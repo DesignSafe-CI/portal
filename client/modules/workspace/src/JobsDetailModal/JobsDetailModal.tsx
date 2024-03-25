@@ -1,6 +1,7 @@
-import { Modal } from 'antd';
+import { Modal, Spin } from 'antd';
 import { useGetJobs } from '@client/hooks';
 import React, { useState } from 'react';
+import styles from './JobsDetailModal.module.css';
 
 export type TModalChildren = (props: {
   onClick: React.MouseEventHandler<HTMLElement>;
@@ -10,15 +11,20 @@ export const JobsDetailModalBody: React.FC<{
   isOpen: boolean;
   uuid: string;
 }> = ({ isOpen, uuid }) => {
-  const jobData = useGetJobs('select', { uuid });
+  const { data, isLoading } = useGetJobs('select', { uuid });
 
   return (
     <Modal
-      title={<h2>{jobData.name}</h2>}
+      title={<h2>Job Detail: {uuid}</h2>}
       width="60%"
       open={isOpen}
       footer={null} // Remove the footer from here
-    ></Modal>
+    >
+      <div className={styles.modalContentContainer}>
+        {isLoading && <Spin className={styles.spinner} />}
+        {data && isOpen && <span>{data.name}</span>}
+      </div>
+    </Modal>
   );
 };
 
