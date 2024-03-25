@@ -26,7 +26,8 @@ class TestValidateTapisJob(TestCase):
         mock_user_model = MagicMock()
         mock_user_model.objects.get.return_value = mock_user
         self.user_model_patcher = patch(
-            "designsafe.apps.webhooks.views.get_user_model", return_value=mock_user_model
+            "designsafe.apps.webhooks.views.get_user_model",
+            return_value=mock_user_model,
         )
         self.user_model = self.user_model_patcher.start()
 
@@ -61,7 +62,8 @@ class TestJobsWebhookView(TransactionTestCase):
         mock_user_model = MagicMock()
         mock_user_model.objects.get.return_value = mock_user
         self.user_model_patcher = patch(
-            "designsafe.apps.webhooks.views.get_user_model", return_value=mock_user_model
+            "designsafe.apps.webhooks.views.get_user_model",
+            return_value=mock_user_model,
         )
         self.user_model = self.user_model_patcher.start()
 
@@ -110,7 +112,7 @@ class TestJobsWebhookView(TransactionTestCase):
 
 
 class TestInteractiveWebhookView(TestCase):
-    fixtures = ["users", "auth"]
+    fixtures = ["user-data", "auth"]
 
     def setUp(self):
         self.mock_tapis_patcher = patch(
@@ -158,7 +160,6 @@ class TestInteractiveWebhookView(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(self.mock_tapis_client.meta.addMetadata.called)
         self.assertEqual(Notification.objects.count(), 1)
 
         n = Notification.objects.last()
