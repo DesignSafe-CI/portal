@@ -1,3 +1,8 @@
+"""
+.. :module:: apps.webhooks.views
+   :synopsys: Views to handle Webhooks
+"""
+
 import json
 import logging
 
@@ -7,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 from requests import HTTPError
 from tapipy.errors import BaseTapyException
@@ -17,14 +23,13 @@ from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
 
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 TERMINAL_JOB_STATES = ["FINISHED", "CANCELLED", "FAILED"]
 
 
-def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
+def validate_tapis_job(job_uuid, job_owner, disallowed_states=None):
     """
     Verifies that a job UUID is both visible to the owner and belongs to the owner
 
@@ -41,14 +46,12 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=[]):
     # Validate the job UUID against the owner
     if job_data.owner != job_owner:
         logger.error(
-            "Tapis job (owner='{}', status='{}) for this event (owner='{}') is not valid".format(
-                job_data.owner, job_data.status, job_owner
-            )
+            f"Tapis job (owner='{job_data.owner}', status='{job_data.status}) for this event (owner='{job_owner}') is not valid"
         )
         raise ApiException("Unable to find a related valid job for this notification.")
 
     # Check to see if the job state should generate a notification
-    if job_data.status in disallowed_states:
+    if disallowed_states and job_data.status in disallowed_states:
         return None
 
     job_data = check_job_for_timeout(job_data)
@@ -89,9 +92,7 @@ class JobsWebhookView(BaseApiView):
             # Do nothing on job status not in portal notification states
             if job_status not in settings.PORTAL_JOB_NOTIFICATION_STATES:
                 logger.info(
-                    "Job UUID {} for owner {} entered {} state (no notification sent)".format(
-                        job_uuid, username, job_status
-                    )
+                    f"Job UUID {job_uuid} for owner {username} entered {job_status} state (no notification sent)"
                 )
                 return HttpResponse("OK")
 
@@ -99,9 +100,7 @@ class JobsWebhookView(BaseApiView):
             if job_status == job_old_status:
                 return HttpResponse("OK")
 
-            logger.info(
-                "JOB STATUS CHANGE: UUID={} status={}".format(job_uuid, job_status)
-            )
+            logger.info(f"JOB STATUS CHANGE: UUID={job_uuid} status={job_status}")
 
             event_data = {
                 Notification.EVENT_TYPE: "job",
@@ -128,31 +127,23 @@ class JobsWebhookView(BaseApiView):
                 ] = job_details.remoteOutcome
                 event_data[Notification.EXTRA]["status"] = job_details.status
 
-                try:
-                    logger.info("Indexing job output for job={}".format(job_uuid))
-
-                    agave_indexer.apply_async(
-                        kwargs={
-                            "username": username,
-                            "systemId": job_details.archiveSystemId,
-                            "filePath": job_details.archiveSystemDir,
-                        },
-                        queue="indexing",
-                    )
-
-                except Exception as e:
-                    logger.exception(
-                        "Error starting async task to index job output: {}".format(e)
-                    )
+                agave_indexer.apply_async(
+                    kwargs={
+                        "username": username,
+                        "systemId": job_details.archiveSystemId,
+                        "filePath": job_details.archiveSystemDir,
+                    },
+                    queue="indexing",
+                )
 
             with transaction.atomic():
                 Notification.objects.create(**event_data)
 
             return HttpResponse("OK")
 
-        except (ObjectDoesNotExist, BaseTapyException, ApiException) as e:
-            logger.exception(e)
-            return HttpResponseBadRequest("ERROR")
+        except (ObjectDoesNotExist, BaseTapyException, ApiException) as exc:
+            logger.exception(exc)
+            return HttpResponseBadRequest(f"ERROR: {exc}")
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -192,9 +183,7 @@ class InteractiveWebhookView(BaseApiView):
             valid_state = validate_tapis_job(job_uuid, job_owner, TERMINAL_JOB_STATES)
             if not valid_state:
                 raise ApiException(
-                    "Interactive Job UUID {} for user {} was in invalid state".format(
-                        job_uuid, job_owner
-                    )
+                    f"Interactive Job UUID {job_uuid} for user {job_owner} was in invalid state"
                 )
             event_data[Notification.EXTRA] = {
                 "name": valid_state.name,
@@ -202,9 +191,9 @@ class InteractiveWebhookView(BaseApiView):
                 "uuid": valid_state.uuid,
             }
 
-        except (HTTPError, BaseTapyException, ApiException) as e:
-            logger.exception(e)
-            return HttpResponseBadRequest(f"ERROR: {e}")
+        except (HTTPError, BaseTapyException, ApiException) as exc:
+            logger.exception(exc)
+            return HttpResponseBadRequest(f"ERROR: {exc}")
 
         Notification.objects.create(**event_data)
 

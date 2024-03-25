@@ -1,7 +1,10 @@
+"""Workspace API Utils"""
+
 import json
 
 
 def get_tapis_timeout_error_messages(job_id):
+    """Return list of Tapis error messages for a give job uuid due to timeouts"""
     return [
         "JOBS_EARLY_TERMINATION Job terminated by Tapis because: TIME_EXPIRED",
         f'JOBS_USER_APP_FAILURE The user application ({job_id}) ended with remote status "TIMEOUT" and returned exit code: 0:0.',
