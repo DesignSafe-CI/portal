@@ -51,7 +51,6 @@ class TestValidateTapisJob(TestCase):
 
 
 class TestJobsWebhookView(TransactionTestCase):
-
     def setUp(self):
         signals.post_save.disconnect(
             sender=Notification, dispatch_uid="notification_msg"

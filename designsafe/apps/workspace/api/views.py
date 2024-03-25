@@ -540,9 +540,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post["archiveSystemDir"] = (
-                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
-            )
+            job_post[
+                "archiveSystemDir"
+            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")
@@ -562,9 +562,12 @@ class JobsView(AuthenticatedApiView):
             # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
         # Test file listing on relevant systems to determine whether keys need to be pushed manually
-        system_needs_keys = any(test_system_needs_keys(tapis, system_id) for system_id in list(
-            set([job_post["archiveSystemId"], job_post["execSystemId"]])
-        ))
+        system_needs_keys = any(
+            test_system_needs_keys(tapis, system_id)
+            for system_id in list(
+                set([job_post["archiveSystemId"], job_post["execSystemId"]])
+            )
+        )
         if system_needs_keys:
             logger.info(
                 f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
@@ -615,7 +618,9 @@ class JobsView(AuthenticatedApiView):
                 )
 
         # Add portalName tag to job in order to filter jobs by portal
-        job_post["tags"] = job_post.get("tags", []) + [f"portalName: {settings.PORTAL_NAMESPACE}"]
+        job_post["tags"] = job_post.get("tags", []) + [
+            f"portalName: {settings.PORTAL_NAMESPACE}"
+        ]
 
         # Add webhook subscription for job status updates
         job_post["subscriptions"] = job_post.get("subscriptions", []) + [
