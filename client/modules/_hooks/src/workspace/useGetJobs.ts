@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
-import { TJobsListingResponse } from './useJobsListing';
+import { TJob, TJobsListing } from './useJobsListing';
 
 type TJobParamsType = {
   uuid?: string;
@@ -9,25 +9,27 @@ type TJobParamsType = {
   skip?: number;
 };
 
+type TJobGetOperations = 'select' | 'listing' | 'search';
+
 async function getJobs(
-  operation: string,
+  operation: TJobGetOperations,
   { signal }: { signal: AbortSignal },
   params: TJobParamsType
 ) {
-  const res = await apiClient.get<TJobsListingResponse>(
-    `/api/workspace/jobs/${operation}`,
-    {
-      signal,
-      ...params,
-    }
-  );
+  const res = await apiClient.get<{
+    response: TJob | TJobsListing;
+    status: number;
+  }>(`/api/workspace/jobs/${operation}`, {
+    signal,
+    ...params,
+  });
   return res.data.response;
 }
 
-function useGetJobs(operation: string, queryOptions: TJobParamsType) {
+function useGetJobs(operation: TJobGetOperations, queryParams: TJobParamsType) {
   return useQuery({
-    queryKey: ['workspace', 'getJobs', operation, ...(<[]>queryOptions)],
-    queryFn: ({ signal }) => getJobs(operation, { signal }, queryOptions),
+    queryKey: ['workspace', 'getJobs', operation, ...(<[]>queryParams)],
+    queryFn: ({ signal }) => getJobs(operation, { signal }, queryParams),
   });
 }
 

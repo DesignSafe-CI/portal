@@ -2,6 +2,7 @@ import { Modal, Spin } from 'antd';
 import { useGetJobs } from '@client/hooks';
 import React, { useState } from 'react';
 import styles from './JobsDetailModal.module.css';
+import { TJob } from '@client/hooks';
 
 export type TModalChildren = (props: {
   onClick: React.MouseEventHandler<HTMLElement>;
@@ -11,7 +12,10 @@ export const JobsDetailModalBody: React.FC<{
   isOpen: boolean;
   uuid: string;
 }> = ({ isOpen, uuid }) => {
-  const { data, isLoading } = useGetJobs('select', { uuid });
+  const { data, isLoading } = useGetJobs('select', { uuid }) as {
+    data: TJob;
+    isLoading: boolean;
+  };
 
   return (
     <Modal

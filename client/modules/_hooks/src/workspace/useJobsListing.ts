@@ -19,14 +19,9 @@ export type TJob = {
   uuid: string;
 };
 
-type TJobsListing = {
+export type TJobsListing = {
   listing: TJob[];
   reachedEnd: boolean;
-};
-
-export type TJobsListingResponse = {
-  response: TJobsListing | TJob;
-  status: number;
 };
 
 async function getJobsListing(
@@ -35,7 +30,7 @@ async function getJobsListing(
   { signal }: { signal: AbortSignal }
 ) {
   const skip = page * limit;
-  const res = await apiClient.get<TJobsListingResponse>(
+  const res = await apiClient.get<{ response: TJobsListing; status: number }>(
     `/api/workspace/jobs/listing`,
     {
       signal,
@@ -64,7 +59,7 @@ function useJobsListing(pageSize: number = 10) {
       lastPageParam: number | unknown
     ): { page: number } | undefined => {
       return lastPage.listing && lastPage.listing.length >= pageSize
-        ? { page: lastPageParam + 1 }
+        ? { page: (lastPageParam as TFileListingPageParam).lastPageParam + 1 }
         : undefined;
     },
     retry: (failureCount, error) =>
