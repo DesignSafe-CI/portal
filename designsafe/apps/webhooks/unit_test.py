@@ -73,8 +73,9 @@ class TestJobsWebhookView(TransactionTestCase):
         self.user_model_patcher.stop()
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["STAGING_INPUTS"])
+    @patch("designsafe.apps.webhooks.views.agave_indexer")
     @patch("designsafe.apps.webhooks.views.validate_tapis_job")
-    def test_webhook_job_post(self, mock_validate_tapis_job):
+    def test_webhook_job_post(self, mock_validate_tapis_job, mock_indexer):
         job_notification_event = json.load(
             open(os.path.join(os.path.dirname(__file__), "fixtures/job_event.json"))
         )
@@ -93,6 +94,7 @@ class TestJobsWebhookView(TransactionTestCase):
         n_status = n.to_dict()["extra"]["status"]
         job_data = json.loads(job_notification_event["event"]["data"])
         self.assertEqual(n_status, job_data["newJobStatus"])
+        self.assertEqual(mock_indexer.apply_async.call_count, 1)
 
     @override_settings(PORTAL_JOB_NOTIFICATION_STATES=["RUNNING"])
     @patch("designsafe.apps.webhooks.views.validate_tapis_job")
