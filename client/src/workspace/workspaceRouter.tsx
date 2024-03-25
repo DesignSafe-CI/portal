@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import WorkspaceRoot from './layouts/WorkspaceBaseLayout';
 import { JobsListingLayout } from './layouts/JobsListingLayout';
-import { JobsDetailModal } from '@client/workspace';
+// import { JobsDetailModal } from '@client/workspace';
 
 const workspaceRouter = createBrowserRouter(
   [

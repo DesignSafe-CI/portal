@@ -424,7 +424,7 @@ class JobsView(AuthenticatedApiView):
         )
 
     def select(self, client, request):
-        job_uuid = request.GET.get("job_uuid")
+        job_uuid = request.GET.get("uuid")
         data = client.jobs.getJob(jobUuid=job_uuid)
 
         return data
@@ -487,7 +487,7 @@ class JobsView(AuthenticatedApiView):
             },
         )
         tapis = request.user.tapis_oauth.client
-        job_uuid = request.GET.get("job_uuid")
+        job_uuid = request.GET.get("uuid")
         data = tapis.jobs.hideJob(jobUuid=job_uuid)
         return JsonResponse(
             {
@@ -502,7 +502,7 @@ class JobsView(AuthenticatedApiView):
         username = request.user.username
         body = json.loads(request.body)
         operation = body.get("operation")
-        job_uuid = body.get("job_uuid")
+        job_uuid = body.get("uuid")
         job_post = body.get("job")
 
         allowed_actions = ["resubmitJob", "cancelJob", "submitJob"]

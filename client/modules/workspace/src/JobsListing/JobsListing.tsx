@@ -5,7 +5,7 @@ import {
   TJobsListingColumns,
 } from './JobsListingTable/JobsListingTable';
 import { getStatusText } from '../utils';
-import { JobsDetailModal } from '../JobsDetailModal/JobsDetailModal';
+import { JobsDetailModalBody } from '../JobsDetailModal/JobsDetailModal';
 
 export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   ...tableProps
@@ -66,10 +66,9 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     <>
       <JobsListingTable columns={columns} {...tableProps} />
       {jobDetailModalState.uuid && (
-        <JobsDetailModal
+        <JobsDetailModalBody
           isOpen={jobDetailModalState.isOpen}
           uuid={jobDetailModalState.uuid}
-          handleCancel={() => setJobDetailModalState({ isOpen: false })}
         />
       )}
     </>

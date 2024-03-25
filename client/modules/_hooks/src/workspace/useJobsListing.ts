@@ -2,7 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { AxiosError } from 'axios';
 
-type TJob = {
+export type TJob = {
   appId: string;
   appVersion: string;
   archiveSystemId: string;
@@ -19,12 +19,13 @@ type TJob = {
   uuid: string;
 };
 
-export type TJobsListing = {
+type TJobsListing = {
   listing: TJob[];
   reachedEnd: boolean;
 };
+
 export type TJobsListingResponse = {
-  response: TJobsListing;
+  response: TJobsListing | TJob;
   status: number;
 };
 
