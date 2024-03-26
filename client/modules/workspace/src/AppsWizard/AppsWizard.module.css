@@ -3,3 +3,8 @@
   list-style-type: 'none';
   padding-left: '0px';
 }
+.spinner {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+}
