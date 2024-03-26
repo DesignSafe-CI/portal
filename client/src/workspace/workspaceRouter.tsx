@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import WorkspaceRoot from './layouts/WorkspaceBaseLayout';
 import { JobsListingLayout } from './layouts/JobsListingLayout';
+import { AppsViewLayout } from './layouts/AppsViewLayout';
 // import { JobsDetailModal } from '@client/workspace';
 
 const workspaceRouter = createBrowserRouter(
@@ -9,14 +10,14 @@ const workspaceRouter = createBrowserRouter(
       path: '/',
       element: <WorkspaceRoot />,
       children: [
-        // {
-        //   path: ':appId',
-        //   element: <AppsView />,
-        // },
-        // {
-        //   path: ':appId-:appVersion?',
-        //   element: <AppsView />,
-        // },
+        {
+          path: ':appId',
+          element: <AppsViewLayout />,
+        },
+        {
+          path: ':appId-:appVersion?',
+          element: <AppsViewLayout />,
+        },
         {
           path: 'jobs/history?',
           children: [
