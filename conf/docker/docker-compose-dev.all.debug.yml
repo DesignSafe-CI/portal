@@ -70,8 +70,6 @@ services:
       - ../nginx/certificates/designsafe.dev.key:/etc/ssl/designsafe.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe/static
-      - ../../data/media:/var/www/designsafe/media
     links:
       - django:django
     ports:
