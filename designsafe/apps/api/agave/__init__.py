@@ -11,19 +11,22 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 def get_service_account_client():
-    """Return service account agave client.
+    """Return service account tapis client.
 
-    This service account should use 'ds_admin' token.
-
-    ..note:: This service account is an admin account on the Agave tenant.
-
-    ..todo:: Should we, instead, use `ds_user`?
-             There might be some issues because of permissionas,
-             but it might be a bit safer."""
+    This service account uses 'wma_prtl' token.
+    """
 
     return Tapis(
         base_url=settings.TAPIS_TENANT_BASEURL,
         access_token=settings.TAPIS_ADMIN_JWT)
+
+
+def get_tg458981_client():
+    """Return tg458981 tapis client."""
+
+    return Tapis(
+        base_url=settings.TAPIS_TENANT_BASEURL,
+        access_token=settings.TAPIS_TG458981_JWT)
 
 
 # TODOV3: Remove sandbox account code

@@ -550,6 +550,7 @@ TAPIS_TENANT_BASEURL = 'https://designsafe.tapis.io'
 TAPIS_CLIENT_ID = 'client_id'
 TAPIS_CLIENT_KEY = 'client_key'
 TAPIS_ADMIN_JWT = 'admin_jwt'
+TAPIS_TG458981_JWT = 'tg_jwt'
 
 KEY_SERVICE_TOKEN = ''
 
