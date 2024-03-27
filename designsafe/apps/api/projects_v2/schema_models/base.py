@@ -117,6 +117,7 @@ class BaseProject(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_values(v, FIELD_RESEARCH_TYPES)),
     ] = []
     dois: list[str] = []
+    license: Optional[str] = None
 
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
@@ -148,7 +149,7 @@ class BaseProject(MetadataModel):
     @model_validator(mode="after")
     def post_validate(self):
         """Populate derived fields if they don't exist yet."""
-        _authors = sorted(self.authors or [], key=lambda a: getattr(a, "order", 0))
+        _authors = sorted(self.authors or [], key=lambda a: getattr(a, "order", 0) or 0)
         if self.authors != _authors:
             self.authors = _authors
         if self.data_type and not self.data_types:

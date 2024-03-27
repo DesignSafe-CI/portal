@@ -1,7 +1,9 @@
 import { Button, Form, Input, Radio, Select } from 'antd';
 import React from 'react';
 
-export const RelatedWorkInput: React.FC<{ name: string }> = ({ name }) => {
+export const RelatedWorkInput: React.FC<{ name: string | string[] }> = ({
+  name,
+}) => {
   return (
     <Form.List name={name} initialValue={[]}>
       {(fields, { add, remove }) => (

@@ -28,7 +28,7 @@ class HybridSimulation(MetadataModel):
         DropdownValue,
         BeforeValidator(lambda v: handle_dropdown_value(v, HYBRID_SIM_TYPES)),
     ]
-    simulation_type_other: str = Field(exclude=True)
+    simulation_type_other: Optional[str] = Field(exclude=True, default=None)
     procedure_start: str = ""
     procedure_end: str = ""
     referenced_data: list[ReferencedWork] = []
