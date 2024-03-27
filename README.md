@@ -12,7 +12,7 @@ on.
 - [Install Docker][3]
 - [Install Docker Compose][4]
 - [Install Make][12]
-- Nodejs 12.x
+- [Node.js][13] 16.x
 
 If you are on a Mac or a Windows machine, the recommended method is to install
 [Docker Desktop][5], which will install both Docker and Docker Compose, which is required to run Docker on Mac/Windows hosts.
@@ -271,3 +271,4 @@ Production deployment is managed by ansible. See https://github.com/designsafe-c
 [10]: http://karma-runner.github.io/0.12/intro/installation.html
 [11]: https://docs.angularjs.org/guide/unit-testing
 [12]: https://www.gnu.org/software/make/
+[13]: https://nodejs.org/
