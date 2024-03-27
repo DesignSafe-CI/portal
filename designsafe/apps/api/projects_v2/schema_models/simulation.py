@@ -29,7 +29,7 @@ class Simulation(MetadataModel):
         DropdownValue,
         BeforeValidator(lambda v: handle_dropdown_value(v, SIMULATION_TYPES)),
     ]
-    simulation_type_other: str = Field(exclude=True)
+    simulation_type_other: Optional[str] = Field(exclude=True, default=None)
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []

@@ -1,4 +1,4 @@
-import { Button, Form, Input, Select, Tag } from 'antd';
+import { Button, Form, Input, Select } from 'antd';
 import React, { useCallback, useEffect } from 'react';
 import {
   nhTypeOptions,
@@ -16,29 +16,7 @@ import {
 } from './_fields';
 import { TProjectUser } from './_fields/UserSelect';
 import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
-
-const customizeRequiredMark = (
-  label: React.ReactNode,
-  info: { required: boolean }
-) => (
-  <>
-    <span style={{ whiteSpace: 'nowrap' }}>{label}</span>&nbsp;
-    {info.required && (
-      <Tag
-        color="#d9534f"
-        style={{
-          borderRadius: '2.7px',
-          lineHeight: 1,
-          paddingInline: 0,
-          padding: '0.2em 0.4em 0.3em',
-          fontSize: '75%',
-        }}
-      >
-        Required
-      </Tag>
-    )}
-  </>
-);
+import { customRequiredMark } from './_common';
 
 export const BaseProjectForm: React.FC<{ projectId: string }> = ({
   projectId,
@@ -79,7 +57,7 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
       layout="vertical"
       onFinish={(v) => console.log(processFormData(v))}
       onFinishFailed={(v) => console.log(processFormData(v.values))}
-      requiredMark={customizeRequiredMark}
+      requiredMark={customRequiredMark}
     >
       <Form.Item label="Project Title" required>
         Incorporate the project's focus with words indicating the hazard, model,

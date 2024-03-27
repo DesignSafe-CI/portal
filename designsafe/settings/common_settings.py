@@ -86,6 +86,7 @@ INSTALLED_APPS = (
     'designsafe.apps.api.notifications',
     'designsafe.apps.api.datafiles',
     'designsafe.apps.api.projects_v2',
+    'designsafe.apps.api.publications_v2',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -115,7 +116,7 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'designsafe.apps.auth.backends.AgaveOAuthBackend',
+    'designsafe.apps.auth.backends.TapisOAuthBackend',
     'designsafe.apps.auth.backends.TASBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -138,7 +139,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
+    'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -177,7 +178,6 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
-                'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -524,6 +524,19 @@ AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
 
+# Tapis Client Configuration
+PORTAL_ADMIN_USERNAME = os.environ.get('PORTAL_ADMIN_USERNAME')
+TAPIS_TENANT_BASEURL = os.environ.get('TAPIS_TENANT_BASEURL')
+TAPIS_CLIENT_ID = os.environ.get('TAPIS_CLIENT_ID')
+TAPIS_CLIENT_KEY = os.environ.get('TAPIS_CLIENT_KEY')
+TAPIS_ADMIN_JWT = os.environ.get('TAPIS_ADMIN_JWT')
+
+KEY_SERVICE_TOKEN = os.environ.get('KEY_SERVICE_TOKEN')
+
+PORTAL_NAMESPACE = 'DESIGNSAFE'
+
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
+
 DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
 
@@ -662,3 +675,5 @@ FEDORA_URL = os.environ.get('FEDORA_URL')
 FEDORA_USERNAME = os.environ.get('FEDORA_USERNAME')
 FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
 FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')
+
+CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('SESSION_COOKIE_DOMAIN')}"]
