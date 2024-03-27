@@ -42,6 +42,12 @@ def format_publication_data(
             v1_full_path = (
                 Path(v1_pubs_root) / Path(project_id) / Path(v1_path.lstrip("/"))
             )
+            if version and version > 1:
+                v1_full_path = (
+                    Path(v1_pubs_root)
+                    / Path(f"{project_id}v{version}")
+                    / Path(v1_path.lstrip("/"))
+                )
             v2_full_path = Path(v2_pubs_root) / Path(v2_path.lstrip("/"))
             os.makedirs(str(v2_full_path.parent), exist_ok=True)
             if v1_full_path.is_dir():

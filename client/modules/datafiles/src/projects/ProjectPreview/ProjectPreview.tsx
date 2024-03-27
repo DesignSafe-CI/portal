@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useProjectPreview, usePublicationDetail } from '@client/hooks';
 import { Collapse } from 'antd';
 import styles from './ProjectPreview.module.css';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
+import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 
 type TTreeData = {
   name: string;
@@ -16,42 +17,11 @@ type TTreeData = {
 };
 
 function RecursiveTree({ treeData }: { treeData: TTreeData }) {
-  const refCallback = useCallback(
-    (ref: HTMLDivElement) => {
-      if (ref) {
-        const header = ref.getElementsByClassName('ant-collapse-header');
-        if (header.length > 0) {
-          const headerElement = header[0] as HTMLElement;
-          headerElement.style.backgroundColor =
-            PROJECT_COLORS[treeData.name]['fill'];
-          headerElement.style.border = `1px solid ${
-            PROJECT_COLORS[treeData.name]['outline']
-          }`;
-        }
-      }
-    },
-    [treeData.name]
-  );
-
   return (
     <li className={`${styles['tree-li']}`}>
-      <Collapse
-        expandIconPosition="right"
-        ref={refCallback}
-        size="small"
-        style={{ flex: 1 }}
-        items={[
-          {
-            label: (
-              <span>
-                {DISPLAY_NAMES[treeData.name]} |{' '}
-                <strong>{treeData.value.title}</strong>
-              </span>
-            ),
-            children: <span>{treeData.value.description}</span>,
-          },
-        ]}
-      ></Collapse>
+      <ProjectCollapse entityName={treeData.name} title={treeData.value.title}>
+        <span>{treeData.value.description}</span>
+      </ProjectCollapse>
       <ul className={styles['tree-ul']}>
         {(treeData.children ?? []).map((child) => (
           <div key={child.id} style={{ display: 'inline-flex', flex: 1 }}>

@@ -134,18 +134,21 @@ def fix_authors(meta: ProjectMetadata):
                 partial_author,
             )
             author_info.pop("order", None)
-            print(author_info)
             return {**partial_author, **author_info}
         return partial_author
 
     if meta.value.get("authors"):
         meta.value["authors"] = [
-            get_complete_author(author) for author in meta.value["authors"]
+            get_complete_author(author)
+            for author in meta.value["authors"]
+            if author["authorship"] is True
         ]
 
     if meta.value.get("dataCollectors"):
         meta.value["dataCollectors"] = [
-            get_complete_author(author) for author in meta.value["dataCollectors"]
+            get_complete_author(author)
+            for author in meta.value["dataCollectors"]
+            if author["authorship"] is True
         ]
     schema_model = SCHEMA_MAPPING[meta.name]
     schema_model.model_validate(meta.value)
