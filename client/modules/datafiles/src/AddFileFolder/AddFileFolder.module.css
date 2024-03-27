@@ -34,7 +34,7 @@ a.navLink:not(:global(.active)):hover > div {
   border-left: 5px solid var(--nav-link-l-border-color--unselected);
 }
 
-ul {
+.customUl {
   border: 1px solid #e3e3e3;
   list-style-type: none;
   padding-left: 0;

@@ -1,0 +1,41 @@
+:root {
+  --nav-link-bg-color--unselected: #eee;
+  --nav-link-bg-color--selected: transparent;
+
+  --nav-link-hover-color--selected: #e1e1e1;
+  --nav-link-hover-color--unselected: transparent;
+
+  --nav-link-l-border-color--selected: #337ab7;
+  --nav-link-l-border-color--unselected: #ccc;
+}
+
+a.navLink {
+  color: #555555;
+  text-decoration: none;
+}
+a.navLink > div {
+  background-color: var(--nav-link-bg-color--unselected);
+  height: 40px;
+  line-height: 40px;
+
+  border-left: 5px solid var(--nav-link-bg-color--unselected);
+  padding-left: 10px;
+  padding-right: 15px;
+}
+
+.navLink:global(.active) > div {
+  background-color: transparent;
+  border-left: 5px solid var(--nav-link-l-border-color--selected);
+  padding-left: 10px;
+}
+
+a.navLink:not(:global(.active)):hover > div {
+  background-color: var(--nav-link-hover-color--selected);
+  border-left: 5px solid var(--nav-link-l-border-color--unselected);
+}
+
+.navList {
+  border: '1px solid #e3e3e3';
+  list-style-type: 'none';
+  padding-left: '0px';
+}

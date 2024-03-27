@@ -86,6 +86,7 @@ INSTALLED_APPS = (
     'designsafe.apps.api.notifications',
     'designsafe.apps.api.datafiles',
     'designsafe.apps.api.projects_v2',
+    'designsafe.apps.api.publications_v2',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -533,6 +534,10 @@ TAPIS_TG458981_JWT = os.environ.get('TAPIS_TG458981_JWT')
 
 KEY_SERVICE_TOKEN = os.environ.get('KEY_SERVICE_TOKEN')
 
+PORTAL_NAMESPACE = 'DESIGNSAFE'
+
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
+
 DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
 
@@ -671,3 +676,5 @@ FEDORA_URL = os.environ.get('FEDORA_URL')
 FEDORA_USERNAME = os.environ.get('FEDORA_USERNAME')
 FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
 FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')
+
+CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('SESSION_COOKIE_DOMAIN')}"]

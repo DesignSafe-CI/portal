@@ -73,10 +73,9 @@ services:
       - ../nginx/certificates/designsafe.dev.crt:/etc/ssl/designsafe.dev.crt
       - ../nginx/certificates/designsafe.dev.key:/etc/ssl/designsafe.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
-      - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../static:/var/www/designsafe/static
-      - ../../media:/var/www/designsafe/media
+      - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
     links:
       - django:django
     ports:
@@ -95,6 +94,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     ports:
       - 127.0.0.1:5678:5678
@@ -110,6 +110,7 @@ services:
     env_file: ../env_files/designsafe.env
     volumes:
       - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     container_name: des_websockets
     command: python manage.py runserver 0.0.0.0:9000
@@ -124,6 +125,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     dns:
       - 8.8.8.8
