@@ -109,21 +109,21 @@ class AppsView(AuthenticatedApiView):
         )
         tapis = request.user.tapis_oauth.client
         app_id = request.GET.get("appId")
-        if app_id:
-            app_version = request.GET.get("appVersion")
-            data = _get_app(app_id, app_version, request.user)
+        app_version = request.GET.get("appVersion")
 
-            # Check if default storage system needs keys pushed
-            if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
-                system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM["system"]
+        if not app_id:
+            raise ApiException("Missing required parameter: app_id", status=422)
 
-                system_needs_keys = test_system_needs_keys(tapis, system_id)
-                if system_needs_keys:
-                    data["systemNeedsKeys"] = True
-                    data["pushKeysSystem"] = system_needs_keys
+        data = _get_app(app_id, app_version, request.user)
 
-        else:
-            data = {"appListing": tapis.apps.getApps(limit=-1)}
+        # Check if default storage system needs keys pushed
+        if settings.AGAVE_STORAGE_SYSTEM:
+            system_needs_keys = test_system_needs_keys(
+                tapis, settings.AGAVE_STORAGE_SYSTEM
+            )
+            if system_needs_keys:
+                data["systemNeedsKeys"] = True
+                data["pushKeysSystem"] = system_needs_keys
 
         return JsonResponse(
             {
@@ -413,7 +413,7 @@ class JobsView(AuthenticatedApiView):
 
         if operation not in allowed_actions:
             raise ApiException(
-                f"user:{request.user.username} is trying to run an unsupported job operation: {operation}",
+                f"user: {request.user.username} is trying to run an unsupported job operation: {operation}",
                 status=400,
             )
 
@@ -540,9 +540,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post[
-                "archiveSystemDir"
-            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            job_post["archiveSystemDir"] = (
+                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            )
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")

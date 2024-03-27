@@ -21,7 +21,7 @@ async function getJobs(
     status: number;
   }>(`/api/workspace/jobs/${operation}`, {
     signal,
-    ...params,
+    params,
   });
   return res.data.response;
 }
