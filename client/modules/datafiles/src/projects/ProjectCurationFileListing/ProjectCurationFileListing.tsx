@@ -150,6 +150,7 @@ const FileCurationSelector: React.FC<{
                 border: `1px solid ${PROJECT_COLORS[e.name]?.outline}`,
                 backgroundColor: PROJECT_COLORS[e.name]?.fill,
                 flex: 1,
+                color: 'black',
                 borderRadius: '5px',
                 paddingLeft: '0.5rem',
                 overflow: 'hidden',
