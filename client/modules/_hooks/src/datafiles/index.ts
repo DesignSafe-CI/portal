@@ -25,3 +25,4 @@ export {
   getSystemRootDisplayName,
 } from './usePathDisplayName';
 export * from './projects';
+export * from './publications';

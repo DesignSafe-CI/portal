@@ -38,6 +38,7 @@ def listing(offset=0, limit=100, limit_fields=True, *args):
                                             'project.value.dataType',
                                             'created',
                                             'projectId',
+                                            'project.uuid',
                                             'users',
                                             'system',
                                             'revision'])

@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react';
-import { useProjectPreview } from '@client/hooks';
+import React, { useMemo, useState } from 'react';
+import { useProjectPreview, usePublicationDetail } from '@client/hooks';
 import { Collapse } from 'antd';
 import styles from './ProjectPreview.module.css';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
+import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 
 type TTreeData = {
   name: string;
@@ -16,34 +17,11 @@ type TTreeData = {
 };
 
 function RecursiveTree({ treeData }: { treeData: TTreeData }) {
-  const refCallback = useCallback((ref: HTMLDivElement) => {
-    if (ref) {
-      const header = ref.getElementsByClassName('ant-collapse-header');
-      if (header.length > 0) {
-        const headerElement = header[0] as HTMLElement;
-        headerElement.style.backgroundColor =
-          PROJECT_COLORS[treeData.name]['fill'];
-        headerElement.style.border = `1px solid ${
-          PROJECT_COLORS[treeData.name]['outline']
-        }`;
-      }
-    }
-  }, []);
-
   return (
     <li className={`${styles['tree-li']}`}>
-      <Collapse
-        expandIconPosition="right"
-        ref={refCallback}
-        size="small"
-        style={{ flex: 1 }}
-        items={[
-          {
-            label: `${DISPLAY_NAMES[treeData.name]} | ${treeData.value.title}`,
-            children: <span>{treeData.value.description}</span>,
-          },
-        ]}
-      ></Collapse>
+      <ProjectCollapse entityName={treeData.name} title={treeData.value.title}>
+        <span>{treeData.value.description}</span>
+      </ProjectCollapse>
       <ul className={styles['tree-ul']}>
         {(treeData.children ?? []).map((child) => (
           <div key={child.id} style={{ display: 'inline-flex', flex: 1 }}>
@@ -71,6 +49,10 @@ const PublishedEntityDisplay: React.FC<{
   defaultOpen: boolean;
 }> = ({ treeData, defaultOpen }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
+  const sortedChildren = useMemo(
+    () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
+    [treeData]
+  );
   return (
     <section>
       <div
@@ -114,7 +96,7 @@ const PublishedEntityDisplay: React.FC<{
                 )}
               </div>
             ),
-            children: (treeData.children ?? []).map((child) => (
+            children: (sortedChildren ?? []).map((child) => (
               <RecursiveTree treeData={child} key={child.id} />
             )),
           },
@@ -128,12 +110,42 @@ export const ProjectPreview: React.FC<{ projectId: string }> = ({
   projectId,
 }) => {
   const { data } = useProjectPreview(projectId ?? '');
+  const { children } = (data?.tree ?? { children: [] }) as TTreeData;
+
+  const sortedChildren = useMemo(
+    () => [...(children ?? [])].sort((a, b) => a.order - b.order),
+    [children]
+  );
   if (!data) return null;
 
-  const { children } = data.tree as TTreeData;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {children.map((child, idx) => (
+      {sortedChildren.map((child, idx) => (
+        <PublishedEntityDisplay
+          treeData={child}
+          defaultOpen={idx === 0}
+          key={child.id}
+        />
+      ))}
+    </div>
+  );
+};
+
+export const PublicationView: React.FC<{ projectId: string }> = ({
+  projectId,
+}) => {
+  const { data } = usePublicationDetail(projectId ?? '');
+  const { children } = (data?.tree ?? { children: [] }) as TTreeData;
+
+  const sortedChildren = useMemo(
+    () => [...(children ?? [])].sort((a, b) => a.order - b.order),
+    [children]
+  );
+  if (!data) return null;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {sortedChildren.map((child, idx) => (
         <PublishedEntityDisplay
           treeData={child}
           defaultOpen={idx === 0}
