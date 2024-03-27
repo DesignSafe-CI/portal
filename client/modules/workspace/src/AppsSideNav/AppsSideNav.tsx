@@ -29,7 +29,13 @@ export const AppsSideNav: React.FC = () => {
               <h3>{category.title}</h3>
               <ul>
                 {category.apps.map((app) => (
-                  <AppsNavLink key={`${app.app_id}-${app.version}`} to={`${app.app_id}` + (app.version ? `?appVersion=${app.version}` : '')}>
+                  <AppsNavLink
+                    key={`${app.app_id}-${app.version}`}
+                    to={
+                      `${app.app_id}` +
+                      (app.version ? `?appVersion=${app.version}` : '')
+                    }
+                  >
                     {app.app_id} {app.version}
                   </AppsNavLink>
                 ))}
