@@ -10,7 +10,7 @@
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/client",
-        "base": "/static"
+        "base": "/static/react-assets"
       },
       "configurations": {
         "development": {

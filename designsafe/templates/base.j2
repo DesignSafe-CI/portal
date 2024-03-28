@@ -37,6 +37,7 @@
       <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
       {% block styles %}{% endblock %}
       {% render_block "css" %}
+      {% render_block "react_assets" %}
       <base href="/">
       {% recaptcha_init 'en' %}
 

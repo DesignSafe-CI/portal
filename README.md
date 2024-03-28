@@ -225,8 +225,8 @@ $ docker-compose -f conf/docker/docker-compose-dev.all.debug.yml up
 $ npm run dev
 ```
 
-When using this compose file, your Agave Client should be configured with a `callback_url`
-of `http://$DOCKER_HOST_IP:8000/auth/agave/callback/`.
+When using this compose file, your Tapis Client should be configured with a `callback_url`
+of `http://$DOCKER_HOST_IP:8000/auth/tapis/callback/`.
 
 For developing some services, e.g. Box.com integration, https support is required. To
 enable an Nginx http proxy run using the [`docker-compose-http.yml`](docker-compose-http.yml)
@@ -237,9 +237,6 @@ up an Nginx proxy secured by a self-signed certificate.
 $ docker-compose -f docker-compose-http.yml build
 $ docker-compose -f docker-compose-http.yml up
 ```
-
-When using this compose file, your Agave Client should be configured with a `callback_url`
-of `https://$DOCKER_HOST_IP/auth/agave/callback/`.
 
 ### Agave filesystem setup
 1. Delete all of the old metadata objects using this command:

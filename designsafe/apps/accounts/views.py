@@ -278,7 +278,7 @@ def register(request):
             if not captcha_json.get("success", False):
                 messages.error(request, "Please complete the reCAPTCHA before submitting your account request.")
                 return render(request,'designsafe/apps/accounts/register.html', context)
-            
+
             # Once captcha is verified, send request to TRAM.
             tram_headers = {"tram-services-key": settings.TRAM_SERVICES_KEY}
             tram_body = {"project_id": settings.TRAM_PROJECT_ID,
@@ -290,7 +290,7 @@ def register(request):
             tram_resp.raise_for_status()
             logger.info("Received response from TRAM: %s", tram_resp.json())
             messages.success(request, "Your request has been received. Please check your email for a project invitation.")
-                
+
         except requests.HTTPError as exc:
             logger.debug(exc)
             messages.error(request, "An unknown error occurred. Please try again later.")

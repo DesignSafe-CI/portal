@@ -1,0 +1,11 @@
+.listing-main {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+}
+
+.listing-container {
+  max-height: 1000px;
+  overflow: auto;
+  flex: 1 0 0;
+}

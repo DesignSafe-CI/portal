@@ -1,0 +1,61 @@
+{
+  "categories": [
+    {
+      "title": "Simulation",
+      "priority": 5,
+      "apps": [
+        {
+          "app_id": "openfoam",
+          "app_type": "tapis",
+          "bundle_id": 1,
+          "label": "OpenFOAM (Frontera) - v9.0",
+          "icon": "openfoam",
+          "is_bundled": false,
+          "bundle_label": "OpenFoam"
+        },
+        {
+          "app_id": "opensees-mp-v35",
+          "app_type": "tapis",
+          "bundle_id": 2,
+          "label": "OpenSeesMP V3.5 (Frontera)",
+          "icon": "opensees",
+          "is_bundled": true,
+          "bundle_label": "OpenSees"
+        },
+        {
+          "app_id": "opensees-sp-v35",
+          "app_type": "tapis",
+          "bundle_id": 2,
+          "label": "OpenSeesSP V3.5 (Frontera)",
+          "icon": "opensees",
+          "is_bundled": true,
+          "bundle_label": "OpenSees"
+        }
+      ]
+    },
+    {
+      "title": "Analysis",
+      "priority": 2,
+      "apps": [
+        {
+          "app_id": "jupyter-lab-hpc",
+          "app_type": "tapis",
+          "bundle_id": 3,
+          "label": "Jupyter Lab HPC (Frontera)",
+          "icon": "jupyter",
+          "is_bundled": true,
+          "bundle_label": "Jupyter"
+        },
+        {
+          "app_id": "jupyter-lab-hpc-cuda",
+          "app_type": "tapis",
+          "bundle_id": 3,
+          "label": "Jupyter Lab HPC CUDA (Frontera)",
+          "icon": "jupyter",
+          "is_bundled": true,
+          "bundle_label": "Jupyter"
+        }
+      ]
+    }
+  ]
+}
