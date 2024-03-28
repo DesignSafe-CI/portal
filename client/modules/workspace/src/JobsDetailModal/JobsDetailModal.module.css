@@ -1,0 +1,12 @@
+.spinner {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+}
+
+.modalContentContainer {
+  min-height: 200px;
+  max-height: 75vh;
+  padding-top: 10px;
+  position: relative;
+}

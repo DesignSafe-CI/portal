@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import requests
 from django.conf import settings
 from django.core.mail import send_mail
-from agavepy.agave import Agave, AgaveException
+# from agavepy.agave import Agave, AgaveException
 from designsafe.apps.api.tasks import agave_indexer
 from designsafe.apps.api.notifications.models import Notification
 from celery import shared_task
@@ -97,7 +97,7 @@ def new_user_alert(username):
                                                     'Name: ' + user.first_name + ' ' + user.last_name + '\n' +
                                                     'Id: ' + str(user.id) + '\n',
               settings.DEFAULT_FROM_EMAIL, settings.NEW_ACCOUNT_ALERT_EMAILS.split(','),)
-    
+
     tram_headers = {"tram-services-key": settings.TRAM_SERVICES_KEY}
     tram_body = {"project_id": settings.TRAM_PROJECT_ID,
                  "email": user.email}

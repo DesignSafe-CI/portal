@@ -5,12 +5,10 @@
 """
 import logging
 import requests
-from agavepy.agave import Agave, load_resource
+from tapipy.tapis import Tapis
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
-
-AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
 
 def get_service_account_client():
     """Return service account agave client.
@@ -23,15 +21,17 @@ def get_service_account_client():
              There might be some issues because of permissionas,
              but it might be a bit safer."""
 
-    return Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                 token=settings.AGAVE_SUPER_TOKEN,
-                 resources=AGAVE_RESOURCES)
+    return Tapis(
+        base_url=settings.TAPIS_TENANT_BASEURL,
+        access_token=settings.TAPIS_ADMIN_JWT)
 
+
+# TODOV3: Remove sandbox account code
 def get_sandbox_service_account_client():
     """Return sandbox service account"""
-    return Agave(api_server=settings.AGAVE_SANDBOX_TENANT_BASEURL,
-                 token=settings.AGAVE_SANDBOX_SUPER_TOKEN,
-                 resources=AGAVE_RESOURCES)
+    return Tapis(
+        base_url=settings.TAPIS_TENANT_BASEURL,
+        access_token=settings.TAPIS_ADMIN_JWT)
 
 def service_account():
     """Return prod or sandbox service client depending on setting.AGAVE_USE_SANDBOX"""

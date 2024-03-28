@@ -1,0 +1,25 @@
+.listing-main {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+}
+
+.listing-container {
+  max-height: 1000px;
+  overflow: auto;
+  flex: 1 0 0;
+}
+
+.breadcrumbWrapper {
+  padding: 20px;
+  padding-right: 20px;
+}
+
+.layoutContainer {
+  background-color: transparent;
+  gap: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

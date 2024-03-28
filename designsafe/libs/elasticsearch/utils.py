@@ -1,4 +1,4 @@
-from future.utils import python_2_unicode_compatible
+
 import urllib.request, urllib.parse, urllib.error
 from elasticsearch import Elasticsearch
 import logging
@@ -165,7 +165,7 @@ def iterate_level(client, system, path, limit=100):
             break
 
 # pylint: disable=too-many-locals
-@python_2_unicode_compatible
+
 def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, paths_to_ignore=None):
     """Walk a pth in an Agave storgae system.
 
@@ -298,14 +298,14 @@ def index_level(path, folders, files, systemId, reindex=False):
             logger.debug(children_paths)
             delete_recursive(hit.system, hit.path)
 
-@python_2_unicode_compatible
+
 def repair_path(name, path):
     if not path.endswith(name):
         path = path + '/' + name
     path = path.strip('/')
     return '/{path}'.format(path=path)
 
-@python_2_unicode_compatible
+
 def repair_paths(limit=1000):
     from designsafe.apps.data.models.elasticsearch import IndexedFile
     from elasticsearch import Elasticsearch

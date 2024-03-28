@@ -16,7 +16,6 @@ from django.core.asgi import get_asgi_application
 from django.urls import re_path
 from designsafe.apps.signals.websocket_consumers import DesignsafeWebsocketConsumer
 
-#from chat.routing import websocket_urlpatterns
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "designsafe.settings")
 websocket_urlpatterns = [
