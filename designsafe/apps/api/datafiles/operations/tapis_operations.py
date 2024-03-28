@@ -36,14 +36,25 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     list
         List of dicts containing file metadata
     """
-    raw_listing = client.files.list(systemId=system,
-                                    filePath=urllib.parse.quote(path),
-                                    offset=int(offset) + 1,
-                                    limit=int(limit))
+    raw_listing = client.files.listFiles(systemId=system,
+                                         path=(path or '/'),
+                                         offset=int(offset),
+                                         limit=int(limit))
 
     try:
         # Convert file objects to dicts for serialization.
-        listing = list(map(dict, raw_listing))
+        listing = list(map(lambda f: {
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f.path,
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }}, raw_listing))
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
