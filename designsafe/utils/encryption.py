@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
 
-def createKeyPair():
+def createKeyPair():  # pylint: disable=invalid-name
+    """ Create private and public keys"""
     private_key = create_private_key()
     priv_key_str = export_key(private_key, 'PEM')
     public_key = create_public_key(private_key)

@@ -1,18 +1,21 @@
+"""
+.. :module:: designsafe.utils.system_access
+   :synopsis: Utilities to register keys with key service and with Tapis
+"""
 import logging
 import requests
 from django.conf import settings
-from designsafe.utils.encryption import createKeyPair
 
 
 logger = logging.getLogger(__name__)
 
 
-def create_system_credentials(client,
+def create_system_credentials(client,  # pylint: disable=too-many-arguments
                               username,
                               public_key,
                               private_key,
                               system_id,
-                              skipCredentialCheck=False) -> int:
+                              skipCredentialCheck=False) -> int:  # pylint: disable=invalid-name
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
@@ -26,13 +29,13 @@ def create_system_credentials(client,
     )
 
 
-def register_public_key(username, publicKey, system_id) -> int:
+def register_public_key(username, publicKey, system_id) -> int:  # pylint: disable=invalid-name
     """
     Push a public key to the Key Service API.
     """
     url = "https://api.tacc.utexas.edu/keys/v2/" + username
-    headers = {"Authorization": "Bearer {}".format(settings.KEY_SERVICE_TOKEN)}
+    headers = {"Authorization": f"Bearer {settings.KEY_SERVICE_TOKEN}"}
     data = {"key_value": publicKey, "tags": [{"name": "system", "value": system_id}]}
-    response = requests.post(url, json=data, headers=headers)
+    response = requests.post(url, json=data, headers=headers, timeout=60)
     response.raise_for_status()
     return response.status_code
