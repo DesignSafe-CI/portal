@@ -20,7 +20,9 @@ const WorkspaceRoot: React.FC = () => {
     { title: 'Tools & Applications', path: '/' },
   ];
   // Modify the path for Job Status
-  const modifiedPath = pathname.endsWith('/jobs/history') ? 'Job Status' : pathname;
+  const modifiedPath = pathname.endsWith('/jobs/history')
+    ? 'Job Status'
+    : pathname;
 
   const get_bundle_label_from_title = (title: string) => {
     const categories = appsListingJson.categories;
@@ -33,7 +35,7 @@ const WorkspaceRoot: React.FC = () => {
     }
     return title;
   };
-    
+
   return (
     <>
       <div className={styles.breadcrumbWrapper}>
@@ -51,7 +53,7 @@ const WorkspaceRoot: React.FC = () => {
             const bundle_label = get_bundle_label_from_title(title);
             return (
               <Link className="breadcrumb-link" to={obj.path}>
-                {bundle_label} 
+                {bundle_label}
               </Link>
             );
           }}
