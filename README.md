@@ -40,11 +40,8 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    - `AGAVE_*`: should be set to enable Agave API integration (authentication, etc.)
    - `RT_*`: should be set to enable ticketing
 
-   Make copies of [rabbitmq.sample.env](conf/env_files/rabbitmq.sample.env) and [mysql.sample.env](conf/env_files/mysql.sample.env),
-   then rename them to `rabbitmq.env` and `mysql.env`.
-
-   Make copies of [mysql.sample.cnf](conf/mysql.sample.cnf), [redis.sample.conf](conf/redis.sample.conf),
-   and [rabbitmq.sample.conf](conf/rabbitmq.sample.conf), then rename them to `mysql.cnf`, `redis.conf`, and `rabbitmq.conf`.
+   Make a copy of [rabbitmq.sample.env](conf/env_files/rabbitmq.sample.env)
+   then rename it to `rabbitmq.env`.
 
    Make a copy of [external_resource_secrets.sample.py](designsafe/settings/external_resource_secrets.sample.py)
    and rename it to `external_resource_secrets.py`.
