@@ -10,26 +10,30 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-def create_system_credentials(client,  # pylint: disable=too-many-arguments
-                              username,
-                              public_key,
-                              private_key,
-                              system_id,
-                              skipCredentialCheck=False) -> int:  # pylint: disable=invalid-name
+def create_system_credentials(  # pylint: disable=too-many-arguments
+    client,
+    username,
+    public_key,
+    private_key,
+    system_id,
+    skipCredentialCheck=False,  # pylint: disable=invalid-name
+) -> int:
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
     logger.info(f"Creating user credential for {username} on Tapis system {system_id}")
-    data = {'privateKey': private_key, 'publicKey': public_key}
+    data = {"privateKey": private_key, "publicKey": public_key}
     client.systems.createUserCredential(
         systemId=system_id,
         userName=username,
         skipCredentialCheck=skipCredentialCheck,
-        **data
+        **data,
     )
 
 
-def register_public_key(username, publicKey, system_id) -> int:  # pylint: disable=invalid-name
+def register_public_key(
+    username, publicKey, system_id  # pylint: disable=invalid-name
+) -> int:
     """
     Push a public key to the Key Service API.
     """

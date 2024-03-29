@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 
 
 def createKeyPair():  # pylint: disable=invalid-name
-    """ Create private and public keys"""
+    """Create private and public keys"""
     private_key = create_private_key()
-    priv_key_str = export_key(private_key, 'PEM')
+    priv_key_str = export_key(private_key, "PEM")
     public_key = create_public_key(private_key)
-    publ_key_str = export_key(public_key, 'OpenSSH')
+    publ_key_str = export_key(public_key, "OpenSSH")
 
     return priv_key_str, publ_key_str
 
@@ -44,7 +44,7 @@ def create_public_key(key):
     return pub_key
 
 
-def export_key(key, format='PEM'):  # pylint: disable=redefined-builtin
+def export_key(key, format="PEM"):  # pylint: disable=redefined-builtin
     """Exports private key
 
     :param key: RSA key
@@ -54,7 +54,7 @@ def export_key(key, format='PEM'):  # pylint: disable=redefined-builtin
         Use `format='PEM'` for exporting private keys
         and `format='OpenSSH' for exporting public keys
     """
-    return key.exportKey(format).decode('utf-8')
+    return key.exportKey(format).decode("utf-8")
 
 
 def encrypt(raw):
@@ -66,7 +66,7 @@ def encrypt(raw):
         Shamelessly copied from:
         https://stackoverflow.com/questions/42568262/how-to-encrypt-text-with-a-password-in-python/44212550#44212550
     """
-    source = raw.encode('utf-8')
+    source = raw.encode("utf-8")
     # Use hash to make sure size is appropiate
     key = SHA256.new(str.encode(settings.SECRET_KEY)).digest()
     # pylint: disable=invalid-name
@@ -91,14 +91,14 @@ def decrypt(raw):
     key = SHA256.new(str.encode(settings.SECRET_KEY)).digest()
     # extract the IV from the beginning
     # pylint: disable=invalid-name
-    IV = source[:AES.block_size]
+    IV = source[: AES.block_size]
     # pylint: enable=invalid-name
     decryptor = AES.new(key, AES.MODE_CBC, IV)
     # decrypt
-    data = decryptor.decrypt(source[AES.block_size:])
+    data = decryptor.decrypt(source[AES.block_size :])
     # pick the padding value from the end;
     padding = data[-1]
     if data[-padding:] != bytes([padding]) * padding:
         raise ValueError("Invalid padding...")
     # remove the padding
-    return data[:-padding].decode('utf-8')
+    return data[:-padding].decode("utf-8")
