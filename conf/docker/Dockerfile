@@ -60,6 +60,7 @@ COPY poetry.lock pyproject.toml ./
 FROM python-base as development
 
 RUN "$POETRY_HOME/bin/poetry" install
+
 # Copy in base project directory without built client assets for local development
 COPY --chown=tg458981:G-816877 . /srv/www/designsafe
 
