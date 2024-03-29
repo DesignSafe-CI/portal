@@ -46,11 +46,6 @@ ENV PATH="$VENV_PATH/bin:$POETRY_HOME/bin:$PATH"
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 
-# COPY --from=node_build --chown=tg458981:G-816877 /designsafe/ /srv/www/designsafe
-
-# `builder-base` is used to split poetry dev dependencies
-FROM python-base as builder-base
-
 # Install poetry version $POETRY_VERSION to $POETRY_HOME
 RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel \
     && python3 -m venv "$POETRY_HOME" \
@@ -60,19 +55,11 @@ RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel \
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 
-# Install runtime dependencies
-RUN "$POETRY_HOME/bin/poetry" install --without dev
-
 ##############
 # `development` image target is used for local development
 FROM python-base as development
 
-WORKDIR $PYSETUP_PATH
-
-# Copy in our built poetry + venv
-COPY --from=builder-base --chown=tg458981:G-816877 $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base --chown=tg458981:G-816877 $PYSETUP_PATH $PYSETUP_PATH
-
+RUN "$POETRY_HOME/bin/poetry" install
 # Copy in base project directory without built client assets for local development
 COPY --chown=tg458981:G-816877 . /srv/www/designsafe
 
@@ -87,8 +74,8 @@ WORKDIR /srv/www/designsafe
 # `production` image target is used for deployed runtime environments
 FROM python-base as production
 
-# Copy in built runtime venv
-COPY --from=builder-base --chown=tg458981:G-816877 $PYSETUP_PATH $PYSETUP_PATH
+# Install runtime dependencies
+RUN "$POETRY_HOME/bin/poetry" install --without dev
 
 # Copy in built client assets
 COPY --from=node_build --chown=tg458981:G-816877 /designsafe/ /srv/www/designsafe
