@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Layout } from 'antd';
 import { AppsSideNav, JobStatusNav, AppsBreadcrumb } from '@client/workspace';
 import styles from './layout.module.css';
+import appsListingJson from '../../../modules/_test-fixtures/src/fixtures/workspace/apps-tray-listing.json';
 
 const { Sider } = Layout;
 
@@ -14,11 +15,25 @@ const WorkspaceRoot: React.FC = () => {
 
   const { pathname } = useLocation();
   const initialBreadcrumbs: Breadcrumb[] = [
-    { title: 'Home', path: 'home' },
+    { title: 'Home', path: '' }, // needs to route to the homepage
     { title: 'Use DesignSafe' },
     { title: 'Tools & Applications', path: '/' },
   ];
+  // Modify the path for Job Status
+  const modifiedPath = pathname.endsWith('/jobs/history') ? 'Job Status' : pathname;
 
+  const get_bundle_label_from_title = (title: string) => {
+    const categories = appsListingJson.categories;
+    for (const category of categories) {
+      for (const app of category.apps) {
+        if (app.app_id === title) {
+          return app.bundle_label;
+        }
+      }
+    }
+    return title;
+  };
+    
   return (
     <>
       <div className={styles.breadcrumbWrapper}>
@@ -27,14 +42,16 @@ const WorkspaceRoot: React.FC = () => {
             ...breadcrumb,
             path: breadcrumb.path ?? '',
           }))}
-          path={pathname ?? ''}
+          path={modifiedPath ?? ''}
           itemRender={(obj) => {
             if (!obj.path) {
               return <span className="breadcrumb-text">{obj.title}</span>;
             }
+            const title = obj.title as string;
+            const bundle_label = get_bundle_label_from_title(title);
             return (
               <Link className="breadcrumb-link" to={obj.path}>
-                {obj.title}
+                {bundle_label} 
               </Link>
             );
           }}
