@@ -6,24 +6,18 @@ services:
     image: redis:7
     volumes:
       - redis_data_v3:/data
-      - ../redis.conf:/usr/local/etc/redis/redis.conf
     ports:
       - 127.0.0.1:6379:6379
-    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
     container_name: des_redis
     hostname: des_redis
 
   rabbitmq:
-    image: rabbitmq:3.6.10-management
+    image: rabbitmq:3-management
     volumes:
       - rabbitmq_data_v3:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
-      - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file: ../env_files/rabbitmq.env
     ports:
       - 127.0.0.1:5672:5672
-      - 127.0.0.1:5673:5673
-      - 127.0.0.1:15673:15673
-      - 127.0.0.1:15672:15672
     container_name: des_rabbitmq
     hostname: des_rabbitmq
 
@@ -135,4 +129,3 @@ volumes:
   des_postgres_data_v3:
   es_data_v3:
   rabbitmq_data_v3:
-  sockets_v3:

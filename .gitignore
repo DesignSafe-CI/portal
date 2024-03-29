@@ -21,10 +21,7 @@ designsafe/templates/react-assets.html
 
 # ignore the populated environment file so as not to commit secrets!
 designsafe.env
-mysql.env
 rabbitmq.env
-rabbitmq.conf
-mysql.cnf
 
 # ignore templated html files
 designsafe/templates/base.html
@@ -41,7 +38,6 @@ designsafe/apps/nco/templates/designsafe/apps/nco/ttc_grants.html
 
 # local config files
 conf/elasticsearch/logging.yml
-conf/redis.conf
 settings.json
 
 # don't commit certs
@@ -49,7 +45,6 @@ certs/
 
 # data directories
 data/redis/
-data/mysql/
 data/elasticsearch/
 data/static/
 data/media/
