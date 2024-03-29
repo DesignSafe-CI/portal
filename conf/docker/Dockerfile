@@ -56,7 +56,7 @@ RUN groupadd --gid 816877 G-816877 && \
 
 COPY --from=node_build /designsafe/ /srv/www/designsafe
 
-COPY --from=node_nx_build /designsafe/client/dist/client/ /srv/www/designsafe/designsafe/static/react-assets/
+COPY --from=node_nx_build /designsafe/client/dist/client/. /srv/www/designsafe/designsafe/static/react-assets
 COPY --from=node_nx_build /designsafe/client/dist/client/react-assets.html /srv/www/designsafe/designsafe/templates/react-assets.html
 
 RUN chown tg458981:G-816877 /srv/www/designsafe /srv/www/designsafe/*

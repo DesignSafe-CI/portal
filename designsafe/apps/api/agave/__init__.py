@@ -5,10 +5,26 @@
 """
 import logging
 import requests
+from agavepy.agave import Agave, load_resource
 from tapipy.tapis import Tapis
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
+
+def get_service_account_client_v2():
+    """Return service account agave client.
+    This service account should use 'ds_admin' token.
+    ..note:: This service account is an admin account on the Agave tenant.
+    ..todo:: Should we, instead, use `ds_user`?
+             There might be some issues because of permissionas,
+             but it might be a bit safer."""
+
+    return Agave(api_server=settings.AGAVE_TENANT_BASEURL,
+                 token=settings.AGAVE_SUPER_TOKEN,
+                 resources=AGAVE_RESOURCES)
+
 
 def get_service_account_client():
     """Return service account tapis client.
