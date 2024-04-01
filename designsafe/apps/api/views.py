@@ -51,6 +51,16 @@ class BaseApiView(View):
                             status=status, content_type='application/json')
 
 
+class AuthenticatedApiView(BaseApiView):
+
+    def dispatch(self, request, *args, **kwargs):
+        """Returns 401 if user is not authenticated."""
+
+        if not request.user.is_authenticated:
+            return JsonResponse({"message": "Unauthenticated user"}, status=401)
+        return super(AuthenticatedApiView, self).dispatch(request, *args, **kwargs)
+
+
 class LoggerApi(BaseApiView):
     """
     Logger API for capturing logs from the front-end.
