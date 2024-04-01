@@ -1,12 +1,24 @@
 import { AppsWizard, AppsSubmissionForm } from '@client/workspace';
-import { TAppParamsType } from '@client/hooks';
+import { TAppParamsType, TAppResponse } from '@client/hooks';
 import { Layout, Form, List, message } from 'antd';
 import React, { useState } from 'react';
 import styles from './layout.module.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
+import { useGetApps } from '@client/hooks';
+import { Spinner } from '@client/common-components';
 
 export const AppsViewLayout: React.FC = () => {
-  const { appId, appVersion } = useParams() as TAppParamsType;
+  const { appId } = useParams() as TAppParamsType;
+  const location = useLocation();
+
+  const appVersion = new URLSearchParams(location.search).get('appVersion') as
+    | string
+    | undefined;
+
+  const { data, isLoading } = useGetApps({ appId, appVersion }) as {
+    data: TAppResponse;
+    isLoading: boolean;
+  };
   const [formValues, setFormValues] = useState({
     steptest1: undefined,
     steptest2: undefined,
@@ -24,6 +36,8 @@ export const AppsViewLayout: React.FC = () => {
       });
   };
 
+  if (isLoading) return <Spinner />;
+
   return (
     <Form
       name="rootForm"
@@ -33,7 +47,7 @@ export const AppsViewLayout: React.FC = () => {
     >
       <Layout style={{ gap: '5px', minWidth: '500px' }}>
         <Layout.Content className={styles['listing-main']}>
-          <AppsWizard appId={appId} appVersion={appVersion} />
+          <AppsWizard data={data} />
         </Layout.Content>
         <Layout.Sider
           width="250"

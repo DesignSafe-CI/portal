@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { useAuthenticatedUser } from '@client/hooks';
 import styles from './AppsWizard.module.css';
-import { useGetApps } from '@client/hooks';
-import { Button, Form, Input, List, message, Steps, theme, Spin } from 'antd';
+import { Button, Form, Input, List, message, Steps, theme } from 'antd';
+import { TAppResponse } from '@client/hooks';
 
 const steps = [
   {
@@ -37,12 +36,7 @@ const steps = [
   },
 ];
 
-export const AppsWizard: React.FC<{ appId: string; appVersion?: string }> = ({
-  appId,
-  appVersion,
-}) => {
-  const { user } = useAuthenticatedUser();
-  const { data, isLoading } = useGetApps({ appId, appVersion });
+export const AppsWizard: React.FC<{ data: TAppResponse }> = ({ data }) => {
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
   const next = () => {
@@ -67,8 +61,7 @@ export const AppsWizard: React.FC<{ appId: string; appVersion?: string }> = ({
 
   return (
     <>
-      {isLoading && <Spin className={styles.spinner} />}
-      {user && data && !isLoading && (
+      {data && (
         <>
           {/* <Steps current={current} items={items} /> */}
           <div

@@ -7,7 +7,7 @@ export type TAppParamsType = {
   appVersion?: string;
 };
 
-type TAppResponse = {
+export type TAppResponse = {
   definition: TTapisApp;
   exec_sys: TTapisSystem;
   license: {
@@ -18,14 +18,16 @@ type TAppResponse = {
   pushKeysSystem?: TTapisSystem;
 };
 
+export type TGetAppsResponse = {
+  response: TAppResponse;
+  status: number;
+};
+
 async function getApps(
   { signal }: { signal: AbortSignal },
   params: TAppParamsType
 ) {
-  const res = await apiClient.get<{
-    response: TAppResponse;
-    status: number;
-  }>(`/api/workspace/apps/`, {
+  const res = await apiClient.get<TGetAppsResponse>(`/api/workspace/apps/`, {
     signal,
     params,
   });
