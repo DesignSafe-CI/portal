@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, defer } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import WorkspaceRoot from './layouts/WorkspaceBaseLayout';
 import { JobsListingLayout } from './layouts/JobsListingLayout';
 import { AppsViewLayout } from './layouts/AppsViewLayout';
@@ -8,9 +8,9 @@ import { appsListingQuery } from '@client/hooks';
 import { QueryClient } from '@tanstack/react-query';
 
 const workspaceRootLoader = (queryClient: QueryClient) => async () => {
-  return defer(
+  return (
     queryClient.getQueryData(appsListingQuery.queryKey) ??
-      (await queryClient.fetchQuery(appsListingQuery))
+    (await queryClient.fetchQuery(appsListingQuery))
   );
 };
 
