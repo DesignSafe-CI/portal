@@ -14,7 +14,7 @@ def add_rapid_event_types(apps, schema_editor):
         {"name": "tsunami", "display_name": "Tsunami"},
         {"name": "flood", "display_name": "Flood"},
         {"name": "hurricane", "display_name": "Hurricane/Typhoon"},
-        {"name": "tornado", "display_name": "Tornado"},
+        {"name": "tornado", "display_name": "Tornado"}
     ]
 
     s = RapidNHEventType.search()
@@ -26,9 +26,10 @@ def add_rapid_event_types(apps, schema_editor):
         et = RapidNHEventType(**ev)
         et.save()
 
-
 class Migration(migrations.Migration):
 
-    dependencies = []
+    dependencies = [
+    ]
 
-    operations = []
+    operations = [
+    ]

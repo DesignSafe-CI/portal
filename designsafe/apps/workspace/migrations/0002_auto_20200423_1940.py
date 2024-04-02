@@ -8,15 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("workspace", "0001_initial"),
+        ('workspace', '0001_initial'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="appdescription",
-            name="appdescription",
-            field=models.TextField(
-                help_text="App dropdown description text for apps that have a dropdown."
-            ),
+            model_name='appdescription',
+            name='appdescription',
+            field=models.TextField(help_text='App dropdown description text for apps that have a dropdown.'),
         ),
     ]

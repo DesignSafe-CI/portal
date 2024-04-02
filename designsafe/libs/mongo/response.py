@@ -3,7 +3,6 @@
 .. module:: designsafe.libs.mongo.response
     :synopsis: Mongo HTTP response classes.
 """
-
 import logging
 from bson import json_util
 from django.http.response import HttpResponse

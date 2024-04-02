@@ -3,6 +3,7 @@
    :synopsis: Wrapper classes for ES ``files`` doc type.
 """
 
+
 import logging
 import os
 from django.conf import settings
@@ -10,9 +11,9 @@ from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 
-# pylint: disable=invalid-name
+#pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-# pylint: enable=invalid-name
+#pylint: enable=invalid-name
 
 
 class BaseESFile(BaseESResource):
@@ -28,16 +29,8 @@ class BaseESFile(BaseESResource):
     we avoid the use of ``AttrDict`` and ``AttrList``.
 
     """
-
-    def __init__(
-        self,
-        username,
-        system=settings.AGAVE_STORAGE_SYSTEM,
-        path="/",
-        wrapped_doc=None,
-        reindex=False,
-        **kwargs
-    ):
+    def __init__(self, username, system=settings.AGAVE_STORAGE_SYSTEM,
+                 path='/', wrapped_doc=None, reindex=False, **kwargs):
         """Elastic Search File representation.
 
         This class directly wraps an Agave indexed file.
@@ -55,16 +48,15 @@ class BaseESFile(BaseESResource):
         try:
             self._wrapped = self._index_cls(self._reindex).from_path(system, path)
         except DocumentNotFound:
-            self._wrapped = self._index_cls(self._reindex)(
-                system=system, path=path, **dict(kwargs)
-            )
-
+            self._wrapped = self._index_cls(self._reindex)(system=system,
+                                            path=path,
+                                            **dict(kwargs))
     @classmethod
     def _index_cls(cls, reindex):
         return IndexedFile
-        # if reindex:
+        #if reindex:
         #    return ReindexedFile
-        # else:
+        #else:
         #    return IndexedFile
 
     def children(self, limit=100):
@@ -74,28 +66,28 @@ class BaseESFile(BaseESResource):
 
         """
         res, search_after = self._index_cls(self._reindex).children(
-            self.username, self.system, self.path, limit=limit
-        )
+                                                self.username,
+                                                self.system,
+                                                self.path,
+                                                limit=limit)
         for doc in res:
-            yield BaseESFile(self.username, wrapped_doc=doc)
+                yield BaseESFile(self.username, wrapped_doc=doc)
 
-        while (
-            not len(res) < limit
-        ):  # If the number or results doesn't match the limit, we're done paginating.
+        while not len(res) < limit: # If the number or results doesn't match the limit, we're done paginating.
             # Retrieve the sort key from the last element then use
             # search_after to get the next page of results
             res, search_after = self._index_cls(self._reindex).children(
-                self.username,
-                self.system,
-                self.path,
-                limit=limit,
-                search_after=search_after,
-            )
+                                                self.username,
+                                                self.system,
+                                                self.path,
+                                                limit=limit,
+                                                search_after=search_after)
             for doc in res:
                 yield BaseESFile(self.username, wrapped_doc=doc)
 
     def save(self, using=None, index=None, validate=True, **kwargs):
-        """Save document"""
+        """Save document
+        """
         self._wrapped.save()
 
     def delete(self):
@@ -104,7 +96,7 @@ class BaseESFile(BaseESResource):
             Module :class:`elasticsearch_dsl.document.DocType`
 
         """
-        if self.format == "folder":
+        if self.format == 'folder':
             children = self.children()
             for child in children:
                 if child.path != self.path:

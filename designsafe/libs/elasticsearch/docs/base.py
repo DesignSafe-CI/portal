@@ -1,3 +1,5 @@
+
+
 import logging
 
 
@@ -10,7 +12,6 @@ class BaseESResource(object):
         Params stored in ``_wrapped`` are made available as attributes
         of the class.
     """
-
     def __init__(self, wrapped_doc=None, **kwargs):
         self._wrap(wrapped_doc, **kwargs)
 
@@ -21,21 +22,22 @@ class BaseESResource(object):
     def _wrap(self, wrapped_doc, **kwargs):
         if wrapped_doc and kwargs:
             wrapped_doc.update(**kwargs)
-        object.__setattr__(self, "_wrapped", wrapped_doc)
+        object.__setattr__(self, '_wrapped', wrapped_doc)
 
     def update(self, **kwargs):
         self._wrapped.update(**kwargs)
 
     def __getattr__(self, name):
-        """Custom attribute getter"""
-        _wrapped = object.__getattribute__(self, "_wrapped")
+        """Custom attribute getter
+        """
+        _wrapped = object.__getattribute__(self, '_wrapped')
         if _wrapped and hasattr(_wrapped, name):
             return getattr(_wrapped, name)
         else:
             return object.__getattribute__(self, name)
 
     def __setattr__(self, name, value):
-        _wrapped = object.__getattribute__(self, "_wrapped")
+        _wrapped = object.__getattribute__(self, '_wrapped')
         if _wrapped and hasattr(_wrapped, name):
             setattr(self._wrapped, name, value)
             return

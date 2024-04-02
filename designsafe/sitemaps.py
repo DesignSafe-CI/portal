@@ -35,10 +35,7 @@ Adjusting these settings for the CMS is handled in ``designsafe.urls``
 from django.contrib import sitemaps
 from django.contrib.sites.models import Site
 from django.urls import reverse
-from designsafe.apps.api.publications.operations import (
-    listing as list_publications,
-    neeslisting as list_nees,
-)
+from designsafe.apps.api.publications.operations import listing as list_publications, neeslisting as list_nees
 from designsafe.apps.api.agave import get_service_account_client
 
 # imported urlpatterns from apps
@@ -58,32 +55,30 @@ from designsafe.apps.dropbox_integration import urls as dropbox_integration_urls
 from designsafe.apps.googledrive_integration import urls as googledrive_integration_urls
 from cms.sitemaps import CMSSitemap
 
-
 # Home
 class HomeSitemap(sitemaps.Sitemap):
     priority = 1.0
-    changefreq = "weekly"
+    changefreq = 'weekly'
 
     def get_urls(self, site=None, **kwargs):
-        site = Site(domain="www.designsafe-ci.org")
+        site = Site(domain='www.designsafe-ci.org')
         return super(HomeSitemap, self).get_urls(site=site, **kwargs)
-
+    
     def items(self):
-        return [""]
+        return ['']
 
     def location(self, item):
         return item
 
-
 # Subsites
 class SubSitemap(sitemaps.Sitemap):
     priority = 0.8
-    changefreq = "weekly"
+    changefreq = 'weekly'
 
     # redefine 'get_urls' so we can set 'domain' and 'name' to empty
     # then feed in the subsite urls
     def get_urls(self, site=None, **kwargs):
-        site = Site(domain="", name="")
+        site = Site(domain='' , name= '')
         return super(SubSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
@@ -95,21 +90,20 @@ class SubSitemap(sitemaps.Sitemap):
     def location(self, item):
         return item
 
-
 # Static - for base urls with 'name'
 class StaticViewSitemap(sitemaps.Sitemap):
     priority = 0.7
-    changefreq = "weekly"
+    changefreq = 'weekly'
 
     def get_urls(self, site=None, **kwargs):
-        site = Site(domain="www.designsafe-ci.org")
+        site = Site(domain='www.designsafe-ci.org')
         return super(StaticViewSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
 
         names_list = []
         for pattern in urls.urlpatterns:
-            if hasattr(pattern, "name") and pattern.name is not None:
+            if hasattr(pattern, 'name') and pattern.name is not None:
                 try:
                     reverse(str(pattern.name))
                     names_list.append(str(pattern.name))
@@ -120,41 +114,39 @@ class StaticViewSitemap(sitemaps.Sitemap):
     def location(self, item):
         return reverse(item)
 
-
 # Dynamic - every new url w/ 'namespace' needs to be added to this dictionary
 # rapid not included due to admin links
 dynamic_apps = {
-    "designsafe_api": api_urls.urlpatterns,
-    "designsafe_applications": applications_urls.urlpatterns,
-    "designsafe_data": data_urls.urlpatterns,
-    "designsafe_workspace": workspace_urls.urlpatterns,
-    "designsafe_notifications": notifications_urls.urlpatterns,
-    "designsafe_search": search_urls.urlpatterns,
-    "djangoRT": help_urls.urlpatterns,
-    "designsafe_geo": geo_urls.urlpatterns,
-    "designsafe_accounts": accounts_urls.urlpatterns,
-    "designsafe_dashboard": dashboard_urls.urlpatterns,
-    "box_integration": box_integration_urls.urlpatterns,
-    "dropbox_integration": dropbox_integration_urls.urlpatterns,
-    "googledrive_integration": googledrive_integration_urls.urlpatterns,
+    'designsafe_api': api_urls.urlpatterns,
+    'designsafe_applications': applications_urls.urlpatterns,
+    'designsafe_data': data_urls.urlpatterns,
+    'designsafe_workspace': workspace_urls.urlpatterns,
+    'designsafe_notifications': notifications_urls.urlpatterns,
+    'designsafe_search': search_urls.urlpatterns,
+    'djangoRT': help_urls.urlpatterns,
+    'designsafe_geo': geo_urls.urlpatterns,
+    'designsafe_accounts': accounts_urls.urlpatterns,
+    'designsafe_dashboard': dashboard_urls.urlpatterns,
+    'box_integration': box_integration_urls.urlpatterns,
+    'dropbox_integration': dropbox_integration_urls.urlpatterns,
+    'googledrive_integration': googledrive_integration_urls.urlpatterns,
 }
-
 
 class DynamicViewSitemap(sitemaps.Sitemap):
     priority = 0.8
-    changefreq = "weekly"
+    changefreq = 'weekly'
 
     def get_urls(self, site=None, **kwargs):
-        site = Site(domain="www.designsafe-ci.org")
+        site = Site(domain='www.designsafe-ci.org')
         return super(DynamicViewSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
 
         names_list = []
-
+ 
         for app in dynamic_apps:
             for item in dynamic_apps[app]:
-                if hasattr(item, "name") and item.name is not None:
+                if hasattr(item, 'name') and item.name is not None:
                     try:
                         reverse(str(app) + ":" + str(item.name))
                         names_list.append(str(app) + ":" + str(item.name))
@@ -166,14 +158,13 @@ class DynamicViewSitemap(sitemaps.Sitemap):
     def location(self, item):
         return reverse(item)
 
-
 # public projects - pulling in urls from agave
 class ProjectSitemap(sitemaps.Sitemap):
     priority = 0.6
-    changefreq = "weekly"
+    changefreq = 'weekly'
 
     def get_urls(self, site=None, **kwargs):
-        site = Site(domain="www.designsafe-ci.org")
+        site = Site(domain='www.designsafe-ci.org')
         return super(ProjectSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
@@ -184,29 +175,29 @@ class ProjectSitemap(sitemaps.Sitemap):
         count = 0
         while True:
             projects = list_publications(offset=count, limit=200, limit_fields=False)
-            for proj in projects["listing"]:
+            for proj in projects['listing']:
                 subpath = {
-                    "root": reverse("designsafe_data:data_depot"),
-                    "project": proj["project"]["value"]["projectId"],
-                    "system": "designsafe.storage.published",
+                    'root' : reverse('designsafe_data:data_depot'),
+                    'project' : proj['project']['value']['projectId'],
+                    'system' : 'designsafe.storage.published'
                 }
-                projPath.append("{root}public/{system}/{project}".format(**subpath))
-            if len(projects["listing"]) < 200:
+                projPath.append('{root}public/{system}/{project}'.format(**subpath))
+            if len(projects['listing']) < 200:
                 break
             count += 200
 
         count = 0
         while True:
             projects = list_nees(offset=count, limit=200, limit_fields=False)
-            for proj in projects["listing"]:
+            for proj in projects['listing']:
                 # nees projects
                 subpath = {
-                    "root": reverse("designsafe_data:data_depot"),
-                    "project": proj["path"],
-                    "system": proj["system"],
+                    'root' : reverse('designsafe_data:data_depot'),
+                    'project' : proj['path'],
+                    'system' : proj['system']
                 }
-                projPath.append("{root}public/{system}{project}".format(**subpath))
-            if len(projects["listing"]) < 200:
+                projPath.append('{root}public/{system}{project}'.format(**subpath))
+            if len(projects['listing']) < 200:
                 break
             count += 200
 
@@ -217,9 +208,11 @@ class ProjectSitemap(sitemaps.Sitemap):
 
 
 class DesignSafeCMSSitemap(CMSSitemap):
-    priority = 0.7
-    changefreq = "weekly"
+    priority = .7
+    changefreq = 'weekly'
 
     def get_urls(self, site=None, **kwargs):
-        site = Site(domain="www.designsafe-ci.org")
+        site = Site(domain='www.designsafe-ci.org')
         return super(DesignSafeCMSSitemap, self).get_urls(site=site, **kwargs)
+
+

@@ -18,7 +18,7 @@ def reindex_uuids(scan_generator, limit=1000):
         Number of documents to process per bulk request.
     """
     _count = 0  # Keep track of how many docs have been reindexed
-    files_reindex_alias = settings.ES_INDEX_PREFIX.format("files-reindex")
+    files_reindex_alias = settings.ES_INDEX_PREFIX.format('files-reindex')
     idx = Index(files_reindex_alias)
     idx_name = list(idx.get_alias().keys())[0]
     client = idx._get_connection()
@@ -27,20 +27,20 @@ def reindex_uuids(scan_generator, limit=1000):
         uuid = file_uuid_sha256(hit.system, hit.path)
         doc = hit.to_dict()
         try:
-            doc["_links"]["self"] = doc["_links"].pop("_self")
+            doc['_links']['self'] = doc['_links'].pop('_self')
         except KeyError:
             pass
         try:
-            doc["legacyPermissions"] = doc["permissions"]
-            del doc["permissions"]
+            doc['legacyPermissions'] = doc['permissions']
+            del doc['permissions']
         except KeyError:
             pass
         return {
-            "_index": idx_name,
-            "_id": uuid,
-            "doc": doc,
-            "_op_type": "update",
-            "doc_as_upsert": True,
+            '_index': idx_name,
+            '_id': uuid,
+            'doc': doc,
+            '_op_type': 'update',
+            'doc_as_upsert': True
         }
 
     for group in grouper(scan_generator, limit):

@@ -5,7 +5,7 @@
     <!--data/data_depot.html-->
     <meta name="keywords" content='{{ keywords|join:", " }}'> <!-- related experiements, subject; used in search -->
     <meta name="authors" content="{% for author in authors %}{{author.full_name}}; {% endfor %}"> <!-- author names -->
-    
+
     <meta name="citation_title" content="{{citation_title}}">
     <meta name="citation_publication_date" content="{{citation_date}}">
     <meta name="citation_doi" content="{{doi}}">
@@ -24,7 +24,7 @@
         {{ dc_json | safe }}
     </script>
 
-    
+
     {% if experiments %}<!-- Experiment Citation Tags -->{% for experiment in experiments %}
     <meta name="citation_title" content="{{ experiment.value.title }}">
     <meta name="citation_doi" content="{{ experiment.doi }}">
@@ -86,7 +86,7 @@
     <meta name="DC.type" content="dataset">
 {% endblock %}
 {% block title %}
-{% if citation_title %}{{citation_title}} 
+{% if citation_title %}{{citation_title}}
 {% else %}
 Data Depot
 {% endif %}
@@ -101,30 +101,24 @@ Data Depot
 
     {%if not react_flag%}
     <div class="container dd-container">
-        <ddmain style="position: relative;">    
+        <ddmain style="position: relative;">
         </ddmain>
     </div>
     {%endif%}
 
-    {% addtoblock "css" %}
-    {% endaddtoblock %}
-
-    {% addtoblock "js" %}
-        {% if debug and react_flag %}
-        <script type="module">
-            import RefreshRuntime from 'http://localhost:4200/static/@react-refresh';
-            RefreshRuntime.injectIntoGlobalHook(window);
-            window.$RefreshReg$ = () => {};
-            window.$RefreshSig$ = () => (type) => type;
-            window.__vite_plugin_react_preamble_installed__ = true;
-        </script>
-        <script type="module" src="http://localhost:4200/static/@vite/client"></script>
-        <script type="module" src="http://localhost:4200/static/src/main.tsx"></script>
+    {% addtoblock "react_assets" %}
+        {% if debug %}
+            <script type="module">
+                import RefreshRuntime from 'http://localhost:4200/static/react-assets/@react-refresh';
+                RefreshRuntime.injectIntoGlobalHook(window);
+                window.$RefreshReg$ = () => {};
+                window.$RefreshSig$ = () => (type) => type;
+                window.__vite_plugin_react_preamble_installed__ = true;
+            </script>
+            <script type="module" src="http://localhost:4200/static/react-assets/@vite/client"></script>
+            <script type="module" src="http://localhost:4200/static/react-assets/src/main.tsx"></script>
         {% else %}
-        <!--TODO: setup non-dev static import for React code-->
+            {% include "react-assets.html" %}
         {% endif %}
-    {% if not react_flag %}
-    <script src="<%= htmlWebpackPlugin.files.js %>"></script>
-    {% endif %}
     {% endaddtoblock %}
 {% endblock %}
