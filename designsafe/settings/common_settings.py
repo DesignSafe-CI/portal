@@ -201,6 +201,7 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 if os.environ.get('DATABASE_HOST'):
+    # mysql connection
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
