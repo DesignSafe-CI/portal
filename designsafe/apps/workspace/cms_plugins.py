@@ -40,7 +40,6 @@ class AppCategoryListing(CMSPluginBase):
             }
             for entry in listing_entries
         ]
-        logger.debug(serialized_listing)
         context["listing"] = serialized_listing
         return context
 
