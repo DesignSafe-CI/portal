@@ -178,6 +178,12 @@ class AppVariant(models.Model):
         blank=True,
     )
 
+    description = models.TextField(
+        help_text="App variant description text for version overview.",
+        blank=True,
+        null=True,
+    )
+
     # Tapis Apps
     version = models.CharField(
         help_text="The version number of the app. The app id + version denotes a unique app.",
