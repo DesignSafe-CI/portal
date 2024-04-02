@@ -3,24 +3,6 @@
 /* To load most structure from Core-Styles */
 @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.3/dist/components/c-app-card.css");
 
-/* To support equal-height columns in Bootstrap 3 */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.3/dist/components/bootstrap.row.css");
-
-
-
-/* Bootstrap (Custom) */
-
-/* Add expected gap between rows of full-height columns */
-.has-row--col-stretch-content-y {
-    --bootstrap-gap: 30px; /* Bootstrap `.container` & `.row` */;
-}
-.has-row--col-stretch-content-y [class^="col-"] {
-    margin-bottom: var(--bootstrap-gap);
-}
-.has-row--col-stretch-content-y .row:last-child {
-    margin-bottom: calc( var(--bootstrap-gap) * -1 );
-}
-
 
 
 /* Card */
