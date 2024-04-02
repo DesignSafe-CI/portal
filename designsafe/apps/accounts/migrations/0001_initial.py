@@ -13,27 +13,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="DesignSafeProfile",
+            name='DesignSafeProfile',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        verbose_name="ID",
-                        serialize=False,
-                        auto_created=True,
-                        primary_key=True,
-                    ),
-                ),
-                ("ethnicity", models.CharField(max_length=255)),
-                ("gender", models.CharField(max_length=255)),
-                (
-                    "user",
-                    models.OneToOneField(
-                        related_name="profile",
-                        to=settings.AUTH_USER_MODEL,
-                        on_delete=models.CASCADE,
-                    ),
-                ),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('ethnicity', models.CharField(max_length=255)),
+                ('gender', models.CharField(max_length=255)),
+                ('user', models.OneToOneField(related_name='profile', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
     ]

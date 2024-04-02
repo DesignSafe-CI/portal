@@ -8,30 +8,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("designsafe_accounts", "0017_auto_20190911_1458"),
+        ('designsafe_accounts', '0017_auto_20190911_1458'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="DesignSafeProfileNHTechnicalDomains",
+            name='DesignSafeProfileNHTechnicalDomains',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("description", models.CharField(max_length=300)),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('description', models.CharField(max_length=300)),
             ],
         ),
         migrations.AddField(
-            model_name="designsafeprofile",
-            name="nh_technical_domains",
-            field=models.ManyToManyField(
-                to="designsafe_accounts.DesignSafeProfileNHTechnicalDomains"
-            ),
+            model_name='designsafeprofile',
+            name='nh_technical_domains',
+            field=models.ManyToManyField(to='designsafe_accounts.DesignSafeProfileNHTechnicalDomains'),
         ),
     ]

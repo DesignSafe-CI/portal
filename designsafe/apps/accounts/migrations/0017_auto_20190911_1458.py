@@ -8,18 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("designsafe_accounts", "0016_designsafeprofile_agree_to_account_limit"),
+        ('designsafe_accounts', '0016_designsafeprofile_agree_to_account_limit'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="designsafeprofile",
-            name="last_updated",
+            model_name='designsafeprofile',
+            name='last_updated',
             field=models.DateTimeField(auto_now=True, null=True),
         ),
         migrations.AddField(
-            model_name="designsafeprofile",
-            name="update_required",
+            model_name='designsafeprofile',
+            name='update_required',
             field=models.BooleanField(default=True),
         ),
     ]

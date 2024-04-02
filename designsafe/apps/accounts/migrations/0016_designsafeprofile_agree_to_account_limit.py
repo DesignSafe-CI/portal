@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("designsafe_accounts", "0015_create_notification_preferences"),
+        ('designsafe_accounts', '0015_create_notification_preferences'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="designsafeprofile",
-            name="agree_to_account_limit",
+            model_name='designsafeprofile',
+            name='agree_to_account_limit',
             field=models.DateTimeField(auto_now_add=True, null=True),
         ),
     ]
