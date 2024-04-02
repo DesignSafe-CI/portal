@@ -77,7 +77,7 @@
     border: var(--border-width) solid #AFAFAF;
     box-shadow: 3px 2px 2px #00000029;
 }
-a.c-app-card:hover {
+.c-app-card:hover {
     outline: 2px solid #0000FF;
     outline-offset: calc( var(--border-width) * -1 );
     box-shadow: none;
