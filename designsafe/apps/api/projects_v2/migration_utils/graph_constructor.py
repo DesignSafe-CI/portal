@@ -6,7 +6,7 @@ from uuid import uuid4
 from pathlib import Path
 import networkx as nx
 from django.utils.text import slugify
-from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
+from designsafe.apps.api.agave import service_account
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers.publication import FIELD_MAP
 from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
