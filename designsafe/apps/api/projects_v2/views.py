@@ -59,6 +59,7 @@ class ProjectsView(BaseApiView):
 class ProjectInstanceView(BaseApiView):
     """View for listing/updating project entities."""
 
+    @method_decorator(tapis_jwt_login)
     def get(self, request: HttpRequest, project_id: str):
         """Return all project metadata for a project ID"""
         user = request.user
