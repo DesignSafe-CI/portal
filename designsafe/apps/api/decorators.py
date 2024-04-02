@@ -65,7 +65,7 @@ def tapis_jwt_login(func):
     """Decorator to log in a user with their Tapis OAuth token
 
     ..note::
-        It will sliently fail and continue executing the wrapped function
+        It will silently fail and continue executing the wrapped function
         if the JWT payload header IS NOT present in the request. If the JWT payload
         header IS present then it will continue executing the wrapped function passing
         the request object with the correct user logged-in.
