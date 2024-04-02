@@ -10,63 +10,42 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = []
+    dependencies = [
+    ]
 
     operations = [
         migrations.CreateModel(
-            name="Broadcast",
+            name='Broadcast',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("event_type", models.CharField(max_length=50)),
-                (
-                    "datetime",
-                    models.DateTimeField(blank=True, default=datetime.datetime.now),
-                ),
-                ("status", models.CharField(max_length=255)),
-                ("operation", models.CharField(default=b"", max_length=255)),
-                ("message", models.TextField(default=b"")),
-                ("extra", models.TextField(default=b"")),
-                ("group", models.CharField(max_length=20)),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('event_type', models.CharField(max_length=50)),
+                ('datetime', models.DateTimeField(blank=True, default=datetime.datetime.now)),
+                ('status', models.CharField(max_length=255)),
+                ('operation', models.CharField(default=b'', max_length=255)),
+                ('message', models.TextField(default=b'')),
+                ('extra', models.TextField(default=b'')),
+                ('group', models.CharField(max_length=20)),
             ],
             options={
-                "abstract": False,
+                'abstract': False,
             },
         ),
         migrations.CreateModel(
-            name="Notification",
+            name='Notification',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("event_type", models.CharField(max_length=50)),
-                (
-                    "datetime",
-                    models.DateTimeField(blank=True, default=datetime.datetime.now),
-                ),
-                ("status", models.CharField(max_length=255)),
-                ("operation", models.CharField(default=b"", max_length=255)),
-                ("message", models.TextField(default=b"")),
-                ("extra", models.TextField(default=b"")),
-                ("user", models.CharField(db_index=True, max_length=20)),
-                ("read", models.BooleanField(default=False)),
-                ("deleted", models.BooleanField(default=False)),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('event_type', models.CharField(max_length=50)),
+                ('datetime', models.DateTimeField(blank=True, default=datetime.datetime.now)),
+                ('status', models.CharField(max_length=255)),
+                ('operation', models.CharField(default=b'', max_length=255)),
+                ('message', models.TextField(default=b'')),
+                ('extra', models.TextField(default=b'')),
+                ('user', models.CharField(db_index=True, max_length=20)),
+                ('read', models.BooleanField(default=False)),
+                ('deleted', models.BooleanField(default=False)),
             ],
             options={
-                "abstract": False,
+                'abstract': False,
             },
         ),
     ]

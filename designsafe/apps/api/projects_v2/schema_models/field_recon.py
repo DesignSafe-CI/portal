@@ -1,5 +1,4 @@
 """Pydantic schema models for Field Recon entities"""
-
 from typing import Annotated, Optional
 import itertools
 from pydantic import BeforeValidator, Field, AliasChoices
@@ -62,9 +61,9 @@ class FieldReconReport(MetadataModel):
     related_work: list[AssociatedProject] = []
 
     file_tags: list[FileTag] = []
-    authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = (
-        Field(default=[], validation_alias=AliasChoices("authors", "dataCollectors"))
-    )
+    authors: Annotated[
+        list[ProjectUser], BeforeValidator(handle_legacy_authors)
+    ] = Field(default=[], validation_alias=AliasChoices("authors", "dataCollectors"))
 
     guest_data_collectors: list[str] = []
     project: list[str] = []

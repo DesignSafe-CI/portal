@@ -8,18 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("notifications_api", "0002_auto_20180309_1926"),
+        ('notifications_api', '0002_auto_20180309_1926'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="broadcast",
-            name="jobid",
+            model_name='broadcast',
+            name='jobid',
             field=models.CharField(blank=True, max_length=255),
         ),
         migrations.AddField(
-            model_name="notification",
-            name="jobid",
+            model_name='notification',
+            name='jobid',
             field=models.CharField(blank=True, max_length=255),
         ),
     ]

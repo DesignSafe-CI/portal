@@ -1,5 +1,4 @@
 """Utiity models used in multiple field types"""
-
 from datetime import datetime
 from functools import partial
 from typing import Annotated, Literal, Optional
@@ -94,9 +93,9 @@ class ProjectAward(MetadataModel):
     """Model for awards."""
 
     order: int = 0
-    name: Annotated[str, BeforeValidator(lambda n: n if isinstance(n, str) else "")] = (
-        ""
-    )
+    name: Annotated[
+        str, BeforeValidator(lambda n: n if isinstance(n, str) else "")
+    ] = ""
     number: str = ""
     funding_source: Optional[str] = None
 

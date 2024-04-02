@@ -11,15 +11,15 @@ class MultiEmailField(forms.Field):
     """
 
     def to_python(self, value):
-        """Normalize data to a list of strings."""
+        """ Normalize data to a list of strings. """
 
         # Return an empty list if no input was given.
         if not value:
             return []
-        return value.split(",")
+        return value.split(',')
 
     def validate(self, value):
-        """Check if value consists only of valid emails."""
+        """ Check if value consists only of valid emails. """
 
         # Use the parent's handling of required fields, etc.
         super(MultiEmailField, self).validate(value)
@@ -32,18 +32,14 @@ class BaseTicketForm(forms.Form):
     """
     Base form class for Tickets.
     """
-
-    first_name = forms.CharField(
-        widget=forms.TextInput(), max_length=255, required=True
-    )
+    first_name = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
     last_name = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
     email = forms.EmailField(widget=forms.EmailInput(), required=True)
     subject = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
 
-    category_choices = (("", "Choose one"),) + settings.TICKET_CATEGORIES
-    category = forms.CharField(
-        widget=forms.Select(choices=category_choices), required=True
-    )
+    category_choices = (('', 'Choose one'),) + settings.TICKET_CATEGORIES
+    category = forms.CharField(widget=forms.Select(choices=category_choices),
+                               required=True)
     problem_description = forms.CharField(widget=forms.Textarea(), required=True)
     attachment = forms.FileField(required=False)
 
@@ -56,39 +52,26 @@ class TicketForm(BaseTicketForm):
     Authenticated users ticket form. Additional "CC" field. This field is not
     provided to anonymous users because it could be used for spam.
     """
-
-    cc = MultiEmailField(
-        widget=forms.TextInput(),
-        label="CC",
-        required=False,
-        help_text="You can copy other people on this ticket. "
-        "Multiple emails should be comma-separated",
-    )
-
+    cc = MultiEmailField(widget=forms.TextInput(), label='CC', required=False,
+                         help_text='You can copy other people on this ticket. '
+                                   'Multiple emails should be comma-separated')
 
 class TicketGuestForm(BaseTicketForm):
     """
     Anonymous users ticket form. Adds a CAPTCHA to reduce spam submissions.
     """
-
     captcha = ReCaptchaField(widget=ReCaptchaWidget)
     pass
-
 
 class ReplyForm(forms.Form):
     """
     Ticket Reply form.
     """
-
     reply = forms.CharField(required=True, widget=forms.Textarea(), label="Enter Reply")
     attachment = forms.FileField(required=False)
-
 
 class CloseForm(forms.Form):
     """
     Ticket Close form.
     """
-
-    reply = forms.CharField(
-        required=True, widget=forms.Textarea(), label="Enter Close Comment"
-    )
+    reply = forms.CharField(required=True, widget=forms.Textarea(), label="Enter Close Comment")

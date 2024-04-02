@@ -3,10 +3,8 @@ import json
 import logging
 import xml.etree.ElementTree as ET
 
-from designsafe.apps.data.models.agave.metadata import (
-    BaseMetadataResource,
-    BaseMetadataPermissionResource,
-)
+from designsafe.apps.data.models.agave.metadata import (BaseMetadataResource,
+                                                       BaseMetadataPermissionResource)
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.systems import BaseSystemResource
 from designsafe.apps.data.models.agave.systems import roles as system_roles
@@ -27,11 +25,13 @@ class Project(BaseMetadataResource):
     associated to the project and to other Files objects within the Project collection.
     """
 
-    NAME = "designsafe.project"
-    STORAGE_SYSTEM_ID = "designsafe.storage.projects"
+    NAME = 'designsafe.project'
+    STORAGE_SYSTEM_ID = 'designsafe.storage.projects'
 
     def __init__(self, agave_client, **kwargs):
-        defaults = {"name": Project.NAME}
+        defaults = {
+            'name': Project.NAME
+        }
         defaults.update(kwargs)
         super(Project, self).__init__(agave_client, **defaults)
 
@@ -46,40 +46,31 @@ class Project(BaseMetadataResource):
         :param agave_client: agavepy.Agave: Agave API client instance
         :return:
         """
-        query = {"name": Project.NAME}
-        records = agave_client.meta.listMetadata(
-            q=json.dumps(query),
-            privileged=False,
-            offset=kwargs.get("offset", 0),
-            limit=kwargs.get("limit", 100),
-        )
+        query = {
+            'name': Project.NAME
+        }
+        records = agave_client.meta.listMetadata(q=json.dumps(
+            query), privileged=False, offset=kwargs.get('offset', 0), limit=kwargs.get('limit',100))
         return [cls(agave_client=agave_client, **dict(r, **kwargs)) for r in records]
 
     @classmethod
     def ES_search(cls, agave_client, query_string, **kwargs):
         """
-        Query Elasticsearch for projects matching a query string. Query the
+        Query Elasticsearch for projects matching a query string. Query the 
         returned UUIDs with the user's client so that we return only projects
         that the user has permission to view.
         """
         from designsafe.apps.projects.models.elasticsearch import IndexedProject
 
-        records = IndexedProject.search().query(
-            "query_string", query=query_string, default_operator="and"
-        )
-        records = records.extra(
-            from_=kwargs.get("offset", 0), size=kwargs.get("limit", 100)
-        )
+        records = IndexedProject.search().query('query_string', query=query_string, default_operator='and')
+        records = records.extra(from_=kwargs.get('offset', 0), size=kwargs.get('limit',100))
         records = records.execute()
         record_uuids = list(map(lambda hit: hit.uuid, records))
         result_query = {"uuid": {"$in": record_uuids}}
-        meta_records = agave_client.meta.listMetadata(
-            q=json.dumps(result_query), privileged=False
-        )
+        meta_records = agave_client.meta.listMetadata(q=json.dumps(
+            result_query), privileged=False)
 
-        return [
-            cls(agave_client=agave_client, **dict(r, **kwargs)) for r in meta_records
-        ]
+        return [cls(agave_client=agave_client, **dict(r, **kwargs)) for r in meta_records]
 
     @classmethod
     def search(cls, q, agave_client):
@@ -95,30 +86,26 @@ class Project(BaseMetadataResource):
 
     def team_members(self):
         permissions = BaseMetadataPermissionResource.list_permissions(
-            self.uuid, self._agave
-        )
+            self.uuid, self._agave)
         pi = self.pi
 
-        co_pis = getattr(self, "co_pis", [])
+        co_pis = getattr(self, 'co_pis', [])
         logger.info(co_pis)
         # co_pis = [x.username for x in permissions if x.username in co_pis_list]
 
-        team_members_list = [
-            x.username for x in permissions if x.username not in co_pis + [pi]
-        ]
-        return {"pi": pi, "coPis": co_pis, "teamMembers": team_members_list}
+        team_members_list = [x.username for x in permissions if x.username not in co_pis + [pi]]
+        return {'pi': pi,
+                'coPis': co_pis,
+                'teamMembers': team_members_list}
 
     @property
     def collaborators(self):
         permissions = BaseMetadataPermissionResource.list_permissions(
-            self.uuid, self._agave
-        )
+            self.uuid, self._agave)
         return [pem.username for pem in permissions]
 
     def add_collaborator(self, username):
-        logger.info(
-            'Adding collaborator "{}" to project "{}"'.format(username, self.uuid)
-        )
+        logger.info('Adding collaborator "{}" to project "{}"'.format(username, self.uuid))
 
         # Set permissions on the metadata record
         pem = BaseMetadataPermissionResource(self.uuid, self._agave)
@@ -131,15 +118,13 @@ class Project(BaseMetadataResource):
         self.project_system.add_role(username, system_roles.USER)
 
     def remove_collaborator(self, username):
-        logger.info(
-            'Removing collaborator "{}" from project "{}"'.format(username, self.uuid)
-        )
+        logger.info('Removing collaborator "{}" from project "{}"'.format(username, self.uuid))
 
-        team_members = self.value.get("teamMembers", [])
+        team_members = self.value.get('teamMembers', [])
         # logger.info(coPis)
         team_members = [uname for uname in team_members if uname != username]
 
-        self.value["teamMembers"] = team_members
+        self.value['teamMembers'] = team_members
 
         # Set permissions on the metadata record
         pem = BaseMetadataPermissionResource(self.uuid, self._agave)
@@ -152,7 +137,7 @@ class Project(BaseMetadataResource):
         self.project_system.remove_role(username)
 
     def update(self, **kwargs):
-        """Updates metadata values.
+        '''Updates metadata values.
 
         This function should be used when updating or adding
         values to the metadata objects.
@@ -164,68 +149,67 @@ class Project(BaseMetadataResource):
         ..note::
             When updating PIs, CO-PIs, team members or collaborators.
             Remember to use :func:`add_collaborator` or :func:`remove_collaborator` respectively.
-        """
-        logger.debug(
-            'updating project metadata: {"id": "%s", "updates": %s}', self.uuid, kwargs
-        )
+        '''
+        logger.debug('updating project metadata: {"id": "%s", "updates": %s}', self.uuid, kwargs)
         for key, value in six.iteritems(kwargs):
             camel_key = to_camel_case(key)
             self.value[camel_key] = value
 
     @property
     def title(self):
-        return self.value.get("title")
+        return self.value.get('title')
 
     @title.setter
     def title(self, value):
-        self.value["title"] = value
+        self.value['title'] = value
 
     @property
     def pi(self):
-        return self.value.get("pi")
+        return self.value.get('pi')
 
     @pi.setter
     def pi(self, value):
-        self.value["pi"] = value
+        self.value['pi'] = value
 
     @property
     def co_pis(self):
-        return self.value.get("coPis", [])
+        return self.value.get('coPis', [])
 
     def add_co_pi(self, username):
         logger.info('Adding Co PI "{}" to project "{}"'.format(username, self.uuid))
 
-        coPis = self.value.get("coPis", [])
+        coPis = self.value.get('coPis', [])
 
         coPis.append(username)
-        self.value["coPis"] = list(set(coPis))
+        self.value['coPis'] = list(set(coPis))
         self.add_collaborator(username)
 
     def remove_co_pi(self, username):
         logger.info('Removing Co PI "{}" from project "{}"'.format(username, self.uuid))
 
-        coPis = self.value.get("coPis", [])
+        coPis = self.value.get('coPis', [])
         # logger.info(coPis)
         coPis = [uname for uname in coPis if uname != username]
 
-        self.value["coPis"] = coPis
+        self.value['coPis'] = coPis
         # logger.info(self.value)
         # Set permissions on the metadata record
         self.remove_collaborator(username)
+
 
     @co_pis.setter
     def co_pis(self, value):
         # TODO is this assertion valuable?
         # assert self.pi not in value
-        self.value["coPis"] = value
+        self.value['coPis'] = value
 
     @property
     def abstract(self):
-        return self.value.get("abstract")
+        return self.value.get('abstract')
 
     @abstract.setter
     def abstract(self, value):
-        self.value["abstract"] = value
+        self.value['abstract'] = value
 
     @property
     def project_directory(self):
@@ -237,24 +221,22 @@ class Project(BaseMetadataResource):
         """
         if self._project_directory is None:
             self._project_directory = BaseFileResource.listing(
-                system=self.project_system_id, path="/", agave_client=self._agave
-            )
+                system=self.project_system_id, path='/', agave_client=self._agave)
         return self._project_directory
 
     @property
     def project_system(self):
         if self._project_system is None:
-            self._project_system = BaseSystemResource.from_id(
-                self._agave, self.project_system_id
-            )
+            self._project_system = BaseSystemResource.from_id(self._agave,
+                                                              self.project_system_id)
         return self._project_system
 
     @property
     def project_system_id(self):
-        return "project-{}".format(self.uuid)
+        return 'project-{}'.format(self.uuid)
 
     @property
-    def project_data_listing(self, path="/"):
-        return BaseFileResource.listing(
-            system=self.project_system_id, path=path, agave_client=self._agave
-        )
+    def project_data_listing(self, path='/'):
+        return BaseFileResource.listing(system=self.project_system_id,
+                                        path=path,
+                                        agave_client=self._agave)

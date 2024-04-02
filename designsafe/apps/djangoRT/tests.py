@@ -19,69 +19,61 @@ class AnonymousViewTests(TestCase):
         For anonymous users, the default/index view redirects to the ticketcreate view.
         :return:
         """
-        resp = self.client.get(reverse("djangoRT:index"))
-        self.assertRedirects(resp, reverse("djangoRT:ticketcreate"))
+        resp = self.client.get(reverse('djangoRT:index'))
+        self.assertRedirects(resp, reverse('djangoRT:ticketcreate'))
 
     def test_my_tickets(self):
-        requested_url = reverse("djangoRT:mytickets")
+        requested_url = reverse('djangoRT:mytickets')
         resp = self.client.get(requested_url)
-        expected_redirect = reverse("login") + "?next=" + requested_url
+        expected_redirect = reverse('login') + '?next=' + requested_url
         self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
     def test_detail(self):
-        requested_url = reverse("djangoRT:ticketdetail", args=[999])
+        requested_url = reverse('djangoRT:ticketdetail', args=[999])
         resp = self.client.get(requested_url)
-        expected_redirect = reverse("login") + "?next=" + requested_url
+        expected_redirect = reverse('login') + '?next=' + requested_url
         self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
     def test_create(self):
-        resp = self.client.get(reverse("djangoRT:ticketcreate"))
+        resp = self.client.get(reverse('djangoRT:ticketcreate'))
         self.assertEqual(resp.status_code, 200)
 
     def test_create_with_error_context(self):
-        query = "error_page=/page/that/failed&http_referer=https://www.google.com"
-        resp = self.client.get(reverse("djangoRT:ticketcreate") + "?" + query)
+        query = 'error_page=/page/that/failed&http_referer=https://www.google.com'
+        resp = self.client.get(reverse('djangoRT:ticketcreate') + '?' + query)
 
-        self.assertContains(
-            resp,
-            '<input id="id_error_page" name="error_page" '
-            'type="hidden" value="/page/that/failed" />',
-            html=True,
-        )
-        self.assertContains(
-            resp,
-            '<input id="id_http_referer" name="http_referer" '
-            'type="hidden" value="https://www.google.com" />',
-            html=True,
-        )
+        self.assertContains(resp, '<input id="id_error_page" name="error_page" '
+                                  'type="hidden" value="/page/that/failed" />', html=True)
+        self.assertContains(resp, '<input id="id_http_referer" name="http_referer" '
+                                  'type="hidden" value="https://www.google.com" />', html=True)
 
     def test_reply(self):
-        requested_url = reverse("djangoRT:ticketreply", args=[999])
+        requested_url = reverse('djangoRT:ticketreply', args=[999])
         resp = self.client.get(requested_url)
-        expected_redirect = reverse("login") + "?next=" + requested_url
+        expected_redirect = reverse('login') + '?next=' + requested_url
         self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
     def test_close(self):
-        requested_url = reverse("djangoRT:ticketclose", args=[999])
+        requested_url = reverse('djangoRT:ticketclose', args=[999])
         resp = self.client.get(requested_url)
-        expected_redirect = reverse("login") + "?next=" + requested_url
+        expected_redirect = reverse('login') + '?next=' + requested_url
         self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
     def test_attachment(self):
-        requested_url = reverse("djangoRT:ticketattachment", args=[999, 1001])
+        requested_url = reverse('djangoRT:ticketattachment', args=[999, 1001])
         resp = self.client.get(requested_url)
-        expected_redirect = reverse("login") + "?next=" + requested_url
+        expected_redirect = reverse('login') + '?next=' + requested_url
         self.assertRedirects(resp, expected_redirect, target_status_code=302)
 
 
 class AuthenticatedViewTests(TestCase):
 
-    fixtures = ["users.json"]
+    fixtures = ['users.json']
 
     def setUp(self):
         # set password for users
         user = get_user_model().objects.get(pk=2)
-        user.set_password("password")
+        user.set_password('password')
         user.save()
 
         # disconnect user_logged_in signal
@@ -93,146 +85,136 @@ class AuthenticatedViewTests(TestCase):
         """
 
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
-        resp = self.client.get(reverse("djangoRT:index"))
-        self.assertRedirects(
-            resp, reverse("djangoRT:mytickets"), fetch_redirect_response=False
-        )
+        resp = self.client.get(reverse('djangoRT:index'))
+        self.assertRedirects(resp, reverse('djangoRT:mytickets'),
+                             fetch_redirect_response=False)
 
     @requests_mock.Mocker()
     def test_mytickets_none(self, req_mock):
 
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
         # mock login
-        req_mock.post("/REST/1.0/", text="RT/4.2.1 200 Ok")
+        req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
 
         # mock ticket query
-        with open("designsafe/apps/djangoRT/fixtures/user_tickets_resp.txt") as f:
-            req_mock.get("/REST/1.0/search/ticket?format=l", text=f.read())
+        with open('designsafe/apps/djangoRT/fixtures/user_tickets_resp.txt') as f:
+            req_mock.get('/REST/1.0/search/ticket?format=l', text=f.read())
 
-        resp = self.client.get(reverse("djangoRT:mytickets"))
-        self.assertContains(resp, "No tickets to display!")
+        resp = self.client.get(reverse('djangoRT:mytickets'))
+        self.assertContains(resp, 'No tickets to display!')
 
     @requests_mock.Mocker()
     def test_mytickets_resolved(self, req_mock):
 
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
         # mock login
-        req_mock.post("/REST/1.0/", text="RT/4.2.1 200 Ok")
+        req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
 
         # mock ticket query
-        with open(
-            "designsafe/apps/djangoRT/fixtures/user_tickets_resolved_resp.txt"
-        ) as f:
-            req_mock.get("/REST/1.0/search/ticket?format=l", text=f.read())
+        with open('designsafe/apps/djangoRT/fixtures/user_tickets_resolved_resp.txt') as f:
+            req_mock.get('/REST/1.0/search/ticket?format=l', text=f.read())
 
-        resp = self.client.get(reverse("djangoRT:mytickets") + "?show_resolved=1")
-        self.assertNotContains(resp, "No tickets to display!")
+        resp = self.client.get(reverse('djangoRT:mytickets') + '?show_resolved=1')
+        self.assertNotContains(resp, 'No tickets to display!')
 
     @requests_mock.Mocker()
     def test_detail(self, req_mock):
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
         # mock login
-        req_mock.post("/REST/1.0/", text="RT/4.2.1 200 Ok")
+        req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
 
         ticket_id = 29152
 
         # mock ticket request
-        with open("designsafe/apps/djangoRT/fixtures/ticket_detail.txt") as f:
-            req_mock.get("/REST/1.0/ticket/{}/show".format(ticket_id), text=f.read())
+        with open('designsafe/apps/djangoRT/fixtures/ticket_detail.txt') as f:
+            req_mock.get('/REST/1.0/ticket/{}/show'.format(ticket_id), text=f.read())
 
         # mock ticket history
-        with open("designsafe/apps/djangoRT/fixtures/ticket_history.txt") as f:
-            req_mock.get("/REST/1.0/ticket/{}/history".format(ticket_id), text=f.read())
+        with open('designsafe/apps/djangoRT/fixtures/ticket_history.txt') as f:
+            req_mock.get('/REST/1.0/ticket/{}/history'.format(ticket_id), text=f.read())
 
-        resp = self.client.get(reverse("djangoRT:ticketdetail", args=[ticket_id]))
-        self.assertContains(resp, "Test Post, Please Ignore")
+        resp = self.client.get(reverse('djangoRT:ticketdetail', args=[ticket_id]))
+        self.assertContains(resp, 'Test Post, Please Ignore')
 
     def test_create(self):
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
-        resp = self.client.get(reverse("djangoRT:ticketcreate"))
-        self.assertNotContains(resp, "Captcha")
+        resp = self.client.get(reverse('djangoRT:ticketcreate'))
+        self.assertNotContains(resp, 'Captcha')
 
     def test_create_with_error_context(self):
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
-        query = "error_page=/page/that/failed&http_referer=https://www.google.com"
-        resp = self.client.get(reverse("djangoRT:ticketcreate") + "?" + query)
+        query = 'error_page=/page/that/failed&http_referer=https://www.google.com'
+        resp = self.client.get(reverse('djangoRT:ticketcreate') + '?' + query)
 
-        self.assertNotContains(resp, "Captcha")
-        self.assertContains(
-            resp,
-            '<input id="id_error_page" name="error_page" '
-            'type="hidden" value="/page/that/failed" />',
-            html=True,
-        )
-        self.assertContains(
-            resp,
-            '<input id="id_http_referer" name="http_referer" '
-            'type="hidden" value="https://www.google.com" />',
-            html=True,
-        )
+        self.assertNotContains(resp, 'Captcha')
+        self.assertContains(resp, '<input id="id_error_page" name="error_page" '
+                                  'type="hidden" value="/page/that/failed" />', html=True)
+        self.assertContains(resp, '<input id="id_http_referer" name="http_referer" '
+                                  'type="hidden" value="https://www.google.com" />', html=True)
 
     @requests_mock.Mocker()
     def test_reply(self, req_mock):
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
         # mock login
-        req_mock.post("/REST/1.0/", text="RT/4.2.1 200 Ok")
+        req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
 
         ticket_id = 29152
 
         # mock ticket request
-        with open("designsafe/apps/djangoRT/fixtures/ticket_detail.txt") as f:
-            req_mock.get("/REST/1.0/ticket/{}/show".format(ticket_id), text=f.read())
+        with open('designsafe/apps/djangoRT/fixtures/ticket_detail.txt') as f:
+            req_mock.get('/REST/1.0/ticket/{}/show'.format(ticket_id), text=f.read())
 
-        resp = self.client.get(reverse("djangoRT:ticketreply", args=[ticket_id]))
-        self.assertContains(resp, "Reply to #{}".format(ticket_id))
+        resp = self.client.get(reverse('djangoRT:ticketreply', args=[ticket_id]))
+        self.assertContains(resp, 'Reply to #{}'.format(ticket_id))
 
     @requests_mock.Mocker()
     def test_reopen(self, req_mock):
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
         # mock login
-        req_mock.post("/REST/1.0/", text="RT/4.2.1 200 Ok")
+        req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
 
         ticket_id = 29152
 
         # mock ticket request
-        with open("designsafe/apps/djangoRT/fixtures/ticket_detail_resolved.txt") as f:
-            req_mock.get("/REST/1.0/ticket/{}/show".format(ticket_id), text=f.read())
+        with open('designsafe/apps/djangoRT/fixtures/ticket_detail_resolved.txt') as f:
+            req_mock.get('/REST/1.0/ticket/{}/show'.format(ticket_id), text=f.read())
 
-        resp = self.client.get(reverse("djangoRT:ticketreply", args=[ticket_id]))
-        self.assertContains(resp, "Reopen #{}".format(ticket_id))
+        resp = self.client.get(reverse('djangoRT:ticketreply', args=[ticket_id]))
+        self.assertContains(resp, 'Reopen #{}'.format(ticket_id))
 
     @requests_mock.Mocker()
     def test_close(self, req_mock):
         # log user in
-        self.client.login(username="ds_user", password="password")
+        self.client.login(username='ds_user', password='password')
 
         # mock login
-        req_mock.post("/REST/1.0/", text="RT/4.2.1 200 Ok")
+        req_mock.post('/REST/1.0/', text='RT/4.2.1 200 Ok')
 
         ticket_id = 29152
 
         # mock ticket request
-        with open("designsafe/apps/djangoRT/fixtures/ticket_detail.txt") as f:
-            req_mock.get("/REST/1.0/ticket/{}/show".format(ticket_id), text=f.read())
+        with open('designsafe/apps/djangoRT/fixtures/ticket_detail.txt') as f:
+            req_mock.get('/REST/1.0/ticket/{}/show'.format(ticket_id), text=f.read())
 
-        resp = self.client.get(reverse("djangoRT:ticketclose", args=[ticket_id]))
-        self.assertContains(resp, "Close #{}".format(ticket_id))
+        resp = self.client.get(reverse('djangoRT:ticketclose', args=[ticket_id]))
+        self.assertContains(resp, 'Close #{}'.format(ticket_id))
+
 
     @skip("TODO implement attachment test - @mrhanlon; 2016-08-10")
     def test_attachment(self):

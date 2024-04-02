@@ -1,5 +1,4 @@
 """Views"""
-
 import copy
 import logging
 import json
@@ -19,11 +18,7 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.projects.models import Project
 from designsafe.apps.projects.models.agave.base import Project as BaseProject
 from designsafe.apps.projects.models.categories import Category
-from designsafe.apps.api.agave import (
-    get_service_account_client,
-    service_account,
-    to_camel_case,
-)
+from designsafe.apps.api.agave import get_service_account_client, service_account, to_camel_case
 from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.files import BaseFileResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
@@ -32,29 +27,23 @@ from designsafe.apps.projects.models.utils import lookup_model as project_lookup
 from designsafe.libs.common.decorators import profile as profile_fn
 from designsafe.apps.api.publications.operations import initilize_publication
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-from designsafe.libs.elasticsearch.docs.publication_legacy import (
-    BaseESPublicationLegacy,
-)
+from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 from django.views.decorators.csrf import csrf_exempt
 from elasticsearch_dsl import Q
 from designsafe.apps.api.utils import get_client_ip
-
 logger = logging.getLogger(__name__)
-metrics = logging.getLogger("metrics.{name}".format(name=__name__))
+metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
 
 
 def template_project_storage_system(project):
     system_template = copy.deepcopy(settings.PROJECT_STORAGE_SYSTEM_TEMPLATE)
-    system_template["id"] = system_template["id"].format(project.uuid)
-    system_template["name"] = system_template["name"].format(project.uuid)
-    system_template["description"] = system_template["description"].format(
-        project.title
-    )
-    system_template["storage"]["rootDir"] = system_template["storage"][
-        "rootDir"
-    ].format(project.uuid)
+    system_template['id'] = system_template['id'].format(project.uuid)
+    system_template['name'] = system_template['name'].format(project.uuid)
+    system_template['description'] = system_template['description'].format(project.title)
+    system_template['storage']['rootDir'] = \
+        system_template['storage']['rootDir'].format(project.uuid)
     return system_template
 
 
@@ -67,46 +56,39 @@ class PublicationView(BaseApiView):
         is not being queried.
         """
         es_client = new_es_client()
-        pub = BaseESPublication(
-            project_id=project_id, revision=revision, using=es_client
-        )
-        latest_revision = IndexedPublication.max_revision(
-            project_id=project_id, using=es_client
-        )
+        pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
+        latest_revision = IndexedPublication.max_revision(project_id=project_id, using=es_client)
         latest_pub_dict = None
         if latest_revision > 0 and latest_revision != revision:
-            latest_pub = BaseESPublication(
-                project_id=project_id, revision=latest_revision, using=es_client
-            )
-            if latest_pub is not None and hasattr(latest_pub, "project"):
+            latest_pub = BaseESPublication(project_id=project_id, revision=latest_revision, using=es_client)
+            if latest_pub is not None and hasattr(latest_pub, 'project'):
                 latest_pub_dict = latest_pub.to_dict()
 
-        if pub is not None and hasattr(pub, "project"):
+        if pub is not None and hasattr(pub, 'project'):
             pub_dict = pub.to_dict()
 
-            if pub_dict["project"]["value"]["projectType"] != "other":
-                metrics.info(
-                    "Data Depot",
-                    extra={
-                        "user": request.user.username,
-                        "sessionId": getattr(request.session, "session_key", ""),
-                        "operation": "listing",
-                        "agent": request.META.get("HTTP_USER_AGENT"),
-                        "ip": get_client_ip(request),
-                        "info": {
-                            "api": "agave",
-                            "systemId": "designsafe.storage.published",
-                            "filePath": project_id,
-                            "query": {},
-                        },
-                    },
-                )
+            if pub_dict['project']['value']['projectType'] != 'other':
+                metrics.info('Data Depot',
+                     extra={
+                         'user': request.user.username,
+                         'sessionId': getattr(request.session, 'session_key', ''),
+                         'operation': 'listing',
+                         'agent': request.META.get('HTTP_USER_AGENT'),
+                         'ip': get_client_ip(request),
+                         'info': {
+                             'api': 'agave',
+                             'systemId': 'designsafe.storage.published',
+                             'filePath': project_id,
+                             'query': {} }
+                     })
 
             if latest_pub_dict:
-                pub_dict["latestRevision"] = latest_pub_dict
+                pub_dict['latestRevision'] = latest_pub_dict
             return JsonResponse(pub_dict)
         else:
-            return JsonResponse({"status": 404, "message": "Not found"}, status=404)
+            return JsonResponse({'status': 404,
+                                 'message': 'Not found'},
+                                status=404)
 
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
@@ -114,19 +96,19 @@ class PublicationView(BaseApiView):
         """
         Publish a project or version a publication
         """
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             data = json.loads(request.body)
         else:
             data = request.POST
 
-        status = data.get("status", "saved")
-        revision = data.get("revision", None)
-        revision_text = data.get("revisionText", None)
-        revision_titles = data.get("revisionTitles", None)
-        revised_authors = data.get("revisionAuthors", None)
-        selected_files = data.get("selectedFiles", None)
+        status = data.get('status', 'saved')
+        revision = data.get('revision', None)
+        revision_text = data.get('revisionText', None)
+        revision_titles = data.get('revisionTitles', None)
+        revised_authors = data.get('revisionAuthors', None)
+        selected_files = data.get('selectedFiles', None)
 
-        project_id = data["publication"]["project"]["value"]["projectId"]
+        project_id = data['publication']['project']['value']['projectId']
 
         current_revision = None
         # If revision is truthy, increment the revision count and pass it to the pipeline.
@@ -135,55 +117,54 @@ class PublicationView(BaseApiView):
             current_revision = latest_revision + 1 if latest_revision >= 2 else 2
 
         pub = initilize_publication(
-            data["publication"],
-            status,
-            revision=current_revision,
-            revision_text=revision_text,
-            revision_titles=revision_titles,
-        )
+                data['publication'],
+                status,
+                revision=current_revision,
+                revision_text=revision_text,
+                revision_titles=revision_titles
+            )
 
-        if data.get("status", "save").startswith("publish"):
+        if data.get('status', 'save').startswith('publish'):
             (
                 tasks.freeze_publication_meta.s(
                     project_id=pub.projectId,
-                    entity_uuids=data.get("mainEntityUuids"),
+                    entity_uuids=data.get('mainEntityUuids'),
                     revision=current_revision,
-                    revised_authors=revised_authors,
-                ).set(queue="api")
-                | group(
+                    revised_authors=revised_authors
+                ).set(queue='api') |
+                group(
                     tasks.save_publication.si(
                         project_id=pub.projectId,
-                        entity_uuids=data.get("mainEntityUuids"),
+                        entity_uuids=data.get('mainEntityUuids'),
                         revision=current_revision,
-                        revised_authors=revised_authors,
-                    ).set(queue="files", countdown=60),
+                        revised_authors=revised_authors
+                    ).set(
+                        queue='files',
+                        countdown=60
+                    ),
                     tasks.copy_publication_files_to_corral.si(
                         project_id=pub.projectId,
                         revision=current_revision,
-                        selected_files=selected_files,
-                    ).set(queue="files", countdown=60),
-                )
-                | tasks.swap_file_tag_uuids.si(pub.projectId, revision=current_revision)
-                | tasks.set_publish_status.si(
+                        selected_files=selected_files
+                    ).set(
+                        queue='files',
+                        countdown=60
+                    )
+                ) |
+                tasks.swap_file_tag_uuids.si(pub.projectId, revision=current_revision) |
+                tasks.set_publish_status.si(
                     project_id=pub.projectId,
-                    entity_uuids=data.get("mainEntityUuids"),
-                    revision=current_revision,
-                )
-                | tasks.zip_publication_files.si(
-                    pub.projectId, revision=current_revision
-                )
-                | tasks.email_user_publication_request_confirmation.si(
-                    request.user.username
-                )
-                | tasks.check_published_files.si(
-                    pub.projectId,
-                    revision=current_revision,
-                    selected_files=selected_files,
-                )
+                    entity_uuids=data.get('mainEntityUuids'),
+                    revision=current_revision
+                ) |
+                tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
+                tasks.email_user_publication_request_confirmation.si(request.user.username) |
+                tasks.check_published_files.si(pub.projectId, revision=current_revision, selected_files=selected_files)
             ).apply_async()
 
-        return JsonResponse({"success": "Project is publishing."}, status=200)
-
+        return JsonResponse({
+            'success': 'Project is publishing.'
+        }, status=200)
 
 class AmendPublicationView(BaseApiView):
     @method_decorator(agave_jwt_login)
@@ -192,33 +173,38 @@ class AmendPublicationView(BaseApiView):
         """
         Amend a Publication
         """
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             data = json.loads(request.body)
         else:
             data = request.PUT
 
-        project_id = data["projectId"]
-        authors = data.get("authors", None)
-        amendments = data.get("amendments", None)
+        project_id = data['projectId']
+        authors = data.get('authors', None)
+        amendments = data.get('amendments', None)
         current_revision = IndexedPublication.max_revision(project_id=project_id)
 
         (
             tasks.amend_publication_data.s(
-                project_id, amendments, authors, current_revision
-            ).set(queue="api")
-            | tasks.zip_publication_files.si(project_id, current_revision).set(
-                queue="files"
-            )
+                project_id,
+                amendments,
+                authors,
+                current_revision
+            ).set(queue='api') |
+            tasks.zip_publication_files.si(
+                project_id,
+                current_revision
+            ).set(queue='files')
         ).apply_async()
 
-        return JsonResponse({"success": "Publication is being amended."}, status=200)
+        return JsonResponse({
+            'success': 'Publication is being amended.'
+        }, status=200)
 
 
 class NeesPublicationView(BaseApiView):
     """
     View for retrieving NEES legacy projects.
     """
-
     @profile_fn
     def get(self, request, nees_id):
         """
@@ -242,12 +228,12 @@ class ProjectListingView(SecureMixin, BaseApiView):
 
         user = get_user_model().objects.get(username=username)
         client = user.agave_oauth.client
-        q = request.GET.get("q", None)
+        q = request.GET.get('q', None)
         if not q:
             projects = Project.list_projects(agave_client=client)
         else:
             projects = Project.search(q=q, agave_client=client)
-        return JsonResponse({"projects": projects}, encoder=AgaveJSONEncoder)
+        return JsonResponse({'projects': projects}, encoder=AgaveJSONEncoder)
 
 
 class ProjectCollectionView(SecureMixin, BaseApiView):
@@ -259,37 +245,29 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         :return: A list of Projects to which the current user has access
         :rtype: JsonResponse
         """
-        # raise HTTPError('Custom Error')
+        #raise HTTPError('Custom Error')
         client = request.user.agave_oauth.client
-        query_string = request.GET.get("query_string", None)
-        offset = request.GET.get("offset", 0)
-        limit = request.GET.get("limit", 100)
+        query_string = request.GET.get('query_string', None)
+        offset = request.GET.get('offset', 0)
+        limit = request.GET.get('limit', 100)
         if query_string is not None:
-            projects = Project.ES_search(
-                agave_client=client,
-                query_string=query_string,
-                **{"offset": offset, "limit": limit}
-            )
-            data = {"projects": projects}
+            projects = Project.ES_search(agave_client=client, query_string=query_string, **{'offset': offset, 'limit': limit})
+            data = {'projects': projects}
             return JsonResponse(data, encoder=AgaveJSONEncoder)
         # Add metadata fields to project listings for workspace browser
         if system_id:
-            projects = Project.list_projects(
-                agave_client=client, **{"path": "", "type": "dir", "system": system_id}
-            )
+            projects = Project.list_projects(agave_client=client, **{'path': '', 'type': 'dir', 'system': system_id})
             for p in projects:
-                p.path = ""
-                p.name = p.value["title"]
-                p.system = "project-{}".format(p.uuid)
+                p.path = ''
+                p.name = p.value['title']
+                p.system = 'project-{}'.format(p.uuid)
             data = {
-                "children": projects,
-                "path": "Projects",
+                'children': projects,
+                'path': 'Projects',
             }
         else:
-            projects = Project.list_projects(
-                agave_client=client, **{"offset": offset, "limit": limit}
-            )
-            data = {"projects": projects}
+            projects = Project.list_projects(agave_client=client, **{'offset': offset, 'limit': limit})
+            data = {'projects': projects}
 
         return JsonResponse(data, encoder=AgaveJSONEncoder)
 
@@ -311,112 +289,88 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         # portal service account needs to create the objects on behalf of the user
         sa_client = get_service_account_client()
 
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
 
         # create Project (metadata)
-        metrics.info(
-            "projects",
-            extra={
-                "user": request.user.username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "project_create",
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {"postData": post_data},
-            },
-        )
-        prj_model = project_lookup_model(
-            {"name": "designsafe.project", "value": post_data}
-        )
+        metrics.info('projects',
+                     extra={'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'project_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
+                            'info': {'postData': post_data}})
+        prj_model = project_lookup_model({'name': 'designsafe.project', 'value': post_data})
         prj = prj_model(value=post_data)
         project_uuid = prj.uuid
         prj.manager().set_client(sa_client)
         prj.save(sa_client)
 
         # create Project Directory on Managed system
-        metrics.info(
-            "projects",
-            extra={
-                "user": request.user.username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "base_directory_create",
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {"systemId": Project.STORAGE_SYSTEM_ID, "uuid": prj.uuid},
-            },
-        )
-        project_storage_root = BaseFileResource(
-            sa_client, Project.STORAGE_SYSTEM_ID, "/"
-        )
+        metrics.info('projects',
+                     extra={'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'base_directory_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
+                            'info': {
+                                'systemId': Project.STORAGE_SYSTEM_ID,
+                                'uuid': prj.uuid
+                            }})
+        project_storage_root = BaseFileResource(sa_client, Project.STORAGE_SYSTEM_ID, '/')
         project_storage_root.mkdir(prj.uuid)
 
         # Wrap Project Directory as private system for project
         project_system_tmpl = template_project_storage_system(prj)
-        project_system_tmpl["storage"]["rootDir"] = project_system_tmpl["storage"][
-            "rootDir"
-        ].format(project_uuid)
-        metrics.info(
-            "projects",
-            extra={
-                "user": request.user.username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "private_system_create",
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {
-                    "id": project_system_tmpl.get("id"),
-                    "site": project_system_tmpl.get("site"),
-                    "default": project_system_tmpl.get("default"),
-                    "status": project_system_tmpl.get("status"),
-                    "description": project_system_tmpl.get("description"),
-                    "name": project_system_tmpl.get("name"),
-                    "globalDefault": project_system_tmpl.get("globalDefault"),
-                    "available": project_system_tmpl.get("available"),
-                    "public": project_system_tmpl.get("public"),
-                    "type": project_system_tmpl.get("type"),
-                    "storage": {
-                        "homeDir": project_system_tmpl.get("storage", {}).get(
-                            "homeDir"
-                        ),
-                        "rootDir": project_system_tmpl.get("storage", {}).get(
-                            "rootDir"
-                        ),
-                    },
-                },
-            },
-        )
+        project_system_tmpl['storage']['rootDir'] = \
+            project_system_tmpl['storage']['rootDir'].format(project_uuid)
+        metrics.info('projects',
+                     extra={'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'private_system_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
+                            'info': {
+                                'id': project_system_tmpl.get('id'),
+                                'site': project_system_tmpl.get('site'),
+                                'default': project_system_tmpl.get('default'),
+                                'status': project_system_tmpl.get('status'),
+                                'description': project_system_tmpl.get('description'),
+                                'name': project_system_tmpl.get('name'),
+                                'globalDefault': project_system_tmpl.get('globalDefault'),
+                                'available': project_system_tmpl.get('available'),
+                                'public': project_system_tmpl.get('public'),
+                                'type': project_system_tmpl.get('type'),
+                                'storage': {
+                                    'homeDir': project_system_tmpl.get('storage', {}).get('homeDir'),
+                                    'rootDir': project_system_tmpl.get('storage', {}).get('rootDir')
+                                }
+                            }})
         sa_client.systems.add(body=project_system_tmpl)
 
         # grant initial permissions for creating user and PI, if exists
-        metrics.info(
-            "projects",
-            extra={
-                "user": request.user.username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "initial_pems_create",
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {"collab": request.user.username, "pi": prj.pi},
-            },
-        )
+        metrics.info('projects',
+                     extra={'user': request.user.username,
+                            'sessionId': getattr(request.session, 'session_key', ''),
+                            'operation': 'initial_pems_create',
+                            'agent': request.META.get('HTTP_USER_AGENT'),
+                            'ip': get_client_ip(request),
+                            'info': {'collab': request.user.username, 'pi': prj.pi}})
 
-        if getattr(prj, "copi", None):
+        if getattr(prj, 'copi', None):
             prj.add_co_pis(prj.copi)
-        elif getattr(prj, "co_pis", None):
+        elif getattr(prj, 'co_pis', None):
             prj.add_co_pis(prj.co_pis)
-        if getattr(prj, "team", None):
+        if getattr(prj, 'team', None):
             prj.add_team_members(prj.team)
-        elif getattr(prj, "team_members", None):
+        elif getattr(prj, 'team_members', None):
             prj.add_team_members(prj.team_members)
 
         prj._add_team_members_pems([prj.pi])
 
-        if request.user.username not in list(
-            set(prj.co_pis + prj.team_members + [prj.pi])
-        ):
+        if request.user.username not in list(set(prj.co_pis + prj.team_members + [prj.pi])):
             # Add creator to project as team member
             prj.add_team_members([request.user.username])
 
@@ -428,37 +382,32 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         sometimes.
         """
         chain(
-            tasks.set_project_id.s(prj.uuid).set(queue="api")
-            | tasks.email_collaborator_added_to_project.s(
+            tasks.set_project_id.s(prj.uuid).set(queue="api") |
+            tasks.email_collaborator_added_to_project.s(
                 prj.uuid,
                 prj.title,
-                request.build_absolute_uri(
-                    "{}/projects/{}/".format(
-                        reverse("designsafe_data:data_depot"), prj.uuid
-                    )
-                ),
-                [
-                    u
-                    for u in list(set(prj.co_pis + prj.team_members + [prj.pi]))
-                    if u != request.user.username
-                ],
-                [],
+                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), prj.uuid)),
+                [u for u in list(set(prj.co_pis + prj.team_members + [prj.pi])) if u != request.user.username],
+                []
             )
         ).apply_async()
 
         tasks.set_facl_project.apply_async(
-            args=[prj.uuid, list(set(prj.co_pis + prj.team_members + [prj.pi]))],
-            queue="api",
+            args=[
+                prj.uuid,
+                list(set(prj.co_pis + prj.team_members + [prj.pi]))
+            ],
+            queue='api'
         )
 
-        prj.add_admin("prjadmin")
+        prj.add_admin('prjadmin')
         return JsonResponse(prj.to_body_dict(), safe=False)
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-@method_decorator(agave_jwt_login, name="dispatch")
-@method_decorator(profile_fn, name="dispatch")
-@method_decorator(login_required, name="dispatch")
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(agave_jwt_login, name='dispatch')
+@method_decorator(profile_fn, name='dispatch')
+@method_decorator(login_required, name='dispatch')
 class ProjectInstanceView(BaseApiView):
 
     def get(self, request, project_id):
@@ -490,7 +439,7 @@ class ProjectInstanceView(BaseApiView):
         6. Set ACLs on the project
         7. Email users who have been added to the project
 
-        :param request:
+        :param request: 
         :return:
         """
         """TODO:
@@ -500,15 +449,13 @@ class ProjectInstanceView(BaseApiView):
         should be prevented anyways). Once that data is deleted, then we should update
         the type of project.
         """
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
 
         client = request.user.agave_oauth.client
-        sa_client = (
-            get_service_account_client()
-        )  # service account for updating user permissions
+        sa_client = get_service_account_client() # service account for updating user permissions
 
         meta_obj = client.meta.getMetadata(uuid=project_id)
         meta_perms = client.meta.listMetadataPermissions(uuid=project_id)
@@ -519,19 +466,21 @@ class ProjectInstanceView(BaseApiView):
             meta_obj.value[camel_key] = value
 
         # get users to add/remove
-        admins = ["ds_admin", "prjadmin"]
-        users_with_access = [x["username"] for x in meta_perms]
-        updated_users = list(
-            set(
-                meta_obj["value"]["teamMembers"]
-                + meta_obj["value"]["coPis"]
-                + [meta_obj["value"]["pi"]]
-            )
-        )
+        admins = ['ds_admin', 'prjadmin']
+        users_with_access = [x['username'] for x in meta_perms]
+        updated_users = list(set(
+            meta_obj['value']['teamMembers'] +
+            meta_obj['value']['coPis'] +
+            [meta_obj['value']['pi']]
+        ))
         add_perm_usrs = [
-            u for u in updated_users + admins if u not in users_with_access
+            u for u in updated_users + admins
+            if u not in users_with_access
         ]
-        rm_perm_usrs = [u for u in users_with_access if u not in updated_users + admins]
+        rm_perm_usrs = [
+            u for u in users_with_access
+            if u not in updated_users + admins
+        ]
 
         prj_class = project_lookup_model(meta_obj)
         project = prj_class(value=meta_obj.value, uuid=project_id)
@@ -540,7 +489,7 @@ class ProjectInstanceView(BaseApiView):
         try:
             ds_user = get_user_model().objects.get(username=project.pi)
         except:
-            return HttpResponseBadRequest("Project update requires a valid PI")
+            return HttpResponseBadRequest('Project update requires a valid PI')
 
         # remove permissions for users not on project and add permissions for new members
         if rm_perm_usrs:
@@ -548,11 +497,13 @@ class ProjectInstanceView(BaseApiView):
         if add_perm_usrs:
             project._add_team_members_pems(add_perm_usrs)
 
-        tasks.check_project_files_meta_pems.apply_async(
-            args=[project.uuid], queue="api"
-        )
+        tasks.check_project_files_meta_pems.apply_async(args=[project.uuid], queue='api')
         tasks.set_facl_project.apply_async(
-            args=[project.uuid, add_perm_usrs], queue="api"
+            args=[
+                project.uuid,
+                add_perm_usrs
+            ],
+            queue='api'
         )
         tasks.email_collaborator_added_to_project.apply_async(
             args=[
@@ -560,12 +511,10 @@ class ProjectInstanceView(BaseApiView):
                 project.uuid,
                 project.title,
                 request.build_absolute_uri(
-                    "{}/projects/{}/".format(
-                        reverse("designsafe_data:data_depot"), project.uuid
-                    )
+                    '{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project.uuid)
                 ),
                 add_perm_usrs,
-                [],
+                []
             ]
         )
         project.save(client)
@@ -575,15 +524,7 @@ class ProjectInstanceView(BaseApiView):
 class ProjectDataView(SecureMixin, BaseApiView):
 
     @profile_fn
-    def get(
-        self,
-        request,
-        file_path="",
-        project_id=None,
-        system_id=None,
-        project_system_id=None,
-        file_mgr_name=None,
-    ):
+    def get(self, request, file_path='', project_id=None, system_id=None, project_system_id=None, file_mgr_name=None):
         """
 
         :return: The root directory for the Project's data
@@ -612,13 +553,13 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         """
         client = request.user.agave_oauth.client
         try:
-            if name is not None and name != "all":
+            if name is not None and name != 'all':
                 model = project_lookup_model(name=name)
                 resp = model._meta.model_manager.list(client, project_id)
                 resp_list = [r.to_body_dict() for r in resp]
-                resp_list = sorted(resp_list, key=lambda x: x["created"])
+                resp_list = sorted(resp_list, key=lambda x: x['created'])
                 return JsonResponse(resp_list, safe=False)
-            elif name == "all":
+            elif name == 'all':
                 prj_obj = client.meta.getMetadata(uuid=project_id)
                 prj = project_lookup_model(prj_obj)(**prj_obj)
                 prj.manager().set_client(client)
@@ -630,7 +571,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
                 resp = model(**meta)
                 return JsonResponse(resp.to_body_dict(), safe=False)
         except ValueError:
-            return HttpResponseBadRequest("Entity not valid.")
+            return HttpResponseBadRequest('Entity not valid.')
 
     @profile_fn
     def delete(self, request, uuid):
@@ -648,8 +589,8 @@ class ProjectMetaView(BaseApiView, SecureMixin):
             model = project_lookup_model(meta_obj)
             meta = model(**meta_obj)
         except Exception as e:
-            logger.exception("Unable to delete project metadata: %s", e)
-            logger.exception("Meta UUID: %s", uuid)
+            logger.exception('Unable to delete project metadata: %s', e)
+            logger.exception('Meta UUID: %s', uuid)
 
         sa_client = get_service_account_client()
         sa_client.meta.deleteMetadata(uuid=uuid)
@@ -665,23 +606,23 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         """
         sa_client = get_service_account_client()
 
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
-        entity = post_data.get("entity")
+        entity = post_data.get('entity')
         try:
             model_cls = project_lookup_model(name=name)
             model = model_cls(value=entity)
             file_uuids = []
-            if "filePaths" in entity:
-                file_paths = entity.get("filePaths", [])
-                project_system = "".join(["project-", project_id])
+            if 'filePaths' in entity:
+                file_paths = entity.get('filePaths', [])
+                project_system = ''.join(['project-', project_id])
                 client = request.user.agave_oauth.client
                 for file_path in file_paths:
-                    file_obj = BaseFileResource.listing(
-                        client, project_system, file_path
-                    )
+                    file_obj = BaseFileResource.listing(client,
+                                                        project_system,
+                                                        file_path)
 
                     file_uuids.append(file_obj.uuid)
                 for file_uuid in file_uuids:
@@ -692,9 +633,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
             saved = model.save(sa_client)
             resp = model_cls(**saved)
             # TODO: We should stop using these "Resources" and just use agavepy methods.
-            pems = BaseMetadataPermissionResource.list_permissions(
-                project_id, sa_client
-            )
+            pems = BaseMetadataPermissionResource.list_permissions(project_id, sa_client)
             # Loop permissions and set them in whatever metadata object we're saving
             for pem in pems:
                 _pem = BaseMetadataPermissionResource(resp.uuid, sa_client)
@@ -704,7 +643,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
                 _pem.save()
 
         except ValueError:
-            return HttpResponseBadRequest("Entity not valid.")
+            return HttpResponseBadRequest('Entity not valid.')
 
         return JsonResponse(resp.to_body_dict(), safe=False)
 
@@ -719,11 +658,11 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         """
         client = request.user.agave_oauth.client
 
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
-        entity = post_data.get("entity")
+        entity = post_data.get('entity')
 
         try:
             model_cls = project_lookup_model(entity)
@@ -731,10 +670,9 @@ class ProjectMetaView(BaseApiView, SecureMixin):
             saved = model.save(client)
             resp = model_cls(**saved)
         except ValueError:
-            return HttpResponseBadRequest("Entity not valid.")
+            return HttpResponseBadRequest('Entity not valid.')
 
         return JsonResponse(resp.to_body_dict(), safe=False)
-
 
 class ProjectNotificationView(BaseApiView, SecureMixin):
     @profile_fn
@@ -743,7 +681,7 @@ class ProjectNotificationView(BaseApiView, SecureMixin):
         View for email notifications regarding projects
         """
         post_data = json.loads(request.body)
-        username = post_data.get("username")
+        username = post_data.get('username')
         sa_client = get_service_account_client()
         project = BaseProject.manager().get(sa_client, uuid=project_uuid)
         tasks.email_project_admins.apply_async(
@@ -751,12 +689,8 @@ class ProjectNotificationView(BaseApiView, SecureMixin):
                 project.project_id,
                 project_uuid,
                 project.title,
-                request.build_absolute_uri(
-                    "{}/projects/{}/".format(
-                        reverse("designsafe_data:data_depot"), project_uuid
-                    )
-                ),
-                username,
+                request.build_absolute_uri('{}/projects/{}/'.format(reverse('designsafe_data:data_depot'), project_uuid)),
+                username
             ]
         )
-        return JsonResponse({"status": "ok"})
+        return JsonResponse({'status': 'ok'})

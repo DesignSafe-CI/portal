@@ -1,5 +1,4 @@
 """Integration-type tests to confirm that Pydantic schemas are exhaustive."""
-
 import json
 from typing import Iterator
 from pydantic import BaseModel, ValidationError
@@ -7,7 +6,7 @@ from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
     transform_pub_entities,
 )
-from designsafe.apps.api.agave import service_account
+from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
 from designsafe.apps.api.publications.operations import listing as list_pubs
 
 

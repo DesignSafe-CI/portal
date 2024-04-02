@@ -9,18 +9,13 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("designsafe_accounts", "0018_auto_20191014_1555"),
+        ('designsafe_accounts', '0018_auto_20191014_1555'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="designsafeprofile",
-            name="nh_interests_primary",
-            field=models.ForeignKey(
-                null=True,
-                on_delete=django.db.models.deletion.CASCADE,
-                related_name="nh_interests_primary",
-                to="designsafe_accounts.DesignSafeProfileNHInterests",
-            ),
+            model_name='designsafeprofile',
+            name='nh_interests_primary',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='nh_interests_primary', to='designsafe_accounts.DesignSafeProfileNHInterests'),
         ),
     ]

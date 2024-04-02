@@ -18,16 +18,14 @@ class LicenseView(SecureMixin, BaseApiView):
             return HttpResponseForbidden()
 
         try:
-            app_license = apps.get_model(
-                "designsafe_licenses", "{}License".format(app_name)
-            )
+            app_license = apps.get_model('designsafe_licenses', '{}License'.format(app_name))
         except LookupError:
             return HttpResponseNotFound()
-        username = request.GET.get("username", None)
+        username = request.GET.get('username', None)
         if not username:
             return HttpResponseNotFound()
         user = get_user_model().objects.get(username=username)
         licenses = app_license.objects.filter(user=user)
 
-        user_license = licenses[0].license_as_str() if len(licenses) > 0 else ""
-        return JsonResponse({"license": user_license}, encoder=AgaveJSONEncoder)
+        user_license = licenses[0].license_as_str() if len(licenses) > 0 else ''
+        return JsonResponse({'license': user_license}, encoder=AgaveJSONEncoder)

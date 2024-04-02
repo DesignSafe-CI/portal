@@ -4,5 +4,5 @@ from django.utils.translation import gettext_lazy as _
 from designsafe.apps.dashboard import views
 
 urlpatterns = [
-    url(r"^$", views.index, name="index"),
+    url(r'^$', views.index, name='index'),
 ]

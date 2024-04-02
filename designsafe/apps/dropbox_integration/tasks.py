@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-
 # from django.utils.text import get_valid_filename
 # from celery import shared_task
 # from boxsdk.exception import BoxAPIException
@@ -27,5 +26,5 @@ def check_connection(username):
     """
     user = get_user_model().objects.get(username=username)
     client = user.box_user_token.client
-    box_user = client.user(user_id="me").get()
+    box_user = client.user(user_id='me').get()
     return box_user

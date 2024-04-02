@@ -8,21 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("cms_plugins", "0003_auto_20170824_1855"),
+        ('cms_plugins', '0003_auto_20170824_1855'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="responsiveembedplugin",
-            name="allowfullscreen",
-            field=models.BooleanField(default=True, verbose_name="Allow Fullscreen"),
+            model_name='responsiveembedplugin',
+            name='allowfullscreen',
+            field=models.BooleanField(default=True, verbose_name='Allow Fullscreen'),
         ),
         migrations.AlterField(
-            model_name="responsiveembedplugin",
-            name="aspect",
-            field=models.CharField(
-                choices=[("16by9", "16by9"), ("4by3", "4by3"), ("podcast", "podcast")],
-                max_length=255,
-            ),
+            model_name='responsiveembedplugin',
+            name='aspect',
+            field=models.CharField(choices=[('16by9', '16by9'), ('4by3', '4by3'), ('podcast', 'podcast')], max_length=255),
         ),
     ]

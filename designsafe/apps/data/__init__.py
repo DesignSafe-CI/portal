@@ -1,3 +1,3 @@
-# data __init__.py
+#data __init__.py
 
-default_app_config = "designsafe.apps.data.apps.DataConfig"
+default_app_config = 'designsafe.apps.data.apps.DataConfig'

@@ -9,42 +9,27 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = []
+    dependencies = [
+    ]
 
     operations = [
         migrations.CreateModel(
-            name="DataFilesSurveyCounter",
+            name='DataFilesSurveyCounter',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("count", models.IntegerField()),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('count', models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name="DataFilesSurveyResult",
+            name='DataFilesSurveyResult',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("project_id", models.CharField(max_length=255)),
-                ("comments", models.CharField(blank=True, default="", max_length=4096)),
-                ("reasons", models.CharField(max_length=4096)),
-                ("professional_level", models.CharField(max_length=255)),
-                ("did_collect", models.BooleanField()),
-                ("created", models.DateTimeField(auto_now_add=True)),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('project_id', models.CharField(max_length=255)),
+                ('comments', models.CharField(blank=True, default='', max_length=4096)),
+                ('reasons', models.CharField(max_length=4096)),
+                ('professional_level', models.CharField(max_length=255)),
+                ('did_collect', models.BooleanField()),
+                ('created', models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]

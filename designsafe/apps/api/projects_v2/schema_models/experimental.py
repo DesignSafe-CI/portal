@@ -1,5 +1,4 @@
 """Pydantic models for Experimental entities"""
-
 import itertools
 from typing import Optional, Annotated
 from pydantic import BeforeValidator, Field, ConfigDict, model_validator, AliasChoices
