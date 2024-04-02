@@ -1,5 +1,6 @@
 import logging
 from designsafe.apps.api.datafiles.notifications import notify
+from designsafe.apps.api.datafiles.operations import tapis_operations
 from designsafe.apps.api.datafiles.operations import googledrive_operations
 from designsafe.apps.api.datafiles.operations import dropbox_operations
 from designsafe.apps.api.datafiles.operations import box_operations
@@ -19,6 +20,8 @@ allowed_actions = {
 notify_actions = ['move', 'copy', 'rename', 'trash', 'mkdir', 'upload']
 
 operations_mapping = {
+    'agave': tapis_operations,
+    'tapis': tapis_operations,
     'googledrive': googledrive_operations,
     'box': box_operations,
     'dropbox': dropbox_operations,
