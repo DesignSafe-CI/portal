@@ -1,4 +1,5 @@
 """Pydantic schema models for base-level project entities."""
+
 from datetime import datetime
 from typing import Literal, Optional, Annotated
 from pydantic import (

@@ -5,14 +5,15 @@ from designsafe.libs.elasticsearch import indices as IndicesManager
 
 from django.db import migrations
 
+
 def init_indices(*args):
     IndicesManager.init()
 
+
 class Migration(migrations.Migration):
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
-      # migrations.RunPython(init_indices)
+        # migrations.RunPython(init_indices)
     ]

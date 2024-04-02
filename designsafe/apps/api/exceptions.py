@@ -22,7 +22,8 @@ class ApiException(RequestException):
         extra: Extra information of exception.
 
     """
-    def __init__(self, message = None, status = None, extra = {}, *args, **kwargs):
+
+    def __init__(self, message=None, status=None, extra={}, *args, **kwargs):
         super(ApiException, self).__init__(*args, **kwargs)
         response = self.response or Response()
         response.status_code = status or response.status_code

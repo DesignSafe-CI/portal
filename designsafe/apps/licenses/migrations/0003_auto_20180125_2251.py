@@ -8,9 +8,9 @@ import django.db.models.deletion
 
 
 def consolidate_licenses(apps, schema_editor):
-    """ Consolidate number of licences to 1 for users with multiple identical MATLAB licenses."""
+    """Consolidate number of licences to 1 for users with multiple identical MATLAB licenses."""
 
-    MATLABLicense = apps.get_model('designsafe_licenses', 'MATLABLicense')
+    MATLABLicense = apps.get_model("designsafe_licenses", "MATLABLicense")
     active_licenses = MATLABLicense.objects.all()
     users_with_matlab_license = list(set([l.user for l in active_licenses]))
 
@@ -25,30 +25,56 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('designsafe_licenses', '0002_auto_20160302_1650'),
+        ("designsafe_licenses", "0002_auto_20160302_1650"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LSDYNALicense',
+            name="LSDYNALicense",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('license_file_content', models.TextField(help_text=b"This should be entire contents of the user's LS-DYNA license file. Please ensure you paste the license exactly as it is in the license file.")),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='lsdynalicense', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "license_file_content",
+                    models.TextField(
+                        help_text=b"This should be entire contents of the user's LS-DYNA license file. Please ensure you paste the license exactly as it is in the license file."
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="lsdynalicense",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.RunPython(consolidate_licenses),
         migrations.AlterField(
-            model_name='matlablicense',
-            name='license_file_content',
-            field=models.TextField(help_text=b"This should be entire contents of the user's MATLAB license file. Please ensure you paste the license exactly as it is in the license file."),
+            model_name="matlablicense",
+            name="license_file_content",
+            field=models.TextField(
+                help_text=b"This should be entire contents of the user's MATLAB license file. Please ensure you paste the license exactly as it is in the license file."
+            ),
         ),
         migrations.AlterField(
-            model_name='matlablicense',
-            name='user',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='matlablicense', to=settings.AUTH_USER_MODEL),
+            model_name="matlablicense",
+            name="user",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="matlablicense",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

@@ -9,7 +9,12 @@ class DropboxUserToken(models.Model):
     """
     Represents an OAuth Token for a dropbox.com user
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='dropbox_user_token', on_delete=models.CASCADE)
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="dropbox_user_token",
+        on_delete=models.CASCADE,
+    )
     dropbox_user_id = models.CharField(max_length=48)
     access_token = models.CharField(max_length=255)
     account_id = models.CharField(max_length=255)

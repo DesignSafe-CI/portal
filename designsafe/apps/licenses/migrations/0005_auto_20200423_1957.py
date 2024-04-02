@@ -8,18 +8,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('designsafe_licenses', '0004_remove_matlablicense_license_type'),
+        ("designsafe_licenses", "0004_remove_matlablicense_license_type"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='lsdynalicense',
-            name='license_file_content',
-            field=models.TextField(help_text="This should be entire contents of the user's LS-DYNA license file. Please ensure you paste the license exactly as it is in the license file."),
+            model_name="lsdynalicense",
+            name="license_file_content",
+            field=models.TextField(
+                help_text="This should be entire contents of the user's LS-DYNA license file. Please ensure you paste the license exactly as it is in the license file."
+            ),
         ),
         migrations.AlterField(
-            model_name='matlablicense',
-            name='license_file_content',
-            field=models.TextField(help_text="This should be entire contents of the user's MATLAB license file. Please ensure you paste the license exactly as it is in the license file."),
+            model_name="matlablicense",
+            name="license_file_content",
+            field=models.TextField(
+                help_text="This should be entire contents of the user's MATLAB license file. Please ensure you paste the license exactly as it is in the license file."
+            ),
         ),
     ]

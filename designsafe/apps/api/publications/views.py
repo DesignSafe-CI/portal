@@ -7,6 +7,7 @@ from designsafe.apps.api.publications import operations
 from designsafe.apps.projects.managers import datacite as DataciteManager
 import json
 import logging
+
 # Create your views here.
 
 logger = logging.getLogger(__name__)
@@ -14,6 +15,8 @@ logger = logging.getLogger(__name__)
 """
 View for listing publications.
 """
+
+
 class PublicationListingView(BaseApiView):
     def get(self, request, operation):
         client = get_service_account_client()
@@ -22,11 +25,14 @@ class PublicationListingView(BaseApiView):
             response = listing_fn(**request.GET.dict())
             return JsonResponse(response)
         except HTTPError as e:
-            return JsonResponse({'message': str(e)}, status=e.response.status_code)
+            return JsonResponse({"message": str(e)}, status=e.response.status_code)
+
 
 """
 View for getting details (description, full definition) from a specific publication.
 """
+
+
 class PublicationDetailView(BaseApiView):
     def get(self, request, operation, project_id, revision=None):
         client = get_service_account_client()
@@ -35,15 +41,18 @@ class PublicationDetailView(BaseApiView):
             response = _operation(project_id, revision, **request.GET.dict())
             return JsonResponse(response)
         except HTTPError as e:
-            return JsonResponse({'message': str(e)}, status=e.response.status_code)
+            return JsonResponse({"message": str(e)}, status=e.response.status_code)
+
 
 """
 View for getting DataCite DOI details from publications.
 """
+
+
 class PublicationDataCiteView(BaseApiView):
     def get(self, request, doi):
         try:
             response = DataciteManager.get_doi(doi)
             return JsonResponse(response)
         except HTTPError as e:
-            return JsonResponse({'message': str(e)}, status=e.response.status_code)
+            return JsonResponse({"message": str(e)}, status=e.response.status_code)

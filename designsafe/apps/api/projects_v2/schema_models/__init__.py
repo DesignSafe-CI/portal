@@ -1,4 +1,5 @@
 """Pydantic models for all project entities."""
+
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.schema_models import (
     base,

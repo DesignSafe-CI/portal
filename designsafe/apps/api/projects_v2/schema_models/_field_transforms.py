@@ -1,4 +1,5 @@
 """Transforms for converting legacy metadata to fit our Pydantic schemas."""
+
 from typing import Optional, TypedDict
 
 

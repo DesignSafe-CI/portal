@@ -7,6 +7,7 @@ from designsafe.apps.data.tasks import agave_indexer
 
 logger = logging.getLogger(__name__)
 
+
 @shared_task()
 def update_search_index():
     logger.info("Updating search index")
@@ -23,4 +24,4 @@ def clear_expired_sessions():
 
 @shared_task(bind=True)
 def index_community_data(self):
-    agave_indexer.delay('designsafe.storage.community', paths_to_ignore=['Trash'])
+    agave_indexer.delay("designsafe.storage.community", paths_to_ignore=["Trash"])

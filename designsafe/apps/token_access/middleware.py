@@ -10,11 +10,12 @@ class TokenAuthenticationMiddleware(MiddlewareMixin):
     and sets the related users in the request object. If the token is invalid, returns a
     403 error.
     """
+
     def process_request(self, request):
-        auth_header = request.META.get('HTTP_AUTHORIZATION', None)
+        auth_header = request.META.get("HTTP_AUTHORIZATION", None)
         if auth_header is not None:
-            parts = auth_header.split(' ')
-            if parts[0] == 'Token':
+            parts = auth_header.split(" ")
+            if parts[0] == "Token":
                 token = parts[-1]
                 try:
                     token = Token.objects.get(token=token)

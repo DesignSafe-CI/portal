@@ -1,4 +1,5 @@
 """Integration-type tests to confirm that Pydantic schemas are exhaustive."""
+
 import json
 from typing import Iterator
 from pydantic import BaseModel, ValidationError

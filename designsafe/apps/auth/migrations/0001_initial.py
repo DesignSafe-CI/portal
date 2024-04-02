@@ -13,14 +13,29 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='AgaveOAuthToken',
+            name="AgaveOAuthToken",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('access_token', models.CharField(max_length=255)),
-                ('refresh_token', models.CharField(max_length=255)),
-                ('expires_in', models.BigIntegerField()),
-                ('created', models.BigIntegerField()),
-                ('user', models.OneToOneField(related_name='agave_oauth', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("access_token", models.CharField(max_length=255)),
+                ("refresh_token", models.CharField(max_length=255)),
+                ("expires_in", models.BigIntegerField()),
+                ("created", models.BigIntegerField()),
+                (
+                    "user",
+                    models.OneToOneField(
+                        related_name="agave_oauth",
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=models.CASCADE,
+                    ),
+                ),
             ],
         ),
     ]

@@ -10,4 +10,4 @@ logger = logging.getLogger(__name__)
 @require_http_methods(["GET", "POST"])
 def box_webhook(request):
     # no op
-    return HttpResponse('OK')
+    return HttpResponse("OK")

@@ -1,4 +1,5 @@
 """Tests for operations that create/update project metadata."""
+
 import pytest
 import networkx as nx
 from django import db

@@ -8,23 +8,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('designsafe_accounts', '0013_auto_20161206_1623'),
+        ("designsafe_accounts", "0013_auto_20161206_1623"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='notificationpreferences',
-            name='designsafe',
-            field=models.BooleanField(default=True, verbose_name='DesignSafe: to communicate new features, planned outages.'),
+            model_name="notificationpreferences",
+            name="designsafe",
+            field=models.BooleanField(
+                default=True,
+                verbose_name="DesignSafe: to communicate new features, planned outages.",
+            ),
         ),
         migrations.AddField(
-            model_name='notificationpreferences',
-            name='tutorials',
-            field=models.BooleanField(default=True, verbose_name='Tutorials: to communicate DesignSafe training opportunities.'),
+            model_name="notificationpreferences",
+            name="tutorials",
+            field=models.BooleanField(
+                default=True,
+                verbose_name="Tutorials: to communicate DesignSafe training opportunities.",
+            ),
         ),
         migrations.AlterField(
-            model_name='notificationpreferences',
-            name='announcements',
-            field=models.BooleanField(default=True, verbose_name='Announcements: to communicate EF Workshops, NHERI Newsletter, Student Opportunities, etc.'),
+            model_name="notificationpreferences",
+            name="announcements",
+            field=models.BooleanField(
+                default=True,
+                verbose_name="Announcements: to communicate EF Workshops, NHERI Newsletter, Student Opportunities, etc.",
+            ),
         ),
     ]

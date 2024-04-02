@@ -7,9 +7,10 @@ import logging
 from django.conf import settings
 from designsafe.apps.api.exceptions import ApiException
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 def SearchLookupManager(name):
     """Lookup data depot manager class"""
@@ -18,7 +19,9 @@ def SearchLookupManager(name):
     if name not in manager_names:
         raise ApiException("Invalid file manager.")
 
-    module_str, class_str = settings.PORTAL_DATA_DEPOT_SEARCH_MANAGERS[name].rsplit('.', 1)
+    module_str, class_str = settings.PORTAL_DATA_DEPOT_SEARCH_MANAGERS[name].rsplit(
+        ".", 1
+    )
     module = import_module(module_str)
     cls = getattr(module, class_str)
     return cls

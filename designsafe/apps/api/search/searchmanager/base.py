@@ -1,10 +1,11 @@
 from elasticsearch import TransportError, ConnectionTimeout
 
-class BaseSearchManager(object):
-    """ Wraps elastic search result object
 
-        This class wraps the elasticsearch result object
-        to add extra functionality"""
+class BaseSearchManager(object):
+    """Wraps elastic search result object
+
+    This class wraps the elasticsearch result object
+    to add extra functionality"""
 
     def __init__(self, doc_class, search, page_size=100):
         self._doc_class = doc_class
@@ -42,7 +43,7 @@ class BaseSearchManager(object):
         try:
             res = self._search.execute()
         except (TransportError, ConnectionTimeout) as err:
-            if getattr(err, 'status_code', 500) == 404:
+            if getattr(err, "status_code", 500) == 404:
                 raise
             res = self._search.execute()
 
@@ -61,8 +62,9 @@ class BaseSearchManager(object):
                 res_limit += page_size
                 res_offset += page_size
 
-            res_limit = res.hits.total.value - \
-                ((res.hits.total.value / page_size) * page_size)
+            res_limit = res.hits.total.value - (
+                (res.hits.total.value / page_size) * page_size
+            )
             if res_limit > 0:
                 res_offset -= page_size
                 res_limit += res_offset
@@ -100,5 +102,4 @@ class BaseSearchManager(object):
         if val:
             return val
         else:
-            raise AttributeError(
-                'Search class has no attribute \'{}\''.format(name))
+            raise AttributeError("Search class has no attribute '{}'".format(name))

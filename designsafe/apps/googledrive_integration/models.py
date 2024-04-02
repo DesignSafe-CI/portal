@@ -14,18 +14,19 @@ import jsonpickle
 
 logger = logging.getLogger(__name__)
 
-CLIENT_SECRETS_FILE = os.path.join(settings.SITE_DIR, 'client_secrets.json')
+CLIENT_SECRETS_FILE = os.path.join(settings.SITE_DIR, "client_secrets.json")
+
 
 class CredentialsField(models.Field):
     """Django ORM field for storing OAuth2 Credentials."""
 
     def __init__(self, *args, **kwargs):
-        if 'null' not in kwargs:
-            kwargs['null'] = True
+        if "null" not in kwargs:
+            kwargs["null"] = True
         super(CredentialsField, self).__init__(*args, **kwargs)
 
     def get_internal_type(self):
-        return 'BinaryField'
+        return "BinaryField"
 
     def from_db_value(self, value, expression, connection):
         """Overrides ``models.Field`` method. This converts the value
@@ -43,10 +44,10 @@ class CredentialsField(models.Field):
         else:
             try:
                 return jsonpickle.decode(
-                    base64.b64decode(encoding.smart_bytes(value)).decode())
+                    base64.b64decode(encoding.smart_bytes(value)).decode()
+                )
             except ValueError:
-                return pickle.loads(
-                    base64.b64decode(encoding.smart_bytes(value)))
+                return pickle.loads(base64.b64decode(encoding.smart_bytes(value)))
 
     def get_prep_value(self, value):
         """Overrides ``models.Field`` method. This is used to convert
@@ -57,7 +58,8 @@ class CredentialsField(models.Field):
             return None
         else:
             return encoding.smart_str(
-                base64.b64encode(jsonpickle.encode(value).encode()))
+                base64.b64encode(jsonpickle.encode(value).encode())
+            )
 
     def value_to_string(self, obj):
         """Convert the field value from the provided model to a string.
@@ -73,18 +75,23 @@ class CredentialsField(models.Field):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
 
+
 class GoogleDriveUserToken(models.Model):
     """
     Represents an OAuth Token for a Google Drive user
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='googledrive_user_token', on_delete=models.CASCADE)
-    credential = CredentialsField()
 
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="googledrive_user_token",
+        on_delete=models.CASCADE,
+    )
+    credential = CredentialsField()
 
     @property
     def client(self):
         if not self.credential.valid:
             request = Request()
             self.credential.refresh(request)
-        drive = discovery.build('drive', 'v3', credentials=self.credential)
+        drive = discovery.build("drive", "v3", credentials=self.credential)
         return drive

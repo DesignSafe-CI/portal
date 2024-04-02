@@ -7,8 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('designsafe_rapid', '0001_initial'),
+        ("designsafe_rapid", "0001_initial"),
     ]
 
-    operations = [
-    ]
+    operations = []

@@ -15,12 +15,21 @@ from elasticsearch_dsl import Q, Search
 
 logger = logging.getLogger(__name__)
 
+
 def check_public_availability(username):
     es_client = new_es_client()
-    query = Q({'multi_match': {'fields': ['project.value.teamMembers',
-                                          'project.value.coPis',
-                                          'project.value.pi'],
-                               'query': username}})
+    query = Q(
+        {
+            "multi_match": {
+                "fields": [
+                    "project.value.teamMembers",
+                    "project.value.coPis",
+                    "project.value.pi",
+                ],
+                "query": username,
+            }
+        }
+    )
     res = IndexedPublication.search(using=es_client).filter(query).execute()
     return res.hits.total.value > 0
 
@@ -29,14 +38,20 @@ class UsageView(SecureMixin, View):
 
     def get(self, request):
         current_user = request.user
-        q = IndexedFile.search()\
-                .query('bool', must=[Q("prefix", **{"path._exact": '/' + current_user.username})])\
-                .extra(size=0)
-        q.aggs.metric('total_storage_bytes', 'sum', field="length")
+        q = (
+            IndexedFile.search()
+            .query(
+                "bool",
+                must=[Q("prefix", **{"path._exact": "/" + current_user.username})],
+            )
+            .extra(size=0)
+        )
+        q.aggs.metric("total_storage_bytes", "sum", field="length")
         result = q.execute()
         agg = result.to_dict()["aggregations"]
         out = {"total_storage_bytes": agg["total_storage_bytes"]["value"]}
         return JsonResponse(out)
+
 
 class AuthenticatedView(View):
 
@@ -56,15 +71,15 @@ class AuthenticatedView(View):
             }
 
             return JsonResponse(out)
-        return JsonResponse({'message': 'Unauthorized'}, status=401)
+        return JsonResponse({"message": "Unauthorized"}, status=401)
 
 
 class SearchView(View):
 
     def get(self, request):
-        resp_fields = ['first_name', 'last_name', 'email', 'username']
+        resp_fields = ["first_name", "last_name", "email", "username"]
         model = get_user_model()
-        q = request.GET.get('username')
+        q = request.GET.get("username")
 
         # Do not return user details if the user is not part of a public project.
         if not request.user.is_authenticated and not check_public_availability(q):
@@ -76,20 +91,18 @@ class SearchView(View):
             except ObjectDoesNotExist as err:
                 return HttpResponseNotFound()
             res_dict = {
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email,
-                'username': user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "username": user.username,
             }
-            if(user.profile.orcid_id):
-                res_dict['orcid_id'] = user.profile.orcid_id
+            if user.profile.orcid_id:
+                res_dict["orcid_id"] = user.profile.orcid_id
             try:
                 user_tas = TASClient().get_user(username=q)
-                res_dict['profile'] = {
-                    'institution': user_tas['institution']
-                }
+                res_dict["profile"] = {"institution": user_tas["institution"]}
             except Exception as err:
-                logger.info('No Profile.')
+                logger.info("No Profile.")
 
             return JsonResponse(res_dict)
 
@@ -97,8 +110,8 @@ class SearchView(View):
         if not request.user.is_authenticated:
             return JsonResponse({})
 
-        q = request.GET.get('q')
-        role = request.GET.get('role')
+        q = request.GET.get("q")
+        role = request.GET.get("role")
         user_rs = model.objects.filter()
         if q:
             query = users_utils.q_to_model_queries(q)
@@ -123,6 +136,7 @@ class SearchView(View):
 
 class ProjectUserView(BaseApiView):
     """View for handling search for project users"""
+
     def get(self, request: HttpRequest):
         """retrieve a user by their exact TACC username."""
         if not request.user.is_authenticated:
@@ -130,21 +144,25 @@ class ProjectUserView(BaseApiView):
 
         username_query = request.GET.get("q")
         user_match = get_user_model().objects.filter(username__iexact=username_query)
-        user_resp = [{"fname": u.first_name,
-                     "lname": u.last_name,
-                     "inst": u.profile.institution,
-                     "email": u.email,
-                     "username": u.username} for u in user_match]
+        user_resp = [
+            {
+                "fname": u.first_name,
+                "lname": u.last_name,
+                "inst": u.profile.institution,
+                "email": u.email,
+                "username": u.username,
+            }
+            for u in user_match
+        ]
 
         return JsonResponse({"result": user_resp})
-
 
 
 class PublicView(View):
 
     def get(self, request):
         model = get_user_model()
-        nl = json.loads(request.GET.get('usernames'))
+        nl = json.loads(request.GET.get("usernames"))
 
         res_list = []
 
@@ -152,7 +170,9 @@ class PublicView(View):
             users = []
             for username in nl:
                 # Do not return user details if the user is not part of a public project.
-                if not request.user.is_authenticated and not check_public_availability(username):
+                if not request.user.is_authenticated and not check_public_availability(
+                    username
+                ):
                     continue
                 try:
                     users.append(model.objects.get(username=username))
@@ -161,10 +181,10 @@ class PublicView(View):
 
             for user in users:
                 data = {
-                    'fname': user.first_name,
-                    'lname': user.last_name,
-                    'username': user.username,
-                    'email': user.email,
+                    "fname": user.first_name,
+                    "lname": user.last_name,
+                    "username": user.username,
+                    "email": user.email,
                 }
                 res_list.append(data)
         except ObjectDoesNotExist as err:

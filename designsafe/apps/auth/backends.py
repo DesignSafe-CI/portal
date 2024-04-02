@@ -36,7 +36,8 @@ def on_user_logged_out(sender, request, user, **kwargs):
         login_provider = "TACC"
 
     logger.info(
-        "Revoking tapis token: %s", TapisOAuthToken().get_masked_token(user.tapis_oauth.access_token)
+        "Revoking tapis token: %s",
+        TapisOAuthToken().get_masked_token(user.tapis_oauth.access_token),
     )
     backend = TapisOAuthBackend()
     TapisOAuthBackend.revoke(backend, user.tapis_oauth.access_token)
@@ -139,7 +140,8 @@ class TapisOAuthBackend(ModelBackend):
             token = kwargs["token"]
 
             logger.info(
-                'Attempting login via Tapis with token "%s"' % TapisOAuthToken().get_masked_token(token)
+                'Attempting login via Tapis with token "%s"'
+                % TapisOAuthToken().get_masked_token(token)
             )
             client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL, access_token=token)
 
@@ -188,7 +190,8 @@ class TapisOAuthBackend(ModelBackend):
 
     def revoke(self, token):
         logger.info(
-            "Attempting to revoke Tapis token %s" % TapisOAuthToken().get_masked_token(token)
+            "Attempting to revoke Tapis token %s"
+            % TapisOAuthToken().get_masked_token(token)
         )
 
         client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL, access_token=token)

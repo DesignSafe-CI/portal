@@ -31,31 +31,33 @@ class Notification(models.Model):
 
 @receiver(generic_event)
 def receive_notification(sender, **kwargs):
-    event_type = kwargs.get('event_type')
-    event_data = kwargs.get('event_data')
-    event_users = kwargs.get('event_users')
+    event_type = kwargs.get("event_type")
+    event_data = kwargs.get("event_data")
+    event_users = kwargs.get("event_users")
 
     d = []
-    if 'html' in event_data:
-        for item in event_data['html']:
+    if "html" in event_data:
+        for item in event_data["html"]:
             for key, value in list(item.items()):
-                if key != 'action_link':
-                    key= cgi.escape(key)
-                    value= cgi.escape(value)
-                    d.append({key:value})
+                if key != "action_link":
+                    key = cgi.escape(key)
+                    value = cgi.escape(value)
+                    d.append({key: value})
 
-    event_data['html'] = d
+    event_data["html"] = d
 
     for user in event_users:
-        notification = Notification(event_type=event_type, user=user,
-                                    body=json.dumps(event_data))
+        notification = Notification(
+            event_type=event_type, user=user, body=json.dumps(event_data)
+        )
         notification.save()
 
     Event.send_event(event_type, event_users, event_data)
 
 
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 class SiteMessage(models.Model):
     """Warning message to display on all pages."""
-    message = models.TextField(help_text='Text for the alert message')
+
+    message = models.TextField(help_text="Text for the alert message")
     display = models.BooleanField()

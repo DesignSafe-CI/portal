@@ -8,18 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifications_api', '0001_initial'),
+        ("notifications_api", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='broadcast',
-            name='action_link',
-            field=models.TextField(default=b''),
+            model_name="broadcast",
+            name="action_link",
+            field=models.TextField(default=b""),
         ),
         migrations.AddField(
-            model_name='notification',
-            name='action_link',
-            field=models.TextField(default=b''),
+            model_name="notification",
+            name="action_link",
+            field=models.TextField(default=b""),
         ),
     ]

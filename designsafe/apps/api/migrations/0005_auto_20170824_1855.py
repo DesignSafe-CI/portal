@@ -8,14 +8,14 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0004_auto_20170718_1602'),
+        ("api", "0004_auto_20170718_1602"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='Broadcast',
+            name="Broadcast",
         ),
         migrations.DeleteModel(
-            name='Notification',
+            name="Notification",
         ),
     ]

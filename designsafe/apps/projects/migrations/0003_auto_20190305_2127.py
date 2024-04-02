@@ -8,13 +8,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0002_auto_20190304_1958'),
+        ("projects", "0002_auto_20190304_1958"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='categoryorder',
-            name='parent',
-            field=models.CharField(blank=True, editable=False, max_length=255, null=True),
+            model_name="categoryorder",
+            name="parent",
+            field=models.CharField(
+                blank=True, editable=False, max_length=255, null=True
+            ),
         ),
     ]

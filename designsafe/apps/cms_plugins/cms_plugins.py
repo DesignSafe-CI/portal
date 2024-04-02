@@ -18,11 +18,13 @@ class CMSResponsiveEmbedPlugin(CMSPluginBase):
     render_template = "cms_plugins/responsive_embed_plugin.html"
 
     def render(self, context, instance, placeholder):
-        context.update({'instance': instance})
+        context.update({"instance": instance})
         return context
 
     def icon_src(self, instance):
         return urllib.parse.urljoin(
-            settings.STATIC_URL, "cms/img/icons/plugins/image.png")
+            settings.STATIC_URL, "cms/img/icons/plugins/image.png"
+        )
+
 
 plugin_pool.register_plugin(CMSResponsiveEmbedPlugin)  # register the plugin

@@ -1,11 +1,13 @@
 """Utilities for APIs
 """
+
 import logging
 from django.conf import settings
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 def is_jwt(request):
     """Checks if a request is authenticated with a JWT
@@ -25,9 +27,9 @@ def is_jwt(request):
 
 
 def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[-1].strip()
+        ip = x_forwarded_for.split(",")[-1].strip()
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get("REMOTE_ADDR")
     return ip

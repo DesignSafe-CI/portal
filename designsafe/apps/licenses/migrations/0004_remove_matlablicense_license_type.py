@@ -8,12 +8,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('designsafe_licenses', '0003_auto_20180125_2251'),
+        ("designsafe_licenses", "0003_auto_20180125_2251"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='matlablicense',
-            name='license_type',
+            model_name="matlablicense",
+            name="license_type",
         ),
     ]

@@ -1,4 +1,5 @@
 """Pydantic schema models for Hybrid Simulation entities"""
+
 from typing import Annotated, Optional
 from pydantic import BeforeValidator, Field, model_validator
 from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel

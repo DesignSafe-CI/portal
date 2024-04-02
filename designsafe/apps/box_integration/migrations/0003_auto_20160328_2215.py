@@ -9,13 +9,17 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('box_integration', '0002_boxusertoken_box_user_id'),
+        ("box_integration", "0002_boxusertoken_box_user_id"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='boxusertoken',
-            name='user',
-            field=models.OneToOneField(related_name='box_user_token', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
+            model_name="boxusertoken",
+            name="user",
+            field=models.OneToOneField(
+                related_name="box_user_token",
+                to=settings.AUTH_USER_MODEL,
+                on_delete=models.CASCADE,
+            ),
         ),
     ]

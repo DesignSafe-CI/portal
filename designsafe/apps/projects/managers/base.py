@@ -3,6 +3,7 @@
 .. :module: designsafe.apps.projects.managers.base
     :synopsis: Base manager for projects.
 """
+
 from __future__ import unicode_literals, absolute_import
 import logging
 import json
@@ -10,7 +11,6 @@ from designsafe.apps.projects.models.utils import lookup_model as project_lookup
 
 
 LOG = logging.getLogger(__name__)
-
 
 
 class ProjectsManager(object):
@@ -50,11 +50,12 @@ class ProjectsManager(object):
         if len(metas) > 1:
             affected_uuids = []
             for meta in metas:
-                affected_uuids.append(meta['uuid'])
+                affected_uuids.append(meta["uuid"])
             LOG.info(
                 "More than one record with project id: {prj_id} found. "
-                "Affected project UUIDs: {uuids}"
-                .format(prj_id=project_id, uuids=affected_uuids)
+                "Affected project UUIDs: {uuids}".format(
+                    prj_id=project_id, uuids=affected_uuids
+                )
             )
 
         prj_json = metas[0]

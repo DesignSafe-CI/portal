@@ -15,30 +15,31 @@ class NEESUser(object):
         for k, v in six.iteritems(kwargs):
             setattr(self, k, v)
 
-    _lookup_sql = "SELECT u.username, u.email, p.givenName, p.middleName, p.surname, " \
-                  "p.organization, p.countryresident, p.countryorigin, p.phone, " \
-                  "a.address1, a.address2, a.addressCity, a.addressRegion, " \
-                  "a.addressPosstal, a.addressCountry " \
-                  "FROM jos_users u JOIN jos_xprofiles p ON p.uidNumber = u.id " \
-                  "LEFT JOIN jos_xprofiles_address a ON a.uidNumber = u.id " \
-                  "WHERE u.email = %s"
+    _lookup_sql = (
+        "SELECT u.username, u.email, p.givenName, p.middleName, p.surname, "
+        "p.organization, p.countryresident, p.countryorigin, p.phone, "
+        "a.address1, a.address2, a.addressCity, a.addressRegion, "
+        "a.addressPosstal, a.addressCountry "
+        "FROM jos_users u JOIN jos_xprofiles p ON p.uidNumber = u.id "
+        "LEFT JOIN jos_xprofiles_address a ON a.uidNumber = u.id "
+        "WHERE u.email = %s"
+    )
 
     @classmethod
     def lookup_user(cls, email):
-        if 'nees_users' in connections:
-            cursor = connections['nees_users'].cursor()
+        if "nees_users" in connections:
+            cursor = connections["nees_users"].cursor()
             try:
                 cursor.execute(cls._lookup_sql, [email])
                 columns = [col[0] for col in cursor.description]
                 return [
-                    cls(**dict(list(zip(columns, row))))
-                    for row in cursor.fetchall()
+                    cls(**dict(list(zip(columns, row)))) for row in cursor.fetchall()
                 ]
             finally:
                 cursor.close()
         else:
-            logger.error('Database connection for `nees_users` is not defined')
-            raise DatabaseError('The NEES users database connection is unavailable.')
+            logger.error("Database connection for `nees_users` is not defined")
+            raise DatabaseError("The NEES users database connection is unavailable.")
 
 
 class DesignSafeProfileNHInterests(models.Model):
@@ -47,11 +48,13 @@ class DesignSafeProfileNHInterests(models.Model):
     def __str__(self):
         return self.description
 
+
 class DesignSafeProfileNHTechnicalDomains(models.Model):
     description = models.CharField(max_length=300)
 
     def __str__(self):
         return self.description
+
 
 class DesignSafeProfileResearchActivities(models.Model):
     description = models.CharField(max_length=300)
@@ -61,7 +64,9 @@ class DesignSafeProfileResearchActivities(models.Model):
 
 
 class DesignSafeProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile', on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, related_name="profile", on_delete=models.CASCADE
+    )
     ethnicity = models.CharField(max_length=255)
     gender = models.CharField(max_length=255)
     agree_to_account_limit = models.DateTimeField(auto_now_add=True, null=True)
@@ -69,7 +74,12 @@ class DesignSafeProfile(models.Model):
     website = models.CharField(max_length=256, default=None, null=True, blank=True)
     orcid_id = models.CharField(max_length=256, default=None, null=True, blank=True)
     nh_interests = models.ManyToManyField(DesignSafeProfileNHInterests)
-    nh_interests_primary = models.ForeignKey(DesignSafeProfileNHInterests, related_name='nh_interests_primary', null=True, on_delete=models.CASCADE)
+    nh_interests_primary = models.ForeignKey(
+        DesignSafeProfileNHInterests,
+        related_name="nh_interests_primary",
+        null=True,
+        on_delete=models.CASCADE,
+    )
     nh_technical_domains = models.ManyToManyField(DesignSafeProfileNHTechnicalDomains)
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
@@ -78,30 +88,42 @@ class DesignSafeProfile(models.Model):
     last_updated = models.DateTimeField(auto_now=True, null=True)
 
     def send_mail(self, subject, body=None):
-        send_mail(subject,
-                  body,
-                  settings.DEFAULT_FROM_EMAIL,
-                  [self.user.email],
-                  html_message=body)
+        send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.user.email],
+            html_message=body,
+        )
 
 
 class NotificationPreferences(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                related_name='notification_preferences', on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="notification_preferences",
+        on_delete=models.CASCADE,
+    )
     announcements = models.BooleanField(
         default=True,
-        verbose_name=_('Announcements: to communicate EF Workshops, NHERI Newsletter, Student Opportunities, etc.'))
+        verbose_name=_(
+            "Announcements: to communicate EF Workshops, NHERI Newsletter, Student Opportunities, etc."
+        ),
+    )
 
     tutorials = models.BooleanField(
         default=True,
-        verbose_name=_('Tutorials: to communicate DesignSafe training opportunities.'))
+        verbose_name=_("Tutorials: to communicate DesignSafe training opportunities."),
+    )
 
     designsafe = models.BooleanField(
         default=True,
-        verbose_name=_('DesignSafe: to communicate new features, planned outages.'))
+        verbose_name=_("DesignSafe: to communicate new features, planned outages."),
+    )
 
     class Meta:
         permissions = (
-            ('view_notification_subscribers', 'Can view list of users subscribed to a '
-                                              'notification type'),
+            (
+                "view_notification_subscribers",
+                "Can view list of users subscribed to a " "notification type",
+            ),
         )

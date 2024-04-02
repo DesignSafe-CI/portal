@@ -3,6 +3,7 @@
 .. module:: designsafe.apps.nco.managers.ttc_grants
     :synopsis: Nco ttc_grants manager. Should only do read actions.
 """
+
 from __future__ import unicode_literals, absolute_import
 import six
 import logging
@@ -36,14 +37,14 @@ class NcoTtcGrantsManager(object):
         """Return ttc grants list."""
         query = {}
 
-        #turn facility and category selection into query
+        # turn facility and category selection into query
         if facility:
-            query['NheriFacility'] = facility
+            query["NheriFacility"] = facility
         if category:
-            query['Category'] = category
+            query["Category"] = category
 
-        #get the grants list
-        grants = [grant for grant in self._mttc.get_ttc_grants(query=query,sort=sort)]
+        # get the grants list
+        grants = [grant for grant in self._mttc.get_ttc_grants(query=query, sort=sort)]
         return grants
 
     def ttc_facilities(self):

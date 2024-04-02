@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dropbox_integration', '0001_initial'),
+        ("dropbox_integration", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='dropboxusertoken',
-            old_name='refresh_token',
-            new_name='account_id',
+            model_name="dropboxusertoken",
+            old_name="refresh_token",
+            new_name="account_id",
         ),
     ]

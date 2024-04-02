@@ -9,13 +9,21 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms_plugins', '0002_responsiveembedplugin_allowfullscreen'),
+        ("cms_plugins", "0002_responsiveembedplugin_allowfullscreen"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='responsiveembedplugin',
-            name='cmsplugin_ptr',
-            field=models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='cms_plugins_responsiveembedplugin', serialize=False, to='cms.CMSPlugin'),
+            model_name="responsiveembedplugin",
+            name="cmsplugin_ptr",
+            field=models.OneToOneField(
+                auto_created=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                parent_link=True,
+                primary_key=True,
+                related_name="cms_plugins_responsiveembedplugin",
+                serialize=False,
+                to="cms.CMSPlugin",
+            ),
         ),
     ]

@@ -7,18 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('designsafe_accounts', '0005_designsafeprofile_website'),
+        ("designsafe_accounts", "0005_designsafeprofile_website"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='designsafeprofile',
-            name='bio',
+            model_name="designsafeprofile",
+            name="bio",
             field=models.CharField(default=None, max_length=4096, null=True),
         ),
         migrations.AlterField(
-            model_name='designsafeprofile',
-            name='website',
+            model_name="designsafeprofile",
+            name="website",
             field=models.CharField(default=None, max_length=256, null=True),
         ),
     ]

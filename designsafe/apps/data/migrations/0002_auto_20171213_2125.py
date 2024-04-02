@@ -7,19 +7,23 @@ from designsafe.libs.elasticsearch import docs as DocsManager
 
 from django.db import migrations
 
+
 def reindex_files(*args):
     pass
+
 
 def reindex_publications(*args):
     pass
 
+
 def reindex_nees_projects(*args):
     pass
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('data', '0001_initial'),
+        ("data", "0001_initial"),
     ]
 
     operations = [

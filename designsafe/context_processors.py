@@ -9,9 +9,9 @@ def analytics(request):
     render your Google Analytics tracking code template.
     """
     context = {}
-    ga_prop_id = getattr(settings, 'GOOGLE_ANALYTICS_PROPERTY_ID', False)
+    ga_prop_id = getattr(settings, "GOOGLE_ANALYTICS_PROPERTY_ID", False)
     if not settings.DEBUG and ga_prop_id:
-        context['GOOGLE_ANALYTICS_PROPERTY_ID'] = ga_prop_id
+        context["GOOGLE_ANALYTICS_PROPERTY_ID"] = ga_prop_id
     return context
 
 
@@ -34,22 +34,24 @@ def messages(request):
             unique_msgs.append(m)
 
     return {
-        'messages': unique_msgs,
-        'DEFAULT_MESSAGE_LEVELS': DEFAULT_LEVELS,
+        "messages": unique_msgs,
+        "DEFAULT_MESSAGE_LEVELS": DEFAULT_LEVELS,
     }
+
 
 def debug(request):
     context = {}
     if settings.DEBUG:
-        context['debug'] = True
+        context["debug"] = True
     if settings.RENDER_REACT:
-        context['react_flag'] = True
-    context['ds_environment'] = settings.DESIGNSAFE_ENVIRONMENT
+        context["react_flag"] = True
+    context["ds_environment"] = settings.DESIGNSAFE_ENVIRONMENT
     return context
+
 
 def site_verification(request):
     context = {}
-    google_verification_id = getattr(settings, 'GOOGLE_SITE_VERIFICATION_ID', False)
+    google_verification_id = getattr(settings, "GOOGLE_SITE_VERIFICATION_ID", False)
     if google_verification_id:
-        context['GOOGLE_SITE_VERIFICATION_ID'] = google_verification_id
+        context["GOOGLE_SITE_VERIFICATION_ID"] = google_verification_id
     return context

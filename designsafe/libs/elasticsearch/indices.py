@@ -3,14 +3,13 @@
    :synopsis: Wrapper classes for ES different doc types.
 """
 
-
 import logging
 import json
 import six
 from importlib import import_module
 from django.conf import settings
 from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import (Index)
+from elasticsearch_dsl import Index
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError, ConnectionTimeout, Elasticsearch
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
@@ -19,11 +18,12 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 try:
-    HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
+    HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]["hosts"]
     es_client = Elasticsearch(HOSTS, http_auth=settings.ES_AUTH)
 except AttributeError as exc:
-    logger.error('Missing ElasticSearch config. %s', exc)
+    logger.error("Missing ElasticSearch config. %s", exc)
     raise
+
 
 def setup_index(index_config, force=False, reindex=False):
     """
@@ -36,11 +36,11 @@ def setup_index(index_config, force=False, reindex=False):
      - If an index does not exist under the provided alias, then create a new
        index with that alias and the provided name.
     """
-    alias = index_config['alias']
+    alias = index_config["alias"]
     if reindex:
-        alias += '-reindex'
+        alias += "-reindex"
     time_now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
-    index_name = '{}-{}'.format(alias, time_now)
+    index_name = "{}-{}".format(alias, time_now)
 
     index = Index(alias, using=es_client)
 
@@ -56,19 +56,20 @@ def setup_index(index_config, force=False, reindex=False):
         aliases = {alias: {}}
         index.aliases(**aliases)
 
-        module_str, class_str = index_config['document'].rsplit('.', 1)
+        module_str, class_str = index_config["document"].rsplit(".", 1)
         module = import_module(module_str)
         cls = getattr(module, class_str)
         index.document(cls)
-        index.settings(**index_config['kwargs'])
+        index.settings(**index_config["kwargs"])
 
         index.create()
 
-def init(name='all', force=False):
-    if name != 'all':
+
+def init(name="all", force=False):
+    if name != "all":
         index_config = settings.ES_INDICES[name]
         setup_index(index_config, force)
     else:
         for index_name, index_config in six.iteritems(settings.ES_INDICES):
-            logger.debug('initializing index: %s', index_name)
+            logger.debug("initializing index: %s", index_name)
             setup_index(index_config, force)

@@ -3,7 +3,6 @@
    :synopsis: Manager handling Community Data searches.
 """
 
-
 import logging
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedFile
@@ -14,14 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class CommunityDataSearchManager(BaseSearchManager):
-    """ Search manager handling Community Data.
-    """
+    """Search manager handling Community Data."""
 
     def __init__(self, request=None, **kwargs):
         if request:
-            self.query_string = request.GET.get('query_string').replace("/", "\\/")
+            self.query_string = request.GET.get("query_string").replace("/", "\\/")
         else:
-            self.query_string = kwargs.get('query_string').replace("/", "\\/")
+            self.query_string = kwargs.get("query_string").replace("/", "\\/")
 
         split_query = self.query_string.split(" ")
         for i, c in enumerate(split_query):
@@ -30,33 +28,39 @@ class CommunityDataSearchManager(BaseSearchManager):
         self.query_string = " ".join(split_query)
 
         super(CommunityDataSearchManager, self).__init__(
-            IndexedFile, IndexedFile.search())
+            IndexedFile, IndexedFile.search()
+        )
 
     def construct_query(self, system=None, file_path=None):
 
-        files_index_name = list(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys())[0]
+        files_index_name = list(
+            Index(settings.ES_INDEX_PREFIX.format("files")).get_alias().keys()
+        )[0]
 
-        ngram_query = Q("query_string", query=self.query_string,
-                        fields=["name"],
-                        minimum_should_match='80%',
-                        default_operator='or')
+        ngram_query = Q(
+            "query_string",
+            query=self.query_string,
+            fields=["name"],
+            minimum_should_match="80%",
+            default_operator="or",
+        )
 
-        match_query = Q("query_string", query=self.query_string,
-                        fields=[
-                            "name._exact", "name._pattern"],
-                        default_operator='and')
+        match_query = Q(
+            "query_string",
+            query=self.query_string,
+            fields=["name._exact", "name._pattern"],
+            default_operator="and",
+        )
 
         community_files_query = Q(
-            'bool',
+            "bool",
             must=[
-                Q({'term': {'_index': files_index_name}}),
-                Q('term', system="designsafe.storage.community"),
+                Q({"term": {"_index": files_index_name}}),
+                Q("term", system="designsafe.storage.community"),
                 (ngram_query | match_query),
-                Q("term", type="file") | Q("term", type="dir") 
+                Q("term", type="file") | Q("term", type="dir"),
             ],
-            must_not=[
-                Q({"prefix": {"path._exact": "/Trash"}})
-            ]
+            must_not=[Q({"prefix": {"path._exact": "/Trash"}})],
         )
 
         return community_files_query
@@ -69,19 +73,19 @@ class CommunityDataSearchManager(BaseSearchManager):
         listing_search = listing_search.query(query)
         listing_search = listing_search.extra(from_=offset, size=limit)
         res = listing_search.execute()
-        
+
         children = []
 
         if res.hits.total.value:
             children = [o.to_dict() for o in res]
 
         result = {
-            'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
-            'name': '$SEARCH',
-            'path': '/',
-            'system': system,
-            'type': 'dir',
-            'children': children,
-            'permissions': 'READ'
+            "trail": [{"name": "$SEARCH", "path": "/$SEARCH"}],
+            "name": "$SEARCH",
+            "path": "/",
+            "system": system,
+            "type": "dir",
+            "children": children,
+            "permissions": "READ",
         }
         return result

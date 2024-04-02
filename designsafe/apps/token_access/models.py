@@ -9,6 +9,7 @@ class Token(models.Model):
     Represents an access token which can be used to access authenticated resources via
     header authentication, e.g., "Authorization: Token <token value>"
     """
+
     token = models.CharField(max_length=40, primary_key=True)
     nickname = models.CharField(max_length=255)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -25,7 +26,7 @@ class Token(models.Model):
 
     @property
     def header(self):
-        return 'Token {0}'.format(self.token)
+        return "Token {0}".format(self.token)
 
     def __str__(self):
         return self.token
