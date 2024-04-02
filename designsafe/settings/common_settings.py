@@ -319,6 +319,7 @@ CMSPLUGIN_CASCADE = {
         'FormPlugin',
         'MeetingFormPlugin',
         'ResponsiveEmbedPlugin',
+        'AppCategoryListing'
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = [
