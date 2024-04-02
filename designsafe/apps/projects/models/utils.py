@@ -1,5 +1,4 @@
 """Utilities for projects models."""
-
 import logging
 from designsafe.apps.projects.models.agave import base
 from designsafe.apps.projects.models.agave import experimental
@@ -50,13 +49,13 @@ def lookup_model(entity=None, name=None):
     :param str name: Name to analyze.
     """
     if entity is not None:
-        entity_name = entity["name"]
+        entity_name = entity['name']
     elif name is not None:
         entity_name = name
 
     entity_meta_name = entity_name.replace("designsafe.project.", "")
-    comps = entity_meta_name.split(".")
-    project_type = "experimental"
+    comps = entity_meta_name.split('.')
+    project_type = 'experimental'
     if len(comps) == 2:
         project_type, ename = comps
     elif entity_meta_name in ["simulation", "hybrid_simulation", "field_recon"]:
@@ -64,26 +63,20 @@ def lookup_model(entity=None, name=None):
     else:
         ename = entity_meta_name
 
-    if entity_name == "designsafe.project":
+    if entity_name == 'designsafe.project':
         if isinstance(entity, dict):
-            ename = "{ptype}_project".format(
-                ptype=entity["value"].get("projectType", "")
-            )
+            ename = '{ptype}_project'.format(ptype=entity['value'].get('projectType', ''))
         else:
-            ename = "{ptype}_project".format(ptype=entity.value.project_type)
+            ename = '{ptype}_project'.format(ptype=entity.value.project_type)
 
         modules = [base, experimental, simulation, hybrid_simulation, rapid]
     else:
-        switch = {
-            "experimental": [experimental],
-            "simulation": [simulation],
-            "hybrid_simulation": [hybrid_simulation],
-            "field_recon": [rapid],
-        }
+        switch = {'experimental': [experimental], 'simulation': [simulation],
+                  'hybrid_simulation': [hybrid_simulation], 'field_recon': [rapid]}
         modules = switch[project_type]
 
-    name_comps = ename.split("_")
-    name = ""
+    name_comps = ename.split('_')
+    name = ''
     for comp in name_comps:
         if not comp:
             continue
@@ -95,13 +88,9 @@ def lookup_model(entity=None, name=None):
             break
         except AttributeError:
             pass
-    if cls is None and ename.endswith("_project"):
+    if cls is None and ename.endswith('_project'):
         return Project
     elif cls is None:
-        raise AttributeError(
-            "Model '{model}' needed for '{name}' does not exist".format(
-                model=name, name=ename
-            )
-        )
+        raise AttributeError("Model '{model}' needed for '{name}' does not exist".format(model=name, name=ename))
 
     return cls

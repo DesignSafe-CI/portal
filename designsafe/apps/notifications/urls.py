@@ -5,8 +5,9 @@ from designsafe.apps.notifications import views
 
 
 urlpatterns = [
-    url(r"^$", views.index, name="index"),
-    url(r"^notifications/$", views.notifications, name="notifications"),
+    url(r'^$', views.index, name='index'),
+    url(r'^notifications/$', views.notifications, name='notifications'),
+
     # url(r'^apps-list/$', 'apps_list', name='apps_list'),
     # url(r'^files-list/$', 'files_list', name='files_list'),
     # url(r'^jobs-list/$', 'jobs_list', name='jobs_list'),
@@ -15,11 +16,11 @@ urlpatterns = [
 
 
 def menu_items(**kwargs):
-    if "type" in kwargs and kwargs["type"] == "account":
+    if 'type' in kwargs and kwargs['type'] == 'account':
         return [
             {
-                "label": _("Notifications"),
-                "url": reverse("designsafe_notifications:index"),
-                "children": [],
+                'label': _('Notifications'),
+                'url': reverse('designsafe_notifications:index'),
+                'children': []
             }
         ]

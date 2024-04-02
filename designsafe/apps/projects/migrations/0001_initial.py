@@ -10,50 +10,28 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = []
+    dependencies = [
+    ]
 
     operations = [
         migrations.CreateModel(
-            name="Category",
+            name='Category',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("uuid", models.CharField(editable=False, max_length=255, unique=True)),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('uuid', models.CharField(editable=False, max_length=255, unique=True)),
             ],
             options={
-                "verbose_name": "Category",
-                "verbose_name_plural": "Categories",
+                'verbose_name': 'Category',
+                'verbose_name_plural': 'Categories',
             },
         ),
         migrations.CreateModel(
-            name="CategoryOrder",
+            name='CategoryOrder',
             fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("parent", models.UUIDField(blank=True, null=True)),
-                ("value", models.PositiveIntegerField(default=0)),
-                (
-                    "category",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="ui_orders",
-                        to="projects.Category",
-                    ),
-                ),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('parent', models.UUIDField(blank=True, null=True)),
+                ('value', models.PositiveIntegerField(default=0)),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ui_orders', to='projects.Category')),
             ],
         ),
     ]

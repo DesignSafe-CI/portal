@@ -4,7 +4,6 @@
     :synopsis: Python interface to Datacite's rest API.
         Visit: https://support.datacite.org/docs/api for more info.
 """
-
 from __future__ import unicode_literals, absolute_import
 import json
 import logging
@@ -16,8 +15,8 @@ LOGGER = logging.getLogger(__name__)
 DATACITE_USER = settings.DATACITE_USER
 DATACITE_PASS = settings.DATACITE_PASS
 DATACITE_URL = settings.DATACITE_URL
-SHOULDER = getattr(settings, "DATACITE_SHOULDER", "").strip("doi:")
-DOIS_URL = "{base_url}/dois".format(base_url=DATACITE_URL.strip("/"))
+SHOULDER = getattr(settings, 'DATACITE_SHOULDER', '').strip('doi:')
+DOIS_URL = '{base_url}/dois'.format(base_url=DATACITE_URL.strip('/'))
 
 
 def get_doi(doi):
@@ -30,7 +29,7 @@ def get_doi(doi):
     :rtype: dict
     """
     res = requests.get(
-        "{api_url}/{doi}".format(api_url=DOIS_URL, doi=doi),
+        '{api_url}/{doi}'.format(api_url=DOIS_URL, doi=doi),
         auth=(DATACITE_USER, DATACITE_PASS),
     )
     res.raise_for_status()
@@ -79,19 +78,24 @@ def create_or_update_doi(attributes=None, doi=None):
         "data": {
             "type": "dois",
             "relationships": {
-                "client": {"data": {"type": "clients", "id": "tdl.tacc"}}
-            },
+                "client": {
+                    "data": {
+                        "type": "clients",
+                        "id": "tdl.tacc"
+                    }
+                }
+            }
         }
     }
     if doi:
         doi_data = get_doi(doi)
-        datacite_attrs = doi_data["data"]["attributes"]
+        datacite_attrs = doi_data['data']['attributes']
         datacite_attrs.update(attributes)
         attributes = datacite_attrs
         http_verb = requests.put
         url = "{base_url}/{doi}".format(base_url=DOIS_URL, doi=doi)
-        payload["data"]["id"] = doi
-        attributes.pop("prefix", None)
+        payload['data']['id'] = doi
+        attributes.pop('prefix', None)
     else:
         attributes["prefix"] = SHOULDER
         http_verb = requests.post
@@ -101,18 +105,9 @@ def create_or_update_doi(attributes=None, doi=None):
     # These fields are part of the metadata handled by DataCite.
     # For more info:
     # https://schema.datacite.org/meta/kernel-4.3/example/datacite-example-full-v4.xml
-    for field in [
-        "xml",
-        "created",
-        "state",
-        "updated",
-        "suffix",
-        "container",
-        "metadataVersion",
-        "isActive",
-        "contentUrl",
-        "published",
-    ]:
+    for field in ['xml', 'created', 'state', 'updated', 'suffix',
+                  'container', 'metadataVersion', 'isActive',
+                  'contentUrl', 'published']:
         attributes.pop(field, None)
 
     payload["data"]["attributes"] = attributes
@@ -120,7 +115,9 @@ def create_or_update_doi(attributes=None, doi=None):
         url,
         auth=(DATACITE_USER, DATACITE_PASS),
         data=json.dumps(payload),
-        headers={"Content-Type": "application/vnd.api+json"},
+        headers={
+            "Content-Type": "application/vnd.api+json"
+        }
     )
     try:
         res.raise_for_status()
@@ -131,7 +128,7 @@ def create_or_update_doi(attributes=None, doi=None):
             exc.request.method,
             exc.response.reason,
             exc.response.elapsed,
-            exc.response.text,
+            exc.response.text
         )
         raise
     return res.json()
@@ -144,7 +141,7 @@ def publish_doi(doi):
 
     :param str doi: Doi to publish.
     """
-    attributes = {"event": "publish"}
+    attributes = {'event': 'publish'}
     return create_or_update_doi(attributes, doi)
 
 
@@ -155,7 +152,7 @@ def register_doi(doi):
 
     :param str doi: Doi to register.
     """
-    attributes = {"event": "register"}
+    attributes = {'event': 'register'}
     return create_or_update_doi(attributes, doi)
 
 
@@ -166,7 +163,7 @@ def hide_doi(doi):
 
     :param str doi: Doi to hide.
     """
-    attributes = {"event": "hide"}
+    attributes = {'event': 'hide'}
     return create_or_update_doi(attributes, doi)
 
 
@@ -179,7 +176,7 @@ def delete_doi(doi):
     """
     res = requests.delete(
         "{base_url}/{doi}".format(base_url=DOIS_URL, doi=doi),
-        auth=(DATACITE_USER, DATACITE_PASS),
+        auth=(DATACITE_USER, DATACITE_PASS)
     )
     res.raise_for_status()
     return res

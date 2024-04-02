@@ -15,19 +15,18 @@ def create_credential_model(apps, schema_editor):
     # and consolidate tokens into CredentialsField model
 
     GoogleDriveUserToken = apps.get_model(
-        "googledrive_integration", "GoogleDriveUserToken"
-    )
+        "googledrive_integration", "GoogleDriveUserToken")
     tokens = GoogleDriveUserToken.objects.all()
     for google_token in tokens:
         credentials = {
-            "token": google_token.token,
-            "refresh_token": google_token.refresh_token,
-            "token_uri": google_token.token_uri,
-            "client_id": settings.GOOGLE_OAUTH2_CLIENT_ID,
-            "client_secret": settings.GOOGLE_OAUTH2_CLIENT_SECRET,
-            "scopes": [google_token.scopes],
+            'token': google_token.token,
+            'refresh_token': google_token.refresh_token,
+            'token_uri': google_token.token_uri,
+            'client_id': settings.GOOGLE_OAUTH2_CLIENT_ID,
+            'client_secret': settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+            'scopes': [google_token.scopes]
         }
-
+        
         google_token.credential = Credentials(**credentials)
         google_token.save()
 
@@ -43,30 +42,30 @@ def create_credential_model(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("googledrive_integration", "0001_initial"),
+        ('googledrive_integration', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="googledriveusertoken",
-            name="credential",
+            model_name='googledriveusertoken',
+            name='credential',
             field=CredentialsField(null=True),
         ),
         migrations.RunPython(create_credential_model),
         migrations.RemoveField(
-            model_name="googledriveusertoken",
-            name="refresh_token",
+            model_name='googledriveusertoken',
+            name='refresh_token',
         ),
         migrations.RemoveField(
-            model_name="googledriveusertoken",
-            name="scopes",
+            model_name='googledriveusertoken',
+            name='scopes',
         ),
         migrations.RemoveField(
-            model_name="googledriveusertoken",
-            name="token",
+            model_name='googledriveusertoken',
+            name='token',
         ),
         migrations.RemoveField(
-            model_name="googledriveusertoken",
-            name="token_uri",
+            model_name='googledriveusertoken',
+            name='token_uri',
         ),
     ]

@@ -9,15 +9,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("googledrive_integration", "0002_auto_20180215_2239"),
+        ('googledrive_integration', '0002_auto_20180215_2239'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="googledriveusertoken",
-            name="credential",
-            field=designsafe.apps.googledrive_integration.models.CredentialsField(
-                null=True
-            ),
+            model_name='googledriveusertoken',
+            name='credential',
+            field=designsafe.apps.googledrive_integration.models.CredentialsField(null=True),
         ),
     ]

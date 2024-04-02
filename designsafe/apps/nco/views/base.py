@@ -3,10 +3,8 @@
 .. module:: designsafe.apps.nco.views
     :synopsis: Views for NCO app.
 """
-
 import logging
 from django.views.generic.base import TemplateView
-
 # from designsafe.libs.mongo.load_projects import MongoProjectsHelper
 # from designsafe.apps.api.agave import service_account
 
@@ -19,8 +17,6 @@ class NcoIndexView(TemplateView):
 
     pass
 
-
 class NcoTtcGrantsView(TemplateView):
     """NCO TTC Grants view."""
-
     pass
