@@ -36,12 +36,10 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     list
         List of dicts containing file metadata
     """
-    raw_listing = client.files.list(
-        systemId=system,
-        filePath=urllib.parse.quote(path),
-        offset=int(offset) + 1,
-        limit=int(limit),
-    )
+    raw_listing = client.files.list(systemId=system,
+                                    filePath=urllib.parse.quote(path),
+                                    offset=int(offset) + 1,
+                                    limit=int(limit))
 
     try:
         # Convert file objects to dicts for serialization.
@@ -53,7 +51,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     # Update Elasticsearch after each listing.
     # agave_listing_indexer.delay(listing)
     agave_listing_indexer.delay(listing)
-    return {"listing": listing, "reachedEnd": len(listing) < int(limit)}
+    return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
 
 
 def logentity(client, system, path, *args, **kwargs):
@@ -67,31 +65,29 @@ def detail(client, system, path, *args, **kwargs):
     """
     Retrieve the uuid for a file by parsing the query string in _links.metadata.href
     """
-    listing = client.files.list(
-        systemId=system, filePath=urllib.parse.quote(path), offset=0, limit=1
-    )
+    listing = client.files.list(systemId=system, filePath=urllib.parse.quote(path), offset=0, limit=1)
 
-    href = listing[0]["_links"]["metadata"]["href"]
+    href = listing[0]['_links']['metadata']['href']
     qs = urllib.parse.urlparse(href).query
-    parsed_qs = urllib.parse.parse_qs(qs)["q"][0]
+    parsed_qs = urllib.parse.parse_qs(qs)['q'][0]
     qs_json = json.loads(parsed_qs)
-    return {**dict(listing[0]), "uuid": qs_json["associationIds"]}
+    return {**dict(listing[0]), 'uuid': qs_json['associationIds']}
 
 
 def iterate_listing(client, system, path, limit=100):
     """Iterate over a filesystem level yielding an attrdict for each file/folder
-    on the level.
-    :param str client: an Agave client
-    :param str system: system
-    :param str path: path to walk
-    :param int limit: Number of docs to retrieve per API call
+        on the level.
+        :param str client: an Agave client
+        :param str system: system
+        :param str path: path to walk
+        :param int limit: Number of docs to retrieve per API call
 
-    :rtype agavepy.agave.AttrDict
+        :rtype agavepy.agave.AttrDict
     """
     offset = 0
 
     while True:
-        page = listing(client, system, path, offset, limit)["listing"]
+        page = listing(client, system, path, offset, limit)['listing']
         yield from page
         offset += limit
         if len(page) != limit:
@@ -99,7 +95,7 @@ def iterate_listing(client, system, path, limit=100):
             break
 
 
-def search(client, system, path, offset=0, limit=100, query_string="", **kwargs):
+def search(client, system, path, offset=0, limit=100, query_string='', **kwargs):
     """
     Perform a search for files using a query string.
 
@@ -122,33 +118,28 @@ def search(client, system, path, offset=0, limit=100, query_string="", **kwargs)
         List of dicts containing file metadata from Elasticsearch
 
     """
-    ngram_query = Q(
-        "query_string",
-        query=query_string,
-        fields=["name"],
-        minimum_should_match="80%",
-        default_operator="or",
-    )
-    match_query = Q(
-        "query_string",
-        query=query_string,
-        fields=["name._exact, name._pattern"],
-        default_operator="and",
-    )
+    ngram_query = Q("query_string", query=query_string,
+                    fields=["name"],
+                    minimum_should_match='80%',
+                    default_operator='or')
+    match_query = Q("query_string", query=query_string,
+                    fields=[
+                        "name._exact, name._pattern"],
+                    default_operator='and')
 
-    if not path.startswith("/"):
-        path = "/" + path
-    if not path.endswith("/"):
-        path = path + "/"
+    if not path.startswith('/'):
+        path = '/' + path
+    if not path.endswith('/'):
+        path = path + '/'
     search = IndexedFile.search()
     search = search.query(ngram_query | match_query)
-    search = search.filter("prefix", **{"path._exact": path})
-    search = search.filter("term", **{"system._exact": system})
+    search = search.filter('prefix', **{'path._exact': path})
+    search = search.filter('term', **{'system._exact': system})
     search = search.extra(from_=int(offset), size=int(limit))
     res = search.execute()
     hits = [hit.to_dict() for hit in res]
 
-    return {"listing": hits, "reachedEnd": len(hits) < int(limit)}
+    return {'listing': hits, 'reachedEnd': len(hits) < int(limit)}
 
 
 def download(client, system, path=None, paths=None, *args, **kwargs):
@@ -172,18 +163,14 @@ def download(client, system, path=None, paths=None, *args, **kwargs):
 
     token = None
     if client is not None:
-        token = client.token.token_info["access_token"]
+        token = client.token.token_info['access_token']
     zip_endpoint = "https://designsafe-download01.tacc.utexas.edu/check"
-    data = json.dumps({"system": system, "paths": paths})
+    data = json.dumps({'system': system, 'paths': paths})
     # data = json.dumps({'system': 'designsafe.storage.published', 'paths': ['PRJ-2889']})
-    resp = requests.put(
-        zip_endpoint, headers={"Authorization": f"Bearer {token}"}, data=data
-    )
+    resp = requests.put(zip_endpoint, headers={"Authorization": f"Bearer {token}"}, data=data)
     resp.raise_for_status()
     download_key = resp.json()["key"]
-    return {
-        "href": f"https://designsafe-download01.tacc.utexas.edu/download/{download_key}"
-    }
+    return {"href": f"https://designsafe-download01.tacc.utexas.edu/download/{download_key}"}
 
 
 def mkdir(client, system, path, dir_name):
@@ -204,15 +191,18 @@ def mkdir(client, system, path, dir_name):
     -------
     dict
     """
-    body = {"action": "mkdir", "path": dir_name}
-    result = client.files.manage(
-        systemId=system, filePath=urllib.parse.quote(path), body=body
-    )
+    body = {
+        'action': 'mkdir',
+        'path': dir_name
+    }
+    result = client.files.manage(systemId=system,
+                                 filePath=urllib.parse.quote(path),
+                                 body=body)
 
-    agave_indexer.apply_async(
-        kwargs={"systemId": system, "filePath": path, "recurse": False},
-        queue="indexing",
-    )
+    agave_indexer.apply_async(kwargs={'systemId': system,
+                                      'filePath': path,
+                                      'recurse': False},
+                              queue='indexing')
     return dict(result)
 
 
@@ -239,62 +229,54 @@ def move(client, src_system, src_path, dest_system, dest_path):
 
     """
     # do not allow moves to the same location or across systems
-    if os.path.dirname(src_path) == dest_path.strip("/") or src_system != dest_system:
+    if (os.path.dirname(src_path) == dest_path.strip('/') or src_system != dest_system):
         return {
-            "system": src_system,
-            "path": urllib.parse.quote(src_path),
-            "name": os.path.basename(src_path),
+            'system': src_system,
+            'path': urllib.parse.quote(src_path),
+            'name': os.path.basename(src_path)
         }
 
     src_file_name = os.path.basename(src_path)
     try:
-        client.files.list(
-            systemId=dest_system, filePath=os.path.join(dest_path, src_file_name)
-        )
+        client.files.list(systemId=dest_system, filePath=os.path.join(dest_path, src_file_name))
         dst_file_name = rename_duplicate_path(src_file_name)
-        full_dest_path = os.path.join(dest_path.strip("/"), dst_file_name)
+        full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
     except:
         dst_file_name = src_file_name
-        full_dest_path = os.path.join(dest_path.strip("/"), src_file_name)
+        full_dest_path = os.path.join(dest_path.strip('/'), src_file_name)
 
-    body = {"action": "move", "path": full_dest_path}
+    body = {'action': 'move', 'path': full_dest_path}
     move_result = client.files.manage(
-        systemId=src_system, filePath=urllib.parse.quote(src_path), body=body
+        systemId=src_system,
+        filePath=urllib.parse.quote(src_path),
+        body=body
     )
-    update_meta.apply_async(
-        kwargs={
-            "src_system": src_system,
-            "src_path": src_path,
-            "dest_system": dest_system,
-            "dest_path": full_dest_path,
-        },
-        queue="indexing",
-    )
+    update_meta.apply_async(kwargs={
+        "src_system": src_system,
+        "src_path": src_path,
+        "dest_system": dest_system,
+        "dest_path": full_dest_path
+    }, queue="indexing")
 
     if os.path.dirname(src_path) != full_dest_path or src_path != full_dest_path:
-        agave_indexer.apply_async(
-            kwargs={
-                "systemId": src_system,
-                "filePath": os.path.dirname(src_path),
-                "recurse": False,
-            },
-            queue="indexing",
-        )
+        agave_indexer.apply_async(kwargs={
+            'systemId': src_system,
+            'filePath': os.path.dirname(src_path),
+            'recurse': False
+        }, queue='indexing')
 
-    agave_indexer.apply_async(
-        kwargs={"systemId": dest_system, "filePath": dest_path, "recurse": False},
-        queue="indexing",
-    )
-
-    if move_result["nativeFormat"] == "dir":
-        agave_indexer.apply_async(
-            kwargs={
-                "systemId": dest_system,
-                "filePath": full_dest_path,
-                "recurse": True,
-            },
-            queue="indexing",
-        )
+    agave_indexer.apply_async(kwargs={
+        'systemId': dest_system,
+        'filePath': dest_path,
+        'recurse': False
+    }, queue='indexing')
+    
+    if move_result['nativeFormat'] == 'dir':
+        agave_indexer.apply_async(kwargs={
+            'systemId': dest_system,
+            'filePath': full_dest_path,
+            'recurse': True
+        }, queue='indexing')
 
     return move_result
 
@@ -323,69 +305,56 @@ def copy(client, src_system, src_path, dest_system, dest_path):
     """
     src_file_name = os.path.basename(src_path)
     try:
-        client.files.list(
-            systemId=dest_system, filePath=os.path.join(dest_path, src_file_name)
-        )
+        client.files.list(systemId=dest_system, filePath=os.path.join(dest_path, src_file_name))
         dst_file_name = rename_duplicate_path(src_file_name)
-        full_dest_path = os.path.join(dest_path.strip("/"), dst_file_name)
+        full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
     except:
         dst_file_name = src_file_name
-        full_dest_path = os.path.join(dest_path.strip("/"), src_file_name)
+        full_dest_path = os.path.join(dest_path.strip('/'), src_file_name)
 
     if src_system == dest_system:
-        body = {"action": "copy", "path": full_dest_path}
+        body = {'action': 'copy', 'path': full_dest_path}
         copy_result = client.files.manage(
             systemId=src_system,
-            filePath=urllib.parse.quote(
-                src_path.strip("/")
-            ),  # don't think we need to strip '/' here...
-            body=body,
+            filePath=urllib.parse.quote(src_path.strip('/')), # don't think we need to strip '/' here...
+            body=body
         )
     else:
-        src_url = "agave://{}/{}".format(src_system, urllib.parse.quote(src_path))
+        src_url = 'agave://{}/{}'.format(src_system, urllib.parse.quote(src_path))
         copy_result = client.files.importData(
             systemId=dest_system,
             filePath=urllib.parse.quote(dest_path),
             fileName=dst_file_name,
-            urlToIngest=src_url,
+            urlToIngest=src_url
         )
 
-    copy_meta.apply_async(
-        kwargs={
-            "src_system": src_system,
-            "src_path": src_path,
-            "dest_system": dest_system,
-            "dest_path": full_dest_path,
-        },
-        queue="indexing",
-    )
+    copy_meta.apply_async(kwargs={
+        "src_system": src_system,
+        "src_path": src_path,
+        "dest_system": dest_system,
+        "dest_path": full_dest_path
+    }, queue='indexing')
 
-    if copy_result["nativeFormat"] == "dir":
-        agave_indexer.apply_async(
-            kwargs={
-                "systemId": dest_system,
-                "filePath": full_dest_path,
-                "recurse": True,
-            },
-            queue="indexing",
-        )
+    if copy_result['nativeFormat'] == 'dir':
+        agave_indexer.apply_async(kwargs={
+            'systemId': dest_system,
+            'filePath': full_dest_path,
+            'recurse': True
+        }, queue='indexing')
     else:
-        agave_indexer.apply_async(
-            kwargs={
-                "username": "ds_admin",
-                "systemId": dest_system,
-                "filePath": dest_path,
-                "recurse": False,
-            },
-            queue="indexing",
-        )
+        agave_indexer.apply_async(kwargs={
+            'username': 'ds_admin',
+            'systemId': dest_system,
+            'filePath': dest_path,
+            'recurse': False
+        }, queue='indexing')
 
     return dict(copy_result)
 
 
 def delete(client, system, path):
-    return client.files.delete(systemId=system, filePath=urllib.parse.quote(path))
-
+    return client.files.delete(systemId=system,
+                               filePath=urllib.parse.quote(path))
 
 def rename(client, system, path, new_name):
     """Renames a file. This is performed under the hood by moving the file to
@@ -413,49 +382,41 @@ def rename(client, system, path, new_name):
     # listing[0].type == 'file'
     # listing[0].type == 'dir'
     listing = client.files.list(systemId=system, filePath=path)
-    path = path.strip("/")
-    body = {"action": "rename", "path": new_name}
+    path = path.strip('/')
+    body = {'action': 'rename', 'path': new_name}
 
     rename_result = client.files.manage(
-        systemId=system, filePath=urllib.parse.quote(os.path.join("/", path)), body=body
+        systemId=system,
+        filePath=urllib.parse.quote(os.path.join('/', path)),
+        body=body
     )
-    update_meta.apply_async(
-        kwargs={
-            "src_system": system,
-            "src_path": path,
-            "dest_system": system,
-            "dest_path": os.path.join(os.path.dirname(path), new_name),
-        },
-        queue="indexing",
-    )
+    update_meta.apply_async(kwargs={
+        "src_system": system,
+        "src_path": path,
+        "dest_system": system,
+        "dest_path": os.path.join(os.path.dirname(path), new_name)
+    }, queue="indexing")
 
     # if rename_result['nativeFormat'] == 'dir':
-    if listing[0].type == "dir":
+    if listing[0].type == 'dir':
         agave_indexer.apply_async(
             kwargs={
-                "systemId": system,
-                "filePath": os.path.dirname(path),
-                "recurse": False,
-            },
-            queue="indexing",
-        )
-        agave_indexer.apply_async(
-            kwargs={
-                "systemId": system,
-                "filePath": rename_result["path"],
-                "recurse": True,
-            },
-            queue="indexing",
-        )
+                'systemId': system,
+                'filePath': os.path.dirname(path),
+                'recurse': False
+            }, queue='indexing')
+        agave_indexer.apply_async(kwargs={
+                'systemId': system,
+                'filePath': rename_result['path'],
+                'recurse': True
+        }, queue='indexing')
     else:
         agave_indexer.apply_async(
             kwargs={
-                "systemId": system,
-                "filePath": os.path.dirname(path),
-                "recurse": False,
-            },
-            queue="indexing",
-        )
+                'systemId': system,
+                'filePath': os.path.dirname(path),
+                'recurse': False
+            }, queue='indexing')
 
     return dict(rename_result)
 
@@ -482,12 +443,11 @@ def trash(client, system, path, trash_path):
 
     # Create a trash path if none exists
     try:
-        client.files.list(systemId=system, filePath=trash_path)
+        client.files.list(systemId=system,
+                          filePath=trash_path)
     except HTTPError as err:
         if err.response.status_code != 404:
-            logger.error(
-                "Unexpected exception listing .trash path in {}".format(system)
-            )
+            logger.error("Unexpected exception listing .trash path in {}".format(system))
             raise
         mkdir(client, system, trash_root, trash_foldername)
 
@@ -496,9 +456,7 @@ def trash(client, system, path, trash_path):
     return resp
 
 
-def upload(
-    client, system, path, uploaded_file, webkit_relative_path=None, *args, **kwargs
-):
+def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args, **kwargs):
     """Upload a file.
     Params
     ------
@@ -523,30 +481,31 @@ def upload(
     # existing data. We will need to be able to handle directory/folder uploads as a single operation.
 
     if webkit_relative_path:
-        rel_path = os.path.dirname(webkit_relative_path).strip("/")
+        rel_path = os.path.dirname(webkit_relative_path).strip('/')
         mkdir(client, system, path, rel_path)
         path = os.path.join(path, rel_path)
 
     upload_name = os.path.basename(uploaded_file.name)
 
-    resp = client.files.importData(
-        systemId=system,
-        filePath=urllib.parse.quote(path),
-        fileName=str(upload_name),
-        fileToUpload=uploaded_file,
-    )
+    resp = client.files.importData(systemId=system,
+                                   filePath=urllib.parse.quote(path),
+                                   fileName=str(upload_name),
+                                   fileToUpload=uploaded_file)
 
-    agave_indexer.apply_async(
-        kwargs={"systemId": system, "filePath": path, "recurse": False},
-        queue="indexing",
-    )
+    agave_indexer.apply_async(kwargs={'systemId': system,
+                                      'filePath': path,
+                                      'recurse': False},
+                              queue='indexing'
+                              )
 
     # attempt to gather standardized metadata from upload
     try:
         metadata = scrape_metadata_from_file(uploaded_file)
         if metadata:
             create_meta(
-                path=os.path.join("/", path, upload_name), system=system, meta=metadata
+                path=os.path.join('/', path, upload_name),
+                system=system,
+                meta=metadata
             )
         return dict(resp)
     except:
@@ -575,46 +534,45 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
     dict
     """
 
-    file_name = path.strip("/").split("/")[-1]
+    file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
-    href = client.files.list(systemId=system, filePath=path)[0]["_links"]["self"][
-        "href"
-    ]
+    href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
 
-    meta_result = query_file_meta(system, os.path.join("/", path))
+    meta_result = query_file_meta(system, os.path.join('/', path))
     meta = meta_result[0] if len(meta_result) else {}
 
     args = {
-        "url": urllib.parse.unquote(href),
-        "maxUses": max_uses,
-        "method": "GET",
-        "lifetime": lifetime,
-        "noauth": False,
+        'url': urllib.parse.unquote(href),
+        'maxUses': max_uses,
+        'method': 'GET',
+        'lifetime': lifetime,
+        'noauth': False
     }
 
     postit_result = client.postits.create(body=args)
-    url = postit_result["_links"]["self"]["href"]
+    url = postit_result['_links']['self']['href']
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
-        file_type = "text"
+        file_type = 'text'
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
-        file_type = "image"
+        file_type = 'image'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
-        file_type = "object"
+        file_type = 'object'
     elif file_ext in settings.SUPPORTED_MS_OFFICE:
-        file_type = "ms-office"
-        url = "https://view.officeapps.live.com/op/view.aspx?src={}".format(url)
+        file_type = 'ms-office'
+        url = 'https://view.officeapps.live.com/op/view.aspx?src={}'.\
+            format(url)
     elif file_ext in settings.SUPPORTED_VIDEO_EXTS:
-        file_type = "video"
+        file_type = 'video'
         # url = '/api/datafiles/media/agave/private/{}/{}'.format(system, path)
     elif file_ext in settings.SUPPORTED_IPYNB_PREVIEW_EXTS:
-        file_type = "ipynb"
-        tmp = url.replace("https://", "")
-        url = "https://nbviewer.jupyter.org/urls/{tmp}".format(tmp=tmp)
+        file_type = 'ipynb'
+        tmp = url.replace('https://', '')
+        url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
     else:
-        file_type = "other"
+        file_type = 'other'
 
-    return {"href": url, "fileType": file_type, "fileMeta": meta}
+    return {'href': url, 'fileType': file_type, 'fileMeta': meta}
 
 
 def download_bytes(client, system, path):
