@@ -9,6 +9,7 @@ from designsafe.apps.workspace.models.app_entries import (
 from designsafe.apps.workspace.models.app_cms_plugins import (
     AppCategoryListingPlugin,
     RelatedAppsPlugin,
+    AppVariantsPlugin,
 )
 
 logger = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ plugin_pool.register_plugin(AppCategoryListing)
 
 
 class RelatedApps(CMSPluginBase):
-    """CMS plugin to render the list of apps for a given category."""
+    """CMS plugin to render related apps."""
 
     model = RelatedAppsPlugin
     name = "Related Apps"
@@ -82,3 +83,23 @@ class RelatedApps(CMSPluginBase):
 
 
 plugin_pool.register_plugin(RelatedApps)
+
+
+class AppVariants(CMSPluginBase):
+    """CMS plugin to render an apps versions/variants."""
+
+    model = AppVariantsPlugin
+    name = "App Version Selection"
+    module = "Tools & Applications"
+    render_template = "designsafe/apps/workspace/app_variant_plugin.html"
+    cache = False
+
+    def render(self, context, instance: AppListingEntry, placeholder):
+        context = super().render(context, instance, placeholder)
+        app_variants = instance.app.appvariant_set.all()
+        context["listing"] = app_variants
+
+        return context
+
+
+plugin_pool.register_plugin(AppVariants)

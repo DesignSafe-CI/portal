@@ -26,3 +26,12 @@ class RelatedAppsPlugin(CMSPlugin):
 
     def __str__(self):
         return self.app.label
+
+
+class AppVariantsPlugin(CMSPlugin):
+    """Model for listing related apps."""
+
+    app = models.ForeignKey(to=AppListingEntry, on_delete=models.deletion.CASCADE)
+
+    def __str__(self):
+        return self.app.label
