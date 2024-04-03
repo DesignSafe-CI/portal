@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigation } from 'react-router-dom';
 import { Layout } from 'antd';
 import { AppsSideNav, JobStatusNav, AppsBreadcrumb } from '@client/workspace';
 import styles from './layout.module.css';
 import appsListingJson from '../../../modules/_test-fixtures/src/fixtures/workspace/apps-tray-listing.json';
+import { Spinner } from '@client/common-components';
 
 const { Sider } = Layout;
 
@@ -35,6 +36,14 @@ const WorkspaceRoot: React.FC = () => {
     }
     return title;
   };
+  const { state } = useNavigation();
+
+  if (state === 'loading')
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    );
 
   return (
     <>

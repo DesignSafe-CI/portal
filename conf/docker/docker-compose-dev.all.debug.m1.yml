@@ -7,10 +7,8 @@ services:
     platform: "linux/amd64"
     volumes:
       - redis_data_v3:/data
-      - ../redis.conf:/usr/local/etc/redis/redis.conf
     ports:
       - 127.0.0.1:6379:6379
-    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
     container_name: des_redis
     hostname: des_redis
 
@@ -18,13 +16,9 @@ services:
     image: arm64v8/rabbitmq:3.6.14-management
     volumes:
       - rabbitmq_data_v3:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
-      - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     env_file: ../env_files/rabbitmq.env
     ports:
       - 127.0.0.1:5672:5672
-      - 127.0.0.1:5673:5673
-      - 127.0.0.1:15673:15673
-      - 127.0.0.1:15672:15672
     container_name: des_rabbitmq
     hostname: des_rabbitmq
 
@@ -73,10 +67,9 @@ services:
       - ../nginx/certificates/designsafe.dev.crt:/etc/ssl/designsafe.dev.crt
       - ../nginx/certificates/designsafe.dev.key:/etc/ssl/designsafe.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
-      - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../static:/var/www/designsafe/static
-      - ../../media:/var/www/designsafe/media
+      - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
     links:
       - django:django
     ports:
@@ -95,6 +88,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     ports:
       - 127.0.0.1:5678:5678
@@ -110,6 +104,7 @@ services:
     env_file: ../env_files/designsafe.env
     volumes:
       - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     container_name: des_websockets
     command: python manage.py runserver 0.0.0.0:9000
@@ -124,6 +119,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     dns:
       - 8.8.8.8
@@ -137,4 +133,3 @@ volumes:
   des_postgres_data_v3:
   es_data_v3:
   rabbitmq_data_v3:
-  sockets_v3:

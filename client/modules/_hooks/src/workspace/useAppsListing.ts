@@ -19,7 +19,7 @@ type AppCategory = {
   title: string;
 };
 
-type AppCategories = {
+export type AppCategories = {
   categories: AppCategory[];
 };
 
@@ -30,11 +30,13 @@ async function getAppsListing({ signal }: { signal: AbortSignal }) {
   return res.data;
 }
 
+export const appsListingQuery = {
+  queryKey: ['workspace', 'appsListing'],
+  queryFn: getAppsListing,
+};
+
 function useAppsListing() {
-  return useQuery({
-    queryKey: ['workspace', 'appsListing'],
-    queryFn: getAppsListing,
-  });
+  return useQuery(appsListingQuery);
 }
 
 export default useAppsListing;

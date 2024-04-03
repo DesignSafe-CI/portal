@@ -1,12 +1,10 @@
 import { Modal, Spin } from 'antd';
 import { useGetJobs } from '@client/hooks';
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './JobsDetailModal.module.css';
 import { TJob } from '@client/hooks';
 
-export type TModalChildren = (props: {
-  onClick: React.MouseEventHandler<HTMLElement>;
-}) => React.ReactElement;
 
 export const JobsDetailModalBody: React.FC<{
   isOpen: boolean;
@@ -33,19 +31,16 @@ export const JobsDetailModalBody: React.FC<{
 };
 
 export const JobsDetailModal: React.FC<{
-  uuid: string;
-  children: TModalChildren;
-}> = ({ uuid, children }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+}> = () => {
+  type JobsDetailModalParams = {
+    uuid: string
+  }
+  const { uuid } = useParams<JobsDetailModalParams>() as JobsDetailModalParams;
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
 
   return (
     <>
-      {React.createElement(children, { onClick: showModal })}
-      <JobsDetailModalBody uuid={uuid} isOpen={isModalOpen} />
+      <JobsDetailModalBody uuid={uuid} isOpen={true} />
     </>
   );
 };
