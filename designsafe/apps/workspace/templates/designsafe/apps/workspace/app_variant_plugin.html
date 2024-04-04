@@ -4,7 +4,7 @@
     <article>
         <div style="display:flex; align-items: center; justify-content: space-between;">
             <h4>{{variant.label}}</h4>
-            <a href="#"><button class="btn btn-success">Get Started</button></a>
+            <a href="{{variant.href}}"><button class="btn btn-success">Get Started</button></a>
         </div>
         <p>{{variant.description}}</p>
         {% if listing.count > forloop.counter %}

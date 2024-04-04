@@ -196,6 +196,14 @@ class AppVariant(models.Model):
         help_text="App variant visibility in app tray.", default=True
     )
 
+    @property
+    def href(self):
+        """Retrieve the link to the app in the Tools & Applications space inthe protal"""
+        app_href = f"/rw/workspace/applications/{self.app_id}"
+        if self.version:
+            app_href += f"?{self.version}"
+        return app_href
+
     def __str__(self):
         return f"{self.bundle.label} {self.app_id} {self.version}  ({'ENABLED' if self.enabled else 'DISABLED'})"
 
