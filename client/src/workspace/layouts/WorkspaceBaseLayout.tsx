@@ -20,9 +20,7 @@ const WorkspaceRoot: React.FC = () => {
     { title: 'Tools & Applications', path: '/' },
   ];
   // Modify the path for Job Status
-  const modifiedPath = pathname.endsWith('/history')
-    ? 'Job Status'
-    : pathname;
+  const modifiedPath = pathname.endsWith('/history') ? 'Job Status' : pathname;
 
   const { state } = useNavigation();
 
