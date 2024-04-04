@@ -1,8 +1,8 @@
 import { Breadcrumb, BreadcrumbProps } from 'antd';
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import styles from './AppsBreadcrumb.module.css';
-import appsListingJson from '../../../_test-fixtures/src/fixtures/workspace/apps-tray-listing.json';
+import { TAppParamsType, TAppResponse, useGetApps } from '@client/hooks';
 
 function getPathRoutes(path: string = '') {
   const pathComponents = decodeURIComponent(path)
@@ -15,45 +15,54 @@ function getPathRoutes(path: string = '') {
   }));
 }
 
-function get_bundle_label_from_title(title: string): string {
-  const categories = appsListingJson.categories;
-  for (const category of categories) {
-    for (const app of category.apps) {
-      if (app.app_id === title) {
-        return app.bundle_label;
-      }
-    }
-  }
-  return title;
-}
-
 export const AppsBreadcrumb: React.FC<
   {
     initialBreadcrumbs: { title: string; path: string }[];
     path: string;
   } & BreadcrumbProps
 > = ({ initialBreadcrumbs, path, ...props }) => {
+  const [appData, setAppData] = useState<TAppResponse | null>(null);
+  const { appId } = useParams() as TAppParamsType;
+  const appVersion = new URLSearchParams(useLocation().search).get(
+    'appVersion'
+  ) as string | undefined;
+
+  const { data, isLoading } = useGetApps({ appId, appVersion });
+  console.log(data);
+  useEffect(() => {
+    if (data) {
+      setAppData(data);
+    }
+  }, [data]);
+
   const breadcrumbItems = [...initialBreadcrumbs, ...getPathRoutes(path)];
 
   return (
     <div className={styles.breadcrumbWrapper}>
-      <Breadcrumb
-        className={styles.appsBreadcrumb}
-        items={breadcrumbItems}
-        itemRender={(obj) => {
-          if (!obj.path) {
-            return <span className="breadcrumb-text">{obj.title}</span>;
-          }
-          const title = obj.title as string;
-          const bundle_label = get_bundle_label_from_title(title);
-          return (
-            <Link className="breadcrumb-link" to={obj.path}>
-              {bundle_label}
-            </Link>
-          );
-        }}
-        {...props}
-      />
+      {isLoading && <div>Loading...</div>}
+      {!isLoading && appData && (
+        <Breadcrumb
+          className={styles.appsBreadcrumb}
+          items={breadcrumbItems}
+          itemRender={(obj) => {
+            if (!obj.path) {
+              return <span className="breadcrumb-text">{obj.title}</span>;
+            }
+            const title = obj.title as string;
+            return (
+              <Link className="breadcrumb-link" to={obj.path}>
+                {data &&
+                data.definition &&
+                data.definition.notes &&
+                data.definition.notes.label
+                  ? data.definition.notes.label
+                  : title}
+              </Link>
+            );
+          }}
+          {...props}
+        />
+      )}
     </div>
   );
 };
