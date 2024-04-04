@@ -198,7 +198,7 @@ class AppVariant(models.Model):
 
     @property
     def href(self):
-        """Retrieve the link to the app in the Tools & Applications space inthe protal"""
+        """Retrieve the app's URL in the Tools & Applications space"""
         app_href = f"/rw/workspace/applications/{self.app_id}"
         if self.version:
             app_href += f"?version={self.version}"
