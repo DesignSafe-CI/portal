@@ -62,7 +62,7 @@ class RelatedApps(CMSPluginBase):
 
     def render(self, context, instance: AppListingEntry, placeholder):
         context = super().render(context, instance, placeholder)
-        listing_entries = instance.app.related_apps.all()
+        listing_entries = instance.app.related_apps.filter(enabled=True)
         serialized_listing = [
             {
                 "label": entry.label,
@@ -96,7 +96,7 @@ class AppVariants(CMSPluginBase):
 
     def render(self, context, instance: AppListingEntry, placeholder):
         context = super().render(context, instance, placeholder)
-        app_variants = instance.app.appvariant_set.all()
+        app_variants = instance.app.appvariant_set.filter(enabled=True)
         context["listing"] = app_variants
 
         return context
