@@ -201,7 +201,7 @@ class AppVariant(models.Model):
         """Retrieve the link to the app in the Tools & Applications space inthe protal"""
         app_href = f"/rw/workspace/applications/{self.app_id}"
         if self.version:
-            app_href += f"?{self.version}"
+            app_href += f"?version={self.version}"
         return app_href
 
     def __str__(self):
