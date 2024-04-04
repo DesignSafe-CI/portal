@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import styles from './AppsBreadcrumb.module.css';
 import appsListingJson from '../../../_test-fixtures/src/fixtures/workspace/apps-tray-listing.json';
 
-
 function getPathRoutes(path: string = '') {
   const pathComponents = decodeURIComponent(path)
     .split('/')
@@ -18,14 +17,14 @@ function getPathRoutes(path: string = '') {
 
 function get_bundle_label_from_title(title: string): string {
   const categories = appsListingJson.categories;
-    for (const category of categories) {
-      for (const app of category.apps) {
-        if (app.app_id === title) {
-          return app.bundle_label;
-        }
+  for (const category of categories) {
+    for (const app of category.apps) {
+      if (app.app_id === title) {
+        return app.bundle_label;
       }
     }
-  return title; 
+  }
+  return title;
 }
 
 export const AppsBreadcrumb: React.FC<
