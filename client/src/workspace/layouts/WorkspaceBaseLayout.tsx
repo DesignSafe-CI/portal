@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Outlet, useLocation, useNavigation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigation } from 'react-router-dom';
 import { Layout } from 'antd';
 import { AppsSideNav, JobStatusNav, AppsBreadcrumb } from '@client/workspace';
 import styles from './layout.module.css';
