@@ -138,7 +138,7 @@ export const FileListingTable: React.FC<
       locale={{
         emptyText:
           isLoading || isFetchingNextPage ? (
-            <div>&nbsp;</div>
+            <div style={{ padding: '50px' }}>&nbsp;</div>
           ) : (
             <div>Placeholder for empty data.</div>
           ),

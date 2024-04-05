@@ -1,0 +1,24 @@
+<a class="c-app-card" href="{{app.href}}" style="width: 230px">
+    <h3 class="c-app-card__title"><i class="icon icon-hazmapper"></i> {{app.label}}</h3>
+
+    <p class="c-app-card__desc">{{app.description}}</p>
+
+    <ul class="c-app-card__types">
+        {% for tag in app.tags %}
+        <li>{{tag}}</li>
+        {% endfor %}
+    </ul>
+
+    <ul class="c-app-card__flags">
+        {% if app.is_popular %}
+        <li><strong>Popular</strong></li>
+        {% endif %}
+
+        {% if not app.is_popular and app.is_simcenter %}
+        <li>SimCenter</li>
+        {% endif %}
+
+
+        <li class="c-app-card__repo">{{app.license_type}}</li>
+    </ul>
+</a>

@@ -28,19 +28,20 @@ logger = logging.getLogger(__name__)
 TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}'
 ENTITY_TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}/#details-{entity_uuid}'
 FIELD_MAP = {
+    "designsafe.project.report": "reportsList",
     "designsafe.project.analysis": "analysisList",
     "designsafe.project.model_config": "modelConfigs",
     "designsafe.project.sensor_list": "sensorLists",
     "designsafe.project.event": "eventsList",
-    "designsafe.project.report": "reportsList",
     "designsafe.project.experiment": "experimentsList",
     "designsafe.project.simulation": "simulations",
+        "designsafe.project.simulation.report": "reports",
     "designsafe.project.simulation.model": "models",
     "designsafe.project.simulation.input": "inputs",
     "designsafe.project.simulation.output": "outputs",
     "designsafe.project.simulation.analysis": "analysiss",
-    "designsafe.project.simulation.report": "reports",
     "designsafe.project.hybrid_simulation": "hybrid_simulations",
+    "designsafe.project.hybrid_simulation.report": "reports",
     "designsafe.project.hybrid_simulation.global_model": "global_models",
     "designsafe.project.hybrid_simulation.coordinator": "coordinators",
     "designsafe.project.hybrid_simulation.sim_substructure": "sim_substructures",
@@ -49,13 +50,12 @@ FIELD_MAP = {
     "designsafe.project.hybrid_simulation.sim_output": "sim_outputs",
     "designsafe.project.hybrid_simulation.exp_output": "exp_outputs",
     "designsafe.project.hybrid_simulation.analysis": "analysiss",
-    "designsafe.project.hybrid_simulation.report": "reports",
+    "designsafe.project.field_recon.report": "reports",
     "designsafe.project.field_recon.mission": "missions",
     "designsafe.project.field_recon.collection": "collections",
     "designsafe.project.field_recon.social_science": "socialscience",
     "designsafe.project.field_recon.planning": "planning",
     "designsafe.project.field_recon.geoscience": "geoscience",
-    "designsafe.project.field_recon.report": "reports",
 }
 
 UNAMENDABLE_FIELDS = { # review

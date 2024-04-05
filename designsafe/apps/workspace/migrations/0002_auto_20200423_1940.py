@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='appdescription',
-            name='appDescription',
+            name='appdescription',
             field=models.TextField(help_text='App dropdown description text for apps that have a dropdown.'),
         ),
     ]

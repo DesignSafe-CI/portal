@@ -308,48 +308,34 @@ def profile_edit(request):
     pro_form = forms.ProfessionalProfileForm(request.POST or None, instance=ds_profile)
 
     if request.method == 'POST':
-        form = forms.UserProfileForm(request.POST, initial=tas_user)
-        if form.is_valid() and pro_form.is_valid():
-            existing_user = (tas.get_user(email=form.cleaned_data['email']))
-            if existing_user and (existing_user['email'] != tas_user['email']):
-                messages.error(request, 'The submitted email already exists! Your email has not been updated!')
-                return HttpResponseRedirect(reverse('designsafe_accounts:profile_edit'))
+        if pro_form.is_valid():
+
 
             pro_form.save()
 
-            data = form.cleaned_data
             pro_data = pro_form.cleaned_data
             # punt on PI Eligibility for now
-            data['piEligibility'] = tas_user['piEligibility']
 
             # retain original account source
-            data['source'] = tas_user['source']
-            saved_user = tas.save_user(tas_user['id'], data)
             messages.success(request, 'Your profile has been updated!')
 
             try:
                 ds_profile = user.profile
-                ds_profile.ethnicity = data['ethnicity']
-                ds_profile.gender = data['gender']
                 ds_profile.bio = pro_data['bio']
                 ds_profile.website = pro_data['website']
                 ds_profile.orcid_id = pro_data['orcid_id']
                 ds_profile.professional_level = pro_data['professional_level']
                 ds_profile.nh_interests_primary = pro_data['nh_interests_primary']
-                ds_profile.institution = saved_user.get('institution', None)
 
             except ObjectDoesNotExist as e:
                 logger.info('exception e: {} {}'.format(type(e), e ))
                 ds_profile = DesignSafeProfile(
                     user=user,
-                    ethnicity=data['ethnicity'],
-                    gender=data['gender'],
                     bio=pro_data['bio'],
                     website=pro_data['website'],
                     orcid_id=pro_data['orcid_id'],
                     professional_level=pro_data['professional_level'],
                     nh_interests_primary=pro_data['nh_interests_primary'],
-                    institution=saved_user.get('institution', None)
                     )
 
             ds_profile.update_required = False

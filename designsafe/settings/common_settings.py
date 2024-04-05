@@ -86,6 +86,7 @@ INSTALLED_APPS = (
     'designsafe.apps.api.notifications',
     'designsafe.apps.api.datafiles',
     'designsafe.apps.api.projects_v2',
+    'designsafe.apps.api.publications_v2',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -318,6 +319,9 @@ CMSPLUGIN_CASCADE = {
         'FormPlugin',
         'MeetingFormPlugin',
         'ResponsiveEmbedPlugin',
+        'AppCategoryListing',
+        'RelatedApps',
+        'AppVariants'
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = [

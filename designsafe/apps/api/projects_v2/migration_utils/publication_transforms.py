@@ -1,4 +1,5 @@
 """Utilities to convert published entitities to a consistent schema."""
+
 from pathlib import Path
 from typing import TypedDict
 from django.conf import settings
@@ -224,7 +225,7 @@ def update_file_objs(
         updated_file_objs.append(
             {**file_obj, "path": path_mapping[file_obj["path"]], "system": system_id}
         )
-    return updated_file_objs
+    return updated_file_objs, path_mapping
 
 
 def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
@@ -252,9 +253,13 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         entity["value"]["fileObjs"] = file_objs
         if entity["value"].get("fileTags", False):
             entity["value"]["fileTags"] = update_file_tag_paths(entity, base_path)
-        entity["value"]["fileObjs"] = update_file_objs(
+        new_file_objs, path_mapping = update_file_objs(
             entity, base_path, system_id=settings.PUBLISHED_SYSTEM
         )
 
+        entity["value"]["fileObjs"] = new_file_objs
+    else:
+        path_mapping = {}
+
     validated_model = model.model_validate(entity["value"])
-    return validated_model.model_dump()
+    return validated_model.model_dump(), path_mapping
