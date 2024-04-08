@@ -36,7 +36,3 @@
 )) {
     grid-area: "desc";
 }
-/* TODO: Consider making this a global change */
-.s-version-list .btn-success {
-    background-color: var(--accent, #47a59d);
-}
