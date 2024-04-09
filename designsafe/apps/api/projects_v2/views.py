@@ -4,6 +4,7 @@ import logging
 import json
 import networkx as nx
 from django.http import HttpRequest, JsonResponse
+from django.utils.decorators import method_decorator
 from django.db import models
 from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
@@ -21,6 +22,7 @@ from designsafe.apps.api.projects_v2.operations.project_publish_operations impor
     add_values_to_tree,
 )
 from designsafe.apps.api.projects_v2.schema_models.base import FileObj
+from designsafe.apps.api.decorators import tapis_jwt_login
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +31,7 @@ logger = logging.getLogger(__name__)
 class ProjectsView(BaseApiView):
     """View for listing and creating projects"""
 
+    @method_decorator(tapis_jwt_login)
     def get(self, request: HttpRequest):
         """Return the list of projects for a given user."""
         offset = int(request.GET.get("offset", 0))
@@ -56,6 +59,7 @@ class ProjectsView(BaseApiView):
 class ProjectInstanceView(BaseApiView):
     """View for listing/updating project entities."""
 
+    @method_decorator(tapis_jwt_login)
     def get(self, request: HttpRequest, project_id: str):
         """Return all project metadata for a project ID"""
         user = request.user
