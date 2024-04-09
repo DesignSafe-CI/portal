@@ -178,6 +178,12 @@ class AppVariant(models.Model):
         blank=True,
     )
 
+    description = models.TextField(
+        help_text="App variant description text for version overview.",
+        blank=True,
+        null=True,
+    )
+
     # Tapis Apps
     version = models.CharField(
         help_text="The version number of the app. The app id + version denotes a unique app.",
@@ -189,6 +195,14 @@ class AppVariant(models.Model):
     enabled = models.BooleanField(
         help_text="App variant visibility in app tray.", default=True
     )
+
+    @property
+    def href(self):
+        """Retrieve the app's URL in the Tools & Applications space"""
+        app_href = f"/rw/workspace/applications/{self.app_id}"
+        if self.version:
+            app_href += f"?version={self.version}"
+        return app_href
 
     def __str__(self):
         return f"{self.bundle.label} {self.app_id} {self.version}  ({'ENABLED' if self.enabled else 'DISABLED'})"
