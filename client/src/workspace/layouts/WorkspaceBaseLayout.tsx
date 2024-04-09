@@ -1,15 +1,17 @@
 import React from 'react';
-import { Outlet, useNavigation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
 import { AppsSideNav, JobStatusNav } from '@client/workspace';
+import { useAuthenticatedUser, useAppsListing } from '@client/hooks';
 import { Spinner } from '@client/common-components';
 
 const { Sider } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
-  const { state } = useNavigation();
+  const { user } = useAuthenticatedUser();
+  const { isLoading } = useAppsListing();
 
-  if (state === 'loading')
+  if (!user || isLoading)
     return (
       <Layout>
         <Spinner />

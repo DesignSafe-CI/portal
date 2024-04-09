@@ -30,13 +30,12 @@ async function getAppsListing({ signal }: { signal: AbortSignal }) {
   return res.data;
 }
 
-export const appsListingQuery = {
-  queryKey: ['workspace', 'appsListing'],
-  queryFn: getAppsListing,
-};
-
 function useAppsListing() {
-  return useQuery(appsListingQuery);
+  return useQuery({
+    queryKey: ['workspace', 'appsListing'],
+    queryFn: getAppsListing,
+    staleTime: 1000,
+  });
 }
 
 export default useAppsListing;

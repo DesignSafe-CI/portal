@@ -1,7 +1,7 @@
 import React from 'react';
-import { NavLink, useRouteLoaderData } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
-import { useAuthenticatedUser } from '@client/hooks';
+import { useAuthenticatedUser, useAppsListing } from '@client/hooks';
 import { AppCategories } from '@client/hooks';
 
 const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
@@ -19,7 +19,7 @@ const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
 
 export const AppsSideNav: React.FC = () => {
   const { user } = useAuthenticatedUser();
-  const data = useRouteLoaderData('root') as AppCategories;
+  const { data } = useAppsListing();
 
   return (
     <ul className={styles.navList}>

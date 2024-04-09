@@ -1,6 +1,6 @@
 import { AppsWizard, AppsSubmissionForm } from '@client/workspace';
 import { TAppParamsType, TAppResponse } from '@client/hooks';
-import { Layout, Form, List, message } from 'antd';
+import { Layout, Form, message } from 'antd';
 import React, { useState } from 'react';
 import styles from './layout.module.css';
 import { useParams, useLocation } from 'react-router-dom';

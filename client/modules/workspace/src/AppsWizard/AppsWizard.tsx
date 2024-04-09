@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import styles from './AppsWizard.module.css';
-import { Button, Form, Input, List, message, Steps, theme } from 'antd';
+// import styles from './AppsWizard.module.css';
+import { Button, Form, Input, theme } from 'antd';
 import { TAppResponse } from '@client/hooks';
 
 const steps = [
@@ -51,7 +51,7 @@ export const AppsWizard: React.FC<{ data: TAppResponse }> = ({ data }) => {
   }));
   const contentStyle = {
     lineHeight: '260px',
-    textAlign: 'center',
+    textAlign: 'center' as const,
     color: token.colorTextTertiary,
     backgroundColor: token.colorFillAlter,
     borderRadius: token.borderRadiusLG,
@@ -60,36 +60,33 @@ export const AppsWizard: React.FC<{ data: TAppResponse }> = ({ data }) => {
   };
 
   return (
-    <>
-      {data && (
-        <>
-          {/* <Steps current={current} items={items} /> */}
-          <div
+    data && (
+      <>
+        <div
+          style={{
+            marginTop: 24,
+          }}
+        >
+          <Button
             style={{
-              marginTop: 24,
+              margin: '0 8px',
             }}
+            onClick={() => prev()}
+            disabled={!(current > 0)}
           >
-            <Button
-              style={{
-                margin: '0 8px',
-              }}
-              onClick={() => prev()}
-              disabled={!(current > 0)}
-            >
-              Back
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => next()}
-              disabled={!(current < steps.length - 1)}
-            >
-              Continue
-            </Button>
-          </div>
-          <div style={contentStyle}>{steps[current].content}</div>
-          <div>{data.definition.notes.label || data.definition.id}</div>
-        </>
-      )}
-    </>
+            Back
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => next()}
+            disabled={!(current < steps.length - 1)}
+          >
+            Continue
+          </Button>
+        </div>
+        <div style={contentStyle}>{steps[current].content}</div>
+        <div>{data.definition.notes.label || data.definition.id}</div>
+      </>
+    )
   );
 };
