@@ -1,5 +1,5 @@
-import { Breadcrumb, BreadcrumbProps } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { Breadcrumb } from 'antd';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import styles from './AppsBreadcrumb.module.css';
 import { TAppParamsType, TAppResponse, useGetApps } from '@client/hooks';
@@ -15,10 +15,7 @@ function getPathRoutes(path: string = '') {
   }));
 }
 
-export const AppsBreadcrumb: React.FC<{
-  initialBreadcrumbs: { title: string; path: string }[];
-  path: string;
-} & BreadcrumbProps> = ({ initialBreadcrumbs, path, ...props }) => {
+export const AppsBreadcrumb: React.FC = () => {
   const [appData, setAppData] = useState<TAppResponse | null>(null);
   const { appId } = useParams() as TAppParamsType;
   const appVersion = new URLSearchParams(useLocation().search).get(
@@ -33,29 +30,43 @@ export const AppsBreadcrumb: React.FC<{
     }
   }, [data]);
 
-  const breadcrumbItems = [...initialBreadcrumbs, ...getPathRoutes(path)];
+  const { pathname } = useLocation();
+  const breadcrumbItems = [
+    { title: 'Home', path: window.location.origin },
+    { title: 'Use DesignSafe' },
+    { title: 'Tools & Applications', path: '/' },
+  ];
+
+  // Modify the path for Job Status
+  let modifiedPath = pathname;
+  if (pathname.endsWith('/history')) {
+    modifiedPath = 'Job Status';
+  } 
 
   return (
     <div className={styles.breadcrumbWrapper}>
-      {isLoading && <div>Loading...</div>}
-      {!isLoading && appData && (
+      {!isLoading && (
         <Breadcrumb
           className={styles.appsBreadcrumb}
-          items={breadcrumbItems}
+          items={[...breadcrumbItems, ...getPathRoutes(modifiedPath)]}
           itemRender={(obj) => {
             if (!obj.path) {
               return <span className="breadcrumb-text">{obj.title}</span>;
             }
-            const title = obj.title as string;
+            let title = obj.title;
+            if (appData && obj.title !== 'Home' && obj.title !== 'Tools & Applications' && obj.title !== 'Job Status') {
+              title = appData.definition.notes?.label || appData.definition.id || obj.title;
+            }
             return (
               <Link className="breadcrumb-link" to={obj.path}>
                 {title}
               </Link>
             );
           }}
-          {...props}
         />
       )}
     </div>
   );
 };
+
+export default AppsBreadcrumb;
