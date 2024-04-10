@@ -179,10 +179,15 @@ class AppsTrayView(AuthenticatedApiView):
         my_apps = list(
             map(
                 lambda app: {
+                    "app_id": app.id,
+                    "app_type": "tapis",
+                    "bundle_id": None,
+                    "bundle_label": None,
+                    "html": None,
+                    "icon": getattr(app.notes, "icon", None),
+                    "is_bundled": False,
                     "label": getattr(app.notes, "label", app.id),
                     "version": app.version,
-                    "type": "tapis",
-                    "appId": app.id,
                 },
                 apps_listing,
             )
