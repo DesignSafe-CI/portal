@@ -15,12 +15,10 @@ function getPathRoutes(path: string = '') {
   }));
 }
 
-export const AppsBreadcrumb: React.FC<
-  {
-    initialBreadcrumbs: { title: string; path: string }[];
-    path: string;
-  } & BreadcrumbProps
-> = ({ initialBreadcrumbs, path, ...props }) => {
+export const AppsBreadcrumb: React.FC<{
+  initialBreadcrumbs: { title: string; path: string }[];
+  path: string;
+} & BreadcrumbProps> = ({ initialBreadcrumbs, path, ...props }) => {
   const [appData, setAppData] = useState<TAppResponse | null>(null);
   const { appId } = useParams() as TAppParamsType;
   const appVersion = new URLSearchParams(useLocation().search).get(
@@ -28,7 +26,7 @@ export const AppsBreadcrumb: React.FC<
   ) as string | undefined;
 
   const { data, isLoading } = useGetApps({ appId, appVersion });
-  console.log(data);
+
   useEffect(() => {
     if (data) {
       setAppData(data);
@@ -51,12 +49,7 @@ export const AppsBreadcrumb: React.FC<
             const title = obj.title as string;
             return (
               <Link className="breadcrumb-link" to={obj.path}>
-                {data &&
-                data.definition &&
-                data.definition.notes &&
-                data.definition.notes.label
-                  ? data.definition.notes.label
-                  : title}
+                {title}
               </Link>
             );
           }}
