@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigation } from 'react-router-dom';
 import { Layout } from 'antd';
 import { AppsSideNav, JobStatusNav, AppsBreadcrumb } from '@client/workspace';
 import styles from './layout.module.css';
+import { useAuthenticatedUser, useAppsListing } from '@client/hooks';
 import { Spinner } from '@client/common-components';
 
 const { Sider } = Layout;
@@ -23,8 +24,10 @@ const WorkspaceRoot: React.FC = () => {
   const modifiedPath = pathname.endsWith('/history') ? 'Job Status' : pathname;
 
   const { state } = useNavigation();
+  const { user } = useAuthenticatedUser();
+  const { isLoading } = useAppsListing();
 
-  if (state === 'loading')
+  if (!user || isLoading)
     return (
       <Layout>
         <Spinner />

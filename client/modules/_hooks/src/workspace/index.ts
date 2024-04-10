@@ -1,6 +1,5 @@
 export {
   default as useAppsListing,
-  appsListingQuery,
   type AppCategories,
 } from './useAppsListing';
 export {
