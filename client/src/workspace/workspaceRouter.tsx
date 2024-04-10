@@ -13,18 +13,13 @@ const workspaceRouter = createBrowserRouter(
       element: <WorkspaceRoot />,
       children: [
         {
-          path: 'applications',
-          children: [
-            {
-              path: '',
-              element: <AppsPlaceholderLayout />,
-            },
-            {
-              id: 'app',
-              path: ':appId',
-              element: <AppsViewLayout />,
-            },
-          ],
+          path: '',
+          element: <AppsPlaceholderLayout />,
+        },
+        {
+          id: 'app',
+          path: ':appId',
+          element: <AppsViewLayout />,
         },
         {
           path: 'history',
