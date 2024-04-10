@@ -45,10 +45,7 @@ export const AppsWizard: React.FC<{ data: TAppResponse }> = ({ data }) => {
   const prev = () => {
     setCurrent(current - 1);
   };
-  const items = steps.map((item) => ({
-    key: item.title,
-    title: item.title,
-  }));
+
   const contentStyle = {
     lineHeight: '260px',
     textAlign: 'center' as const,
