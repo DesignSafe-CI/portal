@@ -22,7 +22,7 @@ const WorkspaceRoot: React.FC = () => {
   ];
   // Modify the path for Job Status
   let modifiedPath = pathname;
-  if (pathname.endsWith('/jobs/history')) {
+  if (pathname.endsWith('/history')) {
     modifiedPath = 'Job Status';
   } 
   // else if (pathname.includes('/applications')) {
