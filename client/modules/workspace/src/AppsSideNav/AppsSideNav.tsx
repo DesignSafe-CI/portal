@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
 import { useAuthenticatedUser, useAppsListing } from '@client/hooks';
-import { AppCategories } from '@client/hooks';
 
 const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   to,
@@ -33,7 +32,7 @@ export const AppsSideNav: React.FC = () => {
                   <AppsNavLink
                     key={`${app.app_id}-${app.version}`}
                     to={
-                      `applications/${app.app_id}` +
+                      `${app.app_id}` +
                       (app.version ? `?appVersion=${app.version}` : '')
                     }
                   >
