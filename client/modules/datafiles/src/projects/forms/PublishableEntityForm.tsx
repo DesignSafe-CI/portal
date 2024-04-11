@@ -512,7 +512,7 @@ export const PublishableEntityForm: React.FC<{
     <Form
       form={form}
       layout="vertical"
-      onFinish={(v) => console.log(v)}
+      onFinish={(v) => console.log(JSON.stringify(v))}
       requiredMark={customRequiredMark}
     >
       {projectType === 'experimental' && (

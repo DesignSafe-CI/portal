@@ -123,12 +123,12 @@ const datafilesRouter = createBrowserRouter(
           path: 'projects',
           children: [
             {
-              path: '',
-              element: <ProjectListingLayout />,
+              path: ':projectId/prepare-to-publish/:curationStep',
+              element: <ProjectPipelineLayout />,
             },
             {
-              path: ':projectId/prepare-to-publish',
-              element: <ProjectPipelineLayout />,
+              path: '',
+              element: <ProjectListingLayout />,
             },
             {
               path: ':projectId/preview',

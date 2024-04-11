@@ -144,6 +144,9 @@ def fix_authors(meta: ProjectMetadata):
             if author["authorship"] is True
         ]
 
+    if meta.value.get("projectType") == "other":
+        meta.value["authors"] = meta.value["users"]
+
     if meta.value.get("dataCollectors"):
         meta.value["dataCollectors"] = [
             get_complete_author(author)
@@ -153,6 +156,15 @@ def fix_authors(meta: ProjectMetadata):
     schema_model = SCHEMA_MAPPING[meta.name]
     schema_model.model_validate(meta.value)
     meta.save()
+
+
+def ingest_v2_projects():
+    """Perform a complete ingest of Tapis V2 projects into the db."""
+    ingest_base_projects()
+    ingest_sub_entities()
+    ingest_graphs()
+    for meta in ProjectMetadata.objects.exclude(name="designsafe.project.graph"):
+        fix_authors(meta)
 
 
 def ingest_publications():

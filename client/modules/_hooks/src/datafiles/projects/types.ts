@@ -91,11 +91,14 @@ export type TBaseProjectValue = {
   dois: string[];
   fileObjs: TFileObj[];
   fileTags: TFileTag[];
+
+  license?: string;
 };
 
 type TEntityValue = {
   title: string;
   description?: string;
+  projectId?: string;
   authors?: TProjectUser[];
   fileObjs?: TFileObj[];
   fileTags: TFileTag[];
