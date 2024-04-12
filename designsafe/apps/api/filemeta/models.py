@@ -6,8 +6,8 @@ class FileMetaModel(models.Model):
     system = models.CharField(max_length=255)
     path = models.CharField(max_length=4096)
     data = models.JSONField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = (('system', 'path'),)  # Enforces unique pairs of system and path and composite index
