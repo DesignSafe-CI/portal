@@ -8,12 +8,15 @@
     padding-bottom: unset;
     border-bottom: unset;
 }
-.s-version-list > * {
-    padding-block: 15px;
+.s-version-list > article {
+    padding-top: 30px;
     display: grid;
     grid-template-areas:
         "name link"
         "desc desc";
+}
+.s-version-list > article:not(:last-of-type) {
+    padding-bottom: 15px;
 }
 .s-version-list > *:not(:first-of-type) {
     border-top: 1px solid #333333;
@@ -37,4 +40,9 @@
     button:only-child
 )) {
     grid-area: desc;
+}
+
+/* Bootstrap */
+.s-version-list .btn {
+    padding-inline: 24px; /* double Bootstrap .btn padding */
 }
