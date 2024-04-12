@@ -96,7 +96,8 @@ export const PipelineSelectForPublish: React.FC<{
         }}
       >
         <NavLink to={`/projects/${projectId}/preview`}>
-          Back to Publication Preview
+          <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
+          Publication Preview
         </NavLink>
         <Button
           className="success-button"
