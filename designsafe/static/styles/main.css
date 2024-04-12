@@ -943,8 +943,6 @@ li .popover.right {
   flex-grow: 1;
   flex-shrink: 0;
   flex-basis: auto;
-
-  line-height: 1.8;
 }
 
 .o-site__body > .container-fluid {

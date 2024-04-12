@@ -9,10 +9,8 @@
     --accent: #47a59d;
 }
 
-
-
 /* ELEMENTS */
-/* FAQ: Each selector is prefixed with an extra-specific selector,
+/* FAQ: Each selector includes `.o-site` to be extra-specific,
         because on DesignSafe website <head> is beneath <body>(?!) */
 .o-site h1 {
     color: var(--accent, #47a59d);
@@ -32,4 +30,8 @@
 }
 .o-site h3:not(.s-version-list *):not(.c-app-card__title) {
     margin-top: 40px; /* double Bootstrap h3 margin-top */
+}
+
+p:where(.o-site__body *):not(.s-version-list *) {
+    line-height: 1.8;
 }
