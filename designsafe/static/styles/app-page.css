@@ -32,6 +32,6 @@
     margin-top: 40px; /* double Bootstrap h3 margin-top */
 }
 
-p:where(.o-site__body *):not(.s-version-list *) {
+p:where(.o-site__body *) {
     line-height: 1.8;
 }
