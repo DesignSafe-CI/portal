@@ -1,7 +1,12 @@
 import React from 'react';
 import { List, Descriptions, DescriptionsProps, Tag, Button } from 'antd';
 
-export const AppsSubmissionForm: React.FC<{ form: {} }> = ({ form }) => {
+export const AppsSubmissionForm: React.FC<{
+  canSubmit: boolean;
+  isSubmitting: boolean;
+  values: {};
+  handleSubmit;
+}> = ({ canSubmit, isSubmitting, values, handleSubmit }) => {
   const getChildren = (value) => {
     if (typeof value === 'object') {
       if (!Object.keys(value).length) return <span>-</span>;
@@ -34,25 +39,30 @@ export const AppsSubmissionForm: React.FC<{ form: {} }> = ({ form }) => {
   };
 
   return (
-    <form.Subscribe
-      selector={(state) => [state.canSubmit, state.isSubmitting, state.values]}
-      children={([canSubmit, isSubmitting, values]) => (
-        <Descriptions
-          bordered
-          size="small"
-          column={1}
-          title="Summary"
-          items={getItems(values)}
-          layout="vertical"
-          extra={
-            <>
-              <Button type="primary" htmlType="submit" disabled={!canSubmit}>
-                {isSubmitting ? '...' : 'Submit'}
-              </Button>
-            </>
-          }
-        />
-      )}
+    <Descriptions
+      bordered
+      size="small"
+      column={1}
+      title="Summary"
+      items={getItems(values)}
+      layout="vertical"
+      extra={
+        <>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={!canSubmit}
+            onClick={(e) => {
+              console.log('submitting');
+              e.preventDefault();
+              e.stopPropagation();
+              void handleSubmit();
+            }}
+          >
+            {isSubmitting ? '...' : 'Submit'}
+          </Button>
+        </>
+      }
     />
   );
 };
