@@ -30,6 +30,6 @@
     padding-bottom: 16px;
     border-bottom: 2px solid var(--accent, #47a59d);
 }
-.o-site h3:not(.s-version-list *) {
+.o-site h3:not(.s-version-list *):not(.c-app-card__title) {
     margin-top: 40px; /* double Bootstrap h3 margin-top */
 }
