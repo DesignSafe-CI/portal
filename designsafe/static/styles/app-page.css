@@ -1,7 +1,12 @@
 @import url("./app-card.css");
 @import url("./app-version-list.css");
 
-
+/* To make width of page content line up with width of header. */
+/* TODO: Verify whether this is safe to put into `main.css` */
+/* FAQ: The `main` makes selector win against `main.css` at bottom of page */
+main.o-site__body > .container-fluid {
+  margin: 0 50px;
+}
 
 /* SETTINGS */
 /* TODO: Consider making this a global setting */
