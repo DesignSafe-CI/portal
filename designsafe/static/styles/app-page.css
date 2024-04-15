@@ -17,6 +17,10 @@
     padding-bottom: 16px;
     border-bottom: 2px solid var(--ds-accent-color, #47a59d);
 }
-.s-app-page h3:not(.s-version-list *) {
+.s-app-page h3:not(.s-version-list *):not(.c-app-card__title) {
     margin-top: 40px; /* double Bootstrap h3 margin-top */
+}
+
+p:where(.s-app-page *) {
+    line-height: 1.8;
 }
