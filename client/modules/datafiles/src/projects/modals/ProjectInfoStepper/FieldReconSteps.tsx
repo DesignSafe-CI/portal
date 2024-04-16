@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { sensitiveDataContext } from './SensitiveDataContext';
+import { sensitiveDataContext } from './sensitiveDataContext';
 import { Radio } from 'antd';
 
 const FieldReconOverview1 = (
