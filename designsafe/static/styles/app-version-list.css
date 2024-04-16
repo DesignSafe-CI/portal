@@ -9,7 +9,6 @@
     border-bottom: unset;
 }
 .s-version-list > article {
-    padding-top: 30px;
     display: grid;
     grid-template-areas:
         "name link"
@@ -19,6 +18,7 @@
     padding-bottom: 15px;
 }
 .s-version-list > *:not(:first-of-type) {
+    padding-top: 30px;
     border-top: 1px solid #333333;
 }
 .s-version-list > * > h3 {
