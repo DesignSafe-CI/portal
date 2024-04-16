@@ -11,7 +11,8 @@
     color: var(--ds-accent-color, #47a59d);
 }
 .s-app-page h2 {
-    font-size: 2.0rem;
+    font-size: 2.5rem;
+    font-weight: 500; /* e.g. "medium" */
     text-transform: none;
 
     margin-bottom: 30px;
@@ -24,6 +25,7 @@
     border-bottom: 2px solid var(--ds-accent-color, #47a59d);
 }
 .s-app-page h3:not(.s-version-list *):not(.c-app-card__title) {
+    font-size: 1.8rem;
     margin-top: 40px; /* double Bootstrap h3 margin-top */
 }
 
