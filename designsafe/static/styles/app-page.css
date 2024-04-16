@@ -3,7 +3,7 @@
 
 /* To make width of page content line up with width of header. */
 /* TODO: Verify whether this is safe to put into `main.css` */
-.s-app-page .o-site__body > .container-fluid {
+.s-app-page > .container-fluid {
   margin: 0 50px;
 }
 
