@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Collapse } from 'antd';
+import { Menu } from 'antd';
 import { NavLink, useRouteLoaderData } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
 import { useAuthenticatedUser } from '@client/hooks';
@@ -10,37 +10,31 @@ const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   children,
 }) => {
   return (
-    <li>
+    <Menu.Item key={to}>
       <NavLink to={to} className={styles.navLink}>
         {children}
       </NavLink>
-    </li>
+    </Menu.Item>
   );
 };
-const { Panel } = Collapse;
 
 export const AppsSideNav: React.FC = () => {
   const { user } = useAuthenticatedUser();
   const data = useRouteLoaderData('root') as AppCategories;
   const [activeApp, setActiveApp] = useState<string | string[]>([]);
 
-  const toggle = (tab: string) => {
-    const newActiveKey = Array.isArray(tab) ? tab[0] : tab;
-    setActiveApp(prevActivePanel =>
-      prevActivePanel === newActiveKey
-        ? []
-        : [newActiveKey]
-    );
+  const toggle = (tab: any) => {
+    setActiveApp(tab.keyPath)
   };
 
   return (
-    <Collapse
-      accordion
-      activeKey={activeApp}
-      onChange={(key) => toggle(key)}
+    <Menu
+      mode="inline"
+      onClick={toggle}
+      selectedKeys={activeApp}
     >
       {user && data && data.categories.map((category) => (
-        <Panel header={category.title} key={category.title}>
+        <Menu.SubMenu key={category.title} title={category.title}>
           <ul>
             {category.apps.map((app) => (
               <AppsNavLink
@@ -54,8 +48,8 @@ export const AppsSideNav: React.FC = () => {
               </AppsNavLink>
             ))}
           </ul>
-        </Panel>
+        </Menu.SubMenu>
       ))}
-    </Collapse>
+    </Menu>
   );
 };
