@@ -25,6 +25,7 @@ Examples:
 from django.conf import settings
 from django.urls import include, re_path as url
 from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
 from django.views.generic import RedirectView, TemplateView
 from django.urls import reverse, path
@@ -171,4 +172,8 @@ urlpatterns = [
     url(r'^', include('cms.urls')),
 ]
 if settings.DEBUG:
-    urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # https://docs.djangoproject.com/en/4.2/howto/static-files/#serving-files-uploaded-by-a-user-during-development
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    # https://docs.djangoproject.com/en/4.2/ref/contrib/staticfiles/#static-file-development-view
+    urlpatterns += staticfiles_urlpatterns()
