@@ -21,7 +21,9 @@ class FileMetaView(AuthenticatedApiView):
         try:
             logger.debug(f"Get file metadata. system:{system_id} path:{path}")
             file_meta = FileMetaModel.objects.get(system=system_id, path=path)
-            result = file_meta.data
+            result = {"value": file_meta.value,
+                      "lastUpdated": file_meta.last_updated,
+                      "name": "designsafe.file"}
         except FileMetaModel.DoesNotExist:
             pass
 
@@ -36,7 +38,7 @@ class FileMetaView(AuthenticatedApiView):
             data = json.loads(request.body)
             FileMetaModel.objects.update_or_create(
                 system=system_id, path=path,
-                defaults={'data': data}
+                defaults={'value': data}
             )
             return JsonResponse({"result": "OK"})
         except Exception:
