@@ -1,4 +1,5 @@
 import pytest
+import json
 from django.test import Client
 from designsafe.apps.api.filemeta.models import FileMetaModel
 
@@ -29,19 +30,44 @@ def mock_access_failure(mocker):
 
 
 @pytest.mark.django_db
-def test_get_file_meta(client, authenticated_user, filemeta_mock, mock_access_success):
+def test_get_file_meta_unauthenticated(client, filemeta_mock, mock_access_success):
     system_id, path, file_meta = filemeta_mock
-    response = client.get(f'/api/filemeta/{system_id}/{path}/')
-    assert response.status_code == 200
-
-    json_response = response.json()
-    assert json_response["value"] == file_meta.value
-    assert json_response["name"] == "designsafe.file"
-    assert "lastUpdated" in json_response
+    response = client.get(f'/api/filemeta/{system_id}/{path}')
+    assert response.status_code == 401
 
 
 @pytest.mark.django_db
-def test_get_file_meta_no_access(client, authenticated_user, filemeta_mock, mock_access_failure):
+def test_get_file_meta(client, authenticated_user, filemeta_mock, mock_access_success):
     system_id, path, file_meta = filemeta_mock
-    response = client.get(f'/api/filemeta/{system_id}/{path}/')
+    response = client.get(f'/api/filemeta/{system_id}/{path}')
+    assert response.status_code == 200
+
+    assert response.json() == {"value": file_meta.value,
+                               "name": "designsafe.file",
+                               "lastUpdated": file_meta.last_updated.isoformat(timespec='milliseconds').replace('+00:00', 'Z')}
+
+
+@pytest.mark.django_db
+def test_update_file_meta_no_access(client, authenticated_user, filemeta_mock, mock_access_failure):
+    system_id, path, file_meta = filemeta_mock
+    response = client.post(f'/api/filemeta/{system_id}/{path}', data=json.dumps({"foo": "bar"}), content_type='application/json')
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_update_file_meta_unauthenticated(client, filemeta_mock, mock_access_success):
+    system_id, path, file_meta = filemeta_mock
+    response = client.post(f'/api/filemeta/{system_id}/{path}', data=json.dumps({"foo": "bar"}), content_type='application/json')
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
+def test_update_file_meta_existing(client, authenticated_user, filemeta_mock, mock_access_success):
+    system_id, path, _ = filemeta_mock
+    new_value = {'different_key': 'different_value'}
+
+    response = client.post(f'/api/filemeta/{system_id}/{path}', data=json.dumps(new_value), content_type='application/json')
+    assert response.status_code == 200
+
+    file_meta = FileMetaModel.objects.first()
+    assert file_meta.value == new_value
