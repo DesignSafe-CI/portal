@@ -89,3 +89,7 @@ a.c-app-card:active {
 .c-app-card__flags > *:has(strong) {
     background-color: #ECE4BF;
 }
+
+.c-app-card__repo {
+    font-style: italic;
+}
