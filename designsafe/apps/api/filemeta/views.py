@@ -1,16 +1,36 @@
 import logging
 import json
+import functools
 from django.http import JsonResponse, HttpRequest
+from designsafe.apps.api.datafiles.operations.agave_operations import listing
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.filemeta.models import FileMetaModel
 from designsafe.apps.api.views import AuthenticatedApiView
-from designsafe.apps.api.exceptions import ApiException
 
 
 logger = logging.getLogger(__name__)
 
+
+def check_access(view_func):
+    """ Decorator to check if user has access to set/get metadata """
+    @functools.wraps(view_func)
+    def wrapper(self, request, system_id, path, *args, **kwargs):
+        try:
+            # TODO_V3 update to use renamed (i.e. "tapis") client
+            # TODO_V3 consider if reading is enough for metadata write access
+            listing(request.user.agave_oauth.client, system_id, path)
+        except Exception as e:
+            logger.error(f"user cannot access any related metadata as listing failed for {system_id}/{path} with error {str(e)}.")
+            return JsonResponse({"message": "User forbidden to access metadata"}, status=403)
+
+        return view_func(self, request, system_id, path, *args, **kwargs)
+    return wrapper
+
+
 class FileMetaView(AuthenticatedApiView):
     """View for creating and getting file metadata"""
 
+    @check_access
     def get(self, request: HttpRequest, system_id:str, path: str):
         """Return metadata for system_id/path
 
@@ -30,7 +50,7 @@ class FileMetaView(AuthenticatedApiView):
         return JsonResponse(result,
                             safe=False)
 
-
+    @check_access
     def post(self, request: HttpRequest, system_id:str, path: str):
         """Create metadata for system_id/path."""
         try:
