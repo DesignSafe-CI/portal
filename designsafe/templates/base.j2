@@ -68,7 +68,7 @@
       <meta name="DC.type" content="dataset">
       {% endblock %}
   </head>
-  <body ng-app="designsafe.portal" class="o-site">
+  <body ng-app="designsafe.portal" class="o-site {% block page_class %}{% endblock page_class %}">
     {% cms_toolbar %}
     <div>
         {% include 'includes/header.html' %}
