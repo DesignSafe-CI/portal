@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse, HttpResponseForbidden
+from django.http.response import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.generic import View
 from requests.exceptions import ConnectionError, HTTPError
 from .exceptions import ApiException
