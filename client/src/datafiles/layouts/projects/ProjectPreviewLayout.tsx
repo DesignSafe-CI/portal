@@ -19,7 +19,13 @@ export const ProjectPreviewLayout: React.FC = () => {
     <div style={{ flex: 1 }}>
       <ProjectTitleHeader projectId={projectId} />
       <BaseProjectDetails projectValue={data.baseProject.value} />
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: "10px" }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '10px',
+        }}
+      >
         <ProjectNavbar projectId={projectId} />
         <NavLink to={`/projects/${projectId}/prepare-to-publish/start`}>
           <Button type="primary" className="success-button">
