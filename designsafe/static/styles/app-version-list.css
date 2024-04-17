@@ -1,0 +1,52 @@
+.s-version-list {
+    background-color: #F4F4F4;
+    padding: 20px;
+}
+.s-version-list > h2 {
+    color: inherit;
+    margin-top: unset;
+    padding-bottom: unset;
+    border-bottom: unset;
+}
+.s-version-list > article {
+    padding-top: 30px;
+    display: grid;
+    grid-template-areas:
+        "name link"
+        "desc desc";
+}
+.s-version-list > article:not(:last-of-type) {
+    padding-bottom: 15px;
+}
+.s-version-list > *:not(:first-of-type) {
+    border-top: 1px solid #333333;
+}
+.s-version-list > * > h3 {
+    grid-area: name;
+    font-size: 1.6rem;
+    font-weight: 500; /* e.g. "medium", Core-Styles `var(--medium)` */
+    margin-top: 0;
+
+    /* To center align text vertically (compared to button) */
+    display: grid;
+    align-content: center;
+}
+/* FAQ: CMS forces a button or link on its own line to be in a paragraph */
+.s-version-list > * > p:has(
+    a:only-child,
+    button:only-child
+) {
+    grid-area: link;
+    justify-self: end;
+}
+.s-version-list > * > p:not(:has(
+    a:only-child,
+    button:only-child
+)) {
+    grid-area: desc;
+}
+
+/* Bootstrap */
+.s-version-list .btn {
+    padding-inline: 24px; /* double Bootstrap .btn padding */
+}
