@@ -1,9 +1,11 @@
+"""File Meta model"""
+
 from django.db import models
-from django.contrib.postgres.fields import JSONField
 from django.utils import timezone
 
 
 class FileMetaModel(models.Model):
+    """Model for File Meta"""
     system = models.CharField(max_length=255)
     path = models.CharField(max_length=4096)
     value = models.JSONField()

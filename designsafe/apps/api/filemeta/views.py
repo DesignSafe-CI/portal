@@ -1,3 +1,4 @@
+"""File Meta view"""
 import logging
 import json
 import functools
@@ -19,8 +20,9 @@ def check_access(view_func):
             # TODO_V3 update to use renamed (i.e. "tapis") client
             # TODO_V3 consider if reading is enough for metadata write access
             listing(request.user.agave_oauth.client, system_id, path)
-        except Exception as e:
-            logger.error(f"user cannot access any related metadata as listing failed for {system_id}/{path} with error {str(e)}.")
+        # pylint:disable=broad-exception-caught
+        except Exception as exc:
+            logger.error(f"user cannot access any related metadata as listing failed for {system_id}/{path} with error {str(exc)}.")
             return JsonResponse({"message": "User forbidden to access metadata"}, status=403)
 
         return view_func(self, request, system_id, path, *args, **kwargs)
@@ -61,8 +63,8 @@ class FileMetaView(AuthenticatedApiView):
                 defaults={'value': data}
             )
             return JsonResponse({"result": "OK"})
-        except Exception:
+        except Exception as exc:
             logger.exception(f"Unable to create or update file metadata: {system_id}/{path}")
             raise ApiException(
                 "Unable to create or update file metadata", status=500
-            )
+            ) from exc
