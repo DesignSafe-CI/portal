@@ -40,7 +40,6 @@ class Experiment(MetadataModel):
         Optional[DropdownValue],
         BeforeValidator(lambda v: handle_dropdown_value(v, FACILITY_OPTIONS)),
         Field(
-            exclude=True,
             validation_alias=AliasChoices("facility", "experimentalFacility"),
         ),
     ] = None

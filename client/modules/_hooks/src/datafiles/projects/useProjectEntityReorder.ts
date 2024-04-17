@@ -19,7 +19,7 @@ export function useProjectEntityReorder(projectId: string, nodeId: string) {
     mutationFn: ({ order }: { order: number }) =>
       reorderEntitity(projectId, nodeId, order),
     onSuccess: () =>
-      queryClient.invalidateQueries({
+      queryClient.refetchQueries({
         queryKey: ['datafiles', 'projects', 'detail', projectId],
       }),
   });
