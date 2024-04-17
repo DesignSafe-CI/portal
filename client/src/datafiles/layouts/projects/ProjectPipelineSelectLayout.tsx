@@ -1,6 +1,5 @@
 import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
-import { ProjectPipeline } from '@client/datafiles';
 
 export const ProjectPipelineSelectLayout: React.FC = () => {
   const { projectId } = useParams();
