@@ -20,6 +20,7 @@ import { ProjectListingLayout } from './layouts/projects/ProjectListingLayout';
 import { ProjectPipelineLayout } from './layouts/projects/ProjectPipelineLayout';
 import { ProjectCurationLayout } from './layouts/projects/ProjectCurationLayout';
 import { ProjectWorkdirLayout } from './layouts/projects/ProjectWorkdirLayout';
+import { ProjectPipelineSelectLayout } from './layouts/projects/ProjectPipelineSelectLayout';
 
 const NavigateToUrlSafePath: React.FC<NavigateProps & { to: string }> = ({
   to,
@@ -123,7 +124,11 @@ const datafilesRouter = createBrowserRouter(
           path: 'projects',
           children: [
             {
-              path: ':projectId/prepare-to-publish/:curationStep',
+              path: ':projectId/prepare-to-publish/start',
+              element: <ProjectPipelineSelectLayout />,
+            },
+            {
+              path: ':projectId/prepare-to-publish/pipeline',
               element: <ProjectPipelineLayout />,
             },
             {
