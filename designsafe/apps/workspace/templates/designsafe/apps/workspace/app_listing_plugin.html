@@ -1,5 +1,5 @@
 <h2>{{instance.app_category}}</h2>
-<section style="display:flex; gap:30px; flex-wrap: wrap">
+<section class="u-app-card-grid">
     {% for app in listing %}
     {% include "designsafe/apps/workspace/app_card.html" with app=app %}
     {% endfor %}
