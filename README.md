@@ -106,8 +106,8 @@ Every file needed is in `conf/nginx/certs`.
 1. Open mac's Keychain Access
 2. File > Import Items
 3. Navigate to `$PROJECT/conf/nginx/certificates`
-4. Select `ca.pem`
-5. Search for designsafe and double click on Designsafe CA
+4. Select `designsafe.dev.crt`
+5. Search for designsafe and double click on Designsafe.dev
 6. Click on Trust and select "Trust Always"
 7. Close the window to save.
 
