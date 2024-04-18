@@ -51,6 +51,9 @@
     grid-area: link;
     justify-self: end;
 }
+.s-version-list > article > a {
+    margin-bottom: 10px; /* mimics Bootstrap `p { margin: 0 0 10px; }` */
+}
 .s-version-list > * > p:only-of-type,
 /* To support manual content via CMS */
 /* FAQ: CMS forces a button or link on its own line to be in a paragraph */
