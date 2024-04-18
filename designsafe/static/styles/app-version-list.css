@@ -1,27 +1,38 @@
+/* FAQ: Relies on markup, so CMS can replicate the design */
+
+/* Container */
 .s-version-list {
     background-color: #F4F4F4;
     padding: 20px;
 }
+
+/* List Title */
 .s-version-list > h2 {
     color: inherit;
     margin-top: unset;
     padding-bottom: unset;
     border-bottom: unset;
 }
+
+/* Version Content Layout */
 .s-version-list > article {
     display: grid;
     grid-template-areas:
         "name link"
         "desc desc";
 }
+
+/* Space & Lines Between Versions */
 .s-version-list > article:not(:last-of-type) {
     padding-bottom: 15px;
 }
-.s-version-list > *:not(:first-of-type) {
+.s-version-list > article:not(:first-of-type) {
     padding-top: 30px;
     border-top: 1px solid #333333;
 }
-.s-version-list > * > h3 {
+
+/* Version Label */
+.s-version-list > article > h3 {
     grid-area: name;
     font-size: 1.6rem;
     font-weight: 500; /* e.g. "medium", Core-Styles `var(--medium)` */
@@ -31,18 +42,19 @@
     display: grid;
     align-content: center;
 }
+
+/* Version Link */
+.s-version-list > article > a,
+/* To support manual content via CMS */
 /* FAQ: CMS forces a button or link on its own line to be in a paragraph */
-.s-version-list > * > p:has(
-    a:only-child,
-    button:only-child
-) {
+.s-version-list > * > p:has(a:only-child) {
     grid-area: link;
     justify-self: end;
 }
-.s-version-list > * > p:not(:has(
-    a:only-child,
-    button:only-child
-)) {
+.s-version-list > * > p:not(:has(a:only-child)),
+/* To support manual content via CMS */
+/* FAQ: CMS forces a button or link on its own line to be in a paragraph */
+.s-version-list > * > p:not(:has(a:only-child)) {
     grid-area: desc;
 }
 
