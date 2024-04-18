@@ -1,15 +1,10 @@
-<section style="background-color: #f4f4f4; padding: 25px;">
-    <h3>Select a Version</h3>
+<section class="s-version-list">
+    <h2>Select a Version</h2>
     {% for variant in listing %}
     <article>
-        <div style="display:flex; align-items: center; justify-content: space-between;">
-            <h4>{{variant.label}}</h4>
-            <a href="{{variant.href}}"><button class="btn btn-success">Get Started</button></a>
-        </div>
+        <h3>{{variant.label}}</h3>
+        <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
         <p>{{variant.description}}</p>
-        {% if listing.count > forloop.counter %}
-        <hr />
-        {% endif %}
     </article>
     {% endfor %}
 </section>
