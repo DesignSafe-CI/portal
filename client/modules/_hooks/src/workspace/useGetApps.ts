@@ -38,6 +38,7 @@ function useGetApps(queryParams: TAppParamsType) {
   return useQuery({
     queryKey: ['workspace', 'getApps', queryParams],
     queryFn: ({ signal }) => getApps({ signal }, queryParams),
+    staleTime: 1000,
   });
 }
 

@@ -1,10 +1,9 @@
 import { Modal, Spin } from 'antd';
 import { useGetJobs } from '@client/hooks';
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './JobsDetailModal.module.css';
 import { TJob } from '@client/hooks';
-
 
 export const JobsDetailModalBody: React.FC<{
   isOpen: boolean;
@@ -30,13 +29,11 @@ export const JobsDetailModalBody: React.FC<{
   );
 };
 
-export const JobsDetailModal: React.FC<{
-}> = () => {
+export const JobsDetailModal: React.FC<{}> = () => {
   type JobsDetailModalParams = {
-    uuid: string
-  }
+    uuid: string;
+  };
   const { uuid } = useParams<JobsDetailModalParams>() as JobsDetailModalParams;
-
 
   return (
     <>

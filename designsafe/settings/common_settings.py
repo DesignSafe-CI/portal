@@ -307,6 +307,7 @@ CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
+    ('cms_page_for_app.html', 'Main Site App Page'),
     ('cms_page_no_footer.html', 'Footerless Page'),
 )
 CMSPLUGIN_CASCADE = {
@@ -317,6 +318,9 @@ CMSPLUGIN_CASCADE = {
         'FormPlugin',
         'MeetingFormPlugin',
         'ResponsiveEmbedPlugin',
+        'AppCategoryListing',
+        'RelatedApps',
+        'AppVariants'
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = [

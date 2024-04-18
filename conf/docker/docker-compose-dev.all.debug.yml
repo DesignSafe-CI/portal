@@ -91,7 +91,7 @@ services:
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver --noasgi 0.0.0.0:8000
     container_name: des_django
     hostname: des_django
 

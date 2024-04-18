@@ -1,13 +1,12 @@
 import { Layout } from 'antd';
 import React from 'react';
 import styles from './layout.module.css';
-import { AppCategories } from '@client/hooks';
-import { useRouteLoaderData } from 'react-router-dom';
+import { useAppsListing } from '@client/hooks';
 
 export const AppsPlaceholderLayout: React.FC = () => {
-  const { categories } = useRouteLoaderData('root') as AppCategories;
+  const { data } = useAppsListing();
 
-  const hasApps = categories?.length > 0;
+  const hasApps = data && data.categories.length > 0;
 
   return (
     <Layout style={{ gap: '5px', minWidth: '500px' }}>
