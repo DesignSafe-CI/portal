@@ -37,6 +37,7 @@ def check_access(request, system_id: str, path: str, check_for_writable_access=F
         raise ApiException("User forbidden to access metadata", status=403) from exc
 
 
+# TODO_V3 update to allow JWT access DES-2706: https://github.com/DesignSafe-CI/portal/pull/1192
 class FileMetaView(AuthenticatedApiView):
     """View for creating and getting file metadata"""
 
@@ -64,6 +65,7 @@ class FileMetaView(AuthenticatedApiView):
         return JsonResponse(result, safe=False)
 
 
+# TODO_V3 update to allow JWT access DES-2706: https://github.com/DesignSafe-CI/portal/pull/1192
 class CreateFileMetaView(AuthenticatedApiView):
     """View for creating (and updating) file metadata"""
 
