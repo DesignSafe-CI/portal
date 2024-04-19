@@ -18,14 +18,14 @@
 
     margin-bottom: 30px;
 }
-.s-app-page h2:not(.s-version-list *) {
+.s-app-page h2:not(.s-app-version-list *) {
     color: var(--ds-accent-color, #47a59d);
 
     margin-top: 40px;
     padding-bottom: 16px;
     border-bottom: 2px solid var(--ds-accent-color, #47a59d);
 }
-.s-app-page h3:not(.s-version-list *):not(.c-app-card__title) {
+.s-app-page h3:not(.s-app-version-list *):not(.c-app-card__title) {
     font-size: 1.8rem;
     margin-top: 40px; /* double Bootstrap h3 margin-top */
 }
