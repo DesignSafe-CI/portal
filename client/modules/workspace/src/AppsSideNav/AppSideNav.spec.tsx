@@ -9,7 +9,7 @@ describe('AppsSideNav', () => {
   });
 
   it('should have nav text', () => {
-    const { getByText } = render(<AppsSideNav />);
-    expect(getByText(/Applications:/gi)).toBeTruthy();
+    const { getAllByText } = render(<AppsSideNav />);
+    expect(getAllByText(/Applications:/gi)).toBeTruthy();
   });
 });
