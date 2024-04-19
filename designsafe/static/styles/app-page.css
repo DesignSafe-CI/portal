@@ -30,7 +30,7 @@
     margin-top: 40px; /* double Bootstrap h3 margin-top */
 }
 
-p:where(.s-app-page *) {
+.s-app-page p {
     line-height: 1.8;
 }
 
