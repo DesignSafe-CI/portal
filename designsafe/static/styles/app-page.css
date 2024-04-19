@@ -32,3 +32,14 @@
 p:where(.s-app-page *) {
     line-height: 1.8;
 }
+
+/* Add more space between Bootstrap columns */
+/* HACK: Overwrite Bootstrap grid */
+.s-app-page [class*="col-"] {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.s-app-page .row {
+    margin-left: -30px;
+    margin-right: -30px;
+}
