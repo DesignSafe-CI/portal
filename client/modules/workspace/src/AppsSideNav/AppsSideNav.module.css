@@ -15,9 +15,9 @@ a.navLink {
 }
 a.navLink > div {
   background-color: var(--nav-link-bg-color--unselected);
-  height: 40px;
-  line-height: 40px;
-
+  height: 50;
+  line-height: 100%;
+  white-space: wrap;
   border-left: 5px solid var(--nav-link-bg-color--unselected);
   padding-left: 10px;
   padding-right: 15px;
@@ -36,6 +36,5 @@ a.navLink:not(:global(.active)):hover > div {
 
 .navList {
   border: '1px solid #e3e3e3';
-  list-style-type: 'none';
   padding-left: '0px';
 }
