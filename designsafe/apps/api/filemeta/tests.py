@@ -1,18 +1,23 @@
 import pytest
 import json
+from django.db import IntegrityError
 from django.test import Client
 from designsafe.apps.api.filemeta.models import FileMetaModel
 
 
 @pytest.fixture
-def filemeta_mock():
-    system_id = "test_system"
-    path = "/test/path"
-    value = {"some_key": "some_value"}
-    file_meta, _created = FileMetaModel.objects.update_or_create(
-        system=system_id, path=path, defaults={"value": value}
-    )
-    return system_id, path, file_meta
+def filemeta_value_mock():
+    value = {"system": "project-1234", "path": "/test/path.txt"}
+    return value
+
+
+@pytest.fixture
+def filemeta_db_mock(filemeta_value_mock):
+    system_id = filemeta_value_mock["system"]
+    path = filemeta_value_mock["path"]
+    value = filemeta_value_mock
+    file_meta_obj = FileMetaModel.objects.create(value=value)
+    return system_id, path, file_meta_obj
 
 
 @pytest.fixture
@@ -31,15 +36,25 @@ def mock_access_failure(mocker):
 
 
 @pytest.mark.django_db
-def test_get_file_meta_unauthenticated(client, filemeta_mock, mock_access_success):
-    system_id, path, file_meta = filemeta_mock
+def test_database_constraint(filemeta_value_mock):
+    FileMetaModel.objects.create(value=filemeta_value_mock)
+    with pytest.raises(IntegrityError) as excinfo:
+        FileMetaModel.objects.create(value=filemeta_value_mock)
+        assert "Unique" in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_get_file_meta_unauthenticated(client, filemeta_db_mock, mock_access_success):
+    system_id, path, file_meta = filemeta_db_mock
     response = client.get(f"/api/filemeta/{system_id}/{path}")
     assert response.status_code == 401
 
 
 @pytest.mark.django_db
-def test_get_file_meta(client, authenticated_user, filemeta_mock, mock_access_success):
-    system_id, path, file_meta = filemeta_mock
+def test_get_file_meta(
+    client, authenticated_user, filemeta_db_mock, mock_access_success
+):
+    system_id, path, file_meta = filemeta_db_mock
     response = client.get(f"/api/filemeta/{system_id}/{path}")
     assert response.status_code == 200
 
@@ -53,42 +68,76 @@ def test_get_file_meta(client, authenticated_user, filemeta_mock, mock_access_su
 
 
 @pytest.mark.django_db
-def test_update_file_meta_no_access(
-    client, authenticated_user, filemeta_mock, mock_access_failure
+def test_create_file_meta_no_access(
+    client, authenticated_user, filemeta_value_mock, mock_access_failure
 ):
-    system_id, path, file_meta = filemeta_mock
     response = client.post(
-        f"/api/filemeta/{system_id}/{path}",
-        data=json.dumps({"foo": "bar"}),
+        "/api/filemeta/",
+        data=json.dumps(filemeta_value_mock),
         content_type="application/json",
     )
     assert response.status_code == 403
 
 
 @pytest.mark.django_db
-def test_update_file_meta_unauthenticated(client, filemeta_mock, mock_access_success):
-    system_id, path, file_meta = filemeta_mock
+def test_create_file_meta_unauthenticated(client, filemeta_value_mock):
     response = client.post(
-        f"/api/filemeta/{system_id}/{path}",
-        data=json.dumps({"foo": "bar"}),
+        "/api/filemeta/",
+        data=json.dumps(filemeta_value_mock),
         content_type="application/json",
     )
     assert response.status_code == 401
 
 
 @pytest.mark.django_db
-def test_update_file_meta_existing(
-    client, authenticated_user, filemeta_mock, mock_access_success
+def test_create_file_meta(
+    client, authenticated_user, filemeta_value_mock, mock_access_success
 ):
-    system_id, path, _ = filemeta_mock
-    new_value = {"different_key": "different_value"}
-
     response = client.post(
-        f"/api/filemeta/{system_id}/{path}",
-        data=json.dumps(new_value),
+        "/api/filemeta/",
+        data=json.dumps(filemeta_value_mock),
         content_type="application/json",
     )
     assert response.status_code == 200
 
     file_meta = FileMetaModel.objects.first()
-    assert file_meta.value == new_value
+    assert file_meta.value == filemeta_value_mock
+
+
+@pytest.mark.django_db
+def test_create_file_meta_update_existing_entry(
+    client,
+    authenticated_user,
+    filemeta_db_mock,
+    filemeta_value_mock,
+    mock_access_success,
+):
+    updated_value = {**filemeta_value_mock, "new_key": "new_value"}
+
+    response = client.post(
+        "/api/filemeta/",
+        data=json.dumps(updated_value),
+        content_type="application/json",
+    )
+    assert response.status_code == 200
+
+    file_meta = FileMetaModel.objects.first()
+    assert file_meta.value == updated_value
+
+
+@pytest.mark.django_db
+def test_create_file_metadata_missing_system_or_path(
+    client,
+    authenticated_user,
+    filemeta_db_mock,
+    filemeta_value_mock,
+    mock_access_success,
+):
+    value_missing_system_path = {"foo": "bar"}
+
+    response = client.post(
+        "/api/filemeta/",
+        data=json.dumps(value_missing_system_path),
+        content_type="application/json",
+    )
+    assert response.status_code == 400
