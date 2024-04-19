@@ -1,0 +1,12 @@
+.o-app-grid {
+    display: grid;
+    gap: 30px; /* mimics Bootstrap's gap */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    justify-content: flex-start;
+
+    margin-bottom: 40px;
+}
+.o-app-grid > * {
+    min-height: 230px;
+    max-width: 350px;
+}

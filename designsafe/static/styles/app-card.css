@@ -5,13 +5,6 @@
 
 
 
-/* Card */
-/* To stretch card to fill column height */
-[class^="col-"] .c-app-card {
-    height: 100%;
-    min-height: 230px;
-}
-
 /* Title */
 .c-app-card__title {
     margin-top: 1em;
