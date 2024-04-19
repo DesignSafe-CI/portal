@@ -1,3 +1,11 @@
+{% load cms_tags static sekizai_tags %}
+
+{% block styles %}
+    {% addtoblock "css" %}
+    <link href="{% static 'workspace/css/app-version-list.css' %}" rel="stylesheet" />
+    {% endaddtoblock %}
+{% endblock %}
+
 <section class="s-app-version-list">
     <h2>Select a Version</h2>
     {% for variant in listing %}
