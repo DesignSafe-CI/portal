@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../apiClient';
-import { TBaseProject, TEntityMeta, TFileTag } from './types';
+import { TBaseProject, TEntityMeta, TFileTag, TTreeData } from './types';
 import { useMemo } from 'react';
 
 type TProjectDetailResponse = {
   baseProject: TBaseProject;
   entities: TEntityMeta[];
-  tree: unknown;
+  tree: TTreeData;
 };
 
 async function getProjectDetail({

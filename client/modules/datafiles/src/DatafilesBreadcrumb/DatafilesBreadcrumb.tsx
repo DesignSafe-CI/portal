@@ -36,6 +36,7 @@ export const DatafilesBreadcrumb: React.FC<
     baseRoute: string;
     systemRoot: string;
     systemRootAlias?: string;
+    skipBreadcrumbs?: number; // Number of path elements to skip when generating breadcrumbs
   } & BreadcrumbProps
 > = ({
   initialBreadcrumbs,
@@ -43,11 +44,14 @@ export const DatafilesBreadcrumb: React.FC<
   baseRoute,
   systemRoot,
   systemRootAlias,
+  skipBreadcrumbs,
   ...props
 }) => {
   const breadcrumbItems = [
     ...initialBreadcrumbs,
-    ...getPathRoutes(baseRoute, path, systemRoot, systemRootAlias),
+    ...getPathRoutes(baseRoute, path, systemRoot, systemRootAlias).slice(
+      skipBreadcrumbs ?? 0
+    ),
   ];
 
   return (

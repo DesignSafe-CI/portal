@@ -1,16 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import {
   TPipelineValidationResult,
+  TPreviewTreeData,
   useProjectPreview,
   useValidateEntitySelection,
 } from '@client/hooks';
 import { Alert, Button } from 'antd';
 import { DISPLAY_NAMES } from '../constants';
 import { NavLink, useSearchParams } from 'react-router-dom';
-import {
-  TTreeData,
-  PublishedEntityDisplay,
-} from '../ProjectPreview/ProjectPreview';
+import { PublishedEntityDisplay } from '../ProjectPreview/ProjectPreview';
 
 const PipelineValidationAlert: React.FC<{
   validationErrors: TPipelineValidationResult[] | undefined;
@@ -46,7 +44,7 @@ export const PipelineSelectForPublish: React.FC<{
   nextStep: () => void;
 }> = ({ projectId, nextStep }) => {
   const { data } = useProjectPreview(projectId ?? '');
-  const { children } = (data?.tree ?? { children: [] }) as TTreeData;
+  const { children } = (data?.tree ?? { children: [] }) as TPreviewTreeData;
   const { mutateAsync } = useValidateEntitySelection();
   const [validationErrors, setValidationErrors] = useState<
     TPipelineValidationResult[] | undefined
@@ -128,6 +126,7 @@ export const PipelineSelectForPublish: React.FC<{
               ></i>
             )}
             <PublishedEntityDisplay
+              preview
               projectId={projectId}
               treeData={child}
               defaultOpen={false}

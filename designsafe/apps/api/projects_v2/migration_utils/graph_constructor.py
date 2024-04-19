@@ -246,7 +246,8 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
     construct_graph_recurse(pub_graph, entity_listing, root_entity, root_node_id)
 
     pub_graph.nodes["NODE_ROOT"]["basePath"] = f"/{project_id}"
-    pub_graph = construct_entity_filepaths(entity_listing, pub_graph, version)
+    # pub_graph = construct_entity_filepaths(entity_listing, pub_graph, version)
+    pub_graph = construct_entity_filepaths_legacy(pub_graph, version)
 
     return pub_graph
 
@@ -280,6 +281,22 @@ def construct_entity_filepaths(
             child_path = Path(parent_base_path) / entity_dirname
 
         pub_graph.nodes[child_node]["basePath"] = str(child_path)
+    return pub_graph
+
+
+def construct_entity_filepaths_legacy(
+    pub_graph: nx.DiGraph, version: Optional[int] = None
+):
+    """
+    Walk the publication graph and construct base file paths for each node.
+    This reproduces legacy file paths where the project directory has been directly
+    copied into the designsafe.storage.published root without preserving tree structure.
+    """
+    base_path = pub_graph.nodes["NODE_ROOT"]["basePath"]
+    if version and version > 1:
+        base_path = f"{base_path}v{version}"
+    for node in pub_graph:
+        pub_graph.nodes[node]["basePath"] = base_path
     return pub_graph
 
 
@@ -317,7 +334,10 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
         )
         if not node_entity:
             continue
-        data_path = str(Path(node_data["basePath"]) / "data")
+        # tree-based data paths TBD
+        # data_path = str(Path(node_data["basePath"]) / "data")
+        data_path = node_data["basePath"]
+
         new_entity_value, path_mapping = transform_entity(
             node_entity, base_pub_meta, data_path
         )

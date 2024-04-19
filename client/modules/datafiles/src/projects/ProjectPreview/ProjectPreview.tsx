@@ -1,28 +1,57 @@
-import React, { useMemo, useState } from 'react';
-import { useProjectPreview, usePublicationDetail } from '@client/hooks';
-import { Collapse } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  TPreviewTreeData,
+  useProjectPreview,
+  usePublicationDetail,
+  useSelectedFiles,
+} from '@client/hooks';
+import { Button, Collapse } from 'antd';
 import styles from './ProjectPreview.module.css';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
-import { ProjectCitation } from '../ProjectCitation/ProjectCitation';
+import {
+  ProjectCitation,
+  PublishedCitation,
+} from '../ProjectCitation/ProjectCitation';
+import {
+  FileListingTable,
+  TFileListingColumns,
+} from '../../FileListing/FileListingTable/FileListingTable';
+import { NavLink } from 'react-router-dom';
 
-export type TTreeData = {
-  name: string;
-  id: string;
-  uuid: string;
-  value: {
-    title: string;
-    description: string;
-  };
-  order: number;
-  children: TTreeData[];
-};
+const columns: TFileListingColumns = [
+  {
+    title: 'File Name',
+    dataIndex: 'name',
+    ellipsis: true,
+    render: (data, record) =>
+      record.type === 'dir' ? (
+        <NavLink
+          className="listing-nav-link"
+          to={`./${encodeURIComponent(record.path)}`}
+          replace={false}
+        >
+          <i role="none" style={{ color: '#333333' }} className="fa fa-folder">
+            &nbsp;&nbsp;
+          </i>
+          {data}
+        </NavLink>
+      ) : (
+        <Button type="link">
+          <i role="none" style={{ color: '#333333' }} className="fa fa-file-o">
+            &nbsp;&nbsp;
+          </i>
+          {data}
+        </Button>
+      ),
+  },
+];
 
 function RecursiveTree({
   treeData,
   defaultOpen = false,
 }: {
-  treeData: TTreeData;
+  treeData: TPreviewTreeData;
   defaultOpen?: boolean;
 }) {
   return (
@@ -33,6 +62,15 @@ function RecursiveTree({
         defaultOpen={defaultOpen}
       >
         <span>{treeData.value.description}</span>
+        <FileListingTable
+          api="tapis"
+          system="designsafe.storage.published"
+          path={treeData.uuid}
+          scheme="public"
+          columns={columns}
+          dataSource={treeData.value.fileObjs}
+          disabled
+        />
       </ProjectCollapse>
       <ul className={styles['tree-ul']}>
         {(treeData.children ?? []).map((child) => (
@@ -58,11 +96,13 @@ function RecursiveTree({
 
 export const PublishedEntityDisplay: React.FC<{
   projectId: string;
-  treeData: TTreeData;
+  preview?: boolean;
+  treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   defaultOpenChildren?: boolean;
 }> = ({
   projectId,
+  preview,
   treeData,
   defaultOpen = false,
   defaultOpenChildren = false,
@@ -89,7 +129,11 @@ export const PublishedEntityDisplay: React.FC<{
         }}
       >
         <strong>Cite This Data:</strong>
-        <ProjectCitation projectId={projectId} entityUuid={treeData.uuid} />
+        {preview ? (
+          <ProjectCitation projectId={projectId} entityUuid={treeData.uuid} />
+        ) : (
+          <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
+        )}
       </article>
       <Collapse
         expandIcon={() => null}
@@ -133,7 +177,7 @@ export const ProjectPreview: React.FC<{ projectId: string }> = ({
   projectId,
 }) => {
   const { data } = useProjectPreview(projectId ?? '');
-  const { children } = (data?.tree ?? { children: [] }) as TTreeData;
+  const { children } = data?.tree ?? {};
 
   const sortedChildren = useMemo(
     () => [...(children ?? [])].sort((a, b) => a.order - b.order),
@@ -145,6 +189,7 @@ export const ProjectPreview: React.FC<{ projectId: string }> = ({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {sortedChildren.map((child, idx) => (
         <PublishedEntityDisplay
+          preview
           projectId={projectId}
           treeData={child}
           defaultOpen={idx === 0}
@@ -159,10 +204,13 @@ export const PublicationView: React.FC<{ projectId: string }> = ({
   projectId,
 }) => {
   const { data } = usePublicationDetail(projectId ?? '');
-  const { children } = (data?.tree ?? { children: [] }) as TTreeData;
+  const { unsetSelections } = useSelectedFiles('tapis', '', '');
+  // Unset file selections when project ID changes to prevent them carrying over on nav.
+  useEffect(() => unsetSelections(), [projectId, unsetSelections]);
+  const { children } = data?.tree ?? {};
 
   const sortedChildren = useMemo(
-    () => [...(children ?? [])].sort((a, b) => a.order - b.order),
+    () => [...(children ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [children]
   );
   if (!data) return null;

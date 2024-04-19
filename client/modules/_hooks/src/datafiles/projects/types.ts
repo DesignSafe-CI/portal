@@ -95,7 +95,7 @@ export type TBaseProjectValue = {
   license?: string;
 };
 
-type TEntityValue = {
+export type TEntityValue = {
   title: string;
   description?: string;
   projectId?: string;
@@ -118,4 +118,21 @@ export type TBaseProject = TProjectMeta & {
 
 export type TEntityMeta = TProjectMeta & {
   value: TEntityValue;
+};
+
+export type TPreviewTreeData = {
+  name: string;
+  id: string;
+  uuid: string;
+  value: TEntityValue;
+  order: number;
+  children: TPreviewTreeData[];
+};
+
+export type TTreeData = {
+  name: string;
+  id: string;
+  uuid: string;
+  order: number;
+  children: TTreeData[];
 };

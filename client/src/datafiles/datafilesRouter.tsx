@@ -21,6 +21,8 @@ import { ProjectPipelineLayout } from './layouts/projects/ProjectPipelineLayout'
 import { ProjectCurationLayout } from './layouts/projects/ProjectCurationLayout';
 import { ProjectWorkdirLayout } from './layouts/projects/ProjectWorkdirLayout';
 import { ProjectPipelineSelectLayout } from './layouts/projects/ProjectPipelineSelectLayout';
+import { PublishedFileListingLayout } from './layouts/published/PublishedFileListingLayout';
+import { PublishedEntityListingLayout } from './layouts/published/PublishedEntityListingLayout';
 
 const NavigateToUrlSafePath: React.FC<NavigateProps & { to: string }> = ({
   to,
@@ -108,8 +110,12 @@ const datafilesRouter = createBrowserRouter(
               element: <PublishedDetailLayout />,
               children: [
                 {
+                  path: '',
+                  element: <PublishedEntityListingLayout />,
+                },
+                {
                   path: ':path',
-                  element: <FileListingLayout />,
+                  element: <PublishedFileListingLayout />,
                 },
                 {
                   path: '*',

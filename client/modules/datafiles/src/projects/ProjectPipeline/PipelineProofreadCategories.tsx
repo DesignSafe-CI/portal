@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react';
-import { useProjectPreview } from '@client/hooks';
+import { TPreviewTreeData, useProjectPreview } from '@client/hooks';
 import { Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
-import {
-  TTreeData,
-  PublishedEntityDisplay,
-} from '../ProjectPreview/ProjectPreview';
+import { PublishedEntityDisplay } from '../ProjectPreview/ProjectPreview';
 
 export const PipelineProofreadCategories: React.FC<{
   projectId: string;
@@ -13,7 +10,7 @@ export const PipelineProofreadCategories: React.FC<{
   prevStep: () => void;
 }> = ({ projectId, nextStep, prevStep }) => {
   const { data } = useProjectPreview(projectId ?? '');
-  const { children } = (data?.tree ?? { children: [] }) as TTreeData;
+  const { children } = (data?.tree ?? { children: [] }) as TPreviewTreeData;
   const [searchParams] = useSearchParams();
 
   const sortedChildren = useMemo(() => {
@@ -54,6 +51,7 @@ export const PipelineProofreadCategories: React.FC<{
         {sortedChildren.map((child) => (
           <section key={child.id}>
             <PublishedEntityDisplay
+              preview
               projectId={projectId}
               treeData={child}
               defaultOpen
