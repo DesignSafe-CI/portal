@@ -44,6 +44,24 @@ def test_database_constraint(filemeta_value_mock):
 
 
 @pytest.mark.django_db
+def test_database_get_by_path_system(filemeta_db_mock, filemeta_value_mock):
+    FileMetaModel.get_by_path_and_system(
+        system=filemeta_value_mock["system"], path=filemeta_value_mock["path"]
+    )
+
+    with pytest.raises(FileMetaModel.DoesNotExist):
+        FileMetaModel.get_by_path_and_system(system="foo", path="bar/baz.txt")
+
+
+@pytest.mark.django_db
+def test_database_constraint(filemeta_value_mock):
+    FileMetaModel.objects.create(value=filemeta_value_mock)
+    with pytest.raises(IntegrityError) as excinfo:
+        FileMetaModel.objects.create(value=filemeta_value_mock)
+        assert "Unique" in str(excinfo.value)
+
+
+@pytest.mark.django_db
 def test_get_file_meta_unauthenticated(client, filemeta_db_mock, mock_access_success):
     system_id, path, file_meta = filemeta_db_mock
     response = client.get(f"/api/filemeta/{system_id}/{path}")
