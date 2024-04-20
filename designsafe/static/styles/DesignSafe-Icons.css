@@ -27,99 +27,99 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-Contract:before {
+.ds-icon-Contract:before {
     content: '\e91d';
 }
-.icon-Expand:before {
+.ds-icon-Expand:before {
     content: '\e923';
 }
-.icon-Job-Status:before {
+.ds-icon-Job-Status:before {
     content: '\e929';
 }
-.icon-All-Hazards:before {
+.ds-icon-All-Hazards:before {
     content: '\e908';
 }
-.icon-New-Tab:before {
+.ds-icon-New-Tab:before {
     content: '\ea7e';
 }
-.icon-NGL-without-text:before {
+.ds-icon-NGL-without-text:before {
     content: '\e903';
 }
-.icon-Potree:before {
+.ds-icon-Potree:before {
     content: '\e906';
 }
-.icon-Generic-Vis:before {
+.ds-icon-Generic-Vis:before {
     content: '\e907';
 }
-.icon-HVSR:before {
+.ds-icon-HVSR:before {
     content: '\e90d';
 }
-.icon-MPM:before {
+.ds-icon-MPM:before {
     content: '\e90e';
 }
-.icon-Generic-App:before {
+.ds-icon-Generic-App:before {
     content: '\e960';
 }
-.icon-GiD:before {
+.ds-icon-GiD:before {
     content: '\e90f';
 }
-.icon-Earth:before {
+.ds-icon-Earth:before {
     content: '\e910';
 }
-.icon-Water:before {
+.ds-icon-Water:before {
     content: '\e912';
 }
-.icon-Wind:before {
+.ds-icon-Wind:before {
     content: '\e915';
 }
-.icon-rWHALE:before {
+.ds-icon-rWHALE:before {
     content: '\e905';
 }
-.icon-Extract:before {
+.ds-icon-Extract:before {
     content: '\e959';
 }
-.icon-Hazmapper:before {
+.ds-icon-Hazmapper:before {
     content: '\e904';
 }
-.icon-Compress:before {
+.ds-icon-Compress:before {
     content: '\e958';
 }
-.icon-STKO:before {
+.ds-icon-STKO:before {
     content: '\e91c';
 }
-.icon-OpenFOAM:before {
+.ds-icon-OpenFOAM:before {
     content: '\e900';
 }
-.icon-Blender:before {
+.ds-icon-Blender:before {
     content: '\e901';
 }
-.icon-MATLAB:before {
+.ds-icon-MATLAB:before {
     content: '\e902';
 }
-.icon-Paraview:before {
+.ds-icon-Paraview:before {
     content: '\e911';
 }
-.icon-Jupyter:before {
+.ds-icon-Jupyter:before {
     content: '\e913';
 }
-.icon-QGIS:before {
+.ds-icon-QGIS:before {
     content: '\e914';
 }
-.icon-OpenSees:before {
+.ds-icon-OpenSees:before {
     content: '\e916';
 }
-.icon-LS-DYNA:before {
+.ds-icon-LS-DYNA:before {
     content: '\e917';
 }
-.icon-Dakota:before {
+.ds-icon-Dakota:before {
     content: '\e918';
 }
-.icon-Clawpack:before {
+.ds-icon-Clawpack:before {
     content: '\e919';
 }
-.icon-Ansys:before {
+.ds-icon-Ansys:before {
     content: '\e91a';
 }
-.icon-SWBatch:before {
+.ds-icon-SWBatch:before {
     content: '\e91b';
 }
