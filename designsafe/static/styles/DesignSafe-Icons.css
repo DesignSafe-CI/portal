@@ -11,8 +11,8 @@
     font-display: block;
 }
 
-[class^='icon-'],
-[class*=' icon-'] {
+[class^='ds-icon-'],
+[class*=' ds-icon-'] {
     /* use !important to prevent issues with browser extensions that change fonts */
     font-family: 'DesignSafe-Icons' !important;
     speak: never;
