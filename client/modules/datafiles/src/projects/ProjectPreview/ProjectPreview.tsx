@@ -200,9 +200,10 @@ export const ProjectPreview: React.FC<{ projectId: string }> = ({
   );
 };
 
-export const PublicationView: React.FC<{ projectId: string }> = ({
-  projectId,
-}) => {
+export const PublicationView: React.FC<{
+  projectId: string;
+  version?: number;
+}> = ({ projectId, version = 1 }) => {
   const { data } = usePublicationDetail(projectId ?? '');
   const { unsetSelections } = useSelectedFiles('tapis', '', '');
   // Unset file selections when project ID changes to prevent them carrying over on nav.
@@ -217,14 +218,16 @@ export const PublicationView: React.FC<{ projectId: string }> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {sortedChildren.map((child, idx) => (
-        <PublishedEntityDisplay
-          projectId={projectId}
-          treeData={child}
-          defaultOpen={idx === 0}
-          key={child.id}
-        />
-      ))}
+      {sortedChildren
+        .filter((child) => child.version === version)
+        .map((child, idx) => (
+          <PublishedEntityDisplay
+            projectId={projectId}
+            treeData={child}
+            defaultOpen={idx === 0}
+            key={child.id}
+          />
+        ))}
     </div>
   );
 };

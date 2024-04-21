@@ -376,7 +376,7 @@ def combine_pub_versions(project_id: str) -> nx.DiGraph:
     """Construct a tree of all versions of published datasets in a project."""
     latest_version: int = IndexedPublication.max_revision(project_id)
 
-    pub_graph = transform_pub_entities(project_id)
+    pub_graph, _ = transform_pub_entities(project_id)
     if not latest_version:
         return pub_graph
 
