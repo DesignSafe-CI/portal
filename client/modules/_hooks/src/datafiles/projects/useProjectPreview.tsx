@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../apiClient';
-import { TBaseProject, TEntityMeta } from './types';
+import { TBaseProject, TEntityMeta, TPreviewTreeData } from './types';
 
 type TProjectPreviewResponse = {
   baseProject: TBaseProject;
   entities: TEntityMeta[];
-  tree: unknown;
+  tree: TPreviewTreeData;
 };
 
 async function getProjectPreview({

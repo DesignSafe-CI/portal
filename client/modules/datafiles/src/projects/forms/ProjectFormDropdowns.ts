@@ -19,6 +19,18 @@ export const nhTypeOptions = [
   { value: 'wind', label: 'Wind' },
 ];
 
+export const frTypeOptions = [
+  { value: 'engineering', label: 'Engineering' },
+  { value: 'geosciences', label: 'Geosciences' },
+  { value: 'public health', label: 'Public Health' },
+  { value: 'social sciences', label: 'Social Sciences' },
+  { value: 'interdisciplinary', label: 'Interdisciplinary' },
+  { value: 'field experiment', label: 'Field Experiment' },
+  { value: 'cross-sectional study', label: 'Cross-Sectional Study' },
+  { value: 'longitudinal study', label: 'Longitudinal Study' },
+  { value: 'reconnaissance', label: 'Reconnaissance' },
+];
+
 export const facilityOptions = [
   {
     value: 'rapid-uw',

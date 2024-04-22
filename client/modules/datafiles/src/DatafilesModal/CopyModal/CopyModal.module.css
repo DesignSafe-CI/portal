@@ -19,6 +19,12 @@
   height: 100%;
 }
 
+.modalRightPanel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
 .destFilesSection {
   display: flex;
   flex: 1;
