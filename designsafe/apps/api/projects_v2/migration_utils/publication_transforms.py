@@ -190,6 +190,32 @@ def update_file_tag_paths(entity: dict, base_path: str) -> list[FileTagDict]:
     return updated_tags
 
 
+def update_file_tag_paths_legacy(entity: dict, base_path: str) -> list[FileTagDict]:
+    """
+    Updates tag paths to reflect what the paths should be in the published dataset.
+    This constructs paths for legacy publications where the data folder is copied directly
+    from the Projects area without consideration for the tree structure.
+
+    Before: [...{"pathName": "/data/xyz/taggedFile.json}, "tagName": "Record"}]
+    After: [...{"pathName": "/PRJ-1234/data/xyz/taggedFile.json}, "tagName": "Record"}]
+    """
+    tags = entity["value"].get("fileTags", None)
+    if not tags:
+        tags = convert_legacy_tags(entity)
+
+    updated_tags = []
+
+    for tag in tags:
+        if not tag.get("path", None):
+            # If there is no path, we can't recover the tag.
+            continue
+        updated_tags.append(
+            {**tag, "path": str(Path(base_path) / tag["path"].lstrip("/"))}
+        )
+
+    return updated_tags
+
+
 def get_path_mapping(entity: dict, base_path: str):
     """map fileObj paths to published paths and handle duplicate names"""
     file_objs = entity["value"]["fileObjs"]
@@ -228,6 +254,26 @@ def update_file_objs(
     return updated_file_objs, path_mapping
 
 
+def update_file_objs_legacy(
+    entity: dict, base_path: str, system_id="designsafe.storage.published"
+):
+    """Return an updated file_objs array with the correct published system. Reproduces
+    existing publications where the file structure does not reflect the curation tree.
+    """
+    file_objs = entity["value"]["fileObjs"]
+    path_mapping = get_path_mapping(entity, base_path)
+    updated_file_objs = []
+    for file_obj in file_objs:
+        updated_file_objs.append(
+            {
+                **file_obj,
+                "path": str(Path(base_path) / file_obj["path"].lstrip("/")),
+                "system": system_id,
+            }
+        )
+    return updated_file_objs, path_mapping
+
+
 def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     """Convert published entity to use our Pydantic schema. Returns a serialized
     reprsentation of the `value` attribute."""
@@ -251,9 +297,19 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     # populated from their children. In these cases, _filepaths is empty.
     if file_objs and entity.get("_filePaths", None) != []:
         entity["value"]["fileObjs"] = file_objs
+        # Avoid "fixing" tags for legacy projects that don't have tree-based file layouts
         if entity["value"].get("fileTags", False):
-            entity["value"]["fileTags"] = update_file_tag_paths(entity, base_path)
-        new_file_objs, path_mapping = update_file_objs(
+            # entity["value"]["fileTags"] = update_file_tag_paths(
+            #    entity, base_path
+            # )
+            entity["value"]["fileTags"] = update_file_tag_paths_legacy(
+                entity, base_path
+            )
+
+        # new_file_objs, path_mapping = update_file_objs(
+        #    entity, base_path, system_id=settings.PUBLISHED_SYSTEM
+        # )
+        new_file_objs, path_mapping = update_file_objs_legacy(
             entity, base_path, system_id=settings.PUBLISHED_SYSTEM
         )
 

@@ -14,7 +14,7 @@ urlpatterns = [
                                namespace='ds_projects_api')),
 
     url(r'^datafiles/', include('designsafe.apps.api.datafiles.urls')),
-    url(r'^publications/', include('designsafe.apps.api.publications.urls')),
+    # url(r'^publications/', include('designsafe.apps.api.publications.urls')),
 
     url(r'^filemeta/', include('designsafe.apps.api.filemeta.urls')),
 
