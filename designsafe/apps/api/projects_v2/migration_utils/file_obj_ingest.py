@@ -1,10 +1,7 @@
-"""Integration-type tests to confirm that Pydantic schemas are exhaustive."""
+"""Utilities to update the database with existing project file associations"""
 
 import json
-import csv
 from typing import Iterator
-import urllib
-from pathlib import Path
 import requests
 from urllib3.util import Retry
 from requests import Session
@@ -53,7 +50,7 @@ def get_entities_by_project_id(project_id: str) -> list[dict]:
 
 
 def add_files_by_project_id(project_id: str):
-    """Get all file associations for a project."""
+    """Get all file associations for a project and update the db to reflect them."""
     entities = get_entities_by_project_id(project_id)
     _session = Session()
     retries = Retry(
