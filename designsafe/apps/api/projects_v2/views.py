@@ -17,6 +17,7 @@ from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     add_file_associations,
     remove_file_associations,
     set_file_tags,
+    change_project_type,
 )
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     add_values_to_tree,
@@ -84,6 +85,38 @@ class ProjectInstanceView(BaseApiView):
             }
         )
 
+    def put(self, request: HttpRequest, project_id: str):
+        """Update project type for a project ID"""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        try:
+            project = user.projects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+
+        # Get the new value from the request data
+        new_value = request.data.get('new_value')
+
+        # Call the change_project_type function to update the project type
+        updated_project = change_project_type(project_id, new_value)
+
+        entities = ProjectMetadata.objects.filter(base_project=updated_project)
+        return JsonResponse(
+            {
+                "updatedProject": updated_project.to_dict(),
+                "entities": [e.to_dict() for e in entities],
+                "tree": nx.tree_data(
+                    nx.node_link_graph(updated_project.project_graph.value), "NODE_ROOT"
+                ),
+            }
+        )
+    
     def patch(self, request: HttpRequest, project_id: str):
         """Update a project's root metadata"""
         user = request.user
