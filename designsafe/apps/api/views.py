@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse, HttpResponseForbidden
+from django.http.response import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.generic import View
 from requests.exceptions import ConnectionError, HTTPError
 from .exceptions import ApiException
@@ -49,6 +49,16 @@ class BaseApiView(View):
                                       
         return HttpResponse(json.dumps(resp),
                             status=status, content_type='application/json')
+
+
+class AuthenticatedApiView(BaseApiView):
+
+    def dispatch(self, request, *args, **kwargs):
+        """Returns 401 if user is not authenticated."""
+
+        if not request.user.is_authenticated:
+            return JsonResponse({"message": "Unauthenticated user"}, status=401)
+        return super(AuthenticatedApiView, self).dispatch(request, *args, **kwargs)
 
 
 class LoggerApi(BaseApiView):

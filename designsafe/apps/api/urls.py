@@ -16,6 +16,8 @@ urlpatterns = [
     url(r'^datafiles/', include('designsafe.apps.api.datafiles.urls')),
     # url(r'^publications/', include('designsafe.apps.api.publications.urls')),
 
+    url(r'^filemeta/', include('designsafe.apps.api.filemeta.urls')),
+
     url(r'^logger/$', LoggerApi.as_view(), name='logger'),
     url(r'^notifications/', include('designsafe.apps.api.notifications.urls')),
     url(r'^users/', include('designsafe.apps.api.users.urls')),
