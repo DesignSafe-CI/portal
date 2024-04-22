@@ -21,7 +21,10 @@ export const PublishedDetailLayout: React.FC = () => {
 
   return (
     <div style={{ width: '100%', paddingBottom: '100px' }}>
-      Placeholder for the Publication detail layout.
+      <div className="prj-head-title" style={{ marginBottom: '20px' }}>
+        <strong>{data.baseProject.projectId}</strong>&nbsp;|&nbsp;
+        {data.baseProject.title}
+      </div>
       <BaseProjectDetails projectValue={data?.baseProject} />
       <Outlet />
     </div>

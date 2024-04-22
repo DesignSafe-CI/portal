@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
-import { Button, Modal, Table } from 'antd';
+import { Button, Modal, Select, Table } from 'antd';
 import {
   useAuthenticatedUser,
   useFileCopy,
@@ -14,6 +14,7 @@ import {
 import { BaseFileListingBreadcrumb } from '../../DatafilesBreadcrumb/DatafilesBreadcrumb';
 import styles from './CopyModal.module.css';
 import { toBytes } from '../../FileListing/FileListing';
+import { CopyModalProjectListing } from './CopyModalProjectListing';
 
 const SelectedFilesColumns: TFileListingColumns = [
   {
@@ -31,14 +32,15 @@ const DestHeaderTitle: React.FC<{
   api: string;
   system: string;
   path: string;
-}> = ({ api, system, path }) => {
+  projectId?: string;
+}> = ({ api, system, path, projectId }) => {
   const getPathName = usePathDisplayName();
   return (
     <span style={{ fontWeight: 'normal' }}>
       <i role="none" className="fa fa-folder-o">
         &nbsp;&nbsp;
       </i>
-      {getPathName(api, system, path)}
+      {projectId || getPathName(api, system, path)}
     </span>
   );
 };
@@ -48,11 +50,19 @@ function getDestFilesColumns(
   system: string,
   path: string,
   mutationCallback: (path: string) => void,
-  navCallback: (path: string) => void
+  navCallback: (path: string) => void,
+  projectId?: string
 ): TFileListingColumns {
   return [
     {
-      title: <DestHeaderTitle api={api} system={system} path={path} />,
+      title: (
+        <DestHeaderTitle
+          api={api}
+          system={system}
+          path={path}
+          projectId={projectId}
+        />
+      ),
       dataIndex: 'name',
       ellipsis: true,
 
@@ -115,12 +125,58 @@ export const CopyModal: React.FC<{
     [user]
   );
 
-  const [dest, setDest] = useState(defaultDestParams);
+  const [dest, setDest] = useState<{
+    destApi: string;
+    destSystem: string;
+    destPath: string;
+    destProjectId?: string;
+  }>(defaultDestParams);
+  const [showProjects, setShowProjects] = useState<boolean>(false);
   const { destApi, destSystem, destPath } = dest;
   useEffect(() => setDest(defaultDestParams), [isModalOpen, defaultDestParams]);
 
+  const [dropdownValue, setDropdownValue] = useState<string>('mydata');
+  const dropdownCallback = (newValue: string) => {
+    setDropdownValue(newValue);
+    switch (newValue) {
+      case 'mydata':
+        setShowProjects(false);
+        setDest(defaultDestParams);
+        break;
+      case 'hpcwork':
+        setShowProjects(false);
+        setDest({
+          destApi: 'tapis',
+          destSystem: 'designsafe.storage.frontera.work',
+          destPath: encodeURIComponent('/' + user?.username),
+        });
+        break;
+      case 'myprojects':
+        setShowProjects(true);
+        break;
+      default:
+        setShowProjects(false);
+        setDest(defaultDestParams);
+        break;
+    }
+  };
+
+  const onProjectSelect = (uuid: string, projectId: string) => {
+    setShowProjects(false);
+    setDest({
+      destApi: 'tapis',
+      destSystem: `project-${uuid}`,
+      destPath: '',
+      destProjectId: projectId,
+    });
+  };
+
   const navCallback = useCallback(
     (path: string) => {
+      if (path === 'PROJECT_LISTING') {
+        setShowProjects(true);
+        return;
+      }
       const newPath = path.split('/').slice(-1)[0];
       setDest({ ...dest, destPath: newPath });
     },
@@ -148,9 +204,17 @@ export const CopyModal: React.FC<{
         destSystem,
         destPath,
         (dPath: string) => mutateCallback(dPath),
-        navCallback
+        navCallback,
+        dest.destProjectId
       ),
-    [navCallback, destApi, destSystem, destPath, mutateCallback]
+    [
+      navCallback,
+      destApi,
+      destSystem,
+      destPath,
+      dest.destProjectId,
+      mutateCallback,
+    ]
   );
 
   return (
@@ -174,34 +238,68 @@ export const CopyModal: React.FC<{
               scroll={{ y: '100%' }}
             />
           </section>
-          <section className={styles.destFilesSection}>
-            <BaseFileListingBreadcrumb
-              api={destApi}
-              system={destSystem}
-              path={destPath}
-              itemRender={(item) => {
-                return (
-                  <Button
-                    type="link"
-                    onClick={() => navCallback(item.path ?? '')}
-                  >
-                    {item.title}
-                  </Button>
-                );
-              }}
+          <div className={styles.modalRightPanel}>
+            <Select
+              options={[
+                { label: 'My Data', value: 'mydata' },
+                { label: 'HPC Work', value: 'hpcwork' },
+                { label: 'My Projects', value: 'myprojects' },
+              ]}
+              style={{ marginBottom: '12px' }}
+              virtual={false}
+              value={dropdownValue}
+              onChange={(newValue) => dropdownCallback(newValue)}
             />
-            <div className={styles.destFilesTableContainer}>
-              <FileListingTable
-                api={destApi}
-                system={destSystem}
-                path={destPath}
-                columns={DestFilesColumns}
-                rowSelection={undefined}
-                filterFn={(listing) => listing.filter((f) => f.type === 'dir')}
-                scroll={undefined}
-              />
-            </div>
-          </section>
+            <section className={styles.destFilesSection}>
+              {!showProjects && (
+                <>
+                  <BaseFileListingBreadcrumb
+                    api={destApi}
+                    system={destSystem}
+                    path={destPath}
+                    systemRootAlias={dest.destProjectId}
+                    initialBreadcrumbs={
+                      destSystem.startsWith('project-')
+                        ? [{ title: 'My Projects', path: 'PROJECT_LISTING' }]
+                        : []
+                    }
+                    itemRender={(item) => {
+                      return (
+                        <Button
+                          type="link"
+                          onClick={() => navCallback(item.path ?? '')}
+                        >
+                          {item.title}
+                        </Button>
+                      );
+                    }}
+                  />
+                  <div className={styles.destFilesTableContainer}>
+                    <FileListingTable
+                      api={destApi}
+                      system={destSystem}
+                      path={destPath}
+                      columns={DestFilesColumns}
+                      rowSelection={undefined}
+                      filterFn={(listing) =>
+                        listing.filter((f) => f.type === 'dir')
+                      }
+                      scroll={undefined}
+                    />
+                  </div>
+                </>
+              )}
+              {showProjects && (
+                <div className={styles.destFilesTableContainer}>
+                  <CopyModalProjectListing
+                    onSelect={(uuid, projectId) =>
+                      onProjectSelect(uuid, projectId)
+                    }
+                  />
+                </div>
+              )}
+            </section>
+          </div>
         </article>
       </Modal>
     </>

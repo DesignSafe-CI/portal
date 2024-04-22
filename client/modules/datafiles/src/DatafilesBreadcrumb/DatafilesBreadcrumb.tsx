@@ -71,19 +71,32 @@ function isUserHomeSystem(system: string) {
 }
 
 export const BaseFileListingBreadcrumb: React.FC<
-  { api: string; system: string; path: string } & BreadcrumbProps
-> = ({ api, system, path, ...props }) => {
+  {
+    api: string;
+    system: string;
+    path: string;
+    systemRootAlias?: string;
+    initialBreadcrumbs?: { title: string; path: string }[];
+  } & BreadcrumbProps
+> = ({
+  api,
+  system,
+  path,
+  systemRootAlias,
+  initialBreadcrumbs = [],
+  ...props
+}) => {
   const { user } = useAuthenticatedUser();
 
   return (
     <DatafilesBreadcrumb
-      initialBreadcrumbs={[]}
+      initialBreadcrumbs={initialBreadcrumbs ?? []}
       path={path}
       baseRoute={`/${api}/${system}`}
       systemRoot={
         isUserHomeSystem(system) ? encodeURIComponent('/' + user?.username) : ''
       }
-      systemRootAlias={getSystemRootDisplayName(api, system)}
+      systemRootAlias={systemRootAlias || getSystemRootDisplayName(api, system)}
       {...props}
     />
   );
