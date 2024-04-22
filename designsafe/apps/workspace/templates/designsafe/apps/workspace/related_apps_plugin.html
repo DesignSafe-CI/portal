@@ -1,5 +1,5 @@
 <h2>Related Applications</h2>
-<section style="display:flex; gap:30px; flex-wrap: wrap">
+<section class="o-app-grid">
     {% for app in listing %}
     {% include "designsafe/apps/workspace/app_card.html" with app=app %}
     {% endfor %}
