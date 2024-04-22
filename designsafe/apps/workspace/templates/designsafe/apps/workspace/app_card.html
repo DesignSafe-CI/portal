@@ -1,11 +1,3 @@
-{% load cms_tags static sekizai_tags %}
-
-{% block styles %}
-    {% addtoblock "css" %}
-    <link href="{% static 'workspace/css/app-card.css' %}" rel="stylesheet" />
-    {% endaddtoblock %}
-{% endblock %}
-
 <a class="c-app-card" href="{{app.href}}">
     <h3 class="c-app-card__title"><i class="ds-icon ds-icon-{{app.icon}}"></i> {{app.label}}</h3>
 
