@@ -2,7 +2,7 @@
 import logging
 import json
 from django.http import JsonResponse, HttpRequest
-from designsafe.apps.api.datafiles.operations.agave_operations import listing
+from designsafe.apps.api.datafiles.operations.tapis_operations import listing
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.filemeta.models import FileMetaModel
 from designsafe.apps.api.views import AuthenticatedApiView
@@ -28,8 +28,7 @@ def check_access(request, system_id: str, path: str, check_for_writable_access=F
         raise ApiException(error_msg, status=403)
 
     try:
-        # TODO_V3 update to use renamed (i.e. "tapis") client
-        listing(request.user.agave_oauth.client, system_id, path)
+        listing(request.user.tapis_oauth.client, system_id, path)
     except Exception as exc:  # pylint:disable=broad-exception-caught
         logger.error(
             f"user cannot access any related metadata as listing failed for {system_id}/{path} with error {str(exc)}."
