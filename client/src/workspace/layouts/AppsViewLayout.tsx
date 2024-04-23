@@ -57,7 +57,7 @@ export const AppsViewLayout: React.FC = () => {
             paddingTop: '3em',
           }}
         >
-          <AppsSubmissionForm formValues={formValues} />
+          {/* <AppsSubmissionForm formValues={formValues} /> */}
         </Layout.Sider>
       </Layout>
     </Form>
