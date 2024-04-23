@@ -1,20 +1,13 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.25.3/dist/components/c-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/components/c-app-card.css");
 
 
-
-/* Card */
-/* To stretch card to fill column height */
-[class^="col-"] .c-app-card {
-    height: 100%;
-    min-height: 230px;
-}
 
 /* Title */
 .c-app-card__title {
-    margin-top: 0.5em;
+    margin-top: 1em;
     margin-bottom: 0;
 }
 .c-app-card__title > .icon::before {
@@ -23,7 +16,7 @@
 
 /* Description */
 .c-app-card__desc {
-    padding-inline: 1rem;
+    padding-inline: 1.5rem;
     margin-block: 1.5rem;
 }
 
@@ -88,4 +81,8 @@ a.c-app-card:active {
 }
 .c-app-card__flags > *:has(strong) {
     background-color: #ECE4BF;
+}
+
+.c-app-card__repo {
+    font-style: italic;
 }

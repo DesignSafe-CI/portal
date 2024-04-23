@@ -7,7 +7,7 @@ from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetad
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
     get_entities_by_project_id,
     construct_graph_from_db,
-    transform_pub_entities,
+    combine_pub_versions,
 )
 from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
 from designsafe.apps.api.projects_v2.tests.schema_integration import (
@@ -18,6 +18,7 @@ from designsafe.apps.api.projects_v2.operations.graph_operations import (
     _renormalize_ordering,
 )
 from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.apps.data.models.elasticsearch import IndexedPublication
 
 
 def ingest_project_to_db(project_id):
@@ -144,6 +145,9 @@ def fix_authors(meta: ProjectMetadata):
             if author["authorship"] is True
         ]
 
+    if meta.value.get("projectType") == "other":
+        meta.value["authors"] = meta.value["users"]
+
     if meta.value.get("dataCollectors"):
         meta.value["dataCollectors"] = [
             get_complete_author(author)
@@ -155,18 +159,32 @@ def fix_authors(meta: ProjectMetadata):
     meta.save()
 
 
+def ingest_v2_projects():
+    """Perform a complete ingest of Tapis V2 projects into the db."""
+    ingest_base_projects()
+    ingest_sub_entities()
+    ingest_graphs()
+    for meta in ProjectMetadata.objects.exclude(name="designsafe.project.graph"):
+        fix_authors(meta)
+
+
 def ingest_publications():
     """Ingest Elasticsearch-based publications into the db"""
     all_pubs = iterate_pubs()
     for pub in all_pubs:
-        # print(pub["projectId"])
+        print(pub["projectId"])
         try:
-            pub_graph, _ = transform_pub_entities(pub["projectId"])
+            pub_graph = combine_pub_versions(pub["projectId"])
+            latest_version: int = IndexedPublication.max_revision(pub["projectId"]) or 1
             pub_base = next(
                 (
                     pub_graph.nodes[node_id]["value"]
                     for node_id in pub_graph
-                    if pub_graph.nodes[node_id]["uuid"] == pub["project"]["uuid"]
+                    if (
+                        pub_graph.nodes[node_id]["uuid"] == pub["project"]["uuid"]
+                        and pub_graph.nodes[node_id].get("version", latest_version)
+                        == latest_version
+                    )
                 ),
                 None,
             )

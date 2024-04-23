@@ -28,6 +28,9 @@ const themeConfig: ThemeConfig = {
     Layout: {
       bodyBg: 'transparent',
     },
+    Steps: {
+      colorPrimary: '#1cb500',
+    },
     Menu: {
       itemHeight: 60,
       itemMarginInline: 0,
