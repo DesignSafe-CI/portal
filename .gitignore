@@ -14,10 +14,7 @@ designsafe/static/build/
 designsafe/static/react-assets/
 designsafe/templates/react-assets.html
 # designsafe/static/styles/base.*
-
-#ignore local static and media folders
 /static
-/media
 
 # ignore the populated environment file so as not to commit secrets!
 designsafe.env

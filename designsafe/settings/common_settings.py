@@ -87,6 +87,7 @@ INSTALLED_APPS = (
     'designsafe.apps.api.datafiles',
     'designsafe.apps.api.projects_v2',
     'designsafe.apps.api.publications_v2',
+    'designsafe.apps.api.filemeta',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -201,7 +202,6 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 if os.environ.get('DATABASE_HOST'):
-    # mysql connection
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -308,6 +308,7 @@ CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
+    ('cms_page_for_app.html', 'Main Site App Page'),
     ('cms_page_no_footer.html', 'Footerless Page'),
 )
 CMSPLUGIN_CASCADE = {
@@ -318,6 +319,9 @@ CMSPLUGIN_CASCADE = {
         'FormPlugin',
         'MeetingFormPlugin',
         'ResponsiveEmbedPlugin',
+        'AppCategoryListing',
+        'RelatedApps',
+        'AppVariants'
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = [

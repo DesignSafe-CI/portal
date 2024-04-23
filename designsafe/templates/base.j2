@@ -35,6 +35,7 @@
       <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css %>">
       <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
       <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
+      <link href="{% static 'styles/DesignSafe-Icons.css' %}" rel="stylesheet" type="text/css">
       {% block styles %}{% endblock %}
       {% render_block "css" %}
       {% render_block "react_assets" %}
@@ -68,7 +69,7 @@
       <meta name="DC.type" content="dataset">
       {% endblock %}
   </head>
-  <body ng-app="designsafe.portal" class="o-site">
+  <body ng-app="designsafe.portal" class="o-site {% block page_class %}{% endblock page_class %}">
     {% cms_toolbar %}
     <div>
         {% include 'includes/header.html' %}

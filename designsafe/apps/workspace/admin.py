@@ -41,6 +41,7 @@ class AppVariantInline(admin.StackedInline):
                 {
                     "fields": (
                         "label",
+                        "description",
                         "enabled",
                     )
                 },

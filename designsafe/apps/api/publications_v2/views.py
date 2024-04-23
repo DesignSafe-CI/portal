@@ -39,7 +39,7 @@ class PublicationListingView(BaseApiView):
 class PublicationDetailView(BaseApiView):
     """View for retrieving publication details."""
 
-    def get(self, request: HttpRequest, project_id):
+    def get(self, request: HttpRequest, project_id, version=None):
         """Returns the tree view and base project metadata for a publication."""
         pub_meta = Publication.objects.get(project_id=project_id)
 
