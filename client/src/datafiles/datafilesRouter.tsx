@@ -20,6 +20,9 @@ import { ProjectListingLayout } from './layouts/projects/ProjectListingLayout';
 import { ProjectPipelineLayout } from './layouts/projects/ProjectPipelineLayout';
 import { ProjectCurationLayout } from './layouts/projects/ProjectCurationLayout';
 import { ProjectWorkdirLayout } from './layouts/projects/ProjectWorkdirLayout';
+import { ProjectPipelineSelectLayout } from './layouts/projects/ProjectPipelineSelectLayout';
+import { PublishedFileListingLayout } from './layouts/published/PublishedFileListingLayout';
+import { PublishedEntityListingLayout } from './layouts/published/PublishedEntityListingLayout';
 
 const NavigateToUrlSafePath: React.FC<NavigateProps & { to: string }> = ({
   to,
@@ -107,8 +110,12 @@ const datafilesRouter = createBrowserRouter(
               element: <PublishedDetailLayout />,
               children: [
                 {
+                  path: '',
+                  element: <PublishedEntityListingLayout />,
+                },
+                {
                   path: ':path',
-                  element: <FileListingLayout />,
+                  element: <PublishedFileListingLayout />,
                 },
                 {
                   path: '*',
@@ -123,12 +130,16 @@ const datafilesRouter = createBrowserRouter(
           path: 'projects',
           children: [
             {
-              path: '',
-              element: <ProjectListingLayout />,
+              path: ':projectId/prepare-to-publish/start',
+              element: <ProjectPipelineSelectLayout />,
             },
             {
-              path: ':projectId/prepare-to-publish',
+              path: ':projectId/prepare-to-publish/pipeline',
               element: <ProjectPipelineLayout />,
+            },
+            {
+              path: '',
+              element: <ProjectListingLayout />,
             },
             {
               path: ':projectId/preview',

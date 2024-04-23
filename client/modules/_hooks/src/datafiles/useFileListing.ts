@@ -45,6 +45,7 @@ type TFileListingHookArgs = {
   path: string;
   scheme: string;
   pageSize: number;
+  disabled?: boolean;
 };
 
 type TFileListingPageParam = {
@@ -58,6 +59,7 @@ function useFileListing({
   path,
   scheme = 'private',
   pageSize = 100,
+  disabled = false,
 }: TFileListingHookArgs) {
   return useInfiniteQuery<
     FileListingResponse,
@@ -78,6 +80,7 @@ function useFileListing({
           signal,
         }
       ),
+    enabled: !disabled,
     getNextPageParam: (lastPage, allpages): TFileListingPageParam | null => {
       return lastPage.listing.length >= pageSize
         ? { page: allpages.length, nextPageToken: lastPage.nextPageToken }
