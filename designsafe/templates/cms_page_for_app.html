@@ -1,6 +1,9 @@
 {% extends "cms_page.html" %}
 {% load cms_tags static sekizai_tags %}
 {% block page_class %}s-app-page{% endblock page_class %}
-{% addtoblock "css" %}
-<link href="{% static 'styles/app-page.css' %}" rel="stylesheet" />
-{% endaddtoblock %}
+
+{% block styles %}
+    {% addtoblock "css" %}
+    <link href="{% static 'styles/app-page.css' %}" rel="stylesheet" />
+    {% endaddtoblock %}
+{% endblock %}

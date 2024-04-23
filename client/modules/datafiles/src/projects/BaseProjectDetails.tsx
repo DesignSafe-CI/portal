@@ -56,8 +56,8 @@ export const BaseProjectDetails: React.FC<{
   const coPis = projectValue.users.filter((u) => u.role === 'co_pi');
 
   return (
-    <>
-      <table style={{ width: '100%' }}>
+    <section style={{ marginBottom: '20px' }}>
+      <table style={{ width: '100%', marginBottom: '20px' }}>
         <colgroup>
           <col style={{ width: '200px' }} />
           <col />
@@ -134,6 +134,6 @@ export const BaseProjectDetails: React.FC<{
         <strong>Description: </strong>
         {projectValue.description}
       </DescriptionExpander>
-    </>
+    </section>
   );
 };
