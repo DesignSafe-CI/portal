@@ -12,3 +12,7 @@ export { useRemoveEntityFromTree } from './useRemoveEntityFromTree';
 export { useAddFileAssociation } from './useAddFileAssociation';
 export { useRemoveFileAssociation } from './useRemoveFileAssociation';
 export { useSetFileTags } from './useSetFileTags';
+export { usePatchEntityMetadata } from './usePatchEntityMetadata';
+export { usePatchProjectMetadata } from './usePatchProjectMetadata';
+export { useValidateEntitySelection } from './UseValidateEntitySelection';
+export type { TPipelineValidationResult } from './UseValidateEntitySelection';

@@ -62,7 +62,7 @@ export const PROJECT_COLORS: Record<string, { outline: string; fill: string }> =
     [SIMULATION_OUTPUT]: { outline: '#B59300', fill: '#ECE4BF' },
 
     [HYBRID_SIM]: { outline: '#cccccc', fill: '#f5f5f5' },
-    [HYBRID_SIM_ANALYSIS]: { outline: '##56C0E0', fill: '#CCECF6' },
+    [HYBRID_SIM_ANALYSIS]: { outline: '#56C0E0', fill: '#CCECF6' },
     [HYBRID_SIM_REPORT]: { outline: '#cccccc', fill: '#f5f5f5' },
     [HYBRID_SIM_GLOBAL_MODEL]: { outline: '#1568C9', fill: '#C4D9F2' },
     [HYBRID_SIM_COORDINATOR]: { outline: '#43A59D', fill: '#CAE9E6' },

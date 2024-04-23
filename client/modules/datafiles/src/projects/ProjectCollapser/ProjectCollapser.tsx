@@ -3,8 +3,13 @@ import { Collapse } from 'antd';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
 
 export const ProjectCollapse: React.FC<
-  React.PropsWithChildren<{ entityName: string; title: string }>
-> = ({ entityName, title, children }) => {
+  React.PropsWithChildren<{
+    entityName: string;
+    title: string;
+    defaultOpen?: boolean;
+  }>
+> = ({ entityName, title, defaultOpen = false, children }) => {
+  // Apply colors to the collapse header and border.
   const refCallback = useCallback(
     (ref: HTMLDivElement) => {
       if (ref) {
@@ -21,6 +26,7 @@ export const ProjectCollapse: React.FC<
   );
   return (
     <Collapse
+      defaultActiveKey={defaultOpen ? 0 : undefined}
       expandIconPosition="end"
       ref={refCallback}
       size="small"

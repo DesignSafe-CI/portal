@@ -37,7 +37,8 @@
   border-left: 1px solid black;
 }
 
-ul {
+.tree-base,
+.tree-base ul {
   list-style: none;
   margin: 0;
   padding: 0;
