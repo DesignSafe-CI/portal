@@ -94,6 +94,7 @@ export const DatafilesToolbar: React.FC = () => {
           system={system}
           selectedFiles={selectedFiles}
           className={styles.toolbarButton}
+          disabled={!rules.canTrash}
         >
           <i role="none" className="fa fa-trash" />
           <span>Trash</span>
