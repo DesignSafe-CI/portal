@@ -45,7 +45,6 @@ export const AppsBreadcrumb: React.FC = () => {
 
   return (
     <div className={styles.breadcrumbWrapper}>
-      {!isLoading && (
         <Breadcrumb
           className={styles.appsBreadcrumb}
           separator=">"
@@ -73,7 +72,6 @@ export const AppsBreadcrumb: React.FC = () => {
             );
           }}
         />
-      )}
     </div>
   );
 };
