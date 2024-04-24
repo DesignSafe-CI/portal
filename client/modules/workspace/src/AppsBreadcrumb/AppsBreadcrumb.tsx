@@ -43,38 +43,32 @@ export const AppsBreadcrumb: React.FC = () => {
     modifiedPath = 'Job Status';
   } 
 
-  let counter = 0; 
-  const encounteredTitles = new Set<string>();
-
   return (
     <div className={styles.breadcrumbWrapper}>
       {!isLoading && (
         <Breadcrumb
           className={styles.appsBreadcrumb}
+          separator=">"
           items={[...breadcrumbItems, ...getPathRoutes(modifiedPath)]}
-          itemRender={(obj) => {
+          itemRender={(obj, _params, items) => {
             if (!obj.path) {
               return <span className="breadcrumb-text">{obj.title}</span>;
             }
             let title = obj.title;
+            const isLast = obj?.path === items[items.length - 1]?.path;
+            console.log(isLast, items)
             if (appData && obj.title !== 'Home' && obj.title !== 'Tools & Applications' && obj.title !== 'Job Status') {
               title = appData.definition.notes?.label || appData.definition.id || obj.title;
             }
-            if (typeof obj.title === 'string' && !encounteredTitles.has(obj.title)) {
-              encounteredTitles.add(obj.title); 
-              counter++; 
-            }
-            const titlesArray = Array.from(encounteredTitles);
-            console.log(titlesArray[counter-1])
             return (
               <>
-                  {obj.title != titlesArray[counter-1] ? (
-                      <Link className="breadcrumb-link" to={obj.path}>
-                          {title}
-                      </Link>
-                  ) : (
-                      <span className="breadcrumb-text">{title}</span>
-                  )}
+                {obj.path && !isLast ? (
+                  <Link className="breadcrumb-link" to={obj.path}>
+                    {title}
+                  </Link>
+                ) : (
+                  <span className="breadcrumb-text">{title}</span>
+                )}
               </>
             );
           }}
