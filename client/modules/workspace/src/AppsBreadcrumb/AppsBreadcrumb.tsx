@@ -43,6 +43,9 @@ export const AppsBreadcrumb: React.FC = () => {
     modifiedPath = 'Job Status';
   } 
 
+  let counter = 0; 
+  const encounteredTitles = new Set<string>();
+
   return (
     <div className={styles.breadcrumbWrapper}>
       {!isLoading && (
@@ -57,10 +60,22 @@ export const AppsBreadcrumb: React.FC = () => {
             if (appData && obj.title !== 'Home' && obj.title !== 'Tools & Applications' && obj.title !== 'Job Status') {
               title = appData.definition.notes?.label || appData.definition.id || obj.title;
             }
+            if (typeof obj.title === 'string' && !encounteredTitles.has(obj.title)) {
+              encounteredTitles.add(obj.title); 
+              counter++; 
+            }
+            const titlesArray = Array.from(encounteredTitles);
+            console.log(titlesArray[counter-1])
             return (
-              <Link className="breadcrumb-link" to={obj.path}>
-                {title}
-              </Link>
+              <>
+                  {obj.title != titlesArray[counter-1] ? (
+                      <Link className="breadcrumb-link" to={obj.path}>
+                          {title}
+                      </Link>
+                  ) : (
+                      <span className="breadcrumb-text">{title}</span>
+                  )}
+              </>
             );
           }}
         />
