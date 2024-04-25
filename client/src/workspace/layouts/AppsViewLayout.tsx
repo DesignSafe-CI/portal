@@ -16,8 +16,8 @@ import {
   AppsWizard,
   AppsSubmissionForm,
   FormSchema,
-  AppFormProvider,
-  useAppFormState,
+  // AppFormProvider,
+  // useAppFormState,
   FormField,
   getSystemName,
   getExecSystemFromId,
@@ -44,7 +44,7 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     data: TAppResponse;
   };
 
-  const [state, setState] = useAppFormState();
+  // const [state, setState] = useAppFormState();
 
   // TODOv3: Load these from state
   const defaultSystem = 'designsafe.storage.default';
@@ -134,11 +134,6 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     missingAllocation = true;
   }
 
-  // set initial state on app load
-  useEffect(() => {
-    setState(initialValues);
-  }, [app, initialValues]);
-
   // const exec_sys = getExecSystemFromId(app, state.execSystemId);
   // const queue = getQueueValueForExecSystem(
   //   app,
@@ -176,7 +171,7 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     }),
   };
 
-  const { Header, Footer, Sider, Content } = Layout;
+  const { Header, Content } = Layout;
   const headerStyle = {
     background: 'transparent',
     paddingLeft: 0,
@@ -201,8 +196,30 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     resolver: zodResolver(z.object(schema)),
     mode: 'onChange',
   });
-  const { handleSubmit, control, formState } = methods;
+  const { handleSubmit, control, reset } = methods;
+
+  useEffect(() => {
+    reset(initialValues);
+  }, [initialValues]);
+
   const [current, setCurrent] = useState('inputs');
+
+  const fields = {
+    inputs: fileInputs.fields,
+    parameters: parameterSet.fields,
+    configuration: {
+      execSystemLogicalQueue: {},
+      maxMinutes: {},
+      coresPerNode: {},
+      nodeCount: {},
+      allocation: {},
+    },
+    outputs: {
+      name: {},
+      archiveSystemId: {},
+      archiveSystemDir: {},
+    },
+  };
 
   const steps = {
     inputs: {
@@ -347,14 +364,14 @@ export const AppsViewLayoutWrapper: React.FC = () => {
 
   const handleNextStep = useCallback(
     (data) => {
-      setState({ ...state, ...data });
+      // setState({ ...state, ...data });
       setCurrent(steps[current].nextPage);
     },
     [current]
   );
   const handlePreviousStep = useCallback(
     (data) => {
-      setState({ ...state, ...data });
+      // setState({ ...state, ...data });
       setCurrent(steps[current].prevPage);
     },
     [current]
@@ -365,7 +382,7 @@ export const AppsViewLayoutWrapper: React.FC = () => {
       <Form
         disabled={readOnly}
         layout="vertical"
-        onFinish={methods.handleSubmit(
+        onFinish={handleSubmit(
           (data) => {
             console.log('submit', data);
           },
@@ -385,16 +402,16 @@ export const AppsViewLayoutWrapper: React.FC = () => {
             <Content>
               <Row>
                 <Col span={14}>
-                  {Object.keys(state).length && (
-                    <AppsWizard
-                      step={steps[current]}
-                      handlePreviousStep={handlePreviousStep}
-                      handleNextStep={handleNextStep}
-                    />
-                  )}
+                  {/* {Object.keys(state).length && ( */}
+                  <AppsWizard
+                    step={steps[current]}
+                    handlePreviousStep={handlePreviousStep}
+                    handleNextStep={handleNextStep}
+                  />
+                  {/* )} */}
                 </Col>
                 <Col span={10}>
-                  <AppsSubmissionForm readOnly={readOnly} />
+                  <AppsSubmissionForm fields={fields} />
                 </Col>
               </Row>
             </Content>
@@ -415,9 +432,9 @@ export const AppsViewLayout: React.FC = () => {
           </Layout>
         }
       >
-        <AppFormProvider>
-          <AppsViewLayoutWrapper />
-        </AppFormProvider>
+        {/* <AppFormProvider> */}
+        <AppsViewLayoutWrapper />
+        {/* </AppFormProvider> */}
       </Suspense>
       <Outlet />
     </>

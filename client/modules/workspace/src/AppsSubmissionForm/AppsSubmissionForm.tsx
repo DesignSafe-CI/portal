@@ -26,7 +26,8 @@ export const AppsSubmissionForm: React.FC<{ fields?: object }> = ({
           key: k,
           label: (
             <span>
-              {k} <Tag color="error">Required</Tag>
+              {k}
+              {/* {k} <Tag color="error">Required</Tag> */}
             </span>
           ),
           children: getChildren(v),

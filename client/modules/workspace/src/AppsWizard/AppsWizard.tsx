@@ -2,28 +2,28 @@ import React, { useState } from 'react';
 import { Button, Form, Input, Row, Layout, Flex, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 
-import { createContext, useContext } from 'react';
-import { useFormContext } from 'react-hook-form';
+// import { createContext, useContext } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 // import styles from './AppsWizard.module.css';
 
-export const AppFormStateContext = createContext({});
+// export const AppFormStateContext = createContext({});
 
-export function AppFormProvider({ children, initialState = {} }) {
-  const value = useState(initialState);
-  return (
-    <AppFormStateContext.Provider value={value}>
-      {children}
-    </AppFormStateContext.Provider>
-  );
-}
+// export function AppFormProvider({ children, initialState = {} }) {
+//   const value = useState(initialState);
+//   return (
+//     <AppFormStateContext.Provider value={value}>
+//       {children}
+//     </AppFormStateContext.Provider>
+//   );
+// }
 
-export function useAppFormState() {
-  const context = useContext(AppFormStateContext);
-  if (!context) {
-    throw new Error('useAppFormState must be used within the AppFormProvider');
-  }
-  return context;
-}
+// export function useAppFormState() {
+//   const context = useContext(AppFormStateContext);
+//   if (!context) {
+//     throw new Error('useAppFormState must be used within the AppFormProvider');
+//   }
+//   return context;
+// }
 
 /**
  * AdjustValuesWhenQueueChanges is a component that makes uses of
@@ -48,35 +48,6 @@ export function useAppFormState() {
 //   return null;
 // };
 
-import { Children, cloneElement, isValidElement } from 'react';
-import type { Control, FieldPath, FieldValues, Field } from 'react-hook-form';
-import { useController, UseControllerProps } from 'react-hook-form';
-function FieldInfo({
-  description,
-  name,
-  control,
-}: {
-  description: string;
-  name: string;
-  control: Control;
-}) {
-  const { fieldState } = useController({ name, control });
-  return (
-    <>
-      <small className="form-field__help">
-        {description}
-        {fieldState.invalid &&
-          fieldState.isTouched &&
-          fieldState.error?.message && (
-            <div className="form-field__validation-error">
-              {fieldState.error.message}
-            </div>
-          )}
-      </small>
-    </>
-  );
-}
-
 export function FormField({
   control,
   name,
@@ -88,24 +59,31 @@ export function FormField({
   type,
   ...props
 }) {
+  const fieldState = useWatch({ control, name });
+  const { resetField } = useFormContext(); // retrieve those props
   return (
-    <Form.Item label={label} htmlFor={name}>
-      <Row>
-        {parameterSet && (
-          <code>
-            (
-            <a
-              href={`https://tapis.readthedocs.io/en/latest/technical/jobs.html#${parameterSet.toLowerCase()}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {parameterSet}
-            </a>
-            )
-          </code>
-        )}
-        <FormItem control={control} name={name} required={required} noStyle>
-          {/* <SelectModal
+    <div style={{ lineHeight: '20px' }}>
+      {parameterSet && (
+        <code>
+          (
+          <a
+            href={`https://tapis.readthedocs.io/en/latest/technical/jobs.html#${parameterSet.toLowerCase()}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {parameterSet}
+          </a>
+          )
+        </code>
+      )}
+      <FormItem
+        control={control}
+        name={name}
+        required={required}
+        label={label}
+        htmlFor={name}
+      >
+        {/* <SelectModal
                 isOpen={openTapisFileModal}
                 toggle={() => {
                   setOpenTapisFileModal((prevState) => !prevState);
@@ -114,40 +92,39 @@ export function FormField({
                   helpers.setValue(`tapis://${system}/${path}`);
                 }}
               /> */}
-          {type === 'select' ? (
-            <Select {...props} />
-          ) : (
-            <Input
-              {...props}
-              type={type}
-              // name={name}
-              addonBefore={
-                tapisFile && (
-                  <Form.Item name="prefix" noStyle>
-                    <Button
-                      type="primary"
-                      // onClick={() => setOpenTapisFileModal(true)}
-                    >
-                      Select
-                    </Button>
-                  </Form.Item>
-                )
-              }
-              addonAfter={
-                <Button
-                  type="text"
-                  onClick={() => console.log('clear')}
-                  // disabled={!field.state.value}
-                >
-                  Clear
-                </Button>
-              }
-            />
-          )}
-        </FormItem>
-        <FieldInfo description={description} control={control} name={name} />
-      </Row>
-    </Form.Item>
+        {type === 'select' ? (
+          <Select {...props} />
+        ) : (
+          <Input
+            {...props}
+            type={type}
+            // name={name}
+            addonBefore={
+              tapisFile && (
+                <Form.Item name="prefix" noStyle>
+                  <Button
+                    type="primary"
+                    // onClick={() => setOpenTapisFileModal(true)}
+                  >
+                    Select
+                  </Button>
+                </Form.Item>
+              )
+            }
+            addonAfter={
+              <Button
+                type="text"
+                onClick={() => resetField(name, { defaultValue: '' })}
+                disabled={!fieldState}
+              >
+                Clear
+              </Button>
+            }
+          />
+        )}
+      </FormItem>
+      <small style={{ lineHeight: '20px' }}>{description}</small>
+    </div>
   );
 }
 

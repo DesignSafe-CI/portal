@@ -37,7 +37,7 @@ async function getApps(
 export const getAppsQuery = (queryParams: TAppParamsType) => ({
   queryKey: ['workspace', 'getApps', queryParams],
   queryFn: ({ signal }) => getApps({ signal }, queryParams),
-  staleTime: 1000,
+  staleTime: 5000,
 });
 
 function useGetApps(queryParams: TAppParamsType) {
