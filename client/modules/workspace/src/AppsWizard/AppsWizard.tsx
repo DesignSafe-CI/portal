@@ -1,47 +1,10 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  forwardRef,
-  useRef,
-} from 'react';
-// import styles from './AppsWizard.module.css';
-import {
-  Button,
-  Form,
-  Input,
-  theme,
-  Row,
-  Col,
-  Layout,
-  Flex,
-  Select,
-} from 'antd';
-import { TAppResponse } from '@client/hooks';
-// import { useForm, useField, Field } from '@tanstack/react-form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState } from 'react';
+import { Button, Form, Input, Row, Layout, Flex, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
-// import type { FieldApi } from '@tanstack/react-form';
-// import { zodValidator } from '@tanstack/zod-form-adapter';
-import { number, z } from 'zod';
-import {
-  isTargetPathEmpty,
-  isTargetPathField,
-  getInputFieldFromTargetPathField,
-  getQueueMaxMinutes,
-  getMaxMinutesValidation,
-  getNodeCountValidation,
-  getCoresPerNodeValidation,
-  getTargetPathFieldName,
-  updateValuesForQueue,
-  getAppQueueValues,
-} from '@client/workspace';
-import FormSchema from './AppsFormSchema';
 
 import { createContext, useContext } from 'react';
-import { FormProvider, useFormContext, useFormState } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
+// import styles from './AppsWizard.module.css';
 
 export const AppFormStateContext = createContext({});
 
@@ -189,11 +152,10 @@ export function FormField({
 }
 
 export const AppsWizard: React.FC<{
-  app: TAppResponse;
-  schema: {};
-  readOnly: boolean;
-  fields: any;
-}> = ({ step, handlePreviousStep }) => {
+  step: object;
+  handlePreviousStep: CallableFunction;
+  handleNextStep: CallableFunction;
+}> = ({ step, handlePreviousStep, handleNextStep }) => {
   const { handleSubmit } = useFormContext();
 
   const contentStyle = {
@@ -227,10 +189,10 @@ export const AppsWizard: React.FC<{
                 style={{
                   margin: '0 8px',
                 }}
+                disabled={!step.prevPage}
                 onClick={handleSubmit(handlePreviousStep, (data) => {
                   console.log('error prev data', data);
                 })}
-                disabled={!step.prevPage}
               >
                 Back
               </Button>
@@ -238,6 +200,9 @@ export const AppsWizard: React.FC<{
                 type="primary"
                 htmlType="submit"
                 disabled={!step.nextPage}
+                onClick={handleSubmit(handleNextStep, (data) => {
+                  console.log('error next data', data);
+                })}
               >
                 Continue
               </Button>

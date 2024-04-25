@@ -1,3 +1,17 @@
+import React, {
+  useState,
+  useEffect,
+  Suspense,
+  useMemo,
+  useCallback,
+} from 'react';
+import { Outlet, useParams, useLocation } from 'react-router-dom';
+import { Layout, Form, Col, Row, Flex } from 'antd';
+import { z } from 'zod';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useGetApps, TAppParamsType, TAppResponse } from '@client/hooks';
+import { Spinner } from '@client/common-components';
 import {
   AppsWizard,
   AppsSubmissionForm,
@@ -5,19 +19,6 @@ import {
   AppFormProvider,
   useAppFormState,
   FormField,
-} from '@client/workspace';
-import { TAppParamsType, TAppResponse, getAppsQuery } from '@client/hooks';
-import { Await, Outlet } from 'react-router-dom';
-import { Layout, Form, message, Col, Row, Flex } from 'antd';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useState, useEffect, Suspense, useMemo } from 'react';
-import styles from './layout.module.css';
-import { useParams, useLocation } from 'react-router-dom';
-import { useGetApps } from '@client/hooks';
-import { Spinner } from '@client/common-components';
-// import { useForm, useField, Field, FormState } from '@tanstack/react-form';
-import { zodValidator } from '@tanstack/zod-form-adapter';
-import {
   getSystemName,
   getExecSystemFromId,
   getQueueValueForExecSystem,
@@ -29,26 +30,7 @@ import {
   isAppTypeBATCH,
   getAppQueueValues,
 } from '@client/workspace';
-
-import {
-  useSuspenseQuery,
-  useIsFetching,
-  type QueryClient,
-  queryOptions,
-} from '@tanstack/react-query';
-import {
-  useLoaderData,
-  Link,
-  NavLink,
-  useNavigation,
-  useSubmit,
-  LoaderFunctionArgs,
-} from 'react-router-dom';
-import { number, z } from 'zod';
-import { useForm, FormProvider, useFormContext } from 'react-hook-form';
-
-import { useCallback, forwardRef, useRef } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
+import styles from './layout.module.css';
 
 export const AppsViewLayoutWrapper: React.FC = () => {
   const { appId } = useParams() as TAppParamsType;
@@ -382,78 +364,41 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     <FormProvider {...methods}>
       <Form
         disabled={readOnly}
-        // name={`${steps[current].title}Form`}
         layout="vertical"
-        onFinish={methods.handleSubmit(handleNextStep, (data) => {
-          console.log('error next data', data);
-        })}
+        onFinish={methods.handleSubmit(
+          (data) => {
+            console.log('submit', data);
+          },
+          (data) => {
+            console.log('error submit data', data);
+          }
+        )}
       >
         <fieldset>
-          <Suspense
-            fallback={
-              <Layout>
-                <h1>HELLO!!!!!!!!!!!!</h1>
-                <Spinner />
-              </Layout>
-            }
-          >
-            <Layout style={layoutStyle}>
-              <Header style={headerStyle}>
-                <Flex justify="space-between">
-                  {app.definition.notes.label || app.definition.id}
-                  <a href="/user-guide">View User Guide</a>
-                </Flex>
-              </Header>
-              <Content>
-                <Row>
-                  <Col span={14}>
-                    {Object.keys(state).length && (
-                      <AppsWizard
-                        step={steps[current]}
-                        handlePreviousStep={handlePreviousStep}
-                      />
-                    )}
-                  </Col>
-                  <Col span={10}>
-                    <AppsSubmissionForm readOnly={readOnly} />
-                  </Col>
-                </Row>
-                {/* <form.Subscribe
-            selector={(state) => [
-              state.canSubmit,
-              state.isSubmitting,
-              state.values,
-            ]}
-            children={([canSubmit, isSubmitting, values]) => {
-              return (
-                <fieldset disabled={readOnly}>
-                  <Row>
-                    <Col span={14}>
-                      <AppsWizard
-                        app={app}
-                        appFormSchema={appFormSchema}
-                        values={values}
-                        form={form}
-                        formValues={formValues}
-                        setFormValues={setFormValues}
-                      />
-                    </Col>
-                    <Col span={10}>
-                      <AppsSubmissionForm
-                        canSubmit={canSubmit}
-                        isSubmitting={isSubmitting}
-                        values={values}
-                        handleSubmit={form.handleSubmit}
-                      />
-                    </Col>
-                  </Row>
-                </fieldset>
-              );
-            }}
-          /> */}
-              </Content>
-            </Layout>
-          </Suspense>
+          <Layout style={layoutStyle}>
+            <Header style={headerStyle}>
+              <Flex justify="space-between">
+                {app.definition.notes.label || app.definition.id}
+                <a href="/user-guide">View User Guide</a>
+              </Flex>
+            </Header>
+            <Content>
+              <Row>
+                <Col span={14}>
+                  {Object.keys(state).length && (
+                    <AppsWizard
+                      step={steps[current]}
+                      handlePreviousStep={handlePreviousStep}
+                      handleNextStep={handleNextStep}
+                    />
+                  )}
+                </Col>
+                <Col span={10}>
+                  <AppsSubmissionForm readOnly={readOnly} />
+                </Col>
+              </Row>
+            </Content>
+          </Layout>
         </fieldset>
       </Form>
     </FormProvider>
@@ -466,7 +411,6 @@ export const AppsViewLayout: React.FC = () => {
       <Suspense
         fallback={
           <Layout>
-            <h1>HELLO!!!!!!!!!!!!</h1>
             <Spinner />
           </Layout>
         }

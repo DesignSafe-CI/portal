@@ -1,17 +1,22 @@
 import React, { useEffect } from 'react';
 import { List, Descriptions, DescriptionsProps, Tag, Button } from 'antd';
 import { useAppFormState } from '../AppsWizard/AppsWizard';
+import {
+  FormProvider,
+  useFormContext,
+  useFormState,
+  useWatch,
+} from 'react-hook-form';
 
-export const AppsSubmissionForm: React.FC<{
-  canSubmit: boolean;
-  isSubmitting: boolean;
-  values: {};
-  handleSubmit;
-}> = ({ readOnly }) => {
-  const [state, setState] = useAppFormState();
-  useEffect(() => {
-    console.log('state changed', state);
-  }, [state]);
+export const AppsSubmissionForm: React.FC<{ fields?: object }> = ({
+  fields,
+}) => {
+  const {
+    handleSubmit,
+    control,
+    formState: { defaultValues, isSubmitting, isValid, errors },
+  } = useFormContext();
+  const formState = useWatch({ control, defaultValue: defaultValues });
 
   const getChildren = (value) => {
     if (typeof value === 'object') {
@@ -50,22 +55,23 @@ export const AppsSubmissionForm: React.FC<{
       size="small"
       column={1}
       title="Summary"
-      items={getItems(state)}
+      items={getItems(formState)}
       layout="vertical"
       extra={
         <>
           <Button
             type="primary"
             htmlType="submit"
-            disabled={readOnly}
-            onClick={(e) => {
-              console.log('submitting');
-              e.preventDefault();
-              e.stopPropagation();
-              // void handleSubmit();
-            }}
+            disabled={!isValid}
+            loading={isSubmitting}
+            // onClick={(e) => {
+            //   console.log('submitting');
+            //   e.preventDefault();
+            //   e.stopPropagation();
+            //   // void handleSubmit();
+            // }}
           >
-            {/* {isSubmitting ? '...' : 'Submit'} */}
+            {isSubmitting ? '' : 'Submit'}
           </Button>
         </>
       }
