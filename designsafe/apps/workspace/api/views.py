@@ -101,9 +101,6 @@ def test_system_needs_keys(tapis, system_id):
         tapis.files.listFiles(systemId=system_id, path="/")
     except (InternalServerError, UnauthorizedError):
         system_def = tapis.systems.getSystem(systemId=system_id)
-        logger.info(
-            f"Keys for user {tapis.username} must be manually pushed to system: {system_id}"
-        )
         return system_def
     return False
 
@@ -140,6 +137,9 @@ class AppsView(AuthenticatedApiView):
                 tapis, settings.AGAVE_STORAGE_SYSTEM
             )
             if system_needs_keys:
+                logger.info(
+                    f"Keys for user {request.user.usernam} must be manually pushed to system: {system_needs_keys.id}"
+                )
                 data["systemNeedsKeys"] = True
                 data["pushKeysSystem"] = system_needs_keys
 
@@ -585,23 +585,15 @@ class JobsView(AuthenticatedApiView):
             # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
         # Test file listing on relevant systems to determine whether keys need to be pushed manually
-        system_needs_keys = any(
-            test_system_needs_keys(tapis, system_id)
-            for system_id in list(
-                set([job_post["archiveSystemId"], job_post["execSystemId"]])
-            )
-        )
-        if system_needs_keys:
-            logger.info(
-                f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
-            )
-            return JsonResponse(
-                {
-                    "status": 200,
-                    "response": {"execSys": system_needs_keys},
-                },
-                encoder=BaseTapisResultSerializer,
-            )
+        for system_id in list(
+            set([job_post["archiveSystemId"], job_post["execSystemId"]])
+        ):
+            system_needs_keys = test_system_needs_keys(tapis, system_id)
+            if system_needs_keys:
+                logger.info(
+                    f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
+                )
+                return {"execSys": system_needs_keys}
 
         if settings.DEBUG:
             wh_base_url = settings.WH_BASE_URL + reverse(

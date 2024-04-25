@@ -10,7 +10,12 @@ import { Layout, Form, Col, Row, Flex } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useGetApps, TAppParamsType, TAppResponse } from '@client/hooks';
+import {
+  useGetApps,
+  TAppParamsType,
+  TAppResponse,
+  usePostJobs,
+} from '@client/hooks';
 import { Spinner } from '@client/common-components';
 import {
   AppsWizard,
@@ -29,6 +34,9 @@ import {
   getExecSystemLogicalQueueValidation,
   isAppTypeBATCH,
   getAppQueueValues,
+  isTargetPathField,
+  getInputFieldFromTargetPathField,
+  isTargetPathEmpty,
 } from '@client/workspace';
 import styles from './layout.module.css';
 
@@ -105,12 +113,6 @@ export const AppsViewLayoutWrapper: React.FC = () => {
         archiveSystemId:
           app.definition.jobAttributes.archiveSystemId || defaultSystem,
         archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
-
-        // Move to submission
-        archiveOnAppError: true,
-        appId: app.definition.id,
-        appVersion: app.definition.version,
-        execSystemId: app.definition.jobAttributes.execSystemId,
       },
     }),
     [app]
@@ -376,20 +378,114 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     },
     [current]
   );
+  const { mutate: submitJob, isPending } = usePostJobs();
+
+  const submitJobCallback = (data) => {
+    const jobData = {
+      operation: 'submitJob',
+
+      licenseType: app.license.type,
+      isInteractive: !!app.definition.notes.isInteractive,
+      job: {
+        archiveOnAppError: true,
+        appId: app.definition.id,
+        appVersion: app.definition.version,
+        execSystemId: app.definition.jobAttributes.execSystemId,
+        ...data.configuration,
+        ...data.outputs,
+      },
+    };
+
+    // Transform input field values into format that jobs service wants.
+    // File Input structure will have 2 fields if target path is required by the app.
+    // field 1 - has source url
+    // field 2 - has target path for the source url.
+    // tapis wants only 1 field with 2 properties - source url and target path.
+    // The logic below handles that scenario by merging the related fields into 1 field.
+    jobData.job.fileInputs = Object.values(
+      Object.entries(data.inputs)
+        .map(([k, v]) => {
+          // filter out read only inputs. 'FIXED' inputs are tracked as readOnly
+          if (fileInputs.fields?.[k].readOnly) return;
+          return {
+            name: k,
+            sourceUrl: !isTargetPathField(k) ? v : null,
+            targetDir: isTargetPathField(k) ? v : null,
+          };
+        })
+        .filter((v) => v) //filter nulls
+        .reduce((acc, entry) => {
+          // merge input field and targetPath fields into one.
+          const key = getInputFieldFromTargetPathField(entry.name);
+          if (!acc[key]) {
+            acc[key] = {};
+          }
+          acc[key]['name'] = key;
+          acc[key]['sourceUrl'] = acc[key]['sourceUrl'] ?? entry.sourceUrl;
+          acc[key]['targetPath'] = acc[key]['targetPath'] ?? entry.targetDir;
+          return acc;
+        }, {})
+    )
+      .flat()
+      .filter((fileInput) => fileInput.sourceUrl) // filter out any empty values
+      .map((fileInput) => {
+        if (isTargetPathEmpty(fileInput.targetPath)) {
+          return {
+            name: fileInput.name,
+            sourceUrl: fileInput.sourceUrl,
+          };
+        }
+        return fileInput;
+      });
+
+    jobData.job.parameterSet = Object.assign(
+      {},
+      ...Object.entries(data.parameters).map(
+        ([parameterSet, parameterValue]) => {
+          return {
+            [parameterSet]: Object.entries(parameterValue)
+              .map(([k, v]) => {
+                if (!v) return;
+                // filter read only parameters. 'FIXED' parameters are tracked as readOnly
+                if (parameterSet.fields?.[k].readOnly) return;
+                // Convert the value to a string, if necessary
+                const transformedValue =
+                  typeof v === 'number' ? v.toString() : v;
+                return parameterSet === 'envVariables'
+                  ? { key: k, value: transformedValue }
+                  : { name: k, arg: transformedValue };
+              })
+              .filter((v) => v), // filter out any empty values
+          };
+        }
+      )
+    );
+
+    // Add allocation scheduler option
+    if (jobData.job.allocation) {
+      if (!jobData.job.parameterSet.schedulerOptions) {
+        jobData.job.parameterSet.schedulerOptions = [];
+      }
+      jobData.job.parameterSet.schedulerOptions.push({
+        name: 'TACC Allocation',
+        description: 'The TACC allocation associated with this job execution',
+        include: true,
+        arg: `-A ${jobData.job.allocation}`,
+      });
+      delete jobData.job.allocation;
+    }
+
+    submitJob(jobData);
+  };
 
   return (
     <FormProvider {...methods}>
       <Form
         disabled={readOnly}
         layout="vertical"
-        onFinish={handleSubmit(
-          (data) => {
-            console.log('submit', data);
-          },
-          (data) => {
-            console.log('error submit data', data);
-          }
-        )}
+        onFinish={handleSubmit(submitJobCallback, (data) => {
+          console.log('error submit data', data);
+        })}
       >
         <fieldset>
           <Layout style={layoutStyle}>
@@ -411,7 +507,10 @@ export const AppsViewLayoutWrapper: React.FC = () => {
                   {/* )} */}
                 </Col>
                 <Col span={10}>
-                  <AppsSubmissionForm fields={fields} />
+                  <AppsSubmissionForm
+                    fields={fields}
+                    isSubmitting={isPending}
+                  />
                 </Col>
               </Row>
             </Content>

@@ -8,9 +8,10 @@ import {
   useWatch,
 } from 'react-hook-form';
 
-export const AppsSubmissionForm: React.FC<{ fields?: object }> = ({
-  fields,
-}) => {
+export const AppsSubmissionForm: React.FC<{
+  fields?: object;
+  isPending: boolean;
+}> = ({ fields, isPending }) => {
   const {
     handleSubmit,
     control,
@@ -64,7 +65,7 @@ export const AppsSubmissionForm: React.FC<{ fields?: object }> = ({
             type="primary"
             htmlType="submit"
             disabled={!isValid}
-            loading={isSubmitting}
+            loading={isSubmitting || isPending}
             // onClick={(e) => {
             //   console.log('submitting');
             //   e.preventDefault();
@@ -72,7 +73,7 @@ export const AppsSubmissionForm: React.FC<{ fields?: object }> = ({
             //   // void handleSubmit();
             // }}
           >
-            {isSubmitting ? '' : 'Submit'}
+            {isSubmitting || isPending ? '' : 'Submit'}
           </Button>
         </>
       }
