@@ -55,10 +55,7 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({
     const { data, isLoading } = useNeesDetails(neesId);
     const neesProjectData = data?.metadata.project;
     const neesExperiments = data?.metadata.experiments;
-
-    const numDois = neesExperiments?.filter(exp => !!exp.doi).length;
-    console.log(numDois);
-
+    const numDOIs = neesExperiments?.filter(exp => !!exp.doi).length || 0;
 
     const neesCitations = neesExperiments?.filter(exp => !!exp.doi).map((u) => {
       const authors = u.creators?.map((a) => a.lastName + ', ' + a.firstName).join('; ');
@@ -221,10 +218,11 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({
                     }
                   </td>
                 </tr>
+                {/*TODO: add this in once breadcrumbs are complete
                 <tr>
                   <td>Files</td>
                   <td>link to files here</td>
-                </tr>
+                </tr> */}
               </tbody>
             </table>
           </Flex>
@@ -238,74 +236,142 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({
         <>
           <div>
             <h2>{neesProjectData?.name}: {neesProjectData?.title}</h2>
-            <Divider />
-            <table style={{ width: '100%' }}>
+            <Divider className={styles['nees-divider']} />
+            <table className={styles['nees-mini-table']}>
               <colgroup>
-                <col style={{ width: '200px' }} />
-                <col />
+                <col style={{ width: '50%' }} />
+                <col style={{ width: '50%' }} />
               </colgroup>
-              <tbody>
-                <tr className="prj-row">
-                  <th>PIs:</th>
-                  <td>
+              <tr>
+                <td>
+                  <table className={styles['nees-mini-table']}>
+                    <tr>
+                      <th className={styles['nees-th']}>PIs</th>
+                      <td className={styles['nees-td']}>
+                        {
+                          neesProjectData?.pis
+                            ? neesProjectData?.pis.map((u) => <div key={u.lastName}>{u.firstName} {u.lastName}</div>)
+                            : "No PIs Listed"
+                        }
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td>
+                  <table style={{ width: '100%' }}>
+                    <tr>
+                      <th className={styles['nees-th']}>Organizations</th>
+                      <td className={styles['nees-td']}>
+                        {
+                          neesProjectData?.organization
+                            ? neesProjectData?.organization.map((u) => <div key={u.name}>{u.name} {u.state}, {u.country}</div>)
+                            : "No Organizations Listed"
+                        }
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <Divider className={styles['nees-divider']} />
+                </td>
+                <td>
+                  <Divider className={styles['nees-divider']} />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                <table className={styles['nees-mini-table']}>
+                    <tr>
+                      <th className={styles['nees-th']}>NEES ID</th>
+                      <td className={styles['nees-td']}>
+                        {neesProjectData?.name}
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td>
+                  <table className={styles['nees-mini-table']}>
+                    <tr>
+                      <th className={styles['nees-th']}>Sponsors</th>
+                      <td className={styles['nees-td']}>
+                        {
+                          neesProjectData?.sponsor
+                          ? neesProjectData?.sponsor?.map((u) =>
+                              <div key={u.name}>
+                                <Link to={u.url} key={u.name}>{u.name}</Link>
+                              </div>
+                            )
+                          : "No Sponsors Listed"
+                        }
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <Divider className={styles['nees-divider']} />
+                </td>
+                <td>
+                  <Divider className={styles['nees-divider']} />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table className={styles['nees-mini-table']}>
+                    <tbody>
+                      <tr>
+                        <th className={styles['nees-th']}>Project Type</th>
+                        <td className={styles['nees-td']}>NEES</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+                <td>
+                  <table className={styles['nees-mini-table']}>
+                    <tbody>
+                      <tr>
+                        <th className={styles['nees-th']}>Start Date</th>
+                        <td className={styles['nees-td']}>
+                          {
+                            neesProjectData?.startDate
+                              ? neesProjectData?.startDate
+                              : "No Start Date"
+                          }
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <Divider className={styles['nees-divider']} />
+                </td>
+                <td>
+                  <Divider className={styles['nees-divider']} />
+                </td>
+              </tr>
+              <tr>
+                <table className={styles['nees-mini-table']}>
+                  <tbody>
                     {
-                      neesProjectData?.pis
-                        ? neesProjectData?.pis.map((u) => <div key={u.lastName}>{u.firstName} {u.lastName}</div>)
-                        : "No PIs Listed"
+                      numDOIs > 0
+                      ?
+                        <tr>
+                          <th className={styles['nees-th']}>DOIs</th>
+                          <td className={styles['nees-td']}>
+                            <Button onClick={doiList}>List of DOIs</Button>
+                          </td>
+                        </tr>
+                      :
+                      <tr></tr>
                     }
-                  </td>
-                </tr>
-                <tr className="prj-row">
-                  <th>Organizations:</th>
-                  <td>
-                    {
-                      neesProjectData?.organization
-                        ? neesProjectData?.organization.map((u) => <div key={u.name}>{u.name} {u.state} {u.country}</div>)
-                        : "No Organizations Listed"
-                    }
-                  </td>
-                </tr>
-                <tr className="prj-row">
-                  <th>NEES ID:</th>
-                  <td>
-                    {neesProjectData?.name}
-                  </td>
-                </tr>
-                <tr className="prj-row">
-                  <th>Sponsors:</th>
-                  <td>
-                    {
-                      neesProjectData?.sponsor
-                      ? neesProjectData?.sponsor?.map((u) =>
-                          <div key={u.name}>
-                            <Link to={u.url} key={u.name}>{u.name}</Link>
-                          </div>
-                        )
-                      : "No Sponsors Listed"
-                    }
-                  </td>
-                </tr>
-                <tr className="prj-row">
-                  <th>Project Type:</th>
-                  <td>NEES</td>
-                </tr>
-                <tr className="prj-row">
-                  <th>Start Date:</th>
-                  <td>
-                    {
-                      neesProjectData?.startDate
-                        ? neesProjectData?.startDate
-                        : "No Start Date"
-                    }
-                  </td>
-                </tr>
-                <tr className="prj-row">
-                  <th>DOIs:</th>
-                  <td>
-                    <Button onClick={doiList}>List of DOIs</Button>
-                  </td>
-                </tr>
-              </tbody>
+                  </tbody>
+                </table>
+              </tr>
             </table>
             Description:
             <DescriptionExpander>{neesProjectData?.description}</DescriptionExpander>
@@ -315,20 +381,17 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({
               type="card"
               items = {[
                 {
+                  key: 'files',
+                  label: 'Files',
+                  children: 'files',
+                },
+                {
                   key: 'experiments',
                   label: 'Experiments',
                   children: experimentsList,
                 },
-                {
-                  key: 'files',
-                  label: 'Files',
-                  children: 'files',
-                }
               ]}
-
-            >
-
-            </Tabs>
+            />
           </div>
         </>
       );

@@ -14,3 +14,21 @@
 th {
   vertical-align: top;
 }
+
+.nees-th {
+  width: 25%;
+}
+
+.nees-td {
+  width: 75%;
+}
+
+.nees-mini-table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.nees-divider {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
