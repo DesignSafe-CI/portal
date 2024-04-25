@@ -63,7 +63,7 @@ export const AppsViewLayoutWrapper: React.FC = () => {
   // TODOv3: Load these from state
   const defaultSystem = 'designsafe.storage.default';
   const portalAlloc = 'DesignSafe-DCV';
-  const allocations = ['A', 'B'];
+  const allocations = ['A', 'DesignSafe-DCV'];
 
   // const hasDefaultAllocation =
   // state.allocations.loading ||
@@ -82,6 +82,8 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     app,
     app.definition.jobAttributes.execSystemId
   );
+
+  // TODOv3: dynamic exec system and queues
   const initialValues = useMemo(
     () => ({
       inputs: fileInputs.defaults,
@@ -89,10 +91,7 @@ export const AppsViewLayoutWrapper: React.FC = () => {
       configuration: {
         execSystemId: defaultExecSystem?.id,
         execSystemLogicalQueue: isAppTypeBATCH(app)
-          ? getQueueValueForExecSystem(
-              app,
-              getExecSystemFromId(app, defaultExecSystem.execSystemId)
-            )?.name
+          ? app.definition.jobAttributes.execSystemLogicalQueue
           : // (
             //     app.execSystems.batchLogicalQueues.find(
             //       (q) =>

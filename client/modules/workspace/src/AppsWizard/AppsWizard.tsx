@@ -41,6 +41,7 @@ import {
 import FormSchema from './AppsFormSchema';
 
 import { createContext, useContext } from 'react';
+import { FormProvider, useFormContext, useFormState } from 'react-hook-form';
 
 export const AppFormStateContext = createContext({});
 
@@ -149,6 +150,7 @@ function FormField({
   type,
   ...props
 }) {
+  console.log(props);
   return (
     <Form.Item label={label} htmlFor={name}>
       <Row>
@@ -334,22 +336,15 @@ export const AppsWizard: React.FC<{
   readOnly: boolean;
   fields: any;
 }> = ({ app, schema, readOnly, fields }) => {
-  const [current, setCurrent] = useState('parameters');
+  const [current, setCurrent] = useState('configuration');
   const [state, setState] = useAppFormState();
 
-  console.log(state);
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    setError,
-    formState: { errors, defaultValues },
-  } = useForm({
+  const methods = useForm({
     defaultValues: { [current]: state[current] },
     resolver: zodResolver(z.object({ [current]: schema[current] })),
     mode: 'onChange',
   });
+  const { handleSubmit, control } = methods;
 
   const allocations = ['A', 'B'];
 
@@ -400,9 +395,10 @@ export const AppsWizard: React.FC<{
               description="Select the queue this job will execute on."
               type="select"
               required
+              // TODOv3: Dynamic system queues
               options={getAppQueueValues(
                 app,
-                state.execSystem?.batchLogicalQueues
+                app.execSystems[0].batchLogicalQueues
               )
                 // Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
                 // while hideNodeCountAndCoresPerNode is true
@@ -523,6 +519,12 @@ export const AppsWizard: React.FC<{
   );
   const handlePreviousStep = useCallback(
     (data) => {
+      // const formcontext = useFormContext();
+      // const formstate = useFormState({
+      //   control,
+      // });
+      // console.log(formcontext);
+      // console.log(formstate);
       console.log('prev changed');
       setState({ ...state, ...data });
       setCurrent(steps[current].prevPage);
@@ -556,6 +558,12 @@ export const AppsWizard: React.FC<{
   // console.log(steps[current].content);
 
   const BackButton = forwardRef(function BackButton(props, ref) {
+    const formcontext = useFormContext();
+    const formstate = useFormState({
+      control,
+    });
+    console.log(formcontext);
+    console.log(formstate);
     return <Button onClick={() => console.log(ref)}>Back</Button>;
     // return <Button onClick={() => onClick(ref)}>Back</Button>
   });
@@ -563,53 +571,57 @@ export const AppsWizard: React.FC<{
   return (
     <Flex gap="middle" wrap="wrap">
       <Layout style={layoutStyle}>
-        <Form
-          disabled={readOnly}
-          name={`${steps[current].title}Form`}
-          layout="vertical"
-          onFinish={handleSubmit(handleNextStep, (data) => {
-            console.log('error data', data);
-          })}
-        >
-          <fieldset>
-            <Header style={headerStyle}>
-              <Flex justify="space-between">
-                <span>{steps[current].title}</span>
-                <span>
-                  {/* <Button
-                    style={{
-                      margin: '0 8px',
-                    }}
-                    // onClick={(e) => {
-                    //   handleSubmit()
-                    //   e.preventDefault();
-                    //   e.stopPropagation();
-                    //   prev(steps[current].prevPage);
-                    // }}
-                    onClick={() => handlePreviousStep(ref)}
-                    disabled={!steps[current].prevPage}
-                  >
-                    Back
-                  </Button> */}
-                  <BackButton />
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    // onClick={(e) => {
-                    //   e.preventDefault();
-                    //   e.stopPropagation();
-                    //   next(steps[current].nextPage);
-                    // }}
-                    disabled={!steps[current].nextPage}
-                  >
-                    Continue
-                  </Button>
-                </span>
-              </Flex>
-            </Header>
-            <Content style={contentStyle}>{steps[current].content}</Content>
-          </fieldset>
-        </Form>
+        <FormProvider {...methods}>
+          <Form
+            disabled={readOnly}
+            name={`${steps[current].title}Form`}
+            layout="vertical"
+            onFinish={handleSubmit(handleNextStep, (data) => {
+              console.log('error data', data);
+            })}
+          >
+            <fieldset>
+              <Header style={headerStyle}>
+                <Flex justify="space-between">
+                  <span>{steps[current].title}</span>
+                  <span>
+                    <Button
+                      style={{
+                        margin: '0 8px',
+                      }}
+                      // onClick={(e) => {
+                      //   handleSubmit()
+                      //   e.preventDefault();
+                      //   e.stopPropagation();
+                      //   prev(steps[current].prevPage);
+                      // }}
+                      onClick={handleSubmit(handlePreviousStep, (data) => {
+                        console.log('error data', data);
+                      })}
+                      disabled={!steps[current].prevPage}
+                    >
+                      Back
+                    </Button>
+                    {/* <BackButton /> */}
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      //   e.stopPropagation();
+                      //   next(steps[current].nextPage);
+                      // }}
+                      disabled={!steps[current].nextPage}
+                    >
+                      Continue
+                    </Button>
+                  </span>
+                </Flex>
+              </Header>
+              <Content style={contentStyle}>{steps[current].content}</Content>
+            </fieldset>
+          </Form>
+        </FormProvider>
       </Layout>
     </Flex>
   );
