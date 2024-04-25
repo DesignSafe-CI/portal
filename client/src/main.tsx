@@ -48,6 +48,7 @@ const themeConfig: ThemeConfig = {
 const appsElement = document.getElementById('apps-root');
 if (appsElement) {
   const appsRoot = ReactDOM.createRoot(appsElement as HTMLElement);
+  console.log('render apps root');
   appsRoot.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>

@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { List, Descriptions, DescriptionsProps, Tag, Button } from 'antd';
+import { useAppFormState } from '../AppsWizard/AppsWizard';
 
 export const AppsSubmissionForm: React.FC<{
   canSubmit: boolean;
   isSubmitting: boolean;
   values: {};
   handleSubmit;
-}> = ({ canSubmit, isSubmitting, values, handleSubmit }) => {
+}> = ({ readOnly }) => {
+  const [state, setState] = useAppFormState();
+  useEffect(() => {
+    console.log('state changed', state);
+  }, [state]);
+
   const getChildren = (value) => {
     if (typeof value === 'object') {
       if (!Object.keys(value).length) return <span>-</span>;
@@ -44,22 +50,22 @@ export const AppsSubmissionForm: React.FC<{
       size="small"
       column={1}
       title="Summary"
-      items={getItems(values)}
+      items={getItems(state)}
       layout="vertical"
       extra={
         <>
           <Button
             type="primary"
             htmlType="submit"
-            disabled={!canSubmit}
+            disabled={readOnly}
             onClick={(e) => {
               console.log('submitting');
               e.preventDefault();
               e.stopPropagation();
-              void handleSubmit();
+              // void handleSubmit();
             }}
           >
-            {isSubmitting ? '...' : 'Submit'}
+            {/* {isSubmitting ? '...' : 'Submit'} */}
           </Button>
         </>
       }

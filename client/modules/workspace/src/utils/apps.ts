@@ -40,7 +40,7 @@ export const getDefaultExecSystem = (app, execSystems) => {
 };
 
 export const getQueueMaxMinutes = (app, exec_sys, queueName) => {
-  if (!isJobTypeBATCH(app)) {
+  if (!isAppTypeBATCH(app)) {
     return DEFAULT_JOB_MAX_MINUTES;
   }
 
@@ -54,11 +54,12 @@ export const getQueueMaxMinutes = (app, exec_sys, queueName) => {
  * Get validator for max minutes of a queue
  *
  * @function
+ * @param {Object} app
  * @param {Object} queue
  * @returns {z.number()} min/max validation of max minutes
  */
-export const getMaxMinutesValidation = (queue, app) => {
-  if (!isJobTypeBATCH(app)) {
+export const getMaxMinutesValidation = (app, queue) => {
+  if (!isAppTypeBATCH(app)) {
     return z.number().lte(DEFAULT_JOB_MAX_MINUTES);
   }
   if (!queue) {
@@ -129,12 +130,13 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  * Get validator for a node count of a queue
  *
  * @function
+ * @param {Object} app
  * @param {Object} queue
  * @returns {z.number()} min/max validation of node count
  */
-export const getNodeCountValidation = (queue) => {
-  if (!queue) {
-    return z.number();
+export const getNodeCountValidation = (app, queue) => {
+  if (!isAppTypeBATCH(app) || !queue) {
+    return z.number().positive().optional();
   }
   return z
     .number()
@@ -153,15 +155,13 @@ export const getNodeCountValidation = (queue) => {
  * Get validator for cores on each node
  *
  * @function
+ * @param {Object} app
  * @param {Object} queue
  * @returns {z.number()} min/max validation of coresPerNode
  */
-export const getCoresPerNodeValidation = (queue) => {
-  if (!queue) {
-    return z.number();
-  }
-  if (queue.maxCoresPerNode === -1) {
-    return z.number().int();
+export const getCoresPerNodeValidation = (app, queue) => {
+  if (!isAppTypeBATCH(app) || !queue || queue.maxCoresPerNode === -1) {
+    return z.number().int().positive().optional();
   }
   return z.number().int().gte(queue.minCoresPerNode).lte(queue.maxCoresPerNode);
 };
@@ -173,6 +173,7 @@ export const getCoresPerNodeValidation = (queue) => {
  * values.
  *
  * @function
+ * @param {Object} app
  * @param {Object} values
  * @returns {Object} updated/fixed values
  */
@@ -233,6 +234,7 @@ export const updateValuesForQueue = (app, values) => {
  * @function
  * @param {any} app App Shape defined in AppForm.jsx
  * @param {any} exec_sys execution system, shape defined in AppForm.jsx
+ * @param {any} queue_name
  * @returns {String} queue_name nullable, queue name to lookup
  */
 export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
@@ -252,6 +254,9 @@ export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
  * 1. If Node and Core per Node is enabled, only allow
  *    queues which match min and max node count with job attributes
  * 2. if queue filter list is set, only allow queues in that list.
+ * @function
+ * @param {any} app App Shape defined in AppForm.jsx
+ * @param {any} queues
  * @returns list of queues in sorted order
  */
 export const getAppQueueValues = (app, queues) => {
@@ -280,8 +285,8 @@ export const getAppQueueValues = (app, queues) => {
  * system based on the host match.
  * Handle case where dynamic execution system is provided.
  * If there is no allocation for a given exec system, skip it.
- * @param {*} app
- * @param {*} allocations
+ * @param {any} app App Shape defined in AppForm.jsx
+ * @param {any} allocations
  * @returns a Map of allocations applicable to each execution system.
  */
 export const matchExecSysWithAllocations = (app, allocations) => {
@@ -395,7 +400,10 @@ export const isAppUsingDynamicExecSystem = (app) => {
   return !!app.definition.notes.dynamicExecSystems;
 };
 
-export const getAllocationValidation = (allocations) => {
+export const getAllocationValidation = (app, allocations) => {
+  if (!isAppTypeBATCH(app)) {
+    return z.string().optional();
+  }
   return z.enum(allocations, {
     errorMap: (issue, ctx) => ({
       message: 'Please select an allocation from the dropdown.',
@@ -403,6 +411,19 @@ export const getAllocationValidation = (allocations) => {
   });
 };
 
-export const isJobTypeBATCH = (app) => {
+export const isAppTypeBATCH = (app) => {
   return app.definition.jobType === 'BATCH';
+};
+
+export const getExecSystemLogicalQueueValidation = (app, exec_sys) => {
+  if (!isAppTypeBATCH(app)) {
+    return z.string().optional();
+  }
+  const validation = z.enum(
+    exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []
+  );
+  console.log(exec_sys);
+  console.log(validation);
+
+  return validation;
 };
