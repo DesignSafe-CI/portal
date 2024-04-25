@@ -260,24 +260,27 @@ export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
  * @returns list of queues in sorted order
  */
 export const getAppQueueValues = (app, queues) => {
-  /*
+  return (
+    (queues ?? [])
+      /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
     while hideNodeCountAndCoresPerNode is true
     */
-  return (queues ?? [])
-    .filter(
-      (q) =>
-        !app.definition.notes.hideNodeCountAndCoresPerNode ||
-        (app.definition.jobAttributes.nodeCount >= q.minNodeCount &&
-          app.definition.jobAttributes.nodeCount <= q.maxNodeCount)
-    )
-    .map((q) => q.name)
-    .filter((queueName) =>
-      app.definition.notes.queueFilter
-        ? app.definition.notes.queueFilter.includes(queueName)
-        : true
-    )
-    .sort();
+      .filter(
+        (q) =>
+          !app.definition.notes.hideNodeCountAndCoresPerNode ||
+          (app.definition.jobAttributes.nodeCount >= q.minNodeCount &&
+            app.definition.jobAttributes.nodeCount <= q.maxNodeCount)
+      )
+      .map((q) => q.name)
+      // Hide queues when app includes a queueFilter and queue is not present in queueFilter
+      .filter(
+        (queueName) =>
+          !app.definition.notes.queueFilter ||
+          app.definition.notes.queueFilter.includes(queueName)
+      )
+      .sort()
+  );
 };
 
 /**
@@ -419,11 +422,6 @@ export const getExecSystemLogicalQueueValidation = (app, exec_sys) => {
   if (!isAppTypeBATCH(app)) {
     return z.string().optional();
   }
-  const validation = z.enum(
-    exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []
-  );
-  console.log(exec_sys);
-  console.log(validation);
 
-  return validation;
+  return z.enum(exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []);
 };

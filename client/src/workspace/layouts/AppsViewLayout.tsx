@@ -4,6 +4,7 @@ import {
   FormSchema,
   AppFormProvider,
   useAppFormState,
+  FormField,
 } from '@client/workspace';
 import { TAppParamsType, TAppResponse, getAppsQuery } from '@client/hooks';
 import { Await, Outlet } from 'react-router-dom';
@@ -26,7 +27,7 @@ import {
   getAllocationValidation,
   getExecSystemLogicalQueueValidation,
   isAppTypeBATCH,
-  getDefaultExecSystem,
+  getAppQueueValues,
 } from '@client/workspace';
 
 import {
@@ -45,6 +46,9 @@ import {
 } from 'react-router-dom';
 import { number, z } from 'zod';
 import { useForm, FormProvider, useFormContext } from 'react-hook-form';
+
+import { useCallback, forwardRef, useRef } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export const AppsViewLayoutWrapper: React.FC = () => {
   const { appId } = useParams() as TAppParamsType;
@@ -148,13 +152,10 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     missingAllocation = true;
   }
 
+  // set initial state on app load
   useEffect(() => {
-    console.log('setting state');
     setState(initialValues);
   }, [app, initialValues]);
-  useEffect(() => {
-    console.log('state changed', state);
-  }, [state]);
 
   // const exec_sys = getExecSystemFromId(app, state.execSystemId);
   // const queue = getQueueValueForExecSystem(
@@ -213,57 +214,211 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     (app.definition.jobType === 'BATCH' && missingAllocation) ||
     systemNeedsKeys;
 
+  const methods = useForm({
+    defaultValues: initialValues,
+    resolver: zodResolver(z.object(schema)),
+    mode: 'onChange',
+  });
+  const { handleSubmit, control, formState } = methods;
+  const [current, setCurrent] = useState('inputs');
+
+  const steps = {
+    inputs: {
+      title: 'Inputs',
+      nextPage: 'parameters',
+      content: (
+        <>
+          {Object.entries(fileInputs.fields).map(([name, field]) => {
+            // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
+            return <FormField control={control} {...field} />;
+          })}
+        </>
+      ),
+    },
+    parameters: {
+      title: 'Parameters',
+      prevPage: 'inputs',
+      nextPage: 'configuration',
+      content: (
+        <>
+          {Object.entries(parameterSet.fields).map(
+            ([parameterSet, parameterValue]) => {
+              return Object.entries(parameterValue).map(([name, field]) => {
+                return <FormField control={control} {...field} />;
+              });
+            }
+          )}
+        </>
+      ),
+    },
+    configuration: {
+      title: 'Configuration',
+      prevPage: 'parameters',
+      nextPage: 'outputs',
+      content: (
+        <>
+          {app.definition.jobType === 'BATCH' && (
+            <FormField
+              control={control}
+              label="Queue"
+              name="configuration.execSystemLogicalQueue"
+              description="Select the queue this job will execute on."
+              type="select"
+              required
+              // TODOv3: Dynamic system queues
+              options={getAppQueueValues(
+                app,
+                app.execSystems[0].batchLogicalQueues
+              ).map((q) => ({ value: q, label: q }))}
+            />
+          )}
+          <FormField
+            control={control}
+            label="Maximum Job Runtime (minutes)"
+            // description={`The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
+            //   app,
+            //   state.execSys,
+            //   state.execSystemLogicalQueue
+            // )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`}
+            name="configuration.maxMinutes"
+            type="number"
+            required
+          />
+          {!app.definition.notes.hideNodeCountAndCoresPerNode ? (
+            <>
+              <FormField
+                control={control}
+                label="Cores Per Node"
+                description="Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total."
+                name="configuration.coresPerNode"
+                type="number"
+              />
+              <FormField
+                control={control}
+                label="Node Count"
+                description="Number of requested process nodes for the job."
+                name="configuration.nodeCount"
+                type="number"
+              />
+            </>
+          ) : null}
+          {app.definition.jobType === 'BATCH' && (
+            <FormField
+              control={control}
+              label="Allocation"
+              name="configuration.allocation"
+              description="Select the project allocation you would like to use with this job submission."
+              type="select"
+              required
+              options={[
+                { label: '', hidden: true, disabled: true },
+                ...allocations.sort().map((projectId) => ({
+                  value: projectId,
+                  label: projectId,
+                })),
+              ]}
+            />
+          )}
+        </>
+      ),
+    },
+    outputs: {
+      title: 'Outputs',
+      prevPage: 'configuration',
+      content: (
+        <>
+          <FormField
+            control={control}
+            label="Job Name"
+            description="A recognizable name for this job."
+            name="outputs.name"
+            type="text"
+            required
+          />
+          {!app.definition.notes.isInteractive && (
+            <>
+              <FormField
+                control={control}
+                label="Archive System"
+                description="System into which output files are archived after application execution."
+                name="outputs.archiveSystemId"
+                type="text"
+                placeholder={app.definition.jobAttributes.archiveSystemId} // || defaultSystem}
+              />
+              <FormField
+                control={control}
+                label="Archive Directory"
+                description="Directory into which output files are archived after application execution."
+                name="outputs.archiveSystemDir"
+                type="text"
+                placeholder={
+                  app.definition.jobAttributes.archiveSystemDir ||
+                  'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}'
+                }
+              />
+            </>
+          )}
+        </>
+      ),
+    },
+  };
+
+  const handleNextStep = useCallback(
+    (data) => {
+      setState({ ...state, ...data });
+      setCurrent(steps[current].nextPage);
+    },
+    [current]
+  );
+  const handlePreviousStep = useCallback(
+    (data) => {
+      setState({ ...state, ...data });
+      setCurrent(steps[current].prevPage);
+    },
+    [current]
+  );
+
   return (
-    // <Form
-    //   disabled={readOnly}
-    //   name="rootForm"
-    //   layout="vertical"
-    //   onValuesChange={onValuesChange}
-    //   // onSubmit={(e) => {
-    //   //   console.log('submitting');
-    //   //   e.preventDefault();
-    //   //   e.stopPropagation();
-    //   //   void handleSubmit();
-    //   // }}
-    // >
-    <Suspense
-      fallback={
-        <Layout>
-          <h1>HELLO!!!!!!!!!!!!</h1>
-          <Spinner />
-        </Layout>
-      }
-    >
-      <Layout style={layoutStyle}>
-        <Header style={headerStyle}>
-          <Flex justify="space-between">
-            {app.definition.notes.label || app.definition.id}
-            <a href="/user-guide">View User Guide</a>
-          </Flex>
-        </Header>
-        <Content>
-          <Row>
-            {/* <AppFormProvider initialState={}> */}
-            <Col span={14}>
-              {Object.keys(state).length && (
-                <AppsWizard
-                  app={app}
-                  schema={schema}
-                  fields={{
-                    parameterSet: parameterSet.fields,
-                    fileInputs: fileInputs.fields,
-                  }}
-                  readOnly={readOnly}
-                  initialValues={initialValues}
-                />
-              )}
-            </Col>
-            <Col span={10}>
-              <AppsSubmissionForm readOnly={readOnly} />
-            </Col>
-            {/* </AppFormProvider> */}
-          </Row>
-          {/* <form.Subscribe
+    <FormProvider {...methods}>
+      <Form
+        disabled={readOnly}
+        // name={`${steps[current].title}Form`}
+        layout="vertical"
+        onFinish={methods.handleSubmit(handleNextStep, (data) => {
+          console.log('error next data', data);
+        })}
+      >
+        <fieldset>
+          <Suspense
+            fallback={
+              <Layout>
+                <h1>HELLO!!!!!!!!!!!!</h1>
+                <Spinner />
+              </Layout>
+            }
+          >
+            <Layout style={layoutStyle}>
+              <Header style={headerStyle}>
+                <Flex justify="space-between">
+                  {app.definition.notes.label || app.definition.id}
+                  <a href="/user-guide">View User Guide</a>
+                </Flex>
+              </Header>
+              <Content>
+                <Row>
+                  <Col span={14}>
+                    {Object.keys(state).length && (
+                      <AppsWizard
+                        step={steps[current]}
+                        handlePreviousStep={handlePreviousStep}
+                      />
+                    )}
+                  </Col>
+                  <Col span={10}>
+                    <AppsSubmissionForm readOnly={readOnly} />
+                  </Col>
+                </Row>
+                {/* <form.Subscribe
             selector={(state) => [
               state.canSubmit,
               state.isSubmitting,
@@ -296,10 +451,12 @@ export const AppsViewLayoutWrapper: React.FC = () => {
               );
             }}
           /> */}
-        </Content>
-      </Layout>
-    </Suspense>
-    // </Form>
+              </Content>
+            </Layout>
+          </Suspense>
+        </fieldset>
+      </Form>
+    </FormProvider>
   );
 };
 

@@ -17,9 +17,6 @@ import {
   getAppsQuery,
 } from '@client/hooks';
 
-console.log('create router');
-const queryClient = new QueryClient();
-
 export const rootLoader = (queryClient: QueryClient) => async () => {
   await queryClient.ensureQueryData(appsListingQuery);
   return {};

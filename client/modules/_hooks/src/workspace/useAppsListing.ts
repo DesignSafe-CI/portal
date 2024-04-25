@@ -42,7 +42,6 @@ export const appsListingQuery = {
 };
 
 function useAppsListing() {
-  console.log('use apps listing');
   // return useSuspenseQuery(appsListingQuery);
   return useQuery(appsListingQuery);
 }

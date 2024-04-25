@@ -27,7 +27,6 @@ import { Spinner } from '@client/common-components';
 const { Sider } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
-  console.log('render workspace root');
   const { data, isLoading } = useAppsListing();
 
   if (isLoading)

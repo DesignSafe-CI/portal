@@ -13,24 +13,9 @@ const FormSchema = (app) => {
       schema: {},
     },
     parameterSet: {
-      defaults: {
-        appArgs: {},
-        containerArgs: {},
-        schedulerOptions: {},
-        envVariables: {},
-      },
-      fields: {
-        appArgs: {},
-        containerArgs: {},
-        schedulerOptions: {},
-        envVariables: {},
-      },
-      schema: {
-        appArgs: {},
-        containerArgs: {},
-        schedulerOptions: {},
-        envVariables: {},
-      },
+      defaults: {},
+      fields: {},
+      schema: {},
     },
   };
 
@@ -38,6 +23,8 @@ const FormSchema = (app) => {
     ([parameterSet, parameterSetValue]) => {
       if (!Array.isArray(parameterSetValue)) return;
       const parameterSetSchema = {};
+      const parameterSetFields = {};
+      const parameterSetDefaults = {};
 
       parameterSetValue.forEach((param) => {
         if (param.notes?.isHidden) {
@@ -54,7 +41,6 @@ const FormSchema = (app) => {
           name: `parameters.${parameterSet}.${paramId}`,
           key: `parameters.${parameterSet}.${paramId}`,
           type: 'text',
-          options: null,
         };
 
         if (param.notes?.enum_values) {
@@ -96,13 +82,23 @@ const FormSchema = (app) => {
             console.warn('Invalid regex pattern for app');
           }
         }
-        appFields.parameterSet.fields[parameterSet][field.label] = field;
-        appFields.parameterSet.defaults[parameterSet][field.label] =
-          param.arg ?? param.value ?? '';
+        parameterSetFields[field.label] = field;
+        parameterSetDefaults[field.label] = param.arg ?? param.value ?? '';
       });
 
-      appFields.parameterSet.schema[parameterSet] =
-        z.object(parameterSetSchema);
+      // Only create schema for parameterSet if it contains values
+      if (Object.keys(parameterSetSchema).length) {
+        appFields.parameterSet.schema[parameterSet] =
+          z.object(parameterSetSchema);
+      }
+      // Only create fields for parameterSet if it contains values
+      if (Object.keys(parameterSetFields).length) {
+        appFields.parameterSet.fields[parameterSet] = parameterSetFields;
+      }
+      // Only add defaults for parameterSet if it contains values
+      if (Object.keys(parameterSetDefaults).length) {
+        appFields.parameterSet.defaults[parameterSet] = parameterSetDefaults;
+      }
     }
   );
 
