@@ -37,6 +37,7 @@ import {
   isTargetPathField,
   getInputFieldFromTargetPathField,
   isTargetPathEmpty,
+  SystemsPushKeysModal,
 } from '@client/workspace';
 import styles from './layout.module.css';
 
@@ -378,7 +379,22 @@ export const AppsViewLayoutWrapper: React.FC = () => {
     },
     [current]
   );
-  const { mutate: submitJob, isPending } = usePostJobs();
+  const {
+    mutate: submitJob,
+    isPending,
+    data: submitResult,
+    error: submitError,
+  } = usePostJobs();
+
+  const [isModalOpen, setIsModalOpen] = useState({});
+
+  console.log('submit result', submitResult);
+  console.log('submitError', submitError);
+  useEffect(() => {
+    if (submitResult?.execSys) {
+      setIsModalOpen(submitResult.execSys);
+    }
+  }, [submitResult]);
 
   const submitJobCallback = (data) => {
     const jobData = {
@@ -517,6 +533,10 @@ export const AppsViewLayoutWrapper: React.FC = () => {
           </Layout>
         </fieldset>
       </Form>
+      <SystemsPushKeysModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
     </FormProvider>
   );
 };
