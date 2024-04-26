@@ -13,6 +13,7 @@ from django.db.models.lookups import GreaterThan
 from django.db.models.functions import Coalesce
 from django.urls import reverse
 from tapipy.errors import InternalServerError, UnauthorizedError
+from tapipy.tapis import TapisResult
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.users.utils import get_user_data
 from designsafe.apps.api.views import AuthenticatedApiView
@@ -52,6 +53,16 @@ def _get_user_app_license(license_type, user):
     return lic
 
 
+def _get_exec_systems(user, systems):
+    """List of all enabled execution systems available for the user."""
+    tapis = user.tapis_oauth.client
+    system_id_search = ",".join(systems)
+    search_string = f"(id.in.{system_id_search})~(canExec.eq.true)~(enabled.eq.true)"
+    return tapis.systems.getSystems(
+        listType="ALL", select="allAttributes", search=search_string
+    )
+
+
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
 
@@ -60,12 +71,19 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getApp(appId=app_id, appVersion=app_version)
     else:
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
+
     data = {"definition": app_def}
 
-    # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-    data["exec_sys"] = tapis.systems.getSystem(
-        systemId=app_def.jobAttributes.execSystemId
-    )
+    exec_systems = getattr(
+        app_def.notes, "dynamicExecSystems", TapisResult()
+    ).__dict__.keys()
+    if len(exec_systems) > 0:
+        data["execSystems"] = _get_exec_systems(user, exec_systems)
+    else:
+        # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
+        data["execSystems"] = [
+            tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)
+        ]
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}
@@ -83,9 +101,6 @@ def test_system_needs_keys(tapis, system_id):
         tapis.files.listFiles(systemId=system_id, path="/")
     except (InternalServerError, UnauthorizedError):
         system_def = tapis.systems.getSystem(systemId=system_id)
-        logger.info(
-            f"Keys for user {tapis.username} must be manually pushed to system: {system_id}"
-        )
         return system_def
     return False
 
@@ -122,6 +137,9 @@ class AppsView(AuthenticatedApiView):
                 tapis, settings.AGAVE_STORAGE_SYSTEM
             )
             if system_needs_keys:
+                logger.info(
+                    f"Keys for user {request.user.usernam} must be manually pushed to system: {system_needs_keys.id}"
+                )
                 data["systemNeedsKeys"] = True
                 data["pushKeysSystem"] = system_needs_keys
 
@@ -567,23 +585,15 @@ class JobsView(AuthenticatedApiView):
             # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
         # Test file listing on relevant systems to determine whether keys need to be pushed manually
-        system_needs_keys = any(
-            test_system_needs_keys(tapis, system_id)
-            for system_id in list(
-                set([job_post["archiveSystemId"], job_post["execSystemId"]])
-            )
-        )
-        if system_needs_keys:
-            logger.info(
-                f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
-            )
-            return JsonResponse(
-                {
-                    "status": 200,
-                    "response": {"execSys": system_needs_keys},
-                },
-                encoder=BaseTapisResultSerializer,
-            )
+        for system_id in list(
+            set([job_post["archiveSystemId"], job_post["execSystemId"]])
+        ):
+            system_needs_keys = test_system_needs_keys(tapis, system_id)
+            if system_needs_keys:
+                logger.info(
+                    f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
+                )
+                return {"execSys": system_needs_keys}
 
         if settings.DEBUG:
             wh_base_url = settings.WH_BASE_URL + reverse(

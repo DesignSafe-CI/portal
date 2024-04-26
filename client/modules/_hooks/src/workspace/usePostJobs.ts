@@ -12,7 +12,7 @@ type TJobBody = {
 };
 
 async function postJobs(body: TJobBody) {
-  const res = await apiClient.post(`/api/workspace/jobs/`, body);
+  const res = await apiClient.post(`/api/workspace/jobs`, body);
   return res.data.response;
 }
 
