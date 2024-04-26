@@ -6,6 +6,7 @@ from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     create_project_metdata,
     create_entity_metadata,
+    change_project_type,
     add_file_associations,
     remove_file_associations,
     add_file_tags,
@@ -48,6 +49,28 @@ def test_entity_creation(project_admin_user):
     entity_obj = ProjectMetadata.objects.get(uuid=entity_meta.uuid)
     assert entity_obj.base_project.value["projectId"] == "PRJ-1234"
     assert ProjectMetadata.get_entities_by_project_id("PRJ-1234").count() == 2
+
+
+@pytest.mark.django_db
+def test_change_project_type(project_admin_user):
+    project_value = {
+        "title": "Test Project",
+        "projectId": "PRJ-1234",
+        "users": [],
+        "projectType": "experimental",
+    }
+    create_project_metdata(project_value)
+
+    new_project_value = {
+        "title": "Test Project",
+        "projectId": "PRJ-1234",
+        "users": [],
+        "projectType": "other",
+    }
+
+    change_project_type("PRJ-1234", new_project_value)
+    project_meta = ProjectMetadata.get_project_by_id("PRJ-1234")
+    assert project_meta.value["projectType"] == "other"
 
 
 @pytest.mark.django_db

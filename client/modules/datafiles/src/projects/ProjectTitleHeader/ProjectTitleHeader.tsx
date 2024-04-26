@@ -20,7 +20,7 @@ export const ProjectTitleHeader: React.FC<{ projectId: string }> = ({
       <BaseProjectUpdateModal projectId={projectId}>
         {({ onClick }) => (
           <Button onClick={onClick} type="link">
-            Edit Project
+            <strong>Edit Project</strong>
           </Button>
         )}
       </BaseProjectUpdateModal>

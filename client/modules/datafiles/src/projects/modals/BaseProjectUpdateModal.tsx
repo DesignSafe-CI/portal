@@ -13,10 +13,7 @@ export const BaseProjectUpdateModal: React.FC<{
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => {
     setIsModalOpen(false);
-    setShowForm(false);
   };
-
-  const [showForm, setShowForm] = useState(false);
 
   return (
     <>
@@ -24,13 +21,12 @@ export const BaseProjectUpdateModal: React.FC<{
       <Modal
         open={isModalOpen}
         onCancel={handleClose}
-        afterOpenChange={(open) => setShowForm(open)}
-        width="80%"
+        width="900px"
         title={<h2>Editing Project {projectId}</h2>}
         footer={null}
       >
         <article>
-          {showForm && <BaseProjectForm projectId={projectId} />}
+          <BaseProjectForm projectId={projectId} onChangeType={handleClose} />
         </article>
       </Modal>
     </>

@@ -1,0 +1,6 @@
+<h2>{{instance.app_category}}</h2>
+<section class="o-app-grid">
+    {% for app in listing %}
+    {% include "designsafe/apps/workspace/app_card.html" with app=app %}
+    {% endfor %}
+</section>

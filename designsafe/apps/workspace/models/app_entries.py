@@ -4,26 +4,35 @@
 from django.db import models
 
 APP_ICONS = [
+    ("Generic-App", "Generic: Application"),
+    ("Generic-Vis", "Generic: Visualization"),
+    ("Earth", "Element: Earth"),
+    ("Water", "Element: Water"),
+    ("Wind", "Element: Wind"),
+    ("All-Hazards", "All Hazards"),
     ("adcirc", "ADCIRC"),
-    ("ansys", "Ansys"),
-    ("blender", "Blender"),
-    ("clawpack", "Clawpack"),
-    ("compress", "Compress"),
-    ("dakota", "Dakota"),
-    ("extract", "Extract"),
-    ("hazmapper", "Hazmapper"),
-    ("jupyter", "Jupyter"),
-    ("ls-dyna", "LS-DYNA"),
-    ("matlab", "MATLAB"),
-    ("ngl", "NGL"),
-    ("openfoam", "OpenFOAM"),
-    ("opensees", "OpenSees"),
-    ("paraview", "Paraview"),
-    ("qgis", "QGIS"),
-    ("rwhale", "rWHALE"),
-    ("stko", "STKO"),
-    ("swbatch", "swbatch"),
-    ("visit", "VisIt"),
+    ("Ansys", "Ansys"),
+    ("Blender", "Blender"),
+    ("Clawpack", "Clawpack"),
+    ("Compress", "Compress"),
+    ("Dakota", "Dakota"),
+    ("Extract", "Extract"),
+    ("GiD", "GiD"),
+    ("Hazmapper", "Hazmapper"),
+    ("HVSR", "HVSR"),
+    ("Jupyter", "Jupyter"),
+    ("LS-DYNA", "LS-DYNA"),
+    ("MATLAB", "MATLAB"),
+    ("MPM", "MPM"),
+    ("NGL-without-text", "NGL"),
+    ("OpenFOAM", "OpenFOAM"),
+    ("OpenSees", "OpenSees"),
+    ("Paraview", "Paraview"),
+    ("Potree", "Potree"),
+    ("QGIS", "QGIS"),
+    ("rWHALE", "rWHALE"),
+    ("STKO", "STKO"),
+    ("SWBatch", "SWBatch"),
 ]
 
 LICENSE_TYPES = [("OS", "Open Source"), ("LS", "Licensed")]
@@ -178,6 +187,12 @@ class AppVariant(models.Model):
         blank=True,
     )
 
+    description = models.TextField(
+        help_text="App variant description text for version overview.",
+        blank=True,
+        null=True,
+    )
+
     # Tapis Apps
     version = models.CharField(
         help_text="The version number of the app. The app id + version denotes a unique app.",
@@ -189,6 +204,14 @@ class AppVariant(models.Model):
     enabled = models.BooleanField(
         help_text="App variant visibility in app tray.", default=True
     )
+
+    @property
+    def href(self):
+        """Retrieve the app's URL in the Tools & Applications space"""
+        app_href = f"/rw/workspace/applications/{self.app_id}"
+        if self.version:
+            app_href += f"?version={self.version}"
+        return app_href
 
     def __str__(self):
         return f"{self.bundle.label} {self.app_id} {self.version}  ({'ENABLED' if self.enabled else 'DISABLED'})"
