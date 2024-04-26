@@ -41,17 +41,19 @@ import {
 } from '@client/workspace';
 import styles from './layout.module.css';
 
-export const AppsViewLayoutWrapper: React.FC = () => {
-  const { appId } = useParams() as TAppParamsType;
-  const location = useLocation();
+export const AppsViewLayoutWrapper: React.FC<{ app: TAppResponse }> = ({
+  app,
+}) => {
+  // const { appId } = useParams() as TAppParamsType;
+  // const location = useLocation();
 
-  const appVersion = new URLSearchParams(location.search).get('appVersion') as
-    | string
-    | undefined;
+  // const appVersion = new URLSearchParams(location.search).get('appVersion') as
+  //   | string
+  //   | undefined;
 
-  const { data: app } = useGetApps({ appId, appVersion }) as {
-    data: TAppResponse;
-  };
+  // const { data: app } = useGetApps({ appId, appVersion }) as {
+  //   data: TAppResponse;
+  // };
 
   // const [state, setState] = useAppFormState();
 
@@ -542,19 +544,38 @@ export const AppsViewLayoutWrapper: React.FC = () => {
 };
 
 export const AppsViewLayout: React.FC = () => {
+  const { appId } = useParams() as TAppParamsType;
+  const location = useLocation();
+
+  const appVersion = new URLSearchParams(location.search).get('appVersion') as
+    | string
+    | undefined;
+
+  const { data: app, isLoading } = useGetApps({ appId, appVersion }) as {
+    data: TAppResponse;
+    isLoading: boolean;
+  };
+
+  if (isLoading)
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    );
+
   return (
     <>
-      <Suspense
+      {/* <Suspense
         fallback={
           <Layout>
             <Spinner />
           </Layout>
         }
-      >
-        {/* <AppFormProvider> */}
-        <AppsViewLayoutWrapper />
-        {/* </AppFormProvider> */}
-      </Suspense>
+      > */}
+      {/* <AppFormProvider> */}
+      <AppsViewLayoutWrapper app={app} />
+      {/* </AppFormProvider> */}
+      {/* </Suspense> */}
       <Outlet />
     </>
   );
