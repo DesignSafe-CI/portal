@@ -9,6 +9,7 @@ export const SystemsPushKyesModalBody: React.FC<{
   handleCancel: () => void;
 }> = ({ isOpen, system, onSuccess, handleCancel }) => {
   const { mutate } = usePushKeys();
+  const [form] = Form.useForm();
 
   const initialValues = {
     systemId: system.id,
@@ -29,6 +30,7 @@ export const SystemsPushKyesModalBody: React.FC<{
       // Keys pushed successfully, close the modal and call onSuccess()
       setIsSubmitting(false);
       handleCancel();
+      form.resetFields();
 
       if (onSuccess) {
         onSuccess();
@@ -55,10 +57,10 @@ export const SystemsPushKyesModalBody: React.FC<{
         initialValues={initialValues}
       >
         <Form.Item label="System ID" name="systemId">
-          <Input />
+          <Input readOnly />
         </Form.Item>
         <Form.Item label="Host" name="hostname">
-          <Input />
+          <Input readOnly />
         </Form.Item>
         <Form.Item
           label="Password"
