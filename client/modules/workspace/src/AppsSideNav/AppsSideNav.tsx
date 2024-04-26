@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu } from 'antd';
+import { Menu, MenuProps, MenuItem } from 'antd';
 import { NavLink } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
 import { useAuthenticatedUser, useAppsListing } from '@client/hooks';
@@ -18,10 +18,16 @@ const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   );
 };
 
-export const AppsSideNav: React.FC = () => {
+export const AppsSideNav: React.FC<
+React.PropsWithChildren<{
+  appName: string;
+  title: string;
+  defaultOpen?: boolean;
+}>
+> = ({ appName, title, defaultOpen = false, children }) => {
   const { user } = useAuthenticatedUser();
   const { data } = useAppsListing();
-  const [activeApp, setActiveApp] = useState<string[]>([]); 
+  const [activeApp, setActiveApp] = useState(); 
 
   const toggle = (tab: any) => {
     setActiveApp(tab.keyPath)
@@ -32,10 +38,41 @@ export const AppsSideNav: React.FC = () => {
   if (user && data) {
     data.categories.forEach((category) => {
       category.apps.forEach((app) => {
-        uniqueBundleLabels.add(app.bundle_label);
+        {app.is_bundled ?? (
+        uniqueBundleLabels.add(app.bundle_label)
+      )};
       });
     });
   }
+
+  //type MenuItem = Required<MenuProps>['items'][number];
+  
+  function getItem(label, key, icon, children, type) {
+    return {
+      key,
+      icon,
+      children,
+      label,
+      type,
+    };
+  }
+  const items = [
+    {data?.categories.map((category) => {
+      getItem
+    })
+  }
+  ];
+//  {data?.categories.map((category) => {
+//    const appItems: MenuItem['items'] = 
+
+//      getItem(`${category.title} [${category.apps.length}]`, category.title, [
+//        category.apps.map((app) => app.is_bundled ?
+//        getItem(app.bundle_label, app.bundle_label, [app.label]) : (getItem(`${category.title} [${category.apps.length}]`, category.title, )))]
+      
+//      )
+//  })
+//};
+
 
   return (
     <Menu
@@ -43,44 +80,11 @@ export const AppsSideNav: React.FC = () => {
       onClick={toggle}
       selectedKeys={activeApp}
       className={styles.apps}
+      items = {appItems}
+      inlineCollapsed={activeApp}
     >
       <MenuDivider/>
         <h3>Applications:</h3>
-        {user && data && (
-          <>
-            {data.categories.map((category) => (
-              <Menu.SubMenu
-                key={category.title}
-                title={`${category.title} [${category.apps.length}]`}
-              >
-                {category.apps.length > 0 && (
-                  Array.from(new Set(category.apps.map((app) => app.bundle_label))).map((bundleLabel) => (
-                    <Menu.SubMenu
-                      key={bundleLabel}
-                      title={`${bundleLabel} [${
-                        category.apps.filter((app) => app.bundle_label === bundleLabel).length
-                      }]`}
-                    >
-                      {category.apps
-                        .filter((app) => app.bundle_label === bundleLabel) 
-                        .map((app) => (
-                          <AppsNavLink
-                            key={`${app.app_id}-${app.version}`}
-                            to={
-                              `${app.app_id}` +
-                              (app.version ? `?appVersion=${app.version}` : '')
-                            }
-                          >
-                            {app.label}
-                          </AppsNavLink>
-                        ))}
-                    </Menu.SubMenu>
-                  ))
-                )}
-              </Menu.SubMenu>
-            ))}
-          </>
-        )}
       <MenuDivider/>
     </Menu>
   );
