@@ -2,6 +2,7 @@
 """
 
 from django.db import models
+from django.db.models.functions import Coalesce
 
 APP_ICONS = [
     ("Generic-App", "Generic: Application"),
@@ -146,6 +147,8 @@ class AppListingEntry(models.Model):
             )
         ]
 
+        ordering = ["label", "is_popular"]
+
 
 class AppVariant(models.Model):
     """Model to represent a variant of an app, e.g. a software version or execution environment"""
@@ -179,6 +182,11 @@ class AppVariant(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
+    )
+
+    priority = models.IntegerField(
+        help_text="App variant priority, rendered in ascending order.",
+        default=0,
     )
 
     # HTML Apps
@@ -223,3 +231,5 @@ class AppVariant(models.Model):
                 name="unique_apps_per_bundle",
             )
         ]
+
+        ordering = [Coalesce("label", "app_id"), "priority"]
