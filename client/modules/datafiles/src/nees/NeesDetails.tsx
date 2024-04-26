@@ -77,7 +77,7 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({
 
     const doiList = () => {
       Modal.info({
-        title: "DOI List",
+        title: "DOIs",
         content: neesCitations,
         width:600,
       })
