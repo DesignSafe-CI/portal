@@ -4,5 +4,5 @@ from django.urls import path
 from .views import SystemKeysView
 
 urlpatterns = [
-    path("", SystemKeysView.as_view()),
+    path("keys/", SystemKeysView.as_view()),
 ]

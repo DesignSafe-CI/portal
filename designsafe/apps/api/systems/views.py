@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from designsafe.apps.api.views import AuthenticatedApiView
 from designsafe.utils.system_access import create_system_credentials
 from designsafe.utils.encryption import createKeyPair
+from .utils import add_pub_key_to_resource
 
 logger = logging.getLogger(__name__)
 
@@ -19,23 +20,14 @@ class SystemKeysView(AuthenticatedApiView):
     Main view for anything involving a system test
     """
 
-    def put(self, request, system_id):
-        """PUT
+    def post(self, request):
+        """POST
 
         :param request: Django's request object
         :param str system_id: System id
         """
         body = json.loads(request.body)
-        action = body["action"]
-        op = getattr(self, action)
-        return op(request, system_id, body)
-
-    def push(self, request, system_id, body):
-        """Pushed public key to a system's host
-
-        :param request: Django's request object
-        :param str system_id: System id
-        """
+        system_id = body["systemId"]
 
         logger.info(
             f"Resetting credentials for user {request.user.username} on system {system_id}"
@@ -44,11 +36,11 @@ class SystemKeysView(AuthenticatedApiView):
 
         _, result, http_status = add_pub_key_to_resource(
             request.user,
-            password=body["form"]["password"],
-            token=body["form"]["token"],
+            password=body["password"],
+            token=body["token"],
             system_id=system_id,
             pub_key=publ_key_str,
-            hostname=body["form"]["hostname"],
+            hostname=body["hostname"],
         )
 
         create_system_credentials(

@@ -55,7 +55,11 @@ def add_pub_key_to_resource(
         # Catch all exceptions and set a status code for unknown exceptions
         success = False
         message = str(base_exc)
-        logger.error(base_exc, exc_info=True)
+        logger.exception(
+            message,
+            extra={"user": user.username},
+        )
+
         try:
             # "Re-throw" exception to get known exception type status codes
             raise base_exc

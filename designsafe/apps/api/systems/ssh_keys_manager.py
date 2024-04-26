@@ -75,7 +75,7 @@ class KeysManager:
         trans.use_compression()
         # trans.set_keepalive(5)
         trans.connect()
-        trans.auth_interactive_dumb(self.username, handler)
+        trans.auth_interactive_dumb(str(self.username), handler)
         return trans
 
     def _get_pub_key_comment(self, system_id):
