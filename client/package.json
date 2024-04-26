@@ -10,7 +10,9 @@
   "private": true,
   "dependencies": {
     "@swc/helpers": "~0.5.2",
+    "@tanstack/react-form": "^0.19.0",
     "@tanstack/react-query": "^5.15.0",
+    "@tanstack/zod-form-adapter": "^0.19.0",
     "antd": "^5.13.2",
     "axios": "^1.6.3",
     "dayjs": "^1.11.0",
@@ -18,7 +20,7 @@
     "react-dom": "18.2.0",
     "react-router-dom": "^6.21.1",
     "tslib": "^2.3.0",
-    "uuid": "^9.0.1"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",

@@ -4,7 +4,7 @@ import {
   JobsListingTable,
   TJobsListingColumns,
 } from './JobsListingTable/JobsListingTable';
-import { getStatusText } from '../utils';
+import { getStatusText } from '../utils/jobs';
 import { JobsDetailModalBody } from '../JobsDetailModal/JobsDetailModal';
 
 export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
