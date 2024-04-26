@@ -10,6 +10,8 @@ urlpatterns = [
     path("publications/v2", include('designsafe.apps.api.publications_v2.urls')),
     path("publications/v2/", include('designsafe.apps.api.publications_v2.urls')),
 
+    path("systems", include('designsafe.apps.api.systems.urls')),
+
     url(r'^projects/', include(('designsafe.apps.api.projects.urls', 'designsafe.apps.api.projects'),
                                namespace='ds_projects_api')),
 
