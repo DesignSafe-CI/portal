@@ -2,7 +2,7 @@
 import logging
 import json
 from django.http import JsonResponse, HttpRequest
-from designsafe.apps.api.datafiles.operations.agave_operations import listing
+from designsafe.apps.api.datafiles.operations.tapis_operations import listing
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.filemeta.models import FileMetaModel
 from designsafe.apps.api.views import AuthenticatedApiView
