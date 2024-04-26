@@ -7,72 +7,40 @@ import {
 
 const FormSchema = (app) => {
   const appFields = {
-    // parameterSet: {
-    //   appArgs: {},
-    //   containerArgs: {},
-    //   schedulerOptions: {},
-    //   envVariables: {},
-    // },
     fileInputs: {
       defaults: {},
       fields: {},
       schema: {},
     },
     parameterSet: {
-      defaults: {
-        appArgs: {},
-        containerArgs: {},
-        schedulerOptions: {},
-        envVariables: {},
-      },
-      fields: {
-        appArgs: {},
-        containerArgs: {},
-        schedulerOptions: {},
-        envVariables: {},
-      },
-      schema: {
-        appArgs: {},
-        containerArgs: {},
-        schedulerOptions: {},
-        envVariables: {},
-      },
+      defaults: {},
+      fields: {},
+      schema: {},
     },
-    // defaults: {
-    //   fileInputs: {},
-    // parameterSet: {
-    //   appArgs: {},
-    //   containerArgs: {},
-    //   schedulerOptions: {},
-    //   envVariables: {},
-    // },
-    // },
-    // schema: {
-    //   fileInputs: {},
-    //   parameterSet: {
-    //     appArgs: {},
-    //     containerArgs: {},
-    //     schedulerOptions: {},
-    //     envVariables: {},
-    //   },
-    // },
   };
 
   Object.entries(app.definition.jobAttributes.parameterSet).forEach(
     ([parameterSet, parameterSetValue]) => {
       if (!Array.isArray(parameterSetValue)) return;
+      const parameterSetSchema = {};
+      const parameterSetFields = {};
+      const parameterSetDefaults = {};
 
       parameterSetValue.forEach((param) => {
         if (param.notes?.isHidden) {
           return;
         }
+        const paramId = param.name ?? param.key;
 
         const field = {
-          label: param.name ?? param.key,
+          label: paramId,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
-          readOnly: param.inputMode === 'FIXED',
+          // readOnly: param.inputMode === 'FIXED',
           parameterSet: parameterSet,
+          name: `parameters.${parameterSet}.${paramId}`,
+          key: `parameters.${parameterSet}.${paramId}`,
+          type: 'text',
         };
 
         if (param.notes?.enum_values) {
@@ -84,50 +52,53 @@ const FormSchema = (app) => {
                 label: value,
               }))[0]
           );
-          appFields.parameterSet.schema[parameterSet][field.label] = z.enum(
-            field.options.map((enumVal) => {
-              if (typeof enumVal === 'string') {
-                return enumVal;
-              }
-              return Object.keys(enumVal)[0];
-            })
+          parameterSetSchema[field.label] = z.enum(
+            field.options.map(({ value, label }) => value)
           );
+        } else if (param.notes?.fieldType === 'email') {
+          field.type = 'email';
+          parameterSetSchema[field.label] = z
+            .string()
+            .email('Must be a valid email.');
+        } else if (param.notes?.fieldType === 'number') {
+          field.type = 'number';
+          parameterSetSchema[field.label] = z.number();
         } else {
-          if (param.notes?.fieldType === 'email') {
-            field.type = 'email';
-            appFields.parameterSet.schema[parameterSet][field.label] = z
-              .string()
-              .email('Must be a valid email.');
-          } else if (param.notes?.fieldType === 'number') {
-            field.type = 'number';
-            appFields.parameterSet.schema[parameterSet][field.label] =
-              z.number();
-          } else {
-            field.type = 'text';
-            appFields.parameterSet.schema[parameterSet][field.label] =
-              z.string();
-          }
+          field.type = 'text';
+          parameterSetSchema[field.label] = z.string();
         }
+
         if (!field.required) {
-          appFields.parameterSet.schema[parameterSet][field.label] =
-            appFields.parameterSet.schema[parameterSet][field.label].optional();
+          parameterSetSchema[field.label] =
+            parameterSetSchema[field.label].optional();
         }
         if (param.notes?.validator?.regex && param.notes?.validator?.message) {
           try {
             const regex = RegExp(param.notes.validator.regex);
-            appFields.parameterSet.schema[parameterSet][field.label] =
-              appFields.parameterSet.schema[parameterSet][field.label].regex(
-                regex,
-                param.notes.validator.message
-              );
+            parameterSetSchema[field.label] = parameterSetSchema[
+              field.label
+            ].regex(regex, param.notes.validator.message);
           } catch (SyntaxError) {
             console.warn('Invalid regex pattern for app');
           }
         }
-        appFields.parameterSet.fields[parameterSet][field.label] = field;
-        appFields.parameterSet.defaults[parameterSet][field.label] =
-          param.arg ?? param.value ?? '';
+        parameterSetFields[field.label] = field;
+        parameterSetDefaults[field.label] = param.arg ?? param.value ?? '';
       });
+
+      // Only create schema for parameterSet if it contains values
+      if (Object.keys(parameterSetSchema).length) {
+        appFields.parameterSet.schema[parameterSet] =
+          z.object(parameterSetSchema);
+      }
+      // Only create fields for parameterSet if it contains values
+      if (Object.keys(parameterSetFields).length) {
+        appFields.parameterSet.fields[parameterSet] = parameterSetFields;
+      }
+      // Only add defaults for parameterSet if it contains values
+      if (Object.keys(parameterSetDefaults).length) {
+        appFields.parameterSet.defaults[parameterSet] = parameterSetDefaults;
+      }
     }
   );
 
@@ -144,10 +115,13 @@ const FormSchema = (app) => {
       label: input.name,
       description: input.description,
       required: input.inputMode === 'REQUIRED',
+      name: `inputs.${input.name}`,
+      key: `inputs.${input.name}`,
+      tapisFile: true,
+      type: 'text',
+      placeholder: 'Browse Data Files',
       readOnly: input.inputMode === 'FIXED',
     };
-
-    field.type = 'text';
 
     appFields.fileInputs.schema[input.name] = z.string();
     appFields.fileInputs.schema[input.name] = appFields.fileInputs.schema[
@@ -190,7 +164,10 @@ const FormSchema = (app) => {
         ' after it is copied to the target system, but before the job is run. Leave this value blank to just use the name of the input file.',
       required: false,
       readOnly: field.readOnly,
+      name: `inputs.${targetPathName}`,
+      key: `inputs.${targetPathName}`,
       type: 'text',
+      placeholder: 'Target Path Name',
     };
     appFields.fileInputs.defaults[targetPathName] =
       checkAndSetDefaultTargetPath(input.targetPath);

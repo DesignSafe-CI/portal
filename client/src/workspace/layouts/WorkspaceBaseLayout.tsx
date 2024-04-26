@@ -1,19 +1,17 @@
 import React from 'react';
-import { Outlet, useLocation, useNavigation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
 import { AppsSideNav, JobStatusNav, AppsBreadcrumb } from '@client/workspace';
 import styles from './layout.module.css';
-import { useAuthenticatedUser, useAppsListing } from '@client/hooks';
+import { useAppsListing } from '@client/hooks';
 import { Spinner } from '@client/common-components';
 
 const { Sider } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
+  const { data, isLoading } = useAppsListing();
 
-  const { user } = useAuthenticatedUser();
-  const { isLoading } = useAppsListing();
-
-  if (!user || isLoading)
+  if (isLoading)
     return (
       <Layout>
         <Spinner />
@@ -29,7 +27,7 @@ const WorkspaceRoot: React.FC = () => {
             <span className="hl hl-research">Tools and Applications</span>
           </h1>
           <JobStatusNav />
-          <AppsSideNav />
+          <AppsSideNav categories={data.categories} />
         </Sider>
         <Outlet />
       </Layout>

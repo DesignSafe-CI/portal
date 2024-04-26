@@ -1,7 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { List, Descriptions, DescriptionsProps, Tag, Button } from 'antd';
+import { useAppFormState } from '../AppsWizard/AppsWizard';
+import {
+  FormProvider,
+  useFormContext,
+  useFormState,
+  useWatch,
+} from 'react-hook-form';
 
-export const AppsSubmissionForm: React.FC<{ form: {} }> = ({ form }) => {
+export const AppsSubmissionForm: React.FC<{
+  fields?: object;
+  isPending: boolean;
+}> = ({ fields, isPending }) => {
+  const {
+    handleSubmit,
+    control,
+    formState: { defaultValues, isSubmitting, isValid, errors },
+  } = useFormContext();
+  const formState = useWatch({ control, defaultValue: defaultValues });
+
   const getChildren = (value) => {
     if (typeof value === 'object') {
       if (!Object.keys(value).length) return <span>-</span>;
@@ -10,7 +27,8 @@ export const AppsSubmissionForm: React.FC<{ form: {} }> = ({ form }) => {
           key: k,
           label: (
             <span>
-              {k} <Tag color="error">Required</Tag>
+              {k}
+              {/* {k} <Tag color="error">Required</Tag> */}
             </span>
           ),
           children: getChildren(v),
@@ -34,25 +52,31 @@ export const AppsSubmissionForm: React.FC<{ form: {} }> = ({ form }) => {
   };
 
   return (
-    <form.Subscribe
-      selector={(state) => [state.canSubmit, state.isSubmitting, state.values]}
-      children={([canSubmit, isSubmitting, values]) => (
-        <Descriptions
-          bordered
-          size="small"
-          column={1}
-          title="Summary"
-          items={getItems(values)}
-          layout="vertical"
-          extra={
-            <>
-              <Button type="primary" htmlType="submit" disabled={!canSubmit}>
-                {isSubmitting ? '...' : 'Submit'}
-              </Button>
-            </>
-          }
-        />
-      )}
+    <Descriptions
+      bordered
+      size="small"
+      column={1}
+      title="Summary"
+      items={getItems(formState)}
+      layout="vertical"
+      extra={
+        <>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={!isValid}
+            loading={isSubmitting || isPending}
+            // onClick={(e) => {
+            //   console.log('submitting');
+            //   e.preventDefault();
+            //   e.stopPropagation();
+            //   // void handleSubmit();
+            // }}
+          >
+            {isSubmitting || isPending ? '' : 'Submit'}
+          </Button>
+        </>
+      }
     />
   );
 };
