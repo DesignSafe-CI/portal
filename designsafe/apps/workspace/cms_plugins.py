@@ -62,7 +62,9 @@ class RelatedApps(CMSPluginBase):
 
     def render(self, context, instance: AppListingEntry, placeholder):
         context = super().render(context, instance, placeholder)
-        listing_entries = instance.app.related_apps.filter(enabled=True)
+        listing_entries = instance.app.related_apps.filter(enabled=True).order_by(
+            "label"
+        )
         serialized_listing = [
             {
                 "label": entry.label,
