@@ -147,7 +147,7 @@ class AppListingEntry(models.Model):
             )
         ]
 
-        ordering = ["label", "is_popular"]
+        ordering = ["is_popular", "label"]
 
 
 class AppVariant(models.Model):
@@ -232,4 +232,4 @@ class AppVariant(models.Model):
             )
         ]
 
-        ordering = [Coalesce("label", "app_id"), "priority"]
+        ordering = ["priority", Coalesce("label", "app_id")]
