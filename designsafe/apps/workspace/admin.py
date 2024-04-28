@@ -9,7 +9,7 @@ from designsafe.apps.workspace.models.app_entries import (
     AppListingEntry,
     AppVariant,
     AppTrayCategory,
-    AppTag
+    AppTag,
 )
 
 admin.site.register(AppDescription)
@@ -43,6 +43,7 @@ class AppVariantInline(admin.StackedInline):
                         "label",
                         "description",
                         "enabled",
+                        "priority",
                     )
                 },
             ),
