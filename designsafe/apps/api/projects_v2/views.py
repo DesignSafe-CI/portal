@@ -29,6 +29,14 @@ from designsafe.apps.api.projects_v2.schema_models.base import FileObj
 logger = logging.getLogger(__name__)
 
 
+def get_search_filter(query_string):
+    id_filter = models.Q(value__projectId__icontains=query_string)
+    title_filter = models.Q(value__title__icontains=query_string)
+    desc_filter = models.Q(value__description__icontains=query_string)
+    user_filter = models.Q(value__users__icontains=query_string)
+    return id_filter | title_filter | desc_filter | user_filter
+
+
 class ProjectsView(BaseApiView):
     """View for listing and creating projects"""
 
@@ -36,17 +44,22 @@ class ProjectsView(BaseApiView):
         """Return the list of projects for a given user."""
         offset = int(request.GET.get("offset", 0))
         limit = int(request.GET.get("limit", 100))
+        query_string = request.GET.get("q", None)
         # user = get_user_model().objects.get(username="ds_admin")
         user = request.user
 
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        projects = user.projects.order_by("last_updated")[offset : offset + limit]
+        projects = user.projects.order_by("last_updated")
+        if query_string:
+            projects = projects.filter(get_search_filter(query_string))
         total = user.projects.count()
 
         project_json = {
-            "result": [project.to_dict() for project in projects],
+            "result": [
+                project.to_dict() for project in projects[offset : offset + limit]
+            ],
             "total": total,
         }
 
@@ -101,7 +114,7 @@ class ProjectInstanceView(BaseApiView):
             ) from exc
 
         # Get the new value from the request data
-        new_value = request.data.get('new_value')
+        new_value = request.data.get("new_value")
 
         # Call the change_project_type function to update the project type
         updated_project = change_project_type(project_id, new_value)
@@ -116,7 +129,7 @@ class ProjectInstanceView(BaseApiView):
                 ),
             }
         )
-    
+
     def patch(self, request: HttpRequest, project_id: str):
         """Update a project's root metadata"""
         user = request.user

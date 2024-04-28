@@ -43,9 +43,10 @@ export const PublishedCitation: React.FC<{
             ? `${author.lname}, ${author.fname[0]}.`
             : `${author.fname[0]}. ${author.lname}`
         )
-        .join(', ')}
-      . "{entityDetails.value.title}", in <i>{data.baseProject.title}</i>.
-      DesignSafe-CI. (DOI will appear after publication)
+        .join(', ')}{' '}
+      ({new Date(entityDetails.publicationDate).getFullYear()}). "
+      {entityDetails.value.title}", in <i>{data.baseProject.title}</i>.
+      DesignSafe-CI. ({entityDetails.value.dois && entityDetails.value.dois[0]})
     </div>
   );
 };

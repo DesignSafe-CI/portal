@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { AxiosError } from 'axios';
+import { useSearchParams } from 'react-router-dom';
 
 export type TFileListing = {
   system: string;
@@ -28,13 +29,14 @@ async function getFileListing(
   limit: number = 100,
   page: number = 0,
   nextPageToken: string | undefined,
+  queryString: string | undefined,
   { signal }: { signal: AbortSignal }
 ) {
   const offset = page * limit;
 
   const res = await apiClient.get<FileListingResponse>(
     `/api/datafiles/${api}/${scheme}/listing/${system}/${path}`,
-    { signal, params: { offset, limit, nextPageToken } }
+    { signal, params: { offset, limit, nextPageToken, q: queryString } }
   );
   return res.data;
 }
@@ -61,12 +63,21 @@ function useFileListing({
   pageSize = 100,
   disabled = false,
 }: TFileListingHookArgs) {
+  const [searchParams] = useSearchParams();
+  const queryString = searchParams.get('q');
   return useInfiniteQuery<
     FileListingResponse,
     AxiosError<{ message?: string }>
   >({
     initialPageParam: 0,
-    queryKey: ['datafiles', 'fileListing', api, system, path],
+    queryKey: [
+      'datafiles',
+      'fileListing',
+      api,
+      system,
+      path,
+      queryString ?? '',
+    ],
     queryFn: ({ pageParam, signal }) =>
       getFileListing(
         api,
@@ -76,6 +87,7 @@ function useFileListing({
         pageSize,
         (pageParam as TFileListingPageParam).page,
         (pageParam as TFileListingPageParam).nextPageToken,
+        queryString ?? undefined,
         {
           signal,
         }
