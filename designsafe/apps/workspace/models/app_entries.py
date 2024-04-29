@@ -147,7 +147,7 @@ class AppListingEntry(models.Model):
             )
         ]
 
-        ordering = ["is_popular", "label"]
+        ordering = ["-is_popular", "label"]
 
 
 class AppVariant(models.Model):
