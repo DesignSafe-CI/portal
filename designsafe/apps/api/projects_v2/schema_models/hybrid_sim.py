@@ -39,6 +39,8 @@ class HybridSimulation(MetadataModel):
 
     facility: Optional[DropdownValue] = None
 
+    tombstone: bool = False
+
     @model_validator(mode="after")
     def handle_other(self):
         """Use values of XXX_other fields to fill in dropdown values."""

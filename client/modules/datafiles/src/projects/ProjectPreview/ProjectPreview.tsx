@@ -18,6 +18,7 @@ import {
   TFileListingColumns,
 } from '../../FileListing/FileListingTable/FileListingTable';
 import { NavLink } from 'react-router-dom';
+import { PublishedEntityDetails } from '../PublishedEntityDetails';
 
 const columns: TFileListingColumns = [
   {
@@ -97,6 +98,7 @@ function RecursiveTree({
 export const PublishedEntityDisplay: React.FC<{
   projectId: string;
   preview?: boolean;
+  license?: string;
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   defaultOpenChildren?: boolean;
@@ -104,6 +106,7 @@ export const PublishedEntityDisplay: React.FC<{
   projectId,
   preview,
   treeData,
+  license,
   defaultOpen = false,
   defaultOpenChildren = false,
 }) => {
@@ -159,13 +162,33 @@ export const PublishedEntityDisplay: React.FC<{
                 )}
               </div>
             ),
-            children: (sortedChildren ?? []).map((child) => (
-              <RecursiveTree
-                treeData={child}
-                key={child.id}
-                defaultOpen={defaultOpenChildren}
-              />
-            )),
+            children: (
+              <>
+                <PublishedEntityDetails
+                  entityValue={treeData.value}
+                  license={license}
+                  publicationDate={treeData.publicationDate}
+                />
+                {(treeData.value.fileObjs?.length ?? 0) > 0 && (
+                  <FileListingTable
+                    api="tapis"
+                    system="designsafe.storage.published"
+                    path={treeData.uuid}
+                    scheme="public"
+                    columns={columns}
+                    dataSource={treeData.value.fileObjs}
+                    disabled
+                  />
+                )}
+                {(sortedChildren ?? []).map((child) => (
+                  <RecursiveTree
+                    treeData={child}
+                    key={child.id}
+                    defaultOpen={defaultOpenChildren}
+                  />
+                ))}
+              </>
+            ),
           },
         ]}
       />
@@ -187,15 +210,17 @@ export const ProjectPreview: React.FC<{ projectId: string }> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {sortedChildren.map((child, idx) => (
-        <PublishedEntityDisplay
-          preview
-          projectId={projectId}
-          treeData={child}
-          defaultOpen={idx === 0}
-          key={child.id}
-        />
-      ))}
+      {sortedChildren
+        .filter((child) => child.name !== 'designsafe.project')
+        .map((child, idx) => (
+          <PublishedEntityDisplay
+            preview
+            projectId={projectId}
+            treeData={child}
+            defaultOpen={idx === 0}
+            key={child.id}
+          />
+        ))}
     </div>
   );
 };
@@ -219,9 +244,13 @@ export const PublicationView: React.FC<{
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {sortedChildren
-        .filter((child) => child.version === version)
+        .filter(
+          (child) =>
+            child.version === version && child.name !== 'designsafe.project'
+        )
         .map((child, idx) => (
           <PublishedEntityDisplay
+            license={data.baseProject.license}
             projectId={projectId}
             treeData={child}
             defaultOpen={idx === 0}
