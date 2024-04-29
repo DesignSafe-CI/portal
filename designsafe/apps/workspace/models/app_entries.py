@@ -2,7 +2,7 @@
 """
 
 from django.db import models
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, Lower
 
 APP_ICONS = [
     ("Generic-App", "Generic: Application"),
@@ -147,7 +147,7 @@ class AppListingEntry(models.Model):
             )
         ]
 
-        ordering = ["-is_popular", "label"]
+        ordering = ["-is_popular", Lower("label")]
 
 
 class AppVariant(models.Model):
@@ -232,4 +232,4 @@ class AppVariant(models.Model):
             )
         ]
 
-        ordering = ["priority", Coalesce("label", "app_id")]
+        ordering = ["priority", Lower(Coalesce("label", "app_id"))]
