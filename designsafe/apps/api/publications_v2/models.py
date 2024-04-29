@@ -13,6 +13,7 @@ class Publication(models.Model):
 
     project_id = models.CharField(max_length=100, primary_key=True, editable=False)
     created = models.DateTimeField(default=timezone.now)
+    is_published = models.BooleanField(default=True)
     last_updated = models.DateTimeField(auto_now=True)
     value = models.JSONField(
         encoder=DjangoJSONEncoder,

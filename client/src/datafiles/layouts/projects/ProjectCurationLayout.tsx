@@ -1,4 +1,5 @@
 import {
+  DatafilesBreadcrumb,
   ManageCategoryModal,
   ManagePublishableEntityModal,
   ProjectCurationFileListing,
@@ -9,7 +10,7 @@ import { useProjectDetail } from '@client/hooks';
 import { Button } from 'antd';
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const PublishableEntityButton: React.FC<{ projectId: string }> = ({
   projectId,
@@ -124,7 +125,9 @@ const PublishableEntityButton: React.FC<{ projectId: string }> = ({
 
 export const ProjectCurationLayout: React.FC = () => {
   const { projectId, path } = useParams();
+  const { data } = useProjectDetail(projectId ?? '');
   if (!projectId) return null;
+  if (!data) return <div>loading...</div>;
   return (
     <div style={{ paddingBottom: '50px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
@@ -163,6 +166,20 @@ export const ProjectCurationLayout: React.FC = () => {
           </RelateDataModal>
         </span>
       </div>
+      <DatafilesBreadcrumb
+        initialBreadcrumbs={[]}
+        path={path ?? ''}
+        baseRoute={`/projects/${projectId}/curation`}
+        systemRootAlias={data.baseProject.value.projectId}
+        systemRoot=""
+        itemRender={(obj) => {
+          return (
+            <Link className="breadcrumb-link" to={obj.path ?? '/'}>
+              {obj.title}
+            </Link>
+          );
+        }}
+      />
       <ProjectCurationFileListing projectId={projectId} path={path ?? ''} />
     </div>
   );
