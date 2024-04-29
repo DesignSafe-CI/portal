@@ -5,6 +5,7 @@ export type TProjectUser = {
   inst: string;
   role: 'pi' | 'co_pi' | 'team_member' | 'guest';
   username?: string;
+  authorship?: boolean;
 };
 
 export type TProjectAward = {
@@ -92,6 +93,8 @@ export type TBaseProjectValue = {
   fileObjs: TFileObj[];
   fileTags: TFileTag[];
 
+  hazmapperMaps?: THazmapperMap[];
+
   license?: string;
 };
 
@@ -102,6 +105,23 @@ export type TEntityValue = {
   authors?: TProjectUser[];
   fileObjs?: TFileObj[];
   fileTags: TFileTag[];
+  dateStart?: string;
+  dateEnd?: string;
+  location?: string;
+  event?: string;
+  facility?: TDropdownValue;
+  latitude?: string;
+  longitude?: string;
+  dois?: string[];
+  referencedData: TReferencedWork[];
+  relatedWork: TAssociatedProject[];
+
+  experimentType?: TDropdownValue;
+  equipmentType?: TDropdownValue;
+  procedureStart?: string;
+  procedureEnd?: string;
+
+  simulationType?: TDropdownValue;
 };
 
 export type TProjectMeta = {
@@ -126,6 +146,7 @@ export type TPreviewTreeData = {
   uuid: string;
   value: TEntityValue;
   order: number;
+  publicationDate?: string;
   children: TPreviewTreeData[];
 };
 

@@ -7,7 +7,7 @@ const columns: TableColumnsType<TPublicationListingItem> = [
   {
     render: (_, record) => record.projectId,
     title: 'Project ID',
-    width: '10%',
+    width: '100px',
   },
   {
     render: (_, record) => <Link to={record.projectId}>{record.title}</Link>,
@@ -19,8 +19,13 @@ const columns: TableColumnsType<TPublicationListingItem> = [
       return `${record.pi?.fname} ${record.pi?.lname}`;
     },
     title: 'Principal Investigator',
+    ellipsis: true,
   },
-  { render: (_, record) => record.created, title: 'Publication Date' },
+  {
+    title: 'Publication Date',
+    ellipsis: true,
+    render: (_, record) => new Date(record.created).toLocaleDateString(),
+  },
 ];
 
 export const PublishedListing: React.FC = () => {
@@ -34,7 +39,7 @@ export const PublishedListing: React.FC = () => {
       loading={isLoading}
       columns={columns}
       style={{ height: '100%' }}
-      scroll={{ y: '100%' }}
+      scroll={{ y: '100%', x: 500 }}
       rowKey={(row) => row.projectId}
       pagination={{
         total: data?.total,
