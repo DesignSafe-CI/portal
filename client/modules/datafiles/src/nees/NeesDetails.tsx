@@ -2,6 +2,7 @@ import { TNeesDetailsItem, useNeesDetails } from '@client/hooks';
 import { Tabs, Button, Divider, Modal, Flex } from 'antd';
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { DatafilesBreadcrumb, FileListing } from '@client/datafiles';
 import styles from './NeesDetails.module.css';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
@@ -56,6 +57,7 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({
     const neesProjectData = data?.metadata.project;
     const neesExperiments = data?.metadata.experiments;
     const numDOIs = neesExperiments?.filter(exp => !!exp.doi).length || 0;
+    const path = data?.path;
 
     const neesCitations = neesExperiments?.filter(exp => !!exp.doi).map((u) => {
       const authors = u.creators?.map((a) => a.lastName + ', ' + a.firstName).join('; ');
@@ -232,6 +234,13 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({
 
     });
 
+    const neesFiles = <FileListing
+                        api="tapis"
+                        system="nees.public"
+                        path={path ?? ''}
+                        scroll={{ y: 500 }}
+                      />;
+
     return (
         <>
           <div>
@@ -383,7 +392,7 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({
                 {
                   key: 'files',
                   label: 'Files',
-                  children: 'files',
+                  children: neesFiles,
                 },
                 {
                   key: 'experiments',
