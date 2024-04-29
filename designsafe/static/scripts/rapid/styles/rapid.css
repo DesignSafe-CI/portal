@@ -14,6 +14,27 @@ body {
 #rapid .navbar {
   margin-bottom: 0px;
 }
+
+.rapid-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.rapid-logo {
+  flex: 0 0 35%;
+  padding-right: 20px;
+}
+
+.rapid-logo img {
+  height: auto;
+  max-width: 100%;
+}
+
+.rapid-header-text {
+  flex: 1;
+}
+
 #rapid_main {
   /*display: flex;*/
   /*flex-direction: row;*/
@@ -195,8 +216,7 @@ body {
 .event-listing .event-type.flood {
   background-color: #4285F4;
 }
-.event-listing  .event-type.tsunami {
-  background-color: #a765fe;
+.event-listing  .event-type.tsunami { 
 }
 .event-listing  .event-type.landslide {
   background-color: #62a241;

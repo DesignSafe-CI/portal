@@ -7,11 +7,23 @@
 
 
 {% block main %}
-<div class="">
-  <div id="rapid">
-    <div>
-      <div ui-view></div>
-    </div>
+<div class="rapid-header">
+  <div class="rapid-logo">
+    <img src="/static/scripts/rapid/images/logo.png" alt="Recon Portal logo"></img>
+  </div>
+  <div class="rapid-header-text">
+    <h3>
+      Recon Portal is an interactive world map of natural hazard events with associated datasets. View available datasets by clicking on a marker, browsing the listing of events, or searching by clicking on "Show filter options". 
+      <br>
+      <a href="/rw/user-guides/tools-applications/recon-portal/"> <i role="none" class="fa fa-question-circle"></i> <b>Learn how to contribute your datasets.</b></a>
+    </h3>
+  </div>
+</div>
+<br>     
+<br>     
+<div id="rapid">
+  <div>
+    <div ui-view></div>
   </div>
 </div>
 
