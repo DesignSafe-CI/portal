@@ -1,10 +1,38 @@
-import { BaseProjectDetails } from '@client/datafiles';
+import { BaseProjectDetails, DatafilesToolbar } from '@client/datafiles';
 import { usePublicationDetail } from '@client/hooks';
 import React, { useEffect } from 'react';
-import { Outlet, useParams, useSearchParams } from 'react-router-dom';
+import { Button, Form, Input } from 'antd';
+import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
+
+const FileListingSearchBar = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const onSubmit = (queryString: string) => {
+    const newSearchParams = searchParams;
+    if (queryString) {
+      newSearchParams.set('q', queryString);
+    } else {
+      newSearchParams.delete('q');
+    }
+
+    setSearchParams(newSearchParams);
+  };
+  return (
+    <Form
+      onFinish={(data) => onSubmit(data.query)}
+      style={{ display: 'inline-flex' }}
+    >
+      <Form.Item name="query" style={{ marginBottom: 0 }}>
+        <Input placeholder="Search Data Files" style={{ width: '250px' }} />
+      </Form.Item>
+      <Button htmlType="submit">
+        <i className="fa fa-search"></i>
+      </Button>
+    </Form>
+  );
+};
 
 export const PublishedDetailLayout: React.FC = () => {
-  const { projectId } = useParams();
+  const { projectId, path } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data } = usePublicationDetail(projectId ?? '');
 
@@ -19,13 +47,34 @@ export const PublishedDetailLayout: React.FC = () => {
 
   if (!projectId || !data) return null;
 
+  if (searchParams.get('q') && !path) {
+    return (
+      <Navigate
+        to={`/public/designsafe.storage.published/${projectId}/${projectId}?q=${searchParams.get(
+          'q'
+        )}`}
+      />
+    );
+  }
+
+  const publicationDate = data.tree.children.find(
+    (c) => c.value.projectId === projectId
+  )?.publicationDate;
+
   return (
     <div style={{ width: '100%', paddingBottom: '100px' }}>
-      <div className="prj-head-title" style={{ marginBottom: '20px' }}>
+      <DatafilesToolbar searchInput={<FileListingSearchBar />} />
+      <div
+        className="prj-head-title"
+        style={{ marginTop: '20px', marginBottom: '20px' }}
+      >
         <strong>{data.baseProject.projectId}</strong>&nbsp;|&nbsp;
         {data.baseProject.title}
       </div>
-      <BaseProjectDetails projectValue={data?.baseProject} />
+      <BaseProjectDetails
+        projectValue={data?.baseProject}
+        publicationDate={publicationDate}
+      />
       <Outlet />
     </div>
   );
