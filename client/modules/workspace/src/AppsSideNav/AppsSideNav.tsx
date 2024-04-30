@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Menu, MenuProps } from 'antd';
 import { NavLink } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
-import MenuDivider from 'antd/es/menu/MenuDivider';
 import { TAppCategory } from '@client/hooks';
 
 const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
@@ -18,12 +17,16 @@ const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
 
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
+  defaultOpen = false,
+  defaultOpenChildren = false,
 }) => {
-  const [activeApp, setActiveApp] = useState();
+  const [activeApp, setActiveApp] = useState<string | string[]>('');
 
   const toggle = (tab: any) => {
-    setActiveApp(tab.keyPath);
+    if (activeApp !== tab) setActiveApp(tab);
   };
+console.log("Active tab ========== " + activeApp)
+
 
   const uniqueBundleLabels = new Set<string>();
 
@@ -102,41 +105,34 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         );
       }
     });
-
     return Object.entries(bundle).map(([bundle_id, bundle]) =>
-      getItem(bundle.label, bundle_id, bundle.apps)
+      getItem(`${bundle.label} [${bundle.apps.length}]`, bundle_id, bundle.apps)
     );
   };
 
   const items: MenuItem[] = categories.map((category) => {
-    console.log(getCategoryApps(category));
-    return getItem(category.title, category.title, getCategoryApps(category));
+    return getItem(`${category.title} [${category.apps.length}]`, category.title, getCategoryApps(category));
   });
 
-  // const items = [
-  //   {categories.map((category) => {
-  //     getItem
-  //   })
-  // ];
-  //  {data?.categories.map((category) => {
-  //    const appItems: MenuItem['items'] =
-
-  //      getItem(`${category.title} [${category.apps.length}]`, category.title, [
-  //        category.apps.map((app) => app.is_bundled ?
-  //        getItem(app.bundle_label, app.bundle_label, [app.label]) : (getItem(`${category.title} [${category.apps.length}]`, category.title, )))]
-
-  //      )
-  //  })
-  //};
+  const expandIcon = (props: any) => {
+    const isActive = activeApp === props;
+    return <i className={isActive ? 'ds-icon-Expand' : 'ds-icon-Collapse'} />;
+  };
 
   return (
+    <div className={styles.appsBrowserSidebar}>
+
+    <h3>Applications:</h3>
     <Menu
       mode="inline"
       onClick={toggle}
-      selectedKeys={activeApp}
-      className={styles.apps}
       items={items}
-      // inlineCollapsed={activeApp}
+      className={styles.appsGridList}
+      onOpenChange={(key) => {
+        setActiveApp(key[0]);
+      }}
+      expandIcon={expandIcon(activeApp)}
     />
+    </div>
   );
 };

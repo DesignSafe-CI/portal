@@ -1,40 +1,65 @@
 :root {
-  --nav-link-bg-color--unselected: #eee;
-  --nav-link-bg-color--selected: transparent;
-
-  --nav-link-hover-color--selected: #e1e1e1;
-  --nav-link-hover-color--unselected: transparent;
-
-  --nav-link-l-border-color--selected: #337ab7;
-  --nav-link-l-border-color--unselected: #ccc;
+  --vertical-buffer: 10px;
+  --max-item-count: 5;
+  --item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
+  /* i.e. ( items * item height ) + ( top space & bottom space ) */
+  --height: calc(
+    (var(--max-item-count) * var(--item-height)) + (var(--vertical-buffer) * 2)
+  );
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(var(--max-item-count), min-content);
+  height: var(--height);
+  padding-top: var(--vertical-buffer);
+  padding-bottom: var(--vertical-buffer);
+  --min-width: 200px;
+  margin-left: calc(var(--horizontal-buffer) * -1);
+  border-right: 1px solid rgb(112 112 112 / 25%);
 }
 
-a.navLink {
-  color: #555555;
-  text-decoration: none;
-}
 a.navLink > div {
-  background-color: var(--nav-link-bg-color--unselected);
   height: 50;
   line-height: 100%;
   white-space: wrap;
-  border-left: 5px solid var(--nav-link-bg-color--unselected);
   padding-left: 10px;
   padding-right: 15px;
 }
 
 .navLink:global(.active) > div {
   background-color: transparent;
-  border-left: 5px solid var(--nav-link-l-border-color--selected);
   padding-left: 10px;
 }
 
-a.navLink:not(:global(.active)):hover > div {
-  background-color: var(--nav-link-hover-color--selected);
-  border-left: 5px solid var(--nav-link-l-border-color--unselected);
+ul.appBrowserSidebar {
+  padding-left: 0;
+  list-style: none;
 }
 
-.navList {
-  border: '1px solid #e3e3e3';
-  padding-left: '0px';
+.appBrowserSidebar .nav-link {
+  min-width: var(--min-width);
+  padding-left: var(--horizontal-buffer);
+  color: var(--global-color-primary--dark);
+  white-space: nowrap;
 }
+
+.appBrowserSidebar .nav-link {
+  /* RFE: Add `href` on links to: obviate this CSS, provide URL to app state */
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.appBrowserSidebar .nav-link.active,
+.appBrowserSidebar .nav-link:hover {
+  color: var(--global-color-primary--x-dark);
+  background: var(--global-color-accent--weak);
+  border: none;
+}
+
+.appBrowserSidebar .nav-link.active {
+  font-weight: 700;
+}
+
+.appBrowserSidebar .nav-link:active {
+  font-weight: 700;
+}
+
