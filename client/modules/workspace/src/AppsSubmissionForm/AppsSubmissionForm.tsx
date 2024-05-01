@@ -36,6 +36,10 @@ import {
   getInputFieldFromTargetPathField,
   isTargetPathEmpty,
   SystemsPushKeysModal,
+  matchExecSysWithAllocations,
+  getExecSystemsForPortalAllocation,
+  isAppUsingDynamicExecSystem,
+  getDefaultExecSystem,
 } from '@client/workspace';
 import styles from './layout.module.css';
 
@@ -47,33 +51,62 @@ export const AppsSubmissionForm: React.FC = () => {
     | string
     | undefined;
 
-  const { data: app } = useGetApps({ appId, appVersion }) as {
+  const { data } = useGetApps({ appId, appVersion }) as {
     data: TAppResponse;
   };
 
-  // const [state, setState] = useAppFormState();
+  const {
+    definition,
+    execSystems,
+    license,
+    defaultSystemNeedsKeys,
+    defaultSystemId,
+  } = data;
 
   // TODOv3: Load these from state
   const portalAlloc = 'DesignSafe-DCV';
   const allocations = ['A', 'DesignSafe-DCV'];
+  const allocationHosts = [
+    'frontera.tacc.utexas.edu',
+    'stampede3.tacc.utexas.edu',
+  ];
+
+  // const [state, setState] = useAppFormState();
+
+  const matchingExecutionHostsMap = matchExecSysWithAllocations(
+    execSystems,
+    allocationHosts
+  );
+  const execSystemsWithAllocation = getExecSystemsForPortalAllocation(
+    matchingExecutionHostsMap,
+    portalAlloc
+  );
+
+  //   const hasCorral =
+  //     configuration.length &&
+  //     ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
+  //       defaultHost?.endsWith(s)
+  //     );
 
   // const hasDefaultAllocation =
   // state.allocations.loading ||
   // state.systems.storage.loading ||
   // state.allocations.hosts[defaultHost] ||
   // hasCorral
-  const defaultStorageHost = 'cloud.corral.tacc.utexas.edu';
+  //   const defaultStorageHost = 'cloud.data.tacc.utexas.edu';
   const hasDefaultAllocation = true;
   const hasStorageSystems = true;
 
   let missingAllocation = false;
 
-  const { fileInputs, parameterSet } = FormSchema(app);
+  const { fileInputs, parameterSet } = FormSchema(definition);
 
   const defaultExecSystem = getExecSystemFromId(
-    app,
-    app.definition.jobAttributes.execSystemId
+    execSystems,
+    definition.jobAttributes.execSystemId
   );
+  const defaultExecSystem2 =
+    getDefaultExecSystem(data, execSystemsWithAllocation) ?? '';
 
   // TODOv3: dynamic exec system and queues
   const initialValues = useMemo(
@@ -82,8 +115,8 @@ export const AppsSubmissionForm: React.FC = () => {
       parameters: parameterSet.defaults,
       configuration: {
         execSystemId: defaultExecSystem?.id,
-        execSystemLogicalQueue: isAppTypeBATCH(app)
-          ? app.definition.jobAttributes.execSystemLogicalQueue
+        execSystemLogicalQueue: isAppTypeBATCH(definition)
+          ? definition.jobAttributes.execSystemLogicalQueue
           : // (
             //     app.execSystems.batchLogicalQueues.find(
             //       (q) =>
@@ -93,10 +126,10 @@ export const AppsSubmissionForm: React.FC = () => {
             //     ) || app.execSystems.batchLogicalQueues[0]
             //   ).name
             '',
-        maxMinutes: app.definition.jobAttributes.maxMinutes,
-        nodeCount: app.definition.jobAttributes.nodeCount,
-        coresPerNode: app.definition.jobAttributes.coresPerNode,
-        allocation: isAppTypeBATCH(app)
+        maxMinutes: definition.jobAttributes.maxMinutes,
+        nodeCount: definition.jobAttributes.nodeCount,
+        coresPerNode: definition.jobAttributes.coresPerNode,
+        allocation: isAppTypeBATCH(definition)
           ? allocations.includes(portalAlloc)
             ? portalAlloc
             : allocations.length === 1
@@ -105,18 +138,22 @@ export const AppsSubmissionForm: React.FC = () => {
           : '',
       },
       outputs: {
-        name: `${app.definition.id}-${app.definition.version}_${
+        name: `${definition.id}-${definition.version}_${
           new Date().toISOString().split('.')[0]
         }`,
         archiveSystemId:
-          app.defaultSystem || app.definition.jobAttributes.archiveSystemId,
-        archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
+          defaultSystemId || definition.jobAttributes.archiveSystemId,
+        archiveSystemDir: definition.jobAttributes.archiveSystemDir,
       },
     }),
-    [app]
+    [definition]
   );
 
-  if (isAppTypeBATCH(app) && !hasDefaultAllocation && hasStorageSystems) {
+  if (
+    isAppTypeBATCH(definition) &&
+    !hasDefaultAllocation &&
+    hasStorageSystems
+  ) {
     // jobSubmission.error = true;
     // jobSubmission.response = {
     //   message: `You need an allocation on ${getSystemName(
@@ -140,14 +177,13 @@ export const AppsSubmissionForm: React.FC = () => {
   //   exec_sys,
   //   state.execSystemLogicalQueue
   // );
-  // const execSys = getDefaultExecSystem(app, app.execSystems) ?? ''
 
   // const currentExecSystem = getExecSystemFromId(app, state.execSystemId);
 
   const queue = getQueueValueForExecSystem(
-    app,
+    definition,
     defaultExecSystem,
-    app.definition.jobAttributes.execSystemLogicalQueue
+    definition.jobAttributes.execSystemLogicalQueue
   );
 
   const schema = {
@@ -156,13 +192,13 @@ export const AppsSubmissionForm: React.FC = () => {
     parameters: z.object(parameterSet.schema),
     configuration: z.object({
       execSystemLogicalQueue: getExecSystemLogicalQueueValidation(
-        app,
+        definition,
         defaultExecSystem
       ),
-      maxMinutes: getMaxMinutesValidation(app, queue),
-      coresPerNode: getCoresPerNodeValidation(app, queue),
-      nodeCount: getNodeCountValidation(app, queue),
-      allocation: getAllocationValidation(app, allocations),
+      maxMinutes: getMaxMinutesValidation(definition, queue),
+      coresPerNode: getCoresPerNodeValidation(definition, queue),
+      nodeCount: getNodeCountValidation(definition, queue),
+      allocation: getAllocationValidation(definition, allocations),
     }),
     outputs: z.object({
       name: z.string().max(80),
@@ -182,14 +218,14 @@ export const AppsSubmissionForm: React.FC = () => {
   const layoutStyle = {
     overflow: 'hidden',
   };
-  const { systemNeedsKeys, pushKeysSystem } = app;
-  const missingLicense = app.license.type && !app.license.enabled;
+
+  const missingLicense = license.type && !license.enabled;
 
   const readOnly =
     missingLicense ||
     !hasStorageSystems ||
-    (app.definition.jobType === 'BATCH' && missingAllocation) ||
-    systemNeedsKeys;
+    (definition.jobType === 'BATCH' && missingAllocation) ||
+    defaultSystemNeedsKeys;
 
   const methods = useForm({
     defaultValues: initialValues,
@@ -224,8 +260,8 @@ export const AppsSubmissionForm: React.FC = () => {
   const steps = {
     inputs: getInputsStep(fileInputs),
     parameters: getParametersStep(parameterSet),
-    configuration: getConfigurationStep(app, allocations),
-    outputs: getOutputsStep(app),
+    configuration: getConfigurationStep(data, allocations),
+    outputs: getOutputsStep(data),
   };
 
   const handleNextStep = useCallback(
@@ -259,19 +295,19 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [submitResult]);
 
-  const submitJobCallback = (data) => {
+  const submitJobCallback = (submitData) => {
     const jobData = {
       operation: 'submitJob',
 
-      licenseType: app.license.type,
-      isInteractive: !!app.definition.notes.isInteractive,
+      licenseType: license.type,
+      isInteractive: !!definition.notes.isInteractive,
       job: {
         archiveOnAppError: true,
-        appId: app.definition.id,
-        appVersion: app.definition.version,
-        execSystemId: app.definition.jobAttributes.execSystemId,
-        ...data.configuration,
-        ...data.outputs,
+        appId: definition.id,
+        appVersion: definition.version,
+        execSystemId: definition.jobAttributes.execSystemId,
+        ...submitData.configuration,
+        ...submitData.outputs,
       },
     };
 
@@ -282,7 +318,7 @@ export const AppsSubmissionForm: React.FC = () => {
     // tapis wants only 1 field with 2 properties - source url and target path.
     // The logic below handles that scenario by merging the related fields into 1 field.
     jobData.job.fileInputs = Object.values(
-      Object.entries(data.inputs)
+      Object.entries(submitData.inputs)
         .map(([k, v]) => {
           // filter out read only inputs. 'FIXED' inputs are tracked as readOnly
           if (fileInputs.fields?.[k].readOnly) return;
@@ -319,7 +355,7 @@ export const AppsSubmissionForm: React.FC = () => {
 
     jobData.job.parameterSet = Object.assign(
       {},
-      ...Object.entries(data.parameters).map(
+      ...Object.entries(submitData.parameters).map(
         ([parameterSet, parameterValue]) => {
           return {
             [parameterSet]: Object.entries(parameterValue)
@@ -362,15 +398,15 @@ export const AppsSubmissionForm: React.FC = () => {
       <Form
         disabled={readOnly}
         layout="vertical"
-        onFinish={handleSubmit(submitJobCallback, (data) => {
-          console.log('error submit data', data);
+        onFinish={handleSubmit(submitJobCallback, (error) => {
+          console.log('error submit data', error);
         })}
       >
         <fieldset>
           <Layout style={layoutStyle}>
             <Header style={headerStyle}>
               <Flex justify="space-between">
-                {app.definition.notes.label || app.definition.id}
+                {definition.notes.label || definition.id}
                 <a href="/user-guide">View User Guide</a>
               </Flex>
             </Header>

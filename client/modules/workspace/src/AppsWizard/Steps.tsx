@@ -49,7 +49,7 @@ export const getConfigurationStep = (app, allocations) => ({
           required
           // TODOv3: Dynamic system queues
           options={getAppQueueValues(
-            app,
+            app.definition,
             app.execSystems[0].batchLogicalQueues
           ).map((q) => ({ value: q, label: q }))}
         />
@@ -121,7 +121,8 @@ export const getOutputsStep = (app) => ({
             name="outputs.archiveSystemId"
             type="text"
             placeholder={
-              app.defaultSystem || app.definition.jobAttributes.archiveSystemId
+              app.defaultSystemId ||
+              app.definition.jobAttributes.archiveSystemId
             }
           />
           <FormField

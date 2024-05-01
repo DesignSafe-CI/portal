@@ -5,7 +5,7 @@ import {
   getTargetPathFieldName,
 } from '@client/workspace';
 
-const FormSchema = (app) => {
+const FormSchema = (definition) => {
   const appFields = {
     fileInputs: {
       defaults: {},
@@ -19,7 +19,7 @@ const FormSchema = (app) => {
     },
   };
 
-  Object.entries(app.definition.jobAttributes.parameterSet).forEach(
+  Object.entries(definition.jobAttributes.parameterSet).forEach(
     ([parameterSet, parameterSetValue]) => {
       if (!Array.isArray(parameterSetValue)) return;
       const parameterSetSchema = {};
@@ -103,9 +103,8 @@ const FormSchema = (app) => {
   );
 
   // The default is to not show target path for file inputs.
-  const showTargetPathForFileInputs =
-    app.definition.notes.showTargetPath ?? false;
-  (app.definition.jobAttributes.fileInputs || []).forEach((i) => {
+  const showTargetPathForFileInputs = definition.notes.showTargetPath ?? false;
+  (definition.jobAttributes.fileInputs || []).forEach((i) => {
     const input = i;
     if (input.notes?.isHidden) {
       return;

@@ -14,9 +14,8 @@ export type TAppResponse = {
     type: null | string;
     enabled?: boolean;
   };
-  systemNeedsKeys?: boolean;
-  pushKeysSystem?: TTapisSystem;
-  defaultSystem?: string;
+  defaultSystemNeedsKeys?: TTapisSystem;
+  defaultSystemId?: string;
 };
 
 export type TGetAppsResponse = {

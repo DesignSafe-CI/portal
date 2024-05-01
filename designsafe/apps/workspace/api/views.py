@@ -31,6 +31,34 @@ from designsafe.apps.workspace.api.utils import check_job_for_timeout
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
 
+TACC_EXEC_SYSTEMS = {
+    "corral": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/work2/{}",
+        "home_dir": "/home/{}",
+    },
+    "stampede2": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/scratch/{}",
+        "home_dir": "/home1/{}",
+    },
+    "stampede3": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/scratch/{}",
+        "home_dir": "/home1/{}",
+    },
+    "frontera": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/scratch1/{}",
+        "home_dir": "/home1/{}",
+    },
+    "ls6": {
+        "work_dir": "/work/{}",
+        "scratch_dir": "/scratch/{}",
+        "home_dir": "/home1/{}",
+    },
+}
+
 
 def _app_license_type(app_def):
     """Gets an app's license type, if any."""
@@ -95,7 +123,10 @@ def _get_app(app_id, app_version, user):
 
 
 def test_system_needs_keys(tapis, system_id):
-    """Tests a Tapis system by making a file listing call."""
+    """Tests a Tapis system by making a file listing call.
+
+    returns: SystemDef
+    """
 
     try:
         tapis.files.listFiles(systemId=system_id, path="/")
@@ -140,10 +171,9 @@ class AppsView(AuthenticatedApiView):
                 logger.info(
                     f"Keys for user {request.user.usernam} must be manually pushed to system: {system_needs_keys.id}"
                 )
-                data["systemNeedsKeys"] = True
-                data["pushKeysSystem"] = system_needs_keys
+                data["defaultSystemNeedsKeys"] = system_needs_keys
 
-            data["defaultSystem"] = settings.AGAVE_STORAGE_SYSTEM
+            data["defaultSystemId"] = settings.AGAVE_STORAGE_SYSTEM
 
         return JsonResponse(
             {
@@ -598,10 +628,12 @@ class JobsView(AuthenticatedApiView):
                 return {"execSys": system_needs_keys}
 
         if settings.DEBUG:
-            wh_base_url = settings.WH_BASE_URL + reverse(
+            wh_base_url = settings.WEBHOOK_POST_URL + reverse(
                 "webhooks:interactive_wh_handler"
             )
-            jobs_wh_url = settings.WH_BASE_URL + reverse("webhooks:jobs_wh_handler")
+            jobs_wh_url = settings.WEBHOOK_POST_URL + reverse(
+                "webhooks:jobs_wh_handler"
+            )
         else:
             wh_base_url = request.build_absolute_uri(
                 reverse("webhooks:interactive_wh_handler")
@@ -620,11 +652,7 @@ class JobsView(AuthenticatedApiView):
             # Make sure $HOME/.tap directory exists for user when running interactive apps
             exec_system_id = job_post["execSystemId"]
             system = next(
-                (
-                    v
-                    for k, v in settings.TACC_EXEC_SYSTEMS.items()
-                    if exec_system_id.endswith(k)
-                ),
+                (v for k, v in TACC_EXEC_SYSTEMS.items() if exec_system_id.endswith(k)),
                 None,
             )
             tasdir = get_user_data(username)["homeDirectory"]
