@@ -1,0 +1,20 @@
+@import url('./DesignSafe-Icons.fonts.css');
+
+/* TODO: Consider isolating and importing main.css & main-ef.css .ds-icon's */
+
+/* To globally adjust sizes of specific font icons */
+.ds-icon-All-Hazards:before {
+    /* … */
+}
+.ds-icon-Earth:before {
+    /* … */
+}
+.ds-icon-Water:before {
+    /* … */
+}
+.ds-icon-Wind:before {
+    /* … */
+}
+.ds-icon-OpenSees:before {
+    /* … */
+}
