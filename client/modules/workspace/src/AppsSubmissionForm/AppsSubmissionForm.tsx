@@ -54,7 +54,6 @@ export const AppsSubmissionForm: React.FC = () => {
   // const [state, setState] = useAppFormState();
 
   // TODOv3: Load these from state
-  const defaultSystem = 'designsafe.storage.default';
   const portalAlloc = 'DesignSafe-DCV';
   const allocations = ['A', 'DesignSafe-DCV'];
 
@@ -110,7 +109,7 @@ export const AppsSubmissionForm: React.FC = () => {
           new Date().toISOString().split('.')[0]
         }`,
         archiveSystemId:
-          app.definition.jobAttributes.archiveSystemId || defaultSystem,
+          app.defaultSystem || app.definition.jobAttributes.archiveSystemId,
         archiveSystemDir: app.definition.jobAttributes.archiveSystemDir,
       },
     }),

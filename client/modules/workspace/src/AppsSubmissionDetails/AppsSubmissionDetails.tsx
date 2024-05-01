@@ -1,6 +1,5 @@
 import React from 'react';
 import { Descriptions, DescriptionsProps, Tag, Button } from 'antd';
-// import { useAppFormState } from '../AppsWizard/AppsWizard';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 export const AppsSubmissionDetails: React.FC<{
@@ -8,7 +7,6 @@ export const AppsSubmissionDetails: React.FC<{
   isPending: boolean;
 }> = ({ fields, isPending }) => {
   const {
-    handleSubmit,
     control,
     formState: { defaultValues, isSubmitting, isValid, errors },
   } = useFormContext();

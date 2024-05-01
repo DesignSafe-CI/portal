@@ -143,6 +143,8 @@ class AppsView(AuthenticatedApiView):
                 data["systemNeedsKeys"] = True
                 data["pushKeysSystem"] = system_needs_keys
 
+            data["defaultSystem"] = settings.AGAVE_STORAGE_SYSTEM
+
         return JsonResponse(
             {
                 "status": 200,

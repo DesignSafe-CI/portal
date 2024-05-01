@@ -16,6 +16,7 @@ export type TAppResponse = {
   };
   systemNeedsKeys?: boolean;
   pushKeysSystem?: TTapisSystem;
+  defaultSystem?: string;
 };
 
 export type TGetAppsResponse = {

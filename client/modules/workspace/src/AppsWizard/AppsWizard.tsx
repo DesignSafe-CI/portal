@@ -74,6 +74,7 @@ export const AppsWizard: React.FC<{
   };
 
   const { Header, Content } = Layout;
+
   return (
     <Flex gap="middle" wrap="wrap">
       <Layout style={layoutStyle}>

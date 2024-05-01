@@ -120,7 +120,9 @@ export const getOutputsStep = (app) => ({
             description="System into which output files are archived after application execution."
             name="outputs.archiveSystemId"
             type="text"
-            placeholder={app.definition.jobAttributes.archiveSystemId} // || defaultSystem}
+            placeholder={
+              app.defaultSystem || app.definition.jobAttributes.archiveSystemId
+            }
           />
           <FormField
             label="Archive Directory"
