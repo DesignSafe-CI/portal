@@ -7,11 +7,15 @@
 
 /* Title */
 .c-app-card__title {
-    margin-top: 1em;
-    margin-bottom: 0;
+    margin-block: 1em 0;
+    padding-inline: 1rem;
 }
-.c-app-card__title > .icon::before {
-    font-size: unset; /* to undo 5vw from ng-designsafe.css */
+.c-app-card__title > .ds-icon {
+    width: unset; /* overwrite .ds-icon from main.css */
+    height: unset; /* overwrite .ds-icon from main.css */
+}
+.c-app-card__title > .ds-icon::before {
+    margin-right: 0.25em;
 }
 
 /* Description */
