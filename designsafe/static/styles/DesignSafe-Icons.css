@@ -4,17 +4,17 @@
 
 /* To globally adjust sizes of specific font icons */
 .ds-icon-All-Hazards:before {
-    /* … */
+    font-size: 1.2em;
 }
 .ds-icon-Earth:before {
-    /* … */
+    font-size: 1.2em;
 }
 .ds-icon-Water:before {
-    /* … */
+    font-size: 1.2em;
 }
 .ds-icon-Wind:before {
-    /* … */
+    font-size: 1.2em;
 }
 .ds-icon-OpenSees:before {
-    /* … */
+    font-size: 1.2em;
 }
