@@ -15,28 +15,7 @@ const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   );
 };
 
-export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
-  categories,
-  defaultOpen = false,
-  defaultOpenChildren = false,
-}) => {
-  const [activeApp, setActiveApp] = useState<string | string[]>('');
-
-  const toggle = (tab: any) => {
-    if (activeApp !== tab) setActiveApp(tab);
-  };
-console.log("Active tab ========== " + activeApp)
-
-
-  const uniqueBundleLabels = new Set<string>();
-
-  categories.forEach((category) => {
-    category.apps.forEach((app) => {
-      {
-        app.is_bundled ?? uniqueBundleLabels.add(app.bundle_label);
-      }
-    });
-  });
+export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({categories}) => {
 
   type MenuItem = Required<MenuProps>['items'][number];
 
@@ -48,8 +27,8 @@ console.log("Active tab ========== " + activeApp)
   ): MenuItem {
     return {
       label,
-      children,
       key,
+      children,
       type,
     } as MenuItem;
   }
@@ -114,10 +93,6 @@ console.log("Active tab ========== " + activeApp)
     return getItem(`${category.title} [${category.apps.length}]`, category.title, getCategoryApps(category));
   });
 
-  const expandIcon = (props: any) => {
-    const isActive = activeApp === props;
-    return <i className={isActive ? 'ds-icon-Expand' : 'ds-icon-Collapse'} />;
-  };
 
   return (
     <div className={styles.appsBrowserSidebar}>
@@ -125,13 +100,8 @@ console.log("Active tab ========== " + activeApp)
     <h3>Applications:</h3>
     <Menu
       mode="inline"
-      onClick={toggle}
       items={items}
       className={styles.appsGridList}
-      onOpenChange={(key) => {
-        setActiveApp(key[0]);
-      }}
-      expandIcon={expandIcon(activeApp)}
     />
     </div>
   );
