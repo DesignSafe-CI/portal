@@ -1,15 +1,119 @@
 """Utils for generating published metadata"""
 
-from typing import Optional
+from typing import Optional, Literal
 from pathlib import Path
 import logging
 import networkx as nx
 from django.utils.text import slugify
 from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
+from designsafe.apps.api.projects_v2 import constants
 
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 
 logger = logging.getLogger(__name__)
+
+REQUIRED_ENTITIES = {
+    constants.EXPERIMENT: [
+        constants.EXPERIMENT_MODEL_CONFIG,
+        constants.EXPERIMENT_SENSOR,
+        constants.EXPERIMENT_EVENT,
+    ],
+    constants.SIMULATION: [
+        constants.SIMULATION_MODEL,
+        constants.SIMULATION_INPUT,
+        constants.SIMULATION_OUTPUT,
+        constants.SIMULATION_REPORT,
+    ],
+    constants.FIELD_RECON_MISSION: [
+        constants.FIELD_RECON_SOCIAL_SCIENCE,
+        constants.FIELD_RECON_GEOSCIENCE,
+        constants.FIELD_RECON_PLANNING,
+    ],
+    constants.HYBRID_SIM: [
+        constants.HYBRID_SIM_GLOBAL_MODEL,
+        constants.HYBRID_SIM_COORDINATOR,
+        constants.HYBRID_SIM_SIM_SUBSTRUCTURE,
+        constants.HYBRID_SIM_EXP_SUBSTRUCTURE,
+    ],
+}
+
+
+def check_missing_entities(
+    project_id: str, entity_uuid: str, default_operator: Literal["AND", "OR"] = "AND"
+):
+    """Validate an entity's tree structure to check for missing requirements.
+    The default_operator argument determines whether to check exhaustively for each
+    required entity, or whether only 1 entity in the array is required
+    (e.g. field recon missions require a planning, social science, OR geoscience colleciton but not all 3)
+    """
+
+    project_tree = ProjectMetadata.get_project_by_id(project_id)
+    project_graph: nx.DiGraph = nx.node_link_graph(project_tree.project_graph.value)
+
+    entity_node = next(
+        (
+            node
+            for node in project_graph.nodes
+            if project_graph.nodes[node]["uuid"] == entity_uuid
+        ),
+        None,
+    )
+    entity_name = project_graph.nodes[entity_node]["name"]
+
+    child_nodes = [
+        project_graph.nodes[node]
+        for node in nx.dfs_preorder_nodes(project_graph, entity_node)
+    ]
+    missing_entities = []
+
+    for required_entity_name in REQUIRED_ENTITIES.get(entity_name, []):
+        has_required_entity = next(
+            (node for node in child_nodes if node["name"] == required_entity_name),
+            None,
+        )
+        if not has_required_entity:
+            missing_entities.append(required_entity_name)
+
+    if default_operator == "OR" and len(missing_entities) < len(
+        REQUIRED_ENTITIES[entity_name]
+    ):
+        # At least one of the required entity types is associated
+        missing_entities = []
+
+    return missing_entities
+
+
+def validate_entity_selection(project_id: str, entity_uuids: list[str]):
+    """Check for missing requirements in a selection of entity UUIDs."""
+    validation_errors = []
+    for uuid in entity_uuids:
+        entity_meta = ProjectMetadata.objects.get(uuid=uuid)
+        match entity_meta.name:
+            case constants.EXPERIMENT | constants.SIMULATION | constants.HYBRID_SIM:
+                missing_entities = check_missing_entities(project_id, uuid)
+                if len(missing_entities) > 0:
+                    validation_errors.append(
+                        {
+                            "errorType": "MISSING_ENTITY",
+                            "name": entity_meta.name,
+                            "title": entity_meta.value["title"],
+                            "missing": missing_entities,
+                        }
+                    )
+            case constants.FIELD_RECON_MISSION:
+                missing_entities = check_missing_entities(
+                    project_id, uuid, default_operator="OR"
+                )
+                if len(missing_entities) > 0:
+                    validation_errors.append(
+                        {
+                            "errorType": "MISSING_ENTITY",
+                            "name": entity_meta.name,
+                            "title": entity_meta.value["title"],
+                            "missing": missing_entities,
+                        }
+                    )
+    return validation_errors
 
 
 def add_values_to_tree(project_id: str) -> nx.DiGraph:

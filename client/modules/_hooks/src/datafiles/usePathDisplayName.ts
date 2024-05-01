@@ -31,7 +31,7 @@ function _getPathDisplayName(
     return 'My Data';
   }
   if (system === 'designsafe.storage.frontera.work' && path === usernamePath) {
-    return 'My Data (Work)';
+    return 'HPC Work';
   }
 
   return decodeURIComponent(path).split('/').slice(-1)[0] || 'Data Files';

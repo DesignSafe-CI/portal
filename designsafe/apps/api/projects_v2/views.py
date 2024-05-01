@@ -13,17 +13,28 @@ from designsafe.apps.api.projects_v2.operations.graph_operations import (
     remove_nodes_from_project,
 )
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
+    patch_metadata,
     add_file_associations,
     remove_file_associations,
     set_file_tags,
+    change_project_type,
 )
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     add_values_to_tree,
+    validate_entity_selection,
 )
 from designsafe.apps.api.projects_v2.schema_models.base import FileObj
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_search_filter(query_string):
+    id_filter = models.Q(value__projectId__icontains=query_string)
+    title_filter = models.Q(value__title__icontains=query_string)
+    desc_filter = models.Q(value__description__icontains=query_string)
+    user_filter = models.Q(value__users__icontains=query_string)
+    return id_filter | title_filter | desc_filter | user_filter
 
 
 class ProjectsView(BaseApiView):
@@ -33,17 +44,22 @@ class ProjectsView(BaseApiView):
         """Return the list of projects for a given user."""
         offset = int(request.GET.get("offset", 0))
         limit = int(request.GET.get("limit", 100))
+        query_string = request.GET.get("q", None)
         # user = get_user_model().objects.get(username="ds_admin")
         user = request.user
 
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        projects = user.projects.order_by("last_updated")[offset : offset + limit]
+        projects = user.projects.order_by("last_updated")
+        if query_string:
+            projects = projects.filter(get_search_filter(query_string))
         total = user.projects.count()
 
         project_json = {
-            "result": [project.to_dict() for project in projects],
+            "result": [
+                project.to_dict() for project in projects[offset : offset + limit]
+            ],
             "total": total,
         }
 
@@ -82,11 +98,77 @@ class ProjectInstanceView(BaseApiView):
             }
         )
 
-    def put(self, request):
-        """Update a project's root metadata"""
+    def put(self, request: HttpRequest, project_id: str):
+        """Update project type for a project ID"""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
 
-    def post(self, request, project_id):
-        """Add a new metadata entity."""
+        try:
+            project = user.projects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+
+        # Get the new value from the request data
+        new_value = request.data.get("new_value")
+
+        # Call the change_project_type function to update the project type
+        updated_project = change_project_type(project_id, new_value)
+
+        entities = ProjectMetadata.objects.filter(base_project=updated_project)
+        return JsonResponse(
+            {
+                "updatedProject": updated_project.to_dict(),
+                "entities": [e.to_dict() for e in entities],
+                "tree": nx.tree_data(
+                    nx.node_link_graph(updated_project.project_graph.value), "NODE_ROOT"
+                ),
+            }
+        )
+
+    def patch(self, request: HttpRequest, project_id: str):
+        """Update a project's root metadata"""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        try:
+            project: ProjectMetadata = user.projects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+
+        request_body = json.loads(request.body).get("patchMetadata", {})
+        patch_metadata(project.uuid, request_body)
+        return JsonResponse({"result": "OK"})
+
+
+class ProjectEntityView(BaseApiView):
+    """View for updating individual project entities"""
+
+    def patch(self, request: HttpRequest, entity_uuid: str):
+        """Patch an entity's metadata value."""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        entity_meta = ProjectMetadata.objects.get(uuid=entity_uuid)
+        if user not in entity_meta.base_project.users.all():
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            )
+
+        request_body = json.loads(request.body).get("patchMetadata", {})
+        logger.debug(request_body)
+        patch_metadata(entity_uuid, request_body)
+        return JsonResponse({"result": "OK"})
 
 
 class ProjectPreviewView(BaseApiView):
@@ -310,3 +392,27 @@ class ProjectFileTagsView(BaseApiView):
 
         set_file_tags(entity_uuid, file_path, tag_names)
         return JsonResponse({"result": "OK"})
+
+
+class ProjectEntityValidateView(BaseApiView):
+    """Views for validating publishable entities."""
+
+    def post(self, request: HttpRequest, project_id):
+        """validate a selection of entities to check publication-readiness."""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        try:
+            project: ProjectMetadata = user.projects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+
+        entities: list[str] = json.loads(request.body).get("entityUuids", None)
+
+        validation_result = validate_entity_selection(project.project_id, entities)
+        return JsonResponse({"result": validation_result})

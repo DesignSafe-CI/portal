@@ -102,22 +102,23 @@ export const AddFileFolder: React.FC = () => {
                   )}
                 </DatafilesModal.UploadFolder>
               </li>
-              <li
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href =
-                    'https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/';
-                }}
-              >
-                <Button
-                  type="text"
-                  className={`${styles.active} ${styles.fullWidthButton}`}
+              <li>
+                <a
+                  href="https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ padding: '0px' }}
                 >
-                  <span className="fa-stack fa-lg">
-                    <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
-                  </span>
-                  <span>Bulk Data Transfer</span>
-                </Button>
+                  <Button
+                    type="text"
+                    className={`${styles.active} ${styles.fullWidthButton}`}
+                  >
+                    <span className="fa-stack fa-lg">
+                      <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
+                    </span>
+                    <span>Bulk Data Transfer</span>
+                  </Button>
+                </a>
               </li>
             </ul>
           </div>
