@@ -78,8 +78,6 @@ export const getMaxMinutesValidation = (app, queue) => {
     );
 };
 
-// TODOv3  Create ticket for us/Design to decide if we want to continue to present max run time as hh:mm:ss and translate to maxMinutes
-// https://jira.tacc.utexas.edu/browse/WP-99
 /**
  * Create regex pattern for maxRunTime
  * @function
@@ -207,19 +205,6 @@ export const updateValuesForQueue = (app, values) => {
   if (values.maxMinutes > queue.maxMinutes) {
     updatedValues.maxMinutes = queue.maxMinutes;
   }
-
-  /* // TODOv3  HH:MM:SS form https://jira.tacc.utexas.edu/browse/WP-99
-
-    const runtimeRegExp = new RegExp(
-      createMaxRunTimeRegex(longestMaxRequestedTime)
-    );
-    if (
-      runtimeRegExp.test(values.maxMinutes) &&
-      values.maxMinutes > queue.maxMinutes
-    ) {
-      updatedValues.maxMinutes = queue.maxMinutes;
-    }
-     */
 
   return updatedValues;
 };
