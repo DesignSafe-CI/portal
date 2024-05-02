@@ -29,7 +29,9 @@ export const getExecSystemsFromApp = (definition, execSystems) => {
     );
   }
 
-  return [definition.jobAttributes.execSystemId];
+  return [
+    execSystems.find((s) => s.id === definition.jobAttributes.execSystemId),
+  ];
 };
 
 /**

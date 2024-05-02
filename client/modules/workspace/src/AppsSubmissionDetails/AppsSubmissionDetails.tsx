@@ -4,11 +4,11 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 export const AppsSubmissionDetails: React.FC<{
   fields?: object;
-  isPending: boolean;
-}> = ({ fields, isPending }) => {
+  isSubmitting: boolean;
+}> = ({ fields, isSubmitting }) => {
   const {
     control,
-    formState: { defaultValues, isSubmitting, isValid, errors },
+    formState: { defaultValues, isValid, errors },
   } = useFormContext();
   const formState = useWatch({ control, defaultValue: defaultValues });
 
@@ -58,9 +58,9 @@ export const AppsSubmissionDetails: React.FC<{
             type="primary"
             htmlType="submit"
             disabled={!isValid}
-            loading={isSubmitting || isPending}
+            loading={isSubmitting}
           >
-            {isSubmitting || isPending ? '' : 'Submit'}
+            Submit
           </Button>
         </>
       }
