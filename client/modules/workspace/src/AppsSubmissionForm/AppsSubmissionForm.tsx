@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Layout, Form, Col, Row, Flex } from 'antd';
+import { Layout, Form, Col, Row, Flex, Alert, Space } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGetApps, usePostJobs, useGetSystems } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
+import { default as AppIcon } from './AppIcon';
 import { default as FormSchema } from '../AppsWizard/AppsFormSchema';
 import {
   getInputsStep,
@@ -253,8 +254,6 @@ export const AppsSubmissionForm: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState({});
 
-  console.log('submit result', submitResult);
-  console.log('submitError', submitError);
   useEffect(() => {
     if (submitResult?.execSys) {
       setIsModalOpen(submitResult.execSys);
@@ -360,48 +359,51 @@ export const AppsSubmissionForm: React.FC = () => {
   };
 
   return (
-    <FormProvider {...methods}>
-      <Form
-        disabled={readOnly}
-        layout="vertical"
-        onFinish={handleSubmit(submitJobCallback, (error) => {
-          console.log('error submit data', error);
-        })}
-      >
-        <fieldset>
-          <Layout style={layoutStyle}>
-            <Header style={headerStyle}>
-              <Flex justify="space-between">
-                {definition.notes.label || definition.id}
-                <a href="/user-guide">View User Guide</a>
-              </Flex>
-            </Header>
-            <Content>
-              <Row>
-                <Col span={14}>
-                  {/* {Object.keys(state).length && ( */}
-                  <AppsWizard
-                    step={steps[current]}
-                    handlePreviousStep={handlePreviousStep}
-                    handleNextStep={handleNextStep}
-                  />
-                  {/* )} */}
-                </Col>
-                <Col span={10}>
-                  <AppsSubmissionDetails
-                    fields={fields}
-                    isSubmitting={isPending}
-                  />
-                </Col>
-              </Row>
-            </Content>
-          </Layout>
-        </fieldset>
-      </Form>
+    <>
+      <Layout style={layoutStyle}>
+        <Header style={headerStyle}>
+          <Flex justify="space-between">
+            <div>
+              <AppIcon name={definition.notes.icon || 'Generic-App'} />
+              {definition.notes.label || definition.id}
+            </div>
+            <a href="/user-guide">View User Guide</a>
+          </Flex>
+        </Header>
+        <Content>
+          <FormProvider {...methods}>
+            <Form
+              disabled={readOnly}
+              layout="vertical"
+              onFinish={handleSubmit(submitJobCallback, (error) => {
+                console.log('error submit data', error);
+              })}
+            >
+              <fieldset>
+                <Row>
+                  <Col span={14}>
+                    <AppsWizard
+                      step={steps[current]}
+                      handlePreviousStep={handlePreviousStep}
+                      handleNextStep={handleNextStep}
+                    />
+                  </Col>
+                  <Col span={10}>
+                    <AppsSubmissionDetails
+                      fields={fields}
+                      isSubmitting={isPending}
+                    />
+                  </Col>
+                </Row>
+              </fieldset>
+            </Form>
+          </FormProvider>
+        </Content>
+      </Layout>
       <SystemsPushKeysModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
       />
-    </FormProvider>
+    </>
   );
 };

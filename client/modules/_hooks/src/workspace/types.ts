@@ -113,6 +113,7 @@ export type TTapisApp = {
     category?: string;
     isInteractive?: boolean;
     hideNodeCountAndCoresPerNode?: boolean;
+    icon?: string;
   };
   uuid: string;
   deleted: boolean;
