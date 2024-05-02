@@ -41,8 +41,8 @@ export const getAppsQuery = (queryParams: TAppParamsType) => ({
 });
 
 function useGetApps(queryParams: TAppParamsType) {
-  // return useSuspenseQuery(getAppsQuery(queryParams));
-  return useQuery(getAppsQuery(queryParams));
+  return useSuspenseQuery(getAppsQuery(queryParams));
+  // return useQuery(getAppsQuery(queryParams));
 }
 
 export default useGetApps;
