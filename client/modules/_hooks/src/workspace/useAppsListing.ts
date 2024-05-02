@@ -1,10 +1,4 @@
-import {
-  useQuery,
-  useQueryClient,
-  type QueryClient,
-  useSuspenseQuery,
-  queryOptions,
-} from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
 type PortalApp = {
@@ -42,7 +36,6 @@ export const appsListingQuery = {
 };
 
 function useAppsListing() {
-  // return useSuspenseQuery(appsListingQuery);
   return useQuery(appsListingQuery);
 }
 const prefetchListing = async () => {

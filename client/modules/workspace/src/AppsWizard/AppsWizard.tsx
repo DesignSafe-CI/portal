@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { Button, Form, Input, Row, Layout, Flex, Select } from 'antd';
-import { FormItem } from 'react-hook-form-antd';
-
-// import { createContext, useContext } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import React from 'react';
+import { Button, Layout, Flex } from 'antd';
+import { useFormContext } from 'react-hook-form';
 // import styles from './AppsWizard.module.css';
+
+// import React, { createContext, useContext, useState } from 'react';
 
 // export const AppFormStateContext = createContext({});
 
@@ -41,92 +40,12 @@ import { useFormContext, useWatch } from 'react-hook-form';
 //       previousValues &&
 //       previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
 //     ) {
-//       setValues(updateValuesForQueue(app, values));
+//       setValues(updateValuesForQueue(execSystems, values));
 //     }
 //     setPreviousValues(values);
 //   }, [app, values, setValues]);
 //   return null;
 // };
-
-export function FormField({
-  control,
-  name,
-  tapisFile = false,
-  parameterSet = null,
-  description,
-  label,
-  required,
-  type,
-  ...props
-}) {
-  const fieldState = useWatch({ control, name });
-  const { resetField } = useFormContext(); // retrieve those props
-  return (
-    <div style={{ lineHeight: '20px' }}>
-      {parameterSet && (
-        <code>
-          (
-          <a
-            href={`https://tapis.readthedocs.io/en/latest/technical/jobs.html#${parameterSet.toLowerCase()}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {parameterSet}
-          </a>
-          )
-        </code>
-      )}
-      <FormItem
-        control={control}
-        name={name}
-        required={required}
-        label={label}
-        htmlFor={name}
-      >
-        {/* <SelectModal
-                isOpen={openTapisFileModal}
-                toggle={() => {
-                  setOpenTapisFileModal((prevState) => !prevState);
-                }}
-                onSelect={(system, path) => {
-                  helpers.setValue(`tapis://${system}/${path}`);
-                }}
-              /> */}
-        {type === 'select' ? (
-          <Select {...props} />
-        ) : (
-          <Input
-            {...props}
-            type={type}
-            // name={name}
-            addonBefore={
-              tapisFile && (
-                <Form.Item name="prefix" noStyle>
-                  <Button
-                    type="primary"
-                    // onClick={() => setOpenTapisFileModal(true)}
-                  >
-                    Select
-                  </Button>
-                </Form.Item>
-              )
-            }
-            addonAfter={
-              <Button
-                type="text"
-                onClick={() => resetField(name, { defaultValue: '' })}
-                disabled={!fieldState}
-              >
-                Clear
-              </Button>
-            }
-          />
-        )}
-      </FormItem>
-      <small style={{ lineHeight: '20px' }}>{description}</small>
-    </div>
-  );
-}
 
 export const AppsWizard: React.FC<{
   step: object;
@@ -155,6 +74,7 @@ export const AppsWizard: React.FC<{
   };
 
   const { Header, Content } = Layout;
+
   return (
     <Flex gap="middle" wrap="wrap">
       <Layout style={layoutStyle}>
