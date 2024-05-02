@@ -15,8 +15,9 @@ const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   );
 };
 
-export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({categories}) => {
-
+export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
+  categories,
+}) => {
   type MenuItem = Required<MenuProps>['items'][number];
 
   function getItem(
@@ -34,12 +35,13 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({categorie
   }
 
   const getCategoryApps = (category) => {
-    const bundle = {};
+    const bundles = {};
+    const categoryItems = [];
 
     category.apps.map((app) => {
       if (app.is_bundled) {
-        if (bundle[app.bundle_id]) {
-          bundle[app.bundle_id].apps.push(
+        if (bundles[app.bundle_id]) {
+          bundles[app.bundle_id].apps.push(
             getItem(
               <AppsNavLink
                 to={
@@ -53,7 +55,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({categorie
             )
           );
         } else {
-          bundle[app.bundle_id] = {
+          bundles[app.bundle_id] = {
             apps: [
               getItem(
                 <AppsNavLink
@@ -71,38 +73,40 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({categorie
           };
         }
       } else {
-        return getItem(
-          <AppsNavLink
-            to={
-              `${app.app_id}` +
-              (app.version ? `?appVersion=${app.version}` : '')
-            }
-          >
-            {app.label}
-          </AppsNavLink>,
-          `${app.app_id}${app.version}`
+        categoryItems.push(
+          getItem(
+            <AppsNavLink
+              to={
+                `${app.app_id}` +
+                (app.version ? `?appVersion=${app.version}` : '')
+              }
+            >
+              {app.label}
+            </AppsNavLink>,
+            `${app.app_id}${app.version}`
+          )
         );
       }
     });
-    return Object.entries(bundle).map(([bundle_id, bundle]) =>
+    const bundleItems = Object.entries(bundles).map(([bundle_id, bundle]) =>
       getItem(`${bundle.label} [${bundle.apps.length}]`, bundle_id, bundle.apps)
     );
+
+    return categoryItems.concat(bundleItems);
   };
 
   const items: MenuItem[] = categories.map((category) => {
-    return getItem(`${category.title} [${category.apps.length}]`, category.title, getCategoryApps(category));
+    return getItem(
+      `${category.title} [${category.apps.length}]`,
+      category.title,
+      getCategoryApps(category)
+    );
   });
-
 
   return (
     <div className={styles.appsBrowserSidebar}>
-
-    <h3>Applications:</h3>
-    <Menu
-      mode="inline"
-      items={items}
-      className={styles.appsGridList}
-    />
+      <h3>Applications:</h3>
+      <Menu mode="inline" items={items} className={styles.appsGridList} />
     </div>
   );
 };
