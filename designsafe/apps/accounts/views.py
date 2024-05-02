@@ -468,11 +468,13 @@ def email_confirmation(request, code=None):
                     logger.info('TAS Account activation succeeded.')
                     from django.conf import settings
                     systems_to_configure = [
-                        {"system_id": settings.AGAVE_STORAGE_SYSTEM, "create_credentials": True},
-                        {"system_id": settings.AGAVE_WORKING_SYSTEM, "create_credentials": False},
+                        {"system_id": settings.AGAVE_STORAGE_SYSTEM, "path": username},
+                        {"system_id": settings.AGAVE_WORKING_SYSTEM, "path": username},
                     ]
                     for system in systems_to_configure:
-                        check_or_configure_system_and_user_directory.apply_async(args=(user.username, system["system_id"], system["create_credentials"]))
+                        check_or_configure_system_and_user_directory.apply_async(args=(user.username,
+                                                                                       system["system_id"],
+                                                                                       system["path"]))
                     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,

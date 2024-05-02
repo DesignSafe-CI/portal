@@ -29,22 +29,22 @@ def mkdir(client, system, path, dir_name):
 
 
 @shared_task(default_retry_delay=30, max_retries=3)
-def check_or_configure_system_and_user_directory(username, system_id, create_credentials):
-    path = username
-
+def check_or_configure_system_and_user_directory(username, system_id, path):
     try:
         user_client = get_user_model().objects.get(username=username).tapis_oauth.client
         user_client.files.listFiles(
             systemId=system_id, path=path
         )
-        logger.info(f"Checked and there is no need to configure system:{system_id} for {username}")
+        logger.info(f"System Works: "
+                    f"Checked and there is no need to configure system:{system_id} path:{path} for {username}")
         return
     except ObjectDoesNotExist:
-        logger.info(f"Checked and there is a need to configure system:{system_id} for {username} (new user)")
-        pass
+        # User is missing; handling email confirmation process where user has not logged in
+        logger.info(f"New User: "
+                    f"Checked and there is a need to configure system:{system_id} path:{path} for {username} ")
     except BaseTapyException as e:
-        logger.info(f"Checked and there is a need to configure system:{system_id} for {username}: {e}")
-        pass
+        logger.info(f"Unable to list system/files: "
+                    f"Checked and there is a need to configure system:{system_id} path:{path} for {username}: {e}")
 
     try:
         tg458981_client = get_tg458981_client()
@@ -57,24 +57,22 @@ def check_or_configure_system_and_user_directory(username, system_id, create_cre
                         system_id)
 
             tg458981_client.files.mkdir(systemId=system_id, path=path)
-            # TODOV3 https://github.com/tapis-project/tapis-files/issues/150 and https://tacc-team.slack.com/archives/C0307MGPCP2/p1711052926468499
-            # tg458981_client.files.setFacl(systemId=system_id,
-            #                              path=path,
-            #                              operation="ADD",
-            #                              recursionMethod="PHYSICAL",
-            #                              aclString=f"d:u:{username}:rwX,u:{username}:rwX")
+            tg458981_client.files.setFacl(systemId=system_id,
+                                          path=path,
+                                          operation="ADD",
+                                          recursionMethod="PHYSICAL",
+                                          aclString=f"d:u:{username}:rwX,u:{username}:rwX")
 
-        if create_credentials:
-            # create keys, push to key service and use as credential for Tapis system
-            logger.info("Creating credentials for user=%s on system=%s", username, system_id)
-            (private_key, public_key) = createKeyPair()
-            register_public_key(username, public_key, system_id)
-            service_account = get_service_account_client()
-            create_system_credentials(service_account,
-                                      username,
-                                      public_key,
-                                      private_key,
-                                      system_id)
+        # create keys, push to key service and use as credential for Tapis system
+        logger.info("Creating credentials for user=%s on system=%s", username, system_id)
+        (private_key, public_key) = createKeyPair()
+        register_public_key(username, public_key, system_id)
+        service_account = get_service_account_client()
+        create_system_credentials(service_account,
+                                  username,
+                                  public_key,
+                                  private_key,
+                                  system_id)
 
         agave_indexer.apply_async(kwargs={'username': username, 'systemId': system_id, 'filePath': path}, queue='indexing')
 
