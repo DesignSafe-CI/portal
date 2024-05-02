@@ -1,32 +1,16 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
-import {
-  useSuspenseQuery,
-  useIsFetching,
-  type QueryClient,
-  queryOptions,
-  useQueryClient,
-} from '@tanstack/react-query';
-import {
-  useLoaderData,
-  Link,
-  NavLink,
-  useNavigation,
-  useSubmit,
-  LoaderFunctionArgs,
-} from 'react-router-dom';
-import { AppsSideNav, JobStatusNav } from '@client/workspace';
-import {
-  useAuthenticatedUser,
-  useAppsListing,
-  appsListingQuery,
-} from '@client/hooks';
+import { AppsSideNav, JobStatusNav, getAppParams } from '@client/workspace';
+import { useAppsListing, usePrefetchGetSystems } from '@client/hooks';
 import { Spinner } from '@client/common-components';
+import { usePrefetchGetApps } from '@client/hooks';
 
 const { Sider } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
+  usePrefetchGetApps(getAppParams());
+  usePrefetchGetSystems();
   const { data, isLoading } = useAppsListing();
 
   if (isLoading)
@@ -37,14 +21,6 @@ const WorkspaceRoot: React.FC = () => {
     );
 
   return (
-    // <Suspense
-    //   fallback={
-    //     <Layout>
-    //       <Spinner />
-    //       <h2>HELLO!!!</h2>
-    //     </Layout>
-    //   }
-    // >
     <Layout
       hasSider
       style={{
@@ -65,7 +41,6 @@ const WorkspaceRoot: React.FC = () => {
       </Sider>
       <Outlet />
     </Layout>
-    // </Suspense>
   );
 };
 

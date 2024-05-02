@@ -1,4 +1,6 @@
+import { useParams, useLocation } from 'react-router-dom';
 import { z } from 'zod';
+import { TAppParamsType } from '@client/hooks';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
@@ -6,12 +8,30 @@ export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
 /**
  * Get the execution system object for a given id of the execution system.
  */
-export const getExecSystemFromId = (app, execSystemId) => {
-  if (app.execSystems?.length) {
-    return app.execSystems.find((exec_sys) => exec_sys.id === execSystemId);
+export const getExecSystemFromId = (execSystems, execSystemId) => {
+  if (execSystems?.length) {
+    return execSystems.find((exec_sys) => exec_sys.id === execSystemId);
   }
 
   return null;
+};
+
+/**
+ * Filters available execution systems if dynamicExecSystems is defined.
+ * Otherwise, return all available systems.
+ */
+export const getExecSystemsFromApp = (definition, execSystems) => {
+  if (isAppUsingDynamicExecSystem(definition)) {
+    if (definition.notes.dynamicExecSystems === 'ALL') return execSystems;
+
+    return execSystems.filter((s) =>
+      definition.notes.dynamicExecSystems.includes(s.id)
+    );
+  }
+
+  return [
+    execSystems.find((s) => s.id === definition.jobAttributes.execSystemId),
+  ];
 };
 
 /**
@@ -21,7 +41,10 @@ export const getExecSystemFromId = (app, execSystemId) => {
 export const getDefaultExecSystem = (app, execSystems) => {
   // If dynamic exec system is not setup, use from job attributes.
   if (!app.definition.notes.dynamicExecSystems) {
-    return getExecSystemFromId(app, app.definition.jobAttributes.execSystemId);
+    return getExecSystemFromId(
+      app.execSystems,
+      app.definition.jobAttributes.execSystemId
+    );
   }
 
   if (execSystems?.length) {
@@ -29,18 +52,18 @@ export const getDefaultExecSystem = (app, execSystems) => {
 
     // Check if the app's default execSystemId is in provided list
     if (execSystems.includes(execSystemId)) {
-      return getExecSystemFromId(app, execSystemId);
+      return getExecSystemFromId(app.execSystems, execSystemId);
     }
 
     // If not found, return the first execSystem from the provided list
-    return getExecSystemFromId(app, execSystems[0]);
+    return getExecSystemFromId(app.execSystems, execSystems[0]);
   }
 
   return null;
 };
 
-export const getQueueMaxMinutes = (app, exec_sys, queueName) => {
-  if (!isAppTypeBATCH(app)) {
+export const getQueueMaxMinutes = (definition, exec_sys, queueName) => {
+  if (!isAppTypeBATCH(definition)) {
     return DEFAULT_JOB_MAX_MINUTES;
   }
 
@@ -54,12 +77,12 @@ export const getQueueMaxMinutes = (app, exec_sys, queueName) => {
  * Get validator for max minutes of a queue
  *
  * @function
- * @param {Object} app
+ * @param {Object} definition App definition
  * @param {Object} queue
  * @returns {z.number()} min/max validation of max minutes
  */
-export const getMaxMinutesValidation = (app, queue) => {
-  if (!isAppTypeBATCH(app)) {
+export const getMaxMinutesValidation = (definition, queue) => {
+  if (!isAppTypeBATCH(definition)) {
     return z.number().lte(DEFAULT_JOB_MAX_MINUTES);
   }
   if (!queue) {
@@ -78,8 +101,6 @@ export const getMaxMinutesValidation = (app, queue) => {
     );
 };
 
-// TODOv3  Create ticket for us/Design to decide if we want to continue to present max run time as hh:mm:ss and translate to maxMinutes
-// https://jira.tacc.utexas.edu/browse/WP-99
 /**
  * Create regex pattern for maxRunTime
  * @function
@@ -130,12 +151,12 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  * Get validator for a node count of a queue
  *
  * @function
- * @param {Object} app
+ * @param {Object} definition App definition
  * @param {Object} queue
  * @returns {z.number()} min/max validation of node count
  */
-export const getNodeCountValidation = (app, queue) => {
-  if (!isAppTypeBATCH(app) || !queue) {
+export const getNodeCountValidation = (definition, queue) => {
+  if (!isAppTypeBATCH(definition) || !queue) {
     return z.number().positive().optional();
   }
   return z
@@ -155,12 +176,12 @@ export const getNodeCountValidation = (app, queue) => {
  * Get validator for cores on each node
  *
  * @function
- * @param {Object} app
+ * @param {Object} definition App definition
  * @param {Object} queue
  * @returns {z.number()} min/max validation of coresPerNode
  */
-export const getCoresPerNodeValidation = (app, queue) => {
-  if (!isAppTypeBATCH(app) || !queue || queue.maxCoresPerNode === -1) {
+export const getCoresPerNodeValidation = (definition, queue) => {
+  if (!isAppTypeBATCH(definition) || !queue || queue.maxCoresPerNode === -1) {
     return z.number().int().positive().optional();
   }
   return z.number().int().gte(queue.minCoresPerNode).lte(queue.maxCoresPerNode);
@@ -173,12 +194,12 @@ export const getCoresPerNodeValidation = (app, queue) => {
  * values.
  *
  * @function
- * @param {Object} app
+ * @param {Object} execSystems
  * @param {Object} values
  * @returns {Object} updated/fixed values
  */
-export const updateValuesForQueue = (app, values) => {
-  const exec_sys = getExecSystemFromId(app, values.execSystemId);
+export const updateValuesForQueue = (execSystems, values) => {
+  const exec_sys = getExecSystemFromId(execSystems, values.execSystemId);
   const updatedValues = { ...values };
   const queue = exec_sys.batchLogicalQueues.find(
     (q) => q.name === values.execSystemLogicalQueue
@@ -208,19 +229,6 @@ export const updateValuesForQueue = (app, values) => {
     updatedValues.maxMinutes = queue.maxMinutes;
   }
 
-  /* // TODOv3  HH:MM:SS form https://jira.tacc.utexas.edu/browse/WP-99
-
-    const runtimeRegExp = new RegExp(
-      createMaxRunTimeRegex(longestMaxRequestedTime)
-    );
-    if (
-      runtimeRegExp.test(values.maxMinutes) &&
-      values.maxMinutes > queue.maxMinutes
-    ) {
-      updatedValues.maxMinutes = queue.maxMinutes;
-    }
-     */
-
   return updatedValues;
 };
 
@@ -232,15 +240,19 @@ export const updateValuesForQueue = (app, values) => {
  *   3. Otherwise, use the execution system default queue.
  *
  * @function
- * @param {any} app App Shape defined in AppForm.jsx
- * @param {any} exec_sys execution system, shape defined in AppForm.jsx
+ * @param {any} definition App definition
+ * @param {any} exec_sys execution system
  * @param {any} queue_name
  * @returns {String} queue_name nullable, queue name to lookup
  */
-export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
+export const getQueueValueForExecSystem = (
+  definition,
+  exec_sys,
+  queue_name
+) => {
   const queueName =
     queue_name ??
-    app.definition.jobAttributes.execSystemLogicalQueue ??
+    definition.jobAttributes.execSystemLogicalQueue ??
     exec_sys?.batchDefaultLogicalQueue;
   return (
     exec_sys?.batchLogicalQueues.find((q) => q.name === queueName) ||
@@ -255,11 +267,11 @@ export const getQueueValueForExecSystem = (app, exec_sys, queue_name) => {
  *    queues which match min and max node count with job attributes
  * 2. if queue filter list is set, only allow queues in that list.
  * @function
- * @param {any} app App Shape defined in AppForm.jsx
+ * @param {any} definition App definition
  * @param {any} queues
  * @returns list of queues in sorted order
  */
-export const getAppQueueValues = (app, queues) => {
+export const getAppQueueValues = (definition, queues) => {
   return (
     (queues ?? [])
       /*
@@ -268,16 +280,16 @@ export const getAppQueueValues = (app, queues) => {
     */
       .filter(
         (q) =>
-          !app.definition.notes.hideNodeCountAndCoresPerNode ||
-          (app.definition.jobAttributes.nodeCount >= q.minNodeCount &&
-            app.definition.jobAttributes.nodeCount <= q.maxNodeCount)
+          !definition.notes.hideNodeCountAndCoresPerNode ||
+          (definition.jobAttributes.nodeCount >= q.minNodeCount &&
+            definition.jobAttributes.nodeCount <= q.maxNodeCount)
       )
       .map((q) => q.name)
       // Hide queues when app includes a queueFilter and queue is not present in queueFilter
       .filter(
         (queueName) =>
-          !app.definition.notes.queueFilter ||
-          app.definition.notes.queueFilter.includes(queueName)
+          !definition.notes.queueFilter ||
+          definition.notes.queueFilter.includes(queueName)
       )
       .sort()
   );
@@ -288,18 +300,18 @@ export const getAppQueueValues = (app, queues) => {
  * system based on the host match.
  * Handle case where dynamic execution system is provided.
  * If there is no allocation for a given exec system, skip it.
- * @param {any} app App Shape defined in AppForm.jsx
- * @param {any} allocations
+ * @param {any} execSystems
+ * @param {any} allocationHosts
  * @returns a Map of allocations applicable to each execution system.
  */
-export const matchExecSysWithAllocations = (app, allocations) => {
-  return app.execSystems.reduce((map, exec_sys) => {
-    const matchingExecutionHost = Object.keys(allocations.hosts).find(
+export const matchExecSysWithAllocations = (execSystems, allocationHosts) => {
+  return execSystems.reduce((map, exec_sys) => {
+    const matchingExecutionHost = Object.keys(allocationHosts).find(
       (host) => exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)
     );
 
     if (matchingExecutionHost) {
-      map.set(exec_sys.id, allocations.hosts[matchingExecutionHost]);
+      map.set(exec_sys.id, allocationHosts[matchingExecutionHost]);
     }
 
     return map;
@@ -399,12 +411,12 @@ export const getExecSystemsForPortalAllocation = (
   return execSystems;
 };
 
-export const isAppUsingDynamicExecSystem = (app) => {
-  return !!app.definition.notes.dynamicExecSystems;
+export const isAppUsingDynamicExecSystem = (definition) => {
+  return !!definition.notes.dynamicExecSystems;
 };
 
-export const getAllocationValidation = (app, allocations) => {
-  if (!isAppTypeBATCH(app)) {
+export const getAllocationValidation = (definition, allocations) => {
+  if (!isAppTypeBATCH(definition)) {
     return z.string().optional();
   }
   return z.enum(allocations, {
@@ -414,14 +426,24 @@ export const getAllocationValidation = (app, allocations) => {
   });
 };
 
-export const isAppTypeBATCH = (app) => {
-  return app.definition.jobType === 'BATCH';
+export const isAppTypeBATCH = (definition) => {
+  return definition.jobType === 'BATCH';
 };
 
-export const getExecSystemLogicalQueueValidation = (app, exec_sys) => {
-  if (!isAppTypeBATCH(app)) {
+export const getExecSystemLogicalQueueValidation = (definition, exec_sys) => {
+  if (!isAppTypeBATCH(definition)) {
     return z.string().optional();
   }
 
   return z.enum(exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []);
+};
+
+export const getAppParams = () => {
+  const { appId } = useParams() as TAppParamsType;
+  const location = useLocation();
+  const appVersion = new URLSearchParams(location.search).get('appVersion') as
+    | string
+    | undefined;
+
+  return { appId, appVersion };
 };
