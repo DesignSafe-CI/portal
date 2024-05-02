@@ -4,7 +4,7 @@ import { Layout, Form, Col, Row, Flex, Alert, Space } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useGetApps, usePostJobs, useGetSystems } from '@client/hooks';
+import { useGetAppsSuspense, usePostJobs, useGetSystems } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
 import { default as AppIcon } from './AppIcon';
@@ -38,7 +38,7 @@ import {
 import styles from './layout.module.css';
 
 export const AppsSubmissionForm: React.FC = () => {
-  const { data: app } = useGetApps(getAppParams());
+  const { data: app } = useGetAppsSuspense(getAppParams());
 
   const {
     data: { executionSystems, storageSystems, defaultStorageSystem },

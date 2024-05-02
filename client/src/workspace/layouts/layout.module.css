@@ -10,6 +10,14 @@
   flex: 1 0 0;
 }
 
+.layoutContainer {
+  background-color: transparent;
+  gap: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 .appDetail-wrapper {
   --space-top: 1.25rem; /* 20px (~17px design * 1.2 design-to-app ratio) */
   --space-bottom: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */

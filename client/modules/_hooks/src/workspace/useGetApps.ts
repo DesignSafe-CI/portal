@@ -43,10 +43,13 @@ const getAppsQuery = (queryParams: TAppParamsType) => ({
   staleTime: 5000,
 });
 
-function useGetApps(queryParams: TAppParamsType) {
+export const useGetAppsSuspense = (queryParams: TAppParamsType) => {
   return useSuspenseQuery(getAppsQuery(queryParams));
-  // return useQuery(getAppsQuery(queryParams));
-}
+};
+
+const useGetApps = (queryParams: TAppParamsType) => {
+  return useQuery(getAppsQuery(queryParams));
+};
 
 export const usePrefetchGetApps = (queryParams: TAppParamsType) => {
   const queryClient = useQueryClient();
