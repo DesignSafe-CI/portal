@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
 import { Layout, Form, Col, Row, Flex } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  useGetApps,
-  TAppParamsType,
-  TAppResponse,
-  usePostJobs,
-  useGetSystems,
-} from '@client/hooks';
+import { useGetApps, usePostJobs, useGetSystems } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
 import { default as FormSchema } from '../AppsWizard/AppsFormSchema';
@@ -38,24 +31,15 @@ import {
   isTargetPathEmpty,
   SystemsPushKeysModal,
   getExecSystemsFromApp,
+  getAppParams,
 } from '@client/workspace';
 import styles from './layout.module.css';
 
 export const AppsSubmissionForm: React.FC = () => {
-  const { appId } = useParams() as TAppParamsType;
-  const location = useLocation();
-
-  const appVersion = new URLSearchParams(location.search).get('appVersion') as
-    | string
-    | undefined;
-
-  const { data: app } = useGetApps({ appId, appVersion }) as {
-    data: TAppResponse;
-  };
+  const { data: app } = useGetApps(getAppParams());
 
   const {
     data: { executionSystems, storageSystems, defaultStorageSystem },
-    isLoading: isSystemsLoading,
   } = useGetSystems();
 
   const { definition, license, defaultSystemNeedsKeys } = app;
@@ -66,11 +50,9 @@ export const AppsSubmissionForm: React.FC = () => {
 
   // const [state, setState] = useAppFormState();
 
-  //   const hasCorral =
-  //     configuration.length &&
-  //     ['corral.tacc.utexas.edu', 'data.tacc.utexas.edu'].some((s) =>
-  //       defaultHost?.endsWith(s)
-  //     );
+  const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
+    (s) => defaultStorageSystem.host?.endsWith(s)
+  );
 
   // const hasDefaultAllocation =
   // state.allocations.loading ||

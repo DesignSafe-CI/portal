@@ -9,7 +9,7 @@ export {
   type TAppResponse,
   type TAppParamsType,
   type TGetAppsResponse,
-  getAppsQuery,
+  usePrefetchGetApps,
 } from './useGetApps';
 export { default as useJobsListing, type TJob } from './useJobsListing';
 export { default as useGetJobs } from './useGetJobs';

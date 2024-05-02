@@ -1,4 +1,6 @@
+import { useParams, useLocation } from 'react-router-dom';
 import { z } from 'zod';
+import { TAppParamsType } from '@client/hooks';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
@@ -432,4 +434,14 @@ export const getExecSystemLogicalQueueValidation = (definition, exec_sys) => {
   }
 
   return z.enum(exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []);
+};
+
+export const getAppParams = () => {
+  const { appId } = useParams() as TAppParamsType;
+  const location = useLocation();
+  const appVersion = new URLSearchParams(location.search).get('appVersion') as
+    | string
+    | undefined;
+
+  return { appId, appVersion };
 };

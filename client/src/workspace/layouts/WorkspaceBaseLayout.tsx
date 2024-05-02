@@ -1,17 +1,19 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Layout } from 'antd';
-import { AppsSideNav, JobStatusNav } from '@client/workspace';
-import { useAppsListing, useGetSystems } from '@client/hooks';
+import { AppsSideNav, JobStatusNav, getAppParams } from '@client/workspace';
+import { useAppsListing, usePrefetchGetSystems } from '@client/hooks';
 import { Spinner } from '@client/common-components';
+import { usePrefetchGetApps } from '@client/hooks';
 
 const { Sider } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
-  const { data, isLoading: isAppsLoading } = useAppsListing();
-  const { isLoading: isSystemsLoading } = useGetSystems();
+  usePrefetchGetApps(getAppParams());
+  usePrefetchGetSystems();
+  const { data, isLoading } = useAppsListing();
 
-  if (isAppsLoading || isSystemsLoading)
+  if (isLoading)
     return (
       <Layout>
         <Spinner />

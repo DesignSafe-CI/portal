@@ -1,4 +1,4 @@
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { TTapisSystem } from './types';
 
@@ -32,7 +32,11 @@ export const getSystemsQuery = (systemId?: string) => ({
 
 function useGetSystems(systemId?: string) {
   return useSuspenseQuery(getSystemsQuery(systemId));
-  // return useQuery(getSystemsQuery(queryParams));
 }
+
+export const usePrefetchGetSystems = () => {
+  const queryClient = useQueryClient();
+  queryClient.ensureQueryData(getSystemsQuery());
+};
 
 export default useGetSystems;

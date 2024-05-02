@@ -179,7 +179,6 @@ class AppsView(AuthenticatedApiView):
                 "info": {"query": request.GET.dict()},
             },
         )
-        tapis = request.user.tapis_oauth.client
         app_id = request.GET.get("appId")
         app_version = request.GET.get("appVersion")
 
@@ -188,16 +187,18 @@ class AppsView(AuthenticatedApiView):
 
         data = _get_app(app_id, app_version, request.user)
 
+        # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
         # Check if default storage system needs keys pushed
-        if settings.AGAVE_STORAGE_SYSTEM:
-            system_needs_keys = test_system_needs_keys(
-                tapis, settings.AGAVE_STORAGE_SYSTEM
-            )
-            if system_needs_keys:
-                logger.info(
-                    f"Keys for user {request.user.usernam} must be manually pushed to system: {system_needs_keys.id}"
-                )
-                data["defaultSystemNeedsKeys"] = system_needs_keys
+        # if settings.AGAVE_STORAGE_SYSTEM:
+        #     tapis = request.user.tapis_oauth.client
+        #     system_needs_keys = test_system_needs_keys(
+        #         tapis, settings.AGAVE_STORAGE_SYSTEM
+        #     )
+        #     if system_needs_keys:
+        #         logger.info(
+        #             f"Keys for user {request.user.username} must be manually pushed to system: {system_needs_keys.id}"
+        #         )
+        #         data["defaultSystemNeedsKeys"] = system_needs_keys
 
         return JsonResponse(
             {
