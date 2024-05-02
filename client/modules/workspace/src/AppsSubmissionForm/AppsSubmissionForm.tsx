@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { NavLink } from 'react-router-dom';
 import { Layout, Form, Col, Row, Flex, Alert, Space } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -361,44 +362,67 @@ export const AppsSubmissionForm: React.FC = () => {
   return (
     <>
       <Layout style={layoutStyle}>
-        <Header style={headerStyle}>
-          <Flex justify="space-between">
-            <div>
-              <AppIcon name={definition.notes.icon || 'Generic-App'} />
-              {definition.notes.label || definition.id}
-            </div>
-            <a href="/user-guide">View User Guide</a>
-          </Flex>
-        </Header>
-        <Content>
-          <FormProvider {...methods}>
-            <Form
-              disabled={readOnly}
-              layout="vertical"
-              onFinish={handleSubmit(submitJobCallback, (error) => {
-                console.log('error submit data', error);
-              })}
-            >
-              <fieldset>
-                <Row>
-                  <Col span={14}>
-                    <AppsWizard
-                      step={steps[current]}
-                      handlePreviousStep={handlePreviousStep}
-                      handleNextStep={handleNextStep}
-                    />
-                  </Col>
-                  <Col span={10}>
-                    <AppsSubmissionDetails
-                      fields={fields}
-                      isSubmitting={isPending}
-                    />
-                  </Col>
-                </Row>
-              </fieldset>
-            </Form>
-          </FormProvider>
-        </Content>
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Header style={headerStyle}>
+            <Flex justify="space-between">
+              <div>
+                <AppIcon name={definition.notes.icon || 'Generic-App'} />
+                {definition.notes.label || definition.id}
+              </div>
+              <a href="/user-guide">View User Guide</a>
+            </Flex>
+          </Header>
+          {submitResult && (
+            <Alert
+              message={
+                <>
+                  Job submitted successfully. Monitor its progress in{' '}
+                  <NavLink to={'/history'}>Job Status</NavLink>.
+                </>
+              }
+              type="success"
+              closable
+              showIcon
+            />
+          )}
+          {submitError && (
+            <Alert
+              message={<>Error: {submitError?.message}</>}
+              type="warning"
+              closable
+              showIcon
+            />
+          )}
+          <Content>
+            <FormProvider {...methods}>
+              <Form
+                disabled={readOnly}
+                layout="vertical"
+                onFinish={handleSubmit(submitJobCallback, (error) => {
+                  console.log('error submit data', error);
+                })}
+              >
+                <fieldset>
+                  <Row>
+                    <Col span={14}>
+                      <AppsWizard
+                        step={steps[current]}
+                        handlePreviousStep={handlePreviousStep}
+                        handleNextStep={handleNextStep}
+                      />
+                    </Col>
+                    <Col span={10}>
+                      <AppsSubmissionDetails
+                        fields={fields}
+                        isSubmitting={isPending}
+                      />
+                    </Col>
+                  </Row>
+                </fieldset>
+              </Form>
+            </FormProvider>
+          </Content>
+        </Space>
       </Layout>
       <SystemsPushKeysModal
         isModalOpen={isModalOpen}
