@@ -2,6 +2,7 @@
 
 from datetime import datetime, timezone
 from pydantic import ValidationError
+from elasticsearch_dsl import Q
 import networkx as nx
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
@@ -172,7 +173,6 @@ def ingest_publications():
     """Ingest Elasticsearch-based publications into the db"""
     all_pubs = iterate_pubs()
     for pub in all_pubs:
-        print(pub["projectId"])
         try:
             pub_graph = combine_pub_versions(pub["projectId"])
             latest_version: int = IndexedPublication.max_revision(pub["projectId"]) or 1
@@ -194,6 +194,48 @@ def ingest_publications():
             Publication.objects.update_or_create(
                 project_id=pub["projectId"],
                 defaults={
+                    "created": datetime.fromisoformat(pub["created"]).replace(
+                        tzinfo=timezone.utc
+                    ),
+                    "tree": pub_graph_json,
+                    "value": pub_base,
+                },
+            )
+        except ValidationError as exc:
+            print(pub["projectId"])
+            print(exc)
+
+
+def ingest_tombstones():
+    """Ingest Elasticsearch tombstones into the db"""
+
+    all_pubs = (
+        IndexedPublication.search().filter(Q("term", status="tombstone")).execute().hits
+    )
+    print(all_pubs)
+    for pub in all_pubs:
+        try:
+            pub_graph = combine_pub_versions(pub["projectId"])
+            latest_version: int = IndexedPublication.max_revision(pub["projectId"]) or 1
+            pub_base = next(
+                (
+                    pub_graph.nodes[node_id]["value"]
+                    for node_id in pub_graph
+                    if (
+                        pub_graph.nodes[node_id]["uuid"] == pub["project"]["uuid"]
+                        and pub_graph.nodes[node_id].get("version", latest_version)
+                        == latest_version
+                    )
+                ),
+                None,
+            )
+            if not pub_base:
+                raise ValueError("No pub base")
+            pub_graph_json = nx.node_link_data(pub_graph)
+            Publication.objects.update_or_create(
+                project_id=pub["projectId"],
+                defaults={
+                    "is_published": False,
                     "created": datetime.fromisoformat(pub["created"]).replace(
                         tzinfo=timezone.utc
                     ),

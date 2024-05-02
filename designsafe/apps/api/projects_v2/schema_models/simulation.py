@@ -37,6 +37,7 @@ class Simulation(MetadataModel):
     dois: list[str] = []
 
     facility: Optional[DropdownValue] = None
+    tombstone: bool = False
 
     @model_validator(mode="after")
     def handle_other(self):
