@@ -1,6 +1,7 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
-import { TTapisApp, TTapisSystem } from './types';
+import { TTapisApp } from './types';
+import { TTapisSystem } from '../systems/types';
 
 export type TAppParamsType = {
   appId: string;
@@ -9,13 +10,11 @@ export type TAppParamsType = {
 
 export type TAppResponse = {
   definition: TTapisApp;
-  execSystems: [TTapisSystem];
   license: {
     type: null | string;
     enabled?: boolean;
   };
   defaultSystemNeedsKeys?: TTapisSystem;
-  defaultSystemId?: string;
 };
 
 export type TGetAppsResponse = {

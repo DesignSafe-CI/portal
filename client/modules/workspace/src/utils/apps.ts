@@ -15,35 +15,51 @@ export const getExecSystemFromId = (execSystems, execSystemId) => {
 };
 
 /**
+ * Filters available execution systems if dynamicExecSystems is defined.
+ * Otherwise, return all available systems.
+ */
+export const getExecSystemsFromApp = (definition, execSystems) => {
+  if (isAppUsingDynamicExecSystem(definition)) {
+    if (definition.notes.dynamicExecSystems === 'ALL') return execSystems;
+
+    return execSystems.filter((s) =>
+      definition.notes.dynamicExecSystems.includes(s.id)
+    );
+  }
+
+  return [definition.jobAttributes.execSystemId];
+};
+
+/**
  * Gets the exec system for the default set in the job attributes.
  * Otherwise, get the first entry.
  */
-export const getDefaultExecSystem = (data, execSystems) => {
+export const getDefaultExecSystem = (app, execSystems) => {
   // If dynamic exec system is not setup, use from job attributes.
-  if (!data.definition.notes.dynamicExecSystems) {
+  if (!app.definition.notes.dynamicExecSystems) {
     return getExecSystemFromId(
-      data.execSystems,
-      data.definition.jobAttributes.execSystemId
+      app.execSystems,
+      app.definition.jobAttributes.execSystemId
     );
   }
 
   if (execSystems?.length) {
-    const execSystemId = data.definition.jobAttributes.execSystemId;
+    const execSystemId = app.definition.jobAttributes.execSystemId;
 
     // Check if the app's default execSystemId is in provided list
     if (execSystems.includes(execSystemId)) {
-      return getExecSystemFromId(data.execSystems, execSystemId);
+      return getExecSystemFromId(app.execSystems, execSystemId);
     }
 
     // If not found, return the first execSystem from the provided list
-    return getExecSystemFromId(data.execSystems, execSystems[0]);
+    return getExecSystemFromId(app.execSystems, execSystems[0]);
   }
 
   return null;
 };
 
-export const getQueueMaxMinutes = (app, exec_sys, queueName) => {
-  if (!isAppTypeBATCH(app)) {
+export const getQueueMaxMinutes = (definition, exec_sys, queueName) => {
+  if (!isAppTypeBATCH(definition)) {
     return DEFAULT_JOB_MAX_MINUTES;
   }
 

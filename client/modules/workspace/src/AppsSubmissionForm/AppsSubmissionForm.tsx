@@ -9,6 +9,7 @@ import {
   TAppParamsType,
   TAppResponse,
   usePostJobs,
+  useGetSystems,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
@@ -36,10 +37,7 @@ import {
   getInputFieldFromTargetPathField,
   isTargetPathEmpty,
   SystemsPushKeysModal,
-  matchExecSysWithAllocations,
-  getExecSystemsForPortalAllocation,
-  isAppUsingDynamicExecSystem,
-  getDefaultExecSystem,
+  getExecSystemsFromApp,
 } from '@client/workspace';
 import styles from './layout.module.css';
 
@@ -51,36 +49,22 @@ export const AppsSubmissionForm: React.FC = () => {
     | string
     | undefined;
 
-  const { data } = useGetApps({ appId, appVersion }) as {
+  const { data: app } = useGetApps({ appId, appVersion }) as {
     data: TAppResponse;
   };
 
   const {
-    definition,
-    execSystems,
-    license,
-    defaultSystemNeedsKeys,
-    defaultSystemId,
-  } = data;
+    data: { executionSystems, storageSystems, defaultStorageSystem },
+    isLoading: isSystemsLoading,
+  } = useGetSystems();
+
+  const { definition, license, defaultSystemNeedsKeys } = app;
 
   // TODOv3: Load these from state
   const portalAlloc = 'DesignSafe-DCV';
-  const allocations = ['A', 'DesignSafe-DCV'];
-  const allocationHosts = [
-    'frontera.tacc.utexas.edu',
-    'stampede3.tacc.utexas.edu',
-  ];
+  const allocations = ['TACC-ACI', 'DesignSafe-DCV'];
 
   // const [state, setState] = useAppFormState();
-
-  const matchingExecutionHostsMap = matchExecSysWithAllocations(
-    execSystems,
-    allocationHosts
-  );
-  const execSystemsWithAllocation = getExecSystemsForPortalAllocation(
-    matchingExecutionHostsMap,
-    portalAlloc
-  );
 
   //   const hasCorral =
   //     configuration.length &&
@@ -93,20 +77,20 @@ export const AppsSubmissionForm: React.FC = () => {
   // state.systems.storage.loading ||
   // state.allocations.hosts[defaultHost] ||
   // hasCorral
-  //   const defaultStorageHost = 'cloud.data.tacc.utexas.edu';
+  const defaultStorageHost = defaultStorageSystem.host;
   const hasDefaultAllocation = true;
-  const hasStorageSystems = true;
+  const hasStorageSystems = !!storageSystems.length;
 
   let missingAllocation = false;
 
-  const { fileInputs, parameterSet } = FormSchema(definition);
+  const execSystems = getExecSystemsFromApp(definition, executionSystems);
 
   const defaultExecSystem = getExecSystemFromId(
     execSystems,
     definition.jobAttributes.execSystemId
   );
-  const defaultExecSystem2 =
-    getDefaultExecSystem(data, execSystemsWithAllocation) ?? '';
+
+  const { fileInputs, parameterSet } = FormSchema(definition);
 
   // TODOv3: dynamic exec system and queues
   const initialValues = useMemo(
@@ -142,7 +126,7 @@ export const AppsSubmissionForm: React.FC = () => {
           new Date().toISOString().split('.')[0]
         }`,
         archiveSystemId:
-          defaultSystemId || definition.jobAttributes.archiveSystemId,
+          defaultStorageSystem?.id || definition.jobAttributes.archiveSystemId,
         archiveSystemDir: definition.jobAttributes.archiveSystemDir,
       },
     }),
@@ -232,7 +216,7 @@ export const AppsSubmissionForm: React.FC = () => {
     resolver: zodResolver(z.object(schema)),
     mode: 'onChange',
   });
-  const { handleSubmit, control, reset } = methods;
+  const { handleSubmit, reset } = methods;
 
   useEffect(() => {
     reset(initialValues);
@@ -260,8 +244,8 @@ export const AppsSubmissionForm: React.FC = () => {
   const steps = {
     inputs: getInputsStep(fileInputs),
     parameters: getParametersStep(parameterSet),
-    configuration: getConfigurationStep(data, allocations),
-    outputs: getOutputsStep(data),
+    configuration: getConfigurationStep(app, execSystems, allocations),
+    outputs: getOutputsStep(app),
   };
 
   const handleNextStep = useCallback(

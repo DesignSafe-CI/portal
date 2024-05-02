@@ -37,11 +37,6 @@ TACC_EXEC_SYSTEMS = {
         "scratch_dir": "/work2/{}",
         "home_dir": "/home/{}",
     },
-    "stampede2": {
-        "work_dir": "/work2/{}",
-        "scratch_dir": "/scratch/{}",
-        "home_dir": "/home1/{}",
-    },
     "stampede3": {
         "work_dir": "/work2/{}",
         "scratch_dir": "/scratch/{}",
@@ -81,13 +76,19 @@ def _get_user_app_license(license_type, user):
     return lic
 
 
-def _get_exec_systems(user, systems):
-    """List of all enabled execution systems available for the user."""
+def _get_systems(
+    user: object, canExec: bool, systems: list = None, listType: str = "ALL"
+) -> list:
+    """List of all enabled systems of the specified canExec type available for the user."""
     tapis = user.tapis_oauth.client
-    system_id_search = ",".join(systems)
-    search_string = f"(id.in.{system_id_search})~(canExec.eq.true)~(enabled.eq.true)"
+
+    search_string = f"(canExec.eq.{canExec})~(enabled.eq.true)"
+
+    if systems:
+        system_id_search = ",".join(systems)
+        search_string += f"~(id.in.{system_id_search})"
     return tapis.systems.getSystems(
-        listType="ALL", select="allAttributes", search=search_string
+        listType=listType, select="allAttributes", search=search_string
     )
 
 
@@ -101,17 +102,6 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
 
     data = {"definition": app_def}
-
-    exec_systems = getattr(
-        app_def.notes, "dynamicExecSystems", TapisResult()
-    ).__dict__.keys()
-    if len(exec_systems) > 0:
-        data["execSystems"] = _get_exec_systems(user, exec_systems)
-    else:
-        # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-        data["execSystems"] = [
-            tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)
-        ]
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}
@@ -134,6 +124,42 @@ def test_system_needs_keys(tapis, system_id):
         system_def = tapis.systems.getSystem(systemId=system_id)
         return system_def
     return False
+
+
+class SystemListingView(AuthenticatedApiView):
+    """System Listing View"""
+
+    def get(self, request):
+        execution_systems = _get_systems(request.user, canExec=True)
+        storage_systems = _get_systems(
+            request.user, canExec=False, listType="SHARED_PUBLIC"
+        )
+        response = {
+            "executionSystems": execution_systems,
+            "storageSystems": storage_systems,
+        }
+
+        default_storage_system_id = settings.AGAVE_STORAGE_SYSTEM
+        if default_storage_system_id:
+            response["defaultStorageSystem"] = next(
+                (sys for sys in storage_systems if sys.id == default_storage_system_id),
+                None,
+            )
+
+        return JsonResponse(
+            {"status": 200, "response": response}, encoder=BaseTapisResultSerializer
+        )
+
+
+class SystemDefinitionView(AuthenticatedApiView):
+    """Get definitions for individual systems"""
+
+    def get(self, request, system_id):
+        client = request.user.tapis_oauth.client
+        system_def = client.systems.getSystem(systemId=system_id)
+        return JsonResponse(
+            {"status": 200, "response": system_def}, encoder=BaseTapisResultSerializer
+        )
 
 
 class AppsView(AuthenticatedApiView):
@@ -172,8 +198,6 @@ class AppsView(AuthenticatedApiView):
                     f"Keys for user {request.user.usernam} must be manually pushed to system: {system_needs_keys.id}"
                 )
                 data["defaultSystemNeedsKeys"] = system_needs_keys
-
-            data["defaultSystemId"] = settings.AGAVE_STORAGE_SYSTEM
 
         return JsonResponse(
             {
@@ -649,7 +673,7 @@ class JobsView(AuthenticatedApiView):
                 "envVariables", []
             ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": wh_base_url}]
 
-            # Make sure $HOME/.tap directory exists for user when running interactive apps
+            # Make sure $HOME/.tap directory exists for user when running interactive apps on TACC HPC Systems
             exec_system_id = job_post["execSystemId"]
             system = next(
                 (v for k, v in TACC_EXEC_SYSTEMS.items() if exec_system_id.endswith(k)),

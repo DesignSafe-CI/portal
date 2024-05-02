@@ -34,7 +34,7 @@ export const getParametersStep = (parameterSet) => ({
   ),
 });
 
-export const getConfigurationStep = (app, allocations) => ({
+export const getConfigurationStep = (app, execSystems, allocations) => ({
   title: 'Configuration',
   prevPage: 'parameters',
   nextPage: 'outputs',
@@ -50,7 +50,7 @@ export const getConfigurationStep = (app, allocations) => ({
           // TODOv3: Dynamic system queues
           options={getAppQueueValues(
             app.definition,
-            app.execSystems[0].batchLogicalQueues
+            execSystems[0].batchLogicalQueues
           ).map((q) => ({ value: q, label: q }))}
         />
       )}
@@ -140,13 +140,3 @@ export const getOutputsStep = (app) => ({
     </>
   ),
 });
-
-export const getSteps = ({ fileInputs, parameterSet, app, allocations }) => {
-  const steps = {
-    inputs: getInputsStep(fileInputs),
-    parameters: getParametersStep(parameterSet),
-    configuration: getConfigurationStep(app, allocations),
-    outputs: getOutputsStep(app),
-  };
-  return steps;
-};
