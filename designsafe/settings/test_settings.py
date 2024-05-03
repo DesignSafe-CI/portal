@@ -449,6 +449,7 @@ AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
+AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
@@ -544,6 +545,7 @@ AGAVE_CLIENT_KEY = 'example_com_client_key'
 AGAVE_CLIENT_SECRET = 'example_com_client_secret'
 AGAVE_SUPER_TOKEN = 'example_com_client_token'
 AGAVE_STORAGE_SYSTEM = 'storage.example.com'
+AGAVE_WORKING_SYSTEM = 'storage.example.work'
 
 # Tapis Client Configuration
 PORTAL_ADMIN_USERNAME = ''
