@@ -8,10 +8,23 @@
 .ds-icon-Water::before,
 .ds-icon-Wind::before,
 .ds-icon-OpenSees::before {
+    display: block;
+}
+.ds-icon-All-Hazards::before,
+.ds-icon-Earth::before,
+.ds-icon-Water::before,
+.ds-icon-Wind::before {
     font-size: 1.2em;
+    /* To restore alignment after font-size changes it */
+    margin-top: -0.15em; /* FAQ: -0.2em did not re-align it perfectly */
+}
+.ds-icon-OpenSees::before {
+    font-size: 1.5em;
+    /* To restore alignment after font-size changes it */
+    margin-top: -0.3em; /* FAQ: -0.2em did not re-align it perfectly */
 }
 .ds-icon-All-Hazards::before,
 .ds-icon-OpenSees::before {
-    display: block;
+    /* To move icon down */
     translate: 0 0.25em;
 }
