@@ -16,19 +16,12 @@ function getPathRoutes(path: string = '') {
 }
 
 export const AppsBreadcrumb: React.FC = () => {
-  const [appData, setAppData] = useState<TAppResponse | null>(null);
   const { appId } = useParams() as TAppParamsType;
   const appVersion = new URLSearchParams(useLocation().search).get(
     'appVersion'
   ) as string | undefined;
 
   const { data, isLoading } = useGetApps({ appId, appVersion });
-
-  useEffect(() => {
-    if (data) {
-      setAppData(data);
-    }
-  }, [data]);
 
   const { pathname } = useLocation();
   const breadcrumbItems = [
@@ -56,8 +49,8 @@ export const AppsBreadcrumb: React.FC = () => {
             let title = obj.title;
             const isLast = obj?.path === items[items.length - 1]?.path;
             console.log(isLast, items)
-            if (appData && obj.title !== 'Home' && obj.title !== 'Tools & Applications' && obj.title !== 'Job Status') {
-              title = appData.definition.notes?.label || appData.definition.id || obj.title;
+            if (data && obj.title !== 'Home' && obj.title !== 'Tools & Applications' && obj.title !== 'Job Status') {
+              title = data.definition.notes?.label || data.definition.id || obj.title;
             }
             return (
               <>
