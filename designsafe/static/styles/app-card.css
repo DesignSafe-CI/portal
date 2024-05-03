@@ -13,9 +13,10 @@
 .c-app-card__title > .ds-icon {
     width: unset; /* overwrite .ds-icon from main.css */
     height: unset; /* overwrite .ds-icon from main.css */
-}
-.c-app-card__title > .ds-icon::before {
-    margin-right: 0.25em;
+
+    /* To add space between icon and text */
+    /* FAQ: Using `rem` cuz some icons are globally resized via `em` */
+    margin-right: 0.5rem;
 }
 
 /* Description */
