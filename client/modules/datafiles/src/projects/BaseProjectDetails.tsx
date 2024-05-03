@@ -162,10 +162,10 @@ export const BaseProjectDetails: React.FC<{
               <td>Co-PIs</td>
               <td style={{ fontWeight: 'bold' }}>
                 {coPis.map((u, i) => (
-                  <>
+                  <React.Fragment key={JSON.stringify(u)}>
                     <UsernamePopover user={u} />
                     {i !== coPis.length - 1 && '; '}
-                  </>
+                  </React.Fragment>
                 ))}
               </td>
             </tr>
@@ -176,10 +176,10 @@ export const BaseProjectDetails: React.FC<{
                 <td>Authors</td>
                 <td style={{ fontWeight: 'bold' }}>
                   {projectValue.authors.map((u, i) => (
-                    <>
+                    <React.Fragment key={JSON.stringify(u)}>
                       <UsernamePopover user={u} />
                       {i !== projectValue.authors.length - 1 && '; '}
-                    </>
+                    </React.Fragment>
                   ))}
                 </td>
               </tr>
@@ -307,6 +307,13 @@ export const BaseProjectDetails: React.FC<{
                   </div>
                 ))}
               </td>
+            </tr>
+          )}
+
+          {projectValue.dois && projectValue.dois[0] && (
+            <tr className={styles['prj-row']}>
+              <td>DOI</td>
+              <td style={{ fontWeight: 'bold' }}>{projectValue.dois[0]}</td>
             </tr>
           )}
 

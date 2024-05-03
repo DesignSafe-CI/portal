@@ -10,6 +10,7 @@ export { useProjectEntityReorder } from './useProjectEntityReorder';
 export { useAddEntityToTree } from './useAddEntityToTree';
 export { useRemoveEntityFromTree } from './useRemoveEntityFromTree';
 export { useAddFileAssociation } from './useAddFileAssociation';
+export { useSetFileAssociations } from './useSetFileAssociations';
 export { useRemoveFileAssociation } from './useRemoveFileAssociation';
 export { useSetFileTags } from './useSetFileTags';
 export { usePatchEntityMetadata } from './usePatchEntityMetadata';

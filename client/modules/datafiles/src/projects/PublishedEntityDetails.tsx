@@ -61,14 +61,14 @@ export const PublishedEntityDetails: React.FC<{
                 {entityValue.authors
                   ?.filter((a) => a.authorship !== false)
                   .map((u, i) => (
-                    <>
+                    <React.Fragment key={JSON.stringify(u)}>
                       <UsernamePopover user={u} />
                       {i !==
                         (entityValue.authors?.filter(
                           (a) => a.authorship !== false
                         ).length ?? 0) -
                           1 && '; '}
-                    </>
+                    </React.Fragment>
                   ))}
               </td>
             </tr>

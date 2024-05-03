@@ -1,9 +1,16 @@
+import { useProjectDetail } from '@client/hooks';
 import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 
 export const ProjectPipelineSelectLayout: React.FC = () => {
   const { projectId } = useParams();
-  if (!projectId) return null;
+  const { data } = useProjectDetail(projectId ?? '');
+  if (!projectId || !data) return null;
+
+  const has_published_entities = !!data.entities.find(
+    (e) => e.value.dois && e.value.dois.length > 0
+  );
+
   return (
     <div style={{ width: '100%', marginBottom: '24px' }}>
       <NavLink to={`/projects/${projectId}/preview`}>
@@ -42,7 +49,12 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
               </li>
             </ul>
             <NavLink to={`/projects/${projectId}/prepare-to-publish/pipeline`}>
-              <button className="btn btn-small btn-add">Publish</button>
+              <button
+                className="btn btn-small btn-add"
+                disabled={has_published_entities}
+              >
+                Publish
+              </button>
             </NavLink>
           </div>
           <div>
@@ -59,7 +71,12 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
                   natural hazard event.
                 </li>
               </ul>
-              <button className="btn btn-small btn-add">Amend</button>
+              <button
+                className="btn btn-small btn-add"
+                disabled={!has_published_entities}
+              >
+                Amend
+              </button>
             </div>
             <div className="pipeline-section">
               <h3>Versioning</h3>
@@ -83,7 +100,12 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
               <NavLink
                 to={`/projects/${projectId}/prepare-to-publish/pipeline?operation=version`}
               >
-                <button className="btn btn-small btn-add">Version</button>
+                <button
+                  className="btn btn-small btn-add"
+                  disabled={!has_published_entities}
+                >
+                  Version
+                </button>
               </NavLink>
             </div>
             <div className="pipeline-section">
