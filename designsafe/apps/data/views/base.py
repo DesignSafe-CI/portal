@@ -235,8 +235,8 @@ class DataDepotPublishedView(TemplateView):
         context['simulations'] = getattr(pub, 'simulations', [])
         context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
 
-        proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
         try:
+            proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
             context['dc_json'] = json.dumps(proj.to_dataset_json())
         except Exception:
             # If we can't generate DataCite JSON, render the page without meta tags.

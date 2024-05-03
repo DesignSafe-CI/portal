@@ -38,4 +38,4 @@ class BaseTapisResultSerializer(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, (TapisResult, list, dict)):
             return self._serialize(o)
-        return json.JSONEncoder.encode(self, o)
+        return super().default(o)

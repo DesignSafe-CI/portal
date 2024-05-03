@@ -44,6 +44,7 @@ class Mission(MetadataModel):
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
     project: list[str] = []
     dois: list[str] = []
+    tombstone: bool = False
 
     # Deprecate these later
     facility: Optional[DropdownValue] = None
@@ -75,6 +76,8 @@ class FieldReconReport(MetadataModel):
     facility: Optional[DropdownValue] = None
     missions: list[str] = Field(default=[], exclude=True)
     referenced_datas: list[ReferencedWork] = Field(default=[], exclude=True)
+
+    tombstone: bool = False
 
 
 class Instrument(MetadataModel):

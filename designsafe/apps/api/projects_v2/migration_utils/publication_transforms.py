@@ -287,6 +287,13 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         fixed_authors = list(map(convert_v2_user, entity["authors"]))
         entity["value"]["authors"] = sorted(fixed_authors, key=lambda a: a["order"])
 
+    tombstone_uuids = base_pub_meta.get("tombstone", [])
+    if entity["uuid"] in tombstone_uuids:
+        entity["value"]["tombstone"] = True
+    tombstone_message = base_pub_meta.get("tombstoneMessage", None)
+    if tombstone_message:
+        entity["value"]["tombstoneMessage"] = tombstone_message
+
     old_tags = entity["value"].get("tags", None)
     if old_tags:
         new_style_tags = convert_legacy_tags(entity)
@@ -316,6 +323,20 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         entity["value"]["fileObjs"] = new_file_objs
     else:
         path_mapping = {}
-
     validated_model = model.model_validate(entity["value"])
+
+    if getattr(validated_model, "project_type", None) == "other":
+        # Type Other doesn't include emails/institutions in team order
+        for author in validated_model.authors:
+            user = next(
+                (u for u in validated_model.users if u.username == author.name), None
+            )
+            if user:
+                author.email = user.email
+                author.inst = user.inst
+        if schema_version == 1:
+            validated_model.authors = [
+                u for u in validated_model.users if u.fname != "N/A"
+            ]
+
     return validated_model.model_dump(), path_mapping

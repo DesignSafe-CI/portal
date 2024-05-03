@@ -1,89 +1,113 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Button, Layout, Flex } from 'antd';
+import { useFormContext } from 'react-hook-form';
 // import styles from './AppsWizard.module.css';
-import { Button, Form, Input, theme } from 'antd';
-import { TAppResponse } from '@client/hooks';
 
-const steps = [
-  {
-    title: 'First',
-    content: (
-      <Form.Item
-        name="steptest1"
-        label="Stepper Field 1"
-        rules={[{ required: true }]}
-        // hidden={current !== 0}
-      >
-        <Input />
-      </Form.Item>
-    ),
-  },
-  {
-    title: 'Second',
-    content: (
-      <Form.Item
-        name="steptest2"
-        label="Stepper Field 2"
-        rules={[{ required: true }]}
-        // hidden={current !== 1}
-      >
-        <Input />
-      </Form.Item>
-    ),
-  },
-  {
-    title: 'Last',
-    content: 'Last-content',
-  },
-];
+// import React, { createContext, useContext, useState } from 'react';
 
-export const AppsWizard: React.FC<{ data: TAppResponse }> = ({ data }) => {
-  const { token } = theme.useToken();
-  const [current, setCurrent] = useState(0);
-  const next = () => {
-    setCurrent(current + 1);
-  };
-  const prev = () => {
-    setCurrent(current - 1);
-  };
+// export const AppFormStateContext = createContext({});
+
+// export function AppFormProvider({ children, initialState = {} }) {
+//   const value = useState(initialState);
+//   return (
+//     <AppFormStateContext.Provider value={value}>
+//       {children}
+//     </AppFormStateContext.Provider>
+//   );
+// }
+
+// export function useAppFormState() {
+//   const context = useContext(AppFormStateContext);
+//   if (!context) {
+//     throw new Error('useAppFormState must be used within the AppFormProvider');
+//   }
+//   return context;
+// }
+
+/**
+ * AdjustValuesWhenQueueChanges is a component that makes uses of
+ * useFormikContext to ensure that when users switch queues, some
+ * variables are updated to match the queue specifications (i.e.
+ * correct node count, runtime etc)
+ */
+// const AdjustValuesWhenQueueChanges = ({ app }) => {
+//   const [previousValues, setPreviousValues] = useState();
+
+//   // Grab values and update if queue changes
+//   const { values, setValues } = useFormikContext();
+//   React.useEffect(() => {
+//     if (
+//       previousValues &&
+//       previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
+//     ) {
+//       setValues(updateValuesForQueue(execSystems, values));
+//     }
+//     setPreviousValues(values);
+//   }, [app, values, setValues]);
+//   return null;
+// };
+
+export const AppsWizard: React.FC<{
+  step: object;
+  handlePreviousStep: CallableFunction;
+  handleNextStep: CallableFunction;
+}> = ({ step, handlePreviousStep, handleNextStep }) => {
+  const { handleSubmit } = useFormContext();
 
   const contentStyle = {
     lineHeight: '260px',
     textAlign: 'center' as const,
-    color: token.colorTextTertiary,
-    backgroundColor: token.colorFillAlter,
-    borderRadius: token.borderRadiusLG,
-    border: `1px dashed ${token.colorBorder}`,
     marginTop: 16,
   };
+  const headerStyle = {
+    paddingLeft: 0,
+    paddingRight: 0,
+    textAlign: 'center',
+    height: 64,
+    paddingInline: 48,
+    lineHeight: '64px',
+    background: 'transparent',
+    borderBottom: '1px solid #707070',
+  };
+  const layoutStyle = {
+    overflow: 'hidden',
+  };
+
+  const { Header, Content } = Layout;
 
   return (
-    data && (
-      <>
-        <div
-          style={{
-            marginTop: 24,
-          }}
-        >
-          <Button
-            style={{
-              margin: '0 8px',
-            }}
-            onClick={() => prev()}
-            disabled={!(current > 0)}
-          >
-            Back
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => next()}
-            disabled={!(current < steps.length - 1)}
-          >
-            Continue
-          </Button>
-        </div>
-        <div style={contentStyle}>{steps[current].content}</div>
-        <div>{data.definition.notes.label || data.definition.id}</div>
-      </>
-    )
+    <Flex gap="middle" wrap="wrap">
+      <Layout style={layoutStyle}>
+        <Header style={headerStyle}>
+          <Flex justify="space-between">
+            <span>{step.title}</span>
+            <span>
+              <Button
+                style={{
+                  margin: '0 8px',
+                }}
+                disabled={!step.prevPage}
+                onClick={handleSubmit(handlePreviousStep, (data) => {
+                  console.log('error prev data', data);
+                })}
+              >
+                Back
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                disabled={!step.nextPage}
+                onClick={handleSubmit(handleNextStep, (data) => {
+                  console.log('error next data', data);
+                })}
+              >
+                Continue
+              </Button>
+            </span>
+          </Flex>
+        </Header>
+        <Content style={contentStyle}>{step.content}</Content>
+      </Layout>
+    </Flex>
   );
 };

@@ -68,6 +68,8 @@ pydantic = "^2.5.0"
 networkx = "^3.2.1"
 tapipy = "^1.6.1"
 requests-mock = "^1.12.1"
+pycryptodome = "^3.20.0"
+paramiko = "^3.4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.0"

@@ -24,6 +24,7 @@ class TapisTokenRefreshMiddleware:
         if (
             request.path != reverse("logout")
             and request.path != reverse("login")
+            and not request.path.startswith("/static/")
             and request.user.is_authenticated
         ):
             self.process_request(request)

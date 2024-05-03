@@ -1,6 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import {
+  useQuery,
+  useSuspenseQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import apiClient from '../apiClient';
-import { TTapisApp, TTapisSystem } from './types';
+import { TTapisApp } from './types';
+import { TTapisSystem } from '../systems/types';
 
 export type TAppParamsType = {
   appId: string;
@@ -9,13 +14,11 @@ export type TAppParamsType = {
 
 export type TAppResponse = {
   definition: TTapisApp;
-  exec_sys: TTapisSystem;
   license: {
     type: null | string;
     enabled?: boolean;
   };
-  systemNeedsKeys?: boolean;
-  pushKeysSystem?: TTapisSystem;
+  defaultSystemNeedsKeys?: TTapisSystem;
 };
 
 export type TGetAppsResponse = {
@@ -34,12 +37,23 @@ async function getApps(
   return res.data.response;
 }
 
-function useGetApps(queryParams: TAppParamsType) {
-  return useQuery({
-    queryKey: ['workspace', 'getApps', queryParams],
-    queryFn: ({ signal }) => getApps({ signal }, queryParams),
-    staleTime: 1000,
-  });
-}
+const getAppsQuery = (queryParams: TAppParamsType) => ({
+  queryKey: ['workspace', 'getApps', queryParams],
+  queryFn: ({ signal }) => getApps({ signal }, queryParams),
+  staleTime: 5000,
+});
+
+export const useGetAppsSuspense = (queryParams: TAppParamsType) => {
+  return useSuspenseQuery(getAppsQuery(queryParams));
+};
+
+const useGetApps = (queryParams: TAppParamsType) => {
+  return useQuery(getAppsQuery(queryParams));
+};
+
+export const usePrefetchGetApps = (queryParams: TAppParamsType) => {
+  const queryClient = useQueryClient();
+  queryClient.ensureQueryData(getAppsQuery(queryParams));
+};
 
 export default useGetApps;

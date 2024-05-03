@@ -13,6 +13,7 @@ from django.db.models.lookups import GreaterThan
 from django.db.models.functions import Coalesce
 from django.urls import reverse
 from tapipy.errors import InternalServerError, UnauthorizedError
+from tapipy.tapis import TapisResult
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.users.utils import get_user_data
 from designsafe.apps.api.views import AuthenticatedApiView
@@ -29,6 +30,29 @@ from designsafe.apps.workspace.api.utils import check_job_for_timeout
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
+
+TACC_EXEC_SYSTEMS = {
+    "corral": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/work2/{}",
+        "home_dir": "/home/{}",
+    },
+    "stampede3": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/scratch/{}",
+        "home_dir": "/home1/{}",
+    },
+    "frontera": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/scratch1/{}",
+        "home_dir": "/home1/{}",
+    },
+    "ls6": {
+        "work_dir": "/work/{}",
+        "scratch_dir": "/scratch/{}",
+        "home_dir": "/home1/{}",
+    },
+}
 
 
 def _app_license_type(app_def):
@@ -52,6 +76,22 @@ def _get_user_app_license(license_type, user):
     return lic
 
 
+def _get_systems(
+    user: object, canExec: bool, systems: list = None, listType: str = "ALL"
+) -> list:
+    """List of all enabled systems of the specified canExec type available for the user."""
+    tapis = user.tapis_oauth.client
+
+    search_string = f"(canExec.eq.{canExec})~(enabled.eq.true)"
+
+    if systems:
+        system_id_search = ",".join(systems)
+        search_string += f"~(id.in.{system_id_search})"
+    return tapis.systems.getSystems(
+        listType=listType, select="allAttributes", search=search_string
+    )
+
+
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
 
@@ -60,12 +100,8 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getApp(appId=app_id, appVersion=app_version)
     else:
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
-    data = {"definition": app_def}
 
-    # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-    data["exec_sys"] = tapis.systems.getSystem(
-        systemId=app_def.jobAttributes.execSystemId
-    )
+    data = {"definition": app_def}
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}
@@ -77,17 +113,53 @@ def _get_app(app_id, app_version, user):
 
 
 def test_system_needs_keys(tapis, system_id):
-    """Tests a Tapis system by making a file listing call."""
+    """Tests a Tapis system by making a file listing call.
+
+    returns: SystemDef
+    """
 
     try:
         tapis.files.listFiles(systemId=system_id, path="/")
     except (InternalServerError, UnauthorizedError):
         system_def = tapis.systems.getSystem(systemId=system_id)
-        logger.info(
-            f"Keys for user {tapis.username} must be manually pushed to system: {system_id}"
-        )
         return system_def
     return False
+
+
+class SystemListingView(AuthenticatedApiView):
+    """System Listing View"""
+
+    def get(self, request):
+        execution_systems = _get_systems(request.user, canExec=True)
+        storage_systems = _get_systems(
+            request.user, canExec=False, listType="SHARED_PUBLIC"
+        )
+        response = {
+            "executionSystems": execution_systems,
+            "storageSystems": storage_systems,
+        }
+
+        default_storage_system_id = settings.AGAVE_STORAGE_SYSTEM
+        if default_storage_system_id:
+            response["defaultStorageSystem"] = next(
+                (sys for sys in storage_systems if sys.id == default_storage_system_id),
+                None,
+            )
+
+        return JsonResponse(
+            {"status": 200, "response": response}, encoder=BaseTapisResultSerializer
+        )
+
+
+class SystemDefinitionView(AuthenticatedApiView):
+    """Get definitions for individual systems"""
+
+    def get(self, request, system_id):
+        client = request.user.tapis_oauth.client
+        system_def = client.systems.getSystem(systemId=system_id)
+        return JsonResponse(
+            {"status": 200, "response": system_def}, encoder=BaseTapisResultSerializer
+        )
 
 
 class AppsView(AuthenticatedApiView):
@@ -107,7 +179,6 @@ class AppsView(AuthenticatedApiView):
                 "info": {"query": request.GET.dict()},
             },
         )
-        tapis = request.user.tapis_oauth.client
         app_id = request.GET.get("appId")
         app_version = request.GET.get("appVersion")
 
@@ -116,14 +187,18 @@ class AppsView(AuthenticatedApiView):
 
         data = _get_app(app_id, app_version, request.user)
 
+        # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
         # Check if default storage system needs keys pushed
-        if settings.AGAVE_STORAGE_SYSTEM:
-            system_needs_keys = test_system_needs_keys(
-                tapis, settings.AGAVE_STORAGE_SYSTEM
-            )
-            if system_needs_keys:
-                data["systemNeedsKeys"] = True
-                data["pushKeysSystem"] = system_needs_keys
+        # if settings.AGAVE_STORAGE_SYSTEM:
+        #     tapis = request.user.tapis_oauth.client
+        #     system_needs_keys = test_system_needs_keys(
+        #         tapis, settings.AGAVE_STORAGE_SYSTEM
+        #     )
+        #     if system_needs_keys:
+        #         logger.info(
+        #             f"Keys for user {request.user.username} must be manually pushed to system: {system_needs_keys.id}"
+        #         )
+        #         data["defaultSystemNeedsKeys"] = system_needs_keys
 
         return JsonResponse(
             {
@@ -567,29 +642,23 @@ class JobsView(AuthenticatedApiView):
             # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
         # Test file listing on relevant systems to determine whether keys need to be pushed manually
-        system_needs_keys = any(
-            test_system_needs_keys(tapis, system_id)
-            for system_id in list(
-                set([job_post["archiveSystemId"], job_post["execSystemId"]])
-            )
-        )
-        if system_needs_keys:
-            logger.info(
-                f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
-            )
-            return JsonResponse(
-                {
-                    "status": 200,
-                    "response": {"execSys": system_needs_keys},
-                },
-                encoder=BaseTapisResultSerializer,
-            )
+        for system_id in list(
+            set([job_post["archiveSystemId"], job_post["execSystemId"]])
+        ):
+            system_needs_keys = test_system_needs_keys(tapis, system_id)
+            if system_needs_keys:
+                logger.info(
+                    f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
+                )
+                return {"execSys": system_needs_keys}
 
         if settings.DEBUG:
-            wh_base_url = settings.WH_BASE_URL + reverse(
+            wh_base_url = settings.WEBHOOK_POST_URL + reverse(
                 "webhooks:interactive_wh_handler"
             )
-            jobs_wh_url = settings.WH_BASE_URL + reverse("webhooks:jobs_wh_handler")
+            jobs_wh_url = settings.WEBHOOK_POST_URL + reverse(
+                "webhooks:jobs_wh_handler"
+            )
         else:
             wh_base_url = request.build_absolute_uri(
                 reverse("webhooks:interactive_wh_handler")
@@ -605,14 +674,10 @@ class JobsView(AuthenticatedApiView):
                 "envVariables", []
             ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": wh_base_url}]
 
-            # Make sure $HOME/.tap directory exists for user when running interactive apps
+            # Make sure $HOME/.tap directory exists for user when running interactive apps on TACC HPC Systems
             exec_system_id = job_post["execSystemId"]
             system = next(
-                (
-                    v
-                    for k, v in settings.TACC_EXEC_SYSTEMS.items()
-                    if exec_system_id.endswith(k)
-                ),
+                (v for k, v in TACC_EXEC_SYSTEMS.items() if exec_system_id.endswith(k)),
                 None,
             )
             tasdir = get_user_data(username)["homeDirectory"]
