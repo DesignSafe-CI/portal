@@ -3,6 +3,7 @@
 import pytest
 import os
 import json
+from unittest.mock import patch
 from django.conf import settings
 from designsafe.apps.auth.models import TapisOAuthToken
 
@@ -35,6 +36,19 @@ def regular_user(django_user_model, mock_tapis_client):
     )
 
     yield user
+
+
+@pytest.fixture
+def regular_user_using_jwt(regular_user, client):
+    """Fixture for regular user who is using jwt for authenticated requests"""
+    with patch('designsafe.apps.api.decorators.Tapis') as mock_tapis:
+        # Mock the Tapis's validate_token method within the tapis_jwt_login decorator
+        mock_validate_token = mock_tapis.return_value.validate_token
+        mock_validate_token.return_value = {"tapis/username": regular_user.username}
+
+        client.defaults['HTTP_X_TAPIS_TOKEN'] = 'fake_token_string'
+
+        yield client
 
 
 @pytest.fixture
