@@ -1,5 +1,5 @@
 import { BaseProjectDetails, DatafilesToolbar } from '@client/datafiles';
-import { usePublicationDetail } from '@client/hooks';
+import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
 import React, { useEffect } from 'react';
 import { Button, Form, Input } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
@@ -35,6 +35,7 @@ export const PublishedDetailLayout: React.FC = () => {
   const { projectId, path } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data } = usePublicationDetail(projectId ?? '');
+  const { allVersions } = usePublicationVersions(projectId ?? '');
 
   const version = (projectId ?? '').split('v')[1];
   useEffect(() => {
@@ -74,6 +75,7 @@ export const PublishedDetailLayout: React.FC = () => {
       <BaseProjectDetails
         projectValue={data?.baseProject}
         publicationDate={publicationDate}
+        versions={allVersions}
       />
       <Outlet />
     </div>

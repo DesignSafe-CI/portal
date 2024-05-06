@@ -47,7 +47,7 @@ export const PublishedEntityDetails: React.FC<{
 
           {entityValue.simulationType && (
             <tr className={styles['prj-row']}>
-              <td>Facility</td>
+              <td>Simulation Type</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.simulationType?.name}
               </td>
@@ -61,14 +61,14 @@ export const PublishedEntityDetails: React.FC<{
                 {entityValue.authors
                   ?.filter((a) => a.authorship !== false)
                   .map((u, i) => (
-                    <>
+                    <React.Fragment key={JSON.stringify(u)}>
                       <UsernamePopover user={u} />
                       {i !==
                         (entityValue.authors?.filter(
                           (a) => a.authorship !== false
                         ).length ?? 0) -
                           1 && '; '}
-                    </>
+                    </React.Fragment>
                   ))}
               </td>
             </tr>
@@ -85,7 +85,7 @@ export const PublishedEntityDetails: React.FC<{
 
           {entityValue.experimentType && (
             <tr className={styles['prj-row']}>
-              <td>Facility</td>
+              <td>Experiment Type</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.experimentType?.name}
               </td>
