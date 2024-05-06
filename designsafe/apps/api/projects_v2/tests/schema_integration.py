@@ -1,13 +1,22 @@
 """Integration-type tests to confirm that Pydantic schemas are exhaustive."""
+
 import json
 from typing import Iterator
+import networkx as nx
 from pydantic import BaseModel, ValidationError
+from designsafe.apps.api.projects_v2.operations.datacite_operations import (
+    get_datacite_json,
+)
 from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
     transform_pub_entities,
 )
 from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
 from designsafe.apps.api.publications.operations import listing as list_pubs
+from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
+    get_publication_full_tree,
+)
 
 
 def update_project(uuid, new_value):
@@ -79,3 +88,27 @@ def validate_publications():
         except ValidationError as exc:
             print(pub["projectId"])
             print(exc)
+
+
+def validate_datacite_json():
+    """Attempt to generate datacite json for all publishable entities"""
+    graphs = ProjectMetadata.objects.filter(name="designsafe.project.graph")
+    for graph in graphs:
+        graph_obj = nx.node_link_graph(graph.value)
+
+        project_type = graph.base_project.value["projectType"]
+        if project_type == "None":
+            continue
+        project_id = graph.base_project.value["projectId"]
+
+        publishable_uuids = [
+            graph_obj.nodes[node_id]["uuid"]
+            for node_id in graph_obj.successors("NODE_ROOT")
+        ]
+        if not publishable_uuids:
+            continue
+
+        full_tree, _ = get_publication_full_tree(project_id, publishable_uuids)
+
+        for pub_id in publishable_uuids:
+            get_datacite_json(full_tree, pub_id)

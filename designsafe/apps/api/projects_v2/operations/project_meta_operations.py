@@ -120,6 +120,16 @@ def add_file_associations(uuid: str, new_file_objs: list[FileObj]):
     return entity
 
 
+def set_file_associations(uuid: str, new_file_objs: list[FileObj]):
+    """Replace the file associations for an entity with the specified set."""
+    # Use atomic transaction here to prevent multiple calls from clobbering each other
+    with transaction.atomic():
+        entity = ProjectMetadata.objects.select_for_update().get(uuid=uuid)
+        entity.value["fileObjs"] = [f.model_dump() for f in new_file_objs]
+        entity.save()
+    return entity
+
+
 def remove_file_associations(uuid: str, file_paths: list[str]):
     """Remove file associations from an entity by their paths."""
     with transaction.atomic():
