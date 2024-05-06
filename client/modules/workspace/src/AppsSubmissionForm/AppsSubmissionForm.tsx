@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Layout, Form, Col, Row, Flex, Alert, Space } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useGetAppsSuspense, usePostJobs, useGetSystems } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
@@ -357,6 +358,29 @@ export const AppsSubmissionForm: React.FC = () => {
     submitJob(jobData);
   };
 
+  const defaultSystemNeedsKeysMessage = defaultStorageSystem.notes
+    ?.keyservice ? (
+    <span>
+      For help,{' '}
+      <Link className="wb-link" to={`tickets/create`}>
+        submit a ticket.
+      </Link>
+    </span>
+  ) : (
+    <span>
+      If this is your first time logging in, you may need to&nbsp;
+      <a
+        className="data-files-nav-link"
+        type="button"
+        href="#"
+        onClick={() => setIsModalOpen(defaultStorageSystem)}
+      >
+        push your keys
+      </a>
+      .
+    </span>
+  );
+
   return (
     <>
       <Layout style={layoutStyle}>
@@ -386,6 +410,19 @@ export const AppsSubmissionForm: React.FC = () => {
           {submitError && (
             <Alert
               message={<>Error: {submitError?.message}</>}
+              type="warning"
+              closable
+              showIcon
+            />
+          )}
+          {defaultSystemNeedsKeys && (
+            <Alert
+              message={
+                <>
+                  There was a problem accessing your default My Data file
+                  system. {defaultSystemNeedsKeysMessage}
+                </>
+              }
               type="warning"
               closable
               showIcon

@@ -57,7 +57,10 @@ export type TTapisSystem = {
   batchSchedulerProfile: string;
   jobCapabilities: [];
   tags: [];
-  notes: object;
+  notes: {
+    label?: string;
+    keyservice?: boolean;
+  };
   importRefId?: string;
   uuid: string;
   allowChildren: boolean;

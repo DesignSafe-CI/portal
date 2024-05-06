@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Layout } from 'antd';
+import { Flex, Layout, Space } from 'antd';
 import {
   AppsSideNav,
   JobStatusNav,
@@ -11,7 +11,7 @@ import { useAppsListing, usePrefetchGetSystems } from '@client/hooks';
 import { Spinner } from '@client/common-components';
 import { usePrefetchGetApps } from '@client/hooks';
 
-const { Sider } = Layout;
+const { Sider, Header } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
   usePrefetchGetApps(useGetAppParams());
@@ -25,30 +25,39 @@ const WorkspaceRoot: React.FC = () => {
       </Layout>
     );
 
+  const headerStyle = {
+    background: 'transparent',
+    padding: 0,
+    borderBottom: '1px solid #707070',
+    alignContent: 'center',
+  };
+
   return (
-    <>
-      <AppsBreadcrumb />
-      <Layout
-        hasSider
-        style={{
-          backgroundColor: 'transparent',
-          gap: '20px',
-          paddingLeft: '20px',
-          paddingRight: '20px',
-          overflowX: 'auto',
-          overflowY: 'hidden',
-        }}
-      >
-        <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
-          <h1 className="headline headline-research" id="headline-data-depot">
-            <span className="hl hl-research">Tools and Applications</span>
-          </h1>
-          <JobStatusNav />
-          <AppsSideNav categories={data.categories} />
-        </Sider>
-        <Outlet />
-      </Layout>
-    </>
+    <Flex
+      vertical
+      style={{
+        marginLeft: '50px',
+        marginRight: '50px',
+      }}
+    >
+      <Space direction="vertical">
+        <Header style={headerStyle}>
+          <AppsBreadcrumb />
+        </Header>
+        <Layout
+          hasSider
+          style={{
+            gap: '20px',
+          }}
+        >
+          <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
+            <JobStatusNav />
+            <AppsSideNav categories={data.categories} />
+          </Sider>
+          <Outlet />
+        </Layout>
+      </Space>
+    </Flex>
   );
 };
 

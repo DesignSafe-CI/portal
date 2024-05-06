@@ -7,9 +7,4 @@ describe('App', () => {
     const { baseElement } = render(<WorkspaceBaseLayout />);
     expect(baseElement).toBeTruthy();
   });
-
-  it('should have a greeting as the title', () => {
-    const { getByText } = render(<WorkspaceBaseLayout />);
-    expect(getByText(/Tools and Applications/gi)).toBeTruthy();
-  });
 });
