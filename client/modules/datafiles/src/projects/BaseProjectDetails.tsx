@@ -2,7 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { TBaseProjectValue, TProjectUser } from '@client/hooks';
 
 import styles from './BaseProjectDetails.module.css';
-import { Button, Col, Popover, Row, Tooltip } from 'antd';
+import { Button, Col, Popover, Row, Select, Tooltip } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
   children,
@@ -131,13 +132,23 @@ const projectTypeMapping = {
 export const BaseProjectDetails: React.FC<{
   projectValue: TBaseProjectValue;
   publicationDate?: string;
-}> = ({ projectValue, publicationDate }) => {
+  versions?: number[];
+}> = ({ projectValue, publicationDate, versions }) => {
   const pi = projectValue.users.find((u) => u.role === 'pi');
   const coPis = projectValue.users.filter((u) => u.role === 'co_pi');
   const projectType = [
     projectTypeMapping[projectValue.projectType],
     ...(projectValue.frTypes?.map((t) => t.name) ?? []),
   ].join(' | ');
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const setSelectedVersion = (newVersion: number) => {
+    setSearchParams((prevParams) => {
+      prevParams.set('version', newVersion.toString());
+      return prevParams;
+    });
+  };
 
   return (
     <section style={{ marginBottom: '20px' }}>
@@ -198,12 +209,14 @@ export const BaseProjectDetails: React.FC<{
               </td>
             </tr>
           )}
-          <tr className={styles['prj-row']}>
-            <td>Natural Hazard Type(s)</td>
-            <td style={{ fontWeight: 'bold' }}>{`${projectValue.nhTypes
-              .map((t) => t.name)
-              .join(', ')}`}</td>
-          </tr>
+          {(projectValue.nhTypes?.length ?? 0) > 0 && (
+            <tr className={styles['prj-row']}>
+              <td>Natural Hazard Type(s)</td>
+              <td style={{ fontWeight: 'bold' }}>{`${projectValue.nhTypes
+                .map((t) => t.name)
+                .join(', ')}`}</td>
+            </tr>
+          )}
           {publicationDate && (
             <tr className={styles['prj-row']}>
               <td>Date of Publication</td>
@@ -322,6 +335,24 @@ export const BaseProjectDetails: React.FC<{
               <td>License</td>
               <td style={{ fontWeight: 'bold' }}>
                 <LicenseDisplay licenseType={projectValue.license} />
+              </td>
+            </tr>
+          )}
+
+          {versions && versions.length > 1 && (
+            <tr className={styles['prj-row']}>
+              <td>Version</td>
+              <td style={{ fontWeight: 'bold' }}>
+                <Select
+                  style={{ width: '200px' }}
+                  size="small"
+                  options={versions.map((v) => ({ value: v, label: v }))}
+                  value={parseInt(
+                    searchParams.get('version') ??
+                      Math.max(...versions).toString()
+                  )}
+                  onChange={(newVal) => setSelectedVersion(newVal)}
+                />
               </td>
             </tr>
           )}

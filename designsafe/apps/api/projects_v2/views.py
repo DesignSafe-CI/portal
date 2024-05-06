@@ -55,7 +55,7 @@ class ProjectsView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        projects = user.projects.order_by("last_updated")
+        projects = user.projects.order_by("-last_updated")
         if query_string:
             projects = projects.filter(get_search_filter(query_string))
         total = user.projects.count()

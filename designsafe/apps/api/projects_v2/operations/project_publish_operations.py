@@ -319,8 +319,8 @@ def copy_publication_files(
     if version and version > 1:
         pub_dirname = f"{project_id}v{version}"
 
-    pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}" / pub_dirname))
-    os.mkdir(pub_root_dir)
+    pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
+    os.makedirs(pub_root_dir, exist_ok=True)
 
     for src_path in path_mapping:
         src_path_obj = Path(src_path)
