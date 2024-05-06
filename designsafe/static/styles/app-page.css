@@ -2,9 +2,10 @@
 @import url("./app-grid.css");
 @import url("./app-version-list.css");
 
-/* To make width of page content line up with width of header. */
-/* TODO: Verify whether this is safe to put into `main.css` */
-.s-app-page > .container-fluid {
+/* To make width of page content line up with width of header */
+.s-app-page > .container-fluid /* FAQ: To support Style wrapper (as fallback) */,
+.s-app-page main > .container-fluid {
+  /* HELP: Is this safe to replace the .container-fluid margin in main.css? */
   margin: 0 50px;
 }
 
