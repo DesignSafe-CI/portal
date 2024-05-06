@@ -10,6 +10,7 @@ from designsafe.apps.api.projects_v2.schema_models.base import (
 )
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.models import ProjectMetadata
+from designsafe.apps.api.projects_v2.operations import graph_operations
 
 
 def create_project_metdata(value):
@@ -71,6 +72,19 @@ def clear_entities(project_id):
     return "OK"
 
 
+def change_project_type(project_id, new_value):
+    """Change the type of a project and update its value."""
+    project = ProjectMetadata.get_project_by_id(project_id)
+    schema_model = SCHEMA_MAPPING[constants.PROJECT]
+    validated_model = schema_model.model_validate(new_value)
+    project.value = validated_model.model_dump()
+    project.save()
+    clear_entities(project_id)
+    graph_operations.initialize_project_graph(project_id)
+
+    return project
+
+
 def _merge_file_objs(
     prev_file_objs: list[FileObj], new_file_objs: list[FileObj]
 ) -> list[FileObj]:
@@ -102,6 +116,16 @@ def add_file_associations(uuid: str, new_file_objs: list[FileObj]):
         merged_file_objs = _merge_file_objs(entity_file_model.file_objs, new_file_objs)
         entity.value["fileObjs"] = [f.model_dump() for f in merged_file_objs]
 
+        entity.save()
+    return entity
+
+
+def set_file_associations(uuid: str, new_file_objs: list[FileObj]):
+    """Replace the file associations for an entity with the specified set."""
+    # Use atomic transaction here to prevent multiple calls from clobbering each other
+    with transaction.atomic():
+        entity = ProjectMetadata.objects.select_for_update().get(uuid=uuid)
+        entity.value["fileObjs"] = [f.model_dump() for f in new_file_objs]
         entity.save()
     return entity
 

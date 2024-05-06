@@ -86,6 +86,8 @@ INSTALLED_APPS = (
     'designsafe.apps.api.notifications',
     'designsafe.apps.api.datafiles',
     'designsafe.apps.api.projects_v2',
+    'designsafe.apps.api.publications_v2',
+    'designsafe.apps.api.filemeta',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -308,6 +310,7 @@ CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
+    ('cms_page_for_app.html', 'Main Site App Page'),
     ('cms_page_no_footer.html', 'Footerless Page'),
 )
 CMSPLUGIN_CASCADE = {
@@ -318,6 +321,9 @@ CMSPLUGIN_CASCADE = {
         'FormPlugin',
         'MeetingFormPlugin',
         'ResponsiveEmbedPlugin',
+        'AppCategoryListing',
+        'RelatedApps',
+        'AppVariants'
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = [
@@ -564,7 +570,8 @@ NOCAPTCHA = True
 
 #FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
-DESIGNSAFE_PUBLISHED_PATH = '/corral-repl/tacc/NHERI/published/'
+DESIGNSAFE_PROJECTS_PATH = os.environ.get('DESIGNSAFE_PROJECTS_PATH', '/corral-repl/tacc/NHERI/projects/')
+DESIGNSAFE_PUBLISHED_PATH = os.environ.get('DESIGNSAFE_PUBLISHED_PATH', '/corral-repl/tacc/NHERI/published/')
 DATACITE_URL = os.environ.get('DATACITE_URL', 'https://doi.test.datacite.org/')
 DATACITE_USER = os.environ.get('DATACITE_USER')
 DATACITE_PASS = os.environ.get('DATACITE_PASS')

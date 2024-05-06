@@ -1,9 +1,10 @@
-import { Button, Form, Input, Select, Tag } from 'antd';
-import React, { useCallback, useEffect } from 'react';
+import { Button, Form, Input, Select } from 'antd';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   nhTypeOptions,
   facilityOptions,
   dataTypeOptions,
+  frTypeOptions,
 } from './ProjectFormDropdowns';
 import {
   UserSelect,
@@ -16,35 +17,74 @@ import {
 } from './_fields';
 import { TProjectUser } from './_fields/UserSelect';
 import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
+import { customRequiredMark } from './_common';
+import { AuthorSelect } from './_fields/AuthorSelect';
+import { ChangeProjectTypeModal } from '../modals';
+import { ProjectTypeRadioSelect } from '../modals/ProjectTypeRadioSelect';
 
-const customizeRequiredMark = (
-  label: React.ReactNode,
-  info: { required: boolean }
-) => (
-  <>
-    <span style={{ whiteSpace: 'nowrap' }}>{label}</span>&nbsp;
-    {info.required && (
-      <Tag
-        color="#d9534f"
-        style={{
-          borderRadius: '2.7px',
-          lineHeight: 1,
-          paddingInline: 0,
-          padding: '0.2em 0.4em 0.3em',
-          fontSize: '75%',
-        }}
-      >
-        Required
-      </Tag>
-    )}
-  </>
-);
+export const ProjectTypeInput: React.FC<{
+  projectType: TBaseProjectValue['projectType'];
+}> = ({ projectType }) => {
+  switch (projectType) {
+    case 'experimental':
+      return (
+        <ProjectTypeRadioSelect
+          label="Experimental Project"
+          iconName="curation-experiment overview-prj-type"
+          description="For physical work, typically done at an experimental facility or in the field."
+        />
+      );
+    case 'simulation':
+      return (
+        <ProjectTypeRadioSelect
+          label="Simulation Project"
+          iconName="curation-simulation overview-prj-type"
+          description="For numerical and/or analytical work, done with software."
+        />
+      );
+    case 'field_recon':
+      return (
+        <ProjectTypeRadioSelect
+          label="Field Research Project"
+          iconName="curation-recon overview-prj-type"
+          description="For work done in areas affected by natural hazards."
+        />
+      );
+    case 'other':
+      return (
+        <ProjectTypeRadioSelect
+          label="Other Type Project"
+          iconName="curation-other overview-prj-type"
+          description="For work other than the project types above."
+        />
+      );
 
-export const BaseProjectForm: React.FC<{ projectId: string }> = ({
-  projectId,
-}) => {
+    case 'hybrid_simulation':
+      return (
+        <ProjectTypeRadioSelect
+          label="Hybrid Simulation Project"
+          iconName="curation-hybrid overview-prj-type"
+          description="For work using both physical and numerical components."
+        />
+      );
+    default:
+      return (
+        <ProjectTypeRadioSelect
+          label="None"
+          iconName="curation-close-window manage-prj-types-icon"
+          description="You have not selected a project type"
+        />
+      );
+  }
+};
+
+export const BaseProjectForm: React.FC<{
+  projectId: string;
+  onChangeType?: () => void;
+}> = ({ projectId, onChangeType }) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
+  const projectType = data?.baseProject.value.projectType;
 
   function processFormData(formData: Record<string, TProjectUser[]>) {
     const { pi, coPis, teamMembers, guestMembers, ...rest } = formData;
@@ -58,7 +98,9 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
     if (data) form.setFieldsValue(cleanInitialvalues(data.baseProject.value));
   }, [data, form]);
 
-  useEffect(() => setValues(), [setValues, projectId]);
+  useEffect(() => {
+    setValues();
+  }, [setValues, projectId]);
 
   function cleanInitialvalues(projectData: TBaseProjectValue) {
     const { users, ...rest } = projectData;
@@ -71,7 +113,22 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
     };
   }
 
-  //const watchedItem = Form.useWatch([], form);
+  const watchedValues = Form.useWatch([], form);
+  const watchedUsers = useMemo(
+    () => [
+      ...(watchedValues?.pi ?? []),
+      ...(watchedValues?.coPis ?? []),
+      ...(watchedValues?.teamMembers ?? []),
+      ...(watchedValues?.guestMembers ?? []),
+    ],
+    [
+      watchedValues?.pi,
+      watchedValues?.coPis,
+      watchedValues?.teamMembers,
+      watchedValues?.guestMembers,
+    ]
+  );
+
   if (!data) return <div>Loading</div>;
   return (
     <Form
@@ -79,7 +136,7 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
       layout="vertical"
       onFinish={(v) => console.log(processFormData(v))}
       onFinishFailed={(v) => console.log(processFormData(v.values))}
-      requiredMark={customizeRequiredMark}
+      requiredMark={customRequiredMark}
     >
       <Form.Item label="Project Title" required>
         Incorporate the project's focus with words indicating the hazard, model,
@@ -93,6 +150,37 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
         </Form.Item>
       </Form.Item>
 
+      {/*TODO: disable in situations where project type shouldn't be changed.*/}
+      <Form.Item label="Project Type">
+        <ProjectTypeInput projectType={data.baseProject.value.projectType} />
+        <ChangeProjectTypeModal projectId={projectId}>
+          {({ onClick }) => (
+            <Button
+              onClick={(evt) => {
+                onChangeType && onChangeType();
+                onClick(evt);
+              }}
+              type="link"
+            >
+              <strong>Change Project Type</strong>
+            </Button>
+          )}
+        </ChangeProjectTypeModal>
+      </Form.Item>
+
+      {projectType === 'field_recon' && (
+        <Form.Item label="Field Research Type" required>
+          Specify the Field Research being performed.
+          <Form.Item
+            name="frTypes"
+            className="inner-form-item"
+            rules={[{ required: true }]}
+          >
+            <DropdownSelect options={frTypeOptions} />
+          </Form.Item>
+        </Form.Item>
+      )}
+
       <Form.Item label="Natural Hazard Types" required>
         Specify the natural hazard being researched.
         <Form.Item
@@ -104,27 +192,31 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Data Types" required>
-        The nature or genre of the content.
-        <Form.Item
-          className="inner-form-item"
-          name="dataTypes"
-          rules={[{ required: true }]}
-        >
-          <DropdownSelect options={dataTypeOptions} />
-        </Form.Item>
-      </Form.Item>
+      {projectType === 'other' && (
+        <>
+          <Form.Item label="Data Types" required>
+            The nature or genre of the content.
+            <Form.Item
+              className="inner-form-item"
+              name="dataTypes"
+              rules={[{ required: true }]}
+            >
+              <DropdownSelect options={dataTypeOptions} />
+            </Form.Item>
+          </Form.Item>
 
-      <Form.Item label="Facilities">
-        Specify the facilities involved in this research.
-        <Form.Item
-          className="inner-form-item"
-          name="facilities"
-          initialValue={[]}
-        >
-          <DropdownSelect options={facilityOptions} />
-        </Form.Item>
-      </Form.Item>
+          <Form.Item label="Facilities">
+            Specify the facilities involved in this research.
+            <Form.Item
+              className="inner-form-item"
+              name="facilities"
+              initialValue={[]}
+            >
+              <DropdownSelect options={facilityOptions} />
+            </Form.Item>
+          </Form.Item>
+        </>
+      )}
 
       <div style={{ display: 'flex', gap: '1rem' }}>
         <Form.Item label="Principal Investigator" required className="flex-1">
@@ -162,21 +254,32 @@ export const BaseProjectForm: React.FC<{ projectId: string }> = ({
         <GuestMembersInput name="guestMembers" />
       </Form.Item>
 
-      <Form.Item label="Award Info">
-        Recommended for funded projects.
-        <AwardsInput name="awardNumbers" />
-      </Form.Item>
+      {projectType === 'other' && (
+        <>
+          <Form.Item label="Assign Authorship">
+            You can order the authors during the publication process.
+            <Form.Item name={['authors']} className="inner-form-item">
+              <AuthorSelect projectUsers={watchedUsers} />
+            </Form.Item>
+          </Form.Item>
 
-      <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
-        <ReferencedDataInput name="referencedData" />
-      </Form.Item>
+          <Form.Item label="Award Info">
+            Recommended for funded projects.
+            <AwardsInput name="awardNumbers" />
+          </Form.Item>
 
-      <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
-        <RelatedWorkInput name="relatedWork" />
-      </Form.Item>
+          <Form.Item label="Referenced Data and Software">
+            Published data used in the creation of this dataset.
+            <ReferencedDataInput name="referencedData" />
+          </Form.Item>
+
+          <Form.Item label="Related Work">
+            Information giving context, a linked dataset on DesignSafe, or works
+            citing the DOI for this dataset.
+            <RelatedWorkInput name="relatedWork" />
+          </Form.Item>
+        </>
+      )}
 
       <Form.Item label="Events">
         Details related to specific events such as natural hazards (ex.

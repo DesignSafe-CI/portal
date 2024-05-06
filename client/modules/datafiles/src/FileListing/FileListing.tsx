@@ -24,8 +24,16 @@ export const FileListing: React.FC<
     system: string;
     path?: string;
     scheme?: string;
+    baseRoute?: string;
   } & Omit<TableProps, 'columns'>
-> = ({ api, system, path = '', scheme = 'private', ...tableProps }) => {
+> = ({
+  api,
+  system,
+  path = '',
+  scheme = 'private',
+  baseRoute,
+  ...tableProps
+}) => {
   // Base file listing for use with My Data/Community Data
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
@@ -43,7 +51,7 @@ export const FileListing: React.FC<
           record.type === 'dir' ? (
             <NavLink
               className="listing-nav-link"
-              to={`../${encodeURIComponent(record.path)}`}
+              to={`${baseRoute ?? '..'}/${encodeURIComponent(record.path)}`}
               replace={false}
             >
               <i
@@ -58,6 +66,7 @@ export const FileListing: React.FC<
           ) : (
             <Button
               type="link"
+              style={{ userSelect: 'text' }}
               onClick={() =>
                 setPreviewModalState({ isOpen: true, path: record.path })
               }
@@ -85,7 +94,7 @@ export const FileListing: React.FC<
         render: (d) => new Date(d).toLocaleString(),
       },
     ],
-    [setPreviewModalState]
+    [setPreviewModalState, baseRoute]
   );
 
   return (
