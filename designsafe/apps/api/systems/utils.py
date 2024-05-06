@@ -15,6 +15,7 @@ from .ssh_keys_manager import KeysManager, KeyCannotBeAdded
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=too-many-arguments
 def add_pub_key_to_resource(
     user,
     password,
@@ -51,7 +52,8 @@ def add_pub_key_to_resource(
             system_id, hostname, pub_key, port=port, transport=transport
         )
         status = 200
-    except Exception as base_exc:
+
+    except Exception as base_exc:  # pylint: disable=broad-exception-caught
         # Catch all exceptions and set a status code for unknown exceptions
         success = False
         message = str(base_exc)
