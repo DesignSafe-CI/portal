@@ -391,7 +391,9 @@ export const AppsSubmissionForm: React.FC = () => {
                 <AppIcon name={definition.notes.icon || 'Generic-App'} />
                 {definition.notes.label || definition.id}
               </div>
-              <a href="/user-guide">View User Guide</a>
+              {definition.notes.helpUrl && (
+                <a href={definition.notes.helpUrl}>View User Guide</a>
+              )}
             </Flex>
           </Header>
           {submitResult && (
