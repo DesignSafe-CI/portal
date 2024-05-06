@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Flex, Layout, Space } from 'antd';
+import { Flex, Layout } from 'antd';
 import {
   AppsSideNav,
   JobStatusNav,
@@ -36,27 +36,24 @@ const WorkspaceRoot: React.FC = () => {
     <Flex
       vertical
       style={{
-        marginLeft: '50px',
-        marginRight: '50px',
+        margin: '-20px 50px 0 50px',
       }}
     >
-      <Space direction="vertical">
-        <Header style={headerStyle}>
-          <AppsBreadcrumb />
-        </Header>
-        <Layout
-          hasSider
-          style={{
-            gap: '20px',
-          }}
-        >
-          <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
-            <JobStatusNav />
-            <AppsSideNav categories={data.categories} />
-          </Sider>
-          <Outlet />
-        </Layout>
-      </Space>
+      <Header style={headerStyle}>
+        <AppsBreadcrumb />
+      </Header>
+      <Layout
+        hasSider
+        style={{
+          gap: '20px',
+        }}
+      >
+        <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
+          <JobStatusNav />
+          <AppsSideNav categories={data.categories} />
+        </Sider>
+        <Outlet />
+      </Layout>
     </Flex>
   );
 };

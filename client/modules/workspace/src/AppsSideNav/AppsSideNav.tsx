@@ -103,7 +103,12 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   return (
     <div className={styles.appsBrowserSidebar}>
       <h3>Applications:</h3>
-      <Menu mode="inline" items={items} className={styles.appsGridList} />
+      <Menu
+        mode="inline"
+        defaultOpenKeys={[]} // TODOv3: Default open menu and submenu for selected app
+        items={items}
+        className={styles.appsGridList}
+      />
     </div>
   );
 };
