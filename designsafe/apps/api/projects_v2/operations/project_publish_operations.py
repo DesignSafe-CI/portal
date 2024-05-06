@@ -1,14 +1,24 @@
 """Utils for generating published metadata"""
 
 from typing import Optional, Literal
+import subprocess
+import os
+import shutil
+import datetime
 from pathlib import Path
 import logging
+from django.conf import settings
 import networkx as nx
-from django.utils.text import slugify
-from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
 from designsafe.apps.api.projects_v2 import constants
 
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from designsafe.apps.api.projects_v2.operations.datacite_operations import (
+    get_datacite_json,
+    publish_datacite_doi,
+    upsert_datacite_json,
+)
+
+from designsafe.apps.api.publications_v2.models import Publication
 
 logger = logging.getLogger(__name__)
 
@@ -138,128 +148,68 @@ def add_values_to_tree(project_id: str) -> nx.DiGraph:
     return publication_tree
 
 
-def construct_entity_filepaths(pub_graph: nx.DiGraph, version: Optional[int] = None):
-    """
-    Walk the publication graph and construct base file paths for each node.
-    The file path for a node contains the titles of each entity above it in the
-    hierarchy. Returns the publication graph with basePath data added for each node.
-    """
-    for parent_node, child_node in nx.bfs_edges(pub_graph, "NODE_ROOT"):
-        # Construct paths based on the entity hierarchy
-        parent_base_path = pub_graph.nodes[parent_node]["basePath"]
-        entity_name_slug = PATH_SLUGS.get(pub_graph.nodes[child_node]["name"])
-        entity_title = pub_graph.nodes[child_node]["value"]["title"]
-
-        entity_dirname = f"{entity_name_slug}--{slugify(entity_title)}"
-
-        if version and version > 1 and child_node in pub_graph.successors("NODE_ROOT"):
-            # Version datasets if the containing publication is versioned.
-            child_path = Path(parent_base_path) / f"{entity_dirname}--v{version}"
-        elif parent_node in pub_graph.successors("NODE_ROOT"):
-            # Publishable entities have a "data" folder in Bagit ontology.
-            child_path = Path(parent_base_path) / "data" / entity_dirname
-        else:
-            child_path = Path(parent_base_path) / entity_dirname
-
-        pub_graph.nodes[child_node]["basePath"] = str(child_path)
-    return pub_graph
-
-
-def map_project_paths_to_published(
-    file_objs: list[dict], base_path: str
-) -> dict[str, str]:
-    """Construct a mapping of project paths to paths in the published archive."""
-    path_mapping = {}
-    duplicate_counts = {}
-    for file_obj in file_objs:
-        pub_path = str(Path(base_path) / Path(file_obj["path"]).name)
-        if pub_path in path_mapping.values():
-            duplicate_counts[pub_path] = duplicate_counts.get(pub_path, 0) + 1
-            # splice dupe count into name, e.g. "myfile(1).txt"
-            [base_name, *ext] = Path(pub_path).name.split(".", 1)
-            deduped_name = f"{base_name}({duplicate_counts[pub_path]})"
-            pub_path = str(Path(base_path) / ".".join([deduped_name, *ext]))
-
-        path_mapping[file_obj["path"]] = pub_path
-
-    return path_mapping
-
-
-def construct_published_path_mappings(
-    pub_graph: nx.DiGraph,
-) -> dict[str, dict[str, str]]:
-    """
-    For each node in the publication graph, get the mapping of file paths in the
-    PROJECT system to file paths in the PUBLICATION system. Returns a dict of form:
-    {"NODE_ID": {"PROJECT_PATH": "PUBLICATION_PATH"}}
-    """
-    path_mappings = {}
-    for node in pub_graph:
-        node_data = pub_graph.nodes[node]
-        if not node_data.get("value"):
-            continue
-        path_mapping = map_project_paths_to_published(
-            node_data["value"].get("fileObjs", []), node_data["basePath"]
-        )
-        path_mappings[node] = path_mapping
-    return path_mappings
-
-
-def update_path_mappings(pub_graph: nx.DiGraph):
+def update_path_mappings(pub_graph: nx.DiGraph, project_uuid: str):
     """update fileObjs and fileTags to point to published paths."""
-    pub_mapping = construct_published_path_mappings(pub_graph)
+    path_mapping = {}
     for node in pub_graph:
-        node_data = pub_graph.nodes[node]
-        if (
-            node not in pub_mapping
-            or not node_data.get("value")
-            or not node_data["value"].get("fileObjs")
-        ):
+        if node == "NODE_ROOT":
             continue
-        path_mapping = pub_mapping[node]
-        new_file_objs = [
+        node_data = pub_graph.nodes[node]
+        new_file_objs = []
+        for file_obj in node_data["value"].get("fileObjs", []):
+            pub_path = str(
+                Path(settings.DESIGNSAFE_PUBLISHED_PATH)
+                / Path(node_data["basePath"].lstrip("/"))
+                / Path(file_obj["path"].lstrip("/"))
+            )
+            project_path = str(
+                Path(settings.DESIGNSAFE_PROJECTS_PATH)
+                / Path(project_uuid)
+                / Path(file_obj["path"].lstrip("/"))
+            )
+            path_mapping[project_path] = pub_path
+
+            new_file_objs.append(
+                {
+                    **file_obj,
+                    "path": str(
+                        Path(node_data["basePath"]) / Path(file_obj["path"].lstrip("/"))
+                    ),
+                    "system": "designsafe.storage.published",
+                }
+            )
+
+        if new_file_objs:
+            node_data["value"]["fileObjs"] = new_file_objs
+
+        updated_tags = [
             {
-                **file_obj,
-                "path": path_mapping[file_obj["path"]],
-                "system": "designsafe.storage.published",
+                **file_tag,
+                "path": str(
+                    Path(node_data["basePath"]) / Path(file_tag["path"].lstrip("/"))
+                ),
             }
-            for file_obj in node_data["value"].get("fileObjs", [])
+            for file_tag in node_data["value"].get("fileTags", [])
+            if file_tag.get("path", None)
         ]
-        node_data["value"]["fileObjs"] = new_file_objs
+        if updated_tags:
+            node_data["value"]["fileTags"] = updated_tags
 
-        # Update file tags. If the path mapping contains:
-        #   {"/path/to/dir1": "/entity1/dir1"}
-        # and the tags contain:
-        #   {"path": "/path/to/dir1/file1", "tagName": "my_tag"}
-        # then we need to construct the file tag:
-        #   {"path": "/entity1/dir1/file1", "tagName": "my_tag"}
-        file_tags = node_data["value"].get("fileTags", [])
-        updated_tags = []
-        for tag in file_tags:
-            if not tag.get("path", None):
-                # If there is no path, we can't recover the tag.
-                continue
-            tag_path_prefixes = [p for p in path_mapping if tag["path"].startswith(p)]
-
-            for prefix in tag_path_prefixes:
-                updated_tags.append(
-                    {
-                        **tag,
-                        "path": tag["path"].replace(prefix, path_mapping[prefix], 1),
-                    }
-                )
-        node_data["value"]["fileTags"] = updated_tags
-
-    return pub_graph
+    return pub_graph, path_mapping
 
 
 def get_publication_subtree(
-    project_id: str, entity_uuid: str, version: Optional[int] = None
+    project_id: str,
+    entity_uuid: str,
+    version: Optional[int] = None,
+    version_info: Optional[int] = None,
 ) -> tuple[str, nx.DiGraph]:
     """
     Obtain the subtree for a single publishable entity (experiment/simulation/etc) and
-    add version information if relevant.
+    add version information if relevant. The subtree includes the root node and any
+    nodes associated with the UUID.
     """
+    project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
     tree_with_values = add_values_to_tree(project_id)
     pub_root = next(
         (
@@ -276,9 +226,20 @@ def get_publication_subtree(
     ).copy()
 
     subtree.nodes[pub_root]["version"] = version or 1
+    subtree.nodes[pub_root]["status"] = "published"
+    subtree.nodes[pub_root]["publicationDate"] = datetime.datetime.now(
+        datetime.UTC
+    ).isoformat()
+    base_pub_path = f"/{project_id}"
+    if version and version > 1:
+        subtree.nodes[pub_root]["versionDate"] = datetime.datetime.now(
+            datetime.UTC
+        ).isoformat()
+        subtree.nodes[pub_root]["versionInfo"] = version_info or ""
+        base_pub_path += f"v{version}"
 
     subtree.add_node(
-        "NODE_ROOT", basePath=f"/{project_id}", **tree_with_values.nodes["NODE_ROOT"]
+        "NODE_ROOT", basePath=base_pub_path, **tree_with_values.nodes["NODE_ROOT"]
     )
     subtree.add_edge("NODE_ROOT", pub_root)
     if version and version > 1:
@@ -288,6 +249,168 @@ def get_publication_subtree(
             {node: f"{node}_V{version}" for node in subtree if node != "NODE_ROOT"},
         )
 
-    subtree = construct_entity_filepaths(subtree, version)
-    subtree = update_path_mappings(subtree)
-    return subtree
+    for node in subtree.nodes:
+        subtree.nodes[node]["basePath"] = base_pub_path
+    subtree, path_mapping = update_path_mappings(subtree, project_uuid)
+    return subtree, path_mapping
+
+
+def fix_publication_dates(existing_tree: nx.DiGraph, incoming_tree: nx.DiGraph):
+    """
+    Update publication date on versioned pubs to match the initial publication date.
+    """
+    initial_pub_dates = {}
+    for published_entity in existing_tree.successors("NODE_ROOT"):
+        published_uuid = existing_tree.nodes[published_entity]["uuid"]
+        initial_pub_dates[published_uuid] = existing_tree.nodes[published_entity][
+            "publicationDate"
+        ]
+    for node in incoming_tree:
+        if incoming_tree.nodes[node]["uuid"] in initial_pub_dates:
+            incoming_tree.nodes[node]["publicationDate"] = initial_pub_dates[
+                incoming_tree.nodes[node]["uuid"]
+            ]
+
+    return incoming_tree
+
+
+def get_publication_full_tree(
+    project_id: str,
+    entity_uuids: list[str],
+    version: Optional[int] = None,
+    version_info: Optional[str] = None,
+):
+    """Combine subtrees to create the full publishable metadata object."""
+    full_path_mapping = {}
+    subtrees = []
+    for uuid in entity_uuids:
+        subtree, path_mapping = get_publication_subtree(
+            project_id, uuid, version=version, version_info=version_info
+        )
+        subtrees.append(subtree)
+        full_path_mapping = {**full_path_mapping, **path_mapping}
+
+    full_tree = nx.compose_all(subtrees)
+
+    if version and version > 1:
+        existing_pub = Publication.objects.get(project_id=project_id)
+        published_tree: nx.DiGraph = nx.node_link_graph(existing_pub.tree)
+
+        # Update publication date on versioned pubs to match the initial publication date.
+        full_tree = fix_publication_dates(published_tree, full_tree)
+        full_tree = nx.compose(published_tree, full_tree)
+
+    return full_tree, full_path_mapping
+
+
+class ProjectFileNotFound(Exception):
+    """exception raised when attempting to copy a non-existent file for publication"""
+
+
+def copy_publication_files(
+    path_mapping: dict, project_id: str, version: Optional[int] = None
+):
+    """
+    Copy files from My Projects to the published area on Corral.
+    `path_mapping` is a dict mapping project paths to their corresponding paths in the
+    published area.
+    """
+    pub_dirname = project_id
+    if version and version > 1:
+        pub_dirname = f"{project_id}v{version}"
+
+    pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
+    os.makedirs(pub_root_dir, exist_ok=True)
+
+    for src_path in path_mapping:
+        src_path_obj = Path(src_path)
+        if not src_path_obj.exists():
+            raise ProjectFileNotFound(f"File not found: {src_path}")
+
+        os.makedirs(src_path_obj.parent, exist_ok=True)
+
+        if src_path_obj.is_dir():
+            shutil.copytree(
+                src_path,
+                path_mapping[src_path],
+                dirs_exist_ok=True,
+                symlinks=True,
+                copy_function=shutil.copy,
+            )
+        else:
+            shutil.copy(src_path, path_mapping[src_path])
+
+    # Lock the publication directory so that non-root users can only read files and list directories
+    subprocess.run(["chmod", "-R", "a-x,a=rX", pub_root_dir], check=True)
+
+
+# pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def publish_project(
+    project_id: str,
+    entity_uuids: list[str],
+    version: Optional[int] = None,
+    version_info: Optional[str] = None,
+    dry_run: bool = False,
+):
+    """
+    Publish a project. The following steps occur during publication:
+    - Create a published metadata record for the project and its entities
+    - Generate a doi for each published entity in draft form
+    - Transfer published files to the Published area on Corral.
+    - Publish the DOI to make it world-readable.
+    (todo)
+    - ZIP publication files and metadata
+    - upload metadata/manifest to Fedora repo
+    """
+
+    pub_tree, path_mapping = get_publication_full_tree(
+        project_id, entity_uuids, version=version, version_info=version_info
+    )
+    if dry_run:
+        return pub_tree, path_mapping
+
+    new_dois = []
+
+    for entity_uuid in entity_uuids:
+        entity_meta = ProjectMetadata.objects.get(uuid=entity_uuid)
+        existing_dois = entity_meta.value.get("dois", [])
+        existing_doi = next(iter(existing_dois), None)
+
+        datacite_json = get_datacite_json(pub_tree, entity_uuid)
+        datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
+        doi = datacite_resp["data"]["id"]
+        new_dois.append(doi)
+
+        entity_meta.value["dois"] = [doi]
+        entity_meta.save()
+
+        entity_nodes = [
+            node
+            for node in pub_tree.nodes
+            if pub_tree.nodes[node]["uuid"] == entity_uuid
+        ]
+        for node in entity_nodes:
+            pub_tree.nodes[node]["value"]["dois"] = [doi]
+
+    if not settings.DEBUG:
+        copy_publication_files(path_mapping, project_id)
+        for doi in new_dois:
+            publish_datacite_doi(doi)
+
+    base_meta_node = next(
+        (
+            node
+            for node in pub_tree.nodes
+            if pub_tree.nodes[node]["name"] == constants.PROJECT
+            and pub_tree.nodes[node].get("version", version) == version
+        )
+    )
+    base_meta_value = pub_tree.nodes[base_meta_node]["value"]
+
+    pub_metadata, _ = Publication.objects.update_or_create(
+        project_id=project_id,
+        defaults={"value": base_meta_value, "tree": nx.node_link_data(pub_tree)},
+    )
+    pub_metadata.save()
+
+    return pub_metadata

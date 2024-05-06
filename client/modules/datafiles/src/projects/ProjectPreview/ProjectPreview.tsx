@@ -3,6 +3,7 @@ import {
   TPreviewTreeData,
   useProjectPreview,
   usePublicationDetail,
+  usePublicationVersions,
   useSelectedFiles,
 } from '@client/hooks';
 import { Button, Collapse } from 'antd';
@@ -235,6 +236,8 @@ export const PublicationView: React.FC<{
   useEffect(() => unsetSelections(), [projectId, unsetSelections]);
   const { children } = data?.tree ?? {};
 
+  const { selectedVersion } = usePublicationVersions(projectId);
+
   const sortedChildren = useMemo(
     () => [...(children ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [children]
@@ -246,7 +249,8 @@ export const PublicationView: React.FC<{
       {sortedChildren
         .filter(
           (child) =>
-            child.version === version && child.name !== 'designsafe.project'
+            child.version === selectedVersion &&
+            child.name !== 'designsafe.project'
         )
         .map((child, idx) => (
           <PublishedEntityDisplay

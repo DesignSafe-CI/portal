@@ -16,6 +16,7 @@ from designsafe.apps.api.projects_v2.operations.graph_operations import (
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     patch_metadata,
     add_file_associations,
+    set_file_associations,
     remove_file_associations,
     set_file_tags,
     change_project_type,
@@ -32,6 +33,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_search_filter(query_string):
+    """
+    Construct a search filter for projects.
+    """
     id_filter = models.Q(value__projectId__icontains=query_string)
     title_filter = models.Q(value__title__icontains=query_string)
     desc_filter = models.Q(value__description__icontains=query_string)
@@ -54,7 +58,7 @@ class ProjectsView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        projects = user.projects.order_by("last_updated")
+        projects = user.projects.order_by("-last_updated")
         if query_string:
             projects = projects.filter(get_search_filter(query_string))
         total = user.projects.count()
@@ -109,7 +113,7 @@ class ProjectInstanceView(BaseApiView):
             raise ApiException("Unauthenticated user", status=401)
 
         try:
-            project = user.projects.get(
+            user.projects.get(
                 models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
             )
         except ProjectMetadata.DoesNotExist as exc:
@@ -290,7 +294,7 @@ class ProjectEntityAssociationsView(BaseApiView):
 class ProjectFileAssociationsView(BaseApiView):
     """View for managing associations between entities and data files."""
 
-    def post(self, request: HttpRequest, project_id, entity_uuid):
+    def patch(self, request: HttpRequest, project_id, entity_uuid):
         """Associate one or more files to an entity"""
         file_obj_data: list[dict] = json.loads(request.body).get("fileObjs", [])
         file_objs = [
@@ -329,8 +333,49 @@ class ProjectFileAssociationsView(BaseApiView):
                 "Entity is not part of the specified project", status=400
             ) from exc
 
-        logger.debug(file_objs)
         add_file_associations(entity_uuid, file_objs)
+        return JsonResponse({"result": "OK"})
+
+    def put(self, request: HttpRequest, project_id, entity_uuid):
+        """Replace an entity's file associations with a new set."""
+        file_obj_data: list[dict] = json.loads(request.body).get("fileObjs", [])
+        file_objs = [
+            FileObj(
+                system=file_obj.get("system"),
+                path=file_obj.get("path"),
+                name=file_obj.get("name"),
+                type=file_obj.get("type"),
+                length=file_obj.get("length"),
+                last_modified=file_obj.get("lastModified"),
+            )
+            for file_obj in file_obj_data
+        ]
+
+        user = request.user
+
+        if not entity_uuid:
+            raise ApiException("Entity UUID must be provided", status=400)
+
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        try:
+            project = user.projects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+
+        try:
+            ProjectMetadata.objects.get(uuid=entity_uuid, base_project=project)
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "Entity is not part of the specified project", status=400
+            ) from exc
+
+        set_file_associations(entity_uuid, file_objs)
         return JsonResponse({"result": "OK"})
 
     def delete(self, request: HttpRequest, project_id, entity_uuid, file_path):
