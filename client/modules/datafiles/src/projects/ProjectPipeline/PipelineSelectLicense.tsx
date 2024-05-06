@@ -1,5 +1,7 @@
 import { usePatchProjectMetadata, useProjectPreview } from '@client/hooks';
 import { Button, Col, Radio, Row } from 'antd';
+import { PipelinePublishModal } from './PipelinePublishModal';
+import { useSearchParams } from 'react-router-dom';
 
 const LicenseRadioIcon: React.FC<{
   label: string;
@@ -35,8 +37,10 @@ export const PipelineSelectLicense: React.FC<{
 }> = ({ projectId, nextStep, prevStep }) => {
   const { data } = useProjectPreview(projectId ?? '');
   const { mutate } = usePatchProjectMetadata(projectId);
+  const [searchParams] = useSearchParams();
 
   if (!data) return null;
+  if (!searchParams.getAll('selected')) return null;
 
   return (
     <>
@@ -53,15 +57,12 @@ export const PipelineSelectLicense: React.FC<{
           <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
           Proofread Project
         </Button>
-        <Button
+        <PipelinePublishModal
           disabled={!data.baseProject.value.license}
-          className="success-button"
-          style={{ padding: '0px 40px' }}
-          type="primary"
-          onClick={() => console.log('Request DOI and Publish')}
-        >
-          <i role="none" className="fa fa-globe"></i>Request DOI and Publish
-        </Button>
+          projectType={data.baseProject.value.projectType}
+          projectId={projectId}
+          entityUuids={searchParams.getAll('selected')}
+        />
       </div>
       <h3 style={{ textAlign: 'center' }}>Select License</h3>
       <ul style={{ listStylePosition: 'inside', paddingInlineStart: '0px' }}>

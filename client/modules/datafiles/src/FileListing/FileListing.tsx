@@ -66,6 +66,7 @@ export const FileListing: React.FC<
           ) : (
             <Button
               type="link"
+              style={{ userSelect: 'text' }}
               onClick={() =>
                 setPreviewModalState({ isOpen: true, path: record.path })
               }

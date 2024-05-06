@@ -1,8 +1,12 @@
-import { useProjectDetail, useSelectedFiles } from '@client/hooks';
+import {
+  useProjectDetail,
+  useSelectedFiles,
+  useSetFileAssociations,
+} from '@client/hooks';
 import { Alert, Button } from 'antd';
 import { FileListing } from '../../FileListing/FileListing';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export const PipelineOtherSelectFiles: React.FC<{
   projectId: string;
@@ -13,8 +17,9 @@ export const PipelineOtherSelectFiles: React.FC<{
 
   const [canContinue, setCanContinue] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { mutate } = useSetFileAssociations(projectId);
 
   const { selectedFiles, setSelectedFiles } = useSelectedFiles(
     'tapis',
@@ -28,18 +33,28 @@ export const PipelineOtherSelectFiles: React.FC<{
 
   const onSaveSelections = () => {
     console.log(selectedFiles);
-    if (selectedFiles.length > 0) {
+    if (selectedFiles.length > 0 && !!data) {
       // TODO: mutation to set project's fileObjs attribute to the selected files.
-      setCanContinue(true);
-      setShowError(false);
-
-      const newSearchParams = new URLSearchParams(searchParams);
-      data && newSearchParams.set('selected', data?.baseProject.uuid);
-      setSearchParams(newSearchParams);
+      mutate(
+        { fileObjs: selectedFiles, entityUuid: data.baseProject.uuid },
+        {
+          onSuccess: () => {
+            setCanContinue(true);
+            setShowError(false);
+            setShowSuccess(true);
+          },
+          onError: () => {
+            setCanContinue(false);
+            setShowError(true);
+            setShowSuccess(false);
+          },
+        }
+      );
       return;
     }
     setCanContinue(false);
     setShowError(true);
+    setShowSuccess(false);
   };
 
   if (!data || !projectId) return null;
@@ -53,10 +68,10 @@ export const PipelineOtherSelectFiles: React.FC<{
           marginTop: 24,
         }}
       >
-        <Button type="link" onClick={() => prevStep()}>
+        <NavLink to={`/projects/${projectId}/preview`}>
           <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
-          Selection
-        </Button>
+          Publication Preview
+        </NavLink>
         <Button
           disabled={!canContinue}
           className="success-button"
@@ -89,6 +104,13 @@ export const PipelineOtherSelectFiles: React.FC<{
             for help with publishing.
           </li>
         </ul>
+        {showSuccess && (
+          <Alert
+            showIcon
+            type="success"
+            message="Your file selections have been saved."
+          />
+        )}
         {showError && (
           <Alert
             showIcon
