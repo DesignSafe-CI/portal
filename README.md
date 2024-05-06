@@ -49,11 +49,11 @@ If you are on a Mac or a Windows machine, the recommended method is to install
 3. Build the containers and frontend package
 
    ```
-   $ make build
+   $ make build-dev
    ```
    or
    ```
-   $ docker-compose -f conf/docker/docker-compose.yml build
+   $ docker-compose -f conf/docker/docker-compose-dev.yml build
    ```
 
    These lines install the node packages required for DesignSafe,
