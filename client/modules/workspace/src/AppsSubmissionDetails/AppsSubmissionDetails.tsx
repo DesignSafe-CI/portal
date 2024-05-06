@@ -53,16 +53,14 @@ export const AppsSubmissionDetails: React.FC<{
       items={getItems(formState)}
       layout="vertical"
       extra={
-        <>
-          <Button
-            type="primary"
-            htmlType="submit"
-            disabled={!isValid}
-            loading={isSubmitting}
-          >
-            Submit
-          </Button>
-        </>
+        <Button
+          type="primary"
+          htmlType="submit"
+          disabled={!isValid}
+          loading={isSubmitting}
+        >
+          Submit
+        </Button>
       }
     />
   );

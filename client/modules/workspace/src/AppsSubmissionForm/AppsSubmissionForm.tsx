@@ -18,7 +18,8 @@ import {
 import {
   // AppFormProvider,
   // useAppFormState,
-  getSystemName,
+  // getSystemName,
+  // getAppQueueValues,
   getExecSystemFromId,
   getQueueValueForExecSystem,
   getNodeCountValidation,
@@ -27,7 +28,6 @@ import {
   getAllocationValidation,
   getExecSystemLogicalQueueValidation,
   isAppTypeBATCH,
-  getAppQueueValues,
   isTargetPathField,
   getInputFieldFromTargetPathField,
   isTargetPathEmpty,
@@ -49,20 +49,18 @@ export const AppsSubmissionForm: React.FC = () => {
   // TODOv3: Load these from state
   const portalAlloc = 'DesignSafe-DCV';
   const allocations = ['TACC-ACI', 'DesignSafe-DCV'];
+  const allocationHosts = {};
 
   // const [state, setState] = useAppFormState();
 
-  const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
-    (s) => defaultStorageSystem.host?.endsWith(s)
-  );
-
-  // const hasDefaultAllocation =
-  // state.allocations.loading ||
-  // state.systems.storage.loading ||
-  // state.allocations.hosts[defaultHost] ||
-  // hasCorral
   const defaultStorageHost = defaultStorageSystem.host;
-  const hasDefaultAllocation = true;
+  const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
+    (s) => defaultStorageHost?.endsWith(s)
+  );
+  const hasDefaultAllocation =
+    // state.allocations.loading ||
+    // state.systems.storage.loading ||
+    allocationHosts[defaultStorageHost] || hasCorral;
   const hasStorageSystems = !!storageSystems.length;
 
   let missingAllocation = false;
