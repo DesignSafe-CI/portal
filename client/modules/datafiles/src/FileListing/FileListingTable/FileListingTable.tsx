@@ -21,6 +21,7 @@ export const FileListingTable: React.FC<
     scheme?: string;
     columns: TFileListingColumns;
     filterFn?: (listing: TFileListing[]) => TFileListing[];
+    disabled?: boolean;
     className?: string;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
@@ -30,6 +31,7 @@ export const FileListingTable: React.FC<
   scheme = 'private',
   filterFn,
   columns,
+  disabled = false,
   className,
   ...props
 }) => {
@@ -45,6 +47,7 @@ export const FileListingTable: React.FC<
       system: system ?? '-',
       path: path ?? '',
       scheme,
+      disabled,
       pageSize: limit,
     });
 

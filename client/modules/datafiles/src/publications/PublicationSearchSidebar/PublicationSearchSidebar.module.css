@@ -1,0 +1,16 @@
+.projectTypeOptions {
+  border: 1px solid #dddddd;
+  padding: 15px 10px;
+}
+
+.sidebarLabel {
+  font-weight: normal;
+}
+
+.checkboxRow {
+  margin-bottom: 10px;
+}
+
+.sidebarSelect {
+  width: 100%;
+}

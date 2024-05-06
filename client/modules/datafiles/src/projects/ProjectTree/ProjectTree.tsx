@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import styles from './ProjectTree.module.css';
 import {
+  TTreeData,
   useAddEntityToTree,
   useProjectDetail,
   useProjectEntityReorder,
@@ -110,23 +111,11 @@ const ProjectTreeDisplay: React.FC<{
   );
 };
 
-type TTreeData = {
-  name: string;
-  id: string;
-  uuid: string;
-  order: number;
-  children: TTreeData[];
-};
-
-function RecursiveTree({
-  treeData,
-  projectId,
-  isLast = false,
-}: {
+const RecursiveTree: React.FC<{
   treeData: TTreeData;
   projectId: string;
   isLast?: boolean;
-}) {
+}> = ({ treeData, projectId, isLast = false }) => {
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
@@ -177,11 +166,11 @@ function RecursiveTree({
       </ul>
     </li>
   );
-}
+};
 
 export const ProjectTree: React.FC<{ projectId: string }> = ({ projectId }) => {
   const { data } = useProjectDetail(projectId);
-  const treeJSON = data?.tree as TTreeData;
+  const treeJSON = data?.tree;
 
   if (!treeJSON) return <div>project tree</div>;
   return (

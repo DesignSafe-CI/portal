@@ -5,5 +5,9 @@ export { ProjectTree } from './ProjectTree/ProjectTree';
 export { ProjectTitleHeader } from './ProjectTitleHeader/ProjectTitleHeader';
 export { ProjectCurationFileListing } from './ProjectCurationFileListing/ProjectCurationFileListing';
 export { ProjectNavbar } from './ProjectNavbar/ProjectNavbar';
-export { ProjectPreview } from './ProjectPreview/ProjectPreview';
+export { ProjectPipeline } from './ProjectPipeline/ProjectPipeline';
+export {
+  ProjectPreview,
+  PublicationView,
+} from './ProjectPreview/ProjectPreview';
 export * from './modals';

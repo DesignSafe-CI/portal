@@ -14,6 +14,35 @@ body {
 #rapid .navbar {
   margin-bottom: 0px;
 }
+
+.rapid-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.rapid-logo {
+  padding-right: 2.5vw;
+  max-width: 25%;
+}
+
+.rapid-logo img {
+  height: auto;
+  max-width: 100%;
+}
+
+.rapid-header-text {
+  flex: 1;
+  font-size: calc(16px + .5vw);
+  line-height: 1.5;
+  padding-right:30px;
+}
+
+.rapid-header-text h3{
+  line-height: inherit;
+  font-size: inherit;
+}
+
 #rapid_main {
   /*display: flex;*/
   /*flex-direction: row;*/
@@ -195,7 +224,7 @@ body {
 .event-listing .event-type.flood {
   background-color: #4285F4;
 }
-.event-listing  .event-type.tsunami {
+.event-listing  .event-type.tsunami { 
   background-color: #a765fe;
 }
 .event-listing  .event-type.landslide {

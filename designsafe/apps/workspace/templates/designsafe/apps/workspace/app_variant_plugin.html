@@ -1,0 +1,10 @@
+<section class="s-app-version-list">
+    <h2>Select a Version</h2>
+    {% for variant in listing %}
+    <article>
+        <h3>{{variant.label}}</h3>
+        <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
+        <p>{{variant.description}}</p>
+    </article>
+    {% endfor %}
+</section>

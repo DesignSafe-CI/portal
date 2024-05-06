@@ -202,12 +202,15 @@ def construct_graph_recurse(
 def get_entities_from_publication(project_id: str, version=None):
     """Loop through a publication's fields and construct a flat entity list."""
     entity_fields: list[str] = list(FIELD_MAP.values())
+    used_fields = []
     pub = IndexedPublication.from_id(project_id, revision=version)
 
     entity_list = [pub.project.to_dict()]
     for field in entity_fields:
-        field_entities = [e.to_dict() for e in getattr(pub, field, [])]
-        entity_list += field_entities
+        if field not in used_fields:
+            field_entities = [e.to_dict() for e in getattr(pub, field, [])]
+            entity_list += field_entities
+        used_fields.append(field)
 
     return entity_list
 
@@ -243,7 +246,8 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
     construct_graph_recurse(pub_graph, entity_listing, root_entity, root_node_id)
 
     pub_graph.nodes["NODE_ROOT"]["basePath"] = f"/{project_id}"
-    pub_graph = construct_entity_filepaths(entity_listing, pub_graph, version)
+    # pub_graph = construct_entity_filepaths(entity_listing, pub_graph, version)
+    pub_graph = construct_entity_filepaths_legacy(pub_graph, version)
 
     return pub_graph
 
@@ -280,6 +284,22 @@ def construct_entity_filepaths(
     return pub_graph
 
 
+def construct_entity_filepaths_legacy(
+    pub_graph: nx.DiGraph, version: Optional[int] = None
+):
+    """
+    Walk the publication graph and construct base file paths for each node.
+    This reproduces legacy file paths where the project directory has been directly
+    copied into the designsafe.storage.published root without preserving tree structure.
+    """
+    base_path = pub_graph.nodes["NODE_ROOT"]["basePath"]
+    if version and version > 1:
+        base_path = f"{base_path}v{version}"
+    for node in pub_graph:
+        pub_graph.nodes[node]["basePath"] = base_path
+    return pub_graph
+
+
 class EntityOrder(TypedDict):
     """Representation for UI orders stored in legacy metadata."""
 
@@ -306,6 +326,7 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
     entity_listing = get_entities_from_publication(project_id, version=version)
     base_pub_meta = IndexedPublication.from_id(project_id, revision=version).to_dict()
     pub_graph = construct_publication_graph(project_id, version)
+    path_mappings = []
 
     for _, node_data in pub_graph.nodes.items():
         node_entity = next(
@@ -313,8 +334,14 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
         )
         if not node_entity:
             continue
-        data_path = str(Path(node_data["basePath"]) / "data")
-        new_entity_value = transform_entity(node_entity, base_pub_meta, data_path)
+        # tree-based data paths TBD
+        # data_path = str(Path(node_data["basePath"]) / "data")
+        data_path = node_data["basePath"]
+
+        new_entity_value, path_mapping = transform_entity(
+            node_entity, base_pub_meta, data_path
+        )
+        path_mappings.append(path_mapping)
         node_data["value"] = new_entity_value
 
     project_users = construct_users(entity_listing[0])
@@ -324,6 +351,9 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
         if node_data["uuid"] == entity_listing[0]["uuid"]
     )
     pub_graph.nodes[base_node]["value"]["users"] = project_users
+    pub_graph.nodes[base_node]["value"]["license"] = next(
+        (v for v in base_pub_meta.get("licenses", {}).values() if v), None
+    )
 
     for pub in pub_graph.successors("NODE_ROOT"):
         if version and version > 1:
@@ -336,22 +366,23 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
             )
         else:
             pub_graph.nodes[pub]["version"] = 1
-        pub_graph.nodes[pub]["publishDate"] = str(base_pub_meta["created"])
+        pub_graph.nodes[pub]["publicationDate"] = str(base_pub_meta["created"])
+        pub_graph.nodes[pub]["status"] = "published"
 
-    return pub_graph
+    return pub_graph, path_mappings
 
 
 def combine_pub_versions(project_id: str) -> nx.DiGraph:
     """Construct a tree of all versions of published datasets in a project."""
     latest_version: int = IndexedPublication.max_revision(project_id)
 
-    pub_graph = transform_pub_entities(project_id)
+    pub_graph, _ = transform_pub_entities(project_id)
     if not latest_version:
         return pub_graph
 
     versions = range(2, latest_version + 1)
     for version in versions:
-        version_graph = transform_pub_entities(project_id, version)
+        version_graph, _ = transform_pub_entities(project_id, version)
         version_pubs = version_graph.successors("NODE_ROOT")
         pub_graph: nx.DiGraph = nx.compose(pub_graph, version_graph)
         for node_id in version_pubs:

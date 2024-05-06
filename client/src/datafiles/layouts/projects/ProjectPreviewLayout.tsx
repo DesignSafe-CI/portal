@@ -5,8 +5,9 @@ import {
   ProjectTitleHeader,
 } from '@client/datafiles';
 import { useProjectDetail } from '@client/hooks';
+import { Button } from 'antd';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 
 export const ProjectPreviewLayout: React.FC = () => {
   const { projectId } = useParams();
@@ -18,8 +19,21 @@ export const ProjectPreviewLayout: React.FC = () => {
     <div style={{ flex: 1 }}>
       <ProjectTitleHeader projectId={projectId} />
       <BaseProjectDetails projectValue={data.baseProject.value} />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '10px',
+        }}
+      >
+        <ProjectNavbar projectId={projectId} />
+        <NavLink to={`/projects/${projectId}/prepare-to-publish/start`}>
+          <Button type="primary" className="success-button">
+            Prepare to Publish
+          </Button>
+        </NavLink>
+      </div>
 
-      <ProjectNavbar projectId={projectId} />
       <ProjectPreview projectId={projectId} />
     </div>
   );

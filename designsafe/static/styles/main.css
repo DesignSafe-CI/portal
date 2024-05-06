@@ -1,3 +1,7 @@
+:root {
+  --ds-accent-color: #47a59d;
+}
+
 body, html {
   background-color: #ffffff;
 }

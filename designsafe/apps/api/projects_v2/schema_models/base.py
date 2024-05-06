@@ -117,6 +117,7 @@ class BaseProject(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_values(v, FIELD_RESEARCH_TYPES)),
     ] = []
     dois: list[str] = []
+    license: Optional[str] = None
 
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
@@ -129,6 +130,9 @@ class BaseProject(MetadataModel):
     natural_hazard_event: Optional[str] = None
     coverage_temporal: Optional[str] = None
     lat_long_name: Optional[str] = None
+
+    tombstone: bool = False
+    tombstone_message: Optional[str] = None
 
     def construct_users(self) -> list[ProjectUser]:
         """Fill in missing user information from the database."""
@@ -148,7 +152,7 @@ class BaseProject(MetadataModel):
     @model_validator(mode="after")
     def post_validate(self):
         """Populate derived fields if they don't exist yet."""
-        _authors = sorted(self.authors or [], key=lambda a: getattr(a, "order", 0))
+        _authors = sorted(self.authors or [], key=lambda a: getattr(a, "order", 0) or 0)
         if self.authors != _authors:
             self.authors = _authors
         if self.data_type and not self.data_types:
