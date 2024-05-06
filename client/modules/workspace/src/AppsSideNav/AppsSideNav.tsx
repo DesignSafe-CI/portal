@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Menu, MenuProps } from 'antd';
 import { NavLink } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
@@ -36,9 +36,8 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
 
   const getCategoryApps = (category) => {
     const bundles = {};
-    const categoryItems = [];
 
-    category.apps.map((app) => {
+    const categoryItems = category.apps.map((app) => {
       if (app.is_bundled) {
         if (bundles[app.bundle_id]) {
           bundles[app.bundle_id].apps.push(
@@ -51,7 +50,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
               >
                 {app.label}
               </AppsNavLink>,
-              `${app.app_id}${app.version}`
+              `${app.app_id}${app.version}${app.bundle_id}`
             )
           );
         } else {
@@ -66,25 +65,23 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                 >
                   {app.label}
                 </AppsNavLink>,
-                `${app.app_id}${app.version}`
+                `${app.app_id}${app.version}${app.bundle_id}`
               ),
             ],
             label: app.bundle_label,
           };
         }
       } else {
-        categoryItems.push(
-          getItem(
-            <AppsNavLink
-              to={
-                `${app.app_id}` +
-                (app.version ? `?appVersion=${app.version}` : '')
-              }
-            >
-              {app.label}
-            </AppsNavLink>,
-            `${app.app_id}${app.version}`
-          )
+        return getItem(
+          <AppsNavLink
+            to={
+              `${app.app_id}` +
+              (app.version ? `?appVersion=${app.version}` : '')
+            }
+          >
+            {app.label}
+          </AppsNavLink>,
+          `${app.app_id}${app.version}${app.bundle_id}`
         );
       }
     });

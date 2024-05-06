@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Modal, Form, Input } from 'antd';
-import { usePushKeys } from '@client/hooks';
+import { usePushKeys, TTapisSystem } from '@client/hooks';
 
 export const SystemsPushKyesModalBody: React.FC<{
   isOpen: boolean;
-  system: {};
+  system: TTapisSystem;
   onSuccess: () => void;
   handleCancel: () => void;
 }> = ({ isOpen, system, onSuccess, handleCancel }) => {
@@ -98,11 +98,11 @@ export const SystemsPushKyesModalBody: React.FC<{
 
 export const SystemsPushKeysModal: React.FC<{
   onSuccess: () => void;
-  isModalOpen: object;
+  isModalOpen: TTapisSystem;
   setIsModalOpen: () => void;
 }> = ({ onSuccess, isModalOpen, setIsModalOpen }) => {
   const handleCancel = () => {
-    setIsModalOpen({});
+    setIsModalOpen();
   };
 
   return (

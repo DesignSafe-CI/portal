@@ -26,7 +26,7 @@ export type TTapisSystem = {
   enabled: boolean;
   effectiveUserId: string;
   defaultAuthnMethod: string;
-  authnCredential?: {};
+  authnCredential?: object;
   bucketName?: string;
   rootDir: string;
   port: number;
@@ -57,7 +57,7 @@ export type TTapisSystem = {
   batchSchedulerProfile: string;
   jobCapabilities: [];
   tags: [];
-  notes: {};
+  notes: object;
   importRefId?: string;
   uuid: string;
   allowChildren: boolean;

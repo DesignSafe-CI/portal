@@ -438,7 +438,7 @@ export const getExecSystemLogicalQueueValidation = (definition, exec_sys) => {
   return z.enum(exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []);
 };
 
-export const getAppParams = () => {
+export const useGetAppParams = () => {
   const { appId } = useParams() as TAppParamsType;
   const location = useLocation();
   const appVersion = new URLSearchParams(location.search).get('appVersion') as

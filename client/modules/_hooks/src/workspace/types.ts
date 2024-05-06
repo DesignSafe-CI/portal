@@ -93,7 +93,7 @@ export type TTapisApp = {
         description?: string;
         inputMode: string;
         autoMountLocal: boolean;
-        notes: {};
+        notes: object;
         sourceUrl: string;
         targetPath: string;
       }

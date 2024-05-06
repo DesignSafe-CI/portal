@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 import {
   AppsSideNav,
   JobStatusNav,
-  getAppParams,
+  useGetAppParams,
   AppsBreadcrumb,
 } from '@client/workspace';
 import { useAppsListing, usePrefetchGetSystems } from '@client/hooks';
@@ -14,7 +14,7 @@ import { usePrefetchGetApps } from '@client/hooks';
 const { Sider } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
-  usePrefetchGetApps(getAppParams());
+  usePrefetchGetApps(useGetAppParams());
   usePrefetchGetSystems();
   const { data, isLoading } = useAppsListing();
 

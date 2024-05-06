@@ -33,12 +33,12 @@ import {
   isTargetPathEmpty,
   SystemsPushKeysModal,
   getExecSystemsFromApp,
-  getAppParams,
+  useGetAppParams,
 } from '@client/workspace';
 import styles from './layout.module.css';
 
 export const AppsSubmissionForm: React.FC = () => {
-  const { data: app } = useGetAppsSuspense(getAppParams());
+  const { data: app } = useGetAppsSuspense(useGetAppParams());
 
   const {
     data: { executionSystems, storageSystems, defaultStorageSystem },

@@ -1,9 +1,6 @@
 import { z } from 'zod';
 
-import {
-  checkAndSetDefaultTargetPath,
-  getTargetPathFieldName,
-} from '@client/workspace';
+import { checkAndSetDefaultTargetPath, getTargetPathFieldName } from '../utils';
 
 const FormSchema = (definition) => {
   const appFields = {

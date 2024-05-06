@@ -29,15 +29,11 @@ export const JobsDetailModalBody: React.FC<{
   );
 };
 
-export const JobsDetailModal: React.FC<{}> = () => {
+export const JobsDetailModal: React.FC = () => {
   type JobsDetailModalParams = {
     uuid: string;
   };
   const { uuid } = useParams<JobsDetailModalParams>() as JobsDetailModalParams;
 
-  return (
-    <>
-      <JobsDetailModalBody uuid={uuid} isOpen={true} />
-    </>
-  );
+  return <JobsDetailModalBody uuid={uuid} isOpen={true} />;
 };

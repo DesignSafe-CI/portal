@@ -53,7 +53,7 @@ const useGetApps = (queryParams: TAppParamsType) => {
 
 export const usePrefetchGetApps = (queryParams: TAppParamsType) => {
   const queryClient = useQueryClient();
-  queryClient.ensureQueryData(getAppsQuery(queryParams));
+  queryParams.appId && queryClient.ensureQueryData(getAppsQuery(queryParams));
 };
 
 export default useGetApps;

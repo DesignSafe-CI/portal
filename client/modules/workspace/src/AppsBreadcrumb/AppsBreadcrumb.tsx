@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Breadcrumb } from 'antd';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './AppsBreadcrumb.module.css';
 import { useGetApps, TAppResponse } from '@client/hooks';
-import { getAppParams } from '@client/workspace';
+import { useGetAppParams } from '../utils';
 
 function getPathRoutes(path: string = '') {
   const pathComponents = decodeURIComponent(path)
@@ -11,22 +11,14 @@ function getPathRoutes(path: string = '') {
     .filter((p) => !!p);
 
   return pathComponents.map((comp, i) => ({
-    title: comp,
+    title: comp === 'history' ? 'Job Status' : comp, // Modify the path for Job Status
     path: '/' + encodeURIComponent(pathComponents.slice(0, i + 1).join('/')),
   }));
 }
 
 export const AppsBreadcrumb: React.FC = () => {
   const { pathname } = useLocation();
-  const { appId, appVersion } = getAppParams();
-
-  let appData = {} as TAppResponse;
-  if (appId) {
-    const { data } = useGetApps({ appId, appVersion }) as {
-      data: TAppResponse;
-    };
-    appData = data;
-  }
+  const { appId, appVersion } = useGetAppParams();
 
   const breadcrumbItems = [
     { title: 'Home', path: window.location.origin },
@@ -34,42 +26,56 @@ export const AppsBreadcrumb: React.FC = () => {
     { title: 'Tools & Applications', path: '/' },
   ];
 
-  // Modify the path for Job Status
-  let modifiedPath = pathname;
-  if (pathname.endsWith('/history')) {
-    modifiedPath = 'Job Status';
-  }
-
   return (
     <div className={styles.breadcrumbWrapper}>
       <Breadcrumb
         className={styles.appsBreadcrumb}
         separator=">"
-        items={[...breadcrumbItems, ...getPathRoutes(modifiedPath)]}
+        items={[...breadcrumbItems, ...getPathRoutes(pathname)]}
         itemRender={(obj, _params, items) => {
-          if (!obj.path) {
-            return <span className="breadcrumb-text">{obj.title}</span>;
-          }
-          const title = appId
-            ? appData?.definition.notes?.label || appData?.definition.id
-            : obj.title;
           const isLast = obj?.path === items[items.length - 1]?.path;
 
-          return (
-            <>
-              {obj.path && !isLast ? (
-                <Link className="breadcrumb-link" to={obj.path}>
-                  {obj.title}
-                </Link>
-              ) : (
-                <span className="breadcrumb-text">{title}</span>
-              )}
-            </>
+          return appId && isLast ? (
+            <AppBreadcrumb appId={appId} appVersion={appVersion} />
+          ) : (
+            <BreadcrumbRender
+              path={obj.path}
+              title={obj.title}
+              isLast={isLast}
+            />
           );
         }}
       />
     </div>
   );
+};
+
+export const BreadcrumbRender: React.FC<{
+  path?: string;
+  title: ReactNode;
+  isLast: boolean;
+}> = ({ path, title, isLast }) => {
+  if (isLast || !path) {
+    return <span className="breadcrumb-text">{title}</span>;
+  }
+
+  return (
+    <Link className="breadcrumb-link" to={path}>
+      {title}
+    </Link>
+  );
+};
+
+export const AppBreadcrumb: React.FC<{
+  appId: string;
+  appVersion?: string;
+}> = ({ appId, appVersion }) => {
+  const { data: appData } = useGetApps({ appId, appVersion }) as {
+    data: TAppResponse;
+  };
+  const title = appData?.definition.notes?.label || appData?.definition.id;
+
+  return <BreadcrumbRender title={title} isLast />;
 };
 
 export default AppsBreadcrumb;

@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
 type PortalApp = {
@@ -38,12 +38,5 @@ export const appsListingQuery = {
 function useAppsListing() {
   return useQuery(appsListingQuery);
 }
-const prefetchListing = async () => {
-  // The results of this query will be cached like a normal query
-  const queryClient = useQueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: ['todos'],
-    queryFn: getAppsListing,
-  });
-};
+
 export default useAppsListing;
