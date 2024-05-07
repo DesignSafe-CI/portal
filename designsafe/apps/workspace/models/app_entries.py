@@ -171,7 +171,7 @@ class AppVariant(models.Model):
     )
 
     label = models.CharField(
-        help_text="The display name of this app in the Apps Tray. If not defined, uses notes.label from app definition.",
+        help_text="The display name of this app in the Apps Tray (not the CMS app listing). If not defined, uses notes.label from app definition.",
         max_length=64,
         blank=True,
     )
