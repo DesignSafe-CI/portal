@@ -7,6 +7,7 @@
 }
 .s-app-version-list:not(:has(article)) {
     text-align: center;
+    padding: 60px;
 }
 
 /* List Title */
