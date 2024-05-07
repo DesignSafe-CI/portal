@@ -4,7 +4,9 @@ from django.urls import path
 from designsafe.apps.api.projects_v2.views import (
     ProjectsView,
     ProjectInstanceView,
+    ProjectEntityView,
     ProjectEntityOrderView,
+    ProjectEntityValidateView,
     ProjectEntityAssociationsView,
     ProjectFileAssociationsView,
     ProjectFileTagsView,
@@ -19,8 +21,9 @@ urlpatterns = [
     path("<str:project_id>/preview", ProjectPreviewView.as_view()),
     path("<str:project_id>/preview/", ProjectPreviewView.as_view()),
     # path("<string:project_id>/associations", ProjectsView.as_view),
-    # path("<string:project_id>/entities/<string:entity_uuid>", ProjectsView.as_view()),
+    path("entities/<str:entity_uuid>/", ProjectEntityView.as_view()),
     path("<str:project_id>/entities/ordering/", ProjectEntityOrderView.as_view()),
+    path("<str:project_id>/entities/validate/", ProjectEntityValidateView.as_view()),
     path(
         "<str:project_id>/entities/associations/<str:node_id>/",
         ProjectEntityAssociationsView.as_view(),

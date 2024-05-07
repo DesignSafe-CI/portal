@@ -10,3 +10,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.prj-row td {
+  padding: 2px 0px;
+}

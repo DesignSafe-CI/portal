@@ -5,25 +5,23 @@
 
 
 
-/* Card */
-/* To stretch card to fill column height */
-[class^="col-"] .c-app-card {
-    height: 100%;
-    min-height: 230px;
-}
-
 /* Title */
 .c-app-card__title {
-    margin-top: 0.5em;
-    margin-bottom: 0;
+    margin-block: 1em 0;
+    padding-inline: 1rem;
 }
-.c-app-card__title > .icon::before {
-    font-size: unset; /* to undo 5vw from ng-designsafe.css */
+.c-app-card__title > .ds-icon {
+    width: unset; /* overwrite .ds-icon from main.css */
+    height: unset; /* overwrite .ds-icon from main.css */
+
+    /* To add space between icon and text */
+    /* FAQ: Using `rem` cuz some icons are globally resized via `em` */
+    margin-right: 0.5rem;
 }
 
 /* Description */
 .c-app-card__desc {
-    padding-inline: 1rem;
+    padding-inline: 1.5rem;
     margin-block: 1.5rem;
 }
 
@@ -60,12 +58,22 @@
     box-shadow: 3px 2px 2px #00000029;
 }
 .c-app-card:hover {
-    outline: 2px solid #0000FF;
+    outline: 2px solid var(--ds-active-color);
     outline-offset: calc( var(--border-width) * -1 );
     box-shadow: none;
 }
+.c-app-card:hover,
+.c-app-card:focus {
+    color: inherit;
+    text-decoration: none;
+}
 a.c-app-card:active {
     outline-width: 1px;
+}
+
+/* Title */
+.c-app-card:hover .c-app-card__title {
+    color: var(--ds-active-color);
 }
 
 /* Description */
@@ -88,4 +96,8 @@ a.c-app-card:active {
 }
 .c-app-card__flags > *:has(strong) {
     background-color: #ECE4BF;
+}
+
+.c-app-card__repo {
+    font-style: italic;
 }

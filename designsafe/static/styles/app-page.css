@@ -1,9 +1,11 @@
 @import url("./app-card.css");
+@import url("./app-grid.css");
 @import url("./app-version-list.css");
 
-/* To make width of page content line up with width of header. */
-/* TODO: Verify whether this is safe to put into `main.css` */
-.s-app-page > .container-fluid {
+/* To make width of page content line up with width of header */
+.s-app-page > .container-fluid /* FAQ: To support Style wrapper (as fallback) */,
+.s-app-page main > .container-fluid {
+  /* HELP: Is this safe to replace the .container-fluid margin in main.css? */
   margin: 0 50px;
 }
 
@@ -11,22 +13,35 @@
     color: var(--ds-accent-color, #47a59d);
 }
 .s-app-page h2 {
-    font-size: 2.0rem;
+    font-size: 2.5rem;
+    font-weight: 500; /* e.g. "medium" */
     text-transform: none;
 
     margin-bottom: 30px;
 }
-.s-app-page h2:not(.s-version-list *) {
+.s-app-page h2:not(.s-app-version-list *) {
     color: var(--ds-accent-color, #47a59d);
 
     margin-top: 40px;
     padding-bottom: 16px;
     border-bottom: 2px solid var(--ds-accent-color, #47a59d);
 }
-.s-app-page h3:not(.s-version-list *):not(.c-app-card__title) {
+.s-app-page h3:not(.s-app-version-list *):not(.c-app-card__title) {
+    font-size: 1.8rem;
     margin-top: 40px; /* double Bootstrap h3 margin-top */
 }
 
-p:where(.s-app-page *) {
+.s-app-page p {
     line-height: 1.8;
+}
+
+/* Add more space between Bootstrap columns */
+/* HACK: Overwrite Bootstrap grid */
+.s-app-page [class*="col-"] {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.s-app-page .row {
+    margin-left: -30px;
+    margin-right: -30px;
 }

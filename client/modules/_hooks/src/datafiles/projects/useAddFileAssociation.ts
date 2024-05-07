@@ -7,7 +7,7 @@ async function addFileAssociation(
   entityUuid: string,
   fileObjs: TFileObj[]
 ) {
-  const res = await apiClient.post(
+  const res = await apiClient.patch(
     `/api/projects/v2/${projectId}/entities/${entityUuid}/files/`,
     { fileObjs }
   );

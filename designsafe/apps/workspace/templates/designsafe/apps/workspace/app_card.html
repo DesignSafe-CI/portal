@@ -1,13 +1,17 @@
-<a class="c-app-card" href="{{app.href}}" style="width: 230px">
-    <h3 class="c-app-card__title"><i class="icon icon-hazmapper"></i> {{app.label}}</h3>
+<a class="c-app-card" href="{{app.href}}">
+    <h3 class="c-app-card__title"><i class="ds-icon ds-icon-{{app.icon}}"></i> {{app.label}}</h3>
 
     <p class="c-app-card__desc">{{app.description}}</p>
 
+    {% if app.tags|length > 0 %}
     <ul class="c-app-card__types">
         {% for tag in app.tags %}
         <li>{{tag}}</li>
         {% endfor %}
     </ul>
+    {% else %}
+    <!-- No tags -->
+    {% endif %}
 
     <ul class="c-app-card__flags">
         {% if app.is_popular %}
