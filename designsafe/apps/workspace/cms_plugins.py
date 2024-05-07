@@ -100,6 +100,9 @@ class AppVariants(CMSPluginBase):
         context = super().render(context, instance, placeholder)
         app_variants = instance.app.appvariant_set.filter(enabled=True)
         context["listing"] = app_variants
+        context["app"] = {
+            "label": instance.app.label
+        }
 
         return context
 
