@@ -102,6 +102,7 @@ export const getOutputsStep = (app) => ({
   content: (
     <>
       <FormField
+        key="name"
         label="Job Name"
         description="A recognizable name for this job."
         name="outputs.name"
