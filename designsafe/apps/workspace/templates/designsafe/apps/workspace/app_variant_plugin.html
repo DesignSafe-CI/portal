@@ -1,3 +1,11 @@
+{% if listing|length == 1 %}
+<section class="s-app-version-list">
+    <h2>Already know everything?</h2>
+    {% for variant in listing %}
+    <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
+    {% endfor %}
+</section>
+{% else %}
 <section class="s-app-version-list">
     <h2>Select a Version</h2>
     {% for variant in listing %}
@@ -8,3 +16,4 @@
     </article>
     {% endfor %}
 </section>
+{% endif %}
