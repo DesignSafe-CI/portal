@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name="label",
             field=models.CharField(
                 blank=True,
-                help_text="The display name of this app in the Apps Tray (not the CMS app listing). If not defined, uses notes.label from app definition.",
+                help_text="The display name of this app in the Apps Tray (not any CMS app listing). If not defined, uses notes.label from app definition.",
                 max_length=64,
             ),
         ),
