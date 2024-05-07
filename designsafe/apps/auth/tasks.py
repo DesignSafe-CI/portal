@@ -80,7 +80,7 @@ def check_or_configure_system_and_user_directory(username, system_id, path):
         logger.exception('Failed to configure system (i.e. create home directory, set acl, create credentials).',
                          extra={'user': username,
                                 'systemId': system_id})
-        # TODO raise for retry
+        raise self.retry(exc=exc)
 
 
 @shared_task(default_retry_delay=30, max_retries=3)
