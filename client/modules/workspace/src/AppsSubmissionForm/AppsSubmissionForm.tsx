@@ -21,6 +21,7 @@ import {
   getConfigurationStep,
   getOutputsStep,
 } from '../AppsWizard/Steps';
+import { SystemsPushKeysModal } from '../SystemsPushKeysModal/SystemsPushKeysModal';
 import {
   // AppFormProvider,
   // useAppFormState,
@@ -38,11 +39,10 @@ import {
   isTargetPathField,
   getInputFieldFromTargetPathField,
   isTargetPathEmpty,
-  SystemsPushKeysModal,
   getExecSystemsFromApp,
   useGetAppParams,
-} from '@client/workspace';
-import styles from './layout.module.css';
+} from '../utils';
+// import styles from './layout.module.css';
 
 export const AppsSubmissionForm: React.FC = () => {
   const { data: app } = useGetAppsSuspense(useGetAppParams());
