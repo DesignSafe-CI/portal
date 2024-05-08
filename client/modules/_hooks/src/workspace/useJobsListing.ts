@@ -17,6 +17,8 @@ export type TJob = {
   status: string;
   tenant: string;
   uuid: string;
+  lastMessage: string;
+  archiveSystemDir: string;
 };
 
 export type TJobsListing = {
