@@ -390,7 +390,7 @@ export const isAppUsingDynamicExecSystem = (definition: TTapisApp) => {
 
 export const getAllocationValidation = (
   definition: TTapisApp,
-  allocations: string
+  allocations: string[]
 ) => {
   if (!isAppTypeBATCH(definition)) {
     return z.string().optional();
