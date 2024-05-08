@@ -58,6 +58,13 @@ import {
 } from '../utils';
 // import styles from './layout.module.css';
 
+type FormValues = {
+  inputs: TFileInputsDefaults;
+  parameters: TParameterSetDefaults;
+  configuration: TConfigurationValues;
+  outputs: TOutputValues;
+};
+
 export const AppsSubmissionForm: React.FC = () => {
   const { data: app } = useGetAppsSuspense(useGetAppParams());
 
@@ -101,13 +108,6 @@ export const AppsSubmissionForm: React.FC = () => {
   ) as TTapisSystem;
 
   const { fileInputs, parameterSet } = FormSchema(definition);
-
-  type FormValues = {
-    inputs: TFileInputsDefaults;
-    parameters: TParameterSetDefaults;
-    configuration: TConfigurationValues;
-    outputs: TOutputValues;
-  };
 
   // TODOv3: dynamic exec system and queues
   const initialValues: FormValues = useMemo(

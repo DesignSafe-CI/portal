@@ -1,5 +1,5 @@
 import { z, ZodType } from 'zod';
-import { TTapisApp } from '@client/hooks';
+import { TTapisApp, TJobKeyValuePair, TJobArgSpec } from '@client/hooks';
 
 import { checkAndSetDefaultTargetPath, getTargetPathFieldName } from '../utils';
 
@@ -79,7 +79,8 @@ const FormSchema = (definition: TTapisApp) => {
         if (param.notes?.isHidden) {
           return;
         }
-        const paramId = param.name ?? param.key;
+        const paramId =
+          (<TJobArgSpec>param).name ?? (<TJobKeyValuePair>param).key;
 
         const field: TField = {
           label: paramId,
@@ -102,7 +103,7 @@ const FormSchema = (definition: TTapisApp) => {
               }))[0]
           );
           parameterSetSchema[field.label] = z.enum(
-            field.options.map(({ value }) => value)
+            field.options.map(({ value }) => value) as [string, ...string[]]
           );
         } else if (param.notes?.fieldType === 'email') {
           field.type = 'email';
@@ -124,15 +125,16 @@ const FormSchema = (definition: TTapisApp) => {
         if (param.notes?.validator?.regex && param.notes?.validator?.message) {
           try {
             const regex = RegExp(param.notes.validator.regex);
-            parameterSetSchema[field.label] = parameterSetSchema[
-              field.label
-            ].regex(regex, param.notes.validator.message);
+            parameterSetSchema[field.label] = (<z.ZodString>(
+              parameterSetSchema[field.label]
+            )).regex(regex, param.notes.validator.message);
           } catch (SyntaxError) {
             console.warn('Invalid regex pattern for app');
           }
         }
         parameterSetFields[field.label] = field;
-        parameterSetDefaults[field.label] = param.arg ?? param.value ?? '';
+        parameterSetDefaults[field.label] =
+          (<TJobArgSpec>param).arg ?? (<TJobKeyValuePair>param).value ?? '';
       });
 
       // Only create schema for parameterSet if it contains values
@@ -169,9 +171,9 @@ const FormSchema = (definition: TTapisApp) => {
     };
 
     appFields.fileInputs.schema[input.name] = z.string();
-    appFields.fileInputs.schema[input.name] = appFields.fileInputs.schema[
-      input.name
-    ].regex(
+    appFields.fileInputs.schema[input.name] = (<z.ZodString>(
+      appFields.fileInputs.schema[input.name]
+    )).regex(
       /^tapis:\/\//g,
       "Input file must be a valid Tapis URI, starting with 'tapis://'"
     );
@@ -188,16 +190,17 @@ const FormSchema = (definition: TTapisApp) => {
         : input.sourceUrl;
 
     // The default is to not show target path for file inputs.
-    const showTargetPathForFileInputs = input.notes.showTargetPath ?? false;
+    const showTargetPathForFileInputs =
+      (input.notes?.showTargetPath && input.targetPath) ?? false;
     // Add targetDir for all sourceUrl
     if (!showTargetPathForFileInputs) {
       return;
     }
     const targetPathName = getTargetPathFieldName(input.name);
     appFields.fileInputs.schema[targetPathName] = z.string();
-    appFields.fileInputs.schema[targetPathName] = appFields.fileInputs.schema[
-      targetPathName
-    ].regex(
+    appFields.fileInputs.schema[targetPathName] = (<z.ZodString>(
+      appFields.fileInputs.schema[targetPathName]
+    )).regex(
       /^tapis:\/\//g,
       "Input file Target Directory must be a valid Tapis URI, starting with 'tapis://'"
     );
@@ -217,7 +220,7 @@ const FormSchema = (definition: TTapisApp) => {
       placeholder: 'Target Path Name',
     };
     appFields.fileInputs.defaults[targetPathName] =
-      checkAndSetDefaultTargetPath(input.targetPath);
+      checkAndSetDefaultTargetPath(input.targetPath) as string;
   });
   return appFields;
 };

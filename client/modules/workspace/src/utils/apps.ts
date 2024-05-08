@@ -6,6 +6,7 @@ import {
   TTapisApp,
   TAppResponse,
   TTapisSystemQueue,
+  TConfigurationValues,
 } from '@client/hooks';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
@@ -184,8 +185,14 @@ export const getCoresPerNodeValidation = (
  * @param {Object} values
  * @returns {Object} updated/fixed values
  */
-export const updateValuesForQueue = (execSystems: TTapisSystem[], values) => {
-  const exec_sys = getExecSystemFromId(execSystems, values.execSystemId);
+export const updateValuesForQueue = (
+  execSystems: TTapisSystem[],
+  values: TConfigurationValues
+) => {
+  const exec_sys = getExecSystemFromId(
+    execSystems,
+    values.execSystemId as string
+  );
   if (!exec_sys) {
     return values;
   }
@@ -288,32 +295,6 @@ export const getAppQueueValues = (
 };
 
 /**
- * Build a map of allocations applicable to each execution
- * system based on the host match.
- * Handle case where dynamic execution system is provided.
- * If there is no allocation for a given exec system, skip it.
- * @param {any} execSystems
- * @param {any} allocationHosts
- * @returns a Map of allocations applicable to each execution system.
- */
-export const matchExecSysWithAllocations = (
-  execSystems: TTapisSystem[],
-  allocationHosts: object[]
-) => {
-  return execSystems.reduce((map, exec_sys) => {
-    const matchingExecutionHost = Object.keys(allocationHosts).find(
-      (host) => exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)
-    );
-
-    if (matchingExecutionHost) {
-      map.set(exec_sys.id, allocationHosts[matchingExecutionHost]);
-    }
-
-    return map;
-  }, new Map());
-};
-
-/**
  * Get the field name used for target path in AppForm
  *
  * @function
@@ -376,7 +357,7 @@ export const isTargetPathEmpty = (targetPathFieldValue?: string) => {
  * @param {String} targetPathFieldValue
  * @returns {String} target path value
  */
-export const checkAndSetDefaultTargetPath = (targetPathFieldValue: string) => {
+export const checkAndSetDefaultTargetPath = (targetPathFieldValue?: string) => {
   if (isTargetPathEmpty(targetPathFieldValue)) {
     return '*';
   }
@@ -395,7 +376,7 @@ export const getAllocationValidation = (
   if (!isAppTypeBATCH(definition)) {
     return z.string().optional();
   }
-  return z.enum(allocations, {
+  return z.enum(allocations as [string, ...string[]], {
     errorMap: (issue, ctx) => ({
       message: 'Please select an allocation from the dropdown.',
     }),
@@ -414,7 +395,12 @@ export const getExecSystemLogicalQueueValidation = (
     return z.string().optional();
   }
 
-  return z.enum(exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []);
+  return z.enum(
+    (exec_sys?.batchLogicalQueues.map((q) => q.name) ?? []) as [
+      string,
+      ...string[]
+    ]
+  );
 };
 
 export const useGetAppParams = () => {

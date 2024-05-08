@@ -41,8 +41,9 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         label: string;
       };
     } = {};
+    const categoryItems: MenuItem[] = [];
 
-    const categoryItems = category.apps.map((app) => {
+    category.apps.forEach((app) => {
       if (app.is_bundled) {
         if (bundles[app.bundle_id]) {
           bundles[app.bundle_id].apps.push(
@@ -77,16 +78,18 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           };
         }
       } else {
-        return getItem(
-          <AppsNavLink
-            to={
-              `${app.app_id}` +
-              (app.version ? `?appVersion=${app.version}` : '')
-            }
-          >
-            {app.label}
-          </AppsNavLink>,
-          `${app.app_id}${app.version}${app.bundle_id}`
+        categoryItems.push(
+          getItem(
+            <AppsNavLink
+              to={
+                `${app.app_id}` +
+                (app.version ? `?appVersion=${app.version}` : '')
+              }
+            >
+              {app.label}
+            </AppsNavLink>,
+            `${app.app_id}${app.version}${app.bundle_id}`
+          )
         );
       }
     });

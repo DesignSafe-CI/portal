@@ -8,7 +8,7 @@ type TParameterSetNotes = {
   enum_values?: [{ [dynamic: string]: string }];
 };
 
-type TJobArgSpec = {
+export type TJobArgSpec = {
   name: string;
   arg?: string;
   description?: string;
