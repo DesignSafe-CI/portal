@@ -7,11 +7,16 @@
 
 /* Title */
 .c-app-card__title {
-    margin-top: 1em;
-    margin-bottom: 0;
+    margin-block: 1em 0;
+    padding-inline: 1rem;
 }
-.c-app-card__title > .icon::before {
-    font-size: unset; /* to undo 5vw from ng-designsafe.css */
+.c-app-card__title > .ds-icon {
+    width: unset; /* overwrite .ds-icon from main.css */
+    height: unset; /* overwrite .ds-icon from main.css */
+
+    /* To add space between icon and text */
+    /* FAQ: Using `rem` cuz some icons are globally resized via `em` */
+    margin-right: 0.5rem;
 }
 
 /* Description */
@@ -53,12 +58,22 @@
     box-shadow: 3px 2px 2px #00000029;
 }
 .c-app-card:hover {
-    outline: 2px solid #0000FF;
+    outline: 2px solid var(--ds-active-color);
     outline-offset: calc( var(--border-width) * -1 );
     box-shadow: none;
 }
+.c-app-card:hover,
+.c-app-card:focus {
+    color: inherit;
+    text-decoration: none;
+}
 a.c-app-card:active {
     outline-width: 1px;
+}
+
+/* Title */
+.c-app-card:hover .c-app-card__title {
+    color: var(--ds-active-color);
 }
 
 /* Description */

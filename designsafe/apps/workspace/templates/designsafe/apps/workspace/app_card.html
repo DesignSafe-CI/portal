@@ -3,11 +3,15 @@
 
     <p class="c-app-card__desc">{{app.description}}</p>
 
+    {% if app.tags|length > 0 %}
     <ul class="c-app-card__types">
         {% for tag in app.tags %}
         <li>{{tag}}</li>
         {% endfor %}
     </ul>
+    {% else %}
+    <!-- No tags -->
+    {% endif %}
 
     <ul class="c-app-card__flags">
         {% if app.is_popular %}
