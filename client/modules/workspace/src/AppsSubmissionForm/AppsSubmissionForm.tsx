@@ -16,7 +16,7 @@ import {
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
 import { default as AppIcon } from './AppIcon';
-import { default as FormSchema } from '../AppsWizard/AppsFormSchema';
+import { default as FormSchema, TField } from '../AppsWizard/AppsFormSchema';
 import {
   getInputsStep,
   getParametersStep,
@@ -220,7 +220,11 @@ export const AppsSubmissionForm: React.FC = () => {
 
   const [current, setCurrent] = useState('inputs');
 
-  const fields = {
+  const fields: {
+    [dynamic: string]: {
+      [dynamic: string]: TField | { [dynamic: string]: TField };
+    };
+  } = {
     inputs: fileInputs.fields,
     parameters: parameterSet.fields,
     configuration: {
@@ -228,6 +232,7 @@ export const AppsSubmissionForm: React.FC = () => {
         description: 'Select the queue this job will execute on.',
         label: 'Queue',
         name: 'configuration.execSystemLogicalQueue',
+        key: 'configuration.execSystemLogicalQueue',
         required: true,
         type: 'select',
         options: getAppQueueValues(
@@ -243,6 +248,7 @@ export const AppsSubmissionForm: React.FC = () => {
         )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`,
         label: 'Maximum Job Runtime (minutes)',
         name: 'configuration.maxMinutes',
+        key: 'configuration.maxMinutes',
         required: true,
         type: 'number',
       },
@@ -251,6 +257,7 @@ export const AppsSubmissionForm: React.FC = () => {
           'Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total.',
         label: 'Cores Per Node',
         name: 'configuration.coresPerNode',
+        key: 'configuration.coresPerNode',
         required: true,
         type: 'number',
       },
@@ -258,6 +265,7 @@ export const AppsSubmissionForm: React.FC = () => {
         description: 'Number of requested process nodes for the job.',
         label: 'Node Count',
         name: 'configuration.nodeCount',
+        key: 'configuration.nodeCount',
         required: true,
         type: 'number',
       },
@@ -266,6 +274,7 @@ export const AppsSubmissionForm: React.FC = () => {
           'Select the project allocation you would like to use with this job submission.',
         label: 'Allocation',
         name: 'configuration.allocation',
+        key: 'configuration.allocation',
         required: true,
         type: 'select',
         options: [
@@ -282,6 +291,7 @@ export const AppsSubmissionForm: React.FC = () => {
         description: 'A recognizable name for this job.',
         label: 'Job Name',
         name: 'outputs.name',
+        key: 'outputs.name',
         required: true,
         type: 'text',
       },
@@ -290,6 +300,7 @@ export const AppsSubmissionForm: React.FC = () => {
           'System into which output files are archived after application execution.',
         label: 'Archive System',
         name: 'outputs.archiveSystemId',
+        key: 'outputs.archiveSystemId',
         required: false,
         type: 'text',
         placeholder:
@@ -300,6 +311,7 @@ export const AppsSubmissionForm: React.FC = () => {
           'Directory into which output files are archived after application execution.',
         label: 'Archive Directory',
         name: 'outputs.archiveSystemDir',
+        key: 'outputs.archiveSystemDir',
         required: false,
         type: 'text',
         placeholder: `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
@@ -309,14 +321,16 @@ export const AppsSubmissionForm: React.FC = () => {
 
   interface TStep {
     [dynamic: string]: {
+      title: string;
       nextPage?: string;
       prevPage?: string;
+      content: JSX.Element;
     };
   }
 
   const steps: TStep = {
-    inputs: getInputsStep(fields.inputs),
-    parameters: getParametersStep(fields.parameters),
+    inputs: getInputsStep(fileInputs.fields),
+    parameters: getParametersStep(parameterSet.fields),
     configuration: getConfigurationStep(definition, execSystems, allocations),
     outputs: getOutputsStep(definition, defaultStorageSystem.id, username),
   };

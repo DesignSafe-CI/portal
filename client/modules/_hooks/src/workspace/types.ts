@@ -1,3 +1,13 @@
+type TParameterSetNotes = {
+  isHidden?: boolean;
+  fieldType?: string;
+  validator?: {
+    regex: string;
+    message: string;
+  };
+  enum_values?: any[];
+};
+
 export type TTapisApp = {
   sharedAppCtx: string;
   isPublic: boolean;
@@ -39,9 +49,7 @@ export type TTapisApp = {
           name: string;
           description?: string;
           inputMode: string;
-          notes: {
-            isHidden?: boolean;
-          };
+          notes: TParameterSetNotes;
         }
       ];
       containerArgs: [
@@ -50,9 +58,7 @@ export type TTapisApp = {
           name: string;
           description?: string;
           inputMode: string;
-          notes: {
-            isHidden?: boolean;
-          };
+          notes: TParameterSetNotes;
         }
       ];
       schedulerOptions: [
@@ -61,9 +67,7 @@ export type TTapisApp = {
           name: string;
           description?: string;
           inputMode: string;
-          notes: {
-            isHidden?: boolean;
-          };
+          notes: TParameterSetNotes;
         }
       ];
       envVariables: [
@@ -72,9 +76,7 @@ export type TTapisApp = {
           value: string;
           description?: string;
           inputMode: string;
-          notes: {
-            isHidden?: boolean;
-          };
+          notes: TParameterSetNotes;
         }
       ];
       archiveFilter: {
@@ -93,7 +95,10 @@ export type TTapisApp = {
         description?: string;
         inputMode: string;
         autoMountLocal: boolean;
-        notes: object;
+        notes: {
+          showTargetPath?: boolean;
+          isHidden?: boolean;
+        };
         sourceUrl: string;
         targetPath: string;
       }

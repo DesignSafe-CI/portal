@@ -1,10 +1,15 @@
 import React from 'react';
 import { Descriptions, DescriptionsProps, Tag, Button, Flex } from 'antd';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, useWatch, FieldValues } from 'react-hook-form';
+import { z } from 'zod';
 
 export const AppsSubmissionDetails: React.FC<{
-  schema?: object;
-  fields: object;
+  schema: { [dynamic: string]: z.ZodType };
+  fields: {
+    [dynamic: string]: {
+      [dynamic: string]: { [dynamic: string]: any } | any;
+    };
+  };
   isSubmitting: boolean;
 }> = ({ schema, fields, isSubmitting }) => {
   const {
@@ -13,7 +18,11 @@ export const AppsSubmissionDetails: React.FC<{
   } = useFormContext();
   const formState = useWatch({ control, defaultValue: defaultValues });
 
-  const getChildren = (key, value, parent) => {
+  const getChildren = (
+    key: string,
+    value: string | object,
+    parent: z.ZodObject<any>
+  ) => {
     if (typeof value === 'object') {
       if (!Object.keys(value).length) return <span>-</span>;
       const items: DescriptionsProps['items'] = Object.entries(value).map(
@@ -40,7 +49,7 @@ export const AppsSubmissionDetails: React.FC<{
     }
   };
 
-  const getItems = (values) => {
+  const getItems = (values: FieldValues) => {
     const items: DescriptionsProps['items'] = Object.entries(values).map(
       ([key, value]) => ({
         key: key,
@@ -53,7 +62,7 @@ export const AppsSubmissionDetails: React.FC<{
             </Button>
           </Flex>
         ),
-        children: getChildren(key, value, schema[key]),
+        children: getChildren(key, value, schema[key] as z.AnyZodObject),
       })
     );
     return items;

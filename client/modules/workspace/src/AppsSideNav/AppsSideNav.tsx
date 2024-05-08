@@ -34,8 +34,13 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     } as MenuItem;
   }
 
-  const getCategoryApps = (category) => {
-    const bundles = {};
+  const getCategoryApps = (category: TAppCategory) => {
+    const bundles: {
+      [dynamic: string]: {
+        apps: MenuItem[];
+        label: string;
+      };
+    } = {};
 
     const categoryItems = category.apps.map((app) => {
       if (app.is_bundled) {

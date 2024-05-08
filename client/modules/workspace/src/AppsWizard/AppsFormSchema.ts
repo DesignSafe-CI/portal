@@ -1,9 +1,43 @@
-import { z } from 'zod';
+import { z, ZodType } from 'zod';
+import { TTapisApp } from '@client/hooks';
 
 import { checkAndSetDefaultTargetPath, getTargetPathFieldName } from '../utils';
 
-const FormSchema = (definition) => {
-  const appFields = {
+export type TField = {
+  label: string;
+  required: boolean;
+  name: string;
+  key: string;
+  type: string;
+  parameterSet?: string;
+  description?: string;
+  options?: any[];
+  tapisFile?: boolean;
+  placeholder?: string;
+  readOnly?: boolean;
+};
+
+export type TAppFormSchema = {
+  fileInputs: {
+    defaults: { [dynamic: string]: any };
+    fields: { [dynamic: string]: TField };
+    schema: { [dynamic: string]: ZodType };
+  };
+  parameterSet: {
+    defaults: {
+      [dynamic: string]: any;
+    };
+    fields: {
+      [dynamic: string]: { [dynamic: string]: TField };
+    };
+    schema: {
+      [dynamic: string]: ZodType;
+    };
+  };
+};
+
+const FormSchema = (definition: TTapisApp) => {
+  const appFields: TAppFormSchema = {
     fileInputs: {
       defaults: {},
       fields: {},
@@ -19,9 +53,15 @@ const FormSchema = (definition) => {
   Object.entries(definition.jobAttributes.parameterSet).forEach(
     ([parameterSet, parameterSetValue]) => {
       if (!Array.isArray(parameterSetValue)) return;
-      const parameterSetSchema = {};
-      const parameterSetFields = {};
-      const parameterSetDefaults = {};
+      const parameterSetSchema: {
+        [dynamic: string]: ZodType;
+      } = {};
+      const parameterSetFields: {
+        [dynamic: string]: TField;
+      } = {};
+      const parameterSetDefaults: {
+        [dynamic: string]: any;
+      } = {};
 
       parameterSetValue.forEach((param) => {
         if (param.notes?.isHidden) {
@@ -29,7 +69,7 @@ const FormSchema = (definition) => {
         }
         const paramId = param.name ?? param.key;
 
-        const field = {
+        const field: TField = {
           label: paramId,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
@@ -99,15 +139,12 @@ const FormSchema = (definition) => {
     }
   );
 
-  // The default is to not show target path for file inputs.
-  const showTargetPathForFileInputs = definition.notes.showTargetPath ?? false;
-  (definition.jobAttributes.fileInputs || []).forEach((i) => {
-    const input = i;
+  (definition.jobAttributes.fileInputs || []).forEach((input) => {
     if (input.notes?.isHidden) {
       return;
     }
 
-    const field = {
+    const field: TField = {
       label: input.name,
       description: input.description,
       required: input.inputMode === 'REQUIRED',
@@ -138,6 +175,8 @@ const FormSchema = (definition) => {
         ? ''
         : input.sourceUrl;
 
+    // The default is to not show target path for file inputs.
+    const showTargetPathForFileInputs = input.notes.showTargetPath ?? false;
     // Add targetDir for all sourceUrl
     if (!showTargetPathForFileInputs) {
       return;
@@ -151,7 +190,7 @@ const FormSchema = (definition) => {
       "Input file Target Directory must be a valid Tapis URI, starting with 'tapis://'"
     );
 
-    appFields.fileInputs.schema[targetPathName] = false;
+    appFields.fileInputs.schema[targetPathName] = z.string().optional();
     appFields.fileInputs.fields[targetPathName] = {
       label: 'Target Path for ' + input.name,
       description:

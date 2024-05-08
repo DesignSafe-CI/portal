@@ -18,7 +18,7 @@ const WorkspaceRoot: React.FC = () => {
   usePrefetchGetSystems();
   const { data, isLoading } = useAppsListing();
 
-  if (isLoading)
+  if (!data || isLoading)
     return (
       <Layout>
         <Spinner />

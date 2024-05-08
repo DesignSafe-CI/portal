@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { PropsWithoutRef } from 'react';
 import { Button, Form, Input, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-export function FormField({
+export const FormField: React.FC<{
+  name: string;
+  tapisFile?: boolean;
+  parameterSet?: string;
+  description?: string;
+  label: string;
+  required?: boolean;
+  type: string;
+  placeholder?: string;
+  options?: any[];
+}> = ({
   name,
   tapisFile = false,
   parameterSet = null,
   description,
   label,
-  required,
+  required = false,
   type,
   ...props
-}) {
+}) => {
   const { resetField, control } = useFormContext();
   const fieldState = useWatch({ control, name });
 
@@ -78,7 +88,9 @@ export function FormField({
           />
         )}
       </FormItem>
-      <small style={{ lineHeight: '20px' }}>{description}</small>
+      {description && (
+        <small style={{ lineHeight: '20px' }}>{description}</small>
+      )}
     </div>
   );
-}
+};

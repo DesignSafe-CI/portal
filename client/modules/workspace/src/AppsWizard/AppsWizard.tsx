@@ -48,7 +48,12 @@ import { useFormContext } from 'react-hook-form';
 // };
 
 export const AppsWizard: React.FC<{
-  step: object;
+  step: {
+    title: string;
+    prevPage?: string;
+    nextPage?: string;
+    content: JSX.Element;
+  };
   handlePreviousStep: CallableFunction;
   handleNextStep: CallableFunction;
 }> = ({ step, handlePreviousStep, handleNextStep }) => {

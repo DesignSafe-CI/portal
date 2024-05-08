@@ -1,7 +1,9 @@
+import { TTapisApp, TTapisSystem } from '@client/hooks';
 import { getAppQueueValues } from '../utils';
 import { FormField } from './FormField';
+import { TField } from '../AppsWizard/AppsFormSchema';
 
-export const getInputsStep = (fields) => ({
+export const getInputsStep = (fields: { [dynamic: string]: TField }) => ({
   title: 'Inputs',
   nextPage: 'parameters',
   content: (
@@ -14,7 +16,9 @@ export const getInputsStep = (fields) => ({
   ),
 });
 
-export const getParametersStep = (fields) => ({
+export const getParametersStep = (fields: {
+  [dynamic: string]: { [dynamic: string]: TField };
+}) => ({
   title: 'Parameters',
   prevPage: 'inputs',
   nextPage: 'configuration',
@@ -29,7 +33,11 @@ export const getParametersStep = (fields) => ({
   ),
 });
 
-export const getConfigurationStep = (definition, execSystems, allocations) => ({
+export const getConfigurationStep = (
+  definition: TTapisApp,
+  execSystems: TTapisSystem[],
+  allocations: string[]
+) => ({
   title: 'Configuration',
   prevPage: 'parameters',
   nextPage: 'outputs',
@@ -97,9 +105,9 @@ export const getConfigurationStep = (definition, execSystems, allocations) => ({
 });
 
 export const getOutputsStep = (
-  definition,
-  defaultStorageSystemId,
-  username
+  definition: TTapisApp,
+  defaultStorageSystemId: string,
+  username: string
 ) => ({
   title: 'Outputs',
   prevPage: 'configuration',
