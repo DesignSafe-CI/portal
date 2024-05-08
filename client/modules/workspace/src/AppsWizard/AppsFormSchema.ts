@@ -3,6 +3,13 @@ import { TTapisApp } from '@client/hooks';
 
 import { checkAndSetDefaultTargetPath, getTargetPathFieldName } from '../utils';
 
+export type TDynamicString = { [dynamic: string]: string | number };
+export type TDynamicField = { [dynamic: string]: TField };
+export type TParameterSetDefaults = {
+  [dynamic: string]: TDynamicString;
+};
+export type TFileInputsDefaults = TDynamicString;
+
 export type TFieldOptions = {
   label: string;
   value?: string;
@@ -26,16 +33,14 @@ export type TField = {
 
 export type TAppFormSchema = {
   fileInputs: {
-    defaults: { [dynamic: string]: string };
-    fields: { [dynamic: string]: TField };
+    defaults: TFileInputsDefaults;
+    fields: TDynamicField;
     schema: { [dynamic: string]: ZodType };
   };
   parameterSet: {
-    defaults: {
-      [dynamic: string]: { [dynamic: string]: string };
-    };
+    defaults: TParameterSetDefaults;
     fields: {
-      [dynamic: string]: { [dynamic: string]: TField };
+      [dynamic: string]: TDynamicField;
     };
     schema: {
       [dynamic: string]: ZodType;
@@ -80,7 +85,7 @@ const FormSchema = (definition: TTapisApp) => {
           label: paramId,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
-          // readOnly: param.inputMode === 'FIXED',
+          readOnly: param.inputMode === 'FIXED',
           parameterSet: parameterSet,
           name: `parameters.${parameterSet}.${paramId}`,
           key: `parameters.${parameterSet}.${paramId}`,

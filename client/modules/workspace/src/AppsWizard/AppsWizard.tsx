@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Layout, Flex } from 'antd';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, SubmitHandler, FieldValues } from 'react-hook-form';
 // import styles from './AppsWizard.module.css';
 
 // import React, { createContext, useContext, useState } from 'react';
@@ -54,8 +54,8 @@ export const AppsWizard: React.FC<{
     nextPage?: string;
     content: JSX.Element;
   };
-  handlePreviousStep: CallableFunction;
-  handleNextStep: CallableFunction;
+  handlePreviousStep: SubmitHandler<FieldValues>;
+  handleNextStep: SubmitHandler<FieldValues>;
 }> = ({ step, handlePreviousStep, handleNextStep }) => {
   const { handleSubmit } = useFormContext();
 
@@ -67,7 +67,7 @@ export const AppsWizard: React.FC<{
   const headerStyle = {
     paddingLeft: 0,
     paddingRight: 0,
-    textAlign: 'center',
+    textAlign: 'center' as const,
     height: 64,
     paddingInline: 48,
     lineHeight: '64px',

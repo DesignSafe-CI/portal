@@ -355,7 +355,7 @@ export const getInputFieldFromTargetPathField = (
  * @param {String} targetPathFieldValue
  * @returns {boolean} if target path is empty
  */
-export const isTargetPathEmpty = (targetPathFieldValue: string) => {
+export const isTargetPathEmpty = (targetPathFieldValue?: string) => {
   if (targetPathFieldValue === null || targetPathFieldValue === undefined) {
     return true;
   }

@@ -1,13 +1,44 @@
 import { useMutation } from '@tanstack/react-query';
 import apiClient from '../apiClient';
+import { TJobArgSpecs, TJobKeyValuePair, TAppFileInput } from './types';
 
 type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
 
-type TJobBody = {
+export type TParameterSetSubmit = {
+  appArgs: TJobArgSpecs;
+  containerArgs: TJobArgSpecs;
+  schedulerOptions: TJobArgSpecs;
+  envVariables: TJobKeyValuePair[];
+};
+
+export type TConfigurationValues = {
+  execSystemId?: string;
+  execSystemLogicalQueue: string;
+  maxMinutes: number;
+  nodeCount: number;
+  coresPerNode: number;
+  allocation?: string;
+};
+
+export type TOutputValues = {
+  name: string;
+  archiveSystemId: string;
+  archiveSystemDir: string;
+};
+
+export interface TJobSubmit extends TConfigurationValues, TOutputValues {
+  archiveOnAppError: boolean;
+  appId: string;
+  appVersion: string;
+  fileInputs: TAppFileInput[];
+  parameterSet: TParameterSetSubmit;
+}
+
+export type TJobBody = {
   operation: TJobPostOperations;
   uuid?: string;
-  job?: FormData;
-  licenseType?: string | null;
+  job?: TJobSubmit;
+  licenseType?: string;
   isInteractive?: boolean;
 };
 

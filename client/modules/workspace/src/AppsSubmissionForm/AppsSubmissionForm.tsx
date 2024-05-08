@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Layout, Form, Col, Row, Flex, Alert, Space } from 'antd';
 import { z } from 'zod';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, FieldValues } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -13,11 +13,22 @@ import {
   TTapisSystem,
   TTapisSystemQueue,
   TUser,
+  TAppFileInput,
+  TConfigurationValues,
+  TOutputValues,
+  TJobSubmit,
+  TParameterSetSubmit,
+  TJobBody,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
 import { default as AppIcon } from './AppIcon';
-import { default as FormSchema, TField } from '../AppsWizard/AppsFormSchema';
+import {
+  default as FormSchema,
+  TField,
+  TFileInputsDefaults,
+  TParameterSetDefaults,
+} from '../AppsWizard/AppsFormSchema';
 import {
   getInputsStep,
   getParametersStep,
@@ -63,7 +74,7 @@ export const AppsSubmissionForm: React.FC = () => {
   // TODOv3: Load these from state
   const portalAlloc = 'DesignSafe-DCV';
   const allocations = ['TACC-ACI', 'DesignSafe-DCV'];
-  const allocationHosts = {};
+  const allocationHosts: { [dynamic: string]: string } = {};
 
   // const [state, setState] = useAppFormState();
 
@@ -91,13 +102,20 @@ export const AppsSubmissionForm: React.FC = () => {
 
   const { fileInputs, parameterSet } = FormSchema(definition);
 
+  type FormValues = {
+    inputs: TFileInputsDefaults;
+    parameters: TParameterSetDefaults;
+    configuration: TConfigurationValues;
+    outputs: TOutputValues;
+  };
+
   // TODOv3: dynamic exec system and queues
-  const initialValues = useMemo(
+  const initialValues: FormValues = useMemo(
     () => ({
       inputs: fileInputs.defaults,
       parameters: parameterSet.defaults,
       configuration: {
-        execSystemId: defaultExecSystem?.id,
+        // execSystemId: defaultExecSystem?.id,
         execSystemLogicalQueue: isAppTypeBATCH(definition)
           ? definition.jobAttributes.execSystemLogicalQueue
           : // (
@@ -338,22 +356,16 @@ export const AppsSubmissionForm: React.FC = () => {
     outputs: getOutputsStep(definition, defaultStorageSystem.id, username),
   };
 
-  const handleNextStep = useCallback(
-    (data) => {
-      // setState({ ...state, ...data });
-      const nextPage = steps[current].nextPage;
-      nextPage && setCurrent(nextPage);
-    },
-    [current]
-  );
-  const handlePreviousStep = useCallback(
-    (data) => {
-      // setState({ ...state, ...data });
-      const prevPage = steps[current].prevPage;
-      prevPage && setCurrent(prevPage);
-    },
-    [current]
-  );
+  const handleNextStep = useCallback(() => {
+    // setState({ ...state, ...data });
+    const nextPage = steps[current].nextPage;
+    nextPage && setCurrent(nextPage);
+  }, [current]);
+  const handlePreviousStep = useCallback(() => {
+    // setState({ ...state, ...data });
+    const prevPage = steps[current].prevPage;
+    prevPage && setCurrent(prevPage);
+  }, [current]);
   const {
     mutate: submitJob,
     isPending,
@@ -371,10 +383,9 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [submitResult]);
 
-  const submitJobCallback = (submitData) => {
-    const jobData = {
+  const submitJobCallback = (submitData: FormValues) => {
+    const jobData: Omit<TJobBody, 'job'> & { job: TJobSubmit } = {
       operation: 'submitJob' as const,
-
       licenseType: license.type,
       isInteractive: !!definition.notes.isInteractive,
       job: {
@@ -382,6 +393,8 @@ export const AppsSubmissionForm: React.FC = () => {
         appId: definition.id,
         appVersion: definition.version,
         execSystemId: definition.jobAttributes.execSystemId,
+        fileInputs: {} as TAppFileInput[],
+        parameterSet: {} as TParameterSetSubmit,
         ...submitData.configuration,
         ...submitData.outputs,
       },
@@ -401,19 +414,19 @@ export const AppsSubmissionForm: React.FC = () => {
           return {
             name: k,
             sourceUrl: !isTargetPathField(k) ? v : null,
-            targetDir: isTargetPathField(k) ? v : null,
+            targetPath: isTargetPathField(k) ? v : null,
           };
         })
-        .filter((v) => v) //filter nulls
-        .reduce((acc, entry) => {
+        .filter((v): v is Required<TAppFileInput> => !!v) //filter nulls
+        .reduce((acc: { [dynamic: string]: TAppFileInput }, entry) => {
           // merge input field and targetPath fields into one.
           const key = getInputFieldFromTargetPathField(entry.name);
           if (!acc[key]) {
-            acc[key] = {};
+            acc[key] = {} as TAppFileInput;
           }
           acc[key]['name'] = key;
           acc[key]['sourceUrl'] = acc[key]['sourceUrl'] ?? entry.sourceUrl;
-          acc[key]['targetPath'] = acc[key]['targetPath'] ?? entry.targetDir;
+          acc[key]['targetPath'] = acc[key]['targetPath'] ?? entry.targetPath;
           return acc;
         }, {})
     )
@@ -438,7 +451,7 @@ export const AppsSubmissionForm: React.FC = () => {
               .map(([k, v]) => {
                 if (!v) return;
                 // filter read only parameters. 'FIXED' parameters are tracked as readOnly
-                if (parameterSet.fields?.[k].readOnly) return;
+                if (parameterSet.fields?.[k]?.readOnly) return;
                 // Convert the value to a string, if necessary
                 const transformedValue =
                   typeof v === 'number' ? v.toString() : v;
@@ -454,13 +467,12 @@ export const AppsSubmissionForm: React.FC = () => {
 
     // Add allocation scheduler option
     if (jobData.job.allocation) {
-      if (!jobData.job.parameterSet.schedulerOptions) {
-        jobData.job.parameterSet.schedulerOptions = [];
+      if (!jobData.job.parameterSet!.schedulerOptions) {
+        jobData.job.parameterSet!.schedulerOptions = [];
       }
-      jobData.job.parameterSet.schedulerOptions.push({
+      jobData.job.parameterSet!.schedulerOptions.push({
         name: 'TACC Allocation',
         description: 'The TACC allocation associated with this job execution',
-        include: true,
         arg: `-A ${jobData.job.allocation}`,
       });
       delete jobData.job.allocation;

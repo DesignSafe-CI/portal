@@ -8,10 +8,42 @@ type TParameterSetNotes = {
   enum_values?: [{ [dynamic: string]: string }];
 };
 
+type TJobArgSpec = {
+  name: string;
+  arg?: string;
+  description?: string;
+  inputMode?: string;
+  notes?: TParameterSetNotes;
+};
+
+export type TJobKeyValuePair = {
+  key: string;
+  value: string;
+  description?: string;
+  inputMode: string;
+  notes: TParameterSetNotes;
+};
+
+export type TJobArgSpecs = TJobArgSpec[];
+
+export type TAppFileInput = {
+  name: string;
+  description?: string;
+  inputMode?: string;
+  envKey?: string;
+  autoMountLocal?: boolean;
+  notes?: {
+    showTargetPath?: boolean;
+    isHidden?: boolean;
+  };
+  sourceUrl?: string;
+  targetPath?: string;
+};
+
 export type TTapisApp = {
   sharedAppCtx: string;
   isPublic: boolean;
-  sharedWithUsers: [];
+  sharedWithUsers: string[];
   tenant: string;
   id: string;
   version: string;
@@ -43,45 +75,13 @@ export type TTapisApp = {
     mpiCmd: string;
     cmdPrefix?: string;
     parameterSet: {
-      appArgs: [
-        {
-          arg: string;
-          name: string;
-          description?: string;
-          inputMode: string;
-          notes: TParameterSetNotes;
-        }
-      ];
-      containerArgs: [
-        {
-          arg: string;
-          name: string;
-          description?: string;
-          inputMode: string;
-          notes: TParameterSetNotes;
-        }
-      ];
-      schedulerOptions: [
-        {
-          arg: string;
-          name: string;
-          description?: string;
-          inputMode: string;
-          notes: TParameterSetNotes;
-        }
-      ];
-      envVariables: [
-        {
-          key: string;
-          value: string;
-          description?: string;
-          inputMode: string;
-          notes: TParameterSetNotes;
-        }
-      ];
+      appArgs: TJobArgSpecs;
+      containerArgs: TJobArgSpecs;
+      schedulerOptions: TJobArgSpecs;
+      envVariables: TJobKeyValuePair[];
       archiveFilter: {
-        includes: [];
-        excludes: [];
+        includes: string[];
+        excludes: string[];
         includeLaunchFiles: boolean;
       };
       logConfig: {
@@ -89,27 +89,14 @@ export type TTapisApp = {
         stderrFilename: string;
       };
     };
-    fileInputs: [
-      {
-        name: string;
-        description?: string;
-        inputMode: string;
-        autoMountLocal: boolean;
-        notes: {
-          showTargetPath?: boolean;
-          isHidden?: boolean;
-        };
-        sourceUrl: string;
-        targetPath: string;
-      }
-    ];
+    fileInputs: TAppFileInput[];
     fileInputArrays: [];
     nodeCount: number;
     coresPerNode: number;
     memoryMB: number;
     maxMinutes: number;
     subscriptions: [];
-    tags: [];
+    tags: string[];
   };
   tags: string[];
   notes: {

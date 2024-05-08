@@ -15,7 +15,7 @@ export type TAppParamsType = {
 export type TAppResponse = {
   definition: TTapisApp;
   license: {
-    type: null | string;
+    type?: string;
     enabled?: boolean;
   };
   defaultSystemNeedsKeys?: TTapisSystem;
