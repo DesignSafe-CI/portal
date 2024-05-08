@@ -27,26 +27,20 @@ export const AppsBreadcrumb: React.FC = () => {
   ];
 
   return (
-    <div className={styles.breadcrumbWrapper}>
-      <Breadcrumb
-        className={styles.appsBreadcrumb}
-        separator=">"
-        items={[...breadcrumbItems, ...getPathRoutes(pathname)]}
-        itemRender={(obj, _params, items) => {
-          const isLast = obj?.path === items[items.length - 1]?.path;
+    <Breadcrumb
+      className={styles.root}
+      separator=">"
+      items={[...breadcrumbItems, ...getPathRoutes(pathname)]}
+      itemRender={(obj, _params, items) => {
+        const isLast = obj?.path === items[items.length - 1]?.path;
 
-          return appId && isLast ? (
-            <AppBreadcrumb appId={appId} appVersion={appVersion} />
-          ) : (
-            <BreadcrumbRender
-              path={obj.path}
-              title={obj.title}
-              isLast={isLast}
-            />
-          );
-        }}
-      />
-    </div>
+        return appId && isLast ? (
+          <AppBreadcrumb appId={appId} appVersion={appVersion} />
+        ) : (
+          <BreadcrumbRender path={obj.path} title={obj.title} isLast={isLast} />
+        );
+      }}
+    />
   );
 };
 

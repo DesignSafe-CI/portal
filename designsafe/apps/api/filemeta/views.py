@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpRequest
 from designsafe.apps.api.datafiles.operations.tapis_operations import listing
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.filemeta.models import FileMetaModel
-from designsafe.apps.api.views import AuthenticatedApiView
+from designsafe.apps.api.views import AuthenticatedAllowJwtApiView
 
 
 logger = logging.getLogger(__name__)
@@ -36,8 +36,7 @@ def check_access(request, system_id: str, path: str, check_for_writable_access=F
         raise ApiException("User forbidden to access metadata", status=403) from exc
 
 
-# TODO_V3 update to allow JWT access DES-2706: https://github.com/DesignSafe-CI/portal/pull/1192
-class FileMetaView(AuthenticatedApiView):
+class FileMetaView(AuthenticatedAllowJwtApiView):
     """View for creating and getting file metadata"""
 
     def get(self, request: HttpRequest, system_id: str, path: str):
@@ -64,8 +63,7 @@ class FileMetaView(AuthenticatedApiView):
         return JsonResponse(result, safe=False)
 
 
-# TODO_V3 update to allow JWT access DES-2706: https://github.com/DesignSafe-CI/portal/pull/1192
-class CreateFileMetaView(AuthenticatedApiView):
+class CreateFileMetaView(AuthenticatedAllowJwtApiView):
     """View for creating (and updating) file metadata"""
 
     def post(self, request: HttpRequest):
