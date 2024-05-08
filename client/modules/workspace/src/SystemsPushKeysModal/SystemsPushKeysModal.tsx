@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
 import { Button, Modal, Form, Input } from 'antd';
-import { usePushKeys, TTapisSystem } from '@client/hooks';
+import { usePushKeys, TTapisSystem, TPushKeysBody } from '@client/hooks';
 
 export const SystemsPushKyesModalBody: React.FC<{
-  isOpen: boolean;
-  system: TTapisSystem;
-  onSuccess: () => void;
+  system?: TTapisSystem;
+  onSuccess?: () => void;
   handleCancel: () => void;
-}> = ({ isOpen, system, onSuccess, handleCancel }) => {
+}> = ({ system, onSuccess, handleCancel }) => {
   const { mutate } = usePushKeys();
   const [form] = Form.useForm();
 
   const initialValues = {
-    systemId: system.id,
-    hostname: system.host,
+    systemId: system?.id,
+    hostname: system?.host,
     password: '',
     token: '',
   };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (data) => {
+  const handleSubmit = async (data: TPushKeysBody) => {
     setIsSubmitting(true);
     try {
       await mutate({
@@ -46,7 +45,7 @@ export const SystemsPushKyesModalBody: React.FC<{
     <Modal
       title={<h2>Authenticate with TACC Token</h2>}
       width="60%"
-      open={isOpen}
+      open={!!system}
       footer={null} // Remove the footer from here
       onCancel={handleCancel}
     >
@@ -97,18 +96,19 @@ export const SystemsPushKyesModalBody: React.FC<{
 };
 
 export const SystemsPushKeysModal: React.FC<{
-  onSuccess: () => void;
-  isModalOpen: TTapisSystem;
-  setIsModalOpen: () => void;
+  onSuccess?: () => void;
+  isModalOpen: TTapisSystem | undefined;
+  setIsModalOpen: React.Dispatch<
+    React.SetStateAction<TTapisSystem | undefined>
+  >;
 }> = ({ onSuccess, isModalOpen, setIsModalOpen }) => {
   const handleCancel = () => {
-    setIsModalOpen();
+    setIsModalOpen(undefined);
   };
 
   return (
     <SystemsPushKyesModalBody
       system={isModalOpen}
-      isOpen={!!Object.keys(isModalOpen).length}
       onSuccess={onSuccess}
       handleCancel={handleCancel}
     />

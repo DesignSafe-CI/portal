@@ -1,6 +1,12 @@
 import { useParams, useLocation } from 'react-router-dom';
 import { z } from 'zod';
-import { TAppParamsType } from '@client/hooks';
+import {
+  TAppParamsType,
+  TTapisSystem,
+  TTapisApp,
+  TAppResponse,
+  TTapisSystemQueue,
+} from '@client/hooks';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
@@ -8,7 +14,10 @@ export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
 /**
  * Get the execution system object for a given id of the execution system.
  */
-export const getExecSystemFromId = (execSystems, execSystemId) => {
+export const getExecSystemFromId = (
+  execSystems: TTapisSystem[],
+  execSystemId: string
+) => {
   if (execSystems?.length) {
     return execSystems.find((exec_sys) => exec_sys.id === execSystemId);
   }
@@ -20,29 +29,40 @@ export const getExecSystemFromId = (execSystems, execSystemId) => {
  * Filters available execution systems if dynamicExecSystems is defined.
  * Otherwise, return all available systems.
  */
-export const getExecSystemsFromApp = (definition, execSystems) => {
+export const getExecSystemsFromApp = (
+  definition: TTapisApp,
+  execSystems: TTapisSystem[]
+) => {
   if (isAppUsingDynamicExecSystem(definition)) {
-    if (definition.notes.dynamicExecSystems === 'ALL') return execSystems;
+    if (
+      definition.notes.dynamicExecSystems?.length === 1 &&
+      definition.notes.dynamicExecSystems[0] === 'ALL'
+    )
+      return execSystems;
 
     return execSystems.filter((s) =>
-      definition.notes.dynamicExecSystems.includes(s.id)
+      definition.notes.dynamicExecSystems?.includes(s.id)
     );
   }
 
-  return [
-    execSystems.find((s) => s.id === definition.jobAttributes.execSystemId),
-  ];
+  const sys = execSystems.find(
+    (s) => s.id === definition.jobAttributes.execSystemId
+  );
+  return sys ? [sys] : [];
 };
 
 /**
  * Gets the exec system for the default set in the job attributes.
  * Otherwise, get the first entry.
  */
-export const getDefaultExecSystem = (app, execSystems) => {
+export const getDefaultExecSystem = (
+  app: TAppResponse,
+  execSystems: TTapisSystem[]
+) => {
   // If dynamic exec system is not setup, use from job attributes.
   if (!app.definition.notes.dynamicExecSystems) {
     return getExecSystemFromId(
-      app.execSystems,
+      execSystems,
       app.definition.jobAttributes.execSystemId
     );
   }
@@ -51,18 +71,21 @@ export const getDefaultExecSystem = (app, execSystems) => {
     const execSystemId = app.definition.jobAttributes.execSystemId;
 
     // Check if the app's default execSystemId is in provided list
-    if (execSystems.includes(execSystemId)) {
-      return getExecSystemFromId(app.execSystems, execSystemId);
-    }
-
     // If not found, return the first execSystem from the provided list
-    return getExecSystemFromId(app.execSystems, execSystems[0]);
+    return (
+      getExecSystemFromId(execSystems, execSystemId) ||
+      getExecSystemFromId(execSystems, execSystems[0].id)
+    );
   }
 
   return null;
 };
 
-export const getQueueMaxMinutes = (definition, exec_sys, queueName) => {
+export const getQueueMaxMinutes = (
+  definition: TTapisApp,
+  exec_sys: TTapisSystem,
+  queueName: string
+) => {
   if (!isAppTypeBATCH(definition)) {
     return DEFAULT_JOB_MAX_MINUTES;
   }
@@ -81,7 +104,10 @@ export const getQueueMaxMinutes = (definition, exec_sys, queueName) => {
  * @param {Object} queue
  * @returns {z.number()} min/max validation of max minutes
  */
-export const getMaxMinutesValidation = (definition, queue) => {
+export const getMaxMinutesValidation = (
+  definition: TTapisApp,
+  queue: TTapisSystemQueue
+) => {
   if (!isAppTypeBATCH(definition)) {
     return z.number().lte(DEFAULT_JOB_MAX_MINUTES);
   }
@@ -102,52 +128,6 @@ export const getMaxMinutesValidation = (definition, queue) => {
 };
 
 /**
- * Create regex pattern for maxRunTime
- * @function
- * @param {String} maxRunTime - maxRunTime given in the format of hh:mm:ss, usually from the target queue's maxRequestedTime
- * Creates a multigrouped regex to accommodate several layers of timestamps.
- */
-export const createMaxRunTimeRegex = (maxRunTime) => {
-  const replaceAt = (str, i, replace) => {
-    return str.slice(0, i) + replace + str.slice(i + 1);
-  };
-
-  const timeStr = maxRunTime.replace(/:/g, '');
-  let tmp = '[0-0][0-0]:[0-0][0-0]:[0-0][0-0]$'; // procedurally populated max value regex
-  const regBase = '[0-4][0-9]:[0-5][0-9]:[0-5][0-9]$'; // default max values
-  let upperReg = tmp;
-  let regStr = '^'; // procedurally generated regex string to be returned
-
-  let index = 3;
-
-  // iterate through each value in the maxRunTime to generate a regex group
-  timeStr.split('').forEach((n, i, arr) => {
-    // only need to generate regex for nonzero values
-    if (n > 0) {
-      if (arr.length - 1 !== i) {
-        tmp = replaceAt(tmp, index, n - 1);
-        if (regStr !== '^') {
-          regStr += '|^';
-        }
-        regStr += tmp.slice(0, index + 1) + regBase.slice(index + 1);
-      }
-
-      tmp = replaceAt(tmp, index, n);
-      upperReg = replaceAt(upperReg, index, n);
-      if (arr.length - 1 === i || arr[i + 1] === 0) {
-        if (regStr !== '^') {
-          regStr += '|^';
-        }
-        regStr += tmp;
-      }
-    }
-
-    index += i % 2 === 0 ? 5 : 6;
-  });
-  return `${regStr}|${upperReg}`;
-};
-
-/**
  * Get validator for a node count of a queue
  *
  * @function
@@ -155,7 +135,10 @@ export const createMaxRunTimeRegex = (maxRunTime) => {
  * @param {Object} queue
  * @returns {z.number()} min/max validation of node count
  */
-export const getNodeCountValidation = (definition, queue) => {
+export const getNodeCountValidation = (
+  definition: TTapisApp,
+  queue: TTapisSystemQueue
+) => {
   if (!isAppTypeBATCH(definition) || !queue) {
     return z.number().positive().optional();
   }
@@ -180,7 +163,10 @@ export const getNodeCountValidation = (definition, queue) => {
  * @param {Object} queue
  * @returns {z.number()} min/max validation of coresPerNode
  */
-export const getCoresPerNodeValidation = (definition, queue) => {
+export const getCoresPerNodeValidation = (
+  definition: TTapisApp,
+  queue: TTapisSystemQueue
+) => {
   if (!isAppTypeBATCH(definition) || !queue || queue.maxCoresPerNode === -1) {
     return z.number().int().positive().optional();
   }
@@ -198,12 +184,17 @@ export const getCoresPerNodeValidation = (definition, queue) => {
  * @param {Object} values
  * @returns {Object} updated/fixed values
  */
-export const updateValuesForQueue = (execSystems, values) => {
+export const updateValuesForQueue = (execSystems: TTapisSystem[], values) => {
   const exec_sys = getExecSystemFromId(execSystems, values.execSystemId);
+  if (!exec_sys) {
+    return values;
+  }
   const updatedValues = { ...values };
-  const queue = exec_sys.batchLogicalQueues.find(
-    (q) => q.name === values.execSystemLogicalQueue
-  );
+  const queue = getQueueValueForExecSystem({
+    exec_sys,
+    queue_name: values.execSystemLogicalQueue,
+  });
+  if (!queue) return values;
 
   if (values.nodeCount < queue.minNodeCount) {
     updatedValues.nodeCount = queue.minNodeCount;
@@ -238,21 +229,19 @@ export const updateValuesForQueue = (execSystems, values) => {
  *   1. Use given queue name.
  *   2. Otherwise, use the app default queue.
  *   3. Otherwise, use the execution system default queue.
- *
- * @function
- * @param {any} definition App definition
- * @param {any} exec_sys execution system
- * @param {any} queue_name
- * @returns {String} queue_name nullable, queue name to lookup
  */
-export const getQueueValueForExecSystem = (
+export const getQueueValueForExecSystem = ({
   definition,
   exec_sys,
-  queue_name
-) => {
+  queue_name,
+}: {
+  definition?: TTapisApp;
+  exec_sys?: TTapisSystem;
+  queue_name?: string;
+}) => {
   const queueName =
     queue_name ??
-    definition.jobAttributes.execSystemLogicalQueue ??
+    definition?.jobAttributes.execSystemLogicalQueue ??
     exec_sys?.batchDefaultLogicalQueue;
   return (
     exec_sys?.batchLogicalQueues.find((q) => q.name === queueName) ||
@@ -271,7 +260,10 @@ export const getQueueValueForExecSystem = (
  * @param {any} queues
  * @returns list of queues in sorted order
  */
-export const getAppQueueValues = (definition, queues) => {
+export const getAppQueueValues = (
+  definition: TTapisApp,
+  queues: TTapisSystemQueue[]
+) => {
   return (
     (queues ?? [])
       /*
@@ -304,7 +296,10 @@ export const getAppQueueValues = (definition, queues) => {
  * @param {any} allocationHosts
  * @returns a Map of allocations applicable to each execution system.
  */
-export const matchExecSysWithAllocations = (execSystems, allocationHosts) => {
+export const matchExecSysWithAllocations = (
+  execSystems: TTapisSystem[],
+  allocationHosts: object[]
+) => {
   return execSystems.reduce((map, exec_sys) => {
     const matchingExecutionHost = Object.keys(allocationHosts).find(
       (host) => exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)
@@ -325,7 +320,7 @@ export const matchExecSysWithAllocations = (execSystems, allocationHosts) => {
  * @param {String} inputFieldName
  * @returns {String} field Name prefixed with target path
  */
-export const getTargetPathFieldName = (inputFieldName) => {
+export const getTargetPathFieldName = (inputFieldName: string) => {
   return TARGET_PATH_FIELD_PREFIX + inputFieldName;
 };
 
@@ -336,7 +331,7 @@ export const getTargetPathFieldName = (inputFieldName) => {
  * @param {String} inputFieldName
  * @returns {String} field Name suffixed with target path
  */
-export const isTargetPathField = (inputFieldName) => {
+export const isTargetPathField = (inputFieldName: string) => {
   return inputFieldName && inputFieldName.startsWith(TARGET_PATH_FIELD_PREFIX);
 };
 
@@ -347,7 +342,9 @@ export const isTargetPathField = (inputFieldName) => {
  * @param {String} targetPathFieldName
  * @returns {String} actual field name
  */
-export const getInputFieldFromTargetPathField = (targetPathFieldName) => {
+export const getInputFieldFromTargetPathField = (
+  targetPathFieldName: string
+) => {
   return targetPathFieldName.replace(TARGET_PATH_FIELD_PREFIX, '');
 };
 
@@ -358,7 +355,7 @@ export const getInputFieldFromTargetPathField = (targetPathFieldName) => {
  * @param {String} targetPathFieldValue
  * @returns {boolean} if target path is empty
  */
-export const isTargetPathEmpty = (targetPathFieldValue) => {
+export const isTargetPathEmpty = (targetPathFieldValue: string) => {
   if (targetPathFieldValue === null || targetPathFieldValue === undefined) {
     return true;
   }
@@ -379,7 +376,7 @@ export const isTargetPathEmpty = (targetPathFieldValue) => {
  * @param {String} targetPathFieldValue
  * @returns {String} target path value
  */
-export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
+export const checkAndSetDefaultTargetPath = (targetPathFieldValue: string) => {
   if (isTargetPathEmpty(targetPathFieldValue)) {
     return '*';
   }
@@ -387,35 +384,14 @@ export const checkAndSetDefaultTargetPath = (targetPathFieldValue) => {
   return targetPathFieldValue;
 };
 
-/**
- * Gets the execution systems with portal's default allocation.
- * It will return empty list, if there is no allocation system matching portal's
- * default allocation.
- * @param {Map} execSystemAllocationsMap
- * @param {String} portalAllocation
- */
-export const getExecSystemsForPortalAllocation = (
-  execSystemAllocationsMap,
-  portalAllocation
-) => {
-  // Look at each execution system and its corressponding allocations
-  // Gather all execution system whose allocation is the default portal allocation.
-  const execSystems = [];
-  execSystemAllocationsMap.forEach((execAllocations, execSystem) => {
-    if (execAllocations.includes(portalAllocation)) {
-      execSystems.push(execSystem);
-    }
-  });
-  // If user does not have any execution systems matching portalAllocation,
-  // this list will be empty.
-  return execSystems;
-};
-
-export const isAppUsingDynamicExecSystem = (definition) => {
+export const isAppUsingDynamicExecSystem = (definition: TTapisApp) => {
   return !!definition.notes.dynamicExecSystems;
 };
 
-export const getAllocationValidation = (definition, allocations) => {
+export const getAllocationValidation = (
+  definition: TTapisApp,
+  allocations: string
+) => {
   if (!isAppTypeBATCH(definition)) {
     return z.string().optional();
   }
@@ -426,11 +402,14 @@ export const getAllocationValidation = (definition, allocations) => {
   });
 };
 
-export const isAppTypeBATCH = (definition) => {
+export const isAppTypeBATCH = (definition: TTapisApp) => {
   return definition.jobType === 'BATCH';
 };
 
-export const getExecSystemLogicalQueueValidation = (definition, exec_sys) => {
+export const getExecSystemLogicalQueueValidation = (
+  definition: TTapisApp,
+  exec_sys: TTapisSystem
+) => {
   if (!isAppTypeBATCH(definition)) {
     return z.string().optional();
   }

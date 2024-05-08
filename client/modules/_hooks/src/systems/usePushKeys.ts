@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-type TPushKeysBody = {
+export type TPushKeysBody = {
   systemId: string;
   hostname: string;
   password: string;

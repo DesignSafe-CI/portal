@@ -37,6 +37,7 @@ export function FormField({
         required={required}
         label={label}
         htmlFor={name}
+        key={name}
       >
         {/* <SelectModal
                   isOpen={openTapisFileModal}

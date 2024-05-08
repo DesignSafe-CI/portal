@@ -7,7 +7,7 @@ type TJobBody = {
   operation: TJobPostOperations;
   uuid?: string;
   job?: FormData;
-  licenseType?: string;
+  licenseType?: string | null;
   isInteractive?: boolean;
 };
 

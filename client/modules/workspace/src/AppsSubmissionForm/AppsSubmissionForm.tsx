@@ -10,6 +10,8 @@ import {
   usePostJobs,
   useGetSystems,
   useAuthenticatedUser,
+  TTapisSystem,
+  TTapisSystemQueue,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
@@ -51,7 +53,7 @@ export const AppsSubmissionForm: React.FC = () => {
     data: { executionSystems, storageSystems, defaultStorageSystem },
   } = useGetSystems();
 
-  const { user } = useAuthenticatedUser();
+  const { user: username } = useAuthenticatedUser();
 
   const { definition, license, defaultSystemNeedsKeys } = app;
 
@@ -74,12 +76,15 @@ export const AppsSubmissionForm: React.FC = () => {
 
   let missingAllocation = false;
 
-  const execSystems = getExecSystemsFromApp(definition, executionSystems);
+  const execSystems = getExecSystemsFromApp(
+    definition,
+    executionSystems as TTapisSystem[]
+  );
 
   const defaultExecSystem = getExecSystemFromId(
     execSystems,
     definition.jobAttributes.execSystemId
-  );
+  ) as TTapisSystem;
 
   const { fileInputs, parameterSet } = FormSchema(definition);
 
@@ -118,7 +123,7 @@ export const AppsSubmissionForm: React.FC = () => {
         }`,
         archiveSystemId:
           defaultStorageSystem?.id || definition.jobAttributes.archiveSystemId,
-        archiveSystemDir: `${user.username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
+        archiveSystemDir: `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
       },
     }),
     [definition]
@@ -155,11 +160,11 @@ export const AppsSubmissionForm: React.FC = () => {
 
   // const currentExecSystem = getExecSystemFromId(app, state.execSystemId);
 
-  const queue = getQueueValueForExecSystem(
+  const queue = getQueueValueForExecSystem({
     definition,
-    defaultExecSystem,
-    definition.jobAttributes.execSystemLogicalQueue
-  );
+    exec_sys: defaultExecSystem,
+    queue_name: definition.jobAttributes.execSystemLogicalQueue,
+  }) as TTapisSystemQueue;
 
   const schema = {
     // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
@@ -197,10 +202,10 @@ export const AppsSubmissionForm: React.FC = () => {
   const missingLicense = license.type && !license.enabled;
 
   const readOnly =
-    missingLicense ||
+    !!missingLicense ||
     !hasStorageSystems ||
     (definition.jobType === 'BATCH' && missingAllocation) ||
-    defaultSystemNeedsKeys;
+    !!defaultSystemNeedsKeys;
 
   const methods = useForm({
     defaultValues: initialValues,
@@ -234,7 +239,7 @@ export const AppsSubmissionForm: React.FC = () => {
         description: `The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
           definition,
           defaultExecSystem,
-          queue
+          queue.name
         )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`,
         label: 'Maximum Job Runtime (minutes)',
         name: 'configuration.maxMinutes',
@@ -297,29 +302,38 @@ export const AppsSubmissionForm: React.FC = () => {
         name: 'outputs.archiveSystemDir',
         required: false,
         type: 'text',
-        placeholder: `${user.username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
+        placeholder: `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
       },
     },
   };
 
-  const steps = {
+  interface TStep {
+    [dynamic: string]: {
+      nextPage?: string;
+      prevPage?: string;
+    };
+  }
+
+  const steps: TStep = {
     inputs: getInputsStep(fields.inputs),
     parameters: getParametersStep(fields.parameters),
     configuration: getConfigurationStep(definition, execSystems, allocations),
-    outputs: getOutputsStep(definition, defaultStorageSystem.id, user.username),
+    outputs: getOutputsStep(definition, defaultStorageSystem.id, username),
   };
 
   const handleNextStep = useCallback(
     (data) => {
       // setState({ ...state, ...data });
-      setCurrent(steps[current].nextPage);
+      const nextPage = steps[current].nextPage;
+      nextPage && setCurrent(nextPage);
     },
     [current]
   );
   const handlePreviousStep = useCallback(
     (data) => {
       // setState({ ...state, ...data });
-      setCurrent(steps[current].prevPage);
+      const prevPage = steps[current].prevPage;
+      prevPage && setCurrent(prevPage);
     },
     [current]
   );
@@ -330,17 +344,19 @@ export const AppsSubmissionForm: React.FC = () => {
     error: submitError,
   } = usePostJobs();
 
-  const [isModalOpen, setIsModalOpen] = useState({});
+  const [pushKeysSystem, setPushKeysSystem] = useState<
+    TTapisSystem | undefined
+  >();
 
   useEffect(() => {
     if (submitResult?.execSys) {
-      setIsModalOpen(submitResult.execSys);
+      setPushKeysSystem(submitResult.execSys);
     }
   }, [submitResult]);
 
   const submitJobCallback = (submitData) => {
     const jobData = {
-      operation: 'submitJob',
+      operation: 'submitJob' as const,
 
       licenseType: license.type,
       isInteractive: !!definition.notes.isInteractive,
@@ -451,7 +467,7 @@ export const AppsSubmissionForm: React.FC = () => {
         className="data-files-nav-link"
         type="button"
         href="#"
-        onClick={() => setIsModalOpen(defaultStorageSystem)}
+        onClick={() => setPushKeysSystem(defaultStorageSystem)}
       >
         push your keys
       </a>
@@ -541,8 +557,8 @@ export const AppsSubmissionForm: React.FC = () => {
         </Space>
       </Layout>
       <SystemsPushKeysModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
+        isModalOpen={pushKeysSystem}
+        setIsModalOpen={setPushKeysSystem}
       />
     </>
   );

@@ -11,7 +11,7 @@ export type TTapisApp = {
   locked: boolean;
   runtime: string;
   runtimeVersion?: string;
-  runtimeOptions: [string];
+  runtimeOptions: string[];
   containerImage: string;
   jobType: string;
   maxJobs: number;
@@ -20,7 +20,7 @@ export type TTapisApp = {
   jobAttributes: {
     description?: string;
     dynamicExecSystem: boolean;
-    execSystemConstraints?: [string];
+    execSystemConstraints?: string[];
     execSystemId: string;
     execSystemExecDir: string;
     execSystemInputDir: string;
@@ -106,7 +106,7 @@ export type TTapisApp = {
     subscriptions: [];
     tags: [];
   };
-  tags: [string];
+  tags: string[];
   notes: {
     label?: string;
     helpUrl?: string;
@@ -114,6 +114,8 @@ export type TTapisApp = {
     isInteractive?: boolean;
     hideNodeCountAndCoresPerNode?: boolean;
     icon?: string;
+    dynamicExecSystems?: string[];
+    queueFilter?: string[];
   };
   uuid: string;
   deleted: boolean;
