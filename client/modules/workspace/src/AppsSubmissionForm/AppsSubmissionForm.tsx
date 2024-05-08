@@ -12,6 +12,7 @@ import {
   useAuthenticatedUser,
   TTapisSystem,
   TTapisSystemQueue,
+  TUser,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
@@ -53,7 +54,9 @@ export const AppsSubmissionForm: React.FC = () => {
     data: { executionSystems, storageSystems, defaultStorageSystem },
   } = useGetSystems();
 
-  const { user: username } = useAuthenticatedUser();
+  const {
+    user: { username },
+  } = useAuthenticatedUser() as { user: TUser };
 
   const { definition, license, defaultSystemNeedsKeys } = app;
 
