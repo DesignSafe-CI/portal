@@ -2,12 +2,13 @@ import React from 'react';
 import { Descriptions, DescriptionsProps, Tag, Button, Flex } from 'antd';
 import { useFormContext, useWatch, FieldValues } from 'react-hook-form';
 import { z } from 'zod';
+import { TField } from '../AppsWizard/AppsFormSchema';
 
 export const AppsSubmissionDetails: React.FC<{
   schema: { [dynamic: string]: z.ZodType };
   fields: {
     [dynamic: string]: {
-      [dynamic: string]: { [dynamic: string]: any } | any;
+      [dynamic: string]: { [dynamic: string]: TField } | TField;
     };
   };
   isSubmitting: boolean;
@@ -22,7 +23,7 @@ export const AppsSubmissionDetails: React.FC<{
   const getChildren = (
     key: string,
     value: string | object,
-    parent: z.ZodObject<any>
+    parent: z.AnyZodObject
   ) => {
     if (typeof value === 'object') {
       if (!Object.keys(value).length) return <span>-</span>;

@@ -432,9 +432,9 @@ export const AppsSubmissionForm: React.FC = () => {
     jobData.job.parameterSet = Object.assign(
       {},
       ...Object.entries(submitData.parameters).map(
-        ([parameterSet, parameterValue]) => {
+        ([sParameterSet, sParameterValue]) => {
           return {
-            [parameterSet]: Object.entries(parameterValue)
+            [sParameterSet]: Object.entries(sParameterValue)
               .map(([k, v]) => {
                 if (!v) return;
                 // filter read only parameters. 'FIXED' parameters are tracked as readOnly
@@ -442,7 +442,7 @@ export const AppsSubmissionForm: React.FC = () => {
                 // Convert the value to a string, if necessary
                 const transformedValue =
                   typeof v === 'number' ? v.toString() : v;
-                return parameterSet === 'envVariables'
+                return sParameterSet === 'envVariables'
                   ? { key: k, value: transformedValue }
                   : { name: k, arg: transformedValue };
               })

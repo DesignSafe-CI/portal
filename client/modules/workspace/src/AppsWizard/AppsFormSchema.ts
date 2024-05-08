@@ -3,6 +3,13 @@ import { TTapisApp } from '@client/hooks';
 
 import { checkAndSetDefaultTargetPath, getTargetPathFieldName } from '../utils';
 
+export type TFieldOptions = {
+  label: string;
+  value?: string;
+  hidden?: boolean;
+  disabled?: boolean;
+};
+
 export type TField = {
   label: string;
   required: boolean;
@@ -11,7 +18,7 @@ export type TField = {
   type: string;
   parameterSet?: string;
   description?: string;
-  options?: any[];
+  options?: TFieldOptions[];
   tapisFile?: boolean;
   placeholder?: string;
   readOnly?: boolean;
@@ -19,13 +26,13 @@ export type TField = {
 
 export type TAppFormSchema = {
   fileInputs: {
-    defaults: { [dynamic: string]: any };
+    defaults: { [dynamic: string]: string };
     fields: { [dynamic: string]: TField };
     schema: { [dynamic: string]: ZodType };
   };
   parameterSet: {
     defaults: {
-      [dynamic: string]: any;
+      [dynamic: string]: { [dynamic: string]: string };
     };
     fields: {
       [dynamic: string]: { [dynamic: string]: TField };
@@ -60,7 +67,7 @@ const FormSchema = (definition: TTapisApp) => {
         [dynamic: string]: TField;
       } = {};
       const parameterSetDefaults: {
-        [dynamic: string]: any;
+        [dynamic: string]: string;
       } = {};
 
       parameterSetValue.forEach((param) => {
@@ -90,7 +97,7 @@ const FormSchema = (definition: TTapisApp) => {
               }))[0]
           );
           parameterSetSchema[field.label] = z.enum(
-            field.options.map(({ value, label }) => value)
+            field.options.map(({ value }) => value)
           );
         } else if (param.notes?.fieldType === 'email') {
           field.type = 'email';

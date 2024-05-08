@@ -1,7 +1,8 @@
-import React, { PropsWithoutRef } from 'react';
+import React from 'react';
 import { Button, Form, Input, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { TFieldOptions } from '../AppsWizard/AppsFormSchema';
 
 export const FormField: React.FC<{
   name: string;
@@ -12,7 +13,7 @@ export const FormField: React.FC<{
   required?: boolean;
   type: string;
   placeholder?: string;
-  options?: any[];
+  options?: TFieldOptions[];
 }> = ({
   name,
   tapisFile = false,

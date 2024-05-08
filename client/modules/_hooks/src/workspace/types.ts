@@ -5,7 +5,7 @@ type TParameterSetNotes = {
     regex: string;
     message: string;
   };
-  enum_values?: any[];
+  enum_values?: [{ [dynamic: string]: string }];
 };
 
 export type TTapisApp = {
