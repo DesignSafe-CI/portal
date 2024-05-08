@@ -11,7 +11,8 @@ export const AppsSubmissionDetails: React.FC<{
     };
   };
   isSubmitting: boolean;
-}> = ({ schema, fields, isSubmitting }) => {
+  setCurrent: CallableFunction;
+}> = ({ schema, fields, isSubmitting, setCurrent }) => {
   const {
     control,
     formState: { defaultValues, isValid },
@@ -56,8 +57,7 @@ export const AppsSubmissionDetails: React.FC<{
         label: (
           <Flex justify="space-between" align="center">
             {key.charAt(0).toUpperCase() + key.slice(1)}
-            {/* TODOv3: change `current` state onClick */}
-            <Button type="text" onClick={(e) => console.log(e)}>
+            <Button type="text" onClick={() => setCurrent(key)}>
               Edit
             </Button>
           </Flex>
