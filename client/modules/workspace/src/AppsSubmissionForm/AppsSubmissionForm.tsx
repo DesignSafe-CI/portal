@@ -5,7 +5,12 @@ import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useGetAppsSuspense, usePostJobs, useGetSystems } from '@client/hooks';
+import {
+  useGetAppsSuspense,
+  usePostJobs,
+  useGetSystems,
+  useAuthenticatedUser,
+} from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
 import { default as AppIcon } from './AppIcon';
@@ -20,7 +25,8 @@ import {
   // AppFormProvider,
   // useAppFormState,
   // getSystemName,
-  // getAppQueueValues,
+  getQueueMaxMinutes,
+  getAppQueueValues,
   getExecSystemFromId,
   getQueueValueForExecSystem,
   getNodeCountValidation,
@@ -44,6 +50,8 @@ export const AppsSubmissionForm: React.FC = () => {
   const {
     data: { executionSystems, storageSystems, defaultStorageSystem },
   } = useGetSystems();
+
+  const { user } = useAuthenticatedUser();
 
   const { definition, license, defaultSystemNeedsKeys } = app;
 
@@ -110,7 +118,7 @@ export const AppsSubmissionForm: React.FC = () => {
         }`,
         archiveSystemId:
           defaultStorageSystem?.id || definition.jobAttributes.archiveSystemId,
-        archiveSystemDir: definition.jobAttributes.archiveSystemDir,
+        archiveSystemDir: `${user.username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
       },
     }),
     [definition]
@@ -211,24 +219,94 @@ export const AppsSubmissionForm: React.FC = () => {
     inputs: fileInputs.fields,
     parameters: parameterSet.fields,
     configuration: {
-      execSystemLogicalQueue: {},
-      maxMinutes: {},
-      coresPerNode: {},
-      nodeCount: {},
-      allocation: {},
+      execSystemLogicalQueue: {
+        description: 'Select the queue this job will execute on.',
+        label: 'Queue',
+        name: 'configuration.execSystemLogicalQueue',
+        required: true,
+        type: 'select',
+        options: getAppQueueValues(
+          definition,
+          execSystems[0].batchLogicalQueues
+        ).map((q) => ({ value: q, label: q })),
+      },
+      maxMinutes: {
+        description: `The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
+          definition,
+          defaultExecSystem,
+          queue
+        )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`,
+        label: 'Maximum Job Runtime (minutes)',
+        name: 'configuration.maxMinutes',
+        required: true,
+        type: 'number',
+      },
+      coresPerNode: {
+        description:
+          'Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total.',
+        label: 'Cores Per Node',
+        name: 'configuration.coresPerNode',
+        required: true,
+        type: 'number',
+      },
+      nodeCount: {
+        description: 'Number of requested process nodes for the job.',
+        label: 'Node Count',
+        name: 'configuration.nodeCount',
+        required: true,
+        type: 'number',
+      },
+      allocation: {
+        description:
+          'Select the project allocation you would like to use with this job submission.',
+        label: 'Allocation',
+        name: 'configuration.allocation',
+        required: true,
+        type: 'select',
+        options: [
+          { label: '', hidden: true, disabled: true },
+          ...allocations.sort().map((projectId) => ({
+            value: projectId,
+            label: projectId,
+          })),
+        ],
+      },
     },
     outputs: {
-      name: {},
-      archiveSystemId: {},
-      archiveSystemDir: {},
+      name: {
+        description: 'A recognizable name for this job.',
+        label: 'Job Name',
+        name: 'outputs.name',
+        required: true,
+        type: 'text',
+      },
+      archiveSystemId: {
+        description:
+          'System into which output files are archived after application execution.',
+        label: 'Archive System',
+        name: 'outputs.archiveSystemId',
+        required: false,
+        type: 'text',
+        placeholder:
+          defaultStorageSystem.id || definition.jobAttributes.archiveSystemId,
+      },
+      archiveSystemDir: {
+        description:
+          'Directory into which output files are archived after application execution.',
+        label: 'Archive Directory',
+        name: 'outputs.archiveSystemDir',
+        required: false,
+        type: 'text',
+        placeholder: `${user.username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
+      },
     },
   };
 
   const steps = {
-    inputs: getInputsStep(fileInputs),
-    parameters: getParametersStep(parameterSet),
-    configuration: getConfigurationStep(app, execSystems, allocations),
-    outputs: getOutputsStep(app),
+    inputs: getInputsStep(fields.inputs),
+    parameters: getParametersStep(fields.parameters),
+    configuration: getConfigurationStep(definition, execSystems, allocations),
+    outputs: getOutputsStep(definition, defaultStorageSystem.id, user.username),
   };
 
   const handleNextStep = useCallback(
@@ -450,6 +528,7 @@ export const AppsSubmissionForm: React.FC = () => {
                     </Col>
                     <Col span={10}>
                       <AppsSubmissionDetails
+                        schema={schema}
                         fields={fields}
                         isSubmitting={isPending}
                       />

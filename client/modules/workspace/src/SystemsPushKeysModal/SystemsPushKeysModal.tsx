@@ -107,10 +107,10 @@ export const SystemsPushKeysModal: React.FC<{
 
   return (
     <SystemsPushKyesModalBody
-        system={isModalOpen}
-        isOpen={!!Object.keys(isModalOpen).length}
-        onSuccess={onSuccess}
-        handleCancel={handleCancel}
-      />
+      system={isModalOpen}
+      isOpen={!!Object.keys(isModalOpen).length}
+      onSuccess={onSuccess}
+      handleCancel={handleCancel}
+    />
   );
 };

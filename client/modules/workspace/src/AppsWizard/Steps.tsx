@@ -1,12 +1,12 @@
 import { getAppQueueValues } from '../utils';
 import { FormField } from './FormField';
 
-export const getInputsStep = (fileInputs) => ({
+export const getInputsStep = (fields) => ({
   title: 'Inputs',
   nextPage: 'parameters',
   content: (
     <>
-      {Object.values(fileInputs.fields).map((field) => {
+      {Object.values(fields).map((field) => {
         // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
         return <FormField {...field} />;
       })}
@@ -14,13 +14,13 @@ export const getInputsStep = (fileInputs) => ({
   ),
 });
 
-export const getParametersStep = (parameterSet) => ({
+export const getParametersStep = (fields) => ({
   title: 'Parameters',
   prevPage: 'inputs',
   nextPage: 'configuration',
   content: (
     <>
-      {Object.values(parameterSet.fields).map((parameterValue) => {
+      {Object.values(fields).map((parameterValue) => {
         return Object.values(parameterValue).map((field) => {
           return <FormField {...field} />;
         });
@@ -29,13 +29,13 @@ export const getParametersStep = (parameterSet) => ({
   ),
 });
 
-export const getConfigurationStep = (app, execSystems, allocations) => ({
+export const getConfigurationStep = (definition, execSystems, allocations) => ({
   title: 'Configuration',
   prevPage: 'parameters',
   nextPage: 'outputs',
   content: (
     <>
-      {app.definition.jobType === 'BATCH' && (
+      {definition.jobType === 'BATCH' && (
         <FormField
           label="Queue"
           name="configuration.execSystemLogicalQueue"
@@ -44,7 +44,7 @@ export const getConfigurationStep = (app, execSystems, allocations) => ({
           required
           // TODOv3: Dynamic system queues
           options={getAppQueueValues(
-            app.definition,
+            definition,
             execSystems[0].batchLogicalQueues
           ).map((q) => ({ value: q, label: q }))}
         />
@@ -60,7 +60,7 @@ export const getConfigurationStep = (app, execSystems, allocations) => ({
         type="number"
         required
       />
-      {!app.definition.notes.hideNodeCountAndCoresPerNode ? (
+      {!definition.notes.hideNodeCountAndCoresPerNode ? (
         <>
           <FormField
             label="Cores Per Node"
@@ -76,7 +76,7 @@ export const getConfigurationStep = (app, execSystems, allocations) => ({
           />
         </>
       ) : null}
-      {app.definition.jobType === 'BATCH' && (
+      {definition.jobType === 'BATCH' && (
         <FormField
           label="Allocation"
           name="configuration.allocation"
@@ -96,7 +96,11 @@ export const getConfigurationStep = (app, execSystems, allocations) => ({
   ),
 });
 
-export const getOutputsStep = (app) => ({
+export const getOutputsStep = (
+  definition,
+  defaultStorageSystemId,
+  username
+) => ({
   title: 'Outputs',
   prevPage: 'configuration',
   content: (
@@ -108,7 +112,7 @@ export const getOutputsStep = (app) => ({
         type="text"
         required
       />
-      {!app.definition.notes.isInteractive && (
+      {!definition.notes.isInteractive && (
         <>
           <FormField
             label="Archive System"
@@ -116,8 +120,7 @@ export const getOutputsStep = (app) => ({
             name="outputs.archiveSystemId"
             type="text"
             placeholder={
-              app.defaultSystemId ||
-              app.definition.jobAttributes.archiveSystemId
+              defaultStorageSystemId || definition.jobAttributes.archiveSystemId
             }
           />
           <FormField
@@ -125,10 +128,7 @@ export const getOutputsStep = (app) => ({
             description="Directory into which output files are archived after application execution."
             name="outputs.archiveSystemDir"
             type="text"
-            placeholder={
-              app.definition.jobAttributes.archiveSystemDir ||
-              'HOST_EVAL($HOME)/tapis-jobs-archive/${JobCreateDate}/${JobName}-${JobUUID}'
-            }
+            placeholder={`${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`}
           />
         </>
       )}
