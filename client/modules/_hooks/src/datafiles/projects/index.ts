@@ -7,6 +7,10 @@ export {
 } from './useProjectDetail';
 export { useProjectPreview } from './useProjectPreview';
 export { useProjectEntityReorder } from './useProjectEntityReorder';
+export { useCreateProject } from './useCreateProject';
+export { useCreateEntity } from './useCreateEntity';
+export { useDeleteEntity } from './useDeleteEntity';
+export { useChangeProjectType } from './useChangeProjectType';
 export { useAddEntityToTree } from './useAddEntityToTree';
 export { useRemoveEntityFromTree } from './useRemoveEntityFromTree';
 export { useAddFileAssociation } from './useAddFileAssociation';

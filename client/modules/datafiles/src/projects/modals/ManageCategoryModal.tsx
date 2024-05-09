@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Button, Modal } from 'antd';
-import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
+import {
+  TBaseProjectValue,
+  useCreateEntity,
+  useDeleteEntity,
+  usePatchEntityMetadata,
+  useProjectDetail,
+} from '@client/hooks';
 import { CATEGORIES_BY_PROJECT_TYPE } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import { ProjectCategoryForm } from '../forms/ProjectCategoryForm';
@@ -13,6 +19,8 @@ const CategoryDetail: React.FC<{
   entityUuid: string;
 }> = ({ description, projectId, projectType, entityUuid }) => {
   const [showForm, setShowForm] = useState(false);
+  const { mutate: patchEntityMeta } = usePatchEntityMetadata();
+  const { mutate: deleteEntity } = useDeleteEntity();
   return (
     <>
       <section>
@@ -21,7 +29,9 @@ const CategoryDetail: React.FC<{
           {showForm ? 'Cancel Editing' : 'Edit'}
         </Button>
         &nbsp;|&nbsp;
-        <Button type="link">Delete</Button>
+        <Button type="link" onClick={() => deleteEntity({ entityUuid })}>
+          Delete
+        </Button>
       </section>
       {showForm && (
         <section style={{ marginTop: '20px' }}>
@@ -30,6 +40,13 @@ const CategoryDetail: React.FC<{
             projectId={projectId}
             entityUuid={entityUuid}
             mode="edit"
+            onSubmit={(v: { name: string; value: Record<string, unknown> }) => {
+              console.log(v);
+              patchEntityMeta(
+                { entityUuid, patchMetadata: v.value },
+                { onSuccess: () => setShowForm(false) }
+              );
+            }}
           />
         </section>
       )}
@@ -47,6 +64,8 @@ export const ManageCategoryModal: React.FC<{
   const handleClose = () => {
     setIsModalOpen(false);
   };
+
+  const { mutate } = useCreateEntity(projectId);
 
   if (!data) return null;
 
@@ -69,6 +88,9 @@ export const ManageCategoryModal: React.FC<{
             mode="create"
             projectId={projectId}
             projectType={projectType}
+            onSubmit={(v: { name: string; value: Record<string, unknown> }) =>
+              mutate({ formData: v })
+            }
           />
         </section>
         <strong>Category Inventory</strong>

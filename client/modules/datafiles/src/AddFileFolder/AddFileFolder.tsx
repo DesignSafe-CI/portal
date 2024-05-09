@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
 import styles from './AddFileFolder.module.css';
+import { BaseProjectCreateModal } from '../projects/modals/BaseProjectCreateModal';
 
 export const AddFileFolder: React.FC = () => {
   const { api, system, path } = useFileListingRouteParams();
@@ -40,15 +41,20 @@ export const AddFileFolder: React.FC = () => {
                 </DatafilesModal.NewFolder>
               </li>
               <li>
-                <Button
-                  type="text"
-                  className={`${styles.active} ${styles.fullWidthButton}`}
-                >
-                  <span className="fa-stack fa-lg">
-                    <i className="fa fa-briefcase fa-2x" role="none"></i>
-                  </span>
-                  <span>New Project</span>
-                </Button>
+                <BaseProjectCreateModal>
+                  {({ onClick }) => (
+                    <Button
+                      onClick={onClick}
+                      type="text"
+                      className={`${styles.active} ${styles.fullWidthButton}`}
+                    >
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-briefcase fa-2x" role="none"></i>
+                      </span>
+                      <span>New Project</span>
+                    </Button>
+                  )}
+                </BaseProjectCreateModal>
               </li>
               <li role="separator" className="divider"></li>
               <li>

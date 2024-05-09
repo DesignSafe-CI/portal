@@ -568,6 +568,8 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 
+PROJECT_STORAGE_SYSTEM_CREDENTIALS = json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
+
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
 COMMUNITY_SYSTEM = 'designsafe.storage.community'
 NEES_PUBLIC_SYSTEM = 'nees.public'
