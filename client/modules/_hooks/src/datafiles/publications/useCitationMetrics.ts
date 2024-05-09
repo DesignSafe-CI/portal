@@ -2,13 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../apiClient';
 
 export type TCitationMetrics = {
-  citationCounts: number;
-  downloadCounts: number;
-  viewCounts: number;
-};
+    attributes: {
+      citationCount: number;
+      downloadCount: number;
+      viewCount: number;
+    };
+  }
 
 export type TCitationMetricsResponse = {
-  metrics: TCitationMetrics[];
+  data: TCitationMetrics;
 };
 
 async function getCitationMetrics({

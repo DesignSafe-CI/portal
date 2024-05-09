@@ -117,8 +117,9 @@ export const PublishedEntityDisplay: React.FC<{
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
-  console.log('ere', treeData.value.dois)
-  const { data: citationMetrics, isLoading, isError, error } = useCitationMetrics('10.17603/ds2-dsh2-a330');
+
+  const dois = treeData.value.dois && treeData.value.dois.length > 0 ? treeData.value.dois[0] : '';
+  const { data: citationMetrics, isLoading, isError, error } = useCitationMetrics(dois);
 
   useEffect(() => {
     console.log("isLoading:", isLoading);
@@ -156,12 +157,23 @@ export const PublishedEntityDisplay: React.FC<{
         {citationMetrics && (
           <div>
             <strong>Download Citation:</strong>
-            <div>Downloads &nbsp;&nbsp;&nbsp;&nbsp;
-                 Views &nbsp;&nbsp;&nbsp;&nbsp;
-                 Citations</div>
-            {/* Display citation metrics data */}
-            {/* Example: */}
-            {/* <div>Project Downloads: {citationMetrics.metrics.toString()}</div> */}
+            <div>
+              <span className={styles["yellow-highlight"]}>
+                {citationMetrics?.data?.attributes.downloadCount ?? '--'} Downloads
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span className={styles["yellow-highlight"]}>
+                {citationMetrics?.data?.attributes.viewCount ?? '--'} Views
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span className={styles["yellow-highlight"]}>
+                {citationMetrics?.data?.attributes.citationCount ?? '--'} Citations
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span>
+                Details
+              </span>
+            </div>
           </div>
         )}
 
