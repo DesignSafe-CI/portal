@@ -5,6 +5,16 @@ from django.db.models import Q
 from django.utils import timezone
 
 
+def _get_normalized_path(path) -> str:
+    """ Return a file path that begins with /"
+
+    For example, "file.jpg" becomes "/file.jpg"
+    """
+    if not path.startswith('/'):
+        path = '/' + path
+    return path
+
+
 class FileMetaModel(models.Model):
     """Model for File Meta"""
 
@@ -41,7 +51,8 @@ class FileMetaModel(models.Model):
         - tuple (instance, created): The FileMetaModel instance and a boolean indicating if it was created (True) or updated (False).
         """
         system = value.get("system")
-        path = value.get("path")
+        path = _get_normalized_path(value.get("path"))
+        value["path"] = path
 
         # Use a transaction to ensure atomicity
         with transaction.atomic():
@@ -64,4 +75,5 @@ class FileMetaModel(models.Model):
         Raises:
             - DoesNotExist: if file metadata entry not found
         """
+        path = _get_normalized_path(path)
         return cls.objects.get(value__system=system, value__path=path)
