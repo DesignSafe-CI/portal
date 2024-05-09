@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   TPreviewTreeData,
+  useCitationMetrics,
   useProjectPreview,
   usePublicationDetail,
   usePublicationVersions,
@@ -116,6 +117,17 @@ export const PublishedEntityDisplay: React.FC<{
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
+  console.log('ere', treeData.value.dois)
+  const { data: citationMetrics, isLoading, isError, error } = useCitationMetrics('10.17603/ds2-dsh2-a330');
+
+  useEffect(() => {
+    console.log("isLoading:", isLoading);
+    console.log("isError:", isError);
+    if (isError) {
+      console.error("Error fetching citation metrics:", error);
+    }
+  }, [isLoading, isError, error]);  
+  
   return (
     <section>
       <div
@@ -138,6 +150,21 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
+        {/* Display citation metrics */}
+        {isLoading && <div>Loading citation metrics...</div>}
+        {isError && <div>Error fetching citation metrics</div>}
+        {citationMetrics && (
+          <div>
+            <strong>Download Citation:</strong>
+            <div>Downloads &nbsp;&nbsp;&nbsp;&nbsp;
+                 Views &nbsp;&nbsp;&nbsp;&nbsp;
+                 Citations</div>
+            {/* Display citation metrics data */}
+            {/* Example: */}
+            {/* <div>Project Downloads: {citationMetrics.metrics.toString()}</div> */}
+          </div>
+        )}
+
       </article>
       <Collapse
         expandIcon={() => null}
