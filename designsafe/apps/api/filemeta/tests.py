@@ -179,8 +179,6 @@ def test_create_file_meta_update_existing_entry(
 def test_create_file_metadata_missing_system_or_path(
     client,
     authenticated_user,
-    filemeta_db_mock,
-    filemeta_value_mock,
     mock_access_success,
 ):
     value_missing_system_path = {"foo": "bar"}
