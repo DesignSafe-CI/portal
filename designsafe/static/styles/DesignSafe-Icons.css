@@ -1,125 +1,30 @@
-@font-face {
-    font-family: 'DesignSafe-Icons';
-    src: url('/static/fonts/DesignSafe-Icons.eot?nvbv6c');
-    src: url('/static/fonts/DesignSafe-Icons.eot?nvbv6c#iefix') format('embedded-opentype'),
-        url('/static/fonts/DesignSafe-Icons.ttf?nvbv6c') format('truetype'),
-        url('/static/fonts/DesignSafe-Icons.woff2') format('woff2'),
-        url('/static/fonts/DesignSafe-Icons.woff?nvbv6c') format('woff'),
-        url('/static/fonts/DesignSafe-Icons.svg?nvbv6c#DesignSafe-Icons') format('svg');
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-}
+@import url('./DesignSafe-Icons.font.css');
 
-[class^='ds-icon-'],
-[class*=' ds-icon-'] {
-    /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: 'DesignSafe-Icons' !important;
-    speak: never;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
+/* TODO: Consider isolating and importing main.css & main-ef.css .ds-icon's */
 
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+/* To globally adjust sizes of specific font icons */
+.ds-icon-All-Hazards::before,
+.ds-icon-Earth::before,
+.ds-icon-Water::before,
+.ds-icon-Wind::before,
+.ds-icon-OpenSees::before {
+    display: block;
 }
-
-.ds-icon-Contract:before {
-    content: '\e91d';
+.ds-icon-All-Hazards::before,
+.ds-icon-Earth::before,
+.ds-icon-Water::before,
+.ds-icon-Wind::before {
+    font-size: 1.2em;
+    /* To restore alignment after font-size changes it */
+    margin-top: -0.15em; /* FAQ: -0.2em did not re-align it perfectly */
 }
-.ds-icon-Expand:before {
-    content: '\e923';
+.ds-icon-OpenSees::before {
+    font-size: 1.5em;
+    /* To restore alignment after font-size changes it */
+    margin-top: -0.3em; /* FAQ: -0.2em did not re-align it perfectly */
 }
-.ds-icon-Job-Status:before {
-    content: '\e929';
-}
-.ds-icon-All-Hazards:before {
-    content: '\e908';
-}
-.ds-icon-New-Tab:before {
-    content: '\ea7e';
-}
-.ds-icon-NGL-without-text:before {
-    content: '\e903';
-}
-.ds-icon-Potree:before {
-    content: '\e906';
-}
-.ds-icon-Generic-Vis:before {
-    content: '\e907';
-}
-.ds-icon-HVSR:before {
-    content: '\e90d';
-}
-.ds-icon-MPM:before {
-    content: '\e90e';
-}
-.ds-icon-Generic-App:before {
-    content: '\e960';
-}
-.ds-icon-GiD:before {
-    content: '\e90f';
-}
-.ds-icon-Earth:before {
-    content: '\e910';
-}
-.ds-icon-Water:before {
-    content: '\e912';
-}
-.ds-icon-Wind:before {
-    content: '\e915';
-}
-.ds-icon-rWHALE:before {
-    content: '\e905';
-}
-.ds-icon-Extract:before {
-    content: '\e959';
-}
-.ds-icon-Hazmapper:before {
-    content: '\e904';
-}
-.ds-icon-Compress:before {
-    content: '\e958';
-}
-.ds-icon-STKO:before {
-    content: '\e91c';
-}
-.ds-icon-OpenFOAM:before {
-    content: '\e900';
-}
-.ds-icon-Blender:before {
-    content: '\e901';
-}
-.ds-icon-MATLAB:before {
-    content: '\e902';
-}
-.ds-icon-Paraview:before {
-    content: '\e911';
-}
-.ds-icon-Jupyter:before {
-    content: '\e913';
-}
-.ds-icon-QGIS:before {
-    content: '\e914';
-}
-.ds-icon-OpenSees:before {
-    content: '\e916';
-}
-.ds-icon-LS-DYNA:before {
-    content: '\e917';
-}
-.ds-icon-Dakota:before {
-    content: '\e918';
-}
-.ds-icon-Clawpack:before {
-    content: '\e919';
-}
-.ds-icon-Ansys:before {
-    content: '\e91a';
-}
-.ds-icon-SWBatch:before {
-    content: '\e91b';
+.ds-icon-All-Hazards::before,
+.ds-icon-OpenSees::before {
+    /* To move icon down */
+    translate: 0 0.25em;
 }
