@@ -1,6 +1,8 @@
 import React from 'react';
-import { Button, Layout, Flex } from 'antd';
+import { Layout, Flex } from 'antd';
 import { useFormContext, SubmitHandler, FieldValues } from 'react-hook-form';
+import { SecondaryButton } from './Components';
+
 // import styles from './AppsWizard.module.css';
 
 // import React, { createContext, useContext, useState } from 'react';
@@ -69,7 +71,6 @@ export const AppsWizard: React.FC<{
     paddingRight: 0,
     textAlign: 'center' as const,
     height: 64,
-    paddingInline: 48,
     lineHeight: '64px',
     background: 'transparent',
     borderBottom: '1px solid #707070',
@@ -87,7 +88,7 @@ export const AppsWizard: React.FC<{
           <Flex justify="space-between">
             <span>{step.title}</span>
             <span>
-              <Button
+              <SecondaryButton
                 style={{
                   margin: '0 8px',
                 }}
@@ -97,9 +98,11 @@ export const AppsWizard: React.FC<{
                 })}
               >
                 Back
-              </Button>
-              <Button
-                type="primary"
+              </SecondaryButton>
+              <SecondaryButton
+                style={{
+                  margin: '0 8px',
+                }}
                 htmlType="submit"
                 disabled={!step.nextPage}
                 onClick={handleSubmit(handleNextStep, (data) => {
@@ -107,7 +110,7 @@ export const AppsWizard: React.FC<{
                 })}
               >
                 Continue
-              </Button>
+              </SecondaryButton>
             </span>
           </Flex>
         </Header>
