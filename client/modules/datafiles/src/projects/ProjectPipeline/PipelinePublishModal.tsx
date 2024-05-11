@@ -19,8 +19,6 @@ export const PipelinePublishModal: React.FC<{
   };
   const { mutate } = usePublishProject();
   const doPublish = () => {
-    console.log(projectId);
-    console.log(entityUuids);
     mutate({ projectId, entityUuids });
   };
 

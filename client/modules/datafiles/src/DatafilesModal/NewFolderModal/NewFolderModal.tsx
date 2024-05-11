@@ -15,9 +15,6 @@ export const NewFolderModalBody: React.FC<{
 
   const handleNewFolderFinish = async (values: { newFolder: string }) => {
     const newFolder = values.newFolder;
-    console.log(api);
-    console.log(system);
-    console.log(path);
 
     mutate(
       {

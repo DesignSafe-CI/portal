@@ -107,8 +107,6 @@ class ProjectsView(BaseApiView):
         project_meta = create_project_metdata(metadata_value)
         initialize_project_graph(project_meta.project_id)
         project_users = [user.username for user in project_meta.users.all()]
-        print(project_users)
-        print(prj_number)
         # create project system
         setup_project_file_system(project_uuid=project_meta.uuid, users=project_users)
         # add users to system
