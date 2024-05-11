@@ -126,7 +126,7 @@ class SocialScienceCollection(MetadataModel):
     sample_approach: Annotated[list[str], BeforeValidator(handle_array_of_none)] = []
     sample_size: str
     date_start: str
-    date_end: str
+    date_end: Optional[str] = None
     data_collectors: list[ProjectUser] = []
     location: str = ""
     latitude: str = ""
@@ -181,7 +181,7 @@ class GeoscienceCollection(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_values(v, FR_OBSERVATION_TYPES)),
     ] = []
     date_start: str
-    date_end: str
+    date_end: Optional[str] = None
     location: str = ""
     latitude: str = ""
     longitude: str = ""

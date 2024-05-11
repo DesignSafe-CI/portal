@@ -195,6 +195,7 @@ const FileCurationSelector: React.FC<{
       <li style={{ display: 'flex', gap: '4rem' }}>
         <section style={{ display: 'flex', flex: 1 }}>
           <Select<string>
+            virtual={false}
             value={selectedEntity}
             allowClear
             onChange={(newVal) => setSelectedEntity(newVal)}
@@ -205,10 +206,13 @@ const FileCurationSelector: React.FC<{
           {selectedEntity && (
             <Button
               onClick={() =>
-                addFileAssociation({
-                  fileObjs: [fileObj],
-                  entityUuid: selectedEntity,
-                })
+                addFileAssociation(
+                  {
+                    fileObjs: [fileObj],
+                    entityUuid: selectedEntity,
+                  },
+                  { onSuccess: () => setSelectedEntity(undefined) }
+                )
               }
               type="link"
             >
@@ -231,14 +235,14 @@ export const ProjectCurationFileListing: React.FC<{
   const tagMapping = useFileTags(projectId);
   const options: DefaultOptionType[] = useMemo(
     () =>
-      ENTITIES_WITH_FILES[data?.baseProject.value.projectType ?? 'None'].map(
-        (t) => ({
+      ENTITIES_WITH_FILES[data?.baseProject.value.projectType ?? 'None']
+        .map((t) => ({
           label: DISPLAY_NAMES[t],
           options: data?.entities
             .filter((e) => e.name === t)
             .map((e) => ({ label: e.value.title, value: e.uuid })),
-        })
-      ),
+        }))
+        .filter((t) => (t.options?.length ?? 0) > 0),
     [data]
   );
 

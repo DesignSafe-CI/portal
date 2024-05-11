@@ -351,7 +351,11 @@ const MissionFormFields: React.FC<{
 
       <Form.Item label="Assign Authorship">
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -466,7 +470,15 @@ export const PublishableEntityForm: React.FC<{
   projectId: string;
   entityUuid?: string;
   mode: 'create' | 'edit';
-}> = ({ projectType, projectId, entityUuid, entityName, mode = 'edit' }) => {
+  onSubmit: CallableFunction;
+}> = ({
+  projectType,
+  projectId,
+  entityUuid,
+  entityName,
+  onSubmit,
+  mode = 'edit',
+}) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
 
@@ -484,7 +496,12 @@ export const PublishableEntityForm: React.FC<{
     <Form
       form={form}
       layout="vertical"
-      onFinish={(v) => console.log(JSON.stringify(v))}
+      onFinish={(v) => {
+        onSubmit(v.value);
+        if (mode === 'create') {
+          form.resetFields();
+        }
+      }}
       requiredMark={customRequiredMark}
     >
       {projectType === 'experimental' && (

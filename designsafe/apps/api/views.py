@@ -1,11 +1,14 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.http.response import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.generic import View
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
 from requests.exceptions import ConnectionError, HTTPError
 from .exceptions import ApiException
 import logging
 from logging import getLevelName
 import json
+from designsafe.apps.api.decorators import tapis_jwt_login
 
 logger = logging.getLogger(__name__)
 
@@ -59,14 +62,16 @@ class AuthenticatedApiView(BaseApiView):
         return super(AuthenticatedApiView, self).dispatch(request, *args, **kwargs)
 
 
-class AuthenticatedApiView(BaseApiView):
+class AuthenticatedAllowJwtApiView(AuthenticatedApiView):
+    """
+    Extends AuthenticatedApiView to also allow JWT access in addition to django session cookie
+    """
 
+    @method_decorator(csrf_exempt, name="dispatch")
+    @method_decorator(tapis_jwt_login)
     def dispatch(self, request, *args, **kwargs):
-        """Returns 401 if user is not authenticated."""
-
-        if not request.user.is_authenticated:
-            return JsonResponse({"message": "Unauthenticated user"}, status=401)
-        return super(AuthenticatedApiView, self).dispatch(request, *args, **kwargs)
+        """Returns 401 if user is not authenticated like AuthenticatedApiView but allows JWT access."""
+        return super(AuthenticatedAllowJwtApiView, self).dispatch(request, *args, **kwargs)
 
 
 class LoggerApi(BaseApiView):
