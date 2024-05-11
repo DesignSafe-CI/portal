@@ -1,3 +1,4 @@
+import { usePublishProject } from '@client/hooks';
 import { Button, Checkbox, Modal } from 'antd';
 import React, { useState } from 'react';
 
@@ -15,6 +16,12 @@ export const PipelinePublishModal: React.FC<{
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+  const { mutate } = usePublishProject();
+  const doPublish = () => {
+    console.log(projectId);
+    console.log(entityUuids);
+    mutate({ projectId, entityUuids });
   };
 
   const [protectedDataAgreement, setProtectedDataAgreement] = useState(false);
@@ -58,7 +65,7 @@ export const PipelinePublishModal: React.FC<{
             </span>
             <Button
               disabled={!canPublish}
-              onClick={handleCancel}
+              onClick={doPublish}
               type="primary"
               className="success-button"
             >
@@ -230,23 +237,15 @@ export const PipelinePublishModal: React.FC<{
             >
               <span>
                 <Checkbox
-                  id="publication-agreement-checkbox"
+                  id="publication-protected-checkbox"
                   checked={protectedDataAgreement}
                   onChange={(e) => setProtectedDataAgreement(e.target.checked)}
                 />
-                <label htmlFor="publication-agreement-checkbox">
+                <label htmlFor="publication-protected-checkbox">
                   &nbsp;The data I am publishing adheres to the procedures
                   listed above
                 </label>
               </span>
-              <Button
-                disabled={!publishingAgreement}
-                onClick={handleCancel}
-                type="primary"
-                className="success-button"
-              >
-                Request DOI and Publish
-              </Button>
             </div>
           </div>
         )}

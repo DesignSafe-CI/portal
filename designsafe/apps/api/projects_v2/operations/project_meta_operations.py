@@ -158,6 +158,20 @@ def remove_file_associations(uuid: str, file_paths: list[str]):
 
         filtered_file_objs = _filter_file_objs(entity_file_model.file_objs, file_paths)
         entity.value["fileObjs"] = [f.model_dump() for f in filtered_file_objs]
+
+        # Remove tags associated with these entity/file path combinations.
+        tagged_paths = []
+        for path in file_paths:
+            tagged_paths += [
+                t["path"]
+                for t in entity.value.get("fileTags", [])
+                if t["path"].startswith(path)
+            ]
+        entity.value["fileTags"] = [
+            t
+            for t in entity.value.get("fileTags", [])
+            if not (t["path"] in tagged_paths)
+        ]
         entity.save()
     return entity
 

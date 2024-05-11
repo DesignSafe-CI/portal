@@ -11,6 +11,9 @@ from designsafe.apps.api.projects_v2.operations.project_system_operations import
     remove_user_from_project_async,
 )
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
+    publish_project_async,
+)
 
 
 @shared_task(max_retries=3, default_retry_delay=60)

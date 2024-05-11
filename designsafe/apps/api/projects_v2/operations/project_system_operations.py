@@ -41,7 +41,6 @@ def set_workspace_permissions(
 
 
 def set_workspace_acls(client, system_id, path, username, operation, role="writer"):
-
     operation_map = {"add": "ADD", "remove": "REMOVE"}
 
     acl_string_map = {
@@ -204,6 +203,7 @@ def remove_user_from_project(project_uuid: str, username: str):
 ##########################################
 # ASYNC TASKS FOR USER ADDITION/REMOVAL
 ##########################################
+
 
 @shared_task(bind=True)
 def add_user_to_project_async(self, project_uuid: str, username: str):
