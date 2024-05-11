@@ -1,4 +1,4 @@
-import { BaseProjectCreateForm } from '../forms/CreateProjectFOrm';
+import { BaseProjectCreateForm } from '../forms/CreateProjectForm';
 import React, { useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Modal, notification } from 'antd';
