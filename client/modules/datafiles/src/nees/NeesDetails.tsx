@@ -1,9 +1,11 @@
-import { TNeesDetailsItem, useNeesDetails } from '@client/hooks';
+import { useNeesDetails } from '@client/hooks';
 import { Tabs, Button, Divider, Modal, Flex } from 'antd';
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { DatafilesBreadcrumb, FileListing } from '@client/datafiles';
+
 import styles from './NeesDetails.module.css';
+import { DatafilesBreadcrumb } from '../DatafilesBreadcrumb/DatafilesBreadcrumb';
+import { FileListing } from '../FileListing/FileListing';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
   children,
@@ -51,7 +53,7 @@ export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
 };
 
 export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
-  const { data, isLoading } = useNeesDetails(neesId);
+  const { data } = useNeesDetails(neesId);
   const neesProjectData = data?.metadata.project;
   const neesExperiments = data?.metadata.experiments;
   const numDOIs = neesExperiments?.filter((exp) => !!exp.doi).length || 0;
@@ -229,7 +231,7 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
         path={path ?? ''}
         baseRoute={`/public/nees.public/${neesId}.groups`}
         systemRootAlias={neesId}
-        systemRoot={``}
+        systemRoot={''}
         skipBreadcrumbs={1}
         itemRender={(obj) => {
           return (

@@ -49,7 +49,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
             'type': 'dir' if f.type == 'dir' else 'file',
             'format': 'folder' if f.type == 'dir' else 'raw',
             'mimeType': f.mimeType,
-            'path': f.path,
+            'path': f"/{f.path}",
             'name': f.name,
             'length': f.size,
             'lastModified': f.lastModified,

@@ -20,7 +20,7 @@ function getPathRoutes(
 
   return [
     systemRootBreadcrumb,
-    ...pathComponents.slice(systemRoot ? 1 : 0).map((comp, i) => ({
+    ...pathComponents.map((comp, i) => ({
       title: comp,
       path: `${baseRoute}/${systemRoot}${encodeURIComponent(
         '/' + pathComponents.slice(0, i + 1).join('/')
