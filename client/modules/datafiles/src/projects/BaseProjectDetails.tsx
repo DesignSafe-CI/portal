@@ -72,7 +72,8 @@ export const LicenseDisplay: React.FC<{ licenseType: string }> = ({
 
 export const UsernamePopover: React.FC<{ user: TProjectUser }> = ({ user }) => {
   const content = (
-    <article
+    <section
+      role="table"
       style={{
         width: '500px',
         display: 'flex',
@@ -80,27 +81,33 @@ export const UsernamePopover: React.FC<{ user: TProjectUser }> = ({ user }) => {
         gap: '10px',
       }}
     >
-      <Row>
-        <Col span={8}>Name</Col>
-        <Col offset={4} span={12}>
+      <Row role="row">
+        <Col role="rowheader" span={8}>
+          Name
+        </Col>
+        <Col role="cell" offset={4} span={12}>
           <strong>
             {user.fname} {user.lname}
           </strong>
         </Col>
       </Row>
-      <Row gutter={[0, 40]}>
-        <Col span={8}>Email</Col>
-        <Col offset={4} span={12}>
+      <Row role="row" gutter={[0, 40]}>
+        <Col role="cell" span={8}>
+          Email
+        </Col>
+        <Col role="cell" offset={4} span={12}>
           <strong>{user.email}</strong>
         </Col>
       </Row>
-      <Row gutter={[0, 40]}>
-        <Col span={8}>Institution</Col>
-        <Col offset={4} span={12}>
+      <Row role="row" gutter={[0, 40]}>
+        <Col role="cell" span={8}>
+          Institution
+        </Col>
+        <Col role="cell" offset={4} span={12}>
           <strong>{user.inst}</strong>
         </Col>
       </Row>
-    </article>
+    </section>
   );
   return (
     <Popover

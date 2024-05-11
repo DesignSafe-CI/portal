@@ -1,12 +1,30 @@
 import React from 'react';
 import { Button } from 'antd';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
-import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
+import {
+  useAuthenticatedUser,
+  useFileListingRouteParams,
+  useProjectDetail,
+} from '@client/hooks';
 import styles from './AddFileFolder.module.css';
+import { BaseProjectCreateModal } from '../projects/modals/BaseProjectCreateModal';
+import { useParams } from 'react-router-dom';
 
 export const AddFileFolder: React.FC = () => {
-  const { api, system, path } = useFileListingRouteParams();
+  const routeParams = useFileListingRouteParams();
+  const { path } = routeParams;
+  let { api, system } = routeParams;
+
   const { user } = useAuthenticatedUser();
+
+  const { projectId } = useParams();
+
+  const { data } = useProjectDetail(projectId ?? '');
+  if (projectId) {
+    system = `project-${data?.baseProject.uuid}`;
+    api = 'tapis';
+  }
+
   return (
     <ul className={styles.customUl}>
       {user && (
@@ -16,7 +34,7 @@ export const AddFileFolder: React.FC = () => {
               className="btn btn-block btn-primary dropdown-toggle"
               data-toggle="dropdown"
             >
-              <i className="fa fa-plus-circle" role="none"></i> Add
+              <i className="fa fa-plus-circle" role="none"></i>&nbsp;Add
             </Button>
             <ul className="dropdown-menu">
               <li>
@@ -34,21 +52,26 @@ export const AddFileFolder: React.FC = () => {
                           role="none"
                         ></i>
                       </span>
-                      New Folder
+                      &nbsp;New Folder
                     </Button>
                   )}
                 </DatafilesModal.NewFolder>
               </li>
               <li>
-                <Button
-                  type="text"
-                  className={`${styles.active} ${styles.fullWidthButton}`}
-                >
-                  <span className="fa-stack fa-lg">
-                    <i className="fa fa-briefcase fa-2x" role="none"></i>
-                  </span>
-                  <span>New Project</span>
-                </Button>
+                <BaseProjectCreateModal>
+                  {({ onClick }) => (
+                    <Button
+                      onClick={onClick}
+                      type="text"
+                      className={`${styles.active} ${styles.fullWidthButton}`}
+                    >
+                      <span className="fa-stack fa-lg">
+                        <i className="fa fa-briefcase fa-2x" role="none"></i>
+                      </span>
+                      <span>&nbsp;New Project</span>
+                    </Button>
+                  )}
+                </BaseProjectCreateModal>
               </li>
               <li role="separator" className="divider"></li>
               <li>
@@ -70,6 +93,7 @@ export const AddFileFolder: React.FC = () => {
                           role="none"
                         ></i>
                       </span>
+                      &nbsp;
                       <span onClick={onClick}>File upload: max 2GB</span>
                     </Button>
                   )}
@@ -97,6 +121,7 @@ export const AddFileFolder: React.FC = () => {
                           role="none"
                         ></i>
                       </span>
+                      &nbsp;
                       <span onClick={onClick}>Folder upload: max 25 files</span>
                     </Button>
                   )}
@@ -116,6 +141,7 @@ export const AddFileFolder: React.FC = () => {
                     <span className="fa-stack fa-lg">
                       <i className="fa fa-hdd-o fa-stack-2x" role="none"></i>
                     </span>
+                    &nbsp;
                     <span>Bulk Data Transfer</span>
                   </Button>
                 </a>

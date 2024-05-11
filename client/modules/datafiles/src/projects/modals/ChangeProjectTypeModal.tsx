@@ -3,7 +3,7 @@ import { BaseProjectForm } from '../forms/BaseProjectForm';
 import React, { useCallback, useMemo, useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Alert, Button, Modal, Radio, Steps } from 'antd';
-import { TBaseProjectValue } from '@client/hooks';
+import { TBaseProjectValue, useChangeProjectType } from '@client/hooks';
 import { experimentSteps } from './ProjectInfoStepper/ExperimentalSteps';
 import { SimulationSteps } from './ProjectInfoStepper/SimulationSteps';
 import { sensitiveDataContext } from './ProjectInfoStepper/sensitiveDataContext';
@@ -224,6 +224,13 @@ export const ChangeProjectTypeModal: React.FC<{
   >('PROJECT_TYPE');
 
   const [sensitiveDataOption, setSensitiveDataOption] = useState(0);
+  const { mutate } = useChangeProjectType(projectId);
+
+  const onSubmit = (formData: Record<string, unknown>) => {
+    const projectValue = { ...formData, projectId, projectType: selectedType };
+    mutate({ value: projectValue, sensitiveData: sensitiveDataOption > 0 });
+    handleClose();
+  };
 
   return (
     <>
@@ -232,7 +239,7 @@ export const ChangeProjectTypeModal: React.FC<{
         open={isModalOpen}
         onCancel={handleClose}
         width={900}
-        title={<h2>Select a Project Type</h2>}
+        title={<h2>Change Project Type</h2>}
         footer={null}
       >
         <article>
@@ -265,9 +272,6 @@ export const ChangeProjectTypeModal: React.FC<{
             }
           />
 
-          {currentDisplay === 'PROJECT_FORM' && (
-            <BaseProjectForm projectId={projectId} />
-          )}
           {currentDisplay === 'PROJECT_TYPE' && (
             <ProjectTypeSelector
               selectedType={selectedType}
@@ -287,7 +291,11 @@ export const ChangeProjectTypeModal: React.FC<{
             </sensitiveDataContext.Provider>
           )}
           {currentDisplay === 'PROJECT_FORM' && (
-            <BaseProjectForm projectId={projectId} />
+            <BaseProjectForm
+              projectId={projectId}
+              onSubmit={onSubmit}
+              projectType={selectedType}
+            />
           )}
         </article>
       </Modal>
