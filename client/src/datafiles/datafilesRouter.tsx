@@ -81,7 +81,7 @@ const datafilesRouter = createBrowserRouter(
             {
               path: ':neesid',
               element: <NeesDetailLayout />,
-              children: [{ path: ':path', element: <FileListingLayout /> }],
+              children: [{ path: ':path', element: <NeesDetailLayout /> }],
             },
           ],
         },

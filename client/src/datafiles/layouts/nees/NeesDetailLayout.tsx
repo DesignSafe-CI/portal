@@ -5,6 +5,7 @@ import { NeesDetails } from '@client/datafiles';
 
 export const NeesDetailLayout: React.FC = () => {
   const { neesid } = useParams();
+  if (!neesid) return null;
   const nees = neesid?.split('.')[0];
 
   return (
