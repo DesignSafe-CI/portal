@@ -21,6 +21,7 @@ import {
 } from '../../FileListing/FileListingTable/FileListingTable';
 import { NavLink } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
+import { MetricsModal } from '../modals/MetricsModal'; 
 
 const columns: TFileListingColumns = [
   {
@@ -97,6 +98,7 @@ function RecursiveTree({
   );
 }
 
+
 export const PublishedEntityDisplay: React.FC<{
   projectId: string;
   preview?: boolean;
@@ -113,6 +115,7 @@ export const PublishedEntityDisplay: React.FC<{
   defaultOpenChildren = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
+  const [isModalVisible, setIsModalVisible] = useState(false); 
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
@@ -120,10 +123,18 @@ export const PublishedEntityDisplay: React.FC<{
 
   const dois = treeData.value.dois && treeData.value.dois.length > 0 ? treeData.value.dois[0] : '';
   const { data: citationMetrics, isLoading, isError, error } = useCitationMetrics(dois);
+  console.log('data1', citationMetrics?.data1)
+
+  const openModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+  console.log(isModalVisible)
 
   useEffect(() => {
-    console.log("isLoading:", isLoading);
-    console.log("isError:", isError);
     if (isError) {
       console.error("Error fetching citation metrics:", error);
     }
@@ -151,7 +162,6 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
-        {/* Display citation metrics */}
         {isLoading && <div>Loading citation metrics...</div>}
         {isError && <div>Error fetching citation metrics</div>}
         {citationMetrics && (
@@ -159,20 +169,21 @@ export const PublishedEntityDisplay: React.FC<{
             <strong>Download Citation:</strong>
             <div>
               <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data?.attributes.downloadCount ?? '--'} Downloads
+                {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'} Downloads
               </span>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data?.attributes.viewCount ?? '--'} Views
+                {citationMetrics?.data2?.data.attributes.viewCount ?? '--'} Views
               </span>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data?.attributes.citationCount ?? '--'} Citations
+                {citationMetrics?.data2?.data.attributes.citationCount ?? '--'} Citations
               </span>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <span>
+              <span onClick={openModal} style={{ cursor: 'pointer', color: '#337AB7', fontWeight: 'bold'}}>
                 Details
               </span>
+              <MetricsModal isOpen={isModalVisible} handleCancel={closeModal} data1={citationMetrics?.data1}/>
             </div>
           </div>
         )}
