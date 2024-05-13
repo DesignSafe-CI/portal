@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Button, Modal } from 'antd';
-import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
+import {
+  TBaseProjectValue,
+  useCreateEntity,
+  useDeleteEntity,
+  usePatchEntityMetadata,
+  useProjectDetail,
+} from '@client/hooks';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import { PublishableEntityForm } from '../forms/PublishableEntityForm';
 
@@ -13,6 +19,8 @@ const CategoryDetail: React.FC<{
   entityUuid: string;
 }> = ({ description, projectId, projectType, entityUuid, entityName }) => {
   const [showForm, setShowForm] = useState(false);
+  const { mutate } = usePatchEntityMetadata();
+  const { mutate: deleteEntity } = useDeleteEntity();
   return (
     <>
       <section>
@@ -21,7 +29,9 @@ const CategoryDetail: React.FC<{
           {showForm ? 'Cancel Editing' : 'Edit'}
         </Button>
         &nbsp;|&nbsp;
-        <Button type="link">Delete</Button>
+        <Button type="link" onClick={() => deleteEntity({ entityUuid })}>
+          Delete
+        </Button>
       </section>
       {showForm && (
         <section style={{ marginTop: '20px' }}>
@@ -31,6 +41,12 @@ const CategoryDetail: React.FC<{
             projectId={projectId}
             projectType={projectType}
             entityUuid={entityUuid}
+            onSubmit={(v: { name: string; value: Record<string, unknown> }) => {
+              mutate(
+                { entityUuid, patchMetadata: v },
+                { onSuccess: () => setShowForm(false) }
+              );
+            }}
           />
         </section>
       )}
@@ -49,6 +65,7 @@ export const ManagePublishableEntityModal: React.FC<{
   const handleClose = () => {
     setIsModalOpen(false);
   };
+  const { mutate } = useCreateEntity(projectId);
 
   if (!data) return null;
 
@@ -70,6 +87,10 @@ export const ManagePublishableEntityModal: React.FC<{
             mode="create"
             projectId={projectId}
             projectType={projectType}
+            onSubmit={(v: Record<string, unknown>) => {
+              console.log(v);
+              mutate({ formData: { name: entityName, value: v } });
+            }}
           />
         </section>
         <strong>Category Inventory</strong>
