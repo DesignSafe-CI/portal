@@ -3,7 +3,7 @@ import apiClient from '../../apiClient';
 
 export type TNeesDetailsItem = {
   agavePath: string;
-  children: {}[];
+  children: Record<string, unknown>[];
   deleted: boolean;
   format: string;
   length: number;

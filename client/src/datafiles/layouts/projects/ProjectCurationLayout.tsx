@@ -167,7 +167,9 @@ export const ProjectCurationLayout: React.FC = () => {
         </span>
       </div>
       <DatafilesBreadcrumb
-        initialBreadcrumbs={[]}
+        initialBreadcrumbs={[
+          { path: `/projects/${projectId}/curation`, title: projectId },
+        ]}
         path={path ?? ''}
         baseRoute={`/projects/${projectId}/curation`}
         systemRootAlias={data.baseProject.value.projectId}

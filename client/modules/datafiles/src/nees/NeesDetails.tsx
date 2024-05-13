@@ -227,12 +227,13 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
   const neesFiles = (
     <>
       <DatafilesBreadcrumb
-        initialBreadcrumbs={[]}
+        initialBreadcrumbs={[
+          { title: neesId, path: `/public/nees.public/${neesId}.groups` },
+        ]}
         path={path ?? ''}
         baseRoute={`/public/nees.public/${neesId}.groups`}
         systemRootAlias={neesId}
-        systemRoot={''}
-        skipBreadcrumbs={1}
+        systemRoot={`/${neesId}.groups`}
         itemRender={(obj) => {
           return (
             <Link className="breadcrumb-link" to={obj.path ?? '/'}>

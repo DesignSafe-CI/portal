@@ -16,7 +16,9 @@ export const ProjectWorkdirLayout: React.FC = () => {
     <>
       <ProjectNavbar projectId={projectId} />
       <DatafilesBreadcrumb
-        initialBreadcrumbs={[]}
+        initialBreadcrumbs={[
+          { path: `/projects/${projectId}/workdir`, title: projectId },
+        ]}
         path={path ?? ''}
         baseRoute={`/projects/${projectId}/workdir`}
         systemRootAlias={data.baseProject.value.projectId}

@@ -256,7 +256,7 @@ export const CopyModal: React.FC<{
                   <BaseFileListingBreadcrumb
                     api={destApi}
                     system={destSystem}
-                    path={destPath}
+                    path={decodeURIComponent(destPath)}
                     systemRootAlias={dest.destProjectId}
                     initialBreadcrumbs={
                       destSystem.startsWith('project-')
