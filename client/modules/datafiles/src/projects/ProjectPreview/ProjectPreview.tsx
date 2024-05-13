@@ -120,10 +120,9 @@ export const PublishedEntityDisplay: React.FC<{
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
-
+  
   const dois = treeData.value.dois && treeData.value.dois.length > 0 ? treeData.value.dois[0] : '';
   const { data: citationMetrics, isLoading, isError, error } = useCitationMetrics(dois);
-  console.log('data1', citationMetrics?.data1)
 
   const openModal = () => {
     setIsModalVisible(true);
@@ -189,7 +188,7 @@ export const PublishedEntityDisplay: React.FC<{
         )}
 
       </article>
-      <Collapse
+      <Collapse 
         expandIcon={() => null}
         activeKey={active ? '0' : undefined}
         onChange={(key) => {
