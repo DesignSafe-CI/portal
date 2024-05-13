@@ -9,7 +9,7 @@ from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
-    publish_project,
+    publish_project_async,
 )
 
 logger = logging.getLogger(__name__)
@@ -81,7 +81,7 @@ class PublicationPublishView(BaseApiView):
                 "User does not have access to the requested project", status=403
             ) from exc
 
-        publish_project(project_id, entities_to_publish, dry_run=False)
+        publish_project_async.apply_async([project_id, entities_to_publish])
         logger.debug(project_id)
         logger.debug(entities_to_publish)
         return JsonResponse({"result": "OK"})
