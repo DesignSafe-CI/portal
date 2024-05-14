@@ -7,19 +7,25 @@ projects from Tapis V2 to Tapis V3.
 # pylint: disable=logging-fstring-interpolation
 # pylint: disable=no-member
 
+
 import logging
 import os
 
+from tapipy.tapis import Tapis
 from django.conf import settings
 from django.core.management.base import BaseCommand
-
-from tapipy.tapis import Tapis
-
 from designsafe.apps.api.projects_v2.tests.schema_integration import iterate_entities
+
+try:
+    from designsafe.apps.api.agave import get_service_account_client_v2
+except ImportError:
+    # TODOV3 drop this
+    from designsafe.apps.api.agave import get_service_account_client as get_service_account_client_v2
 
 
 logger = logging.getLogger(__name__)
 
+service_account_v2 = get_service_account_client_v2()
 
 def remove_user(client, system_id: str, username: str):
     """
@@ -179,11 +185,22 @@ class Command(BaseCommand):
             if pi is not None:
                 all_writers.append(pi)
 
-            logger.info(
-                f"Migrating {i}/{total_number_projects} {project_id} ({uuid}) "
-                f"('{title}') pi:{pi} coPis:{co_pis} teamMembers:{team_members} "
-                f"guestMembers:{guest_members}"
-            )
+            try:
+                tapis_v2_system_roles = service_account_v2.systems.listRoles(systemId=f'project-{uuid}')
+            except:
+                tapis_v2_system_roles = []
+                logger.error(f"Unable to get roles on uuid:{uuid}")
+            users_from_roles = [u['username'] for u in tapis_v2_system_roles]
+            users_from_roles_not_listed_elsewhere = [u for u in users_from_roles if u not in all_writers]
+
+            all_writers = all_writers + users_from_roles_not_listed_elsewhere
+
+            msg = f"Migrating {i}/{total_number_projects}, {project_id}, ({uuid}), "\
+                  f"('{title}'), pi:{pi}, coPis:{co_pis}, teamMembers:{team_members}, "\
+                  f"guestMembers:{guest_members},"\
+                  f"users_from_roles:{users_from_roles},"\
+                  f"users_from_roles_not_listed_elsewhere:{users_from_roles_not_listed_elsewhere}"
+            logger.info(msg)
 
             all_readers = guest_members
             all_users = all_readers + all_writers
@@ -212,15 +229,18 @@ class Command(BaseCommand):
                 create = not system_exists
 
                 try:
-                    create_or_update_workspace_system(
-                        create,
-                        client,
-                        system_id=system,
-                        title=title,
-                        description=description,
-                        project_root_dir=project_root_dir,
-                        owner=OWNER,
-                    )
+                    # Update/create systems except for the project related to the Community Data
+                    if uuid != "7997906542076432871-242ac11c-0001-012":
+                        create_or_update_workspace_system(
+                            create,
+                            client,
+                            system_id=system,
+                            title=title,
+                            description=description,
+                            project_root_dir=project_root_dir,
+                            owner=OWNER,
+                        )
+
                     client.systems.shareSystem(systemId=system, users=all_users)
 
                     for user in all_writers:
