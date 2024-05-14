@@ -24,7 +24,9 @@ const ToolbarButton: React.FC<ButtonProps> = (props) => {
   );
 };
 
-export const DatafilesToolbar: React.FC = () => {
+export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
+  searchInput,
+}) => {
   const { api, system, scheme, path } = useFileListingRouteParams();
   const { selectedFiles } = useSelectedFiles(api, system, path);
   const { user } = useAuthenticatedUser();
@@ -45,7 +47,7 @@ export const DatafilesToolbar: React.FC = () => {
 
   return (
     <div className={styles.toolbarRoot}>
-      <span>(search bar goes here)</span>
+      <div style={{ marginLeft: '12px' }}>{searchInput ?? null}</div>
 
       <div className={styles.toolbarButtonContainer}>
         <DatafilesModal.Rename api={api} system={system} path={path}>
@@ -94,6 +96,7 @@ export const DatafilesToolbar: React.FC = () => {
           system={system}
           selectedFiles={selectedFiles}
           className={styles.toolbarButton}
+          disabled={!rules.canTrash}
         >
           <i role="none" className="fa fa-trash" />
           <span>Trash</span>

@@ -1,4 +1,4 @@
-import { Form, Input, Button, Checkbox, FormInstance } from 'antd';
+import { Form, Input, Button, FormInstance } from 'antd';
 import React, { useCallback, useEffect } from 'react';
 import {
   facilityOptions,
@@ -22,35 +22,7 @@ import {
 } from './_fields';
 
 import * as constants from '../constants';
-
-const AuthorSelect: React.FC<{
-  projectUsers: TProjectUser[];
-  value?: TProjectUser[];
-  onChange?: (value: TProjectUser[]) => void;
-}> = ({ value, onChange, projectUsers }) => {
-  const options = projectUsers.map((author) => ({
-    value: JSON.stringify(author),
-    label: `${author.fname} ${author.lname} (${author.email})`,
-  }));
-
-  const onChangeCallback = useCallback(
-    (value: string[]) => {
-      if (onChange) onChange(value.map((a) => JSON.parse(a)));
-    },
-    [onChange]
-  );
-
-  return (
-    <Checkbox.Group
-      style={{ flexDirection: 'column' }}
-      value={projectUsers
-        .filter((user) => value?.some((v) => user.email === v.email))
-        .map((v) => JSON.stringify(v) ?? [])}
-      options={options}
-      onChange={onChangeCallback}
-    />
-  );
-};
+import { AuthorSelect } from './_fields/AuthorSelect';
 
 const ExperimentFormFields: React.FC<{
   form: FormInstance;
@@ -512,7 +484,7 @@ export const PublishableEntityForm: React.FC<{
     <Form
       form={form}
       layout="vertical"
-      onFinish={(v) => console.log(v)}
+      onFinish={(v) => console.log(JSON.stringify(v))}
       requiredMark={customRequiredMark}
     >
       {projectType === 'experimental' && (

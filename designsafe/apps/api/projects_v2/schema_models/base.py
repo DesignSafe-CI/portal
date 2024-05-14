@@ -131,6 +131,9 @@ class BaseProject(MetadataModel):
     coverage_temporal: Optional[str] = None
     lat_long_name: Optional[str] = None
 
+    tombstone: bool = False
+    tombstone_message: Optional[str] = None
+
     def construct_users(self) -> list[ProjectUser]:
         """Fill in missing user information from the database."""
         users = []

@@ -1,27 +1,42 @@
-.s-version-list {
+/* FAQ: Relies on markup, so CMS can replicate the design */
+
+/* Container */
+.s-app-version-list {
     background-color: #F4F4F4;
     padding: 20px;
 }
-.s-version-list > h2 {
+.s-app-version-list:not(:has(article)) {
+    text-align: center;
+    padding: 60px;
+}
+
+/* List Title */
+.s-app-version-list > h2 {
     color: inherit;
     margin-top: unset;
     padding-bottom: unset;
     border-bottom: unset;
 }
-.s-version-list > article {
-    padding-top: 30px;
+
+/* Version Content Layout */
+.s-app-version-list > article {
     display: grid;
     grid-template-areas:
         "name link"
         "desc desc";
 }
-.s-version-list > article:not(:last-of-type) {
+
+/* Space & Lines Between Versions */
+.s-app-version-list > article:not(:last-of-type) {
     padding-bottom: 15px;
 }
-.s-version-list > *:not(:first-of-type) {
+.s-app-version-list > article:not(:first-of-type) {
+    padding-top: 30px;
     border-top: 1px solid #333333;
 }
-.s-version-list > * > h3 {
+
+/* Version Label */
+.s-app-version-list > article > h3 {
     grid-area: name;
     font-size: 1.6rem;
     font-weight: 500; /* e.g. "medium", Core-Styles `var(--medium)` */
@@ -31,22 +46,26 @@
     display: grid;
     align-content: center;
 }
+
+/* Version Link */
+.s-app-version-list > article > a,
+/* To support manual content via CMS */
 /* FAQ: CMS forces a button or link on its own line to be in a paragraph */
-.s-version-list > * > p:has(
-    a:only-child,
-    button:only-child
-) {
+.s-app-version-list > * > p:has(a:only-child) {
     grid-area: link;
     justify-self: end;
 }
-.s-version-list > * > p:not(:has(
-    a:only-child,
-    button:only-child
-)) {
+.s-app-version-list > article > a {
+    margin-bottom: 10px; /* mimics Bootstrap `p { margin: 0 0 10px; }` */
+}
+.s-app-version-list > * > p:only-of-type,
+/* To support manual content via CMS */
+/* FAQ: CMS forces a button or link on its own line to be in a paragraph */
+.s-app-version-list > * > p:not(:has(a:only-child)) {
     grid-area: desc;
 }
 
 /* Bootstrap */
-.s-version-list .btn {
+.s-app-version-list .btn {
     padding-inline: 24px; /* double Bootstrap .btn padding */
 }
