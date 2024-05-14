@@ -10,6 +10,8 @@ export type TJob = {
   created: string;
   ended: string;
   execSystemId: string;
+  coresPerNode: number;
+  nodeCount: number;
   lastUpdated: string;
   name: string;
   owner: string;

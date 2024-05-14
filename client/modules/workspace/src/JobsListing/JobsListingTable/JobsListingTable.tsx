@@ -27,6 +27,8 @@ export const JobsListingTable: React.FC<
   /* FETCH JOB LISTING */
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useJobsListing(limit);
+    const jobs = data?.pages.flatMap(page => page.listing) || [];
+    console.log(jobs);
 
   const combinedListing = useMemo(() => {
     const cl: TJob[] = [];
