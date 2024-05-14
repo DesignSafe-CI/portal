@@ -58,7 +58,7 @@
   right: -20px !important;
 }
 
-.ant-table-tbody tr:nth-child(even) td {
+.ant-table-tbody tr:nth-child(odd) td {
   background-color: #f9f9f9;
 }
 
@@ -89,6 +89,10 @@
 }
 .success-button:hover {
   background-color: #158600 !important;
+}
+.success-button:disabled {
+  color: #ffffff !important;
+  background-color: rgb(140, 187, 132) !important;
 }
 
 .flex-1 {

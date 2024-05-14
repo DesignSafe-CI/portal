@@ -40,7 +40,6 @@ class Experiment(MetadataModel):
         Optional[DropdownValue],
         BeforeValidator(lambda v: handle_dropdown_value(v, FACILITY_OPTIONS)),
         Field(
-            exclude=True,
             validation_alias=AliasChoices("facility", "experimentalFacility"),
         ),
     ] = None
@@ -64,6 +63,8 @@ class Experiment(MetadataModel):
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
     project: list[str] = []
     dois: list[str] = []
+
+    tombstone: bool = False
 
     @model_validator(mode="after")
     def handle_other(self):

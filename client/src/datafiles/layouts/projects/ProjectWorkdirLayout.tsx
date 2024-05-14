@@ -19,7 +19,7 @@ export const ProjectWorkdirLayout: React.FC = () => {
         initialBreadcrumbs={[]}
         path={path ?? ''}
         baseRoute={`/projects/${projectId}/workdir`}
-        systemRootAlias={projectId}
+        systemRootAlias={data.baseProject.value.projectId}
         systemRoot=""
         itemRender={(obj) => {
           return (

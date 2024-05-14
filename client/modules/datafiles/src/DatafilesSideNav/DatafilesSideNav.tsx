@@ -32,7 +32,7 @@ export const DatafilesSideNav: React.FC = () => {
             My Data
           </DataFilesNavLink>
           <DataFilesNavLink to={`/tapis/designsafe.storage.frontera.work`}>
-            My Data (Work)
+            HPC Work
           </DataFilesNavLink>
           <DataFilesNavLink to="/projects">My Projects</DataFilesNavLink>
           <DataFilesNavLink to="/shared/designsafe.storage.default">

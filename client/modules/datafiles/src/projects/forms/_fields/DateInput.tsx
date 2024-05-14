@@ -13,10 +13,11 @@ export const DateInput: React.FC<
     <>
       <DatePicker
         value={value ? dayjs(value) : undefined}
+        placeholder="mm/dd/yyyy"
         onChange={(v) => onChange && onChange(v ? v.toISOString() : undefined)}
         format="MM/DD/YYYY"
         {...props}
-        style={{ width: '100%', ...props.style }}
+        style={{ width: '100%', minWidth: '200px', ...props.style }}
       />
       {/* Explicit clear button is needed for keyboard usability */}
       <Button

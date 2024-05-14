@@ -56,13 +56,13 @@ export const PROJECT_COLORS: Record<string, { outline: string; fill: string }> =
 
     [SIMULATION]: { outline: '#cccccc', fill: '#f5f5f5' },
     [SIMULATION_REPORT]: { outline: '#cccccc', fill: '#f5f5f5' },
-    [SIMULATION_ANALYSIS]: { outline: '##56C0E0', fill: '#CCECF6' },
+    [SIMULATION_ANALYSIS]: { outline: '#56C0E0', fill: '#CCECF6' },
     [SIMULATION_MODEL]: { outline: '#1568C9', fill: '#C4D9F2' },
     [SIMULATION_INPUT]: { outline: '#43A59D', fill: '#CAE9E6' },
-    [SIMULATION_OUTPUT]: { outline: '#B59300', fill: '#B59300' },
+    [SIMULATION_OUTPUT]: { outline: '#B59300', fill: '#ECE4BF' },
 
     [HYBRID_SIM]: { outline: '#cccccc', fill: '#f5f5f5' },
-    [HYBRID_SIM_ANALYSIS]: { outline: '##56C0E0', fill: '#CCECF6' },
+    [HYBRID_SIM_ANALYSIS]: { outline: '#56C0E0', fill: '#CCECF6' },
     [HYBRID_SIM_REPORT]: { outline: '#cccccc', fill: '#f5f5f5' },
     [HYBRID_SIM_GLOBAL_MODEL]: { outline: '#1568C9', fill: '#C4D9F2' },
     [HYBRID_SIM_COORDINATOR]: { outline: '#43A59D', fill: '#CAE9E6' },
@@ -75,8 +75,8 @@ export const PROJECT_COLORS: Record<string, { outline: string; fill: string }> =
     [FIELD_RECON_REPORT]: { outline: '#cccccc', fill: '#f5f5f5' },
     [FIELD_RECON_MISSION]: { outline: '#000000', fill: '#ffffff' },
     [FIELD_RECON_GEOSCIENCE]: { outline: '#43A59D', fill: '#CAE9E6' },
-    [FIELD_RECON_PLANNING]: { outline: '#B59300', fill: '#ECE4BF' },
-    [FIELD_RECON_SOCIAL_SCIENCE]: { outline: '#43A59D', fill: '#CAE9E6' },
+    [FIELD_RECON_SOCIAL_SCIENCE]: { outline: '#B59300', fill: '#ECE4BF' },
+    [FIELD_RECON_PLANNING]: { outline: '#43A59D', fill: '#CAE9E6' },
   };
 
 export const ALLOWED_RELATIONS: Record<string, string[]> = {
@@ -153,7 +153,6 @@ export const ENTITIES_WITH_FILES: Record<
   ],
   field_recon: [
     FIELD_RECON_GEOSCIENCE,
-    FIELD_RECON_MISSION,
     FIELD_RECON_PLANNING,
     FIELD_RECON_REPORT,
     FIELD_RECON_SOCIAL_SCIENCE,
@@ -195,7 +194,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   [FIELD_RECON_GEOSCIENCE]: 'Geoscience Collection',
   [FIELD_RECON_SOCIAL_SCIENCE]: 'Social Science Collection',
   [FIELD_RECON_REPORT]: 'Document Collection',
-  [FIELD_RECON_PLANNING]: 'Planning Collection',
+  [FIELD_RECON_PLANNING]: 'Research Planning Collection',
 };
 
 export const PUBLISHABLE_NAMES = [
@@ -206,3 +205,37 @@ export const PUBLISHABLE_NAMES = [
   FIELD_RECON_MISSION,
   FIELD_RECON_REPORT,
 ];
+
+// Enumeration of non-publishable entities that can be added in the "Add Categories" modal
+export const CATEGORIES_BY_PROJECT_TYPE: Record<string, string[]> = {
+  experimental: [
+    EXPERIMENT_ANALYSIS,
+    EXPERIMENT_REPORT,
+    EXPERIMENT_MODEL_CONFIG,
+    EXPERIMENT_SENSOR,
+    EXPERIMENT_EVENT,
+  ],
+  simulation: [
+    SIMULATION_ANALYSIS,
+    SIMULATION_REPORT,
+    SIMULATION_MODEL,
+    SIMULATION_INPUT,
+    SIMULATION_OUTPUT,
+  ],
+  hybrid_simulation: [
+    HYBRID_SIM_ANALYSIS,
+    HYBRID_SIM_REPORT,
+    HYBRID_SIM_COORDINATOR,
+    HYBRID_SIM_COORDINATOR_OUTPUT,
+    HYBRID_SIM_GLOBAL_MODEL,
+    HYBRID_SIM_EXP_OUTPUT,
+    HYBRID_SIM_EXP_SUBSTRUCTURE,
+    HYBRID_SIM_SIM_OUTPUT,
+    HYBRID_SIM_SIM_SUBSTRUCTURE,
+  ],
+  field_recon: [
+    FIELD_RECON_GEOSCIENCE,
+    FIELD_RECON_PLANNING,
+    FIELD_RECON_SOCIAL_SCIENCE,
+  ],
+};

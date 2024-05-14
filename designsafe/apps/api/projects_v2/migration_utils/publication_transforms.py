@@ -1,4 +1,5 @@
 """Utilities to convert published entitities to a consistent schema."""
+
 from pathlib import Path
 from typing import TypedDict
 from django.conf import settings
@@ -189,6 +190,32 @@ def update_file_tag_paths(entity: dict, base_path: str) -> list[FileTagDict]:
     return updated_tags
 
 
+def update_file_tag_paths_legacy(entity: dict, base_path: str) -> list[FileTagDict]:
+    """
+    Updates tag paths to reflect what the paths should be in the published dataset.
+    This constructs paths for legacy publications where the data folder is copied directly
+    from the Projects area without consideration for the tree structure.
+
+    Before: [...{"pathName": "/data/xyz/taggedFile.json}, "tagName": "Record"}]
+    After: [...{"pathName": "/PRJ-1234/data/xyz/taggedFile.json}, "tagName": "Record"}]
+    """
+    tags = entity["value"].get("fileTags", None)
+    if not tags:
+        tags = convert_legacy_tags(entity)
+
+    updated_tags = []
+
+    for tag in tags:
+        if not tag.get("path", None):
+            # If there is no path, we can't recover the tag.
+            continue
+        updated_tags.append(
+            {**tag, "path": str(Path(base_path) / tag["path"].lstrip("/"))}
+        )
+
+    return updated_tags
+
+
 def get_path_mapping(entity: dict, base_path: str):
     """map fileObj paths to published paths and handle duplicate names"""
     file_objs = entity["value"]["fileObjs"]
@@ -224,7 +251,27 @@ def update_file_objs(
         updated_file_objs.append(
             {**file_obj, "path": path_mapping[file_obj["path"]], "system": system_id}
         )
-    return updated_file_objs
+    return updated_file_objs, path_mapping
+
+
+def update_file_objs_legacy(
+    entity: dict, base_path: str, system_id="designsafe.storage.published"
+):
+    """Return an updated file_objs array with the correct published system. Reproduces
+    existing publications where the file structure does not reflect the curation tree.
+    """
+    file_objs = entity["value"]["fileObjs"]
+    path_mapping = get_path_mapping(entity, base_path)
+    updated_file_objs = []
+    for file_obj in file_objs:
+        updated_file_objs.append(
+            {
+                **file_obj,
+                "path": str(Path(base_path) / file_obj["path"].lstrip("/")),
+                "system": system_id,
+            }
+        )
+    return updated_file_objs, path_mapping
 
 
 def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
@@ -240,6 +287,13 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         fixed_authors = list(map(convert_v2_user, entity["authors"]))
         entity["value"]["authors"] = sorted(fixed_authors, key=lambda a: a["order"])
 
+    tombstone_uuids = base_pub_meta.get("tombstone", [])
+    if entity["uuid"] in tombstone_uuids:
+        entity["value"]["tombstone"] = True
+    tombstone_message = base_pub_meta.get("tombstoneMessage", None)
+    if tombstone_message:
+        entity["value"]["tombstoneMessage"] = tombstone_message
+
     old_tags = entity["value"].get("tags", None)
     if old_tags:
         new_style_tags = convert_legacy_tags(entity)
@@ -250,11 +304,39 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     # populated from their children. In these cases, _filepaths is empty.
     if file_objs and entity.get("_filePaths", None) != []:
         entity["value"]["fileObjs"] = file_objs
+        # Avoid "fixing" tags for legacy projects that don't have tree-based file layouts
         if entity["value"].get("fileTags", False):
-            entity["value"]["fileTags"] = update_file_tag_paths(entity, base_path)
-        entity["value"]["fileObjs"] = update_file_objs(
+            # entity["value"]["fileTags"] = update_file_tag_paths(
+            #    entity, base_path
+            # )
+            entity["value"]["fileTags"] = update_file_tag_paths_legacy(
+                entity, base_path
+            )
+
+        # new_file_objs, path_mapping = update_file_objs(
+        #    entity, base_path, system_id=settings.PUBLISHED_SYSTEM
+        # )
+        new_file_objs, path_mapping = update_file_objs_legacy(
             entity, base_path, system_id=settings.PUBLISHED_SYSTEM
         )
 
+        entity["value"]["fileObjs"] = new_file_objs
+    else:
+        path_mapping = {}
     validated_model = model.model_validate(entity["value"])
-    return validated_model.model_dump()
+
+    if getattr(validated_model, "project_type", None) == "other":
+        # Type Other doesn't include emails/institutions in team order
+        for author in validated_model.authors:
+            user = next(
+                (u for u in validated_model.users if u.username == author.name), None
+            )
+            if user:
+                author.email = user.email
+                author.inst = user.inst
+        if schema_version == 1:
+            validated_model.authors = [
+                u for u in validated_model.users if u.fname != "N/A"
+            ]
+
+    return validated_model.model_dump(), path_mapping

@@ -23,7 +23,10 @@ const columns: TableColumnsType<TBaseProject> = [
     },
     title: 'Principal Investigator',
   },
-  { render: (_, record) => record.lastUpdated, title: 'Last Modified' },
+  {
+    render: (_, record) => new Date(record.lastUpdated).toLocaleString(),
+    title: 'Last Modified',
+  },
 ];
 
 export const ProjectListing: React.FC = () => {
