@@ -20,12 +20,15 @@ try:
     from designsafe.apps.api.agave import get_service_account_client_v2
 except ImportError:
     # TODOV3 drop this
-    from designsafe.apps.api.agave import get_service_account_client as get_service_account_client_v2
+    from designsafe.apps.api.agave import (
+        get_service_account_client as get_service_account_client_v2,
+    )
 
 
 logger = logging.getLogger(__name__)
 
 service_account_v2 = get_service_account_client_v2()
+
 
 def remove_user(client, system_id: str, username: str):
     """
@@ -151,13 +154,11 @@ class Command(BaseCommand):
         )
         client = Tapis(base_url=TAPIS_TENANT_BASEURL, access_token=TAPIS_ADMIN_JWT)
 
-        if dry_run:
-            logger.info("Running in dry-run mode. No changes will be made.")
-
         total_number_projects = len(list(iterate_entities()))
 
         for i, project in enumerate(iterate_entities()):
             uuid = project["uuid"]
+
             project_id = project["value"]["projectId"]
             system = f"project-{uuid}"
             project_root_dir = f"/corral-repl/projects/NHERI/projects/{uuid}"
@@ -181,25 +182,31 @@ class Command(BaseCommand):
             )
             guest_members = [u["user"] for u in guest_members if u is not None]
 
-            all_writers = co_pis + team_members + guest_members
-            if pi is not None:
-                all_writers.append(pi)
+            all_writers = (
+                co_pis + team_members + guest_members + ([pi] if pi is not None else [])
+            )
 
             try:
-                tapis_v2_system_roles = service_account_v2.systems.listRoles(systemId=f'project-{uuid}')
-            except:
+                tapis_v2_system_roles = service_account_v2.systems.listRoles(
+                    systemId=f"project-{uuid}"
+                )
+            except Exception:  # pylint: disable=broad-exception-caught:
                 tapis_v2_system_roles = []
                 logger.error(f"Unable to get roles on uuid:{uuid}")
-            users_from_roles = [u['username'] for u in tapis_v2_system_roles]
-            users_from_roles_not_listed_elsewhere = [u for u in users_from_roles if u not in all_writers]
+            users_from_roles = [u["username"] for u in tapis_v2_system_roles]
+            users_from_roles_not_listed_elsewhere = [
+                u for u in users_from_roles if u not in all_writers
+            ]
 
             all_writers = all_writers + users_from_roles_not_listed_elsewhere
 
-            msg = f"Migrating {i}/{total_number_projects}, {project_id}, ({uuid}), "\
-                  f"('{title}'), pi:{pi}, coPis:{co_pis}, teamMembers:{team_members}, "\
-                  f"guestMembers:{guest_members},"\
-                  f"users_from_roles:{users_from_roles},"\
-                  f"users_from_roles_not_listed_elsewhere:{users_from_roles_not_listed_elsewhere}"
+            msg = (
+                f"Migrating {i}/{total_number_projects}, {project_id}, ({uuid}), "
+                f"('{title}'), pi:{pi}, coPis:{co_pis}, teamMembers:{team_members}, "
+                f"guestMembers:{guest_members},"
+                f"users_from_roles:{users_from_roles},"
+                f"users_from_roles_not_listed_elsewhere:{users_from_roles_not_listed_elsewhere}"
+            )
             logger.info(msg)
 
             all_readers = guest_members
