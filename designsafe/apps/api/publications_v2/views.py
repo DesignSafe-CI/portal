@@ -7,12 +7,139 @@ from django.db import models
 from django.http import HttpRequest, JsonResponse
 from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.apps.api.publications_v2.elasticsearch import IndexedPublication
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     publish_project_async,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def handle_search(query_opts: dict, offset=0, limit=100):
+    from elasticsearch_dsl import Q
+
+    logger.debug(offset)
+
+    query = IndexedPublication.search()
+
+    if project_type_query := query_opts["project-type"]:
+        query = query.filter("terms", **{"nodes.value.projectType": project_type_query})
+
+    if facility_query := query_opts["facility"]:
+        query = query.filter(
+            Q("term", **{"nodes.value.facility.id.keyword": facility_query})
+            | Q("term", **{"nodes.value.facilities.id.keyword": facility_query})
+        )
+    if nh_type_query := query_opts["nh-type"]:
+        query = query.filter(
+            Q("term", **{"nodes.value.nhTypes.id.keyword": nh_type_query})
+            | Q("term", **{"nodes.value.nhTypes": nh_type_query})
+        )
+
+    if pub_year_query := query_opts["pub-year"]:
+        query = query.filter(
+            Q(
+                {
+                    "range": {
+                        "nodes.publicationDate": {
+                            "gte": f"{pub_year_query}||/y",
+                            "lte": f"{pub_year_query}||/y",
+                            "format": "yyyy",
+                        }
+                    }
+                }
+            )
+        )
+
+    if nh_year_query := query_opts["nh-year"]:
+        query = query.filter(
+            Q(
+                {
+                    "range": {
+                        "nodes.value.nhEventStart": {
+                            "gte": f"{nh_year_query}||/y",
+                            "lte": f"{nh_year_query}||/y",
+                            "format": "yyyy",
+                        }
+                    }
+                }
+            )
+        )
+
+    if experiment_type_query := query_opts["experiment-type"]:
+        query = query.filter(
+            Q(
+                "term",
+                **{"nodes.value.experimentType.id.keyword": experiment_type_query},
+            )
+        )
+
+    if sim_type_query := query_opts["sim-type"]:
+        query = query.filter(
+            Q(
+                "term",
+                **{"nodes.value.simulationType.id.keyword": sim_type_query},
+            )
+        )
+
+    if fr_type_query := query_opts["fr-type"]:
+        query = query.filter(
+            Q(
+                "term",
+                **{"nodes.value.frTypes.id.keyword": fr_type_query},
+            )
+        )
+
+    if hyb_sim_type_query := query_opts["hyb-sim-type"]:
+        query = query.filter(
+            Q(
+                "term",
+                **{"nodes.value.simulationType.id.keyword": hyb_sim_type_query},
+            )
+        )
+
+    if data_type_query := query_opts["data-type"]:
+        query = query.filter(
+            Q(
+                "term",
+                **{"nodes.value.dataType.id.keyword": data_type_query},
+            )
+        )
+
+    if search_string := query_opts["q"]:
+        qs_query = Q(
+            "query_string",
+            query=search_string,
+            default_operator="AND",
+            type="cross_fields",
+            fields=[
+                "nodes.value.description",
+                "nodes.value.keywords",
+                "nodes.value.title",
+                "nodes.value.projectId",
+                "nodes.value.projectType",
+                "nodes.value.dataType",
+                "nodes.value.authors",
+                "nodes.value.authors.fname",
+                "nodes.value.authors.lname",
+                "nodes.value.authors.username",
+                "nodes.value.authors.inst",
+            ],
+        )
+        term_query = Q({"term": {"nodes.value.projectId.keyword": search_string}})
+        query = query.filter(qs_query | term_query)
+
+    hits = (
+        query.extra(from_=offset, size=limit)
+        .sort({"nodes.publicationDate": {"order": "desc"}})
+        .source([""])
+        .execute()
+        .hits
+    )
+    returned_ids = [hit.meta.id for hit in hits]
+
+    return returned_ids, hits.total.value
 
 
 class PublicationListingView(BaseApiView):
@@ -23,10 +150,34 @@ class PublicationListingView(BaseApiView):
         offset = int(request.GET.get("offset", 0))
         limit = int(request.GET.get("limit", 100))
 
-        publications = Publication.objects.defer("tree").order_by("-created")[
-            offset : offset + limit
-        ]
-        total = Publication.objects.count()
+        # Search/filter params
+        query_opts = {
+            "q": request.GET.get("q", None),
+            "project-type": request.GET.getlist("project-type", []),
+            "nh-type": request.GET.get("nh-type", None),
+            "pub-year": request.GET.get("pub-year", None),
+            "facility": request.GET.get("facility", None),
+            "experiment-type": request.GET.get("experiment-type", None),
+            "sim-type": request.GET.get("sim-type", None),
+            "fr-type": request.GET.get("fr-type", None),
+            "nh-year": request.GET.get("nh-year", None),
+            "hyb-sim-type": request.GET.get("hyb-sim-type", None),
+            "data-type": request.GET.get("data-type", None),
+        }
+
+        has_query = any(query_opts.values())
+        if has_query:
+            hits, total = handle_search(query_opts, offset, limit)
+            publications_query = (
+                Publication.objects.filter(project_id__in=hits)
+                .defer("tree")
+                .order_by("-created")
+            )
+            publications = publications_query
+        else:
+            publications_query = Publication.objects.defer("tree").order_by("-created")
+            total = publications_query.count()
+            publications = publications_query[offset : offset + limit]
         result = [
             {
                 "projectId": pub.value["projectId"],

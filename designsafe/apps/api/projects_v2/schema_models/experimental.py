@@ -1,4 +1,5 @@
 """Pydantic models for Experimental entities"""
+
 import itertools
 from typing import Optional, Annotated
 from pydantic import BeforeValidator, Field, ConfigDict, model_validator, AliasChoices
@@ -57,8 +58,8 @@ class Experiment(MetadataModel):
     ] = None
     equipment_type_other: str = Field(default="", exclude=True)
 
-    procedure_start: str = ""
-    procedure_end: str = ""
+    procedure_start: Optional[str] = None
+    procedure_end: Optional[str] = None
 
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
     project: list[str] = []
