@@ -76,6 +76,19 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
             </ToolbarButton>
           )}
         </DatafilesModal.Rename>
+
+        <DatafilesModal.Move api={api} system={system} path={path}>
+          {({ onClick }) => (
+            <ToolbarButton
+              onClick={onClick}
+              disabled={!rules.canRename}
+              className={styles.toolbarButton}
+            >
+              <i role="none" className="fa fa-arrows" />
+              <span>Move</span>
+            </ToolbarButton>
+          )}
+        </DatafilesModal.Move>
         <DatafilesModal.Preview
           api={api}
           system={system}
