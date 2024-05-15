@@ -687,6 +687,11 @@ ES_INDICES = {
         'document': 'designsafe.apps.data.models.elasticsearch.IndexedPublication',
         'kwargs': {'index.mapping.total_fields.limit': 3000}
     },
+        'publications_v2': {
+        'alias': ES_INDEX_PREFIX.format('publications_v2'),
+        'document': 'designsafe.apps.api.publications_v2.elasticsearch.IndexedPublication',
+        'kwargs': {}
+    },
     'web_content': {
         'alias': ES_INDEX_PREFIX.format('web-content'),
         'document': 'designsafe.apps.data.models.elasticsearch.IndexedCMSPage',

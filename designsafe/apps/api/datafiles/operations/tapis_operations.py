@@ -15,7 +15,7 @@ from requests.exceptions import HTTPError
 logger = logging.getLogger(__name__)
 
 
-def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
+def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
     """
     Perform a Tapis file listing
 
@@ -37,6 +37,10 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     list
         List of dicts containing file metadata
     """
+
+    if q:
+        return search(client, system, path, offset=0, limit=100, query_string=q, **kwargs)
+
     raw_listing = client.files.listFiles(systemId=system,
                                          path=(path or '/'),
                                          offset=int(offset),
@@ -59,7 +63,6 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
-
     # Update Elasticsearch after each listing.
     # agave_listing_indexer.delay(listing)
     agave_listing_indexer.delay(listing)

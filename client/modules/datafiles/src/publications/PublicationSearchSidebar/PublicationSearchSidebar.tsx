@@ -53,7 +53,10 @@ export const PublicationSearchSidebar: React.FC = () => {
           onChange={(v) => {
             setSearchParam('facility', v);
           }}
-          options={dropdownOptions.facilityOptions}
+          options={[
+            { label: 'All Facilities', value: null },
+            ...dropdownOptions.facilityOptions,
+          ]}
           popupMatchSelectWidth={false}
           style={{ width: '100%' }}
           placeholder="All Facilities"
@@ -91,8 +94,11 @@ export const PublicationSearchSidebar: React.FC = () => {
             onChange={(v) => setSearchParam('experiment-type', v)}
             options={
               searchParams.get('facility')
-                ? dropdownOptions.experimentTypeOptions[
-                    searchParams.get('facility') ?? ''
+                ? [
+                    { label: 'All Types', value: null },
+                    ...dropdownOptions.experimentTypeOptions[
+                      searchParams.get('facility') ?? ''
+                    ],
                   ]
                 : []
             }
@@ -116,7 +122,10 @@ export const PublicationSearchSidebar: React.FC = () => {
 
         <Select
           id="simulation-type-select"
-          options={dropdownOptions.simulationTypeOptions}
+          options={[
+            { label: 'All Types', value: null },
+            ...dropdownOptions.simulationTypeOptions,
+          ]}
           value={searchParams.get('sim-type')}
           onChange={(v) => setSearchParam('sim-type', v)}
           allowClear
@@ -142,7 +151,10 @@ export const PublicationSearchSidebar: React.FC = () => {
           <Select
             id="fr-type-select"
             allowClear
-            options={dropdownOptions.frTypeOptions}
+            options={[
+              { label: 'All Types', value: null },
+              ...dropdownOptions.frTypeOptions,
+            ]}
             value={searchParams.get('fr-type')}
             onChange={(v) => setSearchParam('fr-type', v)}
             style={{ width: '100%', marginBottom: '5px' }}
@@ -155,7 +167,7 @@ export const PublicationSearchSidebar: React.FC = () => {
           </label>
           <Select
             id="nh-year-select"
-            options={yearOptions}
+            options={[{ label: 'All Years', value: null }, ...yearOptions]}
             value={searchParams.get('nh-year')}
             onChange={(v) => setSearchParam('nh-year', v)}
             allowClear
@@ -179,7 +191,10 @@ export const PublicationSearchSidebar: React.FC = () => {
           </label>
           <Select
             id="hybsim-type-select"
-            options={dropdownOptions.HybridSimTypeOptions}
+            options={[
+              { label: 'All Types', value: null },
+              ...dropdownOptions.HybridSimTypeOptions,
+            ]}
             value={searchParams.get('hyb-sim-type')}
             onChange={(v) => setSearchParam('hyb-sim-type', v)}
             allowClear
@@ -203,7 +218,11 @@ export const PublicationSearchSidebar: React.FC = () => {
             Data Type
           </label>
           <Select
-            options={dropdownOptions.dataTypeOptions}
+            options={[
+              { label: 'All Types', value: null },
+              ...dropdownOptions.dataTypeOptions,
+              { label: 'Other', value: 'other' },
+            ]}
             value={searchParams.get('data-type')}
             onChange={(v) => setSearchParam('data-type', v)}
             allowClear
