@@ -5,11 +5,12 @@ import {
   useFileListingRouteParams,
   useProjectDetail,
   useSelectedFiles,
+  useSelectedFilesForSystem,
 } from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import TrashButton from './TrashButton';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
-import { useParams } from 'react-router-dom';
+import { useMatches, useParams } from 'react-router-dom';
 
 const toolbarTheme: ThemeConfig = {
   components: {
@@ -33,17 +34,43 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
   const routeParams = useFileListingRouteParams();
   const { scheme, path } = routeParams;
   let { api, system } = routeParams;
-  const { projectId } = useParams();
+  let { projectId } = useParams();
 
   const { user } = useAuthenticatedUser();
 
+  const matches = useMatches();
+  const isProjects = matches.find((m) => m.id === 'project');
+  const isPublished = matches.find((m) => m.id === 'published');
+  const isEntityListing = matches.find((m) => m.id === 'entity-listing');
+  const isNees = matches.find((m) => m.id === 'nees');
+
+  const isReadOnly =
+    isPublished || isNees || system === 'designsafe.storage.community';
+
+  if (!isProjects) projectId = '';
   const { data } = useProjectDetail(projectId ?? '');
   if (projectId) {
     system = `project-${data?.baseProject.uuid}`;
     api = 'tapis';
   }
+  if (isPublished) {
+    system = 'designsafe.storage.published';
+    api = 'tapis';
+  }
 
-  const { selectedFiles } = useSelectedFiles(api, system, path);
+  /* 
+  Project landing pages have multiple selectable listings, so use the 
+  useSelectedFilesForSystem hook to capture every selection on the page.
+  */
+  const { selectedFiles: listingSelectedFiles } = useSelectedFiles(
+    api,
+    system,
+    path
+  );
+  const publicationSelectedFiles = useSelectedFilesForSystem('tapis', system);
+  const selectedFiles = isEntityListing
+    ? publicationSelectedFiles
+    : listingSelectedFiles;
 
   const rules = useMemo(
     function () {
@@ -51,12 +78,13 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
       return {
         canPreview:
           selectedFiles.length === 1 && selectedFiles[0].type === 'file',
-        canRename: user && selectedFiles.length === 1,
+        canRename: user && selectedFiles.length === 1 && !isReadOnly,
         canCopy: user && selectedFiles.length >= 1,
-        canTrash: user && selectedFiles.length >= 1,
+        canTrash: user && selectedFiles.length >= 1 && !isReadOnly,
+        canDownload: selectedFiles.length >= 1,
       };
     },
-    [selectedFiles, user]
+    [selectedFiles, isReadOnly, user]
   );
 
   return (
@@ -76,6 +104,19 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
             </ToolbarButton>
           )}
         </DatafilesModal.Rename>
+
+        <DatafilesModal.Move api={api} system={system} path={path}>
+          {({ onClick }) => (
+            <ToolbarButton
+              onClick={onClick}
+              disabled={!rules.canRename}
+              className={styles.toolbarButton}
+            >
+              <i role="none" className="fa fa-arrows" />
+              <span>Move</span>
+            </ToolbarButton>
+          )}
+        </DatafilesModal.Move>
         <DatafilesModal.Preview
           api={api}
           system={system}
@@ -115,6 +156,18 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           <i role="none" className="fa fa-trash" />
           <span>Trash</span>
         </TrashButton>
+        <DatafilesModal.Download api={api} system={system} path={path}>
+          {({ onClick }) => (
+            <ToolbarButton
+              onClick={onClick}
+              disabled={!rules.canDownload}
+              className={styles.toolbarButton}
+            >
+              <i role="none" className="fa fa-cloud-download" />
+              <span>Download</span>
+            </ToolbarButton>
+          )}
+        </DatafilesModal.Download>
       </div>
     </div>
   );

@@ -154,8 +154,8 @@ def iterate_level(client, system, path, limit=100):
     offset = 0
 
     while True:
-        page = client.files.list(systemId=system,
-                                 filePath=urllib.parse.quote(path),
+        page = client.files.listFiles(systemId=system,
+                                 path=urllib.parse.quote(path),
                                  offset=offset,
                                  limit=limit)
         yield from page

@@ -93,11 +93,11 @@ export const PublicationSearchSidebar: React.FC = () => {
             value={searchParams.get('experiment-type')}
             onChange={(v) => setSearchParam('experiment-type', v)}
             options={
-              searchParams.get('facility')
+              searchParams.get('experimentType')
                 ? [
                     { label: 'All Types', value: null },
                     ...dropdownOptions.experimentTypeOptions[
-                      searchParams.get('facility') ?? ''
+                      searchParams.get('experimentType') ?? ''
                     ],
                   ]
                 : []
