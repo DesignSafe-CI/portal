@@ -68,7 +68,7 @@ export const AppsSubmissionDetails: React.FC<{
       if (!Object.keys(value).length) return <span>-</span>;
       const items: DescriptionsProps['items'] = Object.entries(value).map(
         ([k, v], childIndex) => {
-          const fieldSchema = parent.shape?.[k];
+          const fieldSchema = parent?.shape?.[k];
           // For summary, it is considered required :
           // only if it is required and value is not valid.
           const isRequired =
@@ -92,7 +92,7 @@ export const AppsSubmissionDetails: React.FC<{
             children: getChildren(
               `${key}.${k}`,
               v,
-              parent.shape?.[k],
+              parent?.shape?.[k],
               childIndex
             ),
             style: {
