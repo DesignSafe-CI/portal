@@ -3,16 +3,19 @@ import styles from './DatafilesToolbar.module.css';
 import {
   useAuthenticatedUser,
   useFileListingRouteParams,
+  useProjectDetail,
   useSelectedFiles,
 } from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import TrashButton from './TrashButton';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
+import { useParams } from 'react-router-dom';
 
 const toolbarTheme: ThemeConfig = {
   components: {
     Button: {
       colorPrimaryHover: 'rgba(0, 0, 0, 0.88)',
+      motionDurationMid: '0',
     },
   },
 };
@@ -27,9 +30,20 @@ const ToolbarButton: React.FC<ButtonProps> = (props) => {
 export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
   searchInput,
 }) => {
-  const { api, system, scheme, path } = useFileListingRouteParams();
-  const { selectedFiles } = useSelectedFiles(api, system, path);
+  const routeParams = useFileListingRouteParams();
+  const { scheme, path } = routeParams;
+  let { api, system } = routeParams;
+  const { projectId } = useParams();
+
   const { user } = useAuthenticatedUser();
+
+  const { data } = useProjectDetail(projectId ?? '');
+  if (projectId) {
+    system = `project-${data?.baseProject.uuid}`;
+    api = 'tapis';
+  }
+
+  const { selectedFiles } = useSelectedFiles(api, system, path);
 
   const rules = useMemo(
     function () {

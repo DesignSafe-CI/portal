@@ -148,6 +148,7 @@
             firstName: "{{ request.user.first_name }}",
             lastName: "{{ request.user.last_name }}",
             email: "{{ request.user.email }}",
+            institution: "{{ request.user.profile.institution }}"
         };
     </script>
 

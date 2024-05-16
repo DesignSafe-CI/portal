@@ -14,11 +14,8 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import TapisOAuthToken
 
-# TODOV3: Onboarding
-# from tapipy.errors import BaseTapyException
-# from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
-# from portal.apps.onboarding.execute import execute_setup_steps, new_user_setup_check
-# from portal.apps.search.tasks import index_allocations
+from tapipy.errors import BaseTapyException
+from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
@@ -65,44 +62,29 @@ def tapis_oauth(request):
     return HttpResponseRedirect(authorization_url)
 
 
-# TODOV3: Onboarding
-# def launch_setup_checks(user):
-#     """Perform any onboarding checks or non-onboarding steps that may spawn celery tasks"""
+def launch_setup_checks(user):
+    """Perform any onboarding checks or non-onboarding steps that may spawn celery tasks"""
+    systems_to_configure = [
+        {"system_id": settings.AGAVE_STORAGE_SYSTEM, "path": user.username},
+        {"system_id": settings.AGAVE_WORKING_SYSTEM, "path": user.username},
+    ]
+    client = user.tapis_oauth.client
 
-#     # Check onboarding settings
-#     # new_user_setup_check(user)
-#     # if not user.profile.setup_complete:
-#     #     logger.info("Executing onboarding setup steps for %s", user.username)
-#     #     execute_setup_steps.apply_async(args=[user.username])
-#     # else:
-#     #     logger.info(
-#     #         "Already onboarded, running non-onboarding steps (e.g. update cached "
-#     #         "allocation information) for %s",
-#     #         user.username,
-#     #     )
-#     #     index_allocations.apply_async(args=[user.username])
-
-#     # TODOV3: Onboarding -> Move home dir creation to onboarding step
-#     client = user.tapis_oauth.client
-#     try:
-#         client.files.list(
-#             systemId=settings.AGAVE_STORAGE_SYSTEM, filePath=user.username
-#         )
-#     except BaseTapyException as e:
-#         if e.response.status_code == 404:
-#             check_or_create_agave_home_dir.apply_async(
-#                 args=(user.username, settings.AGAVE_STORAGE_SYSTEM), queue="files"
-#             )
-
-#     try:
-#         client.files.list(
-#             systemId=settings.AGAVE_WORKING_SYSTEM, filePath=user.username
-#         )
-#     except BaseTapyException as e:
-#         if e.response.status_code == 404:
-#             check_or_create_agave_home_dir.apply_async(
-#                 args=(user.username, settings.AGAVE_WORKING_SYSTEM), queue="files"
-#             )
+    for system in systems_to_configure:
+        system_id = system["system_id"]
+        path = system["path"]
+        try:
+            client.files.listFiles(
+                systemId=system_id, path=path
+            )
+            logger.debug(f"Checking system:{system_id} (by performing a listing during login) has succeeded.")
+        except BaseTapyException as e:
+            logger.info(f"Checking system:{system_id} (by performing a listing during login) has failed "
+                        f"({e}: {e.response.status_code}. Starting task to configure the system "
+                        f"correctly.")
+            check_or_configure_system_and_user_directory.apply_async(
+                    args=(user.username, system_id, path), queue="files"
+            )
 
 
 def tapis_oauth_callback(request):
@@ -150,8 +132,7 @@ def tapis_oauth_callback(request):
             TapisOAuthToken.objects.update_or_create(user=user, defaults={**token_data})
 
             login(request, user)
-            # TODOV3: Onboarding
-            # launch_setup_checks(user)
+            launch_setup_checks(user)
         else:
             messages.error(
                 request,

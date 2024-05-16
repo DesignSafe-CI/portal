@@ -534,6 +534,7 @@ TAPIS_TENANT_BASEURL = os.environ.get('TAPIS_TENANT_BASEURL')
 TAPIS_CLIENT_ID = os.environ.get('TAPIS_CLIENT_ID')
 TAPIS_CLIENT_KEY = os.environ.get('TAPIS_CLIENT_KEY')
 TAPIS_ADMIN_JWT = os.environ.get('TAPIS_ADMIN_JWT')
+TAPIS_TG458981_JWT = os.environ.get('TAPIS_TG458981_JWT')
 
 KEY_SERVICE_TOKEN = os.environ.get('KEY_SERVICE_TOKEN')
 
@@ -567,6 +568,8 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
     }
 }
+
+PROJECT_STORAGE_SYSTEM_CREDENTIALS = json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
 
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
 COMMUNITY_SYSTEM = 'designsafe.storage.community'

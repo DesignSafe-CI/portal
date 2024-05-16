@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import urllib
+from pathlib import Path
 from designsafe.apps.api.datafiles.utils import *
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
@@ -14,7 +15,7 @@ from requests.exceptions import HTTPError
 logger = logging.getLogger(__name__)
 
 
-def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
+def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
     """
     Perform a Tapis file listing
 
@@ -36,6 +37,10 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     list
         List of dicts containing file metadata
     """
+
+    if q:
+        return search(client, system, path, offset=0, limit=100, query_string=q, **kwargs)
+
     raw_listing = client.files.listFiles(systemId=system,
                                          path=(path or '/'),
                                          offset=int(offset),
@@ -48,7 +53,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
             'type': 'dir' if f.type == 'dir' else 'file',
             'format': 'folder' if f.type == 'dir' else 'raw',
             'mimeType': f.mimeType,
-            'path': f.path,
+            'path': f"/{f.path}",
             'name': f.name,
             'length': f.size,
             'lastModified': f.lastModified,
@@ -58,7 +63,6 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     except IndexError:
         # Return [] if the listing is empty.
         listing = []
-
     # Update Elasticsearch after each listing.
     # agave_listing_indexer.delay(listing)
     agave_listing_indexer.delay(listing)
@@ -202,19 +206,15 @@ def mkdir(client, system, path, dir_name):
     -------
     dict
     """
-    body = {
-        'action': 'mkdir',
-        'path': dir_name
-    }
-    result = client.files.manage(systemId=system,
-                                 filePath=urllib.parse.quote(path),
-                                 body=body)
+    path_input = str(Path(path) / Path(dir_name))
+    client.files.mkdir(systemId=system, path=path_input)
+
 
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
                               queue='indexing')
-    return dict(result)
+    return {"result": "OK"}
 
 
 def move(client, src_system, src_path, dest_system, dest_path):
@@ -498,11 +498,10 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
 
     upload_name = os.path.basename(uploaded_file.name)
 
-    resp = client.files.importData(systemId=system,
-                                   filePath=urllib.parse.quote(path),
-                                   fileName=str(upload_name),
-                                   fileToUpload=uploaded_file)
 
+    dest_path = os.path.join(path.strip('/'), uploaded_file.name)
+    response_json = client.files.insert(systemId=system, path=dest_path, file=uploaded_file)
+    return {"result": "OK"}
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
