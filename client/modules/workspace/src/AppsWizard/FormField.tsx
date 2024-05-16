@@ -27,7 +27,7 @@ export const FormField: React.FC<{
 }) => {
   const { resetField, control, getValues } = useFormContext();
   const fieldState = useWatch({ control, name });
-  let parameterSetLabel = null;
+  let parameterSetLabel: React.ReactElement | null = null;
 
   if (parameterSet) {
     parameterSetLabel = (
