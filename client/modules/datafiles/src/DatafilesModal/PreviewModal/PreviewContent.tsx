@@ -1,5 +1,5 @@
 import { useConsumePostit, TPreviewFileType } from '@client/hooks';
-import { Spin } from 'antd';
+import { Alert, Spin } from 'antd';
 import React, { useState } from 'react';
 import styles from './PreviewModal.module.css';
 
@@ -69,6 +69,14 @@ export const PreviewContent: TPreviewContent = ({ href, fileType }) => {
         </div>
       );
     default:
-      return <span>Error.</span>;
+      return (
+        <Alert
+          style={{ marginTop: '25px' }}
+          type="warning"
+          showIcon
+          message="Unsupported File Type"
+          description="Preview for this item is not supported."
+        />
+      );
   }
 };

@@ -178,7 +178,7 @@ def download(client, system, path=None, paths=None, *args, **kwargs):
 
     token = None
     if client is not None:
-        token = client.token.token_info['access_token']
+        token = client.access_token.access_token
     zip_endpoint = "https://designsafe-download01.tacc.utexas.edu/check"
     data = json.dumps({'system': system, 'paths': paths})
     # data = json.dumps({'system': 'designsafe.storage.published', 'paths': ['PRJ-2889']})
@@ -296,7 +296,7 @@ def copy(client, src_system, src_path, dest_system, dest_path):
     """
     src_file_name = os.path.basename(src_path)
     try:
-        client.files.list(systemId=dest_system, filePath=os.path.join(dest_path, src_file_name))
+        client.files.listFiles(systemId=dest_system, path=os.path.join(dest_path, src_file_name))
         dst_file_name = rename_duplicate_path(src_file_name)
         full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
     except:
@@ -375,44 +375,16 @@ def rename(client, system, path, new_name):
     # a directory...
     # listing[0].type == 'file'
     # listing[0].type == 'dir'
-    listing = client.files.list(systemId=system, filePath=path)
     path = path.strip('/')
-    body = {'action': 'rename', 'path': new_name}
+    new_path = str(Path(path).parent / new_name)
 
-    rename_result = client.files.manage(
-        systemId=system,
-        filePath=urllib.parse.quote(os.path.join('/', path)),
-        body=body
-    )
-    #update_meta.apply_async(kwargs={
-    #    "src_system": system,
-    #    "src_path": path,
-    #    "dest_system": system,
-    #    "dest_path": os.path.join(os.path.dirname(path), new_name)
-    #}, queue="indexing")
+    client.files.moveCopy(systemId=system, 
+                          path=path,
+                          operation="MOVE",
+                          newPath=new_path)
+    
+    return {"result": "OK"}
 
-    # if rename_result['nativeFormat'] == 'dir':
-    if listing[0].type == 'dir':
-        agave_indexer.apply_async(
-            kwargs={
-                'systemId': system,
-                'filePath': os.path.dirname(path),
-                'recurse': False
-            }, queue='indexing')
-        agave_indexer.apply_async(kwargs={
-                'systemId': system,
-                'filePath': rename_result['path'],
-                'recurse': True
-        }, queue='indexing')
-    else:
-        agave_indexer.apply_async(
-            kwargs={
-                'systemId': system,
-                'filePath': os.path.dirname(path),
-                'recurse': False
-            }, queue='indexing')
-
-    return dict(rename_result)
 
 
 def trash(client, system, path, trash_path):
@@ -529,21 +501,14 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
 
     file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
-    href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
+    # href = client.files.list(systemId=system, filePath=path)[0]['_links']['self']['href']
 
-    meta_result = query_file_meta(system, os.path.join('/', path))
-    meta = meta_result[0] if len(meta_result) else {}
+    # meta_result = query_file_meta(system, os.path.join('/', path))
+    # meta = meta_result[0] if len(meta_result) else {}
+    meta = {}
 
-    args = {
-        'url': urllib.parse.unquote(href),
-        'maxUses': max_uses,
-        'method': 'GET',
-        'lifetime': lifetime,
-        'noauth': False
-    }
-
-    postit_result = client.postits.create(body=args)
-    url = postit_result['_links']['self']['href']
+    postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
+    url = postit_result.redeemUrl
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
@@ -583,7 +548,7 @@ def download_bytes(client, system, path):
         BytesIO object representing the downloaded file.
     """
     file_name = os.path.basename(path)
-    resp = client.files.download(systemId=system, filePath=path)
-    result = io.BytesIO(resp.content)
+    resp = client.files.getContents(systemId=system, path=path)
+    result = io.BytesIO(resp)
     result.name = file_name
     return result
