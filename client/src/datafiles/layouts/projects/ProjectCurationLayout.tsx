@@ -1,11 +1,11 @@
 import {
-  DatafilesBreadcrumb,
   ManageCategoryModal,
   ManagePublishableEntityModal,
   ProjectCurationFileListing,
   ProjectNavbar,
   RelateDataModal,
 } from '@client/datafiles';
+import { DatafilesBreadcrumb } from '@client/common-components';
 import { useProjectDetail } from '@client/hooks';
 import { Button } from 'antd';
 

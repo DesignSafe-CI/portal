@@ -1,1 +1,1 @@
-export * from './lib/common-components';
+export * from './datafiles';
