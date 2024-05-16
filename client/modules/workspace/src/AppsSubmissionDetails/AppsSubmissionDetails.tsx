@@ -13,7 +13,6 @@ import {
 import { useFormContext, useWatch, FieldValues } from 'react-hook-form';
 import { z } from 'zod';
 import { TField } from '../AppsWizard/AppsFormSchema';
-import styles from './AppsSubmissionDetails.module.css';
 
 const tagTheme: ThemeConfig = {
   token: {
