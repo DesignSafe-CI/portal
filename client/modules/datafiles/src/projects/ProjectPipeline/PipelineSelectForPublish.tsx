@@ -21,18 +21,27 @@ const PipelineValidationAlert: React.FC<{
         <div>
           Your selection has missing data or incomplete requirements. Please
           review the following fields:
-          {(validationErrors ?? []).map((validationError) => (
-            <div key={validationError.title}>
-              In the {DISPLAY_NAMES[validationError.name]}{' '}
-              <strong>{validationError.title}</strong>, the following
-              requirements are missing or incomplete:
-              <ul>
-                {validationError.missing.map((missingReq) => (
-                  <li key={missingReq}>{DISPLAY_NAMES[missingReq]}</li>
-                ))}
-              </ul>
-            </div>
-          ))}{' '}
+          {(validationErrors ?? [])
+            .filter((e) => e.errorType === 'MISSING_ENTITY')
+            .map((validationError) => (
+              <div key={validationError.title}>
+                In the {DISPLAY_NAMES[validationError.name]}{' '}
+                <strong>{validationError.title}</strong>, the following
+                requirements are missing or incomplete:
+                <ul>
+                  {validationError.missing.map((missingReq) => (
+                    <li key={missingReq}>{DISPLAY_NAMES[missingReq]}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          {(validationErrors ?? [])
+            .filter((e) => e.errorType === 'NO_SELECTION')
+            .map((validationError) => (
+              <div key={validationError.title}>
+                <strong>No publishable collections are selected.</strong>
+              </div>
+            ))}
         </div>
       }
     />
@@ -72,7 +81,16 @@ export const PipelineSelectForPublish: React.FC<{
   const validateAndContinue = async () => {
     const entityUuids = searchParams.getAll('selected');
     const res = await mutateAsync({ projectId, entityUuids: entityUuids });
-    if (res.result.length > 0) {
+    if (entityUuids.length === 0) {
+      setValidationErrors([
+        {
+          name: 'Project',
+          title: 'Project',
+          errorType: 'NO_SELECTION',
+          missing: [],
+        },
+      ]);
+    } else if (res.result.length > 0) {
       setValidationErrors(res.result);
     } else {
       setValidationErrors(undefined);

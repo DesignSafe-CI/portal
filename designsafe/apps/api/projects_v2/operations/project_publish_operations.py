@@ -9,6 +9,7 @@ from pathlib import Path
 import logging
 from django.conf import settings
 import networkx as nx
+from celery import shared_task
 from designsafe.apps.api.projects_v2 import constants
 
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
@@ -414,3 +415,16 @@ def publish_project(
     pub_metadata.save()
 
     return pub_metadata
+
+
+@shared_task
+def publish_project_async(
+    project_id: str,
+    entity_uuids: list[str],
+    version: Optional[int] = None,
+    version_info: Optional[str] = None,
+    dry_run: bool = False,
+):
+    """Async wrapper arount publication"""
+
+    publish_project_async(project_id, entity_uuids, version, version_info, dry_run)

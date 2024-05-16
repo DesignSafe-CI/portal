@@ -18,7 +18,12 @@ export const PublishedListingLayout: React.FC = () => {
       >
         <PublicationSearchToolbar />
       </div>
-      <Layout style={{ gap: '10px' }}>
+      <Layout style={{ gap: '10px', flexDirection: 'row-reverse' }}>
+        {/* The search sidebar is placed before the listing in 
+        the markup so that search options can be keyboard-navigated as a group.*/}
+        <Layout.Sider width={200} style={{ backgroundColor: 'transparent' }}>
+          <PublicationSearchSidebar />
+        </Layout.Sider>
         <Layout.Content
           style={{
             display: 'flex',
@@ -31,9 +36,6 @@ export const PublishedListingLayout: React.FC = () => {
             <PublishedListing />
           </div>
         </Layout.Content>
-        <Layout.Sider width={200} style={{ backgroundColor: 'transparent' }}>
-          <PublicationSearchSidebar />
-        </Layout.Sider>
       </Layout>
     </Layout>
   );

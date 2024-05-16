@@ -76,7 +76,7 @@ export const PublishedEntityDetails: React.FC<{
 
           {entityValue.facility && (
             <tr className={styles['prj-row']}>
-              <td>Experiment Type</td>
+              <td>Facility</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.facility?.name}
               </td>

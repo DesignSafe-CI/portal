@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
 type TRenameParam = {
@@ -17,7 +17,14 @@ function renameFn(src: TRenameParam) {
 }
 
 export function useRename() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ src }: { src: TRenameParam }) => renameFn(src),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['datafiles', 'fileListing'],
+      });
+      queryClient.resetQueries({ queryKey: ['selected-rows'] });
+    },
   });
 }

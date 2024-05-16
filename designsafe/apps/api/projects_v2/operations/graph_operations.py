@@ -170,6 +170,23 @@ def remove_nodes_from_project(project_id: str, node_ids: list[str]):
         graph_model.save()
 
 
+def remove_nodes_for_entity(project_id: str, entity_uuid: str):
+    """
+    Remove an entity from the tree by deleting all nodes that point to its UUID.
+    """
+    graph_model = ProjectMetadata.objects.get(
+        name=constants.PROJECT_GRAPH, base_project__value__projectId=project_id
+    )
+    project_graph = nx.node_link_graph(graph_model.value)
+    nodes_to_remove = [
+        node
+        for node in project_graph.nodes
+        if project_graph.nodes[node].get("uuid") == entity_uuid
+    ]
+    if nodes_to_remove:
+        remove_nodes_from_project(project_id, nodes_to_remove)
+
+
 def reorder_project_nodes(project_id: str, node_id: str, new_index: int):
     """Update the database entry for the project graph to reorder nodes."""
     # Lock the project graph's tale row to prevent conflicting updates.

@@ -1,5 +1,5 @@
-import { Button, Form, Input, Select } from 'antd';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { Button, Form, Input, Popconfirm, Select } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   nhTypeOptions,
   facilityOptions,
@@ -16,10 +16,13 @@ import {
   ReferencedDataInput,
 } from './_fields';
 import { TProjectUser } from './_fields/UserSelect';
-import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
+import {
+  TBaseProjectValue,
+  useAuthenticatedUser,
+  useProjectDetail,
+} from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { AuthorSelect } from './_fields/AuthorSelect';
-import { ChangeProjectTypeModal } from '../modals';
 import { ProjectTypeRadioSelect } from '../modals/ProjectTypeRadioSelect';
 
 export const ProjectTypeInput: React.FC<{
@@ -80,11 +83,16 @@ export const ProjectTypeInput: React.FC<{
 
 export const BaseProjectForm: React.FC<{
   projectId: string;
-  onChangeType?: () => void;
-}> = ({ projectId, onChangeType }) => {
+  projectType?: string;
+  onSubmit: (patchMetadata: Record<string, unknown>) => void;
+  changeTypeModal?: React.ReactElement;
+}> = ({ projectId, projectType, onSubmit, changeTypeModal }) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
-  const projectType = data?.baseProject.value.projectType;
+
+  if (!projectType) {
+    projectType = data?.baseProject.value.projectType;
+  }
 
   function processFormData(formData: Record<string, TProjectUser[]>) {
     const { pi, coPis, teamMembers, guestMembers, ...rest } = formData;
@@ -129,12 +137,27 @@ export const BaseProjectForm: React.FC<{
     ]
   );
 
+  const { user } = useAuthenticatedUser();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const onFormSubmit = (
+    v: Record<string, unknown> & { users: TProjectUser[] }
+  ) => {
+    const currentUserInProject = v.users.find(
+      (u) => u.username === user?.username
+    );
+    if (!currentUserInProject && !showConfirm) {
+      setShowConfirm(true);
+    } else {
+      onSubmit(v);
+    }
+  };
+
   if (!data) return <div>Loading</div>;
   return (
     <Form
       form={form}
       layout="vertical"
-      onFinish={(v) => console.log(processFormData(v))}
+      onFinish={(v) => onFormSubmit(processFormData(v))}
       onFinishFailed={(v) => console.log(processFormData(v.values))}
       requiredMark={customRequiredMark}
     >
@@ -151,22 +174,12 @@ export const BaseProjectForm: React.FC<{
       </Form.Item>
 
       {/*TODO: disable in situations where project type shouldn't be changed.*/}
-      <Form.Item label="Project Type">
-        <ProjectTypeInput projectType={data.baseProject.value.projectType} />
-        <ChangeProjectTypeModal projectId={projectId}>
-          {({ onClick }) => (
-            <Button
-              onClick={(evt) => {
-                onChangeType && onChangeType();
-                onClick(evt);
-              }}
-              type="link"
-            >
-              <strong>Change Project Type</strong>
-            </Button>
-          )}
-        </ChangeProjectTypeModal>
-      </Form.Item>
+      {changeTypeModal && (
+        <Form.Item label="Project Type">
+          <ProjectTypeInput projectType={data.baseProject.value.projectType} />
+          {changeTypeModal}
+        </Form.Item>
+      )}
 
       {projectType === 'field_recon' && (
         <Form.Item label="Field Research Type" required>
@@ -258,7 +271,16 @@ export const BaseProjectForm: React.FC<{
         <>
           <Form.Item label="Assign Authorship">
             You can order the authors during the publication process.
-            <Form.Item name={['authors']} className="inner-form-item">
+            <Form.Item
+              name={['authors']}
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select at least one author.',
+                },
+              ]}
+              className="inner-form-item"
+            >
               <AuthorSelect projectUsers={watchedUsers} />
             </Form.Item>
           </Form.Item>
@@ -289,8 +311,16 @@ export const BaseProjectForm: React.FC<{
 
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
-        <Form.Item name="keywords" className="inner-form-item">
-          <Select mode="tags" notFoundContent={null}></Select>
+        <Form.Item
+          name="keywords"
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
         </Form.Item>
       </Form.Item>
 
@@ -308,9 +338,35 @@ export const BaseProjectForm: React.FC<{
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
+        <Popconfirm
+          title="Confirm Update"
+          description={
+            <div id="desc">
+              If you save this project without adding yourself as a principal
+              investigator
+              <br /> or team member, you will lose access to the project and its
+              files.
+            </div>
+          }
+          open={showConfirm}
+          okText="Proceed"
+          placement="topRight"
+          afterOpenChange={(isOpen) => {
+            if (isOpen) {
+              // Focus on opening so that the popover is accessible via keyboard
+              document.getElementById('prj-confirm-cancel')?.focus();
+            }
+          }}
+          cancelButtonProps={{ id: 'prj-confirm-cancel' }}
+          onOpenChange={(newVal) => {
+            if (!newVal) setShowConfirm(newVal);
+          }}
+          onConfirm={() => onSubmit(processFormData(form.getFieldsValue()))}
+        >
+          <Button type="primary" htmlType="submit" style={{ float: 'right' }}>
+            Update Project
+          </Button>
+        </Popconfirm>
       </Form.Item>
     </Form>
   );
