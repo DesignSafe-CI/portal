@@ -35,7 +35,7 @@ services:
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
-      - es_data_v3:/usr/share/elasticsearch/data
+      - es_data:/usr/share/elasticsearch/data
     ports:
       - 127.0.0.1:9200:9200
     container_name: des_elasticsearch
@@ -127,5 +127,5 @@ services:
 volumes:
   redis_data_v3:
   des_postgres_data_v3:
-  es_data_v3:
+  es_data:
   rabbitmq_data_v3:
