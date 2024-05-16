@@ -158,10 +158,13 @@ class Command(BaseCommand):
 
         for i, project in enumerate(iterate_entities()):
             uuid = project["uuid"]
-
             project_id = project["value"]["projectId"]
             system = f"project-{uuid}"
-            project_root_dir = f"/corral-repl/projects/NHERI/projects/{uuid}"
+            project_root_dir = (
+                f"/corral-repl/projects/NHERI/projects/{uuid}"
+                if uuid != "7997906542076432871-242ac11c-0001-012"
+                else "/corral-repl/projects/NHERI/community"  # community data system has as a special path
+            )
             title = project["value"]["title"]
             description = (
                 project["value"]["description"]
@@ -236,17 +239,15 @@ class Command(BaseCommand):
                 create = not system_exists
 
                 try:
-                    # Update/create systems except for the project related to the Community Data
-                    if uuid != "7997906542076432871-242ac11c-0001-012":
-                        create_or_update_workspace_system(
-                            create,
-                            client,
-                            system_id=system,
-                            title=title,
-                            description=description,
-                            project_root_dir=project_root_dir,
-                            owner=OWNER,
-                        )
+                    create_or_update_workspace_system(
+                        create,
+                        client,
+                        system_id=system,
+                        title=title,
+                        description=description,
+                        project_root_dir=project_root_dir,
+                        owner=OWNER,
+                    )
 
                     client.systems.shareSystem(systemId=system, users=all_users)
 
