@@ -6,8 +6,6 @@ import {
 } from './JobsListingTable/JobsListingTable';
 import { getStatusText } from '../utils/jobs';
 import { JobsDetailModalBody } from '../JobsDetailModal/JobsDetailModal';
-import { TJob } from '@client/hooks';
-import { uuid } from 'uuidv4';
 
 export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   ...tableProps
@@ -28,9 +26,33 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
           <div>
             {record.name}
             <br />
-            <Button type="default">
-              View Output
-            </Button>
+            {record.status === ('RUNNING') ? (
+              <>
+                <Button type="default">
+                  Open
+                </Button>
+                &nbsp;&nbsp;
+                {/* <Button type="default">
+                  End
+                </Button> */}
+              </>
+            ) : null}
+            {record.status === ('PENDING' || 'PROCESSING_INPUTS' || 'STAGING_INPUTS' || 'STAGING_JOB' || 'SUBMITTING_JOB' || 'QUEUED') ? (
+              <>
+                <Button type="default" disabled>
+                  Output pending
+                </Button>
+              </>
+            ) : null}
+            {record.status === ('FAILED' || 'FINISHED') ? (
+              <>
+                <a href={`data/browser/${record.archiveSystemId}${record.archiveSystemDir}`} target="_blank" rel="noopener noreferrer">
+                  <Button type="default">
+                    View Output
+                  </Button>
+                </a>&nbsp;&nbsp;
+              </>
+            ) : null}
             <Button
               type="link"
               onClick={() =>
@@ -40,7 +62,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
               <i
                 role="none"
                 style={{ color: '#333333' }}
-                className="fa fa-file-o"
+                // className="fa fa-file-o"
               >
                 &nbsp;&nbsp;
               </i>
@@ -64,6 +86,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
       { width: '10%',
         title: 'Job Status',
         dataIndex: 'status',
+        render: (status) => <>{getStatusText({ status }) || 'Unknown'}</>,
       },
       { width: '10%',
         title: 'Nodes',

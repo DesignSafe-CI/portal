@@ -5,6 +5,7 @@ import { AxiosError } from 'axios';
 export type TJob = {
   appId: string;
   appVersion: string;
+  archiveSystemDir: string;
   archiveSystemId: string;
   condition: boolean;
   created: string;
