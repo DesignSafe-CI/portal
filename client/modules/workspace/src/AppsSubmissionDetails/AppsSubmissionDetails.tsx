@@ -7,12 +7,12 @@ import {
   Tag,
   ThemeConfig,
   Button,
-  ButtonProps,
   Flex,
 } from 'antd';
 import { useFormContext, useWatch, FieldValues } from 'react-hook-form';
 import { z } from 'zod';
 import { TField } from '../AppsWizard/AppsFormSchema';
+import { PrimaryButton } from '@client/common-components';
 
 const tagTheme: ThemeConfig = {
   token: {
@@ -40,37 +40,6 @@ const descriptionCardStyle = {
   backgroundOrigin: 'padding-box',
   border: '1px solid #dbdbdb',
   padding: '0px',
-};
-
-const submitButtonTheme: ThemeConfig = {
-  components: {
-    Button: {
-      defaultActiveBg: '#039',
-      defaultActiveColor: '#039',
-      defaultActiveBorderColor: '#026',
-      defaultBg: '#fff',
-      defaultBorderColor: '#707070',
-      defaultColor: '#707070',
-      defaultHoverBg: '#026',
-      defaultHoverBorderColor: '#026',
-      defaultHoverColor: '#fff',
-    },
-  },
-};
-
-export const SubmitButton: React.FC<ButtonProps> = (props) => {
-  return (
-    <ConfigProvider theme={submitButtonTheme}>
-      <Button
-        type="primary"
-        style={{
-          fontFamily:
-            '-apple-system, "system-ui", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
-        }}
-        {...props}
-      />
-    </ConfigProvider>
-  );
 };
 
 export const AppsSubmissionDetails: React.FC<{
@@ -202,13 +171,13 @@ export const AppsSubmissionDetails: React.FC<{
         layout="vertical"
         style={itemStyle}
         extra={
-          <SubmitButton
+          <PrimaryButton
             htmlType="submit"
             disabled={!isValid}
             loading={isSubmitting}
           >
             Submit Job
-          </SubmitButton>
+          </PrimaryButton>
         }
       />
     </Card>

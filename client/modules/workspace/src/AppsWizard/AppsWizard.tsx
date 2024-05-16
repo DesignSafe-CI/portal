@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Flex } from 'antd';
 import { useFormContext, SubmitHandler, FieldValues } from 'react-hook-form';
-import { SecondaryButton } from './Components';
+import { SecondaryButton } from '@client/common-components';
 
 // import styles from './AppsWizard.module.css';
 

@@ -3,7 +3,7 @@ import { Button, Form, Input, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TFieldOptions } from '../AppsWizard/AppsFormSchema';
-import { SecondaryButton } from './Components';
+import { SecondaryButton } from '@client/common-components';
 
 export const FormField: React.FC<{
   name: string;
@@ -104,7 +104,7 @@ export const FormField: React.FC<{
           style={{
             display: 'block',
             textAlign: 'left',
-            font: 'italic normal normal 10px/16px Helvetica Neue',
+            font: 'italic normal normal 12px/16px Helvetica Neue',
             letterSpacing: '0px',
             color: '#707070',
             opacity: 1,
