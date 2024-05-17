@@ -563,7 +563,7 @@ export const AppsSubmissionForm: React.FC = () => {
                 })}
               >
                 <fieldset>
-                  <Row>
+                  <Row gutter={[64, 16]} align="top">
                     <Col span={14}>
                       <AppsWizard
                         step={steps[current]}

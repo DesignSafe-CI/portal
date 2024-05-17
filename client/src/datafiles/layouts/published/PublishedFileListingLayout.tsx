@@ -17,8 +17,7 @@ export const PublishedFileListingLayout: React.FC = () => {
         path={path ?? ''}
         baseRoute={`/public/designsafe.storage.published/${projectId}`}
         systemRootAlias={projectId}
-        systemRoot={projectId}
-        skipBreadcrumbs={1}
+        systemRoot={`/${projectId}`}
         itemRender={(obj) => {
           return (
             <Link className="breadcrumb-link" to={obj.path ?? '/'}>

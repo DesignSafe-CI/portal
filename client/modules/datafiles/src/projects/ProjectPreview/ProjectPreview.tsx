@@ -6,7 +6,7 @@ import {
   usePublicationVersions,
   useSelectedFiles,
 } from '@client/hooks';
-import { Button, Collapse } from 'antd';
+import { Alert, Button, Collapse } from 'antd';
 import styles from './ProjectPreview.module.css';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
@@ -208,6 +208,21 @@ export const ProjectPreview: React.FC<{ projectId: string }> = ({
     [children]
   );
   if (!data) return null;
+
+  if (!sortedChildren.length) {
+    return (
+      <Alert
+        type="warning"
+        showIcon
+        description={
+          <strong>
+            No publishable collections were found for this project. You can add
+            a new collection under the "Curation Directory" tab.
+          </strong>
+        }
+      ></Alert>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

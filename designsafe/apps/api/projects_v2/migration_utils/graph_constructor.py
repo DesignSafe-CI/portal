@@ -4,6 +4,7 @@ import json
 from typing import TypedDict, Optional
 from uuid import uuid4
 from pathlib import Path
+from datetime import datetime
 import networkx as nx
 from django.utils.text import slugify
 from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
@@ -366,7 +367,7 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
             )
         else:
             pub_graph.nodes[pub]["version"] = 1
-        pub_graph.nodes[pub]["publicationDate"] = str(base_pub_meta["created"])
+        pub_graph.nodes[pub]["publicationDate"] = base_pub_meta["created"].isoformat()
         pub_graph.nodes[pub]["status"] = "published"
 
     return pub_graph, path_mappings
