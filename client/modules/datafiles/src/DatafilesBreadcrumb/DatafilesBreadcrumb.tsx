@@ -6,27 +6,18 @@ import { getSystemRootDisplayName, useAuthenticatedUser } from '@client/hooks';
 function getPathRoutes(
   baseRoute: string,
   path: string = '',
-  systemRoot: string = '',
-  systemRootAlias?: string
+  relativeTo: string = ''
 ) {
-  const pathComponents = decodeURIComponent(path.replace(systemRoot, ''))
+  const pathComponents = path
+    .replace(relativeTo, '')
     .split('/')
     .filter((p) => !!p);
-
-  const systemRootBreadcrumb = {
-    path: `${baseRoute}/${systemRoot}`,
-    title: systemRootAlias ?? 'Data Files',
-  };
-
-  return [
-    systemRootBreadcrumb,
-    ...pathComponents.map((comp, i) => ({
-      title: comp,
-      path: `${baseRoute}/${systemRoot}${encodeURIComponent(
-        '/' + pathComponents.slice(0, i + 1).join('/')
-      )}`,
-    })),
-  ];
+  return pathComponents.map((comp, i) => ({
+    title: comp,
+    path: `${baseRoute}/${encodeURIComponent(relativeTo)}${encodeURIComponent(
+      '/' + pathComponents.slice(0, i + 1).join('/')
+    )}`,
+  }));
 }
 
 export const DatafilesBreadcrumb: React.FC<
@@ -36,7 +27,6 @@ export const DatafilesBreadcrumb: React.FC<
     baseRoute: string;
     systemRoot: string;
     systemRootAlias?: string;
-    skipBreadcrumbs?: number; // Number of path elements to skip when generating breadcrumbs
   } & BreadcrumbProps
 > = ({
   initialBreadcrumbs,
@@ -44,14 +34,11 @@ export const DatafilesBreadcrumb: React.FC<
   baseRoute,
   systemRoot,
   systemRootAlias,
-  skipBreadcrumbs,
   ...props
 }) => {
   const breadcrumbItems = [
     ...initialBreadcrumbs,
-    ...getPathRoutes(baseRoute, path, systemRoot, systemRootAlias).slice(
-      skipBreadcrumbs ?? 0
-    ),
+    ...getPathRoutes(baseRoute, path, systemRoot),
   ];
 
   return (
@@ -87,15 +74,20 @@ export const BaseFileListingBreadcrumb: React.FC<
   ...props
 }) => {
   const { user } = useAuthenticatedUser();
-
+  const rootAlias = systemRootAlias || getSystemRootDisplayName(api, system);
+  const systemRoot = isUserHomeSystem(system) ? '/' + user?.username : '';
   return (
     <DatafilesBreadcrumb
-      initialBreadcrumbs={initialBreadcrumbs ?? []}
+      initialBreadcrumbs={[
+        ...initialBreadcrumbs,
+        {
+          path: `/${api}/${system}/${encodeURIComponent(systemRoot)}`,
+          title: rootAlias,
+        },
+      ]}
       path={path}
       baseRoute={`/${api}/${system}`}
-      systemRoot={
-        isUserHomeSystem(system) ? encodeURIComponent('/' + user?.username) : ''
-      }
+      systemRoot={isUserHomeSystem(system) ? '/' + user?.username : ''}
       systemRootAlias={systemRootAlias || getSystemRootDisplayName(api, system)}
       {...props}
     />

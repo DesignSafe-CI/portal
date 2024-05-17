@@ -6,14 +6,17 @@ export const ProjectCitation: React.FC<{
 }> = ({ projectId, entityUuid }) => {
   const { data } = useProjectDetail(projectId);
   const entityDetails = data?.entities.find((e) => e.uuid === entityUuid);
-
+  const authors =
+    entityDetails?.value.authors?.filter((a) => a.fname && a.lname) ?? [];
   if (!data || !entityDetails) return null;
   return (
     <div>
-      {(entityDetails.value.authors ?? [])
+      {authors
         .map((author, idx) =>
           idx === 0
-            ? `${author.lname}, ${author.fname[0]}.`
+            ? `${author.lname}, ${author.fname[0]}${
+                authors.length > 1 ? '.' : ''
+              }`
             : `${author.fname[0]}. ${author.lname}`
         )
         .join(', ')}
@@ -33,14 +36,18 @@ export const PublishedCitation: React.FC<{
   const entityDetails = (data?.tree.children ?? []).find(
     (child) => child.uuid === entityUuid && child.version === version
   );
+
+  const authors = entityDetails?.value.authors ?? [];
   if (!data || !entityDetails) return null;
 
   return (
     <div>
-      {(entityDetails.value.authors ?? [])
+      {authors
         .map((author, idx) =>
           idx === 0
-            ? `${author.lname}, ${author.fname[0]}.`
+            ? `${author.lname}, ${author.fname[0]}${
+                authors.length > 1 ? '.' : ''
+              }`
             : `${author.fname[0]}. ${author.lname}`
         )
         .join(', ')}{' '}

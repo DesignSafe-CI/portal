@@ -1,56 +1,26 @@
-import { Form, Input, Button, Select, Checkbox } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Form, Input, Button, Select } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   equipmentOptions,
   observationTypeOptions,
 } from './ProjectFormDropdowns';
 
 //import { TProjectUser } from './_fields/UserSelect';
-import {
-  TBaseProjectValue,
-  TProjectUser,
-  useProjectDetail,
-} from '@client/hooks';
+import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { CATEGORIES_BY_PROJECT_TYPE, DISPLAY_NAMES } from '../constants';
 import * as constants from '../constants';
 import { DateInput, DropdownSelect, SampleApproachInput } from './_fields';
 import { CollectionModeInput } from './_fields/CollectionModeInput';
-
-const AuthorSelect: React.FC<{
-  projectUsers: TProjectUser[];
-  value?: TProjectUser[];
-  onChange?: (value: TProjectUser[]) => void;
-}> = ({ value, onChange, projectUsers }) => {
-  const options = projectUsers.map((author) => ({
-    value: JSON.stringify(author),
-    label: `${author.fname} ${author.lname} (${author.email})`,
-  }));
-
-  const onChangeCallback = useCallback(
-    (value: string[]) => {
-      if (onChange) onChange(value.map((a) => JSON.parse(a)));
-    },
-    [onChange]
-  );
-
-  return (
-    <Checkbox.Group
-      value={projectUsers
-        .filter((user) => value?.some((v) => user.email === v.email))
-        .map((v) => JSON.stringify(v) ?? [])}
-      options={options}
-      onChange={onChangeCallback}
-    />
-  );
-};
+import { AuthorSelect } from './_fields/AuthorSelect';
 
 export const ProjectCategoryForm: React.FC<{
   projectType: TBaseProjectValue['projectType'];
   projectId: string;
   entityUuid?: string;
   mode: 'create' | 'edit';
-}> = ({ projectType, projectId, entityUuid, mode = 'edit' }) => {
+  onSubmit: CallableFunction;
+}> = ({ projectType, projectId, entityUuid, mode = 'edit', onSubmit }) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
   const [selectedName, setSelectedName] = useState<string | undefined>(
@@ -63,23 +33,32 @@ export const ProjectCategoryForm: React.FC<{
     label: DISPLAY_NAMES[name],
   }));
 
-  const category = data?.entities.find((e) => e.uuid === entityUuid);
+  const category = useMemo(
+    () => data?.entities.find((e) => e.uuid === entityUuid),
+    [data, entityUuid]
+  );
 
-  const setValues = useCallback(() => {
+  // Set initial form values
+  useEffect(() => {
     if (data && category && mode === 'edit') {
       form.setFieldsValue({ value: category.value });
       setSelectedName(category.name);
     }
-  }, [data, form, category, mode]);
-  useEffect(() => setValues(), [setValues, projectId, category?.uuid]);
+  }, [projectId, category, data, form, mode]);
 
-  if (!data) return <div>Loading</div>;
+  if (!data) return null;
   return (
     <Form
       form={form}
-      onValuesChange={(_, v) => setSelectedName(v.name)}
+      onValuesChange={(_, v) => mode === 'create' && setSelectedName(v.name)}
       layout="vertical"
-      onFinish={(v) => console.log(v)}
+      onFinish={(v) => {
+        onSubmit(v);
+        if (mode === 'create') {
+          form.resetFields();
+          setSelectedName(undefined);
+        }
+      }}
       requiredMark={customRequiredMark}
     >
       {mode === 'create' && (

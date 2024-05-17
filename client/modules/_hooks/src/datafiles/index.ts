@@ -14,6 +14,7 @@ export {
 } from './useSelectedFiles';
 
 export { useFileCopy } from './useFileCopy';
+export { useFileMove } from './useFileMove';
 export { useTrash } from './useTrash';
 export { useRename } from './useRename';
 export { useNewFolder } from './useNewFolder';

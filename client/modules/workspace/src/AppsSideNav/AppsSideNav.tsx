@@ -54,7 +54,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                   (app.version ? `?appVersion=${app.version}` : '')
                 }
               >
-                {app.label}
+                {app.label || app.bundle_label}
               </AppsNavLink>,
               `${app.app_id}${app.version}${app.bundle_id}`
             )
@@ -69,7 +69,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                     (app.version ? `?appVersion=${app.version}` : '')
                   }
                 >
-                  {app.label}
+                  {app.label || app.bundle_label}
                 </AppsNavLink>,
                 `${app.app_id}${app.version}${app.bundle_id}`
               ),
@@ -86,7 +86,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                 (app.version ? `?appVersion=${app.version}` : '')
               }
             >
-              {app.label}
+              {app.label || app.bundle_label}
             </AppsNavLink>,
             `${app.app_id}${app.version}${app.bundle_id}`
           )
