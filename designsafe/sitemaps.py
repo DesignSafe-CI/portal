@@ -179,9 +179,10 @@ class ProjectSitemap(sitemaps.Sitemap):
                 subpath = {
                     'root' : reverse('designsafe_data:data_depot'),
                     'project' : proj['project']['value']['projectId'],
-                    'system' : 'designsafe.storage.published'
+                    'system' : 'designsafe.storage.published',
+                    'revision' : 'v' + str(proj['revision']) if 'revision' in proj else ''
                 }
-                projPath.append('{root}public/{system}/{project}'.format(**subpath))
+                projPath.append('{root}public/{system}/{project}{revision}'.format(**subpath))
             if len(projects['listing']) < 200:
                 break
             count += 200
