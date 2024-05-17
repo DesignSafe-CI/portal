@@ -179,12 +179,25 @@ class AppsView(AuthenticatedApiView):
             },
         )
         app_id = request.GET.get("appId")
-        app_version = request.GET.get("appVersion")
+        app_version = request.GET.get("appVersion", "")
 
         if not app_id:
             raise ApiException("Missing required parameter: app_id", status=422)
 
-        data = _get_app(app_id, app_version, request.user)
+        try:
+            portal_app = AppVariant.objects.get(app_id=app_id, version=app_version)
+            if portal_app.app_type == "html":
+                data = {
+                    "definition": {
+                        "id": portal_app.app_id,
+                        "notes": {"label": portal_app.label or portal_app.bundle.label},
+                    }
+                }
+            else:
+                data = _get_app(app_id, app_version, request.user)
+
+        except ObjectDoesNotExist:
+            data = _get_app(app_id, app_version, request.user)
 
         # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
         # Check if default storage system needs keys pushed
@@ -314,6 +327,7 @@ class AppsTrayView(AuthenticatedApiView):
         values = reduced_values if not verbose else all_values
 
         categories = []
+        html_definitions = {}
         # Traverse category records in descending priority
         for category in AppTrayCategory.objects.order_by("-priority"):
             # Retrieve all apps known to the portal in that category
@@ -369,16 +383,21 @@ class AppsTrayView(AuthenticatedApiView):
                 "apps": [
                     {k: v for k, v in app.items() if v != ""}
                     for app in valid_tapis_apps
-                ]  # Remove empty strings from response
-                + html_apps,
+                ],  # Remove empty strings from response
             }
+
+            # Add html apps to html_definitions
+            for html_app in html_apps:
+                html_definitions[html_app["app_id"]] = html_app
+
+                category_result["apps"].append(html_app)
 
             category_result["apps"] = sorted(
                 category_result["apps"], key=lambda app: app["label"] or app["app_id"]
             )
             categories.append(category_result)
 
-        return categories
+        return categories, html_definitions
 
     def get(self, request, *args, **kwargs):
         """
@@ -431,7 +450,9 @@ class AppsTrayView(AuthenticatedApiView):
 
         public_only = request.GET.get("public_only", False)
 
-        categories = self._get_public_apps(request.user, verbose=public_only)
+        categories, html_definitions = self._get_public_apps(
+            request.user, verbose=public_only
+        )
 
         if not public_only:
             my_apps = self._get_private_apps(request.user)
@@ -443,7 +464,8 @@ class AppsTrayView(AuthenticatedApiView):
         )
 
         return JsonResponse(
-            {"categories": categories}, encoder=BaseTapisResultSerializer
+            {"categories": categories, "htmlDefinitions": html_definitions},
+            encoder=BaseTapisResultSerializer,
         )
 
 
