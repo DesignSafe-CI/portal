@@ -369,6 +369,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const {
     mutate: submitJob,
     isPending,
+    isSuccess,
     data: submitResult,
     error: submitError,
   } = usePostJobs();
@@ -380,6 +381,8 @@ export const AppsSubmissionForm: React.FC = () => {
   useEffect(() => {
     if (submitResult?.execSys) {
       setPushKeysSystem(submitResult.execSys);
+    } else if (isSuccess) {
+      reset(initialValues);
     }
   }, [submitResult]);
 
