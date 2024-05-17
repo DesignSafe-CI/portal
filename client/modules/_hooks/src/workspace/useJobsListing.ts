@@ -19,6 +19,9 @@ export type TJob = {
   uuid: string;
   lastMessage: string;
   archiveSystemDir: string;
+  execSystemExecDir: string;
+  execSystemOutputDir: string;
+  remoteOutcome: string;
 };
 
 export type TJobsListing = {
