@@ -13,7 +13,6 @@ from django.db.models.lookups import GreaterThan
 from django.db.models.functions import Coalesce
 from django.urls import reverse
 from tapipy.errors import InternalServerError, UnauthorizedError
-from tapipy.tapis import TapisResult
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.users.utils import get_user_data
 from designsafe.apps.api.views import AuthenticatedApiView
@@ -291,8 +290,8 @@ class AppsTrayView(AuthenticatedApiView):
             "bundle_is_simcenter",
             "bundle_label",
             "bundle_license_type",
-            "bundle_related_apps",
-            "bundle_tags",
+            "bundle__related_apps",
+            "bundle__tags",
             "html",
             "icon",
             "is_bundled",
@@ -336,8 +335,6 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
-                    bundle_related_apps=F("bundle__related_apps"),
-                    bundle_tags=F("bundle__tags"),
                 )
                 .values(*values)
             )
@@ -360,8 +357,6 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
-                    bundle_related_apps=F("bundle__related_apps"),
-                    bundle_tags=F("bundle__tags"),
                 )
                 .values(*values)
             )
