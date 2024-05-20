@@ -13,6 +13,7 @@ from designsafe.apps.api.projects_v2.operations.project_system_operations import
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     publish_project_async,
+    amend_publication_async,
 )
 
 
