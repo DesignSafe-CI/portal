@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import apiClient from '../apiClient';
+import apiClient, { type TApiError } from '../apiClient';
 import { TJobArgSpecs, TJobKeyValuePair, TAppFileInput } from './types';
 
 type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
@@ -52,6 +52,7 @@ export function usePostJobs() {
     mutationFn: (body: TJobBody) => {
       return postJobs(body);
     },
+    onError: (err: TApiError) => err,
   });
 }
 
