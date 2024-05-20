@@ -6,13 +6,14 @@ import {
   usePathDisplayName,
   useSelectedFiles,
 } from '@client/hooks';
+
+import { BaseFileListingBreadcrumb } from '@client/common-components';
+import styles from './MoveModal.module.css';
+import { toBytes } from '../../FileListing/FileListing';
 import {
   FileListingTable,
   TFileListingColumns,
-} from '../../FileListing/FileListingTable/FileListingTable';
-import { BaseFileListingBreadcrumb } from '../../DatafilesBreadcrumb/DatafilesBreadcrumb';
-import styles from './MoveModal.module.css';
-import { toBytes } from '../../FileListing/FileListing';
+} from '@client/common-components';
 
 const SelectedFilesColumns: TFileListingColumns = [
   {

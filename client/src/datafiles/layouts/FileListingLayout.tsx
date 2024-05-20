@@ -1,8 +1,5 @@
-import {
-  BaseFileListingBreadcrumb,
-  DatafilesToolbar,
-  FileListing,
-} from '@client/datafiles';
+import { DatafilesToolbar, FileListing } from '@client/datafiles';
+import { BaseFileListingBreadcrumb } from '@client/common-components';
 import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
 import { Button, Form, Input, Layout } from 'antd';
 import React from 'react';

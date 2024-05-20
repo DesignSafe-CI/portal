@@ -1,10 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import {
-  DatafilesBreadcrumb,
-  FileListing,
-  ProjectNavbar,
-} from '@client/datafiles';
+import { FileListing, ProjectNavbar } from '@client/datafiles';
+import { DatafilesBreadcrumb } from '@client/common-components';
 import { useProjectDetail } from '@client/hooks';
 
 export const ProjectWorkdirLayout: React.FC = () => {

@@ -24,6 +24,7 @@ export const AddFileFolder: React.FC = () => {
   const isNees = matches.find((m) => m.id === 'nees');
 
   const isReadOnly = !!(
+    (isProjects && !projectId) ||
     isPublished ||
     isNees ||
     system === 'designsafe.storage.community'

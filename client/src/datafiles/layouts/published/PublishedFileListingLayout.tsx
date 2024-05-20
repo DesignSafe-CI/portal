@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { DatafilesBreadcrumb, FileListing } from '@client/datafiles';
+import { FileListing } from '@client/datafiles';
+import { DatafilesBreadcrumb } from '@client/common-components';
 
 export const PublishedFileListingLayout: React.FC = () => {
   const { projectId, path } = useParams();
