@@ -32,7 +32,7 @@ class BaseApiView(View):
             logger.error(e, exc_info=True)
             raise e
         except ApiException as e:
-            status = e.response.status_code
+            status = e.response.status_code or 400
             message = e.response.reason
             extra = e.extra
             if status != 404:
@@ -41,7 +41,7 @@ class BaseApiView(View):
                 )
             else:
                 logger.info("Error %s", message, exc_info=True, extra=extra)
-            return JsonResponse({"message": message}, status=400)
+            return JsonResponse({"message": message}, status=status)
         except (ConnectionError, HTTPError, BaseTapyException) as e:
             # status code and json content from ConnectionError/HTTPError exceptions
             # are used in the returned response. Note: the handling of these two exceptions
