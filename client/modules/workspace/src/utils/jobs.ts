@@ -2,7 +2,7 @@ import { TJob } from '@client/hooks';
 import { STATUS_TEXT_MAP } from '../constants';
 import { getSystemName } from './systems';
 
-export function getStatusText({ status }: { status: string }) {
+export function getStatusText(status: string) {
   if (status in STATUS_TEXT_MAP) {
     return STATUS_TEXT_MAP[status];
   }

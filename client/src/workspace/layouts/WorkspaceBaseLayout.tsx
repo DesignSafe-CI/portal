@@ -6,6 +6,7 @@ import {
   JobStatusNav,
   useGetAppParams,
   AppsBreadcrumb,
+  Toast,
 } from '@client/workspace';
 import { useAppsListing, usePrefetchGetSystems } from '@client/hooks';
 import { Spinner } from '@client/common-components';
@@ -33,28 +34,31 @@ const WorkspaceRoot: React.FC = () => {
   };
 
   return (
-    <Flex
-      vertical
-      style={{
-        margin: '-20px 50px 0 50px',
-      }}
-    >
-      <Header style={headerStyle}>
-        <AppsBreadcrumb />
-      </Header>
-      <Layout
-        hasSider
+    <>
+      <Flex
+        vertical
         style={{
-          gap: '20px',
+          margin: '-20px 50px 0 50px',
         }}
       >
-        <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
-          <JobStatusNav />
-          <AppsSideNav categories={data.categories} />
-        </Sider>
-        <Outlet />
-      </Layout>
-    </Flex>
+        <Header style={headerStyle}>
+          <AppsBreadcrumb />
+        </Header>
+        <Layout
+          hasSider
+          style={{
+            gap: '20px',
+          }}
+        >
+          <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
+            <JobStatusNav />
+            <AppsSideNav categories={data.categories} />
+          </Sider>
+          <Outlet />
+        </Layout>
+      </Flex>
+      <Toast />
+    </>
   );
 };
 
