@@ -176,7 +176,7 @@ export const getConfigurationFields = (
     description: `The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
       definition,
       defaultExecSystem,
-      queue.name
+      queue?.name
     )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`,
     label: 'Maximum Job Runtime (minutes)',
     name: 'configuration.maxMinutes',
