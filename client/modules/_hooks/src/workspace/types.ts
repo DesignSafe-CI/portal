@@ -114,3 +114,9 @@ export type TTapisApp = {
   created: string;
   updated: string;
 };
+
+export type TTasAllocations = {
+  hosts: {
+    [hostname: string]: string[];
+  }
+}
