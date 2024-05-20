@@ -1,4 +1,4 @@
 export * from './datafiles';
-export { Spinner } from './lib/Spinner';
+export { PrimaryButton, SecondaryButton } from './lib/Button';
 export { Icon } from './lib/Icon';
-export { SecondaryButton, PrimaryButton } from './lib/Button';
+export { Spinner } from './lib/Spinner';
