@@ -284,6 +284,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const {
     mutate: submitJob,
     isPending,
+    isSuccess,
     data: submitResult,
     error: submitError,
   } = usePostJobs();
@@ -295,6 +296,8 @@ export const AppsSubmissionForm: React.FC = () => {
   useEffect(() => {
     if (submitResult?.execSys) {
       setPushKeysSystem(submitResult.execSys);
+    } else if (isSuccess) {
+      reset(initialValues);
     }
   }, [submitResult]);
 
@@ -449,7 +452,12 @@ export const AppsSubmissionForm: React.FC = () => {
           )}
           {submitError && (
             <Alert
-              message={<>Error: {submitError?.message}</>}
+              message={
+                <>
+                  Job Submit Error:{' '}
+                  {submitError.response?.data.message || submitError.message}
+                </>
+              }
               type="warning"
               closable
               showIcon
