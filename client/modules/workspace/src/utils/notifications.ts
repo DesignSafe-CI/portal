@@ -48,9 +48,9 @@ export const getToastMessage = ({
 }: TJobStatusNotification) => {
   switch (eventType) {
     case 'job':
-      return `${truncateMiddle(extra.name, 20)} ${toastMap(extra.status)}`;
+      return `${truncateMiddle(extra.name, 25)} ${toastMap(extra.status)}`;
     case 'interactive_session_ready':
-      return `${truncateMiddle(extra.name, 20)} ${
+      return `${truncateMiddle(extra.name, 25)} ${
         message ? message.toLowerCase() : 'session ready to view.'
       }`;
     default:

@@ -148,16 +148,16 @@ function NotificationService(
         });
 
         const toastViewLink = renderLink(msg);
-        // if (typeof toastViewLink !== 'undefined') {
-        //     toast.action('View');
-        //     $mdToast.show(toast).then(function(response) {
-        //         if (response == 'ok') {
-        //             window.location.href = toastViewLink;
-        //         }
-        //     });
-        // } else {
-        //     $mdToast.show(toast);
-        // }
+        if (typeof toastViewLink !== 'undefined') {
+            toast.action('View');
+            $mdToast.show(toast).then(function(response) {
+                if (response == 'ok') {
+                    window.location.href = toastViewLink;
+                }
+            });
+        } else {
+            $mdToast.show(toast);
+        }
     }
 
     return {
