@@ -182,7 +182,9 @@ class ProjectSitemap(sitemaps.Sitemap):
                     'system' : 'designsafe.storage.published',
                     'revision' : 'v' + str(proj['revision']) if 'revision' in proj else ''
                 }
-                projPath.append('{root}public/{system}/{project}{revision}'.format(**subpath))
+                # making sure that only the most recent revision is included in the sitemap
+                if not any(subpath['project'] in s for s in projPath): 
+                    projPath.append('{root}public/{system}/{project}{revision}'.format(**subpath))
             if len(projects['listing']) < 200:
                 break
             count += 200
