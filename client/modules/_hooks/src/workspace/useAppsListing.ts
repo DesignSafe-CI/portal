@@ -21,6 +21,7 @@ export type TAppCategory = {
 
 export type TAppCategories = {
   categories: TAppCategory[];
+  htmlDefinitions: { [dynamic: string]: PortalApp };
 };
 
 async function getAppsListing() {

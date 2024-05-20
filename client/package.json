@@ -15,11 +15,13 @@
     "antd": "^5.16.4",
     "axios": "^1.6.3",
     "dayjs": "^1.11.0",
+    "html-react-parser": "^5.1.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.51.3",
     "react-hook-form-antd": "^1.1.0",
     "react-router-dom": "^6.21.1",
+    "react-use-websocket": "^4.8.1",
     "tslib": "^2.3.0",
     "zod": "^3.23.4"
   },
