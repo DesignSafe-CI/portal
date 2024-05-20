@@ -23,6 +23,7 @@ import {
   getQueueMaxMinutes,
   isAppTypeBATCH,
   getExecSystemLogicalQueueValidation,
+  preprocessStringToNumber,
 } from '../utils';
 
 export type TDynamicString = { [dynamic: string]: string | number };
@@ -316,7 +317,10 @@ const FormSchema = (
             .email('Must be a valid email.');
         } else if (param.notes?.fieldType === 'number') {
           field.type = 'number';
-          parameterSetSchema[field.label] = z.number();
+          parameterSetSchema[field.label] = z.preprocess(
+            preprocessStringToNumber,
+            z.number()
+          );
         } else {
           field.type = 'text';
           parameterSetSchema[field.label] = z.string();
