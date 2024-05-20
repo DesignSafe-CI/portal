@@ -11,11 +11,8 @@ import {
   useGetSystems,
   useAuthenticatedUser,
   TTapisSystem,
-  TTapisSystemQueue,
   TUser,
   TAppFileInput,
-  TConfigurationValues,
-  TOutputValues,
   TJobSubmit,
   TParameterSetSubmit,
   TJobBody,
@@ -26,8 +23,10 @@ import { default as AppIcon } from './AppIcon';
 import {
   default as FormSchema,
   TField,
-  TFileInputsDefaults,
-  TParameterSetDefaults,
+  TFormValues,
+  TAppFieldSchema,
+  getConfigurationSchema,
+  getConfigurationFields,
 } from '../AppsWizard/AppsFormSchema';
 import {
   getInputsStep,
@@ -40,30 +39,17 @@ import {
   // AppFormProvider,
   // useAppFormState,
   // getSystemName,
-  getQueueMaxMinutes,
-  getAppQueueValues,
   getExecSystemFromId,
   getQueueValueForExecSystem,
-  getNodeCountValidation,
-  getCoresPerNodeValidation,
-  getMaxMinutesValidation,
-  getAllocationValidation,
-  getExecSystemLogicalQueueValidation,
   isAppTypeBATCH,
   isTargetPathField,
   getInputFieldFromTargetPathField,
   isTargetPathEmpty,
   getExecSystemsFromApp,
   useGetAppParams,
+  updateValuesForQueue,
 } from '../utils';
 // import styles from './layout.module.css';
-
-type FormValues = {
-  inputs: TFileInputsDefaults;
-  parameters: TParameterSetDefaults;
-  configuration: TConfigurationValues;
-  outputs: TOutputValues;
-};
 
 export const AppsSubmissionForm: React.FC = () => {
   const { data: app } = useGetAppsSuspense(useGetAppParams());
@@ -102,50 +88,22 @@ export const AppsSubmissionForm: React.FC = () => {
     executionSystems as TTapisSystem[]
   );
 
-  const defaultExecSystem = getExecSystemFromId(
-    execSystems,
-    definition.jobAttributes.execSystemId
-  ) as TTapisSystem;
-
-  const { fileInputs, parameterSet } = FormSchema(definition);
+  const { fileInputs, parameterSet, configuration, outputs } = FormSchema(
+    definition,
+    executionSystems,
+    allocations,
+    portalAlloc,
+    defaultStorageSystem,
+    username
+  );
 
   // TODOv3: dynamic exec system and queues
-  const initialValues: FormValues = useMemo(
+  const initialValues: TFormValues = useMemo(
     () => ({
       inputs: fileInputs.defaults,
       parameters: parameterSet.defaults,
-      configuration: {
-        // execSystemId: defaultExecSystem?.id,
-        execSystemLogicalQueue: isAppTypeBATCH(definition)
-          ? definition.jobAttributes.execSystemLogicalQueue
-          : // (
-            //     app.execSystems.batchLogicalQueues.find(
-            //       (q) =>
-            //         q.name ===
-            //         (app.definition.jobAttributes.execSystemLogicalQueue ||
-            //           app.execSystems.batchDefaultLogicalQueue)
-            //     ) || app.execSystems.batchLogicalQueues[0]
-            //   ).name
-            '',
-        maxMinutes: definition.jobAttributes.maxMinutes,
-        nodeCount: definition.jobAttributes.nodeCount,
-        coresPerNode: definition.jobAttributes.coresPerNode,
-        allocation: isAppTypeBATCH(definition)
-          ? allocations.includes(portalAlloc)
-            ? portalAlloc
-            : allocations.length === 1
-            ? allocations[0]
-            : ''
-          : '',
-      },
-      outputs: {
-        name: `${definition.id}-${definition.version}_${
-          new Date().toISOString().split('.')[0]
-        }`,
-        archiveSystemId:
-          defaultStorageSystem?.id || definition.jobAttributes.archiveSystemId,
-        archiveSystemDir: `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
-      },
+      configuration: configuration.defaults,
+      outputs: outputs.defaults,
     }),
     [definition]
   );
@@ -181,32 +139,12 @@ export const AppsSubmissionForm: React.FC = () => {
 
   // const currentExecSystem = getExecSystemFromId(app, state.execSystemId);
 
-  const queue = getQueueValueForExecSystem({
-    definition,
-    exec_sys: defaultExecSystem,
-    queue_name: definition.jobAttributes.execSystemLogicalQueue,
-  }) as TTapisSystemQueue;
-
-  const schema = {
-    // TODOv3 handle fileInputArrays https://jira.tacc.utexas.edu/browse/WP-81
+  const [schema, setSchema] = useState<TAppFieldSchema>({
     inputs: z.object(fileInputs.schema),
     parameters: z.object(parameterSet.schema),
-    configuration: z.object({
-      execSystemLogicalQueue: getExecSystemLogicalQueueValidation(
-        definition,
-        defaultExecSystem
-      ),
-      maxMinutes: getMaxMinutesValidation(definition, queue),
-      coresPerNode: getCoresPerNodeValidation(definition, queue),
-      nodeCount: getNodeCountValidation(definition, queue),
-      allocation: getAllocationValidation(definition, allocations),
-    }),
-    outputs: z.object({
-      name: z.string().max(80),
-      archiveSystemId: z.string().optional(),
-      archiveSystemDir: z.string().optional(),
-    }),
-  };
+    configuration: z.object(configuration.schema),
+    outputs: z.object(outputs.schema),
+  });
 
   const { Header, Content } = Layout;
   const headerStyle = {
@@ -233,7 +171,7 @@ export const AppsSubmissionForm: React.FC = () => {
     resolver: zodResolver(z.object(schema)),
     mode: 'onChange',
   });
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, setValue, getValues, watch } = methods;
 
   useEffect(() => {
     reset(initialValues);
@@ -241,104 +179,64 @@ export const AppsSubmissionForm: React.FC = () => {
 
   const [current, setCurrent] = useState('inputs');
 
-  const fields: {
+  const [fields, setFields] = useState<{
     [dynamic: string]: {
       [dynamic: string]: TField | { [dynamic: string]: TField };
     };
-  } = {
+  }>({
     inputs: fileInputs.fields,
     parameters: parameterSet.fields,
-    configuration: {
-      execSystemLogicalQueue: {
-        description: 'Select the queue this job will execute on.',
-        label: 'Queue',
-        name: 'configuration.execSystemLogicalQueue',
-        key: 'configuration.execSystemLogicalQueue',
-        required: true,
-        type: 'select',
-        options: getAppQueueValues(
-          definition,
-          execSystems[0].batchLogicalQueues
-        ).map((q) => ({ value: q, label: q })),
-      },
-      maxMinutes: {
-        description: `The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
-          definition,
-          defaultExecSystem,
-          queue.name
-        )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`,
-        label: 'Maximum Job Runtime (minutes)',
-        name: 'configuration.maxMinutes',
-        key: 'configuration.maxMinutes',
-        required: true,
-        type: 'number',
-      },
-      coresPerNode: {
-        description:
-          'Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total.',
-        label: 'Cores Per Node',
-        name: 'configuration.coresPerNode',
-        key: 'configuration.coresPerNode',
-        required: true,
-        type: 'number',
-      },
-      nodeCount: {
-        description: 'Number of requested process nodes for the job.',
-        label: 'Node Count',
-        name: 'configuration.nodeCount',
-        key: 'configuration.nodeCount',
-        required: true,
-        type: 'number',
-      },
-      allocation: {
-        description:
-          'Select the project allocation you would like to use with this job submission.',
-        label: 'Allocation',
-        name: 'configuration.allocation',
-        key: 'configuration.allocation',
-        required: true,
-        type: 'select',
-        options: [
-          { label: '', hidden: true, disabled: true },
-          ...allocations.sort().map((projectId) => ({
-            value: projectId,
-            label: projectId,
-          })),
-        ],
-      },
-    },
-    outputs: {
-      name: {
-        description: 'A recognizable name for this job.',
-        label: 'Job Name',
-        name: 'outputs.name',
-        key: 'outputs.name',
-        required: true,
-        type: 'text',
-      },
-      archiveSystemId: {
-        description:
-          'System into which output files are archived after application execution.',
-        label: 'Archive System',
-        name: 'outputs.archiveSystemId',
-        key: 'outputs.archiveSystemId',
-        required: false,
-        type: 'text',
-        placeholder:
-          defaultStorageSystem.id || definition.jobAttributes.archiveSystemId,
-      },
-      archiveSystemDir: {
-        description:
-          'Directory into which output files are archived after application execution.',
-        label: 'Archive Directory',
-        name: 'outputs.archiveSystemDir',
-        key: 'outputs.archiveSystemDir',
-        required: false,
-        type: 'text',
-        placeholder: `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
-      },
-    },
-  };
+    configuration: configuration.fields,
+    outputs: outputs.fields,
+  });
+
+  // Queue dependency handler.
+  const queueValue = watch('configuration.execSystemLogicalQueue');
+  React.useEffect(() => {
+    if (queueValue) {
+      const execSystem = getExecSystemFromId(
+        execSystems,
+        definition.jobAttributes.execSystemId
+      );
+      if (!execSystem) return;
+      updateValuesForQueue(
+        execSystems,
+        definition.jobAttributes.execSystemId,
+        getValues(),
+        setValue
+      );
+      const queue = getQueueValueForExecSystem({
+        exec_sys: execSystem,
+        queue_name: queueValue as string,
+      });
+      if (!queue) return;
+
+      // Only configuration is dependent on queue values
+      const updatedSchema = getConfigurationSchema(
+        definition,
+        allocations,
+        execSystem,
+        queue
+      );
+
+      setSchema((prevSchema) => ({
+        ...prevSchema,
+        configuration: z.object(updatedSchema),
+      }));
+
+      const updatedFields = getConfigurationFields(
+        definition,
+        allocations,
+        [execSystem],
+        queue
+      );
+
+      setFields((prevFields) => ({
+        ...prevFields,
+        configuration: updatedFields,
+      }));
+    }
+  }, [queueValue, setValue]);
 
   interface TStep {
     [dynamic: string]: {
@@ -349,12 +247,29 @@ export const AppsSubmissionForm: React.FC = () => {
     };
   }
 
-  const steps: TStep = {
+  // Make step part of state to allow steps
+  // to handle field changes
+  const [steps, setSteps] = useState<TStep>({
     inputs: getInputsStep(fileInputs.fields),
     parameters: getParametersStep(parameterSet.fields),
-    configuration: getConfigurationStep(definition, execSystems, allocations),
-    outputs: getOutputsStep(definition, defaultStorageSystem.id, username),
-  };
+    configuration: getConfigurationStep(configuration.fields),
+    outputs: getOutputsStep(outputs.fields),
+  });
+
+  // Note: currently configuration is the only
+  // step that needs. This can be more generic
+  // in future if the fields shape is same between
+  // Step and Submission Detail View (mostly related to env vars)
+  useEffect(() => {
+    const updatedSteps: TStep = {
+      ...steps,
+      configuration: getConfigurationStep(
+        fields.configuration as { [key: string]: TField }
+      ),
+    };
+
+    setSteps(updatedSteps);
+  }, [fields]);
 
   const handleNextStep = useCallback(() => {
     // setState({ ...state, ...data });
@@ -386,7 +301,7 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [submitResult]);
 
-  const submitJobCallback = (submitData: FormValues) => {
+  const submitJobCallback = (submitData: TFormValues) => {
     const jobData: Omit<TJobBody, 'job'> & { job: TJobSubmit } = {
       operation: 'submitJob' as const,
       licenseType: license.type,

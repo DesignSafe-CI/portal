@@ -6,8 +6,9 @@ import {
   TTapisApp,
   TAppResponse,
   TTapisSystemQueue,
-  TConfigurationValues,
 } from '@client/hooks';
+import { TFormValues } from '../AppsWizard/AppsFormSchema';
+import { UseFormSetValue } from 'react-hook-form';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
@@ -187,47 +188,44 @@ export const getCoresPerNodeValidation = (
  */
 export const updateValuesForQueue = (
   execSystems: TTapisSystem[],
-  values: TConfigurationValues
+  execSystemId: string,
+  values: TFormValues,
+  setValue: UseFormSetValue<TFormValues>
 ) => {
-  const exec_sys = getExecSystemFromId(
-    execSystems,
-    values.execSystemId as string
-  );
+  const exec_sys = getExecSystemFromId(execSystems, execSystemId);
   if (!exec_sys) {
-    return values;
+    return;
   }
-  const updatedValues = { ...values };
+
   const queue = getQueueValueForExecSystem({
     exec_sys,
-    queue_name: values.execSystemLogicalQueue,
+    queue_name: values.configuration.execSystemLogicalQueue as string,
   });
-  if (!queue) return values;
+  if (!queue) return;
 
-  if (values.nodeCount < queue.minNodeCount) {
-    updatedValues.nodeCount = queue.minNodeCount;
+  if ((values.configuration.nodeCount as number) < queue.minNodeCount) {
+    setValue('configuration.nodeCount', queue.minNodeCount);
   }
-  if (values.nodeCount > queue.maxNodeCount) {
-    updatedValues.nodeCount = queue.maxNodeCount;
+  if ((values.configuration.nodeCount as number) > queue.maxNodeCount) {
+    setValue('configuration.nodeCount', queue.maxNodeCount);
   }
 
-  if (values.coresPerNode < queue.minCoresPerNode) {
-    updatedValues.coresPerNode = queue.minCoresPerNode;
+  if ((values.configuration.coresPerNode as number) < queue.minCoresPerNode) {
+    setValue('configuration.coresPerNode', queue.minCoresPerNode);
   }
   if (
     queue.maxCoresPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
-    values.coresPerNode > queue.maxCoresPerNode
+    (values.configuration.coresPerNode as number) > queue.maxCoresPerNode
   ) {
-    updatedValues.coresPerNode = queue.maxCoresPerNode;
+    setValue('configuration.coresPerNode', queue.maxCoresPerNode);
   }
 
-  if (values.maxMinutes < queue.minMinutes) {
-    updatedValues.maxMinutes = queue.minMinutes;
+  if ((values.configuration.maxMinutes as number) < queue.minMinutes) {
+    setValue('configuration.maxMinutes', queue.minMinutes);
   }
-  if (values.maxMinutes > queue.maxMinutes) {
-    updatedValues.maxMinutes = queue.maxMinutes;
+  if ((values.configuration.maxMinutes as number) > queue.maxMinutes) {
+    setValue('configuration.maxMinutes', queue.maxMinutes);
   }
-
-  return updatedValues;
 };
 
 /**
