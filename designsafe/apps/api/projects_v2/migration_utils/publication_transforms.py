@@ -287,6 +287,10 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         fixed_authors = list(map(convert_v2_user, entity["authors"]))
         entity["value"]["authors"] = sorted(fixed_authors, key=lambda a: a["order"])
 
+    legacy_doi = entity.get("doi", None)
+    if legacy_doi:
+        entity["value"]["dois"] = [legacy_doi.lstrip("doi:")]
+
     tombstone_uuids = base_pub_meta.get("tombstone", [])
     if entity["uuid"] in tombstone_uuids:
         entity["value"]["tombstone"] = True

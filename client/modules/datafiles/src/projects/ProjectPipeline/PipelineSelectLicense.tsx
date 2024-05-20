@@ -59,6 +59,7 @@ export const PipelineSelectLicense: React.FC<{
         </Button>
         <PipelinePublishModal
           disabled={!data.baseProject.value.license}
+          operation={searchParams.get('operation') ?? ''}
           projectType={data.baseProject.value.projectType}
           projectId={projectId}
           entityUuids={searchParams.getAll('selected')}
