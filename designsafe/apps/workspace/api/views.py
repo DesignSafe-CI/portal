@@ -80,18 +80,18 @@ def _get_user_app_license(license_type, user):
 
 
 def _get_systems(
-    user: object, canExec: bool, systems: list = None, listType: str = "ALL"
+    user: object, can_exec: bool, systems: list = None, list_type: str = "ALL"
 ) -> list:
-    """List of all enabled systems of the specified canExec type available for the user."""
+    """List of all enabled systems of the specified can_exec type available for the user."""
     tapis = user.tapis_oauth.client
 
-    search_string = f"(canExec.eq.{canExec})~(enabled.eq.true)"
+    search_string = f"(canExec.eq.{can_exec})~(enabled.eq.true)"
 
     if systems:
         system_id_search = ",".join(systems)
         search_string += f"~(id.in.{system_id_search})"
     return tapis.systems.getSystems(
-        listType=listType, select="allAttributes", search=search_string
+        listType=list_type, select="allAttributes", search=search_string
     )
 
 
@@ -173,9 +173,10 @@ class SystemListingView(AuthenticatedApiView):
     """System Listing View"""
 
     def get(self, request):
-        execution_systems = _get_systems(request.user, canExec=True)
+        """Returns a listing of execution and storage systems for the user"""
+        execution_systems = _get_systems(request.user, can_exec=True)
         storage_systems = _get_systems(
-            request.user, canExec=False, listType="SHARED_PUBLIC"
+            request.user, can_exec=False, list_type="SHARED_PUBLIC"
         )
         response = {
             "executionSystems": execution_systems,
@@ -195,9 +196,10 @@ class SystemListingView(AuthenticatedApiView):
 
 
 class SystemDefinitionView(AuthenticatedApiView):
-    """Get definitions for individual systems"""
+    """System Definition View"""
 
     def get(self, request, system_id):
+        """Get definitions for individual systems"""
         client = request.user.tapis_oauth.client
         system_def = client.systems.getSystem(systemId=system_id)
         return JsonResponse(
@@ -223,12 +225,25 @@ class AppsView(AuthenticatedApiView):
             },
         )
         app_id = request.GET.get("appId")
-        app_version = request.GET.get("appVersion")
+        app_version = request.GET.get("appVersion", "")
 
         if not app_id:
             raise ApiException("Missing required parameter: app_id", status=422)
 
-        data = _get_app(app_id, app_version, request.user)
+        try:
+            portal_app = AppVariant.objects.get(app_id=app_id, version=app_version)
+            if portal_app.app_type == "html":
+                data = {
+                    "definition": {
+                        "id": portal_app.app_id,
+                        "notes": {"label": portal_app.label or portal_app.bundle.label},
+                    }
+                }
+            else:
+                data = _get_app(app_id, app_version, request.user)
+
+        except ObjectDoesNotExist:
+            data = _get_app(app_id, app_version, request.user)
 
         # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
         # Check if default storage system needs keys pushed
@@ -313,6 +328,7 @@ class AppsTrayView(AuthenticatedApiView):
 
         return my_apps
 
+    # pylint: disable-msg=too-many-locals
     def _get_public_apps(self, user, verbose):
         """Returns a listing of public Tapis apps defined by the portal, sorted by category."""
 
@@ -358,6 +374,7 @@ class AppsTrayView(AuthenticatedApiView):
         values = reduced_values if not verbose else all_values
 
         categories = []
+        html_definitions = {}
         # Traverse category records in descending priority
         for category in AppTrayCategory.objects.order_by("-priority"):
             # Retrieve all apps known to the portal in that category
@@ -413,16 +430,21 @@ class AppsTrayView(AuthenticatedApiView):
                 "apps": [
                     {k: v for k, v in app.items() if v != ""}
                     for app in valid_tapis_apps
-                ]  # Remove empty strings from response
-                + html_apps,
+                ],  # Remove empty strings from response
             }
+
+            # Add html apps to html_definitions
+            for html_app in html_apps:
+                html_definitions[html_app["app_id"]] = html_app
+
+                category_result["apps"].append(html_app)
 
             category_result["apps"] = sorted(
                 category_result["apps"], key=lambda app: app["label"] or app["app_id"]
             )
             categories.append(category_result)
 
-        return categories
+        return categories, html_definitions
 
     def get(self, request, *args, **kwargs):
         """
@@ -475,7 +497,9 @@ class AppsTrayView(AuthenticatedApiView):
 
         public_only = request.GET.get("public_only", False)
 
-        categories = self._get_public_apps(request.user, verbose=public_only)
+        categories, html_definitions = self._get_public_apps(
+            request.user, verbose=public_only
+        )
 
         if not public_only:
             my_apps = self._get_private_apps(request.user)
@@ -487,7 +511,8 @@ class AppsTrayView(AuthenticatedApiView):
         )
 
         return JsonResponse(
-            {"categories": categories}, encoder=BaseTapisResultSerializer
+            {"categories": categories, "htmlDefinitions": html_definitions},
+            encoder=BaseTapisResultSerializer,
         )
 
 
@@ -647,6 +672,7 @@ class JobsView(AuthenticatedApiView):
             encoder=BaseTapisResultSerializer,
         )
 
+    # pylint: disable-msg=too-many-locals
     def _submit_job(self, request, body, tapis, username):
         job_post = body.get("job")
         if not job_post:
