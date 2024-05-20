@@ -119,7 +119,7 @@ function NotificationService(
      * @param {Object} msg
      */
     function processToastr(e, msg) {
-        if (e.event_type !== 'data_depot') {
+        if (msg?.event_type !== 'data_depot') {
             return;
         }
 
