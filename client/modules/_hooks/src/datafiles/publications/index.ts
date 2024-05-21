@@ -3,3 +3,5 @@ export type { TPublicationListingItem } from './usePublishedListing';
 export { usePublicationDetail } from './usePublicationDetail';
 export { usePublicationVersions } from './usePublicationVersions';
 export { usePublishProject } from './usePublishProject';
+export { useVersionProject } from './useVersionProject';
+export { useAmendProject } from './useAmendProject';

@@ -23,6 +23,7 @@ import {
   getQueueMaxMinutes,
   isAppTypeBATCH,
   getExecSystemLogicalQueueValidation,
+  preprocessStringToNumber,
 } from '../utils';
 
 export type TDynamicString = { [dynamic: string]: string | number };
@@ -175,7 +176,7 @@ export const getConfigurationFields = (
     description: `The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
       definition,
       defaultExecSystem,
-      queue.name
+      queue?.name
     )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`,
     label: 'Maximum Job Runtime (minutes)',
     name: 'configuration.maxMinutes',
@@ -245,7 +246,6 @@ const FormSchema = (
     },
     configuration: {
       defaults: {
-        execSystemId: undefined,
         execSystemLogicalQueue: '',
         maxMinutes: 0,
         nodeCount: 0,
@@ -316,7 +316,10 @@ const FormSchema = (
             .email('Must be a valid email.');
         } else if (param.notes?.fieldType === 'number') {
           field.type = 'number';
-          parameterSetSchema[field.label] = z.number();
+          parameterSetSchema[field.label] = z.preprocess(
+            preprocessStringToNumber,
+            z.number()
+          );
         } else {
           field.type = 'text';
           parameterSetSchema[field.label] = z.string();

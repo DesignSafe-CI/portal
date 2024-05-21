@@ -17,7 +17,7 @@ import {
 import {
   FileListingTable,
   TFileListingColumns,
-} from '../../FileListing/FileListingTable/FileListingTable';
+} from '@client/common-components';
 import { NavLink } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
 

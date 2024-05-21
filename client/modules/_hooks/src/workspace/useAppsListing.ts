@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-type PortalApp = {
+export type TPortalApp = {
   app_id: string;
   app_type: string;
   bundle_id: number;
@@ -14,14 +14,14 @@ type PortalApp = {
 };
 
 export type TAppCategory = {
-  apps: PortalApp[];
+  apps: TPortalApp[];
   priority: number;
   title: string;
 };
 
 export type TAppCategories = {
   categories: TAppCategory[];
-  htmlDefinitions: { [dynamic: string]: PortalApp };
+  htmlDefinitions: { [dynamic: string]: TPortalApp };
 };
 
 async function getAppsListing() {

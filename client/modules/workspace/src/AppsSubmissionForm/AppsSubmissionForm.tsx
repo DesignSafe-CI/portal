@@ -173,11 +173,26 @@ export const AppsSubmissionForm: React.FC = () => {
   });
   const { handleSubmit, reset, setValue, getValues, watch } = methods;
 
+  // Make step part of state to allow steps
+  // to handle field changes
+  const [steps, setSteps] = useState<TStep>({
+    inputs: getInputsStep(fileInputs.fields),
+    parameters: getParametersStep(parameterSet.fields),
+    configuration: getConfigurationStep(configuration.fields),
+    outputs: getOutputsStep(outputs.fields),
+  });
+  const [current, setCurrent] = useState('inputs');
+
   useEffect(() => {
     reset(initialValues);
+    setSteps({
+      inputs: getInputsStep(fileInputs.fields),
+      parameters: getParametersStep(parameterSet.fields),
+      configuration: getConfigurationStep(configuration.fields),
+      outputs: getOutputsStep(outputs.fields),
+    });
+    setCurrent('inputs');
   }, [initialValues]);
-
-  const [current, setCurrent] = useState('inputs');
 
   const [fields, setFields] = useState<{
     [dynamic: string]: {
@@ -246,15 +261,6 @@ export const AppsSubmissionForm: React.FC = () => {
       content: JSX.Element;
     };
   }
-
-  // Make step part of state to allow steps
-  // to handle field changes
-  const [steps, setSteps] = useState<TStep>({
-    inputs: getInputsStep(fileInputs.fields),
-    parameters: getParametersStep(parameterSet.fields),
-    configuration: getConfigurationStep(configuration.fields),
-    outputs: getOutputsStep(outputs.fields),
-  });
 
   // Note: currently configuration is the only
   // step that needs. This can be more generic

@@ -3,6 +3,7 @@ export {
   appsListingQuery,
   type TAppCategories,
   type TAppCategory,
+  type TPortalApp,
 } from './useAppsListing';
 export {
   default as useGetApps,

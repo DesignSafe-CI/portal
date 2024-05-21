@@ -377,7 +377,7 @@ def publish_project(
         existing_dois = entity_meta.value.get("dois", [])
         existing_doi = next(iter(existing_dois), None)
 
-        datacite_json = get_datacite_json(pub_tree, entity_uuid)
+        datacite_json = get_datacite_json(pub_tree, entity_uuid, version)
         datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
         doi = datacite_resp["data"]["id"]
         new_dois.append(doi)
@@ -426,5 +426,64 @@ def publish_project_async(
     dry_run: bool = False,
 ):
     """Async wrapper arount publication"""
+    publish_project(project_id, entity_uuids, version, version_info, dry_run)
 
-    publish_project_async(project_id, entity_uuids, version, version_info, dry_run)
+
+def amend_publication(project_id: str):
+    """
+    Update metadata values in a publication to match the latest changes made in the
+    underlying project. Does NOT affect file associations or tags.
+    """
+
+    pub_root = Publication.objects.get(project_id=project_id)
+    pub_tree: nx.DiGraph = nx.node_link_graph(pub_root.tree)
+    latest_version = max(
+        pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
+    )
+    pubs_to_amend = [
+        node
+        for node in pub_tree.successors("NODE_ROOT")
+        if pub_tree.nodes[node]["version"] == latest_version
+    ]
+
+    for pub_node in pubs_to_amend:
+        for node in nx.dfs_preorder_nodes(pub_tree, pub_node):
+            uuid = pub_tree.nodes[node]["uuid"]
+            published_meta_value = pub_tree.nodes[node]["value"]
+            try:
+                prj_meta_value = ProjectMetadata.objects.get(uuid=uuid).value
+                prj_meta_value.pop("fileObjs", None)
+                prj_meta_value.pop("fileTags", None)
+                amended_meta_value = {**published_meta_value, **prj_meta_value}
+                pub_tree.nodes[node]["value"] = amended_meta_value
+            except ProjectMetadata.DoesNotExist:
+                continue
+
+    base_prj_meta_value = ProjectMetadata.get_project_by_id(project_id).value
+    base_prj_meta_value.pop("fileObjs", None)
+    base_prj_meta_value.pop("fileTags", None)
+
+    # If not type Other, we also amend the NODE_ROOT metadata.
+    if pub_tree.nodes["NODE_ROOT"].get("uuid", None):
+        base_published_meta_value = pub_tree.nodes["NODE_ROOT"]["value"]
+        amended_root_meta_value = {**base_published_meta_value, **base_prj_meta_value}
+        pub_tree.nodes["NODE_ROOT"]["value"] = amended_root_meta_value
+
+    pub_root.tree = nx.node_link_data(pub_tree)
+    pub_root.value = {**pub_root.value, **base_prj_meta_value}
+    pub_root.save()
+
+    # Update datacite metadata
+    for node in pubs_to_amend:
+        datacite_json = get_datacite_json(
+            pub_tree, pub_tree.nodes[node]["uuid"], latest_version
+        )
+        upsert_datacite_json(
+            datacite_json, doi=pub_tree.nodes[node]["value"]["dois"][0]
+        )
+
+
+@shared_task
+def amend_publication_async(project_id: str):
+    """async wrapper around amend_publication"""
+    amend_publication(project_id)

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FileListingTable,
   TFileListingColumns,
-} from '../../FileListing/FileListingTable/FileListingTable';
+} from '@client/common-components';
 import { toBytes } from '../../FileListing/FileListing';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { NavLink } from 'react-router-dom';

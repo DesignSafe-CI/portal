@@ -37,14 +37,14 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
             <ul>
               <li>Publish new dataset(s) in your project.</li>
               <li>
-                If you need to publish subsequent dataset(s),
+                If you need to publish subsequent dataset(s),&nbsp;
                 <a
                   href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+PRJ-3986"
                   target="_blank"
                   aria-describedby="msg-open-new-window"
                 >
                   submit a ticket
-                </a>
+                </a>{' '}
                 with your project number and the name of the dataset(s).
               </li>
             </ul>
@@ -71,12 +71,16 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
                   natural hazard event.
                 </li>
               </ul>
-              <button
-                className="btn btn-small btn-add"
-                disabled={!has_published_entities}
+              <NavLink
+                to={`/projects/${projectId}/prepare-to-publish/pipeline?operation=amend`}
               >
-                Amend
-              </button>
+                <button
+                  className="btn btn-small btn-add"
+                  disabled={!has_published_entities}
+                >
+                  Amend
+                </button>
+              </NavLink>
             </div>
             <div className="pipeline-section">
               <h3>Versioning</h3>
@@ -107,22 +111,6 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
                   Version
                 </button>
               </NavLink>
-            </div>
-            <div className="pipeline-section">
-              <h3>Add/Remove Authors</h3>
-              <hr />
-              <div>
-                If you need to add or remove authors to/from a publication,
-                <a
-                  href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+PRJ-3986"
-                  target="_blank"
-                  aria-describedby="msg-open-new-window"
-                >
-                  submit a ticket
-                </a>
-                .
-              </div>
-              <br />
             </div>
           </div>
         </div>
