@@ -181,6 +181,7 @@ export const AppsSubmissionForm: React.FC = () => {
     configuration: getConfigurationStep(configuration.fields),
     outputs: getOutputsStep(outputs.fields),
   });
+  const [current, setCurrent] = useState('inputs');
 
   useEffect(() => {
     reset(initialValues);
@@ -190,9 +191,8 @@ export const AppsSubmissionForm: React.FC = () => {
       configuration: getConfigurationStep(configuration.fields),
       outputs: getOutputsStep(outputs.fields),
     });
+    setCurrent('inputs');
   }, [initialValues]);
-
-  const [current, setCurrent] = useState('inputs');
 
   const [fields, setFields] = useState<{
     [dynamic: string]: {
