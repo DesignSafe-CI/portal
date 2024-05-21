@@ -383,10 +383,7 @@ class AppsTrayView(AuthenticatedApiView):
             category_result = {
                 "title": category.category,
                 "priority": category.priority,
-                "apps": [
-                    {k: v for k, v in app.items() if v != ""}
-                    for app in valid_tapis_apps
-                ],  # Remove empty strings from response
+                "apps": valid_tapis_apps,
             }
 
             # Add html apps to html_definitions
