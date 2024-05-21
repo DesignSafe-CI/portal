@@ -76,6 +76,7 @@ export const PublishedDetailLayout: React.FC = () => {
         projectValue={data?.baseProject}
         publicationDate={publicationDate}
         versions={allVersions}
+        isPublished
       />
       <Outlet />
     </div>

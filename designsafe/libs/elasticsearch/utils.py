@@ -154,10 +154,24 @@ def iterate_level(client, system, path, limit=100):
     offset = 0
 
     while True:
-        page = client.files.listFiles(systemId=system,
+        _page = client.files.listFiles(systemId=system,
                                  path=urllib.parse.quote(path),
                                  offset=offset,
                                  limit=limit)
+
+        page = [{
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f"/{f.path}",
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }} for f in _page]
+
         yield from page
         offset += limit
         if len(page) != limit:
