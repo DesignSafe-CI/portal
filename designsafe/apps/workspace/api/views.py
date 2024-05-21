@@ -685,12 +685,18 @@ class JobsView(AuthenticatedApiView):
                 reverse("webhooks:jobs_wh_handler")
             )
 
+        # Add portalName tag to job in order to filter jobs by portal
+        job_post["tags"] = job_post.get("tags", []) + [
+            f"portalName: {settings.PORTAL_NAMESPACE}"
+        ]
+
         # Add additional data for interactive apps
         if body.get("isInteractive"):
             # Add webhook URL environment variable for interactive apps
             job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get(
                 "envVariables", []
             ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": wh_base_url}]
+            job_post["tags"].append("isInteractive")
 
             # Make sure $HOME/.tap directory exists for user when running interactive apps on TACC HPC Systems
             exec_system_id = job_post["execSystemId"]
@@ -704,11 +710,6 @@ class JobsView(AuthenticatedApiView):
                     systemId=exec_system_id,
                     path=f"{system['home_dir'].format(tasdir)}/.tap",
                 )
-
-        # Add portalName tag to job in order to filter jobs by portal
-        job_post["tags"] = job_post.get("tags", []) + [
-            f"portalName: {settings.PORTAL_NAMESPACE}"
-        ]
 
         # Add webhook subscription for job status updates
         job_post["subscriptions"] = job_post.get("subscriptions", []) + [

@@ -8,15 +8,21 @@ import {
   AppsBreadcrumb,
   Toast,
 } from '@client/workspace';
-import { useAppsListing, usePrefetchGetSystems } from '@client/hooks';
 import { Spinner } from '@client/common-components';
-import { usePrefetchGetApps } from '@client/hooks';
+import {
+  usePrefetchGetApps,
+  usePrefetchGetNotifications,
+  useAppsListing,
+  usePrefetchGetSystems,
+} from '@client/hooks';
 
 const { Sider, Header } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
   usePrefetchGetApps(useGetAppParams());
   usePrefetchGetSystems();
+  usePrefetchGetNotifications({ event_type: 'job' });
+  usePrefetchGetNotifications({ event_type: 'interactive_session_ready' });
   const { data, isLoading } = useAppsListing();
 
   if (!data || isLoading)

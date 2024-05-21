@@ -1,11 +1,21 @@
 import React, { useMemo, useState } from 'react';
-import { Button, TableProps } from 'antd';
+import { TableProps, Col, Row, Flex } from 'antd';
+import { SecondaryButton } from '@client/common-components';
 import {
   JobsListingTable,
   TJobsListingColumns,
 } from './JobsListingTable/JobsListingTable';
-import { getStatusText } from '../utils/jobs';
+import {
+  getStatusText,
+  truncateMiddle,
+  getJobInteractiveSessionInfo,
+  isOutputState,
+  isInteractiveJob,
+  isTerminalState,
+} from '../utils';
 import { JobsDetailModalBody } from '../JobsDetailModal/JobsDetailModal';
+import { InteractiveSessionModal } from '../InteractiveSessionModal';
+import styles from './JobsListing.module.css';
 
 export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   ...tableProps
@@ -15,6 +25,8 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     uuid?: string;
   }>({ isOpen: false });
 
+  const [interactiveModalState, setInteractiveModalState] = useState(false);
+
   const columns: TJobsListingColumns = useMemo(
     () => [
       {
@@ -22,88 +34,97 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
         dataIndex: 'name',
         ellipsis: true,
         width: '30%',
-        render: (data, record) => (
-          <div>
-            {record.name}
-            <br />
-            {record.status === ('RUNNING') ? (
-              <>
-                <Button type="default">
-                  Open
-                </Button>
-                &nbsp;&nbsp;
-                {/* <Button type="default">
-                  End
-                </Button> */}
-              </>
-            ) : null}
-            {record.status === ('PENDING' || 'PROCESSING_INPUTS' || 'STAGING_INPUTS' || 'STAGING_JOB' || 'SUBMITTING_JOB' || 'QUEUED') ? (
-              <>
-                <Button type="default" disabled>
-                  Output pending
-                </Button>
-              </>
-            ) : null}
-            {record.status === ('FAILED' || 'FINISHED') ? (
-              <>
-                <a href={`data/browser/${record.archiveSystemId}${record.archiveSystemDir}`} target="_blank" rel="noopener noreferrer">
-                  <Button type="default">
-                    View Output
-                  </Button>
-                </a>&nbsp;&nbsp;
-              </>
-            ) : null}
-            <Button
-              type="link"
-              onClick={() =>
-                setJobDetailModalState({ isOpen: true, uuid: record.uuid })
-              }
-            >
-              <i
-                role="none"
-                style={{ color: '#333333' }}
-                // className="fa fa-file-o"
-              >
-                &nbsp;&nbsp;
-              </i>
-              View Details
-            </Button>
-          </div>
-        ),
-      },
-      { width: '10%',
-        title: 'Application',
-        dataIndex: 'appId',
-        render: (appId) => {
-          // Check if appId is not null or undefined
-          if (appId) {
-            // Capitalize the first letter and concatenate the rest of the string
-            return `${appId.charAt(0).toUpperCase()}${appId.slice(1)}`;
-          }
-          return ''; // Return an empty string or a default value if appId is undefined or null
+        render: (_, job) => {
+          const { interactiveSessionLink, message } =
+            getJobInteractiveSessionInfo(job);
+
+          return (
+            <Flex vertical>
+              {truncateMiddle(job.name, 35)}
+              <Row className={styles.jobActions}>
+                {interactiveSessionLink && (
+                  <>
+                    <SecondaryButton
+                      onClick={() =>
+                        setInteractiveModalState(!interactiveModalState)
+                      }
+                    >
+                      Open
+                    </SecondaryButton>
+                    <SecondaryButton onClick={() => console.log('cancel job')}>
+                      End
+                    </SecondaryButton>
+                    <InteractiveSessionModal
+                      isOpen={interactiveModalState}
+                      interactiveSessionLink={interactiveSessionLink}
+                      message={message}
+                      onCancel={() =>
+                        setInteractiveModalState(!interactiveModalState)
+                      }
+                    />
+                  </>
+                )}
+                {!isInteractiveJob(job) && (
+                  <SecondaryButton
+                    type="default"
+                    href={`data/browser/${job.archiveSystemId}${job.archiveSystemDir}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    disabled={!isOutputState(job.status)}
+                  >
+                    {isOutputState(job.status)
+                      ? 'View Output'
+                      : 'Output Pending'}
+                  </SecondaryButton>
+                )}
+                {isTerminalState(job.status) && (
+                  <SecondaryButton onClick={() => console.log('resubmit')}>
+                    {isInteractiveJob(job) ? 'Resubmit' : 'Reuse Inputs'}
+                  </SecondaryButton>
+                )}
+                <SecondaryButton
+                  type="link"
+                  onClick={() =>
+                    setJobDetailModalState({ isOpen: true, uuid: job.uuid })
+                  }
+                >
+                  View Details
+                </SecondaryButton>
+              </Row>
+            </Flex>
+          );
         },
       },
-      { width: '10%',
+      {
+        width: '10%',
+        title: 'Application',
+        dataIndex: 'appId',
+        render: (appId, job) => {
+          const appNotes = JSON.parse(job.notes);
+
+          return (
+            appNotes.label ||
+            `${appId.charAt(0).toUpperCase()}${appId.slice(1)}`
+          );
+        },
+      },
+      {
+        width: '10%',
         title: 'Job Status',
         dataIndex: 'status',
-        render: (status) => <>{getStatusText({ status }) || 'Unknown'}</>,
+        render: (status) => <>{getStatusText(status)}</>,
       },
-      { width: '10%',
-        title: 'Nodes',
-        dataIndex: 'nodeCount',
-      },
-      { width: '10%',
-        title: 'Cores',
-        dataIndex: 'coresPerNode',
-      },
-      { width: '30%',
+      { width: '10%', title: 'Nodes', dataIndex: 'nodeCount' },
+      { width: '10%', title: 'Cores', dataIndex: 'coresPerNode' },
+      {
+        width: '30%',
         title: 'Time Submitted - Finished',
         dataIndex: 'created',
-        render: (text, record) => {
+        render: (_, job) => {
           const formatDate = (dateString: string) => {
             if (!dateString) return '';
             const date = new Date(dateString);
-            const month = date.getMonth() + 1;  // getMonth() is zero-indexed
+            const month = date.getMonth() + 1; // getMonth() is zero-indexed
             const day = date.getDate();
             const year = date.getFullYear();
             let hours = date.getHours();
@@ -112,8 +133,12 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
             // Format the date and time parts to ensure two digits
-            const formattedDate = `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
-            const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            const formattedDate = `${month.toString().padStart(2, '0')}/${day
+              .toString()
+              .padStart(2, '0')}/${year}`;
+            const formattedTime = `${hours
+              .toString()
+              .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             return `${formattedDate} ${formattedTime}`;
           };
 
@@ -121,16 +146,20 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
             if (!start || !end) return '';
             const startDate = new Date(start).getTime();
             const endDate = new Date(end).getTime();
-            const duration = endDate - startDate;  // duration in milliseconds
+            const duration = endDate - startDate; // duration in milliseconds
             const seconds = Math.floor(duration / 1000);
             const hours = Math.floor(seconds / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
             const remainingSeconds = seconds % 60;
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            return `${hours.toString().padStart(2, '0')}:${minutes
+              .toString()
+              .padStart(2, '0')}:${remainingSeconds
+              .toString()
+              .padStart(2, '0')}`;
           };
-          const formattedStart = formatDate(record.created);
-          const formattedEnd = formatDate(record.ended);
-          const runtime = formatDuration(record.created, record.ended);
+          const formattedStart = formatDate(job.created);
+          const formattedEnd = formatDate(job.ended);
+          const runtime = formatDuration(job.created, job.ended);
 
           return (
             <div>
