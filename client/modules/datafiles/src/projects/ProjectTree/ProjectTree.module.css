@@ -3,10 +3,17 @@
   --tree-spacing-y: 15px;
 }
 
-.tree-list-item {
-  background-color: rgb(176, 250, 192);
+.tree-list-badge {
   white-space: nowrap;
-  outline: 1px solid green;
+  border-radius: 5px;
+  position: relative;
+  padding: 5px;
+  margin-left: -5px;
+  font-size: 14px;
+  z-index: 100;
+}
+
+.tree-list-item {
   border-radius: 5px;
   position: relative;
   padding: 5px;

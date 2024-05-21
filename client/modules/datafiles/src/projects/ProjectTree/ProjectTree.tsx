@@ -130,29 +130,38 @@ const RecursiveTree: React.FC<{
 
   return (
     <li className={styles['tree-li']}>
-      <span
+      <div
         className={styles['tree-list-item']}
-        style={{
-          backgroundColor: PROJECT_COLORS[treeData.name].fill,
-          outline: `1px solid ${PROJECT_COLORS[treeData.name].outline}`,
-        }}
+        style={{ display: 'flex', alignItems: 'center' }}
       >
-        {DISPLAY_NAMES[treeData.name]}
-      </span>
-      {readOnly ? (
-        <span style={{ lineHeight: '32px' }}>
-          &nbsp;{(treeData as TPublicationTree<TEntityValue>).value.title}
-        </span>
-      ) : (
-        <ProjectTreeDisplay
-          projectId={projectId}
-          uuid={treeData.uuid}
-          nodeId={treeData.id}
-          name={treeData.name}
-          order={treeData.order ?? 0}
-          isLast={isLast}
-        />
-      )}
+        <div
+          className={styles['tree-list-badge']}
+          style={{
+            backgroundColor: PROJECT_COLORS[treeData.name].fill,
+            outline: `1px solid ${PROJECT_COLORS[treeData.name].outline}`,
+          }}
+        >
+          {DISPLAY_NAMES[treeData.name]}
+        </div>
+        {readOnly ? (
+          <div
+            style={{
+              marginLeft: '1rem',
+            }}
+          >
+            {(treeData as TPublicationTree<TEntityValue>).value.title}
+          </div>
+        ) : (
+          <ProjectTreeDisplay
+            projectId={projectId}
+            uuid={treeData.uuid}
+            nodeId={treeData.id}
+            name={treeData.name}
+            order={treeData.order ?? 0}
+            isLast={isLast}
+          />
+        )}
+      </div>
       <ul className={styles['tree-ul']}>
         {sortedChildren.map((child, idx) => (
           <RecursiveTree
