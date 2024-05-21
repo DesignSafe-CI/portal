@@ -11,7 +11,6 @@ import {
 import { Spinner } from '@client/common-components';
 import {
   usePrefetchGetApps,
-  usePrefetchGetNotifications,
   useAppsListing,
   usePrefetchGetSystems,
 } from '@client/hooks';

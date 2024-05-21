@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { TableProps, Col, Row, Flex } from 'antd';
+import { TableProps, Row, Flex } from 'antd';
 import { SecondaryButton } from '@client/common-components';
 import {
   useGetNotifications,
@@ -139,7 +139,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
             const year = date.getFullYear();
             let hours = date.getHours();
             const minutes = date.getMinutes();
-            const amPm = hours >= 12 ? 'PM' : 'AM';
+            // const amPm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // the hour '0' should be '12'
             // Format the date and time parts to ensure two digits
