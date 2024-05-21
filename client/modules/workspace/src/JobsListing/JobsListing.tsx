@@ -61,6 +61,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                     >
                       Open
                     </SecondaryButton>
+                    {/* TODOv3: hook up job cancel */}
                     <SecondaryButton onClick={() => console.log('cancel job')}>
                       End
                     </SecondaryButton>
@@ -87,11 +88,13 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                       : 'Output Pending'}
                   </SecondaryButton>
                 )}
+                {/* TODOv3: hook up job cancel */}
                 {isTerminalState(job.status) && (
                   <SecondaryButton onClick={() => console.log('resubmit')}>
                     {isInteractiveJob(job) ? 'Resubmit' : 'Reuse Inputs'}
                   </SecondaryButton>
                 )}
+                {/* TODOv3: hook up job cancel */}
                 <SecondaryButton
                   type="link"
                   onClick={() =>

@@ -9,7 +9,8 @@ export const JobStatusNav: React.FC = () => {
   const { data: jobNotifs, isLoading } = useGetNotifications({});
   console.log(jobNotifs, isLoading);
 
-  const unreadNotifs = 1;
+  // TODOv3: fix unread notification count
+  const unreadNotifs = 0;
   // (interactiveSessionNotifs?.unread as number) +
   // (jobNotifs?.unread as number);
 
