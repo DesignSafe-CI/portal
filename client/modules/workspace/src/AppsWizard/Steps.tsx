@@ -1,9 +1,10 @@
 import { FormField } from './FormField';
 import { TField } from '../AppsWizard/AppsFormSchema';
 
+export const stepKeys = ['inputs', 'parameters', 'configuration', 'outputs'];
+
 export const getInputsStep = (fields: { [dynamic: string]: TField }) => ({
   title: 'Inputs',
-  nextPage: 'parameters',
   content: (
     <>
       {Object.values(fields).map((field) => {
@@ -18,8 +19,6 @@ export const getParametersStep = (fields: {
   [dynamic: string]: { [dynamic: string]: TField };
 }) => ({
   title: 'Parameters',
-  prevPage: 'inputs',
-  nextPage: 'configuration',
   content: (
     <>
       {Object.values(fields).map((parameterValue) => {
@@ -41,8 +40,6 @@ const configurationFieldOrder = [
 
 export const getConfigurationStep = (fields: { [key: string]: TField }) => ({
   title: 'Configuration',
-  prevPage: 'parameters',
-  nextPage: 'outputs',
   content: (
     <>
       {configurationFieldOrder.map((key) => {
@@ -59,7 +56,6 @@ export const getConfigurationStep = (fields: { [key: string]: TField }) => ({
 const outputFieldOrder = ['name', 'archiveSystemId', 'archiveSystemDir'];
 export const getOutputsStep = (fields: { [key: string]: TField }) => ({
   title: 'Outputs',
-  prevPage: 'configuration',
   content: (
     <>
       {outputFieldOrder.map((key) => {

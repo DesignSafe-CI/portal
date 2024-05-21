@@ -123,8 +123,13 @@ export const AppsSubmissionDetails: React.FC<{
   };
 
   const getItems = (values: FieldValues) => {
-    const items: DescriptionsProps['items'] = Object.entries(values).map(
-      ([key, value], index) => ({
+    // Filter out empty items. Example: app with no inputs
+    const items: DescriptionsProps['items'] = Object.entries(values)
+      .filter(
+        ([_, value]) =>
+          typeof value !== 'object' || Object.keys(value).length > 0
+      )
+      .map(([key, value], index) => ({
         key: key,
         label: (
           <Flex
@@ -154,8 +159,7 @@ export const AppsSubmissionDetails: React.FC<{
           border: '0',
           backgroundColor: 'inherit',
         },
-      })
-    );
+      }));
     return items;
   };
 
