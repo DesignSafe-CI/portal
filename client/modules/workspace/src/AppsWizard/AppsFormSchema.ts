@@ -170,6 +170,22 @@ export const getConfigurationFields = (
         execSystems[0].batchLogicalQueues
       ).map((q) => ({ value: q, label: q })),
     };
+    configurationFields['allocation'] = {
+      description:
+        'Select the project allocation you would like to use with this job submission.',
+      label: 'Allocation',
+      name: 'configuration.allocation',
+      key: 'configuration.allocation',
+      required: true,
+      type: 'select',
+      options: [
+        { label: '', hidden: true, disabled: true },
+        ...allocations.sort().map((projectId) => ({
+          value: projectId,
+          label: projectId,
+        })),
+      ],
+    };
   }
 
   configurationFields['maxMinutes'] = {
@@ -206,22 +222,6 @@ export const getConfigurationFields = (
     };
   }
 
-  configurationFields['allocation'] = {
-    description:
-      'Select the project allocation you would like to use with this job submission.',
-    label: 'Allocation',
-    name: 'configuration.allocation',
-    key: 'configuration.allocation',
-    required: true,
-    type: 'select',
-    options: [
-      { label: '', hidden: true, disabled: true },
-      ...allocations.sort().map((projectId) => ({
-        value: projectId,
-        label: projectId,
-      })),
-    ],
-  };
   return configurationFields;
 };
 
@@ -246,11 +246,7 @@ const FormSchema = (
     },
     configuration: {
       defaults: {
-        execSystemLogicalQueue: '',
         maxMinutes: 0,
-        nodeCount: 0,
-        coresPerNode: 0,
-        allocation: undefined,
       },
       fields: {},
       schema: {},
