@@ -1,21 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './JobsListingTable.module.css';
 import { Table, TableColumnType, TableProps } from 'antd';
-import { useJobsListing, TJob } from '@client/hooks';
+import { useJobsListing, TTapisJob } from '@client/hooks';
 
 type TableRef = {
   nativeElement: HTMLDivElement;
   scrollTo: (config: { index?: number; key?: React.Key; top?: number }) => void;
 };
 
-export type TJobsListingColumns = (TableColumnType<TJob> & {
-  dataIndex: keyof TJob;
+export type TJobsListingColumns = (TableColumnType<TTapisJob> & {
+  dataIndex: keyof TTapisJob;
 })[];
 
 export const JobsListingTable: React.FC<
   {
     columns: TJobsListingColumns;
-    filterFn?: (listing: TJob[]) => TJob[];
+    filterFn?: (listing: TTapisJob[]) => TTapisJob[];
     className?: string;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({ filterFn, columns, className, ...props }) => {
@@ -27,9 +27,10 @@ export const JobsListingTable: React.FC<
   /* FETCH JOB LISTING */
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useJobsListing(limit);
+  // const jobs = data?.pages.flatMap((page) => page.listing) || [];
 
   const combinedListing = useMemo(() => {
-    const cl: TJob[] = [];
+    const cl: TTapisJob[] = [];
     data?.pages.forEach((page) => cl.push(...page.listing));
     if (filterFn) {
       return filterFn(cl);

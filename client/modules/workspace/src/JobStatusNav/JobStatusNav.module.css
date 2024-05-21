@@ -1,4 +1,8 @@
 .icon {
   color: #cc443e;
-  padding: 0 5px;
+  font-size: 16px;
+}
+
+.badge {
+  margin: 0 10px;
 }
