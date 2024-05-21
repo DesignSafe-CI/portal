@@ -13,10 +13,10 @@ export type TParameterSetSubmit = {
 
 export type TConfigurationValues = {
   execSystemId?: string;
-  execSystemLogicalQueue: string;
+  execSystemLogicalQueue?: string;
   maxMinutes: number;
-  nodeCount: number;
-  coresPerNode: number;
+  nodeCount?: number;
+  coresPerNode?: number;
   allocation?: string;
 };
 
