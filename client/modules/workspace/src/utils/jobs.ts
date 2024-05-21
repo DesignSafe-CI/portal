@@ -1,6 +1,5 @@
 import { STATUS_TEXT_MAP, TERMINAL_STATES } from '../constants';
-import { TTapisJob } from '@client/hooks';
-import { useGetNotifications } from '@client/hooks';
+import { TJobStatusNotification, TTapisJob } from '@client/hooks';
 
 export function getStatusText(status: string) {
   if (status in STATUS_TEXT_MAP) {
@@ -57,16 +56,17 @@ export function isInteractiveJob(job: TTapisJob) {
   return job.tags.includes('isInteractive');
 }
 
-export function getJobInteractiveSessionInfo(job: TTapisJob) {
+export function getJobInteractiveSessionInfo(
+  job: TTapisJob,
+  interactiveNotifications: TJobStatusNotification[]
+) {
   const jobConcluded =
     isTerminalState(job.status) || job.status === 'ARCHIVING';
   if (jobConcluded || !isInteractiveJob(job)) return {};
 
-  const {
-    data: { notifs: interactiveNotifications },
-  } = useGetNotifications({ event_type: 'interactive_session_ready' });
-
-  const notif = interactiveNotifications.find((n) => n.extra.uuid === job.uuid);
+  const notif = interactiveNotifications?.find(
+    (n) => n.extra.uuid === job.uuid
+  );
 
   return {
     interactiveSessionLink: notif?.action_link,

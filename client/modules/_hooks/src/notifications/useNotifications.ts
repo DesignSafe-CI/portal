@@ -1,4 +1,8 @@
-import { useQueryClient, useQuery } from '@tanstack/react-query';
+import {
+  useQueryClient,
+  useQuery,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
 type TPortalEventTypes = 'data_depot' | 'job' | 'interactive_session_ready';
@@ -42,30 +46,36 @@ type TGetNotificationsParams = {
   skip?: number;
 };
 
-async function getNotifications(queryParams: TGetNotificationsParams) {
-  const { event_type, ...params } = queryParams;
+async function getNotifications(
+  { signal }: { signal: AbortSignal },
+  params: TGetNotificationsParams
+) {
   const res = await apiClient.get<TGetNotificationsResponse>(
-    event_type
-      ? `/api/notifications/notifications/${event_type}/`
-      : `/api/notifications/`,
+    `/api/notifications/notifications/jobs/`,
     {
+      signal,
       params,
     }
   );
   return res.data.response;
 }
 
-export const getNotificationsQuery = (
-  queryParams: TGetNotificationsParams
-) => ({
+const getNotificationsQuery = (queryParams: TGetNotificationsParams) => ({
   queryKey: ['workspace', 'getNotifications', queryParams],
-  queryFn: () => getNotifications(queryParams),
-  staleTime: 1000, // 1 second stale time
+  queryFn: ({ signal }: { signal: AbortSignal }) =>
+    getNotifications({ signal }, queryParams),
+  // staleTime: 5000,
 });
 
-function useGetNotifications(queryParams: TGetNotificationsParams) {
+export const useGetNotificationsSuspense = (
+  queryParams: TGetNotificationsParams
+) => {
+  return useSuspenseQuery(getNotificationsQuery(queryParams));
+};
+
+const useGetNotifications = (queryParams: TGetNotificationsParams) => {
   return useQuery(getNotificationsQuery(queryParams));
-}
+};
 
 export const usePrefetchGetNotifications = (
   queryParams: TGetNotificationsParams

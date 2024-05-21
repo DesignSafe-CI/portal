@@ -2,6 +2,11 @@ import React, { useMemo, useState } from 'react';
 import { TableProps, Col, Row, Flex } from 'antd';
 import { SecondaryButton } from '@client/common-components';
 import {
+  useGetNotifications,
+  TJobStatusNotification,
+  TNotificationsResponse,
+} from '@client/hooks';
+import {
   JobsListingTable,
   TJobsListingColumns,
 } from './JobsListingTable/JobsListingTable';
@@ -26,7 +31,9 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   }>({ isOpen: false });
 
   const [interactiveModalState, setInteractiveModalState] = useState(false);
-
+  const { data } = useGetNotifications({
+    event_type: 'interactive_session_ready',
+  }) as { data: TNotificationsResponse };
   const columns: TJobsListingColumns = useMemo(
     () => [
       {
@@ -36,7 +43,10 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
         width: '30%',
         render: (_, job) => {
           const { interactiveSessionLink, message } =
-            getJobInteractiveSessionInfo(job);
+            getJobInteractiveSessionInfo(
+              job,
+              data?.notifs as TJobStatusNotification[]
+            );
 
           return (
             <Flex vertical>

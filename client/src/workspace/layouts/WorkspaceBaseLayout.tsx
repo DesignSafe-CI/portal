@@ -21,8 +21,7 @@ const { Sider, Header } = Layout;
 const WorkspaceRoot: React.FC = () => {
   usePrefetchGetApps(useGetAppParams());
   usePrefetchGetSystems();
-  usePrefetchGetNotifications({ event_type: 'job' });
-  usePrefetchGetNotifications({ event_type: 'interactive_session_ready' });
+
   const { data, isLoading } = useAppsListing();
 
   if (!data || isLoading)
