@@ -1,22 +1,3 @@
-:root {
-  --vertical-buffer: 10px;
-  --max-item-count: 5;
-  --item-height: 35px; /* (~30px design * 1.2 design-to-app ratio) */
-  /* i.e. ( items * item height ) + ( top space & bottom space ) */
-  --height: calc(
-    (var(--max-item-count) * var(--item-height)) + (var(--vertical-buffer) * 2)
-  );
-  display: inline-grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(var(--max-item-count), min-content);
-  height: var(--height);
-  padding-top: var(--vertical-buffer);
-  padding-bottom: var(--vertical-buffer);
-  --min-width: 200px;
-  margin-left: calc(var(--horizontal-buffer) * -1);
-  border-right: 1px solid rgb(112 112 112 / 25%);
-}
-
 a.navLink > div {
   height: 50;
   line-height: 100%;

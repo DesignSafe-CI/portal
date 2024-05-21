@@ -33,6 +33,7 @@ import {
   getParametersStep,
   getConfigurationStep,
   getOutputsStep,
+  stepKeys,
 } from '../AppsWizard/Steps';
 import { SystemsPushKeysModal } from '../SystemsPushKeysModal/SystemsPushKeysModal';
 import {
@@ -173,11 +174,36 @@ export const AppsSubmissionForm: React.FC = () => {
   });
   const { handleSubmit, reset, setValue, getValues, watch } = methods;
 
-  useEffect(() => {
-    reset(initialValues);
-  }, [initialValues]);
+  const getSteps = (): TStep => {
+    const formSteps: TStep = {
+      configuration: getConfigurationStep(configuration.fields),
+      outputs: getOutputsStep(outputs.fields),
+    };
+    if (fileInputs.fields && Object.keys(fileInputs.fields).length) {
+      formSteps.inputs = getInputsStep(fileInputs.fields);
+    }
+    if (parameterSet.fields && Object.keys(parameterSet.fields).length) {
+      formSteps.parameters = getParametersStep(parameterSet.fields);
+    }
+    // Setup prev and next steps based on what is available.
+    const formStepKeys = Object.keys(formSteps);
+    const availableStepKeys = stepKeys.filter((key) =>
+      formStepKeys.includes(key)
+    );
+    availableStepKeys.forEach((key, index) => {
+      if (index > 0 && formSteps[availableStepKeys[index - 1]]) {
+        formSteps[key].prevPage = availableStepKeys[index - 1];
+      }
+      if (
+        index < stepKeys.length - 1 &&
+        formSteps[availableStepKeys[index + 1]]
+      ) {
+        formSteps[key].nextPage = availableStepKeys[index + 1];
+      }
+    });
 
-  const [current, setCurrent] = useState('inputs');
+    return formSteps;
+  };
 
   const [fields, setFields] = useState<{
     [dynamic: string]: {
@@ -189,6 +215,32 @@ export const AppsSubmissionForm: React.FC = () => {
     configuration: configuration.fields,
     outputs: outputs.fields,
   });
+
+  const initialSteps = useMemo(
+    () => getSteps(),
+    [
+      fileInputs.fields,
+      parameterSet.fields,
+      configuration.fields,
+      outputs.fields,
+      fields,
+    ]
+  );
+
+  const getInitialCurrentStep = (steps: TStep) => {
+    if (steps.inputs) return 'inputs';
+    if (steps.parameters) return 'parameters';
+    return 'configuration';
+  };
+  const [steps, setSteps] = useState<TStep>(initialSteps);
+  const [current, setCurrent] = useState(getInitialCurrentStep(initialSteps));
+
+  useEffect(() => {
+    reset(initialValues);
+    const newSteps = getSteps();
+    setSteps(newSteps);
+    setCurrent(getInitialCurrentStep(newSteps));
+  }, [initialValues]);
 
   // Queue dependency handler.
   const queueValue = watch('configuration.execSystemLogicalQueue');
@@ -247,25 +299,21 @@ export const AppsSubmissionForm: React.FC = () => {
     };
   }
 
-  // Make step part of state to allow steps
-  // to handle field changes
-  const [steps, setSteps] = useState<TStep>({
-    inputs: getInputsStep(fileInputs.fields),
-    parameters: getParametersStep(parameterSet.fields),
-    configuration: getConfigurationStep(configuration.fields),
-    outputs: getOutputsStep(outputs.fields),
-  });
-
   // Note: currently configuration is the only
   // step that needs. This can be more generic
   // in future if the fields shape is same between
   // Step and Submission Detail View (mostly related to env vars)
   useEffect(() => {
+    const updatedConfigurationStep = getConfigurationStep(
+      fields.configuration as { [key: string]: TField }
+    );
+
     const updatedSteps: TStep = {
       ...steps,
-      configuration: getConfigurationStep(
-        fields.configuration as { [key: string]: TField }
-      ),
+      configuration: {
+        ...steps.configuration,
+        ...updatedConfigurationStep,
+      },
     };
 
     setSteps(updatedSteps);

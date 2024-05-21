@@ -12,7 +12,7 @@ const Notifications = () => {
 
   const [api, contextHolder] = notification.useNotification({ maxCount: 1 });
 
-  const openNotification = (notification: TJobStatusNotification) => {
+  const handleNotification = (notification: TJobStatusNotification) => {
     api.open({
       message: getToastMessage(notification),
       placement: 'bottomLeft',
@@ -26,7 +26,7 @@ const Notifications = () => {
 
   useEffect(() => {
     if (lastMessage !== null) {
-      openNotification(JSON.parse(lastMessage.data));
+      handleNotification(JSON.parse(lastMessage.data));
     }
   }, [lastMessage]);
 

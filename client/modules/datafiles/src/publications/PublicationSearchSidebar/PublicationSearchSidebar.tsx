@@ -138,8 +138,8 @@ export const PublicationSearchSidebar: React.FC = () => {
           <Checkbox
             checked={searchParams
               .getAll('project-type')
-              .includes('field-research')}
-            onChange={() => toggleProjectTypeFilter('field-research')}
+              .includes('field_recon')}
+            onChange={() => toggleProjectTypeFilter('field_recon')}
           />
           &nbsp;
           <strong>Field Research</strong>
@@ -179,8 +179,10 @@ export const PublicationSearchSidebar: React.FC = () => {
       <article className={styles.projectTypeOptions}>
         <div className={styles.checkboxRow}>
           <Checkbox
-            checked={searchParams.getAll('project-type').includes('hybrid-sim')}
-            onChange={() => toggleProjectTypeFilter('hybrid-sim')}
+            checked={searchParams
+              .getAll('project-type')
+              .includes('hybrid_simulation')}
+            onChange={() => toggleProjectTypeFilter('hybrid_simulation')}
           />
           &nbsp;
           <strong>Hybrid Simulation</strong>

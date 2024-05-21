@@ -121,20 +121,18 @@ export const BaseProjectForm: React.FC<{
     };
   }
 
-  const watchedValues = Form.useWatch([], form);
+  const watchedPi = Form.useWatch(['pi'], form);
+  const watchedCoPis = Form.useWatch(['coPis'], form);
+  const watchedMembers = Form.useWatch(['teamMembers'], form);
+  const watchedGuestMembers = Form.useWatch(['guestMembers'], form);
   const watchedUsers = useMemo(
     () => [
-      ...(watchedValues?.pi ?? []),
-      ...(watchedValues?.coPis ?? []),
-      ...(watchedValues?.teamMembers ?? []),
-      ...(watchedValues?.guestMembers ?? []),
+      ...(watchedPi ?? []),
+      ...(watchedCoPis ?? []),
+      ...(watchedMembers ?? []),
+      ...(watchedGuestMembers ?? []),
     ],
-    [
-      watchedValues?.pi,
-      watchedValues?.coPis,
-      watchedValues?.teamMembers,
-      watchedValues?.guestMembers,
-    ]
+    [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
 
   const { user } = useAuthenticatedUser();
@@ -298,7 +296,7 @@ export const BaseProjectForm: React.FC<{
           <Form.Item label="Related Work">
             Information giving context, a linked dataset on DesignSafe, or works
             citing the DOI for this dataset.
-            <RelatedWorkInput name="relatedWork" />
+            <RelatedWorkInput name="associatedProjects" />
           </Form.Item>
         </>
       )}

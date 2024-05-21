@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './NeesDetails.module.css';
-import { DatafilesBreadcrumb } from '../DatafilesBreadcrumb/DatafilesBreadcrumb';
+import { DatafilesBreadcrumb } from '@client/common-components';
 import { FileListing } from '../FileListing/FileListing';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({

@@ -8,15 +8,19 @@ import {
   AppsBreadcrumb,
   Toast,
 } from '@client/workspace';
-import { useAppsListing, usePrefetchGetSystems } from '@client/hooks';
 import { Spinner } from '@client/common-components';
-import { usePrefetchGetApps } from '@client/hooks';
+import {
+  usePrefetchGetApps,
+  useAppsListing,
+  usePrefetchGetSystems,
+} from '@client/hooks';
 
 const { Sider, Header } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
   usePrefetchGetApps(useGetAppParams());
   usePrefetchGetSystems();
+
   const { data, isLoading } = useAppsListing();
 
   if (!data || isLoading)

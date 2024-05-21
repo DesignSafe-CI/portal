@@ -2,7 +2,8 @@ import React from 'react';
 import { Menu, MenuProps } from 'antd';
 import { NavLink } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
-import { TAppCategory } from '@client/hooks';
+import { TAppCategory, TPortalApp } from '@client/hooks';
+import { useGetAppParams } from '../utils';
 
 const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   to,
@@ -108,12 +109,30 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     );
   });
 
+  const { appId, appVersion } = useGetAppParams();
+
+  const currentApp = categories
+    .map((cat) => cat.apps)
+    .flat()
+    .find((app) => app.app_id === appId && app.version === (appVersion || ''));
+  const currentCategory = categories.find((cat) =>
+    cat.apps.includes(currentApp as TPortalApp)
+  );
+  const currentSubMenu = currentApp?.is_bundled
+    ? `${currentApp.bundle_id}`
+    : '';
+  const defaultKey = `${appId}${appVersion || ''}${currentApp?.bundle_id}`;
+
   return (
     <div className={styles.appsBrowserSidebar}>
       <h3>Applications:</h3>
       <Menu
         mode="inline"
-        defaultOpenKeys={[]} // TODOv3: Default open menu and submenu for selected app
+        defaultOpenKeys={[
+          (currentCategory as TAppCategory)?.title,
+          currentSubMenu,
+        ]}
+        defaultSelectedKeys={[defaultKey]}
         items={items}
         className={styles.appsGridList}
       />

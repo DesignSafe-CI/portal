@@ -98,6 +98,13 @@ export const getQueueMaxMinutes = (
   );
 };
 
+export const preprocessStringToNumber = (value: unknown): unknown => {
+  if (typeof value === 'string' && !isNaN(Number(value))) {
+    return Number(value);
+  }
+  return value;
+};
+
 /**
  * Get validator for max minutes of a queue
  *
@@ -111,22 +118,28 @@ export const getMaxMinutesValidation = (
   queue: TTapisSystemQueue
 ) => {
   if (!isAppTypeBATCH(definition)) {
-    return z.number().lte(DEFAULT_JOB_MAX_MINUTES);
+    return z.preprocess(
+      preprocessStringToNumber,
+      z.number().lte(DEFAULT_JOB_MAX_MINUTES)
+    );
   }
   if (!queue) {
-    return z.number();
+    return z.preprocess(preprocessStringToNumber, z.number());
   }
 
-  return z
-    .number()
-    .gte(
-      queue.minMinutes,
-      `Max Minutes must be greater than or equal to ${queue.minMinutes} for the ${queue.name} queue`
-    )
-    .lte(
-      queue.maxMinutes,
-      `Max Minutes must be less than or equal to ${queue.maxMinutes} for the ${queue.name} queue`
-    );
+  return z.preprocess(
+    preprocessStringToNumber,
+    z
+      .number()
+      .gte(
+        queue.minMinutes,
+        `Max Minutes must be greater than or equal to ${queue.minMinutes} for the ${queue.name} queue`
+      )
+      .lte(
+        queue.maxMinutes,
+        `Max Minutes must be less than or equal to ${queue.maxMinutes} for the ${queue.name} queue`
+      )
+  );
 };
 
 /**
@@ -144,17 +157,20 @@ export const getNodeCountValidation = (
   if (!isAppTypeBATCH(definition) || !queue) {
     return z.number().positive().optional();
   }
-  return z
-    .number()
-    .int('Node Count must be an integer.')
-    .gte(
-      queue.minNodeCount,
-      `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue.`
-    )
-    .lte(
-      queue.maxNodeCount,
-      `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue.`
-    );
+  return z.preprocess(
+    preprocessStringToNumber,
+    z
+      .number()
+      .int('Node Count must be an integer.')
+      .gte(
+        queue.minNodeCount,
+        `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue.`
+      )
+      .lte(
+        queue.maxNodeCount,
+        `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue.`
+      )
+  );
 };
 
 /**
@@ -170,9 +186,15 @@ export const getCoresPerNodeValidation = (
   queue: TTapisSystemQueue
 ) => {
   if (!isAppTypeBATCH(definition) || !queue || queue.maxCoresPerNode === -1) {
-    return z.number().int().positive().optional();
+    return z.preprocess(
+      preprocessStringToNumber,
+      z.number().int().positive().optional()
+    );
   }
-  return z.number().int().gte(queue.minCoresPerNode).lte(queue.maxCoresPerNode);
+  return z.preprocess(
+    preprocessStringToNumber,
+    z.number().int().gte(queue.minCoresPerNode).lte(queue.maxCoresPerNode)
+  );
 };
 
 /**

@@ -10,8 +10,8 @@ import {
 import {
   FileListingTable,
   TFileListingColumns,
-} from '../../FileListing/FileListingTable/FileListingTable';
-import { BaseFileListingBreadcrumb } from '../../DatafilesBreadcrumb/DatafilesBreadcrumb';
+} from '@client/common-components';
+import { BaseFileListingBreadcrumb } from '@client/common-components';
 import styles from './CopyModal.module.css';
 import { toBytes } from '../../FileListing/FileListing';
 import { CopyModalProjectListing } from './CopyModalProjectListing';
