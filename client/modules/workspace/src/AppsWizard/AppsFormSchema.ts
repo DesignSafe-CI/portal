@@ -246,7 +246,6 @@ const FormSchema = (
     },
     configuration: {
       defaults: {
-        execSystemId: undefined,
         execSystemLogicalQueue: '',
         maxMinutes: 0,
         nodeCount: 0,

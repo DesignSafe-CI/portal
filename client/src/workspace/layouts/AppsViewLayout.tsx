@@ -7,9 +7,10 @@ import { useAppsListing } from '@client/hooks';
 import parse from 'html-react-parser';
 
 export const AppsViewLayout: React.FC = () => {
-  const { appId } = useGetAppParams();
+  const { appId, appVersion } = useGetAppParams();
   const { data } = useAppsListing();
   const htmlApp = data?.htmlDefinitions[appId];
+  const key = `${appId}-${appVersion}`;
   return (
     <>
       {htmlApp ? (
@@ -25,7 +26,7 @@ export const AppsViewLayout: React.FC = () => {
           }
         >
           {/* <AppFormProvider> */}
-          <AppsSubmissionForm />
+          <AppsSubmissionForm key={key} />
           {/* </AppFormProvider> */}
         </Suspense>
       )}
