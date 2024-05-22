@@ -857,7 +857,7 @@ class AllocationsView(AuthenticatedApiView):
             }
             result.update(UserAllocations.objects.get(user=user).value)
             return result
-        except NotFoundError or UserAllocations.DoesNotExist:
+        except (NotFoundError, UserAllocations.DoesNotExist):
             # Fall back to getting allocations from TAS
             allocations = _get_tas_allocations(username)
             userAllocs = UserAllocations(user=user, value=allocations)
