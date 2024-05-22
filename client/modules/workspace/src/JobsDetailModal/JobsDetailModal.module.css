@@ -25,13 +25,12 @@
 dl.header-details dd + dt {
   border-left: var(--border);
   padding-left: 10px;
-  margin-left:10px;
+  margin-left: 10px;
 }
 
 dl.header-details dt {
   padding-right: 1px;
   margin-right: 1px;
-
 }
 .modal-body-container {
   width: 100%;
@@ -56,7 +55,7 @@ dl.header-details dt {
 
 .submit-button {
   display: block;
-  width: 100%
+  width: 100%;
 }
 .submit-button + .submit-button {
   margin-top: whatever;
@@ -68,7 +67,7 @@ dl.header-details dt {
   padding: 20px;
 }
 
-.left-panel .submit-button + .submit-button{
+.left-panel .submit-button + .submit-button {
   margin-top: 10px;
 }
 

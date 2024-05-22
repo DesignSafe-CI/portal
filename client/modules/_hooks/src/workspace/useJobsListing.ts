@@ -22,7 +22,6 @@ export type TJob = {
   tenant: string;
   uuid: string;
   lastMessage: string;
-  archiveSystemDir: string;
   execSystemExecDir: string;
   execSystemOutputDir: string;
   remoteOutcome: string;
