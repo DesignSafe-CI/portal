@@ -187,6 +187,10 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     [setJobDetailModalState]
   );
 
+  const handleModalToggle = (isOpen: boolean) => {
+    setJobDetailModalState((prevState) => ({ ...prevState, isOpen }));
+  };
+
   return (
     <>
       <JobsListingTable columns={columns} {...tableProps} />
@@ -194,6 +198,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
         <JobsDetailModalBody
           isOpen={jobDetailModalState.isOpen}
           uuid={jobDetailModalState.uuid}
+          onToggleModal={handleModalToggle}
         />
       )}
     </>

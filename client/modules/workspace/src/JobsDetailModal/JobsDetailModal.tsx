@@ -101,7 +101,7 @@ export const JobsDetailModalBody: React.FC<{
               <dt>Job ID</dt>
               <dd>{data.uuid}</dd>
               <dt>Status</dt>
-              <dd>{getStatusText(data)}</dd>
+              <dd>{getStatusText(data.status)}</dd>
               <dt>Submitted</dt>
               <dd>{formatDateTime(new Date(data.created))}</dd>
               <dt>Finished</dt>
