@@ -28,7 +28,7 @@ async function getJobs(
 
 function useGetJobs(operation: TJobGetOperations, queryParams: TJobParamsType) {
   return useQuery({
-    queryKey: ['workspace', 'getJobs', operation, ...(<[]>queryParams)],
+    queryKey: ['workspace', 'getJobs', operation, queryParams],
     queryFn: ({ signal }) => getJobs(operation, { signal }, queryParams),
   });
 }

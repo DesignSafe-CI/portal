@@ -2,16 +2,17 @@ import {
   useQueryClient,
   useQuery,
   useSuspenseQuery,
+  useMutation,
 } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-type TPortalEventTypes = 'data_depot' | 'job' | 'interactive_session_ready';
+type TPortalEventType = 'data_depot' | 'job' | 'interactive_session_ready';
 
 export type TJobStatusNotification = {
   action_link: string;
   datetime: string;
   deleted: boolean;
-  event_type: TPortalEventTypes;
+  event_type: TPortalEventType;
   extra: {
     name: string;
     owner: string;
@@ -27,54 +28,70 @@ export type TJobStatusNotification = {
   user: string;
 };
 
-export type TNotificationsResponse = {
+export type TGetNotificationsResponse = {
   notifs: TJobStatusNotification[];
   page: number;
   total: number;
   unread: number;
 };
 
-export type TGetNotificationsResponse = {
-  response: TNotificationsResponse;
-  status: number;
-};
-
 type TGetNotificationsParams = {
-  event_type?: TPortalEventTypes;
+  event_types?: TPortalEventType[];
   read?: boolean;
   limit?: number;
   skip?: number;
 };
 
-async function getNotifications(
-  { signal }: { signal: AbortSignal },
-  params: TGetNotificationsParams
-) {
+async function getNotifications(params: TGetNotificationsParams) {
   const res = await apiClient.get<TGetNotificationsResponse>(
-    `/api/notifications/notifications/jobs/`,
-    {
-      signal,
-      params,
-    }
+    '/api/notifications/',
+    { params }
   );
-  return res.data.response;
+  return res.data;
 }
 
-const getNotificationsQuery = (queryParams: TGetNotificationsParams) => ({
-  queryKey: ['workspace', 'getNotifications', queryParams],
-  queryFn: ({ signal }: { signal: AbortSignal }) =>
-    getNotifications({ signal }, queryParams),
-  // staleTime: 5000,
+async function getUnreadNotifications(params: TGetNotificationsParams) {
+  const res = await apiClient.get<{ unread: number }>(
+    '/api/notifications/badge/',
+    { params }
+  );
+  return res.data;
+}
+
+async function readNotifications(body: { event_types?: TPortalEventType[] }) {
+  const res = await apiClient.patch('/api/notifications/', body);
+  return res.data;
+}
+
+export function useReadNotifications() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { event_types?: TPortalEventType[] }) => {
+      return readNotifications(body);
+    },
+  });
+}
+
+const getNotificationsQuery = (params: TGetNotificationsParams) => ({
+  queryKey: ['workspace', 'notifications', params],
+  queryFn: () => getNotifications(params),
 });
+
+export function useGetNotifications(params: TGetNotificationsParams) {
+  return useQuery(getNotificationsQuery(params));
+}
+
+export function useGetUnreadNotifications(params: TGetNotificationsParams) {
+  return useQuery({
+    queryKey: ['workspace', 'notifications', 'badge', params],
+    queryFn: () => getUnreadNotifications(params),
+  });
+}
 
 export const useGetNotificationsSuspense = (
   queryParams: TGetNotificationsParams
 ) => {
   return useSuspenseQuery(getNotificationsQuery(queryParams));
-};
-
-const useGetNotifications = (queryParams: TGetNotificationsParams) => {
-  return useQuery(getNotificationsQuery(queryParams));
 };
 
 export const usePrefetchGetNotifications = (
@@ -83,5 +100,3 @@ export const usePrefetchGetNotifications = (
   const queryClient = useQueryClient();
   queryClient.ensureQueryData(getNotificationsQuery(queryParams));
 };
-
-export default useGetNotifications;
