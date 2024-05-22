@@ -11,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
 from django.db.models.functions import Coalesce
+from django.contrib.auth.models import User
 from django.urls import reverse
 from pytas.http import TASClient
 from tapipy.errors import InternalServerError, UnauthorizedError
@@ -20,7 +21,6 @@ from designsafe.apps.api.views import AuthenticatedApiView
 from designsafe.apps.api.utils import get_client_ip
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.tapis.serializers import BaseTapisResultSerializer
-from designsafe.apps.workspace.models.elasticsearch import IndexedAllocation
 from elasticsearch.exceptions import NotFoundError
 from designsafe.libs.elasticsearch.utils import get_sha256_hash
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
@@ -28,6 +28,7 @@ from designsafe.apps.workspace.models.app_entries import (
     AppTrayCategory,
     AppVariant,
 )
+from designsafe.apps.workspace.models.allocations import UserAllocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
 
 
@@ -836,8 +837,8 @@ class AllocationsView(AuthenticatedApiView):
 
     def _get_allocations(self, username, force=False):
         """
-        Returns indexed allocation data cached in Elasticsearch, or fetches
-        allocations from TAS and indexes them if not cached yet.
+        Returns indexed allocation data stored in Django DB, or fetches
+        allocations from TAS and stores them.
         Parameters
             ----------
             username: str
@@ -846,6 +847,7 @@ class AllocationsView(AuthenticatedApiView):
             -------
             dict
         """
+        user = User.objects.get(username=username)
         try:
             if force:
                 logger.info("Forcing TAS allocation retrieval for user:{}".format(username))
@@ -853,14 +855,13 @@ class AllocationsView(AuthenticatedApiView):
             result = {
                 'hosts': {}
             }
-            result.update(IndexedAllocation.from_username(username).value.to_dict())
+            result.update(UserAllocations.objects.get(user=user).value)
             return result
-        except NotFoundError:
+        except NotFoundError or UserAllocations.DoesNotExist:
             # Fall back to getting allocations from TAS
             allocations = _get_tas_allocations(username)
-            doc = IndexedAllocation(username=username, value=allocations)
-            doc.meta.id = get_sha256_hash(username)
-            doc.save()
+            userAllocs = UserAllocations(user=user, value=allocations)
+            userAllocs.save()
             return allocations
 
     def get(self, request):
