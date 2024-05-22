@@ -64,7 +64,6 @@ async function readNotifications(body: { event_types?: TPortalEventType[] }) {
 }
 
 export function useReadNotifications() {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: { event_types?: TPortalEventType[] }) => {
       return readNotifications(body);

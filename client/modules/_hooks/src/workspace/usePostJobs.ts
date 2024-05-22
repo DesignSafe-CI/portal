@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import apiClient from '../apiClient';
+import apiClient, { type TApiError } from '../apiClient';
 import {
   TJobArgSpecs,
   TJobKeyValuePair,
   TAppFileInput,
   TTapisJob,
 } from './types';
+import { TTapisSystem } from '../systems';
 
 export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
 
@@ -48,7 +49,7 @@ export type TJobBody = {
 };
 
 type TJobPostResponse = {
-  response: TTapisJob;
+  response: TTapisJob | { execSys: TTapisSystem };
   status: number;
 };
 
@@ -66,6 +67,7 @@ export function usePostJobs() {
     mutationFn: (body: TJobBody) => {
       return postJobs(body);
     },
+    onError: (err: TApiError) => err,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['workspace', 'jobsListing'],
