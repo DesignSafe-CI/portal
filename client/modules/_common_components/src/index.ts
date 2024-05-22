@@ -1,4 +1,4 @@
-export * from './lib/common-components';
-export { Spinner } from './lib/Spinner';
+export * from './datafiles';
+export { PrimaryButton, SecondaryButton } from './lib/Button';
 export { Icon } from './lib/Icon';
-export { SecondaryButton, PrimaryButton } from './lib/Button';
+export { Spinner } from './lib/Spinner';

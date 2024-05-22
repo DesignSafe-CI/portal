@@ -4,7 +4,7 @@ import { Button, TableProps } from 'antd';
 import {
   FileListingTable,
   TFileListingColumns,
-} from './FileListingTable/FileListingTable';
+} from '@client/common-components';
 import { NavLink } from 'react-router-dom';
 import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
 

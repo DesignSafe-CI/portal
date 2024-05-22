@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   TPipelineValidationResult,
   TPreviewTreeData,
@@ -64,19 +64,45 @@ export const PipelineSelectForPublish: React.FC<{
     [children]
   );
   const [searchParams, setSearchParams] = useSearchParams();
+  const operation = searchParams.get('operation');
+  const selectedEntities = searchParams.getAll('selected');
 
-  const toggleEntitySelection = (uuid: string) => {
-    const selectedEntities = searchParams.getAll('selected');
-    const newSearchParams = new URLSearchParams(searchParams);
+  const toggleEntitySelection = useCallback(
+    (uuid: string) => {
+      const selectedEntities = searchParams.getAll('selected');
+      const newSearchParams = new URLSearchParams(searchParams);
 
-    if (selectedEntities.includes(uuid)) {
-      newSearchParams.delete('selected', uuid);
-      setSearchParams(newSearchParams, { replace: true });
-    } else {
-      newSearchParams.append('selected', uuid);
-      setSearchParams(newSearchParams, { replace: true });
+      if (selectedEntities.includes(uuid)) {
+        newSearchParams.delete('selected', uuid);
+        setSearchParams(newSearchParams, { replace: true });
+      } else {
+        newSearchParams.append('selected', uuid);
+        setSearchParams(newSearchParams, { replace: true });
+      }
+    },
+    [setSearchParams, searchParams]
+  );
+
+  useEffect(() => {
+    if (operation !== 'publish') {
+      const publishableChildren = sortedChildren.filter((child) =>
+        data?.entities.some(
+          (ent) => ent.uuid === child.uuid && (ent.value.dois?.length ?? 0) > 0
+        )
+      );
+      publishableChildren.forEach((c) => {
+        if (!selectedEntities.includes(c.uuid)) {
+          toggleEntitySelection(c.uuid);
+        }
+      });
     }
-  };
+  }, [
+    operation,
+    sortedChildren,
+    data,
+    toggleEntitySelection,
+    selectedEntities,
+  ]);
 
   const validateAndContinue = async () => {
     const entityUuids = searchParams.getAll('selected');
@@ -131,6 +157,7 @@ export const PipelineSelectForPublish: React.FC<{
         {sortedChildren.map((child) => (
           <section key={child.id}>
             <Button
+              disabled={operation !== 'publish'}
               type="link"
               onClick={() => toggleEntitySelection(child.uuid)}
             >

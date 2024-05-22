@@ -6,8 +6,9 @@ import {
   TTapisApp,
   TAppResponse,
   TTapisSystemQueue,
-  TConfigurationValues,
 } from '@client/hooks';
+import { TFormValues } from '../AppsWizard/AppsFormSchema';
+import { UseFormSetValue } from 'react-hook-form';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
@@ -97,6 +98,13 @@ export const getQueueMaxMinutes = (
   );
 };
 
+export const preprocessStringToNumber = (value: unknown): unknown => {
+  if (typeof value === 'string' && !isNaN(Number(value))) {
+    return Number(value);
+  }
+  return value;
+};
+
 /**
  * Get validator for max minutes of a queue
  *
@@ -110,22 +118,28 @@ export const getMaxMinutesValidation = (
   queue: TTapisSystemQueue
 ) => {
   if (!isAppTypeBATCH(definition)) {
-    return z.number().lte(DEFAULT_JOB_MAX_MINUTES);
+    return z.preprocess(
+      preprocessStringToNumber,
+      z.number().lte(DEFAULT_JOB_MAX_MINUTES)
+    );
   }
   if (!queue) {
-    return z.number();
+    return z.preprocess(preprocessStringToNumber, z.number());
   }
 
-  return z
-    .number()
-    .gte(
-      queue.minMinutes,
-      `Max Minutes must be greater than or equal to ${queue.minMinutes} for the ${queue.name} queue`
-    )
-    .lte(
-      queue.maxMinutes,
-      `Max Minutes must be less than or equal to ${queue.maxMinutes} for the ${queue.name} queue`
-    );
+  return z.preprocess(
+    preprocessStringToNumber,
+    z
+      .number()
+      .gte(
+        queue.minMinutes,
+        `Max Minutes must be greater than or equal to ${queue.minMinutes} for the ${queue.name} queue`
+      )
+      .lte(
+        queue.maxMinutes,
+        `Max Minutes must be less than or equal to ${queue.maxMinutes} for the ${queue.name} queue`
+      )
+  );
 };
 
 /**
@@ -143,17 +157,20 @@ export const getNodeCountValidation = (
   if (!isAppTypeBATCH(definition) || !queue) {
     return z.number().positive().optional();
   }
-  return z
-    .number()
-    .int('Node Count must be an integer.')
-    .gte(
-      queue.minNodeCount,
-      `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue.`
-    )
-    .lte(
-      queue.maxNodeCount,
-      `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue.`
-    );
+  return z.preprocess(
+    preprocessStringToNumber,
+    z
+      .number()
+      .int('Node Count must be an integer.')
+      .gte(
+        queue.minNodeCount,
+        `Node Count must be greater than or equal to ${queue.minNodeCount} for the ${queue.name} queue.`
+      )
+      .lte(
+        queue.maxNodeCount,
+        `Node Count must be less than or equal to ${queue.maxNodeCount} for the ${queue.name} queue.`
+      )
+  );
 };
 
 /**
@@ -169,9 +186,15 @@ export const getCoresPerNodeValidation = (
   queue: TTapisSystemQueue
 ) => {
   if (!isAppTypeBATCH(definition) || !queue || queue.maxCoresPerNode === -1) {
-    return z.number().int().positive().optional();
+    return z.preprocess(
+      preprocessStringToNumber,
+      z.number().int().positive().optional()
+    );
   }
-  return z.number().int().gte(queue.minCoresPerNode).lte(queue.maxCoresPerNode);
+  return z.preprocess(
+    preprocessStringToNumber,
+    z.number().int().gte(queue.minCoresPerNode).lte(queue.maxCoresPerNode)
+  );
 };
 
 /**
@@ -187,47 +210,44 @@ export const getCoresPerNodeValidation = (
  */
 export const updateValuesForQueue = (
   execSystems: TTapisSystem[],
-  values: TConfigurationValues
+  execSystemId: string,
+  values: TFormValues,
+  setValue: UseFormSetValue<TFormValues>
 ) => {
-  const exec_sys = getExecSystemFromId(
-    execSystems,
-    values.execSystemId as string
-  );
+  const exec_sys = getExecSystemFromId(execSystems, execSystemId);
   if (!exec_sys) {
-    return values;
+    return;
   }
-  const updatedValues = { ...values };
+
   const queue = getQueueValueForExecSystem({
     exec_sys,
-    queue_name: values.execSystemLogicalQueue,
+    queue_name: values.configuration.execSystemLogicalQueue as string,
   });
-  if (!queue) return values;
+  if (!queue) return;
 
-  if (values.nodeCount < queue.minNodeCount) {
-    updatedValues.nodeCount = queue.minNodeCount;
+  if ((values.configuration.nodeCount as number) < queue.minNodeCount) {
+    setValue('configuration.nodeCount', queue.minNodeCount);
   }
-  if (values.nodeCount > queue.maxNodeCount) {
-    updatedValues.nodeCount = queue.maxNodeCount;
+  if ((values.configuration.nodeCount as number) > queue.maxNodeCount) {
+    setValue('configuration.nodeCount', queue.maxNodeCount);
   }
 
-  if (values.coresPerNode < queue.minCoresPerNode) {
-    updatedValues.coresPerNode = queue.minCoresPerNode;
+  if ((values.configuration.coresPerNode as number) < queue.minCoresPerNode) {
+    setValue('configuration.coresPerNode', queue.minCoresPerNode);
   }
   if (
     queue.maxCoresPerNode !== -1 /* e.g. Frontera rtx/rtx-dev queue */ &&
-    values.coresPerNode > queue.maxCoresPerNode
+    (values.configuration.coresPerNode as number) > queue.maxCoresPerNode
   ) {
-    updatedValues.coresPerNode = queue.maxCoresPerNode;
+    setValue('configuration.coresPerNode', queue.maxCoresPerNode);
   }
 
-  if (values.maxMinutes < queue.minMinutes) {
-    updatedValues.maxMinutes = queue.minMinutes;
+  if ((values.configuration.maxMinutes as number) < queue.minMinutes) {
+    setValue('configuration.maxMinutes', queue.minMinutes);
   }
-  if (values.maxMinutes > queue.maxMinutes) {
-    updatedValues.maxMinutes = queue.maxMinutes;
+  if ((values.configuration.maxMinutes as number) > queue.maxMinutes) {
+    setValue('configuration.maxMinutes', queue.maxMinutes);
   }
-
-  return updatedValues;
 };
 
 /**

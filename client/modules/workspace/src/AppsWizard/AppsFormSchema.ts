@@ -1,7 +1,30 @@
-import { z, ZodType } from 'zod';
-import { TTapisApp, TJobKeyValuePair, TJobArgSpec } from '@client/hooks';
+import { z, ZodType, ZodObject, ZodRawShape } from 'zod';
+import {
+  TTapisApp,
+  TJobKeyValuePair,
+  TJobArgSpec,
+  TConfigurationValues,
+  TOutputValues,
+  TTapisSystem,
+  TTapisSystemQueue,
+} from '@client/hooks';
 
-import { checkAndSetDefaultTargetPath, getTargetPathFieldName } from '../utils';
+import {
+  checkAndSetDefaultTargetPath,
+  getTargetPathFieldName,
+  getNodeCountValidation,
+  getCoresPerNodeValidation,
+  getMaxMinutesValidation,
+  getAllocationValidation,
+  getExecSystemsFromApp,
+  getExecSystemFromId,
+  getAppQueueValues,
+  getQueueValueForExecSystem,
+  getQueueMaxMinutes,
+  isAppTypeBATCH,
+  getExecSystemLogicalQueueValidation,
+  preprocessStringToNumber,
+} from '../utils';
 
 export type TDynamicString = { [dynamic: string]: string | number };
 export type TDynamicField = { [dynamic: string]: TField };
@@ -9,12 +32,21 @@ export type TParameterSetDefaults = {
   [dynamic: string]: TDynamicString;
 };
 export type TFileInputsDefaults = TDynamicString;
+//export type TConfigurationDefaults = TDynamicString;
+//export type TOutputsDefaults = TDynamicString;
 
 export type TFieldOptions = {
   label: string;
   value?: string;
   hidden?: boolean;
   disabled?: boolean;
+};
+
+export type TFormValues = {
+  inputs: TFileInputsDefaults;
+  parameters: TParameterSetDefaults;
+  configuration: TConfigurationValues;
+  outputs: TOutputValues;
 };
 
 export type TField = {
@@ -29,6 +61,13 @@ export type TField = {
   tapisFile?: boolean;
   placeholder?: string;
   readOnly?: boolean;
+};
+
+export type TAppFieldSchema = {
+  inputs: ZodObject<ZodRawShape>;
+  parameters: ZodObject<ZodRawShape>;
+  configuration: ZodObject<ZodRawShape>;
+  outputs: ZodObject<ZodRawShape>;
 };
 
 export type TAppFormSchema = {
@@ -46,9 +85,154 @@ export type TAppFormSchema = {
       [dynamic: string]: ZodType;
     };
   };
+  configuration: {
+    defaults: TConfigurationValues;
+    fields: TDynamicField;
+    schema: { [dynamic: string]: ZodType };
+  };
+  outputs: {
+    defaults: TOutputValues;
+    fields: TDynamicField;
+    schema: { [dynamic: string]: ZodType };
+  };
 };
 
-const FormSchema = (definition: TTapisApp) => {
+// Configuration Schema is pulled out of the default Schema
+// building logic because configuration can change based on queue
+// or exec system changes.
+export const getConfigurationSchema = (
+  definition: TTapisApp,
+  allocations: string[],
+  execSystem: TTapisSystem,
+  queue: TTapisSystemQueue
+) => {
+  const configurationSchema: { [dynamic: string]: ZodType } = {};
+
+  if (definition.jobType === 'BATCH') {
+    configurationSchema['execSystemLogicalQueue'] =
+      getExecSystemLogicalQueueValidation(definition, execSystem);
+    configurationSchema['allocation'] = getAllocationValidation(
+      definition,
+      allocations
+    );
+  }
+
+  configurationSchema['maxMinutes'] = getMaxMinutesValidation(
+    definition,
+    queue
+  );
+  if (!definition.notes.hideNodeCountAndCoresPerNode) {
+    configurationSchema['nodeCount'] = getNodeCountValidation(
+      definition,
+      queue
+    );
+
+    configurationSchema['coresPerNode'] = getCoresPerNodeValidation(
+      definition,
+      queue
+    );
+  }
+  return configurationSchema;
+};
+
+// Pulling configuration fields out of the main schema building
+// to allow for rebuilding of fields based on values changes.
+// Example: description has max minutes value, which is dependent
+// on queue.
+export const getConfigurationFields = (
+  definition: TTapisApp,
+  allocations: string[],
+  executionSystems: TTapisSystem[],
+  queue: TTapisSystemQueue
+) => {
+  const configurationFields: TDynamicField = {};
+
+  const execSystems = getExecSystemsFromApp(
+    definition,
+    executionSystems as TTapisSystem[]
+  );
+
+  const defaultExecSystem = getExecSystemFromId(
+    execSystems,
+    definition.jobAttributes.execSystemId
+  ) as TTapisSystem;
+
+  if (definition.jobType === 'BATCH') {
+    configurationFields['execSystemLogicalQueue'] = {
+      description: 'Select the queue this job will execute on.',
+      label: 'Queue',
+      name: 'configuration.execSystemLogicalQueue',
+      key: 'configuration.execSystemLogicalQueue',
+      required: true,
+      type: 'select',
+      options: getAppQueueValues(
+        definition,
+        execSystems[0].batchLogicalQueues
+      ).map((q) => ({ value: q, label: q })),
+    };
+    configurationFields['allocation'] = {
+      description:
+        'Select the project allocation you would like to use with this job submission.',
+      label: 'Allocation',
+      name: 'configuration.allocation',
+      key: 'configuration.allocation',
+      required: true,
+      type: 'select',
+      options: [
+        { label: '', hidden: true, disabled: true },
+        ...allocations.sort().map((projectId) => ({
+          value: projectId,
+          label: projectId,
+        })),
+      ],
+    };
+  }
+
+  configurationFields['maxMinutes'] = {
+    description: `The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
+      definition,
+      defaultExecSystem,
+      queue?.name
+    )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`,
+    label: 'Maximum Job Runtime (minutes)',
+    name: 'configuration.maxMinutes',
+    key: 'configuration.maxMinutes',
+    required: true,
+    type: 'number',
+  };
+
+  if (!definition.notes.hideNodeCountAndCoresPerNode) {
+    configurationFields['nodeCount'] = {
+      description: 'Number of requested process nodes for the job.',
+      label: 'Node Count',
+      name: 'configuration.nodeCount',
+      key: 'configuration.nodeCount',
+      required: true,
+      type: 'number',
+    };
+
+    configurationFields['coresPerNode'] = {
+      description:
+        'Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total.',
+      label: 'Cores Per Node',
+      name: 'configuration.coresPerNode',
+      key: 'configuration.coresPerNode',
+      required: true,
+      type: 'number',
+    };
+  }
+
+  return configurationFields;
+};
+
+const FormSchema = (
+  definition: TTapisApp,
+  executionSystems: [TTapisSystem],
+  allocations: string[],
+  portalAlloc: string,
+  defaultStorageSystem: TTapisSystem,
+  username: string
+) => {
   const appFields: TAppFormSchema = {
     fileInputs: {
       defaults: {},
@@ -57,6 +241,22 @@ const FormSchema = (definition: TTapisApp) => {
     },
     parameterSet: {
       defaults: {},
+      fields: {},
+      schema: {},
+    },
+    configuration: {
+      defaults: {
+        maxMinutes: 0,
+      },
+      fields: {},
+      schema: {},
+    },
+    outputs: {
+      defaults: {
+        name: '',
+        archiveSystemId: '',
+        archiveSystemDir: '',
+      },
       fields: {},
       schema: {},
     },
@@ -112,7 +312,10 @@ const FormSchema = (definition: TTapisApp) => {
             .email('Must be a valid email.');
         } else if (param.notes?.fieldType === 'number') {
           field.type = 'number';
-          parameterSetSchema[field.label] = z.number();
+          parameterSetSchema[field.label] = z.preprocess(
+            preprocessStringToNumber,
+            z.number()
+          );
         } else {
           field.type = 'text';
           parameterSetSchema[field.label] = z.string();
@@ -222,6 +425,107 @@ const FormSchema = (definition: TTapisApp) => {
     appFields.fileInputs.defaults[targetPathName] =
       checkAndSetDefaultTargetPath(input.targetPath) as string;
   });
+
+  // Configuration
+  const execSystems = getExecSystemsFromApp(
+    definition,
+    executionSystems as TTapisSystem[]
+  );
+
+  const defaultExecSystem = getExecSystemFromId(
+    execSystems,
+    definition.jobAttributes.execSystemId
+  ) as TTapisSystem;
+
+  const queue = getQueueValueForExecSystem({
+    definition,
+    exec_sys: defaultExecSystem,
+    queue_name: definition.jobAttributes.execSystemLogicalQueue,
+  }) as TTapisSystemQueue;
+
+  if (definition.jobType === 'BATCH') {
+    appFields.configuration.defaults['execSystemLogicalQueue'] = isAppTypeBATCH(
+      definition
+    )
+      ? definition.jobAttributes.execSystemLogicalQueue
+      : '';
+
+    appFields.configuration.defaults['allocation'] = isAppTypeBATCH(definition)
+      ? allocations.includes(portalAlloc)
+        ? portalAlloc
+        : allocations.length === 1
+        ? allocations[0]
+        : ''
+      : '';
+  }
+
+  appFields.configuration.defaults['maxMinutes'] =
+    definition.jobAttributes.maxMinutes;
+
+  if (!definition.notes.hideNodeCountAndCoresPerNode) {
+    appFields.configuration.defaults['nodeCount'] =
+      definition.jobAttributes.nodeCount;
+
+    appFields.configuration.defaults['coresPerNode'] =
+      definition.jobAttributes.coresPerNode;
+  }
+
+  appFields.configuration.schema = getConfigurationSchema(
+    definition,
+    allocations,
+    defaultExecSystem,
+    queue
+  );
+  appFields.configuration.fields = getConfigurationFields(
+    definition,
+    allocations,
+    execSystems,
+    queue
+  );
+
+  // Outputs
+  appFields.outputs.schema['name'] = z.string().max(80);
+  appFields.outputs.defaults['name'] = `${definition.id}-${
+    definition.version
+  }_${new Date().toISOString().split('.')[0]}`;
+  appFields.outputs.fields['name'] = {
+    description: 'A recognizable name for this job.',
+    label: 'Job Name',
+    name: 'outputs.name',
+    key: 'outputs.name',
+    required: true,
+    type: 'text',
+  };
+  appFields.outputs.schema['archiveSystemId'] = z.string().optional();
+  appFields.outputs.defaults['archiveSystemId'] =
+    defaultStorageSystem?.id || definition.jobAttributes.archiveSystemId;
+  appFields.outputs.fields['archiveSystemId'] = {
+    description:
+      'System into which output files are archived after application execution.',
+    label: 'Archive System',
+    name: 'outputs.archiveSystemId',
+    key: 'outputs.archiveSystemId',
+    required: false,
+    type: 'text',
+    placeholder:
+      defaultStorageSystem.id || definition.jobAttributes.archiveSystemId,
+  };
+
+  appFields.outputs.schema['archiveSystemDir'] = z.string().optional();
+  appFields.outputs.defaults[
+    'archiveSystemDir'
+  ] = `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`;
+  appFields.outputs.fields['archiveSystemDir'] = {
+    description:
+      'Directory into which output files are archived after application execution.',
+    label: 'Archive Directory',
+    name: 'outputs.archiveSystemDir',
+    key: 'outputs.archiveSystemDir',
+    required: false,
+    type: 'text',
+    placeholder: `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
+  };
+
   return appFields;
 };
 
