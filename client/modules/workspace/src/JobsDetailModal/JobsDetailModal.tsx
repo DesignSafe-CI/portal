@@ -126,10 +126,6 @@ export const JobsDetailModalBody: React.FC<{
 export const JobsDetailModal: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
   const handleCancel = () => {
     setIsModalOpen(false);
   };
