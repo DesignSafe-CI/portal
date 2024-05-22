@@ -3,11 +3,11 @@ import { NavLink } from 'react-router-dom';
 import { Layout, Badge } from 'antd';
 import { Icon } from '@client/common-components';
 import styles from './JobStatusNav.module.css';
-import { useGetNotifications } from '@client/hooks';
+// import { useGetNotifications } from '@client/hooks';
 
 export const JobStatusNav: React.FC = () => {
-  const { data: jobNotifs, isLoading } = useGetNotifications({});
-  console.log(jobNotifs, isLoading);
+  // const { data: jobNotifs } = useGetNotifications({event_type: 'job'});
+  // const { data: interactiveSessionNotifs } = useGetNotifications({event_type: 'interactive_session_ready'});
 
   // TODOv3: fix unread notification count
   const unreadNotifs = 0;
