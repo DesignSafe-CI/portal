@@ -48,8 +48,12 @@ export type TJobBody = {
   isInteractive?: boolean;
 };
 
+interface IJobPostResponse extends TTapisJob {
+  execSys?: TTapisSystem;
+}
+
 type TJobPostResponse = {
-  response: TTapisJob | { execSys: TTapisSystem };
+  response: IJobPostResponse;
   status: number;
 };
 
