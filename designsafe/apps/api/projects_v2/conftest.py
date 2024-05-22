@@ -1,3 +1,4 @@
+"""Fixtures related to project metadata."""
 import pytest
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
@@ -14,11 +15,12 @@ from designsafe.apps.api.projects_v2.operations.graph_operations import (
 
 
 @pytest.fixture
-def project_with_associations():
+def project_with_associations(regular_user):
+    """Project with associations fixture"""
     project_value = {
         "title": "Test Project",
         "projectId": "PRJ-1234",
-        "users": [],
+        "users": [{"username": regular_user.username, "role": "pi"}],
         "projectType": "experimental",
     }
     experiment_value = {"title": "Test Experiment", "description": "Experiment test"}

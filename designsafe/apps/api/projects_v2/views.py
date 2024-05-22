@@ -5,6 +5,7 @@ import json
 import networkx as nx
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.db import models
 from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
@@ -114,6 +115,7 @@ class ProjectsView(BaseApiView):
         return JsonResponse({"result": "OK"})
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class ProjectInstanceView(BaseApiView):
     """View for listing/updating project entities."""
 
@@ -181,6 +183,7 @@ class ProjectInstanceView(BaseApiView):
 
         return JsonResponse({"result": "OK"})
 
+    @method_decorator(tapis_jwt_login)
     def patch(self, request: HttpRequest, project_id: str):
         """Update a project's root metadata"""
         user = request.user
