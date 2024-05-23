@@ -173,7 +173,7 @@ class InteractiveWebhookView(BaseApiView):
             Notification.EVENT_TYPE: event_type,
             Notification.STATUS: Notification.INFO,
             Notification.USER: job_owner,
-            Notification.MESSAGE: 'Ready to view.',
+            Notification.MESSAGE: "Ready to view.",
             Notification.ACTION_LINK: address,
         }
 
