@@ -10,4 +10,8 @@ export {
   ProjectPreview,
   PublicationView,
 } from './ProjectPreview/ProjectPreview';
+export {
+  ProjectCitation,
+  PublishedCitation,
+} from './ProjectCitation/ProjectCitation';
 export * from './modals';
