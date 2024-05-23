@@ -683,9 +683,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post["archiveSystemDir"] = (
-                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
-            )
+            job_post[
+                "archiveSystemDir"
+            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")

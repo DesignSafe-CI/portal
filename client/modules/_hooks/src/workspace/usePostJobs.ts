@@ -1,8 +1,14 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient, { type TApiError } from '../apiClient';
-import { TJobArgSpecs, TJobKeyValuePair, TAppFileInput } from './types';
+import {
+  TJobArgSpecs,
+  TJobKeyValuePair,
+  TAppFileInput,
+  TTapisJob,
+} from './types';
+import { TTapisSystem } from '../systems';
 
-type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
+export type TJobPostOperations = 'resubmitJob' | 'cancelJob' | 'submitJob';
 
 export type TParameterSetSubmit = {
   appArgs: TJobArgSpecs;
@@ -42,17 +48,35 @@ export type TJobBody = {
   isInteractive?: boolean;
 };
 
+interface IJobPostResponse extends TTapisJob {
+  execSys?: TTapisSystem;
+}
+
+type TJobPostResponse = {
+  response: IJobPostResponse;
+  status: number;
+};
+
 async function postJobs(body: TJobBody) {
-  const res = await apiClient.post(`/api/workspace/jobs`, body);
+  const res = await apiClient.post<TJobPostResponse>(
+    `/api/workspace/jobs`,
+    body
+  );
   return res.data.response;
 }
 
 export function usePostJobs() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: TJobBody) => {
       return postJobs(body);
     },
     onError: (err: TApiError) => err,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['workspace', 'jobsListing'],
+      });
+    },
   });
 }
 
