@@ -6,7 +6,7 @@ import {
   usePublicationVersions,
   useSelectedFiles,
 } from '@client/hooks';
-import { Alert, Button, Collapse } from 'antd';
+import { Alert, Button, Collapse, Tag } from 'antd';
 import styles from './ProjectPreview.module.css';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
@@ -18,43 +18,106 @@ import {
   FileListingTable,
   TFileListingColumns,
 } from '@client/common-components';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
+import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
+import { SubEntityDetails } from '../SubEntityDetails';
 
-const columns: TFileListingColumns = [
-  {
-    title: 'File Name',
-    dataIndex: 'name',
-    ellipsis: true,
-    render: (data, record) =>
-      record.type === 'dir' ? (
-        <NavLink
-          className="listing-nav-link"
-          to={`./${encodeURIComponent(record.path)}`}
-          replace={false}
-        >
-          <i role="none" style={{ color: '#333333' }} className="fa fa-folder">
-            &nbsp;&nbsp;
-          </i>
-          {data}
-        </NavLink>
-      ) : (
-        <Button type="link">
-          <i role="none" style={{ color: '#333333' }} className="fa fa-file-o">
-            &nbsp;&nbsp;
-          </i>
-          {data}
-        </Button>
+const EntityFileListingTable: React.FC<{
+  treeData: TPreviewTreeData;
+  preview?: boolean;
+}> = ({ treeData, preview }) => {
+  const [previewModalState, setPreviewModalState] = useState<{
+    isOpen: boolean;
+    path?: string;
+  }>({ isOpen: false });
+
+  const columns: TFileListingColumns = [
+    {
+      title: 'File Name',
+      dataIndex: 'name',
+      ellipsis: true,
+      render: (data, record) => (
+        <div>
+          {record.type === 'dir' ? (
+            <Link
+              className="listing-nav-link"
+              to={`./${encodeURIComponent(record.path)}`}
+              style={{ pointerEvents: preview ? 'none' : 'all' }}
+              replace={false}
+            >
+              <i
+                role="none"
+                style={{ color: '#333333' }}
+                className="fa fa-folder"
+              >
+                &nbsp;&nbsp;
+              </i>
+              {data}
+            </Link>
+          ) : (
+            <Button
+              type="link"
+              disabled={preview}
+              onClick={() =>
+                setPreviewModalState({ isOpen: true, path: record.path })
+              }
+            >
+              <i
+                role="none"
+                style={{ color: '#333333' }}
+                className="fa fa-file-o"
+              >
+                &nbsp;&nbsp;
+              </i>
+              {data}
+            </Button>
+          )}
+          <div>
+            {treeData.value.fileTags
+              .filter((t) => t.path === record.path)
+              .map((t) => (
+                <Tag color="#337ab7" key={t.tagName}>
+                  {t.tagName}
+                </Tag>
+              ))}
+          </div>
+        </div>
       ),
-  },
-];
+    },
+  ];
+  return (
+    <>
+      <FileListingTable
+        api="tapis"
+        system="designsafe.storage.published"
+        path={treeData.uuid}
+        scheme="public"
+        columns={columns}
+        dataSource={treeData.value.fileObjs}
+        disabled
+      />
+      {previewModalState.path && (
+        <PreviewModalBody
+          isOpen={previewModalState.isOpen}
+          api={'tapis'}
+          system={'designsafe.storage.published'}
+          path={previewModalState.path}
+          handleCancel={() => setPreviewModalState({ isOpen: false })}
+        />
+      )}
+    </>
+  );
+};
 
 function RecursiveTree({
   treeData,
+  preview,
   defaultOpen = false,
 }: {
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
+  preview?: boolean;
 }) {
   return (
     <li className={`${styles['tree-li']}`}>
@@ -63,16 +126,8 @@ function RecursiveTree({
         title={treeData.value.title}
         defaultOpen={defaultOpen}
       >
-        <span>{treeData.value.description}</span>
-        <FileListingTable
-          api="tapis"
-          system="designsafe.storage.published"
-          path={treeData.uuid}
-          scheme="public"
-          columns={columns}
-          dataSource={treeData.value.fileObjs}
-          disabled
-        />
+        <SubEntityDetails entityValue={treeData.value} />
+        <EntityFileListingTable treeData={treeData} preview={preview} />
       </ProjectCollapse>
       <ul className={styles['tree-ul']}>
         {(treeData.children ?? []).map((child) => (
@@ -88,7 +143,11 @@ function RecursiveTree({
             >
               <i role="none" className="fa fa-level-up fa-rotate-90"></i>
             </span>
-            <RecursiveTree treeData={child} defaultOpen={defaultOpen} />
+            <RecursiveTree
+              treeData={child}
+              defaultOpen={defaultOpen}
+              preview={preview}
+            />
           </div>
         ))}
       </ul>
@@ -171,14 +230,9 @@ export const PublishedEntityDisplay: React.FC<{
                   publicationDate={treeData.publicationDate}
                 />
                 {(treeData.value.fileObjs?.length ?? 0) > 0 && (
-                  <FileListingTable
-                    api="tapis"
-                    system="designsafe.storage.published"
-                    path={treeData.uuid}
-                    scheme="public"
-                    columns={columns}
-                    dataSource={treeData.value.fileObjs}
-                    disabled
+                  <EntityFileListingTable
+                    treeData={treeData}
+                    preview={preview}
                   />
                 )}
                 {(sortedChildren ?? []).map((child) => (

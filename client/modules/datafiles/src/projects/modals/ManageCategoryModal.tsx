@@ -3,6 +3,7 @@ import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Button, Modal } from 'antd';
 import {
   TBaseProjectValue,
+  TEntityValue,
   useCreateEntity,
   useDeleteEntity,
   usePatchEntityMetadata,
@@ -11,20 +12,21 @@ import {
 import { CATEGORIES_BY_PROJECT_TYPE } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import { ProjectCategoryForm } from '../forms/ProjectCategoryForm';
+import { SubEntityDetails } from '../SubEntityDetails';
 
 const CategoryDetail: React.FC<{
-  description?: string;
+  value: TEntityValue;
   projectType: TBaseProjectValue['projectType'];
   projectId: string;
   entityUuid: string;
-}> = ({ description, projectId, projectType, entityUuid }) => {
+}> = ({ value, projectId, projectType, entityUuid }) => {
   const [showForm, setShowForm] = useState(false);
   const { mutate: patchEntityMeta } = usePatchEntityMetadata();
   const { mutate: deleteEntity } = useDeleteEntity();
   return (
     <>
       <section>
-        <article>{description}</article>
+        <SubEntityDetails entityValue={value} />
         <Button type="link" onClick={() => setShowForm(!showForm)}>
           {showForm ? 'Cancel Editing' : 'Edit'}
         </Button>
@@ -93,8 +95,8 @@ export const ManageCategoryModal: React.FC<{
             }
           />
         </section>
-        <strong>Category Inventory</strong>
-        <article>
+        <article style={{ marginTop: '5px' }}>
+          <strong>Category Inventory</strong>
           {categories.map((category) =>
             data.entities
               .filter((e) => e.name === category)
@@ -105,7 +107,7 @@ export const ManageCategoryModal: React.FC<{
                   entityName={entity.name}
                 >
                   <CategoryDetail
-                    description={entity.value.description}
+                    value={entity.value}
                     entityUuid={entity.uuid}
                     projectId={projectId}
                     projectType={projectType}

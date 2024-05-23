@@ -3,6 +3,7 @@ import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Button, Modal } from 'antd';
 import {
   TBaseProjectValue,
+  TEntityValue,
   useCreateEntity,
   useDeleteEntity,
   usePatchEntityMetadata,
@@ -10,21 +11,22 @@ import {
 } from '@client/hooks';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import { PublishableEntityForm } from '../forms/PublishableEntityForm';
+import { PublishedEntityDetails } from '../PublishedEntityDetails';
 
 const CategoryDetail: React.FC<{
-  description?: string;
+  value?: TEntityValue;
   entityName: string;
   projectType: TBaseProjectValue['projectType'];
   projectId: string;
   entityUuid: string;
-}> = ({ description, projectId, projectType, entityUuid, entityName }) => {
+}> = ({ value, projectId, projectType, entityUuid, entityName }) => {
   const [showForm, setShowForm] = useState(false);
   const { mutate } = usePatchEntityMetadata();
   const { mutate: deleteEntity } = useDeleteEntity();
   return (
     <>
       <section>
-        <article>{description}</article>
+        {value && <PublishedEntityDetails entityValue={value} />}
         <Button type="link" onClick={() => setShowForm(!showForm)}>
           {showForm ? 'Cancel Editing' : 'Edit'}
         </Button>
@@ -93,8 +95,8 @@ export const ManagePublishableEntityModal: React.FC<{
             }}
           />
         </section>
-        <strong>Category Inventory</strong>
-        <article>
+
+        <article style={{ marginTop: '5px' }}>
           {data.entities
             .filter((e) => e.name === entityName)
             .map((entity) => (
@@ -104,7 +106,7 @@ export const ManagePublishableEntityModal: React.FC<{
                 entityName={entity.name}
               >
                 <CategoryDetail
-                  description={entity.value.description}
+                  value={entity.value}
                   entityName={entityName}
                   entityUuid={entity.uuid}
                   projectId={projectId}
