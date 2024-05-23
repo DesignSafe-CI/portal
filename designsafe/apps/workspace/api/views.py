@@ -10,7 +10,6 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
-from django.db.models.functions import Coalesce
 from django.urls import reverse
 from tapipy.errors import InternalServerError, UnauthorizedError
 from designsafe.apps.api.exceptions import ApiException
