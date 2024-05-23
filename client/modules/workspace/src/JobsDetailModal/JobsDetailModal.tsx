@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Spin, Button } from 'antd';
+import { Modal, Spin } from 'antd';
 import { useGetJobs } from '@client/hooks';
 import { useParams, NavLink } from 'react-router-dom';
 import styles from './JobsDetailModal.module.css';
 import { getStatusText } from '../utils/jobs';
 import { formatDateTime } from '../utils/timeFormat';
 import { TJob } from '@client/hooks';
+import { PrimaryButton } from '@client/common-components';
 
 const DataFilesLink: React.FC<
   React.PropsWithChildren<{
@@ -66,7 +67,7 @@ export const JobsDetailModalBody: React.FC<{
     >
       <div className={styles['modal-body-container']}>
         {isLoading && <Spin className={styles.spinner} />}
-        {data && isOpen && (
+        {data && (
           <>
             <div className={`${styles['left-panel']}`}>
               <dl>
@@ -87,16 +88,15 @@ export const JobsDetailModalBody: React.FC<{
                   </DataFilesLink>
                 </dd>
               </dl>
-              <Button type="primary" className={styles['submit-button']}>
+              <PrimaryButton className={styles['submit-button']}>
                 Resubmit Job
-              </Button>
-              <Button type="primary" className={styles['submit-button']}>
+              </PrimaryButton>
+              <PrimaryButton className={styles['submit-button']}>
                 Cancel Job
-              </Button>
-
-              <Button type="primary" className={styles['submit-button']} danger>
+              </PrimaryButton>
+              <PrimaryButton className={styles['submit-button']} danger>
                 Delete Job
-              </Button>
+              </PrimaryButton>
             </div>
             <dl
               className={`${styles['right-panel']} ${styles['panel-content']}`}
