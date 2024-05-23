@@ -21,7 +21,9 @@ export const JobsDetailModalBody: React.FC<{
               <dd>
                 <SecondaryButton
                   type="link"
-                  href={`data/browser/tapis/${jobData.execSystemId}${jobData.execSystemExecDir}`}
+                  href={`data/browser/tapis/${
+                    jobData.execSystemId
+                  }/${encodeURIComponent(jobData.execSystemExecDir)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   disabled={!isOutputState(jobData.status)}
@@ -36,7 +38,9 @@ export const JobsDetailModalBody: React.FC<{
             <dd>
               <SecondaryButton
                 type="link"
-                href={`data/browser/tapis/${jobData.archiveSystemId}${jobData.archiveSystemDir}`}
+                href={`data/browser/tapis/${
+                  jobData.archiveSystemId
+                }/${encodeURIComponent(jobData.archiveSystemDir)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 disabled={!isOutputState(jobData.status)}

@@ -120,7 +120,9 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                 {!isInteractiveJob(job) && (
                   <SecondaryButton
                     type="default"
-                    href={`data/browser/tapis/${job.archiveSystemId}${job.archiveSystemDir}`}
+                    href={`data/browser/tapis/${
+                      job.archiveSystemId
+                    }/${encodeURIComponent(job.archiveSystemDir)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     disabled={!isOutputState(job.status)}
