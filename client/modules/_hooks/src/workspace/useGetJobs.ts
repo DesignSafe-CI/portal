@@ -28,6 +28,7 @@ const getJobsQuery = (
 ) => ({
   queryKey: ['workspace', 'getJobs', operation, queryParams],
   queryFn: () => getJobs(operation, queryParams),
+  retry: false,
 });
 
 export function useGetJobs(
