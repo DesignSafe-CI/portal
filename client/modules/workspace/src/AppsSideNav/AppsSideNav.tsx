@@ -23,7 +23,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
 
   function getItem(
     label: React.ReactNode,
-    key?: React.Key | null,
+    key: string,
     children?: MenuItem[],
     type?: 'group'
   ): MenuItem {
@@ -46,8 +46,9 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
 
     category.apps.forEach((app) => {
       if (app.is_bundled) {
-        if (bundles[app.bundle_id]) {
-          bundles[app.bundle_id].apps.push(
+        const bundleKey = `${app.bundle_label}${app.bundle_id}`;
+        if (bundles[bundleKey]) {
+          bundles[bundleKey].apps.push(
             getItem(
               <AppsNavLink
                 to={
@@ -61,7 +62,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
             )
           );
         } else {
-          bundles[app.bundle_id] = {
+          bundles[bundleKey] = {
             apps: [
               getItem(
                 <AppsNavLink
@@ -94,11 +95,13 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         );
       }
     });
-    const bundleItems = Object.entries(bundles).map(([bundle_id, bundle]) =>
-      getItem(`${bundle.label} [${bundle.apps.length}]`, bundle_id, bundle.apps)
+    const bundleItems = Object.entries(bundles).map(([bundleKey, bundle]) =>
+      getItem(`${bundle.label} [${bundle.apps.length}]`, bundleKey, bundle.apps)
     );
 
-    return categoryItems.concat(bundleItems);
+    return categoryItems
+      .concat(bundleItems)
+      .sort((a, b) => (a?.key as string).localeCompare(b?.key as string));
   };
 
   const items: MenuItem[] = categories.map((category) => {
