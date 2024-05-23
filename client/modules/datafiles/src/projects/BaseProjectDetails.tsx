@@ -370,18 +370,24 @@ export const BaseProjectDetails: React.FC<{
 
       {isPublished && (
         <section style={{ paddingBottom: '12px' }}>
-          <RelateDataModal projectId={projectValue.projectId} readOnly>
-            {({ onClick }) => (
-              <Button
-                onClick={onClick}
-                type="link"
-                style={{ fontWeight: 'bold' }}
-              >
-                View Data Diagram
-              </Button>
-            )}
-          </RelateDataModal>{' '}
-          |{' '}
+          {!['other', 'field_reconnaissance'].includes(
+            projectValue.projectType
+          ) && (
+            <>
+              <RelateDataModal projectId={projectValue.projectId} readOnly>
+                {({ onClick }) => (
+                  <Button
+                    onClick={onClick}
+                    type="link"
+                    style={{ fontWeight: 'bold' }}
+                  >
+                    View Data Diagram
+                  </Button>
+                )}
+              </RelateDataModal>{' '}
+              |{' '}
+            </>
+          )}
           <Button type="link">
             <strong>Leave Feedback (REPLACE ME)</strong>
           </Button>

@@ -122,8 +122,6 @@ export const FileListingTable: React.FC<
     isLoading,
   ]);
 
-  console.log(error);
-
   /* RENDER THE TABLE */
   return (
     <Table
