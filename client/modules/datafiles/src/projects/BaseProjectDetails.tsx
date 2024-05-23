@@ -4,6 +4,7 @@ import { TBaseProjectValue, TProjectUser } from '@client/hooks';
 import styles from './BaseProjectDetails.module.css';
 import { Button, Col, Popover, Row, Select, Tooltip } from 'antd';
 import { useSearchParams } from 'react-router-dom';
+import { RelateDataModal } from './modals';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
   children,
@@ -140,7 +141,8 @@ export const BaseProjectDetails: React.FC<{
   projectValue: TBaseProjectValue;
   publicationDate?: string;
   versions?: number[];
-}> = ({ projectValue, publicationDate, versions }) => {
+  isPublished?: boolean;
+}> = ({ projectValue, publicationDate, versions, isPublished }) => {
   const pi = projectValue.users.find((u) => u.role === 'pi');
   const coPis = projectValue.users.filter((u) => u.role === 'co_pi');
   const projectType = [
@@ -365,6 +367,32 @@ export const BaseProjectDetails: React.FC<{
           )}
         </tbody>
       </table>
+
+      {isPublished && (
+        <section style={{ paddingBottom: '12px' }}>
+          {!['other', 'field_reconnaissance'].includes(
+            projectValue.projectType
+          ) && (
+            <>
+              <RelateDataModal projectId={projectValue.projectId} readOnly>
+                {({ onClick }) => (
+                  <Button
+                    onClick={onClick}
+                    type="link"
+                    style={{ fontWeight: 'bold' }}
+                  >
+                    View Data Diagram
+                  </Button>
+                )}
+              </RelateDataModal>{' '}
+              |{' '}
+            </>
+          )}
+          <Button type="link">
+            <strong>Leave Feedback (REPLACE ME)</strong>
+          </Button>
+        </section>
+      )}
       <DescriptionExpander>
         <strong>Description: </strong>
         {projectValue.description}
