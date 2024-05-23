@@ -13,6 +13,7 @@ import * as constants from '../constants';
 import { DateInput, DropdownSelect, SampleApproachInput } from './_fields';
 import { CollectionModeInput } from './_fields/CollectionModeInput';
 import { AuthorSelect } from './_fields/AuthorSelect';
+import { ProjectCategoryFormHelp } from './ProjectCategoryFormHelp';
 
 export const ProjectCategoryForm: React.FC<{
   projectType: TBaseProjectValue['projectType'];
@@ -63,14 +64,9 @@ export const ProjectCategoryForm: React.FC<{
     >
       {mode === 'create' && (
         <Form.Item label="Category Type" required>
-          Model Configuration Files describing the design and layout of what is
-          being tested (some call this a specimen). Sensor Information Files
-          about the sensor instrumentation used in a model configuration to
-          conduct one or more event. Event Files from unique occurrences during
-          which data are generated. Analysis Tables, graphs, visualizations,
-          Jupyter Notebooks, or other representations of the results. Report
-          Written accounts made to convey information about an entire project or
-          experiment.
+          <article style={{ margin: '5px 0px' }}>
+            <ProjectCategoryFormHelp projectType={projectType} />
+          </article>
           <Form.Item
             name="name"
             rules={[{ required: true }]}

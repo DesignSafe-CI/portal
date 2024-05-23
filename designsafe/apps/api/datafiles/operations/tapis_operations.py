@@ -383,6 +383,16 @@ def rename(client, system, path, new_name):
                           operation="MOVE",
                           newPath=new_path)
     
+    agave_indexer.apply_async(kwargs={'systemId': system,
+                                      'filePath': os.path.dirname(path),
+                                      'recurse': False},
+                              queue='indexing')
+    
+    agave_indexer.apply_async(kwargs={'systemId': system,
+                                      'filePath': new_path,
+                                      'recurse': True},
+                              queue='indexing')
+    
     return {"result": "OK"}
 
 

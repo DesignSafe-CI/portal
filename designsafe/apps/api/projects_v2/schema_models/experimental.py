@@ -183,6 +183,8 @@ class ExperimentAnalysis(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
+    dois: list[str] = []
+
     tags: Optional[dict] = Field(default=None, exclude=True)
     reference: Optional[str] = Field(default=None, exclude=True)
     referencedoi: Optional[str] = Field(default=None, exclude=True)
