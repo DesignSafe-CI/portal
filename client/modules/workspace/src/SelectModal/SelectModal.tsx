@@ -21,6 +21,7 @@ type TModalChildren = (props: {
 }) => React.ReactElement;
 
 const api = 'tapis';
+const portalName = 'DesignSafe';
 const HeaderTitle: React.FC<{
   api: string;
   system: string;
@@ -109,15 +110,20 @@ export const SelectModal: React.FC<{
   const {
     data: { storageSystems, defaultStorageSystem },
   } = useGetSystems();
-  // only pick up enabled systems with label
+  // only pick up enabled systems in this portal
   const includedSystems = storageSystems.filter(
-    (s) => s.enabled && s.notes?.label
+    (s) => s.enabled && s.notes?.portalNames?.includes(portalName)
   );
 
-  const systemOptions = includedSystems.map((system) => ({
-    label: system.notes.label,
-    value: system.id,
-  }));
+  // Sort - so mydata is shown first.
+  const systemOptions = includedSystems
+    .sort((a, b) => {
+      return (a.notes?.isMyData ? 0 : 1) - (b.notes?.isMyData ? 0 : 1);
+    })
+    .map((system) => ({
+      label: system.notes.label,
+      value: system.id,
+    }));
   systemOptions.push({ label: 'My Projects', value: 'myprojects' });
 
   const defaultParams = useMemo(
