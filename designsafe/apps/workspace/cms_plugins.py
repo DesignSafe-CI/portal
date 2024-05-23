@@ -3,7 +3,6 @@
 import logging
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from django.db.models.functions import Coalesce
 from designsafe.apps.workspace.models.app_entries import (
     AppListingEntry,
 )
@@ -29,7 +28,7 @@ class AppCategoryListing(CMSPluginBase):
         context = super().render(context, instance, placeholder)
         listing_entries = AppListingEntry.objects.filter(
             category=instance.app_category, enabled=True
-        ).order_by("label")
+        )
         serialized_listing = [
             {
                 "label": entry.label,
@@ -99,9 +98,7 @@ class AppVariants(CMSPluginBase):
 
     def render(self, context, instance: AppListingEntry, placeholder):
         context = super().render(context, instance, placeholder)
-        app_variants = instance.app.appvariant_set.filter(enabled=True).order_by(
-            Coalesce("label", "app_id")
-        )
+        app_variants = instance.app.appvariant_set.filter(enabled=True)
         context["listing"] = app_variants
 
         return context
