@@ -1,144 +1,150 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Spin } from 'antd';
-import { useGetJobs } from '@client/hooks';
-import { useParams, NavLink } from 'react-router-dom';
+import { Modal, Layout } from 'antd';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useGetJobs, TTapisJob } from '@client/hooks';
 import styles from './JobsDetailModal.module.css';
-import { getStatusText } from '../utils/jobs';
+import { getStatusText, isOutputState, isTerminalState } from '../utils/jobs';
 import { formatDateTime } from '../utils/timeFormat';
-import { TJob } from '@client/hooks';
-import { PrimaryButton } from '@client/common-components';
-
-const DataFilesLink: React.FC<
-  React.PropsWithChildren<{
-    to: string;
-  }>
-> = ({ to, children }) => {
-  return (
-    <NavLink to={to} className={styles.link}>
-      {children}
-    </NavLink>
-  );
-};
+import { JobActionButton } from '../JobsListing/JobsListing';
+import { Spinner, SecondaryButton } from '@client/common-components';
 
 export const JobsDetailModalBody: React.FC<{
-  isOpen: boolean;
-  uuid: string;
-  onToggleModal: (isOpen: boolean) => void;
-}> = ({ isOpen, uuid, onToggleModal }) => {
-  const { data, isLoading } = useGetJobs('select', { uuid }) as {
-    data: TJob;
-    isLoading: boolean;
-  };
-  const [isModalOpen, setIsModalOpen] = useState(isOpen);
-
-  useEffect(() => {
-    setIsModalOpen(isOpen);
-  }, [isOpen]);
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    onToggleModal(false);
-  };
-
+  jobData: TTapisJob;
+}> = ({ jobData }) => {
   return (
-    <Modal
-      className={`${styles.root} job-history-modal`}
-      title={
-        data && (
-          <>
-            <header>
-              Job Detail: {data.name}-{uuid}
-              <dl className={styles['header-details']}>
-                <dt>Job UUID: </dt>
-                <dd>{uuid}</dd>
-                <dt>Application: </dt>
-                <dd>{data.name}</dd>
-                <dt>System: </dt>
-                <dd>{data.execSystemId}</dd>
-              </dl>
-            </header>
-          </>
-        )
-      }
-      width="60%"
-      open={isModalOpen}
-      onCancel={handleCancel}
-      footer={null} // Remove the footer from here
-    >
-      <div className={styles['modal-body-container']}>
-        {isLoading && <Spin className={styles.spinner} />}
-        {data && (
-          <>
-            <div className={`${styles['left-panel']}`}>
-              <dl>
-                <dt>Execution:</dt>
-                <dd>
-                  <DataFilesLink
-                    to={`./data/browser/${data.archiveSystemId}${data.archiveSystemDir}`}
-                  >
-                    View in Data Files
-                  </DataFilesLink>
-                </dd>
-                <dt>Output:</dt>
-                <dd>
-                  <DataFilesLink
-                    to={`./data/browser/${data.archiveSystemId}${data.archiveSystemDir}`}
-                  >
-                    View in Data Files
-                  </DataFilesLink>
-                </dd>
-              </dl>
-              <PrimaryButton className={styles['submit-button']}>
-                Resubmit Job
-              </PrimaryButton>
-              <PrimaryButton className={styles['submit-button']}>
-                Cancel Job
-              </PrimaryButton>
-              <PrimaryButton className={styles['submit-button']} danger>
-                Delete Job
-              </PrimaryButton>
-            </div>
-            <dl
-              className={`${styles['right-panel']} ${styles['panel-content']}`}
-            >
-              <dt>Application</dt>
+    <div className={styles['modal-body-container']}>
+      <div className={`${styles['left-panel']}`}>
+        <dl>
+          {isOutputState(jobData.status) && (
+            <>
+              <dt>Execution:</dt>
               <dd>
-                {data.appId} {data.appVersion}
+                <SecondaryButton
+                  type="link"
+                  href={`data/browser/tapis/${
+                    jobData.execSystemId
+                  }/${encodeURIComponent(jobData.execSystemExecDir)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  disabled={!isOutputState(jobData.status)}
+                >
+                  View in Execution Directory
+                </SecondaryButton>
               </dd>
-              <dt>Job ID</dt>
-              <dd>{data.uuid}</dd>
-              <dt>Status</dt>
-              <dd>{getStatusText(data.status)}</dd>
-              <dt>Submitted</dt>
-              <dd>{formatDateTime(new Date(data.created))}</dd>
-              <dt>Finished</dt>
-              <dd>{formatDateTime(new Date(data.ended))}</dd>
-              <dt>Last Status Message</dt>
-              <dd>{data.lastMessage}</dd>
-            </dl>
+            </>
+          )}
+          <>
+            <dt>Output:</dt>
+            <dd>
+              <SecondaryButton
+                type="link"
+                href={`data/browser/tapis/${
+                  jobData.archiveSystemId
+                }/${encodeURIComponent(jobData.archiveSystemDir)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                disabled={!isOutputState(jobData.status)}
+              >
+                {isOutputState(jobData.status)
+                  ? 'View Output'
+                  : 'Output Pending'}
+              </SecondaryButton>
+            </dd>
           </>
+        </dl>
+        {isTerminalState(jobData.status) && (
+          <JobActionButton
+            uuid={jobData.uuid}
+            title="Resubmit Job"
+            operation="resubmitJob"
+            type="primary"
+          />
+        )}
+        {!isTerminalState(jobData.status) && (
+          <JobActionButton
+            uuid={jobData.uuid}
+            title="Cancel Job"
+            operation="cancelJob"
+            type="primary"
+          />
         )}
       </div>
-    </Modal>
+      <dl className={`${styles['right-panel']} ${styles['panel-content']}`}>
+        <dt>Application ID</dt>
+        <dd>{jobData.appId}</dd>
+        {jobData.appVersion && (
+          <>
+            <dt>Application Version</dt>
+            <dd>{jobData.appVersion}</dd>
+          </>
+        )}
+        <dt>Job ID</dt>
+        <dd>{jobData.uuid}</dd>
+        <dt>Status</dt>
+        <dd>{getStatusText(jobData.status)}</dd>
+        <dt>Submitted</dt>
+        <dd>{formatDateTime(new Date(jobData.created))}</dd>
+        <dt>Finished</dt>
+        <dd>{formatDateTime(new Date(jobData.ended))}</dd>
+        <dt>Last Status Message</dt>
+        <dd>{jobData.lastMessage}</dd>
+      </dl>
+    </div>
   );
 };
 
 export const JobsDetailModal: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    navigate('..', { relative: 'path' });
   };
   type JobsDetailModalParams = {
     uuid: string;
   };
   const { uuid } = useParams<JobsDetailModalParams>() as JobsDetailModalParams;
+  const { data: jobData, isLoading } = useGetJobs('select', { uuid }) as {
+    data: TTapisJob;
+    isLoading: boolean;
+  };
+
+  useEffect(() => {
+    uuid && setIsModalOpen(true);
+  }, [uuid]);
 
   return (
-    <JobsDetailModalBody
-      uuid={uuid}
-      isOpen={isModalOpen}
-      onToggleModal={handleCancel}
-    />
+    <Modal
+      className={`${styles.root} job-history-modal`}
+      title={
+        <>
+          <header>
+            Job Detail: {uuid}
+            {jobData && (
+              <dl className={styles['header-details']}>
+                <dt>Job UUID: </dt>
+                <dd>{jobData.uuid}</dd>
+                <dt>Application: </dt>
+                <dd>{JSON.parse(jobData.notes).label || jobData.appId}</dd>
+                <dt>System: </dt>
+                <dd>{jobData.execSystemId}</dd>
+              </dl>
+            )}
+          </header>
+        </>
+      }
+      width="60%"
+      open={isModalOpen}
+      onCancel={handleCancel}
+      footer={null}
+    >
+      {isLoading ? (
+        <Layout style={{ height: 300 }}>
+          <Spinner />
+        </Layout>
+      ) : (
+        <JobsDetailModalBody jobData={jobData} />
+      )}
+    </Modal>
   );
 };

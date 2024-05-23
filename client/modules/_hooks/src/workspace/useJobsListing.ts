@@ -3,30 +3,6 @@ import apiClient from '../apiClient';
 import { AxiosError } from 'axios';
 import { TTapisJob } from './types';
 
-export type TJob = {
-  appId: string;
-  appVersion: string;
-  archiveSystemDir: string;
-  archiveSystemId: string;
-  condition: boolean;
-  created: string;
-  ended: string;
-  execSystemId: string;
-  coresPerNode: number;
-  nodeCount: number;
-  lastUpdated: string;
-  name: string;
-  owner: string;
-  remoteStarted: string;
-  status: string;
-  tenant: string;
-  uuid: string;
-  lastMessage: string;
-  execSystemExecDir: string;
-  execSystemOutputDir: string;
-  remoteOutcome: string;
-};
-
 export type TJobsListing = {
   listing: TTapisJob[];
   reachedEnd: boolean;
