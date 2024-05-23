@@ -1,10 +1,13 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { TableProps, Row, Flex } from 'antd';
+import { useQueryClient } from '@tanstack/react-query';
 import { SecondaryButton } from '@client/common-components';
 import {
   useGetNotifications,
   TJobStatusNotification,
-  TNotificationsResponse,
+  usePostJobs,
+  TJobPostOperations,
+  useReadNotifications,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -22,18 +25,59 @@ import { JobsDetailModalBody } from '../JobsDetailModal/JobsDetailModal';
 import { InteractiveSessionModal } from '../InteractiveSessionModal';
 import styles from './JobsListing.module.css';
 
+const JobActionButton: React.FC<{
+  uuid: string;
+  operation: TJobPostOperations;
+  title: string;
+}> = ({ uuid, operation, title }) => {
+  const { mutate: mutateJob, isPending, isSuccess } = usePostJobs();
+  return (
+    <SecondaryButton
+      onClick={() => mutateJob({ uuid, operation })}
+      loading={isPending}
+      disabled={isPending}
+    >
+      {title}
+      {isSuccess && <i className="fa fa-check" style={{ marginLeft: 5 }} />}
+    </SecondaryButton>
+  );
+};
+
 export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   ...tableProps
 }) => {
+  const queryClient = useQueryClient();
   const [jobDetailModalState, setJobDetailModalState] = useState<{
     isOpen: boolean;
     uuid?: string;
   }>({ isOpen: false });
 
   const [interactiveModalState, setInteractiveModalState] = useState(false);
-  const { data } = useGetNotifications({
-    event_type: 'interactive_session_ready',
-  }) as { data: TNotificationsResponse };
+  const { data: interactiveSessionNotifs } = useGetNotifications({
+    event_types: ['interactive_session_ready'],
+  });
+  const { mutate: readNotifications } = useReadNotifications();
+
+  // mark all as read on component mount
+  useEffect(() => {
+    readNotifications({
+      event_types: ['interactive_session_ready', 'job'],
+    });
+  }, []);
+
+  // update unread count state
+  queryClient.setQueryData(
+    [
+      'workspace',
+      'notifications',
+      'badge',
+      {
+        event_types: ['interactive_session_ready', 'job'],
+      },
+    ],
+    0
+  );
+
   const columns: TJobsListingColumns = useMemo(
     () => [
       {
@@ -45,7 +89,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
           const { interactiveSessionLink, message } =
             getJobInteractiveSessionInfo(
               job,
-              data?.notifs as TJobStatusNotification[]
+              interactiveSessionNotifs?.notifs as TJobStatusNotification[]
             );
 
           return (
@@ -61,10 +105,11 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                     >
                       Open
                     </SecondaryButton>
-                    {/* TODOv3: hook up job cancel */}
-                    <SecondaryButton onClick={() => console.log('cancel job')}>
-                      End
-                    </SecondaryButton>
+                    <JobActionButton
+                      uuid={job.uuid}
+                      operation="cancelJob"
+                      title="End"
+                    />
                     <InteractiveSessionModal
                       isOpen={interactiveModalState}
                       interactiveSessionLink={interactiveSessionLink}
@@ -88,13 +133,13 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                       : 'Output Pending'}
                   </SecondaryButton>
                 )}
-                {/* TODOv3: hook up job cancel */}
                 {isTerminalState(job.status) && (
-                  <SecondaryButton onClick={() => console.log('resubmit')}>
-                    {isInteractiveJob(job) ? 'Resubmit' : 'Reuse Inputs'}
-                  </SecondaryButton>
+                  <JobActionButton
+                    uuid={job.uuid}
+                    operation="resubmitJob"
+                    title={isInteractiveJob(job) ? 'Resubmit' : 'Reuse Inputs'}
+                  />
                 )}
-                {/* TODOv3: hook up job cancel */}
                 <SecondaryButton
                   type="link"
                   onClick={() =>
