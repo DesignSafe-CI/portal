@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Layout } from 'antd';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useGetJobs, TTapisJob } from '@client/hooks';
 import styles from './JobsDetailModal.module.css';
 import { getStatusText, isOutputState, isTerminalState } from '../utils/jobs';
@@ -93,24 +93,21 @@ export const JobsDetailModalBody: React.FC<{
   );
 };
 
-export const JobsDetailModal: React.FC = () => {
+export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleCancel = () => {
     navigate('..', { relative: 'path' });
   };
-  type JobsDetailModalParams = {
-    uuid: string;
-  };
-  const { uuid } = useParams<JobsDetailModalParams>() as JobsDetailModalParams;
+
   const { data: jobData, isLoading } = useGetJobs('select', { uuid }) as {
     data: TTapisJob;
     isLoading: boolean;
   };
 
   useEffect(() => {
-    uuid && setIsModalOpen(true);
+    setIsModalOpen(!!uuid);
   }, [uuid]);
 
   return (
@@ -143,7 +140,7 @@ export const JobsDetailModal: React.FC = () => {
           <Spinner />
         </Layout>
       ) : (
-        <JobsDetailModalBody jobData={jobData} />
+        jobData && <JobsDetailModalBody jobData={jobData} />
       )}
     </Modal>
   );
