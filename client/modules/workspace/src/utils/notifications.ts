@@ -1,24 +1,5 @@
 import { truncateMiddle, getStatusText } from '../utils';
-
-export type TJobStatusNotification = {
-  event_type: string;
-  datetime: string;
-  status: string;
-  operation: string;
-  message: string;
-  extra: {
-    name: string;
-    owner: string;
-    status: string;
-    uuid: string;
-  };
-  pk: number;
-  action_link: string;
-  user: string;
-  read: boolean;
-  deleted: boolean;
-};
-
+import { TJobStatusNotification } from '@client/hooks';
 /*
  * Post-process mapped status message to get a toast message translation.
  */
