@@ -60,6 +60,7 @@ export type TTapisSystem = {
   notes: {
     label?: string;
     keyservice?: boolean;
+    isMyData?: boolean;
   };
   importRefId?: string;
   uuid: string;
