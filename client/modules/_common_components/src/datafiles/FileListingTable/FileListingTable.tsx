@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './FileListingTable.module.css';
-import { Table, TableColumnType, TableProps } from 'antd';
+import { Alert, Table, TableColumnType, TableProps } from 'antd';
 import { useFileListing, TFileListing, useSelectedFiles } from '@client/hooks';
 import { FileListingTableCheckbox } from './FileListingTableCheckbox';
 
@@ -23,6 +23,7 @@ export const FileListingTable: React.FC<
     filterFn?: (listing: TFileListing[]) => TFileListing[];
     disabled?: boolean;
     className?: string;
+    emptyListingDisplay?: React.ReactNode;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
   api,
@@ -33,6 +34,7 @@ export const FileListingTable: React.FC<
   columns,
   disabled = false,
   className,
+  emptyListingDisplay,
   ...props
 }) => {
   const limit = 100;
@@ -41,15 +43,21 @@ export const FileListingTable: React.FC<
   );
 
   /* FETCH FILE LISTINGS */
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    useFileListing({
-      api,
-      system: system ?? '-',
-      path: path ?? '',
-      scheme,
-      disabled,
-      pageSize: limit,
-    });
+  const {
+    data,
+    isLoading,
+    error,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useFileListing({
+    api,
+    system: system ?? '-',
+    path: path ?? '',
+    scheme,
+    disabled,
+    pageSize: limit,
+  });
 
   const combinedListing = useMemo(() => {
     const cl: TFileListing[] = [];
@@ -143,7 +151,26 @@ export const FileListingTable: React.FC<
           isLoading || isFetchingNextPage ? (
             <div style={{ padding: '50px' }}>&nbsp;</div>
           ) : (
-            <div>Placeholder for empty data.</div>
+            <>
+              {error && (
+                <Alert
+                  showIcon
+                  type="error"
+                  description={
+                    <span style={{ color: '#d9534f' }}>
+                      {error.response?.data.message}
+                    </span>
+                  }
+                />
+              )}
+              {!error && (
+                <Alert
+                  showIcon
+                  type="info"
+                  description={emptyListingDisplay ?? 'No files to display.'}
+                />
+              )}
+            </>
           ),
       }}
       {...props}

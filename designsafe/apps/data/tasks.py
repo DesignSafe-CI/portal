@@ -24,7 +24,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
     if recurse:
         for child in folders:
             self.apply_async(args=[systemId],
-                             kwargs={'filePath': child.path,
+                             kwargs={'filePath': child["path"],
                                      'reindex': reindex,
                                      'update_pems': update_pems},
                              queue='indexing')

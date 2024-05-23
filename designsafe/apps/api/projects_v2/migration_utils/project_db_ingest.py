@@ -124,9 +124,9 @@ def ingest_graphs():
 def fix_authors(meta: ProjectMetadata):
     """Ensure that authors contain complete name/institution information."""
     base_project = meta.base_project
-
+    print(meta.project_id)
     def get_complete_author(partial_author):
-        if partial_author["name"] and not partial_author["guest"]:
+        if partial_author.get("name") and not partial_author.get("guest"):
             author_info = next(
                 (
                     user
@@ -143,7 +143,7 @@ def fix_authors(meta: ProjectMetadata):
         meta.value["authors"] = [
             get_complete_author(author)
             for author in meta.value["authors"]
-            if author["authorship"] is True
+            if author.get("authorship", True) is True
         ]
 
     if meta.value.get("projectType") == "other":
@@ -153,7 +153,7 @@ def fix_authors(meta: ProjectMetadata):
         meta.value["dataCollectors"] = [
             get_complete_author(author)
             for author in meta.value["dataCollectors"]
-            if author["authorship"] is True
+            if author.get("authorship", True) is True
         ]
     schema_model = SCHEMA_MAPPING[meta.name]
     schema_model.model_validate(meta.value)

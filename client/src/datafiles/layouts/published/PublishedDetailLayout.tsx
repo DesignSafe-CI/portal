@@ -1,4 +1,8 @@
-import { BaseProjectDetails, DatafilesToolbar } from '@client/datafiles';
+import {
+  BaseProjectDetails,
+  DatafilesToolbar,
+  PublishedCitation,
+} from '@client/datafiles';
 import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
 import React, { useEffect } from 'react';
 import { Button, Form, Input } from 'antd';
@@ -72,10 +76,28 @@ export const PublishedDetailLayout: React.FC = () => {
         <strong>{data.baseProject.projectId}</strong>&nbsp;|&nbsp;
         {data.baseProject.title}
       </div>
+
+      {data.baseProject.projectType === 'other' && (
+        <section
+          style={{
+            backgroundColor: '#eef9fc',
+            padding: '10px 20px',
+            margin: '10px 0px',
+          }}
+        >
+          <strong>Cite This Data:</strong>
+
+          <PublishedCitation
+            projectId={projectId}
+            entityUuid={data.tree.children[0].uuid}
+          />
+        </section>
+      )}
       <BaseProjectDetails
         projectValue={data?.baseProject}
         publicationDate={publicationDate}
         versions={allVersions}
+        isPublished
       />
       <Outlet />
     </div>
