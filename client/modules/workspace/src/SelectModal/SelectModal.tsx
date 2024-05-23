@@ -4,6 +4,8 @@ import {
   useAuthenticatedUser,
   usePathDisplayName,
   useGetSystems,
+  TTapisSystem,
+  TUser,
 } from '@client/hooks';
 
 import { BaseFileListingBreadcrumb } from '@client/common-components';
@@ -33,6 +35,20 @@ const HeaderTitle: React.FC<{
       {getPathName(api, system, path)}
     </span>
   );
+};
+
+// Use dynamic effective user as a mechanism to know whether the system is private or public
+const getScheme = (storageSystem: TTapisSystem): string => {
+  return storageSystem.isDynamicEffectiveUser ? 'private' : 'public';
+};
+
+const getPath = (
+  storageSystem: TTapisSystem,
+  user: TUser | undefined
+): string => {
+  return storageSystem.isDynamicEffectiveUser
+    ? encodeURIComponent('/' + user?.username)
+    : '';
 };
 
 function getFilesColumns(
@@ -93,10 +109,13 @@ export const SelectModal: React.FC<{
   const {
     data: { storageSystems, defaultStorageSystem },
   } = useGetSystems();
-  const includedSystems = storageSystems.filter((s) => s.enabled);
+  // only pick up enabled systems with label
+  const includedSystems = storageSystems.filter(
+    (s) => s.enabled && s.notes?.label
+  );
 
   const systemOptions = includedSystems.map((system) => ({
-    label: system.notes?.label ?? system.id,
+    label: system.notes.label,
     value: system.id,
   }));
   systemOptions.push({ label: 'My Projects', value: 'myprojects' });
@@ -105,7 +124,8 @@ export const SelectModal: React.FC<{
     () => ({
       selectedApi: api,
       selectedSystem: defaultStorageSystem.id,
-      selectedPath: encodeURIComponent('/' + user?.username),
+      selectedPath: getPath(defaultStorageSystem, user),
+      scheme: getScheme(defaultStorageSystem),
     }),
     [user]
   );
@@ -114,11 +134,12 @@ export const SelectModal: React.FC<{
     selectedApi: string;
     selectedSystem: string;
     selectedPath: string;
+    scheme?: string;
     projectId?: string;
   }>(defaultParams);
 
   const [showProjects, setShowProjects] = useState<boolean>(false);
-  const { selectedApi, selectedSystem, selectedPath } = selection;
+  const { selectedApi, selectedSystem, selectedPath, scheme } = selection;
   useEffect(() => setSelection(defaultParams), [isModalOpen, defaultParams]);
   const [dropdownValue, setDropdownValue] = useState<string>(
     defaultStorageSystem.id
@@ -138,7 +159,8 @@ export const SelectModal: React.FC<{
     setSelection({
       selectedApi: api,
       selectedSystem: system.id,
-      selectedPath: encodeURIComponent('/' + user?.username),
+      selectedPath: getPath(system, user),
+      scheme: getScheme(system),
     });
   };
 
@@ -234,6 +256,7 @@ export const SelectModal: React.FC<{
                       path={selectedPath}
                       columns={FileColumns}
                       rowSelection={undefined}
+                      scheme={scheme}
                       scroll={undefined}
                     />
                   </div>
