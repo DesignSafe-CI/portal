@@ -37,16 +37,16 @@ const HeaderTitle: React.FC<{
   );
 };
 
-// Use dynamic effective user as a mechanism to know whether the system is private or public
+// Use isMyData is note as an indicate of private vs public
 const getScheme = (storageSystem: TTapisSystem): string => {
-  return storageSystem.isDynamicEffectiveUser ? 'private' : 'public';
+  return storageSystem.notes?.isMyData ? 'private' : 'public';
 };
 
 const getPath = (
   storageSystem: TTapisSystem,
   user: TUser | undefined
 ): string => {
-  return storageSystem.isDynamicEffectiveUser
+  return storageSystem.notes?.isMyData
     ? encodeURIComponent('/' + user?.username)
     : '';
 };
