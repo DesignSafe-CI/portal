@@ -377,7 +377,7 @@ class AppsTrayView(AuthenticatedApiView):
         categories = []
         html_definitions = {}
         # Traverse category records in descending priority
-        for category in AppTrayCategory.objects.order_by("-priority"):
+        for category in AppTrayCategory.objects.order_by("priority"):
             # Retrieve all apps known to the portal in that category
             tapis_apps = list(
                 AppVariant.objects.filter(
@@ -386,7 +386,6 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle__category=category,
                     app_type="tapis",
                 )
-                .order_by(Coalesce("label", "app_id"))
                 # Only include bundle info if bundled
                 .annotate(
                     icon=F("bundle__icon"),
@@ -397,8 +396,7 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
-                )
-                .values(*values)
+                ).values(*values)
             )
 
             html_apps = list(
@@ -408,7 +406,6 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle__category=category,
                     app_type="html",
                 )
-                .order_by(Coalesce("label", "app_id"))
                 # Only include bundle info if bundled
                 .annotate(
                     icon=F("bundle__icon"),
@@ -419,8 +416,7 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
-                )
-                .values(*values)
+                ).values(*values)
             )
 
             valid_tapis_apps = self._get_valid_apps(apps_listing, tapis_apps)
@@ -683,9 +679,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post[
-                "archiveSystemDir"
-            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            job_post["archiveSystemDir"] = (
+                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            )
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")
