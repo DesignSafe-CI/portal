@@ -159,3 +159,28 @@ def test_create_file_metadata_missing_system_or_path(
         content_type="application/json",
     )
     assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_create_using_path_without_starting_slashes_issue_DES_2767 (
+    filemeta_value_mock,
+):
+    # testing that "file.txt" and "/file.txt" are referring to the same
+    # file and that "file.txt" is normalized to "/file.txt"
+    filemeta_value_mock["path"] = "file.txt"
+
+    file_meta, created = FileMetaModel.create_or_update_file_meta(filemeta_value_mock)
+    assert created
+    assert file_meta.value["path"] == "/file.txt"
+
+
+@pytest.mark.django_db
+def test_get_using_path_with_or_without_starting_slashes_issue_DES_2767(
+    filemeta_value_mock,
+):
+    filemeta_value_mock["path"] = "file.txt"
+    FileMetaModel.create_or_update_file_meta(filemeta_value_mock)
+
+    system = filemeta_value_mock["system"]
+    FileMetaModel.get_by_path_and_system(system, "file.txt")
+    FileMetaModel.get_by_path_and_system(system, "/file.txt")
