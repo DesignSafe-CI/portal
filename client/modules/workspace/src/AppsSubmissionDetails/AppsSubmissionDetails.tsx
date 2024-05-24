@@ -13,11 +13,12 @@ import { useFormContext, useWatch, FieldValues } from 'react-hook-form';
 import { z } from 'zod';
 import { TField } from '../AppsWizard/AppsFormSchema';
 import { PrimaryButton } from '@client/common-components';
+import styles from './AppsSubmissionDetails.module.css';
 
 const tagTheme: ThemeConfig = {
   token: {
     fontFamily: 'Helvetica Neue',
-    fontSizeSM: 8,
+    fontSizeSM: 12,
     borderRadiusSM: 3,
     lineWidth: 0,
   },
@@ -30,8 +31,7 @@ const tagTheme: ThemeConfig = {
 };
 
 const itemStyle = {
-  paddingLeft: 0,
-  paddingRight: 0,
+  paddingBottom: 0,
   backgroundColor: 'inherit',
 };
 
@@ -39,7 +39,6 @@ const descriptionCardStyle = {
   background: '#f4f4f4',
   backgroundOrigin: 'padding-box',
   border: '1px solid #dbdbdb',
-  padding: '0px',
 };
 
 export const AppsSubmissionDetails: React.FC<{
@@ -66,25 +65,56 @@ export const AppsSubmissionDetails: React.FC<{
   ) => {
     if (typeof value === 'object') {
       if (!Object.keys(value).length) return <span>-</span>;
-      const items: DescriptionsProps['items'] = Object.entries(value).map(
-        ([k, v], childIndex) => {
-          const fieldSchema = parent?.shape?.[k];
-          // For summary, it is considered required :
-          // only if it is required and value is not valid.
-          const isRequired =
-            !(v instanceof Object) &&
-            fieldSchema &&
-            !fieldSchema.isOptional() &&
-            !fieldSchema?.safeParse(v)?.success;
-
-          return {
+      const items: DescriptionsProps['items'] = [];
+      Object.entries(value).forEach(([k, v], childIndex) => {
+        const fieldSchema = parent?.shape?.[k];
+        // For summary, it is considered required :
+        // only if it is required and value is not valid.
+        const isRequired =
+          !(v instanceof Object) &&
+          fieldSchema &&
+          !fieldSchema.isOptional() &&
+          !fieldSchema?.safeParse(v)?.success;
+        if (v instanceof Object) {
+          Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
+            items.push({
+              key: kk,
+              label: (
+                <span>
+                  {fields[key]?.[kk]?.label || kk}{' '}
+                  {isRequired && (
+                    <ConfigProvider theme={tagTheme}>
+                      <Tag className="required" style={{ marginLeft: 10 }}>
+                        Required
+                      </Tag>
+                    </ConfigProvider>
+                  )}
+                </span>
+              ),
+              children: getChildren(
+                `${key}.${kk}`,
+                vv,
+                parent?.shape?.[kk],
+                zchildIndex
+              ),
+              style: {
+                padding: '8px',
+                backgroundColor: zchildIndex % 2 === 0 ? '#fff' : '#f4f4f4',
+                borderBottom: '1px solid #DBDBDB',
+              },
+            });
+          });
+        } else {
+          items.push({
             key: k,
-            label: !(v instanceof Object) && (
+            label: (
               <span>
                 {fields[key]?.[k]?.label || k}{' '}
                 {isRequired && (
                   <ConfigProvider theme={tagTheme}>
-                    <Tag className="required">Required</Tag>
+                    <Tag className="required" style={{ marginLeft: 10 }}>
+                      Required
+                    </Tag>
                   </ConfigProvider>
                 )}
               </span>
@@ -96,12 +126,13 @@ export const AppsSubmissionDetails: React.FC<{
               childIndex
             ),
             style: {
-              paddingTop: '8px',
+              padding: '8px',
               backgroundColor: childIndex % 2 === 0 ? '#fff' : '#f4f4f4',
+              borderBottom: '1px solid #DBDBDB',
             },
-          };
+          });
         }
-      );
+      });
       return (
         <Descriptions
           bordered={false}
@@ -113,6 +144,7 @@ export const AppsSubmissionDetails: React.FC<{
             width: '200px',
             color: 'rgba(0, 0, 0, 0.88)',
             font: 'normal normal 14px Helvetica Neue',
+            alignItems: 'center',
           }}
           contentStyle={{ color: '#484848', fontWeight: 'bold', border: '0' }}
         />
@@ -140,7 +172,11 @@ export const AppsSubmissionDetails: React.FC<{
             <div style={{ flex: 1 }}>
               {key.charAt(0).toUpperCase() + key.slice(1)}
             </div>
-            <Button type="link" onClick={() => setCurrent(key)}>
+            <Button
+              type="link"
+              onClick={() => setCurrent(key)}
+              style={{ fontWeight: 'bold' }}
+            >
               Edit
             </Button>
           </Flex>
@@ -153,6 +189,7 @@ export const AppsSubmissionDetails: React.FC<{
           backgroundColor: 'inherit',
           width: '100%',
           borderBottom: '1px solid #707070',
+          lineHeight: 4,
         },
         contentStyle: {
           color: '#484848',
@@ -174,11 +211,13 @@ export const AppsSubmissionDetails: React.FC<{
         items={getItems(formState)}
         layout="vertical"
         style={itemStyle}
+        className={styles.root}
         extra={
           <PrimaryButton
             htmlType="submit"
             disabled={!isValid}
             loading={isSubmitting}
+            style={{ width: 120 }}
           >
             Submit Job
           </PrimaryButton>

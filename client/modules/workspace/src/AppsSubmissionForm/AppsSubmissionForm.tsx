@@ -549,6 +549,7 @@ export const AppsSubmissionForm: React.FC = () => {
             <FormProvider {...methods}>
               <Form
                 disabled={readOnly}
+                requiredMark={false}
                 layout="vertical"
                 onFinish={handleSubmit(submitJobCallback, (error) => {
                   console.log('error submit data', error);

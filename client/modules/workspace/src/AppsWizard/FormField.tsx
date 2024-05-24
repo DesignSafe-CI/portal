@@ -32,7 +32,7 @@ export const FormField: React.FC<{
 
   if (parameterSet) {
     parameterSetLabel = (
-      <code>
+      <code style={{ marginLeft: 5 }}>
         (
         <a
           href={`https://tapis.readthedocs.io/en/latest/technical/jobs.html#${parameterSet.toLowerCase()}`}
@@ -53,9 +53,8 @@ export const FormField: React.FC<{
         name={name}
         required={required}
         label={
-          <span>
-            {label}
-            {parameterSetLabel}
+          <span style={{ marginBottom: 10 }}>
+            {label} {parameterSetLabel}
           </span>
         }
         htmlFor={name}
@@ -91,6 +90,7 @@ export const FormField: React.FC<{
               type="link"
               onClick={() => resetField(name, { defaultValue: '' })}
               disabled={!fieldState}
+              style={{ fontWeight: 'bold' }}
             >
               Clear
             </Button>
@@ -102,11 +102,13 @@ export const FormField: React.FC<{
           style={{
             display: 'block',
             textAlign: 'left',
-            font: 'italic normal normal 12px/16px Helvetica Neue',
+            font: 'italic normal normal 14px/16px Helvetica Neue',
             letterSpacing: '0px',
             color: '#707070',
             opacity: 1,
             marginBottom: 16,
+            marginTop: 10,
+            lineHeight: 1.5,
           }}
         >
           {description}
