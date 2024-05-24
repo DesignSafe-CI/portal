@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Layout } from 'antd';
+import { Modal, Layout, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useGetJobs, TTapisJob } from '@client/hooks';
 import styles from './JobsDetailModal.module.css';
@@ -19,7 +19,7 @@ export const JobsDetailModalBody: React.FC<{
             <>
               <dt>Execution:</dt>
               <dd>
-                <SecondaryButton
+                <Button
                   type="link"
                   href={`data/browser/tapis/${
                     jobData.execSystemId
@@ -29,14 +29,14 @@ export const JobsDetailModalBody: React.FC<{
                   disabled={!isOutputState(jobData.status)}
                 >
                   View in Execution Directory
-                </SecondaryButton>
+                </Button>
               </dd>
             </>
           )}
           <>
             <dt>Output:</dt>
             <dd>
-              <SecondaryButton
+              <Button
                 type="link"
                 href={`data/browser/tapis/${
                   jobData.archiveSystemId
@@ -48,7 +48,7 @@ export const JobsDetailModalBody: React.FC<{
                 {isOutputState(jobData.status)
                   ? 'View Output'
                   : 'Output Pending'}
-              </SecondaryButton>
+              </Button>
             </dd>
           </>
         </dl>
