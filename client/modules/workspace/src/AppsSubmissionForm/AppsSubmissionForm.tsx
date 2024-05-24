@@ -174,6 +174,11 @@ export const AppsSubmissionForm: React.FC = () => {
   });
   const { handleSubmit, reset, setValue, getValues, watch } = methods;
 
+  // Define type to support calls like method.trigger, which
+  // require literals instead of string or string[]
+  const fieldValues = getValues();
+  type FieldNameUnion = keyof typeof fieldValues;
+
   const getSteps = (): TStep => {
     const formSteps: TStep = {
       configuration: getConfigurationStep(configuration.fields),
@@ -319,11 +324,18 @@ export const AppsSubmissionForm: React.FC = () => {
     setSteps(updatedSteps);
   }, [fields]);
 
-  const handleNextStep = useCallback(() => {
-    // setState({ ...state, ...data });
-    const nextPage = steps[current].nextPage;
-    nextPage && setCurrent(nextPage);
-  }, [current]);
+  // Only allow transition to next step, if the current step has
+  // no validation errors.
+  const handleNextStep = useCallback(async () => {
+    const stepFields = Object.keys(fieldValues).filter((key) =>
+      key.startsWith(current)
+    ) as FieldNameUnion[];
+    const isValid = await methods.trigger(stepFields);
+    if (isValid) {
+      const nextPage = steps[current].nextPage;
+      nextPage && setCurrent(nextPage);
+    }
+  }, [current, methods]);
   const handlePreviousStep = useCallback(() => {
     // setState({ ...state, ...data });
     const prevPage = steps[current].prevPage;
