@@ -5,6 +5,10 @@
 
 import logging
 import json
+
+from asgiref.sync import async_to_sync
+from celery import shared_task
+
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -154,6 +158,17 @@ def _get_tas_allocations(username):
     return {
         'hosts': hosts,
     }
+
+@shared_task(bind=True, max_retries=3, queue='indexing')
+def _cache_allocations(user, username, return_alloc=False):
+    '''
+        Creates or updates allocations cache associated with requesting user
+    '''
+    allocations = _get_tas_allocations(username)
+    userAllocs = UserAllocations(user=user, value=allocations)
+    userAllocs.save()
+    if return_alloc:
+        return allocations
 
 
 def test_system_needs_keys(tapis, system_id):
@@ -853,10 +868,7 @@ class AllocationsView(AuthenticatedApiView):
             return result
         except (NotFoundError, UserAllocations.DoesNotExist):
             # Fall back to getting allocations from TAS
-            allocations = _get_tas_allocations(username)
-            userAllocs = UserAllocations(user=user, value=allocations)
-            userAllocs.save()
-            return allocations
+            return _cache_allocations(user=user, username=username, return_alloc=True)
 
     def get(self, request):
         """Returns active user allocations on TACC resources
