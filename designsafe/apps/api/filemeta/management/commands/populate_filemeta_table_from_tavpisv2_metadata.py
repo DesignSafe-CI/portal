@@ -65,7 +65,7 @@ def populate_filemeta_table(dry_run, do_not_update_existing):
     )
 
     v2_file_meta_data = get_all_v2_file_meta()
-    logger.error(f"Processing {len(v2_file_meta_data)} tapisv2-based metadata entries")
+    logger.info(f"Processing {len(v2_file_meta_data)} tapisv2-based metadata entries")
 
     updated = 0
     already_exists = 0
