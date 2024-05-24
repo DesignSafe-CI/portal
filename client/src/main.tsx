@@ -14,7 +14,6 @@ const themeConfig: ThemeConfig = {
     colorPrimary: '#337ab7',
     colorError: '#d9534f',
     colorPrimaryTextHover: 'black',
-    fontFamily: 'Helvetica Neue',
   },
   components: {
     Table: {
