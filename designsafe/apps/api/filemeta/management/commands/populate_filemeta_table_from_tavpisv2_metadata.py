@@ -43,7 +43,7 @@ def get_all_v2_file_meta():
     offset = 0
 
     while True:
-        limit = 100
+        limit = 300
         result = service_account_v2.meta.listMetadata(
             q=json.dumps(query), limit=limit, offset=offset
         )
