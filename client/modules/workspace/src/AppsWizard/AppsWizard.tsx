@@ -99,7 +99,6 @@ export const AppsWizard: React.FC<{
                 style={{
                   margin: '0 8px',
                 }}
-                htmlType="submit"
                 disabled={!step.nextPage}
                 onClick={handleNextStep}
               >
