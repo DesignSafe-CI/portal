@@ -3,7 +3,6 @@ import WorkspaceRoot from './layouts/WorkspaceBaseLayout';
 import { JobsListingLayout } from './layouts/JobsListingLayout';
 import { AppsViewLayout } from './layouts/AppsViewLayout';
 import { AppsPlaceholderLayout } from './layouts/AppsPlaceholderLayout';
-import { JobsDetailModal } from '@client/workspace';
 
 const workspaceRouter = createBrowserRouter(
   [
@@ -22,19 +21,8 @@ const workspaceRouter = createBrowserRouter(
           element: <AppsViewLayout />,
         },
         {
-          path: 'history',
-          children: [
-            {
-              id: 'history',
-              path: '',
-              element: <JobsListingLayout />,
-            },
-            {
-              id: 'detail',
-              path: ':uuid',
-              element: <JobsDetailModal />,
-            },
-          ],
+          path: 'history/:uuid?',
+          element: <JobsListingLayout />,
         },
         {
           path: '*',

@@ -1,3 +1,4 @@
-.root {
+.root,
+.root a {
   font-size: 16px;
 }

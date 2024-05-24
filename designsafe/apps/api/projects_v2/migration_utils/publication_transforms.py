@@ -279,6 +279,8 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     reprsentation of the `value` attribute."""
     model = SCHEMA_MAPPING[entity["name"]]
     authors = entity["value"].get("authors", None)
+    if not authors:
+        authors = entity.get("authors", None)
     schema_version = base_pub_meta.get("version", 1)
     if authors and schema_version == 1:
         updated_authors = get_v1_authors(entity, base_pub_meta["users"])
@@ -286,6 +288,20 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     if authors and schema_version > 1:
         fixed_authors = list(map(convert_v2_user, entity["authors"]))
         entity["value"]["authors"] = sorted(fixed_authors, key=lambda a: a["order"])
+
+    data_collectors = entity["value"].get("dataCollectors", None)
+    if data_collectors:
+        fixed_data_collectors = []
+        for collector in data_collectors:
+            if collector.get("guest", None):
+                fixed_data_collectors.append(collector)
+            else:
+                fixed_data_collectors.append(
+                    {**collector, **get_user_info(collector["name"])}
+                )
+        entity["value"]["dataCollectors"] = sorted(
+            fixed_data_collectors, key=lambda a: a["order"]
+        )
 
     legacy_doi = entity.get("doi", None)
     if legacy_doi:

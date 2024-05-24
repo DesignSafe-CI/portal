@@ -36,7 +36,7 @@ from designsafe.views import project_version as des_version, redirect_old_nees
 from impersonate import views as impersonate_views
 
 # sitemap - classes must be imported and added to sitemap dictionary
-from django.contrib.sitemaps.views import sitemap
+from django.contrib.sitemaps.views import sitemap, index
 from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap
 from designsafe import views
 
@@ -75,8 +75,18 @@ urlpatterns = [
         ),
         path("admin/", admin.site.urls),
 
-        # sitemap
-        url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+        path(
+            "sitemap.xml",
+            index,
+            {"sitemaps": sitemaps},
+            name="django.contrib.sitemaps.views.index",
+        ),
+        path(
+            "sitemap-<section>.xml",
+            sitemap,
+            {"sitemaps": sitemaps},
+            name="django.contrib.sitemaps.views.sitemap",
+        ),
 
         # terms-and-conditions
         url(r'^terms/', include('termsandconditions.urls')),
