@@ -13,7 +13,7 @@ export {
   usePrefetchGetApps,
   useGetAppsSuspense,
 } from './useGetApps';
-export { default as useJobsListing, type TJob } from './useJobsListing';
-export { default as useGetJobs } from './useGetJobs';
+export { default as useJobsListing } from './useJobsListing';
+export * from './useGetJobs';
 export * from './usePostJobs';
 export * from './types';

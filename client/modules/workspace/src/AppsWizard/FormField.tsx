@@ -4,6 +4,7 @@ import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TFieldOptions } from '../AppsWizard/AppsFormSchema';
 import { SecondaryButton } from '@client/common-components';
+import { SelectModal } from '../SelectModal/SelectModal';
 
 export const FormField: React.FC<{
   name: string;
@@ -25,7 +26,7 @@ export const FormField: React.FC<{
   type,
   ...props
 }) => {
-  const { resetField, control, getValues } = useFormContext();
+  const { resetField, control, getValues, setValue } = useFormContext();
   const fieldState = useWatch({ control, name });
   let parameterSetLabel: React.ReactElement | null = null;
 
@@ -61,15 +62,6 @@ export const FormField: React.FC<{
         key={name}
         style={{ textAlign: 'left', marginBottom: description ? 0 : 16 }}
       >
-        {/* <SelectModal
-                  isOpen={openTapisFileModal}
-                  toggle={() => {
-                    setOpenTapisFileModal((prevState) => !prevState);
-                  }}
-                  onSelect={(system, path) => {
-                    helpers.setValue(`tapis://${system}/${path}`);
-                  }}
-                /> */}
         {type === 'select' ? (
           <Select
             {...props}
@@ -80,7 +72,13 @@ export const FormField: React.FC<{
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {tapisFile && (
               <Form.Item name="prefix" noStyle>
-                <SecondaryButton>Select</SecondaryButton>
+                <SelectModal
+                  onSelect={(value: string) => setValue(name, value)}
+                >
+                  {({ onClick }) => (
+                    <SecondaryButton onClick={onClick}>Select</SecondaryButton>
+                  )}
+                </SelectModal>
               </Form.Item>
             )}
             <Input

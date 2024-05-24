@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Breadcrumb } from 'antd';
+import { Breadcrumb, Button } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './AppsBreadcrumb.module.css';
 import { useGetApps, TAppResponse } from '@client/hooks';
@@ -23,7 +23,10 @@ export const AppsBreadcrumb: React.FC = () => {
   const breadcrumbItems = [
     { title: 'Home', path: window.location.origin },
     { title: 'Use DesignSafe' },
-    { title: 'Tools & Applications', path: '/' },
+    {
+      title: 'Tools & Applications',
+      href: '/use-designsafe/tools-applications/',
+    },
   ];
 
   return (
@@ -37,7 +40,12 @@ export const AppsBreadcrumb: React.FC = () => {
         return appId && isLast ? (
           <AppBreadcrumb appId={appId} appVersion={appVersion} />
         ) : (
-          <BreadcrumbRender path={obj.path} title={obj.title} isLast={isLast} />
+          <BreadcrumbRender
+            path={obj.path}
+            href={obj.href}
+            title={obj.title}
+            isLast={isLast}
+          />
         );
       }}
     />
@@ -46,9 +54,17 @@ export const AppsBreadcrumb: React.FC = () => {
 
 export const BreadcrumbRender: React.FC<{
   path?: string;
+  href?: string;
   title: ReactNode;
   isLast: boolean;
-}> = ({ path, title, isLast }) => {
+}> = ({ path, href, title, isLast }) => {
+  if (href && !isLast)
+    return (
+      <Button className="breadcrumb-link" href={href} type="link">
+        {title}
+      </Button>
+    );
+
   if (isLast || !path) {
     return <span className="breadcrumb-text">{title}</span>;
   }

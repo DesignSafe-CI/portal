@@ -132,39 +132,41 @@ export const ProjectCurationLayout: React.FC = () => {
     <div style={{ paddingBottom: '50px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
         <ProjectNavbar projectId={projectId} />
-        <span
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-            fontWeight: 'bold',
-          }}
-        >
-          1&nbsp;| <PublishableEntityButton projectId={projectId} /> 2&nbsp;|
-          <ManageCategoryModal projectId={projectId}>
-            {({ onClick }) => (
-              <Button
-                onClick={onClick}
-                type="link"
-                style={{ fontWeight: 'bold' }}
-              >
-                Add Categories
-              </Button>
-            )}
-          </ManageCategoryModal>{' '}
-          3&nbsp;|
-          <RelateDataModal projectId={projectId}>
-            {({ onClick }) => (
-              <Button
-                onClick={onClick}
-                type="link"
-                style={{ fontWeight: 'bold' }}
-              >
-                Relate Data
-              </Button>
-            )}
-          </RelateDataModal>
-        </span>
+        {data.baseProject.value.projectType !== 'other' && (
+          <span
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              fontWeight: 'bold',
+            }}
+          >
+            1&nbsp;| <PublishableEntityButton projectId={projectId} /> 2&nbsp;|
+            <ManageCategoryModal projectId={projectId}>
+              {({ onClick }) => (
+                <Button
+                  onClick={onClick}
+                  type="link"
+                  style={{ fontWeight: 'bold' }}
+                >
+                  Add Categories
+                </Button>
+              )}
+            </ManageCategoryModal>{' '}
+            3&nbsp;|
+            <RelateDataModal projectId={projectId}>
+              {({ onClick }) => (
+                <Button
+                  onClick={onClick}
+                  type="link"
+                  style={{ fontWeight: 'bold' }}
+                >
+                  Relate Data
+                </Button>
+              )}
+            </RelateDataModal>
+          </span>
+        )}
       </div>
       <DatafilesBreadcrumb
         initialBreadcrumbs={[

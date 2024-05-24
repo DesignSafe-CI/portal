@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { TableProps, Row, Flex } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
-import { SecondaryButton } from '@client/common-components';
+import { NavLink } from 'react-router-dom';
+import { PrimaryButton, SecondaryButton } from '@client/common-components';
 import {
   useGetNotifications,
   TJobStatusNotification,
@@ -21,25 +22,26 @@ import {
   isInteractiveJob,
   isTerminalState,
 } from '../utils';
-import { JobsDetailModalBody } from '../JobsDetailModal/JobsDetailModal';
 import { InteractiveSessionModal } from '../InteractiveSessionModal';
 import styles from './JobsListing.module.css';
 
-const JobActionButton: React.FC<{
+export const JobActionButton: React.FC<{
   uuid: string;
   operation: TJobPostOperations;
   title: string;
-}> = ({ uuid, operation, title }) => {
+  type?: 'primary' | 'secondary';
+}> = ({ uuid, operation, title, type, ...props }) => {
   const { mutate: mutateJob, isPending, isSuccess } = usePostJobs();
+  const Button = type === 'primary' ? PrimaryButton : SecondaryButton;
   return (
-    <SecondaryButton
+    <Button
       onClick={() => mutateJob({ uuid, operation })}
       loading={isPending}
       disabled={isPending}
     >
       {title}
       {isSuccess && <i className="fa fa-check" style={{ marginLeft: 5 }} />}
-    </SecondaryButton>
+    </Button>
   );
 };
 
@@ -47,11 +49,6 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   ...tableProps
 }) => {
   const queryClient = useQueryClient();
-  const [jobDetailModalState, setJobDetailModalState] = useState<{
-    isOpen: boolean;
-    uuid?: string;
-  }>({ isOpen: false });
-
   const [interactiveModalState, setInteractiveModalState] = useState(false);
   const { data: interactiveSessionNotifs } = useGetNotifications({
     event_types: ['interactive_session_ready'],
@@ -123,7 +120,9 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                 {!isInteractiveJob(job) && (
                   <SecondaryButton
                     type="default"
-                    href={`data/browser/${job.archiveSystemId}${job.archiveSystemDir}`}
+                    href={`data/browser/tapis/${
+                      job.archiveSystemId
+                    }/${encodeURIComponent(job.archiveSystemDir)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     disabled={!isOutputState(job.status)}
@@ -140,14 +139,9 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                     title={isInteractiveJob(job) ? 'Resubmit' : 'Reuse Inputs'}
                   />
                 )}
-                <SecondaryButton
-                  type="link"
-                  onClick={() =>
-                    setJobDetailModalState({ isOpen: true, uuid: job.uuid })
-                  }
-                >
+                <NavLink to={job.uuid} className={styles.link}>
                   View Details
-                </SecondaryButton>
+                </NavLink>
               </Row>
             </Flex>
           );
@@ -229,18 +223,12 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
         },
       },
     ],
-    [setJobDetailModalState]
+    [interactiveSessionNotifs]
   );
 
   return (
     <>
       <JobsListingTable columns={columns} {...tableProps} />
-      {jobDetailModalState.uuid && (
-        <JobsDetailModalBody
-          isOpen={jobDetailModalState.isOpen}
-          uuid={jobDetailModalState.uuid}
-        />
-      )}
     </>
   );
 };
