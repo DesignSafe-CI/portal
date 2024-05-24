@@ -35,6 +35,7 @@ export const JobActionButton: React.FC<{
   const Button = type === 'primary' ? PrimaryButton : SecondaryButton;
   return (
     <Button
+      size="small"
       onClick={() => mutateJob({ uuid, operation })}
       loading={isPending}
       disabled={isPending}
@@ -96,6 +97,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                 {interactiveSessionLink && (
                   <>
                     <SecondaryButton
+                      size="small"
                       onClick={() =>
                         setInteractiveModalState(!interactiveModalState)
                       }
@@ -119,6 +121,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                 )}
                 {!isInteractiveJob(job) && (
                   <SecondaryButton
+                    size="small"
                     type="default"
                     href={`data/browser/tapis/${
                       job.archiveSystemId

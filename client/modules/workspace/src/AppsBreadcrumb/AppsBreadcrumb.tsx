@@ -66,7 +66,7 @@ export const BreadcrumbRender: React.FC<{
     );
 
   if (isLast || !path) {
-    return <span className="breadcrumb-text">{title}</span>;
+    return <span>{title}</span>;
   }
 
   return (
