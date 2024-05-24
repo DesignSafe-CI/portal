@@ -318,7 +318,11 @@ const FormSchema = (
           );
         } else {
           field.type = 'text';
-          parameterSetSchema[field.label] = z.string();
+          // Need to do this for non empty strings. Zod does not handle
+          // string with 0 length even with required property.
+          parameterSetSchema[field.label] = z
+            .string()
+            .refine((data) => data.trim() !== '');
         }
 
         if (!field.required) {
