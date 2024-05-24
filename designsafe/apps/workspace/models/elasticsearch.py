@@ -47,37 +47,3 @@ class IndexedApp(Document):
 
     class Meta:
         dynamic = MetaField('strict')
-
-class IndexedAllocation(Document):
-    """
-    Elasticsearch document representing cached allocations. Thin wrapper around
-    `elasticsearch_dsl.Document`.
-    """
-
-    username = Text(fields={'_exact': Keyword()})
-    value = Object()
-
-    @classmethod
-    def from_username(cls, username):
-        """
-        Fetches indexed allocations for a user.
-
-        Parameters
-        ----------
-        username: str
-            TACC username to fetch allocations for.
-        Returns
-        -------
-        IndexedAllocation
-
-        Raises
-        ------
-        elasticsearch.exceptions.NotFoundError
-        """
-        es_client = new_es_client()
-        uuid = get_sha256_hash(username)
-        return cls.get(uuid, using=es_client)
-
-    class Index:
-        name = settings.ES_INDEX_PREFIX.format('allocations')
-

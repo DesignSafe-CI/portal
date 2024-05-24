@@ -79,11 +79,6 @@ ES_INDICES = {
         'kwargs': {}
 
     },
-    'allocations': {
-        'alias': ES_INDEX_PREFIX.format('allocations'),
-        'document': 'designsafe.apps.projects.models.elasticsearch.IndexedAllocation',
-        'kwargs': {}
-    },
     #'apps': {
     #    'name': 'des-apps_a',
     #    'alias': ['des-apps'],
