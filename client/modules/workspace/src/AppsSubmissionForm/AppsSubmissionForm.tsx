@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Layout, Form, Col, Row, Flex, Alert, Space } from 'antd';
+import { Layout, Form, Col, Row, Flex, Alert, Space, Button } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -536,16 +536,38 @@ export const AppsSubmissionForm: React.FC = () => {
               showIcon
             />
           )}
+          {!!(missingLicense && hasStorageSystems) && (
+            <div className="appDetail-error">
+              <Alert
+                type="warning"
+                showIcon
+                message={
+                  <>
+                    Activate your {app.license.type} license in{' '}
+                    <Button
+                      type="link"
+                      href="/account/licenses/"
+                      target="_blank"
+                    >
+                      Manage Account
+                    </Button>
+                    , then return to this form.
+                  </>
+                }
+              />
+            </div>
+          )}
           <Content>
             <FormProvider {...methods}>
               <Form
                 disabled={readOnly}
+                requiredMark={false}
                 layout="vertical"
                 onFinish={handleSubmit(submitJobCallback, (error) => {
                   console.log('error submit data', error);
                 })}
               >
-                <fieldset>
+                <fieldset disabled={readOnly}>
                   <Row gutter={[64, 16]} align="top">
                     <Col span={14}>
                       <AppsWizard
