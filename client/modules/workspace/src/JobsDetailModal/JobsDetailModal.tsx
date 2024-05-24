@@ -6,7 +6,7 @@ import styles from './JobsDetailModal.module.css';
 import { getStatusText, isOutputState, isTerminalState } from '../utils/jobs';
 import { formatDateTime } from '../utils/timeFormat';
 import { JobActionButton } from '../JobsListing/JobsListing';
-import { Spinner, SecondaryButton } from '@client/common-components';
+import { Spinner } from '@client/common-components';
 
 export const JobsDetailModalBody: React.FC<{
   jobData: TTapisJob;
