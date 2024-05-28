@@ -5,7 +5,7 @@ import json
 from django.conf import settings
 from django.db import models
 from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import (Search, Document, Date, Nested,
+from elasticsearch_dsl import (Search, DocType, Date, Nested,
                                analyzer, Object, Text, Long,
                                Boolean, Keyword,
                                GeoPoint, MetaField)
@@ -31,12 +31,12 @@ class IndexedApp(Document):
     value = Nested(
         properties={
             'relations': Nested(properties={
-                'type': Text(fields={'_exact': Keyword()}),
-                'uuids': Text(fields={'_exact': Keyword()}, multi=True)
+                'type': Text(fields={'_exact'}),
+                'uuids': Text(fields={'_exact'}, multi=True)
             }),
             'tags': Nested(properties={
-                'name': Text(fields={'_exact': Keyword()}),
-                'value': Text(fields={'_exact': Keyword()}, multi=True)
+                'name': Text(fields={'_exact'}),
+                'value': Text(fields={'_exact'}, multi=True)
             }),
             'title': Text(analyzer='english'),
             'description': Text(analyzer='english')
