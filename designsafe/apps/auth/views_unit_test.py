@@ -4,7 +4,7 @@ import pytest
 from django.conf import settings
 from django.urls import reverse
 
-# TODOV3: Onboarding Tests
+# TODOV3: Onboarding Tests https://tacc-main.atlassian.net/browse/DES-2822
 # from portal.apps.auth.views import launch_setup_checks
 
 TEST_STATE = "ABCDEFG123456"
@@ -32,7 +32,7 @@ def test_tapis_callback(client, mocker, regular_user, tapis_tokens_create_mock):
     """Test successful Tapis callback"""
     mock_authenticate = mocker.patch("designsafe.apps.auth.views.authenticate")
     mock_tapis_token_post = mocker.patch("designsafe.apps.auth.views.requests.post")
-    # TODOV3: Onboarding Tests
+    # TODOV3: Onboarding Tests https://tacc-main.atlassian.net/browse/DES-2822
     # mock_launch_setup_checks = mocker.patch(
     #     "designsafe.apps.auth.views.launch_setup_checks"
     # )
@@ -77,7 +77,7 @@ def test_tapis_callback_mismatched_state(client):
     assert response.status_code == 400
 
 
-# TODOV3: Onboarding Tests
+# TODOV3: Onboarding Tests https://tacc-main.atlassian.net/browse/DES-2822
 # def test_launch_setup_checks(regular_user, mocker):
 #     mock_execute_setup_steps = mocker.patch(
 #         "portal.apps.auth.views.execute_setup_steps"
@@ -88,7 +88,7 @@ def test_tapis_callback_mismatched_state(client):
 #     )
 
 
-# TODOV3: Onboarding Tests
+# TODOV3: Onboarding Tests https://tacc-main.atlassian.net/browse/DES-2822
 # def test_launch_setup_checks_already_onboarded(regular_user, mocker):
 #     regular_user.profile.setup_complete = True
 #     mock_index_allocations = mocker.patch("portal.apps.auth.views.index_allocations")
