@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout, Flex } from 'antd';
-import { useFormContext, SubmitHandler, FieldValues } from 'react-hook-form';
+import { SubmitHandler, FieldValues } from 'react-hook-form';
 import { SecondaryButton } from '@client/common-components';
 
 // import styles from './AppsWizard.module.css';
@@ -59,8 +59,6 @@ export const AppsWizard: React.FC<{
   handlePreviousStep: SubmitHandler<FieldValues>;
   handleNextStep: SubmitHandler<FieldValues>;
 }> = ({ step, handlePreviousStep, handleNextStep }) => {
-  const { handleSubmit } = useFormContext();
-
   const contentStyle = {
     lineHeight: '260px',
     textAlign: 'center' as const,
@@ -93,9 +91,7 @@ export const AppsWizard: React.FC<{
                   margin: '0 8px',
                 }}
                 disabled={!step.prevPage}
-                onClick={handleSubmit(handlePreviousStep, (data) => {
-                  console.log('error prev data', data);
-                })}
+                onClick={handlePreviousStep}
               >
                 Back
               </SecondaryButton>
@@ -103,11 +99,8 @@ export const AppsWizard: React.FC<{
                 style={{
                   margin: '0 8px',
                 }}
-                htmlType="submit"
                 disabled={!step.nextPage}
-                onClick={handleSubmit(handleNextStep, (data) => {
-                  console.log('error next data', data);
-                })}
+                onClick={handleNextStep}
               >
                 Continue
               </SecondaryButton>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Layout } from 'antd';
+import { Modal, Layout, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useGetJobs, TTapisJob } from '@client/hooks';
 import styles from './JobsDetailModal.module.css';
 import { getStatusText, isOutputState, isTerminalState } from '../utils/jobs';
 import { formatDateTime } from '../utils/timeFormat';
 import { JobActionButton } from '../JobsListing/JobsListing';
-import { Spinner, SecondaryButton } from '@client/common-components';
+import { Spinner } from '@client/common-components';
 
 export const JobsDetailModalBody: React.FC<{
   jobData: TTapisJob;
@@ -19,7 +19,7 @@ export const JobsDetailModalBody: React.FC<{
             <>
               <dt>Execution:</dt>
               <dd>
-                <SecondaryButton
+                <Button
                   type="link"
                   href={`data/browser/tapis/${
                     jobData.execSystemId
@@ -29,14 +29,14 @@ export const JobsDetailModalBody: React.FC<{
                   disabled={!isOutputState(jobData.status)}
                 >
                   View in Execution Directory
-                </SecondaryButton>
+                </Button>
               </dd>
             </>
           )}
           <>
             <dt>Output:</dt>
             <dd>
-              <SecondaryButton
+              <Button
                 type="link"
                 href={`data/browser/tapis/${
                   jobData.archiveSystemId
@@ -48,7 +48,7 @@ export const JobsDetailModalBody: React.FC<{
                 {isOutputState(jobData.status)
                   ? 'View Output'
                   : 'Output Pending'}
-              </SecondaryButton>
+              </Button>
             </dd>
           </>
         </dl>

@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { TableProps, Row, Flex } from 'antd';
+import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
 import { PrimaryButton, SecondaryButton } from '@client/common-components';
@@ -30,11 +31,13 @@ export const JobActionButton: React.FC<{
   operation: TJobPostOperations;
   title: string;
   type?: 'primary' | 'secondary';
-}> = ({ uuid, operation, title, type, ...props }) => {
+  size?: ButtonSize;
+}> = ({ uuid, operation, title, type, size, ...props }) => {
   const { mutate: mutateJob, isPending, isSuccess } = usePostJobs();
   const Button = type === 'primary' ? PrimaryButton : SecondaryButton;
   return (
     <Button
+      size={size || 'middle'}
       onClick={() => mutateJob({ uuid, operation })}
       loading={isPending}
       disabled={isPending}
@@ -96,6 +99,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                 {interactiveSessionLink && (
                   <>
                     <SecondaryButton
+                      size="small"
                       onClick={() =>
                         setInteractiveModalState(!interactiveModalState)
                       }
@@ -106,6 +110,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                       uuid={job.uuid}
                       operation="cancelJob"
                       title="End"
+                      size="small"
                     />
                     <InteractiveSessionModal
                       isOpen={interactiveModalState}
@@ -119,6 +124,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                 )}
                 {!isInteractiveJob(job) && (
                   <SecondaryButton
+                    size="small"
                     type="default"
                     href={`data/browser/tapis/${
                       job.archiveSystemId
@@ -137,6 +143,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                     uuid={job.uuid}
                     operation="resubmitJob"
                     title={isInteractiveJob(job) ? 'Resubmit' : 'Reuse Inputs'}
+                    size="small"
                   />
                 )}
                 <NavLink to={job.uuid} className={styles.link}>

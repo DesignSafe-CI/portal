@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
-import './Button.module.css';
+import styles from './Button.module.css';
 
 const secondaryTheme: ThemeConfig = {
   components: {
@@ -19,13 +19,7 @@ const secondaryTheme: ThemeConfig = {
 export const SecondaryButton: React.FC<ButtonProps> = (props) => {
   return (
     <ConfigProvider theme={secondaryTheme}>
-      <Button
-        style={{
-          fontFamily:
-            '-apple-system, "system-ui", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
-        }}
-        {...props}
-      />
+      <Button className={styles.root} {...props} />
     </ConfigProvider>
   );
 };
@@ -33,14 +27,14 @@ export const SecondaryButton: React.FC<ButtonProps> = (props) => {
 const primaryButtonTheme: ThemeConfig = {
   components: {
     Button: {
-      defaultActiveBg: '#039',
-      defaultActiveColor: '#039',
-      defaultActiveBorderColor: '#026',
-      defaultBg: '#fff',
-      defaultBorderColor: '#707070',
-      defaultColor: '#707070',
-      defaultHoverBg: '#026',
-      defaultHoverBorderColor: '#026',
+      defaultActiveBg: '#74B566',
+      defaultActiveColor: '#fff',
+      defaultActiveBorderColor: '#74B566',
+      defaultBg: '#74B566',
+      defaultBorderColor: '#74B566',
+      defaultColor: '#fff',
+      defaultHoverBg: '#74b566d9',
+      defaultHoverBorderColor: '#74b566d9',
       defaultHoverColor: '#fff',
     },
   },
@@ -49,14 +43,7 @@ const primaryButtonTheme: ThemeConfig = {
 export const PrimaryButton: React.FC<ButtonProps> = (props) => {
   return (
     <ConfigProvider theme={primaryButtonTheme}>
-      <Button
-        type="primary"
-        style={{
-          fontFamily:
-            '-apple-system, "system-ui", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
-        }}
-        {...props}
-      />
+      <Button className={styles.root} {...props} />
     </ConfigProvider>
   );
 };

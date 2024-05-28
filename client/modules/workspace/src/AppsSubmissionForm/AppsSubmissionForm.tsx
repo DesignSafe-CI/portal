@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Layout, Form, Col, Row, Flex, Alert, Space } from 'antd';
+import { Layout, Form, Col, Row, Flex, Alert, Space, Button } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -174,6 +174,11 @@ export const AppsSubmissionForm: React.FC = () => {
   });
   const { handleSubmit, reset, setValue, getValues, watch } = methods;
 
+  // Define type to support calls like method.trigger, which
+  // require literals instead of string or string[]
+  const fieldValues = getValues();
+  type FieldNameUnion = keyof typeof fieldValues;
+
   const getSteps = (): TStep => {
     const formSteps: TStep = {
       configuration: getConfigurationStep(configuration.fields),
@@ -319,11 +324,18 @@ export const AppsSubmissionForm: React.FC = () => {
     setSteps(updatedSteps);
   }, [fields]);
 
-  const handleNextStep = useCallback(() => {
-    // setState({ ...state, ...data });
-    const nextPage = steps[current].nextPage;
-    nextPage && setCurrent(nextPage);
-  }, [current]);
+  // Only allow transition to next step, if the current step has
+  // no validation errors.
+  const handleNextStep = useCallback(async () => {
+    const stepFields = Object.keys(fieldValues).filter((key) =>
+      key.startsWith(current)
+    ) as FieldNameUnion[];
+    const isValid = await methods.trigger(stepFields);
+    if (isValid) {
+      const nextPage = steps[current].nextPage;
+      nextPage && setCurrent(nextPage);
+    }
+  }, [current, methods]);
   const handlePreviousStep = useCallback(() => {
     // setState({ ...state, ...data });
     const prevPage = steps[current].prevPage;
@@ -524,16 +536,38 @@ export const AppsSubmissionForm: React.FC = () => {
               showIcon
             />
           )}
+          {!!(missingLicense && hasStorageSystems) && (
+            <div className="appDetail-error">
+              <Alert
+                type="warning"
+                showIcon
+                message={
+                  <>
+                    Activate your {app.license.type} license in{' '}
+                    <Button
+                      type="link"
+                      href="/account/licenses/"
+                      target="_blank"
+                    >
+                      Manage Account
+                    </Button>
+                    , then return to this form.
+                  </>
+                }
+              />
+            </div>
+          )}
           <Content>
             <FormProvider {...methods}>
               <Form
                 disabled={readOnly}
+                requiredMark={false}
                 layout="vertical"
                 onFinish={handleSubmit(submitJobCallback, (error) => {
                   console.log('error submit data', error);
                 })}
               >
-                <fieldset>
+                <fieldset disabled={readOnly}>
                   <Row gutter={[64, 16]} align="top">
                     <Col span={14}>
                       <AppsWizard
