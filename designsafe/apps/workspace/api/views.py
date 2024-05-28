@@ -11,7 +11,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from pytas.http import TASClient
 from tapipy.errors import InternalServerError, UnauthorizedError
@@ -161,6 +161,7 @@ def _get_latest_allocations(username):
     """
     Creates or updates allocations cache for a given user and returns new allocations
     """
+    User = get_user_model()
     user = User.objects.get(username=username)
     allocations = _get_tas_allocations(username)
     UserAllocations.objects.update_or_create(user=user, value=allocations)
@@ -168,7 +169,7 @@ def _get_latest_allocations(username):
 
 
 @shared_task(bind=True, max_retries=3, queue="indexing")
-def _cache_allocations(username):
+def _cache_allocations(self, username):
     """
     Refreshes allocations cache
     """
@@ -848,7 +849,7 @@ class JobsView(AuthenticatedApiView):
 
 class AllocationsView(AuthenticatedApiView):
 
-    def _get_allocations(self, username, force=False):
+    def _get_allocations(self, user, force=False):
         """
         Returns indexed allocation data stored in Django DB, or fetches
         allocations from TAS and stores them.
@@ -860,7 +861,7 @@ class AllocationsView(AuthenticatedApiView):
             -------
             dict
         """
-        user = User.objects.get(username=username)
+        username = user.username
         try:
             if force:
                 logger.info(f"Forcing TAS allocation retrieval for user:{username}")
@@ -878,7 +879,7 @@ class AllocationsView(AuthenticatedApiView):
         : returns: {'response': {'active': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive, 'hosts': hosts}}
         : rtype: dict
         """
-        data = self._get_allocations(request.user.username)
+        data = self._get_allocations(request.user)
 
         return JsonResponse(
             {

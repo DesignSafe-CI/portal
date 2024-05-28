@@ -88,7 +88,7 @@ def launch_setup_checks(user):
                 args=(user.username, system_id, path), queue="files"
             )
     logger.info("Creating/updating cached allocation information for %s", user.username)
-    _cache_allocations.apply_async(args=user.username)
+    _cache_allocations.apply_async(args=(user.username,))
 
 
 def tapis_oauth_callback(request):
