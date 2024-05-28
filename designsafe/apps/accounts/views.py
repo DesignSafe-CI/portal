@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
                                              NotificationPreferences)
-from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory
+from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory, get_systems_to_configure
 from designsafe.apps.accounts.tasks import create_report
 from pytas.http import TASClient
 from pytas.models import User as TASUser
@@ -466,15 +466,12 @@ def email_confirmation(request, code=None):
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
                     logger.info('TAS Account activation succeeded.')
-                    from django.conf import settings
-                    systems_to_configure = [
-                        {"system_id": settings.AGAVE_STORAGE_SYSTEM, "path": username},
-                        {"system_id": settings.AGAVE_WORKING_SYSTEM, "path": username},
-                    ]
+                    systems_to_configure = get_systems_to_configure(username)
                     for system in systems_to_configure:
                         check_or_configure_system_and_user_directory.apply_async(args=(user.username,
                                                                                        system["system_id"],
-                                                                                       system["path"]))
+                                                                                       system["path"],
+                                                                                       system["create_path"]))
                     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,

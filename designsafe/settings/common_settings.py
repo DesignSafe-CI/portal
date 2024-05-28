@@ -528,6 +528,12 @@ AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
 
+AGAVE_SYSTEMS_TO_CONFIGURE = [
+    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
+    {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
+    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
+]
+
 # Tapis Client Configuration
 PORTAL_ADMIN_USERNAME = os.environ.get('PORTAL_ADMIN_USERNAME')
 TAPIS_TENANT_BASEURL = os.environ.get('TAPIS_TENANT_BASEURL')

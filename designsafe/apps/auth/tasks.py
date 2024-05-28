@@ -21,15 +21,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# TODOV3 replace following by importing mkdir from server/portal/libs/agave/operations.py
-# TODOV3 when added during https://tacc-main.atlassian.net/browse/DES-2703
-def mkdir(client, system, path, dir_name):
-    client.files.mkdir(systemId=system, path=path_input)
-    return {"result": "OK"}
+def get_systems_to_configure(username):
+    """ Get systems to configure either during startup or for new user """
+
+    systems = []
+    for system in settings.AGAVE_SYSTEMS_TO_CONFIGURE:
+        system_copy = system.copy()
+        system_copy['path'] = system_copy['path'].format(username=username)
+        systems.append(system_copy)
+    return systems
 
 
 @shared_task(default_retry_delay=30, max_retries=3)
-def check_or_configure_system_and_user_directory(username, system_id, path):
+def check_or_configure_system_and_user_directory(username, system_id, path, create_path):
     try:
         user_client = get_user_model().objects.get(username=username).tapis_oauth.client
         user_client.files.listFiles(
@@ -47,21 +51,26 @@ def check_or_configure_system_and_user_directory(username, system_id, path):
                     f"Checked and there is a need to configure system:{system_id} path:{path} for {username}: {e}")
 
     try:
-        tg458981_client = get_tg458981_client()
-        try:
-            # User tg account to check if path exists
-            tg458981_client.files.listFiles(systemId=system_id, path=path)
-            logger.info(f"Home directory for user={username} on system={system_id}/{path} exists and works. ")
-        except NotFoundError:
-            logger.info("Creating the home directory for user=%s then going to run setfacl on system=%s", username,
-                        system_id)
+        if create_path:
+            tg458981_client = get_tg458981_client()
+            try:
+                # User tg account to check if path exists
+                tg458981_client.files.listFiles(systemId=system_id, path=path)
+                logger.info(f"Directory for user={username} on system={system_id}/{path} exists and works. ")
+            except NotFoundError:
+                logger.info("Creating the directory for user=%s then going to run setfacl on system=%s path=%s",
+                            username,
+                            system_id,
+                            path)
 
-            tg458981_client.files.mkdir(systemId=system_id, path=path)
-            tg458981_client.files.setFacl(systemId=system_id,
-                                          path=path,
-                                          operation="ADD",
-                                          recursionMethod="PHYSICAL",
-                                          aclString=f"d:u:{username}:rwX,u:{username}:rwX")
+                tg458981_client.files.mkdir(systemId=system_id, path=path)
+                tg458981_client.files.setFacl(systemId=system_id,
+                                              path=path,
+                                              operation="ADD",
+                                              recursionMethod="PHYSICAL",
+                                              aclString=f"d:u:{username}:rwX,u:{username}:rwX")
+                agave_indexer.apply_async(kwargs={'systemId': system_id, 'filePath': path, 'recurse': False},
+                                          queue='indexing')
 
         # create keys, push to key service and use as credential for Tapis system
         logger.info("Creating credentials for user=%s on system=%s", username, system_id)
@@ -73,13 +82,11 @@ def check_or_configure_system_and_user_directory(username, system_id, path):
                                   public_key,
                                   private_key,
                                   system_id)
-
-        agave_indexer.apply_async(kwargs={'username': username, 'systemId': system_id, 'filePath': path}, queue='indexing')
-
     except BaseTapyException:
-        logger.exception('Failed to configure system (i.e. create home directory, set acl, create credentials).',
+        logger.exception('Failed to configure system (i.e. create directory, set acl, create credentials).',
                          extra={'user': username,
-                                'systemId': system_id})
+                                'systemId': system_id,
+                                'path': path})
         raise self.retry(exc=exc)
 
 
