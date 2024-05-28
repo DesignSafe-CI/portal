@@ -455,7 +455,7 @@ const FormSchema = (
       : '';
 
     appFields.configuration.defaults['allocation'] = isAppTypeBATCH(definition)
-      ? allocations.includes(portalAlloc)
+      ? allocations.includes(portalAlloc || '')
         ? portalAlloc
         : allocations.length === 1
         ? allocations[0]
