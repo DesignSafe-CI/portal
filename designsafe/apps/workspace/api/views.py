@@ -5,16 +5,12 @@
 
 import logging
 import json
-
-from asgiref.sync import async_to_sync
 from celery import shared_task
-
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
-from django.db.models.functions import Coalesce
 from django.contrib.auth.models import User
 from django.urls import reverse
 from pytas.http import TASClient
@@ -25,8 +21,6 @@ from designsafe.apps.api.views import AuthenticatedApiView
 from designsafe.apps.api.utils import get_client_ip
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
 from designsafe.libs.tapis.serializers import BaseTapisResultSerializer
-from elasticsearch.exceptions import NotFoundError
-from designsafe.libs.elasticsearch.utils import get_sha256_hash
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from designsafe.apps.workspace.models.app_entries import (
     AppTrayCategory,
@@ -130,45 +124,55 @@ def _get_tas_allocations(username):
     tas_client = TASClient(
         baseURL=settings.TAS_URL,
         credentials={
-            'username': settings.TAS_CLIENT_KEY,
-            'password': settings.TAS_CLIENT_SECRET
-        }
+            "username": settings.TAS_CLIENT_KEY,
+            "password": settings.TAS_CLIENT_SECRET,
+        },
     )
     tas_projects = tas_client.projects_for_user(username)
 
-    with open('designsafe/apps/workspace/api/tas_to_tacc_resources.json') as f:
+    with open("designsafe/apps/workspace/api/tas_to_tacc_resources.json") as f:
         tas_to_tacc_resources = json.load(f)
 
     hosts = {}
 
     for tas_proj in tas_projects:
         # Each project from tas has an array of length 1 for its allocations
-        alloc = tas_proj['allocations'][0]
-        charge_code = tas_proj['chargeCode']
-        if alloc['resource'] in tas_to_tacc_resources:
-            resource = dict(tas_to_tacc_resources[alloc['resource']])
-            resource['allocation'] = dict(alloc)
+        alloc = tas_proj["allocations"][0]
+        charge_code = tas_proj["chargeCode"]
+        if alloc["resource"] in tas_to_tacc_resources:
+            resource = dict(tas_to_tacc_resources[alloc["resource"]])
+            resource["allocation"] = dict(alloc)
 
             # Separate active and inactive allocations and make single entry for each project
-            if resource['allocation']['status'] == 'Active':
-                if resource['host'] in hosts and charge_code not in hosts[resource['host']]:
-                    hosts[resource['host']].append(charge_code)
-                elif resource['host'] not in hosts:
-                    hosts[resource['host']] = [charge_code]
+            if resource["allocation"]["status"] == "Active":
+                if (
+                    resource["host"] in hosts
+                    and charge_code not in hosts[resource["host"]]
+                ):
+                    hosts[resource["host"]].append(charge_code)
+                elif resource["host"] not in hosts:
+                    hosts[resource["host"]] = [charge_code]
     return {
-        'hosts': hosts,
+        "hosts": hosts,
     }
 
-@shared_task(bind=True, max_retries=3, queue='indexing')
-def _cache_allocations(user, username, return_alloc=False):
-    '''
-        Creates or updates allocations cache associated with requesting user
-    '''
+
+def _get_latest_allocations(username):
+    """
+    Creates or updates allocations cache for a given user and returns new allocations
+    """
+    user = User.objects.get(username=username)
     allocations = _get_tas_allocations(username)
-    userAllocs = UserAllocations(user=user, value=allocations)
-    userAllocs.save()
-    if return_alloc:
-        return allocations
+    UserAllocations.objects.update_or_create(user=user, value=allocations)
+    return allocations
+
+
+@shared_task(bind=True, max_retries=3, queue="indexing")
+def _cache_allocations(username):
+    """
+    Refreshes allocations cache
+    """
+    _get_latest_allocations(username)
 
 
 def test_system_needs_keys(tapis, system_id):
@@ -694,9 +698,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post[
-                "archiveSystemDir"
-            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            job_post["archiveSystemDir"] = (
+                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            )
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")
@@ -859,16 +863,14 @@ class AllocationsView(AuthenticatedApiView):
         user = User.objects.get(username=username)
         try:
             if force:
-                logger.info("Forcing TAS allocation retrieval for user:{}".format(username))
-                raise NotFoundError
-            result = {
-                'hosts': {}
-            }
+                logger.info(f"Forcing TAS allocation retrieval for user:{username}")
+                raise ObjectDoesNotExist
+            result = {"hosts": {}}
             result.update(UserAllocations.objects.get(user=user).value)
             return result
-        except (NotFoundError, UserAllocations.DoesNotExist):
+        except ObjectDoesNotExist:
             # Fall back to getting allocations from TAS
-            return _cache_allocations(user=user, username=username, return_alloc=True)
+            return _get_latest_allocations(username)
 
     def get(self, request):
         """Returns active user allocations on TACC resources

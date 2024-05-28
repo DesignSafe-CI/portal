@@ -229,9 +229,9 @@ const FormSchema = (
   definition: TTapisApp,
   executionSystems: [TTapisSystem],
   allocations: string[],
-  portalAlloc: string,
   defaultStorageSystem: TTapisSystem,
-  username: string
+  username: string,
+  portalAlloc?: string
 ) => {
   const appFields: TAppFormSchema = {
     fileInputs: {

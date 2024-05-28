@@ -17,3 +17,4 @@ export { default as useJobsListing } from './useJobsListing';
 export * from './useGetJobs';
 export * from './usePostJobs';
 export * from './types';
+export * from './useGetAllocations';

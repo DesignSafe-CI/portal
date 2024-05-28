@@ -1,38 +1,40 @@
 import {
-    useQuery
+  useQuery,
+  useSuspenseQuery,
+  useQueryClient,
 } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { TTasAllocations } from './types';
 
-export type TAllocParamsType = {
-    username: string;
-}
-
 export type TGetAllocationsResponse = {
-    response: TTasAllocations;
-    status: number;
-}
-
-async function getAllocations(
-    { signal }: { signal: AbortSignal },
-    params: TAllocParamsType
-  ) {
-    const res = await apiClient.get<TGetAllocationsResponse>(`/api/workspace/allocations`, {
-      signal,
-      params,
-    });
-    return res.data.response;
-  }
-const getAllocationsQuery = (queryParams: TAllocParamsType) => ({
-    queryKey: ['workspace', 'getAllocations', queryParams],
-    queryFn: ({ signal }: { signal: AbortSignal }) =>
-        getAllocations({ signal }, queryParams),
-    staleTime: 5000,
-});
-
-const useGetAllocations = (queryParams: TAllocParamsType) => {
-    return useQuery(getAllocationsQuery(queryParams));
+  response: TTasAllocations;
+  status: number;
 };
 
-export default useGetAllocations;
-  
+async function getAllocations({ signal }: { signal: AbortSignal }) {
+  const res = await apiClient.get<TGetAllocationsResponse>(
+    `/api/workspace/allocations`,
+    {
+      signal,
+    }
+  );
+  return res.data.response;
+}
+const getAllocationsQuery = () => ({
+  queryKey: ['workspace', 'getAllocations'],
+  queryFn: ({ signal }: { signal: AbortSignal }) => getAllocations({ signal }),
+  staleTime: 5000,
+});
+
+export const useGetAllocations = () => {
+  return useQuery(getAllocationsQuery());
+};
+
+export const useGetAllocationsSuspense = () => {
+  return useSuspenseQuery(getAllocationsQuery());
+};
+
+export const usePrefetchGetAllocations = () => {
+  const queryClient = useQueryClient();
+  queryClient.ensureQueryData(getAllocationsQuery());
+};
