@@ -4,13 +4,11 @@ import {
   TAppParamsType,
   TTapisSystem,
   TTapisApp,
-  TAppResponse,
   TTapisSystemQueue,
   TTasAllocations,
 } from '@client/hooks';
 import { TFormValues } from '../AppsWizard/AppsFormSchema';
 import { UseFormSetValue } from 'react-hook-form';
-import { exec } from 'child_process';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
