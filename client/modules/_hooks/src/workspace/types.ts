@@ -118,7 +118,7 @@ export type TTapisApp = {
 export type TTasAllocations = {
   hosts: {
     [hostname: string]: string[];
-  }
+  };
 };
 
 export type TTapisJob = {
