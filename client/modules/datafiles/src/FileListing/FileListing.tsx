@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Button, TableProps, Tag } from 'antd';
 import {
   FileListingTable,
+  FileTypeIcon,
   TFileListingColumns,
 } from '@client/common-components';
 import { NavLink } from 'react-router-dom';
@@ -68,22 +69,19 @@ export const FileListing: React.FC<
                 {data}
               </NavLink>
             ) : (
-              <Button
-                type="link"
-                style={{ userSelect: 'text' }}
-                onClick={() =>
-                  setPreviewModalState({ isOpen: true, path: record.path })
-                }
-              >
-                <i
-                  role="none"
-                  style={{ color: '#333333' }}
-                  className="fa fa-file-o"
+              <>
+                <FileTypeIcon name={record.name} />
+                &nbsp;&nbsp;
+                <Button
+                  type="link"
+                  style={{ userSelect: 'text' }}
+                  onClick={() =>
+                    setPreviewModalState({ isOpen: true, path: record.path })
+                  }
                 >
-                  &nbsp;&nbsp;
-                </i>
-                {data}
-              </Button>
+                  {data}
+                </Button>
+              </>
             )}
             <br />
             {(fileTags ?? [])

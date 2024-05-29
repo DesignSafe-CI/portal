@@ -16,6 +16,7 @@ import {
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
+  FileTypeIcon,
   TFileListingColumns,
 } from '@client/common-components';
 import { Link } from 'react-router-dom';
@@ -56,22 +57,19 @@ const EntityFileListingTable: React.FC<{
               {data}
             </Link>
           ) : (
-            <Button
-              type="link"
-              disabled={preview}
-              onClick={() =>
-                setPreviewModalState({ isOpen: true, path: record.path })
-              }
-            >
-              <i
-                role="none"
-                style={{ color: '#333333' }}
-                className="fa fa-file-o"
+            <>
+              <FileTypeIcon name={record.name} />
+              &nbsp;&nbsp;
+              <Button
+                type="link"
+                disabled={preview}
+                onClick={() =>
+                  setPreviewModalState({ isOpen: true, path: record.path })
+                }
               >
-                &nbsp;&nbsp;
-              </i>
-              {data}
-            </Button>
+                {data}
+              </Button>
+            </>
           )}
           <div>
             {treeData.value.fileTags

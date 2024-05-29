@@ -7,7 +7,10 @@ import {
   useSelectedFiles,
 } from '@client/hooks';
 
-import { BaseFileListingBreadcrumb } from '@client/common-components';
+import {
+  BaseFileListingBreadcrumb,
+  FileTypeIcon,
+} from '@client/common-components';
 import styles from './MoveModal.module.css';
 import { toBytes } from '../../FileListing/FileListing';
 import {
@@ -19,6 +22,12 @@ const SelectedFilesColumns: TFileListingColumns = [
   {
     title: 'Files/Folders to Move',
     dataIndex: 'name',
+    render: (value, record) => (
+      <span>
+        <FileTypeIcon name={value} type={record.type} />
+        &nbsp;&nbsp;{value}
+      </span>
+    ),
   },
   {
     title: <span />,
@@ -181,7 +190,7 @@ export const MoveModal: React.FC<{
         open={isModalOpen}
         onCancel={handleClose}
         width="80%"
-        title={<h2>Copy Files</h2>}
+        title={<h2>Move Files</h2>}
         footer={null}
       >
         <article className={styles.copyModalContent}>

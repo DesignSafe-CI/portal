@@ -393,10 +393,12 @@ export const BaseProjectDetails: React.FC<{
           </Button>
         </section>
       )}
-      <DescriptionExpander>
-        <strong>Description: </strong>
-        {projectValue.description}
-      </DescriptionExpander>
+      {projectValue.description && (
+        <DescriptionExpander>
+          <strong>Description: </strong>
+          {projectValue.description}
+        </DescriptionExpander>
+      )}
     </section>
   );
 };
