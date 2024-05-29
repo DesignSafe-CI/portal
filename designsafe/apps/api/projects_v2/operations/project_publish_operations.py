@@ -46,6 +46,7 @@ REQUIRED_ENTITIES = {
         constants.HYBRID_SIM_SIM_SUBSTRUCTURE,
         constants.HYBRID_SIM_EXP_SUBSTRUCTURE,
     ],
+    constants.FIELD_RECON_REPORT: [],
 }
 
 ENTITIES_WITH_REQUIRED_FILES = [
@@ -63,7 +64,12 @@ ENTITIES_WITH_REQUIRED_FILES = [
     constants.HYBRID_SIM_COORDINATOR,
     constants.HYBRID_SIM_SIM_SUBSTRUCTURE,
     constants.HYBRID_SIM_EXP_SUBSTRUCTURE,
+    constants.HYBRID_SIM_COORDINATOR_OUTPUT,
+    constants.HYBRID_SIM_EXP_OUTPUT,
+    constants.HYBRID_SIM_SIM_OUTPUT,
     constants.FIELD_RECON_REPORT,
+    constants.HYBRID_SIM_REPORT,
+    constants.HYBRID_SIM_ANALYSIS,
 ]
 
 
@@ -93,6 +99,7 @@ def check_missing_entities(
         project_graph.nodes[node]
         for node in nx.dfs_preorder_nodes(project_graph, entity_node)
     ]
+    logger.debug(child_nodes)
     missing_entities = []
 
     for required_entity_name in REQUIRED_ENTITIES.get(entity_name, []):
@@ -150,7 +157,7 @@ def validate_entity_selection(project_id: str, entity_uuids: list[str]):
                         }
                     )
 
-            case constants.FIELD_RECON_MISSION:
+            case constants.FIELD_RECON_MISSION | constants.FIELD_RECON_REPORT:
                 missing_entities, missing_file_objs = check_missing_entities(
                     project_id, uuid, default_operator="OR"
                 )

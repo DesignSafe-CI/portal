@@ -128,9 +128,13 @@ const ExperimentFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -203,9 +207,13 @@ const SimulationFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -278,9 +286,13 @@ const HybridSimFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -351,7 +363,7 @@ const MissionFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
         <Form.Item
           name={['value', 'authors']}
@@ -443,9 +455,13 @@ const DocumentFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>

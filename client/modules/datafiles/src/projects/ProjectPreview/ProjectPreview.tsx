@@ -178,9 +178,24 @@ export const PublishedEntityDisplay: React.FC<{
     <section>
       <div
         className={styles['pub-show-button']}
-        style={{ padding: '16px 12px', width: '100%' }}
+        style={{
+          padding: '16px 12px',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
-        {DISPLAY_NAMES[treeData.name]} | <strong>{treeData.value.title}</strong>
+        <span>
+          {DISPLAY_NAMES[treeData.name]} |{' '}
+          <strong>{treeData.value.title}</strong>
+        </span>
+        {preview &&
+          ((treeData.value.dois?.length ?? 0) > 0 ? (
+            <Tag color="#1cb500">Published</Tag>
+          ) : (
+            <Tag>Unpublished</Tag>
+          ))}
       </div>
       <article
         style={{

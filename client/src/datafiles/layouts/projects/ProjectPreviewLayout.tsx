@@ -29,7 +29,7 @@ export const ProjectPreviewLayout: React.FC = () => {
         <ProjectNavbar projectId={projectId} />
         <NavLink to={`/projects/${projectId}/prepare-to-publish/start`}>
           <Button type="primary" className="success-button">
-            Prepare to Publish
+            Publish/ Amend/ Version
           </Button>
         </NavLink>
       </div>

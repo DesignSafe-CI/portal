@@ -89,11 +89,17 @@ export const ProjectCategoryForm: React.FC<{
       </Form.Item>
 
       {selectedName === constants.FIELD_RECON_PLANNING && (
-        <Form.Item label="Data Collectors">
+        <Form.Item label="Data Collectors" required>
           Select data collectors for this collection.
           <Form.Item
             name={['value', 'dataCollectors']}
             className="inner-form-item"
+            rules={[
+              {
+                required: true,
+                message: 'Please select at least one data collector.',
+              },
+            ]}
           >
             <AuthorSelect projectUsers={data.baseProject.value.users} />
           </Form.Item>
@@ -134,11 +140,17 @@ export const ProjectCategoryForm: React.FC<{
             </div>
           </Form.Item>
 
-          <Form.Item label="Data Collectors">
+          <Form.Item label="Data Collectors" required>
             Select data collectors for this collection.
             <Form.Item
               name={['value', 'dataCollectors']}
               className="inner-form-item"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select at least one data collector.',
+                },
+              ]}
             >
               <AuthorSelect projectUsers={data.baseProject.value.users} />
             </Form.Item>
@@ -230,11 +242,17 @@ export const ProjectCategoryForm: React.FC<{
             </div>
           </Form.Item>
 
-          <Form.Item label="Data Collectors">
+          <Form.Item label="Data Collectors" required>
             Select data collectors for this collection.
             <Form.Item
               name={['value', 'dataCollectors']}
               className="inner-form-item"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select at least one data collector.',
+                },
+              ]}
             >
               <AuthorSelect projectUsers={data.baseProject.value.users} />
             </Form.Item>
@@ -293,7 +311,7 @@ export const ProjectCategoryForm: React.FC<{
         </>
       )}
 
-      <Form.Item label="Description">
+      <Form.Item label="Description" required>
         Summarize the purpose of the category and its files. What is it about?
         What are its features? Description must be between 50 and 5000
         characters in length.
