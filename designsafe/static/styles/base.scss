@@ -1,3 +1,16 @@
+/* ELEMENTS */
+
+@import '_mixins/link';
+
+a {
+  @include link;
+}
+a:active {
+  @include link--active;
+}
+
+/* MODULES */
+
 .row-flex {
     display: flex;
     flex-direction: row;

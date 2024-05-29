@@ -1,0 +1,25 @@
+:root {
+  --ds-accent-color: #47a59d;
+  --ds-active-color: #337AB7;
+
+  /* Primary (Text, Layout) */
+  --global-color-primary--xx-light: #ffffff;
+  --global-color-primary--x-light: #f4f4f4;
+  --global-color-primary--light: #c6c6c6;
+  --global-color-primary--normal: #afafaf;
+  --global-color-primary--dark: #707070;
+  --global-color-primary--x-dark: #484848; /* ¹ */
+  --global-color-primary--xx-dark: #222222; /* ¹ */
+
+  /* Space */
+  --global-space--above-breadcrumbs: 35px;
+  --global-space--under-breadcrumbs: 20px;
+
+  /* Font */
+  /* TODO: Add missing variables after determining values */
+  --global-font-size--x-small: 1.2rem;
+  --global-font-weight--medium: 500;
+
+  /* Common */
+  --global-color-background--app: var(--global-color-primary--xx-light);
+}
