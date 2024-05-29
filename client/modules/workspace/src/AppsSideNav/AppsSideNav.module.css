@@ -16,30 +16,30 @@ ul.appBrowserSidebar {
   list-style: none;
 }
 
-.appBrowserSidebar .nav-link {
+.appsBrowserSidebar .navLink {
   min-width: var(--min-width);
   padding-left: var(--horizontal-buffer);
   color: var(--global-color-primary--dark);
   white-space: nowrap;
 }
 
-.appBrowserSidebar .nav-link {
+.appsBrowserSidebar .navLink {
   /* RFE: Add `href` on links to: obviate this CSS, provide URL to app state */
   font-weight: 500;
   cursor: pointer;
 }
 
-.appBrowserSidebar .nav-link.active,
-.appBrowserSidebar .nav-link:hover {
+.appsBrowserSidebar .navLink:global(.active),
+.appsBrowserSidebar .navLink:hover {
   color: var(--global-color-primary--x-dark);
   background: var(--global-color-accent--weak);
   border: none;
 }
 
-.appBrowserSidebar .nav-link.active {
+.appsBrowserSidebar .navLink:global(.active) {
   font-weight: 700;
 }
 
-.appBrowserSidebar .nav-link:active {
+.appsBrowserSidebar .navLink:global(.active) {
   font-weight: 700;
 }
