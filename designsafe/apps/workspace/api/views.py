@@ -5,13 +5,15 @@
 
 import logging
 import json
+from celery import shared_task
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
-from django.db.models.functions import Coalesce
+from django.contrib.auth import get_user_model
 from django.urls import reverse
+from pytas.http import TASClient
 from tapipy.errors import InternalServerError, UnauthorizedError
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.users.utils import get_user_data
@@ -24,11 +26,35 @@ from designsafe.apps.workspace.models.app_entries import (
     AppTrayCategory,
     AppVariant,
 )
+from designsafe.apps.workspace.models.allocations import UserAllocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
 
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
+
+TACC_EXEC_SYSTEMS = {
+    "corral": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/work2/{}",
+        "home_dir": "/home/{}",
+    },
+    "stampede3": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/scratch/{}",
+        "home_dir": "/home1/{}",
+    },
+    "frontera": {
+        "work_dir": "/work2/{}",
+        "scratch_dir": "/scratch1/{}",
+        "home_dir": "/home1/{}",
+    },
+    "ls6": {
+        "work_dir": "/work/{}",
+        "scratch_dir": "/scratch/{}",
+        "home_dir": "/home1/{}",
+    },
+}
 
 
 def _app_license_type(app_def):
@@ -52,6 +78,22 @@ def _get_user_app_license(license_type, user):
     return lic
 
 
+def _get_systems(
+    user: object, can_exec: bool, systems: list = None, list_type: str = "ALL"
+) -> list:
+    """List of all enabled systems of the specified can_exec type available for the user."""
+    tapis = user.tapis_oauth.client
+
+    search_string = f"(canExec.eq.{can_exec})~(enabled.eq.true)"
+
+    if systems:
+        system_id_search = ",".join(systems)
+        search_string += f"~(id.in.{system_id_search})"
+    return tapis.systems.getSystems(
+        listType=list_type, select="allAttributes", search=search_string
+    )
+
+
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
 
@@ -60,12 +102,8 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getApp(appId=app_id, appVersion=app_version)
     else:
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
-    data = {"definition": app_def}
 
-    # GET EXECUTION SYSTEM INFO TO PROCESS SPECIFIC SYSTEM DATA E.G. QUEUE INFORMATION
-    data["exec_sys"] = tapis.systems.getSystem(
-        systemId=app_def.jobAttributes.execSystemId
-    )
+    data = {"definition": app_def}
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}
@@ -76,18 +114,118 @@ def _get_app(app_id, app_version, user):
     return data
 
 
+def _get_tas_allocations(username):
+    """Returns user allocations on TACC resources
+
+    : returns: allocations
+    : rtype: dict
+    """
+
+    tas_client = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            "username": settings.TAS_CLIENT_KEY,
+            "password": settings.TAS_CLIENT_SECRET,
+        },
+    )
+    tas_projects = tas_client.projects_for_user(username)
+
+    with open("designsafe/apps/workspace/api/tas_to_tacc_resources.json") as f:
+        tas_to_tacc_resources = json.load(f)
+
+    hosts = {}
+
+    for tas_proj in tas_projects:
+        # Each project from tas has an array of length 1 for its allocations
+        alloc = tas_proj["allocations"][0]
+        charge_code = tas_proj["chargeCode"]
+        if alloc["resource"] in tas_to_tacc_resources:
+            resource = dict(tas_to_tacc_resources[alloc["resource"]])
+            resource["allocation"] = dict(alloc)
+
+            # Separate active and inactive allocations and make single entry for each project
+            if resource["allocation"]["status"] == "Active":
+                if (
+                    resource["host"] in hosts
+                    and charge_code not in hosts[resource["host"]]
+                ):
+                    hosts[resource["host"]].append(charge_code)
+                elif resource["host"] not in hosts:
+                    hosts[resource["host"]] = [charge_code]
+    return {
+        "hosts": hosts,
+    }
+
+
+def _get_latest_allocations(username):
+    """
+    Creates or updates allocations cache for a given user and returns new allocations
+    """
+    User = get_user_model()
+    user = User.objects.get(username=username)
+    allocations = _get_tas_allocations(username)
+    UserAllocations.objects.update_or_create(user=user, value=allocations)
+    return allocations
+
+
+@shared_task(bind=True, max_retries=3, queue="indexing")
+def _cache_allocations(self, username):
+    """
+    Refreshes allocations cache
+    """
+    _get_latest_allocations(username)
+
+
 def test_system_needs_keys(tapis, system_id):
-    """Tests a Tapis system by making a file listing call."""
+    """Tests a Tapis system by making a file listing call.
+
+    returns: SystemDef
+    """
 
     try:
         tapis.files.listFiles(systemId=system_id, path="/")
     except (InternalServerError, UnauthorizedError):
         system_def = tapis.systems.getSystem(systemId=system_id)
-        logger.info(
-            f"Keys for user {tapis.username} must be manually pushed to system: {system_id}"
-        )
         return system_def
     return False
+
+
+class SystemListingView(AuthenticatedApiView):
+    """System Listing View"""
+
+    def get(self, request):
+        """Returns a listing of execution and storage systems for the user"""
+        execution_systems = _get_systems(request.user, can_exec=True)
+        storage_systems = _get_systems(
+            request.user, can_exec=False, list_type="SHARED_PUBLIC"
+        )
+        response = {
+            "executionSystems": execution_systems,
+            "storageSystems": storage_systems,
+        }
+
+        default_storage_system_id = settings.AGAVE_STORAGE_SYSTEM
+        if default_storage_system_id:
+            response["defaultStorageSystem"] = next(
+                (sys for sys in storage_systems if sys.id == default_storage_system_id),
+                None,
+            )
+
+        return JsonResponse(
+            {"status": 200, "response": response}, encoder=BaseTapisResultSerializer
+        )
+
+
+class SystemDefinitionView(AuthenticatedApiView):
+    """System Definition View"""
+
+    def get(self, request, system_id):
+        """Get definitions for individual systems"""
+        client = request.user.tapis_oauth.client
+        system_def = client.systems.getSystem(systemId=system_id)
+        return JsonResponse(
+            {"status": 200, "response": system_def}, encoder=BaseTapisResultSerializer
+        )
 
 
 class AppsView(AuthenticatedApiView):
@@ -107,23 +245,39 @@ class AppsView(AuthenticatedApiView):
                 "info": {"query": request.GET.dict()},
             },
         )
-        tapis = request.user.tapis_oauth.client
         app_id = request.GET.get("appId")
-        if app_id:
-            app_version = request.GET.get("appVersion")
+        app_version = request.GET.get("appVersion", "")
+
+        if not app_id:
+            raise ApiException("Missing required parameter: app_id", status=422)
+
+        try:
+            portal_app = AppVariant.objects.get(app_id=app_id, version=app_version)
+            if portal_app.app_type == "html":
+                data = {
+                    "definition": {
+                        "id": portal_app.app_id,
+                        "notes": {"label": portal_app.label or portal_app.bundle.label},
+                    }
+                }
+            else:
+                data = _get_app(app_id, app_version, request.user)
+
+        except ObjectDoesNotExist:
             data = _get_app(app_id, app_version, request.user)
 
-            # Check if default storage system needs keys pushed
-            if settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM:
-                system_id = settings.PORTAL_DATAFILES_DEFAULT_STORAGE_SYSTEM["system"]
-
-                system_needs_keys = test_system_needs_keys(tapis, system_id)
-                if system_needs_keys:
-                    data["systemNeedsKeys"] = True
-                    data["pushKeysSystem"] = system_needs_keys
-
-        else:
-            data = {"appListing": tapis.apps.getApps(limit=-1)}
+        # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
+        # Check if default storage system needs keys pushed
+        # if settings.AGAVE_STORAGE_SYSTEM:
+        #     tapis = request.user.tapis_oauth.client
+        #     system_needs_keys = test_system_needs_keys(
+        #         tapis, settings.AGAVE_STORAGE_SYSTEM
+        #     )
+        #     if system_needs_keys:
+        #         logger.info(
+        #             f"Keys for user {request.user.username} must be manually pushed to system: {system_needs_keys.id}"
+        #         )
+        #         data["defaultSystemNeedsKeys"] = system_needs_keys
 
         return JsonResponse(
             {
@@ -179,10 +333,15 @@ class AppsTrayView(AuthenticatedApiView):
         my_apps = list(
             map(
                 lambda app: {
+                    "app_id": app.id,
+                    "app_type": "tapis",
+                    "bundle_id": None,
+                    "bundle_label": None,
+                    "html": None,
+                    "icon": getattr(app.notes, "icon", None),
+                    "is_bundled": False,
                     "label": getattr(app.notes, "label", app.id),
                     "version": app.version,
-                    "type": "tapis",
-                    "appId": app.id,
                 },
                 apps_listing,
             )
@@ -190,6 +349,7 @@ class AppsTrayView(AuthenticatedApiView):
 
         return my_apps
 
+    # pylint: disable-msg=too-many-locals
     def _get_public_apps(self, user, verbose):
         """Returns a listing of public Tapis apps defined by the portal, sorted by category."""
 
@@ -211,8 +371,8 @@ class AppsTrayView(AuthenticatedApiView):
             "bundle_is_simcenter",
             "bundle_label",
             "bundle_license_type",
-            "bundle_related_apps",
-            "bundle_tags",
+            "bundle__related_apps",
+            "bundle__tags",
             "html",
             "icon",
             "is_bundled",
@@ -235,8 +395,9 @@ class AppsTrayView(AuthenticatedApiView):
         values = reduced_values if not verbose else all_values
 
         categories = []
+        html_definitions = {}
         # Traverse category records in descending priority
-        for category in AppTrayCategory.objects.order_by("-priority"):
+        for category in AppTrayCategory.objects.order_by("priority"):
             # Retrieve all apps known to the portal in that category
             tapis_apps = list(
                 AppVariant.objects.filter(
@@ -245,7 +406,6 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle__category=category,
                     app_type="tapis",
                 )
-                .order_by(Coalesce("label", "app_id"))
                 # Only include bundle info if bundled
                 .annotate(
                     icon=F("bundle__icon"),
@@ -256,10 +416,7 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
-                    bundle_related_apps=F("bundle__related_apps"),
-                    bundle_tags=F("bundle__tags"),
-                )
-                .values(*values)
+                ).values(*values)
             )
 
             html_apps = list(
@@ -269,7 +426,6 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle__category=category,
                     app_type="html",
                 )
-                .order_by(Coalesce("label", "app_id"))
                 # Only include bundle info if bundled
                 .annotate(
                     icon=F("bundle__icon"),
@@ -280,10 +436,7 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
-                    bundle_related_apps=F("bundle__related_apps"),
-                    bundle_tags=F("bundle__tags"),
-                )
-                .values(*values)
+                ).values(*values)
             )
 
             valid_tapis_apps = self._get_valid_apps(apps_listing, tapis_apps)
@@ -291,19 +444,21 @@ class AppsTrayView(AuthenticatedApiView):
             category_result = {
                 "title": category.category,
                 "priority": category.priority,
-                "apps": [
-                    {k: v for k, v in app.items() if v != ""}
-                    for app in valid_tapis_apps
-                ]  # Remove empty strings from response
-                + html_apps,
+                "apps": valid_tapis_apps,
             }
+
+            # Add html apps to html_definitions
+            for html_app in html_apps:
+                html_definitions[html_app["app_id"]] = html_app
+
+                category_result["apps"].append(html_app)
 
             category_result["apps"] = sorted(
                 category_result["apps"], key=lambda app: app["label"] or app["app_id"]
             )
             categories.append(category_result)
 
-        return categories
+        return categories, html_definitions
 
     def get(self, request, *args, **kwargs):
         """
@@ -356,7 +511,9 @@ class AppsTrayView(AuthenticatedApiView):
 
         public_only = request.GET.get("public_only", False)
 
-        categories = self._get_public_apps(request.user, verbose=public_only)
+        categories, html_definitions = self._get_public_apps(
+            request.user, verbose=public_only
+        )
 
         if not public_only:
             my_apps = self._get_private_apps(request.user)
@@ -368,7 +525,8 @@ class AppsTrayView(AuthenticatedApiView):
         )
 
         return JsonResponse(
-            {"categories": categories}, encoder=BaseTapisResultSerializer
+            {"categories": categories, "htmlDefinitions": html_definitions},
+            encoder=BaseTapisResultSerializer,
         )
 
 
@@ -413,7 +571,7 @@ class JobsView(AuthenticatedApiView):
 
         if operation not in allowed_actions:
             raise ApiException(
-                f"user:{request.user.username} is trying to run an unsupported job operation: {operation}",
+                f"user: {request.user.username} is trying to run an unsupported job operation: {operation}",
                 status=400,
             )
 
@@ -528,6 +686,7 @@ class JobsView(AuthenticatedApiView):
             encoder=BaseTapisResultSerializer,
         )
 
+    # pylint: disable-msg=too-many-locals
     def _submit_job(self, request, body, tapis, username):
         job_post = body.get("job")
         if not job_post:
@@ -540,9 +699,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post[
-                "archiveSystemDir"
-            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            job_post["archiveSystemDir"] = (
+                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            )
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")
@@ -562,29 +721,23 @@ class JobsView(AuthenticatedApiView):
             # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
         # Test file listing on relevant systems to determine whether keys need to be pushed manually
-        system_needs_keys = any(
-            test_system_needs_keys(tapis, system_id)
-            for system_id in list(
-                set([job_post["archiveSystemId"], job_post["execSystemId"]])
-            )
-        )
-        if system_needs_keys:
-            logger.info(
-                f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
-            )
-            return JsonResponse(
-                {
-                    "status": 200,
-                    "response": {"execSys": system_needs_keys},
-                },
-                encoder=BaseTapisResultSerializer,
-            )
+        for system_id in list(
+            set([job_post["archiveSystemId"], job_post["execSystemId"]])
+        ):
+            system_needs_keys = test_system_needs_keys(tapis, system_id)
+            if system_needs_keys:
+                logger.info(
+                    f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
+                )
+                return {"execSys": system_needs_keys}
 
         if settings.DEBUG:
-            wh_base_url = settings.WH_BASE_URL + reverse(
+            wh_base_url = settings.WEBHOOK_POST_URL + reverse(
                 "webhooks:interactive_wh_handler"
             )
-            jobs_wh_url = settings.WH_BASE_URL + reverse("webhooks:jobs_wh_handler")
+            jobs_wh_url = settings.WEBHOOK_POST_URL + reverse(
+                "webhooks:jobs_wh_handler"
+            )
         else:
             wh_base_url = request.build_absolute_uri(
                 reverse("webhooks:interactive_wh_handler")
@@ -593,21 +746,23 @@ class JobsView(AuthenticatedApiView):
                 reverse("webhooks:jobs_wh_handler")
             )
 
+        # Add portalName tag to job in order to filter jobs by portal
+        job_post["tags"] = job_post.get("tags", []) + [
+            f"portalName: {settings.PORTAL_NAMESPACE}"
+        ]
+
         # Add additional data for interactive apps
         if body.get("isInteractive"):
             # Add webhook URL environment variable for interactive apps
             job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get(
                 "envVariables", []
             ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": wh_base_url}]
+            job_post["tags"].append("isInteractive")
 
-            # Make sure $HOME/.tap directory exists for user when running interactive apps
+            # Make sure $HOME/.tap directory exists for user when running interactive apps on TACC HPC Systems
             exec_system_id = job_post["execSystemId"]
             system = next(
-                (
-                    v
-                    for k, v in settings.TACC_EXEC_SYSTEMS.items()
-                    if exec_system_id.endswith(k)
-                ),
+                (v for k, v in TACC_EXEC_SYSTEMS.items() if exec_system_id.endswith(k)),
                 None,
             )
             tasdir = get_user_data(username)["homeDirectory"]
@@ -616,11 +771,6 @@ class JobsView(AuthenticatedApiView):
                     systemId=exec_system_id,
                     path=f"{system['home_dir'].format(tasdir)}/.tap",
                 )
-
-        # Add portalName tag to job in order to filter jobs by portal
-        job_post["tags"] = job_post.get("tags", []) + [
-            f"portalName: {settings.PORTAL_NAMESPACE}"
-        ]
 
         # Add webhook subscription for job status updates
         job_post["subscriptions"] = job_post.get("subscriptions", []) + [
@@ -694,4 +844,46 @@ class JobsView(AuthenticatedApiView):
                 "response": response,
             },
             encoder=BaseTapisResultSerializer,
+        )
+
+
+class AllocationsView(AuthenticatedApiView):
+
+    def _get_allocations(self, user, force=False):
+        """
+        Returns indexed allocation data stored in Django DB, or fetches
+        allocations from TAS and stores them.
+        Parameters
+            ----------
+            username: str
+                TACC username to fetch allocations for.
+            Returns
+            -------
+            dict
+        """
+        username = user.username
+        try:
+            if force:
+                logger.info(f"Forcing TAS allocation retrieval for user:{username}")
+                raise ObjectDoesNotExist
+            result = {"hosts": {}}
+            result.update(UserAllocations.objects.get(user=user).value)
+            return result
+        except ObjectDoesNotExist:
+            # Fall back to getting allocations from TAS
+            return _get_latest_allocations(username)
+
+    def get(self, request):
+        """Returns active user allocations on TACC resources
+
+        : returns: {'response': {'active': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive, 'hosts': hosts}}
+        : rtype: dict
+        """
+        data = self._get_allocations(request.user)
+
+        return JsonResponse(
+            {
+                "status": 200,
+                "response": data,
+            }
         )

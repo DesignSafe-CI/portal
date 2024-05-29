@@ -1,5 +1,3 @@
-# This compose file is useful for testing https
----
 services:
     django:
       build:

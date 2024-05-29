@@ -1,26 +1,10 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { AxiosError } from 'axios';
-
-export type TJob = {
-  appId: string;
-  appVersion: string;
-  archiveSystemId: string;
-  condition: boolean;
-  created: string;
-  ended: string;
-  execSystemId: string;
-  lastUpdated: string;
-  name: string;
-  owner: string;
-  remoteStarted: string;
-  status: string;
-  tenant: string;
-  uuid: string;
-};
+import { TTapisJob } from './types';
 
 export type TJobsListing = {
-  listing: TJob[];
+  listing: TTapisJob[];
   reachedEnd: boolean;
 };
 

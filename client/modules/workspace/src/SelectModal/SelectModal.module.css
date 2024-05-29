@@ -1,0 +1,31 @@
+.modalContent {
+  display: flex;
+  max-height: 60vh;
+  min-height: 400px;
+  gap: 50px;
+}
+
+.modalContent td {
+  vertical-align: middle;
+}
+
+.modalPanel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.filesSection {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid #707070;
+}
+
+.filesTableContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}

@@ -105,6 +105,7 @@ class JobsWebhookView(BaseApiView):
             event_data = {
                 Notification.EVENT_TYPE: "job",
                 Notification.STATUS: Notification.INFO,
+                Notification.MESSAGE: f"Job '{job_name}' updated to {job_status}",
                 Notification.USER: username,
                 Notification.EXTRA: {
                     "name": job_name,
@@ -172,6 +173,7 @@ class InteractiveWebhookView(BaseApiView):
             Notification.EVENT_TYPE: event_type,
             Notification.STATUS: Notification.INFO,
             Notification.USER: job_owner,
+            Notification.MESSAGE: "Ready to view.",
             Notification.ACTION_LINK: address,
         }
 
