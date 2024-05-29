@@ -24,6 +24,7 @@ export const PublishedEntityListingLayout: React.FC = () => {
               ?.basePath ?? ''
           )}
           baseRoute="."
+          fileTags={data.fileTags}
         />
       )}
     </div>

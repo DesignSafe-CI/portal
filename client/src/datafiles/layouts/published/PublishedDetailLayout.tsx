@@ -66,6 +66,7 @@ export const PublishedDetailLayout: React.FC = () => {
         to={`/public/designsafe.storage.published/${projectId}/%2F${projectId}?q=${searchParams.get(
           'q'
         )}`}
+        replace
       />
     );
   }

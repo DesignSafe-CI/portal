@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 //import styles from './FileListing.module.css';
-import { Button, TableProps } from 'antd';
+import { Button, TableProps, Tag } from 'antd';
 import {
   FileListingTable,
   TFileListingColumns,
 } from '@client/common-components';
 import { NavLink } from 'react-router-dom';
 import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
+import { TFileTag } from '@client/hooks';
 
 export function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
@@ -25,6 +26,7 @@ export const FileListing: React.FC<
     path?: string;
     scheme?: string;
     baseRoute?: string;
+    fileTags?: TFileTag[];
   } & Omit<TableProps, 'columns'>
 > = ({
   api,
@@ -32,6 +34,7 @@ export const FileListing: React.FC<
   path = '',
   scheme = 'private',
   baseRoute,
+  fileTags,
   ...tableProps
 }) => {
   // Base file listing for use with My Data/Community Data
@@ -47,40 +50,51 @@ export const FileListing: React.FC<
         dataIndex: 'name',
         ellipsis: true,
         width: '50%',
-        render: (data, record) =>
-          record.type === 'dir' ? (
-            <NavLink
-              className="listing-nav-link"
-              to={`${baseRoute ?? '..'}/${encodeURIComponent(record.path)}`}
-              replace={false}
-            >
-              <i
-                role="none"
-                style={{ color: '#333333' }}
-                className="fa fa-folder"
+        render: (data, record) => (
+          <>
+            {record.type === 'dir' ? (
+              <NavLink
+                className="listing-nav-link"
+                to={`${baseRoute ?? '..'}/${encodeURIComponent(record.path)}`}
+                replace={false}
               >
-                &nbsp;&nbsp;
-              </i>
-              {data}
-            </NavLink>
-          ) : (
-            <Button
-              type="link"
-              style={{ userSelect: 'text' }}
-              onClick={() =>
-                setPreviewModalState({ isOpen: true, path: record.path })
-              }
-            >
-              <i
-                role="none"
-                style={{ color: '#333333' }}
-                className="fa fa-file-o"
+                <i
+                  role="none"
+                  style={{ color: '#333333' }}
+                  className="fa fa-folder"
+                >
+                  &nbsp;&nbsp;
+                </i>
+                {data}
+              </NavLink>
+            ) : (
+              <Button
+                type="link"
+                style={{ userSelect: 'text' }}
+                onClick={() =>
+                  setPreviewModalState({ isOpen: true, path: record.path })
+                }
               >
-                &nbsp;&nbsp;
-              </i>
-              {data}
-            </Button>
-          ),
+                <i
+                  role="none"
+                  style={{ color: '#333333' }}
+                  className="fa fa-file-o"
+                >
+                  &nbsp;&nbsp;
+                </i>
+                {data}
+              </Button>
+            )}
+            <br />
+            {(fileTags ?? [])
+              .filter((tag) => tag.path === record.path)
+              .map((tag) => (
+                <Tag color="#337ab7" key={tag.tagName}>
+                  {tag.tagName}
+                </Tag>
+              ))}
+          </>
+        ),
       },
       {
         title: 'Size',

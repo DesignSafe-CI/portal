@@ -5,7 +5,7 @@ import {
   ProjectTitleHeader,
 } from '@client/datafiles';
 import { useProjectDetail } from '@client/hooks';
-import { Button } from 'antd';
+import { Alert, Button } from 'antd';
 import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 
@@ -35,6 +35,16 @@ export const ProjectPreviewLayout: React.FC = () => {
       </div>
 
       <ProjectPreview projectId={projectId} />
+      {data.baseProject.value.projectType === 'other' && (
+        <Alert
+          showIcon
+          description={
+            <span>
+              You will select the data to be published in the next step.
+            </span>
+          }
+        />
+      )}
     </div>
   );
 };

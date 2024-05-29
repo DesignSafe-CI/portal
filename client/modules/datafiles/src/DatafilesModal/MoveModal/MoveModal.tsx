@@ -226,7 +226,11 @@ export const MoveModal: React.FC<{
                   columns={DestFilesColumns}
                   rowSelection={undefined}
                   filterFn={(listing) =>
-                    listing.filter((f) => f.type === 'dir')
+                    listing.filter(
+                      (f) =>
+                        f.type === 'dir' &&
+                        !selectedFiles.map((sf) => sf.path).includes(f.path)
+                    )
                   }
                   scroll={undefined}
                 />
