@@ -1,0 +1,23 @@
+{# https://github.com/django-cms/django-cms/blob/release/3.11.x/menus/templates/menu/breadcrumb.html #}
+{% for ance in ancestors %}
+
+  {# To support structured data, item* attributes are used #}
+  {# https://confluence.tacc.utexas.edu/x/5yMFDg #}
+  <li itemscope itemprop="itemListElement"
+      itemtype="https://schema.org/ListItem">
+  {% if not forloop.last %}
+
+    <a href="{{ ance.get_absolute_url }}" itemprop="item">
+      <span itemprop="name">{{ ance.get_menu_title }}</span>
+    </a>
+
+  {% else %}
+
+    <span itemprop="name">{{ ance.get_menu_title }}</span>
+
+  {% endif %}
+
+    <meta itemprop="position" content="{{ forloop.counter }}" />
+  </li>
+
+{% endfor %}

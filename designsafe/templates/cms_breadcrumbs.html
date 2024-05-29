@@ -1,0 +1,35 @@
+{# @var className #}
+{% load menu_tags %}
+
+<style>
+  @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/trumps/s-breadcrumbs.css");
+  @import url("https://cdn.jsdelivr.net/gh/TACC/tup-ui@v1.1.10/apps/tup-cms/src/taccsite_custom/tup_cms/static/tup_cms/css/for-tup-cms/trumps/s-breadcrumbs.css");
+
+  {# https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/elements/links.css #}
+  .s-breadcrumbs a:not([href]) {
+    pointer-events: none;
+  }
+</style>
+<nav class="s-breadcrumbs  {{className}}" id="cms-breadcrumbs">
+
+  {# To support structured data, item* attributes are used #}
+  {# SEE: https://confluence.tacc.utexas.edu/x/5yMFDg #}
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+
+    {# To include pages marked to not show in menu, attributes are added #}
+    {# SEE: https://docs.django-cms.org/en/release-3.6.x/reference/navigation.html#show-breadcrumb #}
+    {% show_breadcrumb 0 "menu/breadcrumb.html" 0 %}
+
+  </ol>
+
+</nav>
+<script>
+  {# To disable 2nd-level breadcrumb #}
+  {# NOTE: Not using module, so effect is quicker (and code is minimal) #}
+  {# FAQ: Attempts to do this server-side failed cuz useful props are blank #}
+  {# https://docs.django-cms.org/en/release-3.11.x/reference/navigation.html#properties-of-navigation-nodes-in-templates #}
+  document
+    .getElementById('cms-breadcrumbs')
+    .querySelector('li:nth-of-type(2) > a')
+    .removeAttribute('href');
+</script>
