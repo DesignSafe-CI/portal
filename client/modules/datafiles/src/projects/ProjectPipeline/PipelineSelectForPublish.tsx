@@ -163,6 +163,28 @@ export const PipelineSelectForPublish: React.FC<{
           Continue
         </Button>
       </div>
+      {operation !== 'publish' && (
+        <Alert
+          showIcon
+          style={{ marginBottom: '12px' }}
+          description={
+            <span>
+              Amending or revising a project will impact all previously
+              published works. New datasets cannot be published through this
+              process. If you need to publish subsequent dataset(s), please{' '}
+              <a
+                href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-describedby="msg-open-new-window"
+              >
+                submit a ticket
+              </a>{' '}
+              with your project number and the name of the dataset(s)
+            </span>
+          }
+        />
+      )}
       {(validationErrors?.length ?? 0) > 0 && (
         <PipelineValidationAlert validationErrors={validationErrors} />
       )}

@@ -5,7 +5,7 @@ import {
 } from '@client/datafiles';
 import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
 import React, { useEffect } from 'react';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
 
 const FileListingSearchBar = () => {
@@ -53,7 +53,12 @@ export const PublishedDetailLayout: React.FC = () => {
     }
   }, [version, searchParams, setSearchParams]);
 
-  if (!projectId || !data) return null;
+  if (!projectId || !data)
+    return (
+      <Layout style={{ position: 'relative' }}>
+        <Spin style={{ position: 'absolute', top: '50%', left: '50%' }} />
+      </Layout>
+    );
 
   if (searchParams.get('q') && !path) {
     return (
@@ -70,7 +75,7 @@ export const PublishedDetailLayout: React.FC = () => {
   )?.publicationDate;
 
   return (
-    <div style={{ width: '100%', paddingBottom: '100px' }}>
+    <Layout style={{ paddingBottom: '100px' }}>
       <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
         <DatafilesToolbar searchInput={<FileListingSearchBar />} />
       </div>
@@ -105,6 +110,6 @@ export const PublishedDetailLayout: React.FC = () => {
         isPublished
       />
       <Outlet />
-    </div>
+    </Layout>
   );
 };

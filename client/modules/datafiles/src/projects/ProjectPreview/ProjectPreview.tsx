@@ -94,6 +94,7 @@ const EntityFileListingTable: React.FC<{
         path={treeData.uuid}
         scheme="public"
         columns={columns}
+        scroll={{ x: 500, y: 500 }}
         dataSource={treeData.value.fileObjs}
         disabled
       />
@@ -326,7 +327,7 @@ export const PublicationView: React.FC<{
             license={data.baseProject.license}
             projectId={projectId}
             treeData={child}
-            defaultOpen={idx === 0}
+            defaultOpen={idx === 0 && sortedChildren.length === 1}
             key={child.id}
           />
         ))}

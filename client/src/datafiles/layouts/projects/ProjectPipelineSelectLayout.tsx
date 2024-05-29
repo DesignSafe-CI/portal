@@ -39,8 +39,9 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
               <li>
                 If you need to publish subsequent dataset(s),&nbsp;
                 <a
-                  href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+PRJ-3986"
+                  href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
                   target="_blank"
+                  rel="noopener noreferrer"
                   aria-describedby="msg-open-new-window"
                 >
                   submit a ticket
