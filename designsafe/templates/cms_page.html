@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load cms_tags static sekizai_tags menu_tags %}
 {% block breadcrumb %}
-    {% include "cms_breadcrumbs.html" with className="container" %}
+    {% include "cms_breadcrumbs.html" with className="container-fluid" %}
 {% endblock %}
 {% block content %}{% placeholder "content" %}{% endblock content %}
 {% block footer %}{% include 'includes/footer.html' %}{% endblock footer %}
