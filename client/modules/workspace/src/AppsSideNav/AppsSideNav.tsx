@@ -137,7 +137,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
 
   return (
     <div className={styles.appsBrowserSidebar}>
-      <h3>Applications:</h3>
+      <h3 className={styles.appsNavHeader}>Applications:</h3>
       <ConfigProvider theme={AppMenuItemTheme}>
         <Menu
           mode="inline"

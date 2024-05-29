@@ -16,6 +16,12 @@ ul.appBrowserSidebar {
   list-style: none;
 }
 
+.appsNavHeader {
+  text-align: center;
+  font-size: 14px;
+  font-family: inherit;
+}
+
 .appsBrowserSidebar .navLink {
   min-width: var(--min-width);
   padding-left: var(--horizontal-buffer);
