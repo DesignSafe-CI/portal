@@ -322,7 +322,16 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     file_objs = entity.get("fileObjs", None)
     # Some legacy experiment/hybrid sim entities have file_objs incorrectly
     # populated from their children. In these cases, _filepaths is empty.
-    if file_objs and entity.get("_filePaths", None) != []:
+    if file_objs and not (
+        entity.get("_filePaths", None) == []
+        and (
+            entity["name"]
+            in [
+                "designsafe.project.experiment",
+                "designsafe.project.hybrid_simulation",
+            ]
+        )
+    ):
         entity["value"]["fileObjs"] = file_objs
         # Avoid "fixing" tags for legacy projects that don't have tree-based file layouts
 
