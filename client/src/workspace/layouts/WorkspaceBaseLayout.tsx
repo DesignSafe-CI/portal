@@ -14,6 +14,8 @@ import {
   useAppsListing,
   usePrefetchGetSystems,
 } from '@client/hooks';
+import styles from './layout.module.css';
+
 
 const { Sider, Header } = Layout;
 
@@ -54,7 +56,7 @@ const WorkspaceRoot: React.FC = () => {
             gap: '20px',
           }}
         >
-          <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
+          <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0} className={styles.workspaceSidebar}>
             <JobStatusNav />
             <AppsSideNav categories={data.categories} />
           </Sider>

@@ -18,6 +18,11 @@
   overflow-x: auto;
   overflow-y: hidden;
 }
+
+.workspaceSidebar {
+  border-inline-end: 1px solid;
+}
+
 .appDetail-wrapper {
   --space-top: 1.25rem; /* 20px (~17px design * 1.2 design-to-app ratio) */
   --space-bottom: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */
