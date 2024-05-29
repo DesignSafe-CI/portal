@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, MenuProps } from 'antd';
+import { Menu, MenuProps, ConfigProvider, ThemeConfig } from 'antd';
 import { NavLink } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
 import { TAppCategory, TPortalApp } from '@client/hooks';
@@ -15,6 +15,15 @@ const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
     </NavLink>
   );
 };
+
+const AppMenuItemTheme: ThemeConfig = {
+  components: {
+    Menu: {
+      itemHoverBg: "#cbdded",
+      itemSelectedBg: "#cbdded",
+    },
+  },
+}
 
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
@@ -129,16 +138,17 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   return (
     <div className={styles.appsBrowserSidebar}>
       <h3>Applications:</h3>
-      <Menu
-        mode="inline"
-        defaultOpenKeys={[
-          (currentCategory as TAppCategory)?.title,
-          currentSubMenu,
-        ]}
-        defaultSelectedKeys={[defaultKey]}
-        items={items}
-        className={styles.appsGridList}
-      />
+      <ConfigProvider theme={AppMenuItemTheme}>
+        <Menu
+          mode="inline"
+          defaultOpenKeys={[
+            (currentCategory as TAppCategory)?.title,
+            currentSubMenu,
+          ]}
+          defaultSelectedKeys={[defaultKey]}
+          items={items}
+        />
+      </ConfigProvider>
     </div>
   );
 };
