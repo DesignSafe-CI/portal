@@ -12,10 +12,13 @@ from django.contrib.auth import authenticate, login
 from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-from .models import TapisOAuthToken
-
 from tapipy.errors import BaseTapyException
-from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory, get_systems_to_configure
+from designsafe.apps.auth.tasks import (
+    check_or_configure_system_and_user_directory,
+    get_systems_to_configure,
+)
+from designsafe.apps.workspace.api.tasks import cache_allocations
+from .models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
@@ -72,17 +75,21 @@ def launch_setup_checks(user):
         path = system["path"]
         create_path = system["create_path"]
         try:
-            client.files.listFiles(
-                systemId=system_id, path=path
+            client.files.listFiles(systemId=system_id, path=path)
+            logger.debug(
+                f"Checking system:{system_id} (by performing a listing during login) has succeeded."
             )
-            logger.debug(f"Checking system:{system_id} (by performing a listing during login) has succeeded.")
         except BaseTapyException as e:
-            logger.info(f"Checking system:{system_id} (by performing a listing during login) has failed "
-                        f"({e}: {e.response.status_code}. Starting task to configure the system "
-                        f"correctly.")
-            check_or_configure_system_and_user_directory.apply_async(
-                    args=(user.username, system_id, path, create_path), queue="files"
+            logger.info(
+                f"Checking system:{system_id} (by performing a listing during login) has failed "
+                f"({e}: {e.response.status_code}. Starting task to configure the system "
+                f"correctly."
             )
+            check_or_configure_system_and_user_directory.apply_async(
+                args=(user.username, system_id, path, create_path), queue="files"
+            )
+    logger.info("Creating/updating cached allocation information for %s", user.username)
+    cache_allocations.apply_async(args=(user.username,))
 
 
 def tapis_oauth_callback(request):

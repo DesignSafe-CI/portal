@@ -32,10 +32,9 @@ def test_tapis_callback(client, mocker, regular_user, tapis_tokens_create_mock):
     """Test successful Tapis callback"""
     mock_authenticate = mocker.patch("designsafe.apps.auth.views.authenticate")
     mock_tapis_token_post = mocker.patch("designsafe.apps.auth.views.requests.post")
-    # TODOV3: Onboarding Tests https://tacc-main.atlassian.net/browse/DES-2822
-    # mock_launch_setup_checks = mocker.patch(
-    #     "designsafe.apps.auth.views.launch_setup_checks"
-    # )
+    mock_launch_setup_checks = mocker.patch(
+        "designsafe.apps.auth.views.launch_setup_checks"
+    )
 
     # add auth to session
     session = client.session
@@ -51,8 +50,7 @@ def test_tapis_callback(client, mocker, regular_user, tapis_tokens_create_mock):
     )
     assert response.status_code == 302
     assert response.url == settings.LOGIN_REDIRECT_URL
-    # TODOV3: Onboarding Tests
-    # assert mock_launch_setup_checks.call_count == 1
+    assert mock_launch_setup_checks.call_count == 1
 
 
 def test_tapis_callback_no_code(client):

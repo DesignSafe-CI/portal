@@ -1,32 +1,70 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Layout } from 'antd';
-import { AppsSideNav, JobStatusNav } from '@client/workspace';
+import { Flex, Layout } from 'antd';
+import {
+  AppsSideNav,
+  JobStatusNav,
+  useGetAppParams,
+  AppsBreadcrumb,
+  Toast,
+} from '@client/workspace';
+import { Spinner } from '@client/common-components';
+import {
+  usePrefetchGetApps,
+  useAppsListing,
+  usePrefetchGetSystems,
+  usePrefetchGetAllocations,
+} from '@client/hooks';
 
-const { Sider } = Layout;
+const { Sider, Header } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
+  usePrefetchGetApps(useGetAppParams());
+  usePrefetchGetSystems();
+  usePrefetchGetAllocations();
+
+  const { data, isLoading } = useAppsListing();
+
+  if (!data || isLoading)
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    );
+
+  const headerStyle = {
+    background: 'transparent',
+    padding: 0,
+    borderBottom: '1px solid #707070',
+    alignContent: 'center',
+  };
+
   return (
-    <Layout
-      hasSider
-      style={{
-        backgroundColor: 'transparent',
-        gap: '20px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        overflowX: 'auto',
-        overflowY: 'hidden',
-      }}
-    >
-      <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
-        <h1 className="headline headline-research" id="headline-data-depot">
-          <span className="hl hl-research">Tools and Applications</span>
-        </h1>
-        <JobStatusNav />
-        <AppsSideNav />
-      </Sider>
-      <Outlet />
-    </Layout>
+    <>
+      <Flex
+        vertical
+        style={{
+          margin: '-20px 50px 0 50px',
+        }}
+      >
+        <Header style={headerStyle}>
+          <AppsBreadcrumb />
+        </Header>
+        <Layout
+          hasSider
+          style={{
+            gap: '20px',
+          }}
+        >
+          <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>
+            <JobStatusNav />
+            <AppsSideNav categories={data.categories} />
+          </Sider>
+          <Outlet />
+        </Layout>
+      </Flex>
+      <Toast />
+    </>
   );
 };
 
