@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
-import { TJob, TJobsListing } from './useJobsListing';
+import { TJobsListing } from './useJobsListing';
+import { TTapisJob } from './types';
 
 type TJobParamsType = {
   uuid?: string;
@@ -11,26 +12,35 @@ type TJobParamsType = {
 
 type TJobGetOperations = 'select' | 'listing' | 'search';
 
-async function getJobs(
-  operation: TJobGetOperations,
-  { signal }: { signal: AbortSignal },
-  params: TJobParamsType
-) {
+async function getJobs(operation: TJobGetOperations, params: TJobParamsType) {
   const res = await apiClient.get<{
-    response: TJob | TJobsListing;
+    response: TTapisJob | TJobsListing;
     status: number;
   }>(`/api/workspace/jobs/${operation}`, {
-    signal,
-    ...params,
+    params,
   });
   return res.data.response;
 }
 
-function useGetJobs(operation: TJobGetOperations, queryParams: TJobParamsType) {
-  return useQuery({
-    queryKey: ['workspace', 'getJobs', operation, ...(<[]>queryParams)],
-    queryFn: ({ signal }) => getJobs(operation, { signal }, queryParams),
-  });
+const getJobsQuery = (
+  operation: TJobGetOperations,
+  queryParams: TJobParamsType
+) => ({
+  queryKey: ['workspace', 'getJobs', operation, queryParams],
+  queryFn: () => getJobs(operation, queryParams),
+  retry: false,
+});
+
+export function useGetJobs(
+  operation: TJobGetOperations,
+  queryParams: TJobParamsType
+) {
+  return useQuery(getJobsQuery(operation, queryParams));
 }
 
-export default useGetJobs;
+export const useGetJobsSuspense = (
+  operation: TJobGetOperations,
+  queryParams: TJobParamsType
+) => {
+  return useSuspenseQuery(getJobsQuery(operation, queryParams));
+};

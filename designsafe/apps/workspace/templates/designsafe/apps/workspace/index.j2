@@ -32,7 +32,6 @@
          ng-init="panel.collapsed = true"></div>
   </div>
 </div>
-{% endif %}
 
 {% addtoblock "css" %}
 <link href="{% static 'scripts/workspace/styles/workspace.css' %}" rel="stylesheet">
@@ -52,20 +51,21 @@
 <script src="{% static 'scripts/workspace/directives/asf-agave-file-picker.js' %}"></script>
 <script src="<%= htmlWebpackPlugin.files.js %>"></script>
 {% endaddtoblock %}
+{% endif %}
 
-{% addtoblock "js" %}
+{% addtoblock "react_assets" %}
 {% if debug and react_flag %}
-<script type="module">
-    import RefreshRuntime from 'http://localhost:4200/static/react-assets/@react-refresh';
-    RefreshRuntime.injectIntoGlobalHook(window);
-    window.$RefreshReg$ = () => {};
-    window.$RefreshSig$ = () => (type) => type;
-    window.__vite_plugin_react_preamble_installed__ = true;
+  <script type="module">
+      import RefreshRuntime from 'http://localhost:4200/static/react-assets/@react-refresh';
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
   </script>
   <script type="module" src="http://localhost:4200/static/react-assets/@vite/client"></script>
   <script type="module" src="http://localhost:4200/static/react-assets/src/main.tsx"></script>
 {% else %}
-<!--TODO: setup non-dev static import for React code-->
+  {% include "react-assets.html" %}
 {% endif %}
 {% endaddtoblock %}
 

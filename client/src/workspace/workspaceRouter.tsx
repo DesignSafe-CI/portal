@@ -1,35 +1,28 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import WorkspaceRoot from './layouts/WorkspaceBaseLayout';
 import { JobsListingLayout } from './layouts/JobsListingLayout';
-// import { JobsDetailModal } from '@client/workspace';
+import { AppsViewLayout } from './layouts/AppsViewLayout';
+import { AppsPlaceholderLayout } from './layouts/AppsPlaceholderLayout';
 
 const workspaceRouter = createBrowserRouter(
   [
     {
+      id: 'root',
       path: '/',
       element: <WorkspaceRoot />,
       children: [
-        // {
-        //   path: ':appId',
-        //   element: <AppsView />,
-        // },
-        // {
-        //   path: ':appId-:appVersion?',
-        //   element: <AppsView />,
-        // },
         {
-          path: 'jobs/history?',
-          children: [
-            {
-              path: '',
-              element: <JobsListingLayout />,
-            },
-            // {
-            //   id: 'jobdetail',
-            //   path: ':uuid?',
-            //   element: <JobsDetailModal />,
-            // },
-          ],
+          path: '',
+          element: <AppsPlaceholderLayout />,
+        },
+        {
+          id: 'app',
+          path: ':appId',
+          element: <AppsViewLayout />,
+        },
+        {
+          path: 'history/:uuid?',
+          element: <JobsListingLayout />,
         },
         {
           path: '*',
