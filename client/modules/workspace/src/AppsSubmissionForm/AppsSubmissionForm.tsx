@@ -16,6 +16,7 @@ import {
   TJobSubmit,
   TParameterSetSubmit,
   TJobBody,
+  useGetAllocationsSuspense,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
@@ -49,11 +50,14 @@ import {
   getExecSystemsFromApp,
   useGetAppParams,
   updateValuesForQueue,
+  getDefaultExecSystem,
+  getAllocationList,
 } from '../utils';
 // import styles from './layout.module.css';
 
 export const AppsSubmissionForm: React.FC = () => {
   const { data: app } = useGetAppsSuspense(useGetAppParams());
+  const { data: tasAllocations } = useGetAllocationsSuspense();
 
   const {
     data: { executionSystems, storageSystems, defaultStorageSystem },
@@ -65,11 +69,6 @@ export const AppsSubmissionForm: React.FC = () => {
 
   const { definition, license, defaultSystemNeedsKeys } = app;
 
-  // TODOv3: Load these from state
-  const portalAlloc = 'DesignSafe-DCV';
-  const allocations = ['TACC-ACI', 'DesignSafe-DCV'];
-  const allocationHosts: { [dynamic: string]: string } = {};
-
   // const [state, setState] = useAppFormState();
 
   const defaultStorageHost = defaultStorageSystem.host;
@@ -79,7 +78,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const hasDefaultAllocation =
     // state.allocations.loading ||
     // state.systems.storage.loading ||
-    allocationHosts[defaultStorageHost] || hasCorral;
+    tasAllocations.hosts[defaultStorageHost] || hasCorral;
   const hasStorageSystems = !!storageSystems.length;
 
   let missingAllocation = false;
@@ -88,14 +87,22 @@ export const AppsSubmissionForm: React.FC = () => {
     definition,
     executionSystems as TTapisSystem[]
   );
+  const defaultExecSystem = getDefaultExecSystem(
+    definition,
+    execSystems
+  ) as TTapisSystem;
+  const allocations = getAllocationList(defaultExecSystem, tasAllocations);
+  const portalAlloc = allocations.find(
+    (a) => a.includes('DesignSafe-DCV') || a.includes('DesignSafe-HPC')
+  );
 
   const { fileInputs, parameterSet, configuration, outputs } = FormSchema(
     definition,
     executionSystems,
     allocations,
-    portalAlloc,
     defaultStorageSystem,
-    username
+    username,
+    portalAlloc
   );
 
   // TODOv3: dynamic exec system and queues

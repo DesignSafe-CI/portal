@@ -229,9 +229,9 @@ const FormSchema = (
   definition: TTapisApp,
   executionSystems: [TTapisSystem],
   allocations: string[],
-  portalAlloc: string,
   defaultStorageSystem: TTapisSystem,
-  username: string
+  username: string,
+  portalAlloc?: string
 ) => {
   const appFields: TAppFormSchema = {
     fileInputs: {
@@ -455,7 +455,7 @@ const FormSchema = (
       : '';
 
     appFields.configuration.defaults['allocation'] = isAppTypeBATCH(definition)
-      ? allocations.includes(portalAlloc)
+      ? allocations.includes(portalAlloc || '')
         ? portalAlloc
         : allocations.length === 1
         ? allocations[0]

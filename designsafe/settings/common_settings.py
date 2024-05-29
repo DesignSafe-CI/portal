@@ -495,6 +495,10 @@ TRAM_SERVICES_URL = os.environ.get('TRAM_SERVICES_URL', None)
 TRAM_SERVICES_KEY = os.environ.get('TRAM_SERVICES_KEY', None)
 TRAM_PROJECT_ID = os.environ.get('TRAM_PROJECT_ID', None)
 
+TAS_CLIENT_KEY = os.environ.get('TAS_CLIENT_KEY', None)
+TAS_CLIENT_SECRET = os.environ.get('TAS_CLIENT_SECRET', None)
+TAS_URL = os.environ.get('TAS_URL', None)
+
 ###
 # Agave Integration
 #

@@ -115,6 +115,12 @@ export type TTapisApp = {
   updated: string;
 };
 
+export type TTasAllocations = {
+  hosts: {
+    [hostname: string]: string[];
+  };
+};
+
 export type TTapisJob = {
   appId: string;
   appVersion: string;
