@@ -12,6 +12,7 @@ import {
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import { PublishableEntityForm } from '../forms/PublishableEntityForm';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
+import { DISPLAY_NAMES } from '../constants';
 
 const CategoryDetail: React.FC<{
   value?: TEntityValue;
@@ -80,7 +81,7 @@ export const ManagePublishableEntityModal: React.FC<{
         open={isModalOpen}
         onCancel={handleClose}
         width="900px"
-        title={<h2>Manage Categories</h2>}
+        title={<h2>Manage {DISPLAY_NAMES[entityName]}s</h2>}
         footer={null}
       >
         <section style={{ backgroundColor: '#f5f5f5', padding: '20px' }}>

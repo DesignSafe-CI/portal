@@ -6,6 +6,9 @@ export type TPublicationListingItem = {
   projectId: string;
   title: string;
   description: string;
+  keywords: string[];
+  type: string;
+  dataTypes: string[];
   pi: { fname: string; lname: string; email: string; inst: string };
   created: string;
 };

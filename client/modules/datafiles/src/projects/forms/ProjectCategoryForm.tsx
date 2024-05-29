@@ -310,8 +310,7 @@ export const ProjectCategoryForm: React.FC<{
         <Button type="primary" className="success-button" htmlType="submit">
           {mode === 'create' ? (
             <span>
-              <i role="none" className="fa fa-plus"></i>
-              Add Category
+              <i role="none" className="fa fa-plus"></i> Add Category
             </span>
           ) : (
             <span>Update</span>

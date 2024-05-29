@@ -26,7 +26,10 @@ const FileListingSearchBar = () => {
       style={{ display: 'inline-flex' }}
     >
       <Form.Item name="query" style={{ marginBottom: 0 }}>
-        <Input placeholder="Search Data Files" style={{ width: '250px' }} />
+        <Input
+          placeholder="Search within Publication"
+          style={{ width: '250px' }}
+        />
       </Form.Item>
       <Button htmlType="submit">
         <i className="fa fa-search"></i>
@@ -55,7 +58,7 @@ export const PublishedDetailLayout: React.FC = () => {
   if (searchParams.get('q') && !path) {
     return (
       <Navigate
-        to={`/public/designsafe.storage.published/${projectId}/${projectId}?q=${searchParams.get(
+        to={`/public/designsafe.storage.published/${projectId}/%2F${projectId}?q=${searchParams.get(
           'q'
         )}`}
       />
@@ -68,7 +71,9 @@ export const PublishedDetailLayout: React.FC = () => {
 
   return (
     <div style={{ width: '100%', paddingBottom: '100px' }}>
-      <DatafilesToolbar searchInput={<FileListingSearchBar />} />
+      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+        <DatafilesToolbar searchInput={<FileListingSearchBar />} />
+      </div>
       <div
         className="prj-head-title"
         style={{ marginTop: '20px', marginBottom: '20px' }}

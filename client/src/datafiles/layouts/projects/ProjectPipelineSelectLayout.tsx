@@ -48,7 +48,9 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
                 with your project number and the name of the dataset(s).
               </li>
             </ul>
-            <NavLink to={`/projects/${projectId}/prepare-to-publish/pipeline`}>
+            <NavLink
+              to={`/projects/${projectId}/prepare-to-publish/pipeline?operation=publish`}
+            >
               <button
                 className="btn btn-small btn-add"
                 disabled={has_published_entities}

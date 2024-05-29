@@ -184,6 +184,9 @@ class PublicationListingView(BaseApiView):
                 "projectId": pub.value["projectId"],
                 "title": pub.value["title"],
                 "description": pub.value["description"],
+                "keywords": pub.value["keywords"],
+                "type": pub.value["projectType"],
+                "dataTypes": [t["name"] for t in pub.value.get("dataTypes", None)],
                 "pi": next(
                     (user for user in pub.value["users"] if user["role"] == "pi"), None
                 ),
