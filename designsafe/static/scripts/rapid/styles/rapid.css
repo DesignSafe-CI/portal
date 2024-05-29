@@ -23,7 +23,7 @@ body {
 
 .rapid-logo {
   padding-right: 2.5vw;
-  max-width: 25%;
+  max-width: 20%;
 }
 
 .rapid-logo img {
@@ -33,8 +33,7 @@ body {
 
 .rapid-header-text {
   flex: 1;
-  font-size: calc(16px + .5vw);
-  line-height: 1.5;
+  font-size: calc(12px + .5vw);
   padding-right:30px;
 }
 
