@@ -13,6 +13,7 @@ import {
   usePrefetchGetApps,
   useAppsListing,
   usePrefetchGetSystems,
+  usePrefetchGetAllocations,
 } from '@client/hooks';
 
 const { Sider, Header } = Layout;
@@ -20,6 +21,7 @@ const { Sider, Header } = Layout;
 const WorkspaceRoot: React.FC = () => {
   usePrefetchGetApps(useGetAppParams());
   usePrefetchGetSystems();
+  usePrefetchGetAllocations();
 
   const { data, isLoading } = useAppsListing();
 
