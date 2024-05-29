@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from tapipy.errors import BaseTapyException
 from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory
-from designsafe.apps.workspace.api.views import _cache_allocations
+from designsafe.apps.workspace.api.tasks import cache_allocations
 from .models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
@@ -88,7 +88,7 @@ def launch_setup_checks(user):
                 args=(user.username, system_id, path), queue="files"
             )
     logger.info("Creating/updating cached allocation information for %s", user.username)
-    _cache_allocations.apply_async(args=(user.username,))
+    cache_allocations.apply_async(args=(user.username,))
 
 
 def tapis_oauth_callback(request):

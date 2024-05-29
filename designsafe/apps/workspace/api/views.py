@@ -5,7 +5,6 @@
 
 import logging
 import json
-from celery import shared_task
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -130,8 +129,10 @@ def _get_tas_allocations(username):
     )
     tas_projects = tas_client.projects_for_user(username)
 
-    with open("designsafe/apps/workspace/api/tas_to_tacc_resources.json") as f:
-        tas_to_tacc_resources = json.load(f)
+    with open(
+        "designsafe/apps/workspace/api/tas_to_tacc_resources.json", encoding="utf-8"
+    ) as file:
+        tas_to_tacc_resources = json.load(file)
 
     hosts = {}
 
@@ -161,19 +162,10 @@ def _get_latest_allocations(username):
     """
     Creates or updates allocations cache for a given user and returns new allocations
     """
-    User = get_user_model()
-    user = User.objects.get(username=username)
+    user = get_user_model().objects.get(username=username)
     allocations = _get_tas_allocations(username)
-    UserAllocations.objects.update_or_create(user=user, value=allocations)
+    UserAllocations.objects.update_or_create(user=user, defaults={"value": allocations})
     return allocations
-
-
-@shared_task(bind=True, max_retries=3, queue="indexing")
-def _cache_allocations(self, username):
-    """
-    Refreshes allocations cache
-    """
-    _get_latest_allocations(username)
 
 
 def test_system_needs_keys(tapis, system_id):
@@ -699,9 +691,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post["archiveSystemDir"] = (
-                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
-            )
+            job_post[
+                "archiveSystemDir"
+            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")
@@ -848,6 +840,7 @@ class JobsView(AuthenticatedApiView):
 
 
 class AllocationsView(AuthenticatedApiView):
+    """Allocations API View"""
 
     def _get_allocations(self, user, force=False):
         """
