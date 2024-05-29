@@ -48,11 +48,41 @@ export const JobActionButton: React.FC<{
   );
 };
 
+const InteractiveSessionButtons: React.FC<{
+  uuid: string;
+  interactiveSessionLink: string;
+  message?: string;
+}> = ({ uuid, interactiveSessionLink, message }) => {
+  const [interactiveModalState, setInteractiveModalState] = useState(false);
+
+  return (
+    <>
+      <SecondaryButton
+        size="small"
+        onClick={() => setInteractiveModalState(true)}
+      >
+        Open
+      </SecondaryButton>
+      <JobActionButton
+        uuid={uuid}
+        operation="cancelJob"
+        title="End"
+        size="small"
+      />
+      <InteractiveSessionModal
+        isOpen={interactiveModalState}
+        interactiveSessionLink={interactiveSessionLink}
+        message={message}
+        onCancel={() => setInteractiveModalState(false)}
+      />
+    </>
+  );
+};
+
 export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   ...tableProps
 }) => {
   const queryClient = useQueryClient();
-  const [interactiveModalState, setInteractiveModalState] = useState(false);
   const { data: interactiveSessionNotifs } = useGetNotifications({
     event_types: ['interactive_session_ready'],
   });
@@ -96,31 +126,12 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
             <Flex vertical>
               {truncateMiddle(job.name, 35)}
               <Row className={styles.jobActions}>
-                {interactiveSessionLink && (
-                  <>
-                    <SecondaryButton
-                      size="small"
-                      onClick={() =>
-                        setInteractiveModalState(!interactiveModalState)
-                      }
-                    >
-                      Open
-                    </SecondaryButton>
-                    <JobActionButton
-                      uuid={job.uuid}
-                      operation="cancelJob"
-                      title="End"
-                      size="small"
-                    />
-                    <InteractiveSessionModal
-                      isOpen={interactiveModalState}
-                      interactiveSessionLink={interactiveSessionLink}
-                      message={message}
-                      onCancel={() =>
-                        setInteractiveModalState(!interactiveModalState)
-                      }
-                    />
-                  </>
+                {!!interactiveSessionLink && (
+                  <InteractiveSessionButtons
+                    uuid={job.uuid}
+                    interactiveSessionLink={interactiveSessionLink}
+                    message={message}
+                  />
                 )}
                 {!isInteractiveJob(job) && (
                   <SecondaryButton
