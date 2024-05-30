@@ -32,7 +32,7 @@ const themeConfig: ThemeConfig = {
       colorPrimary: '#1cb500',
     },
     Menu: {
-      itemHeight: 60,
+      itemHeight: 30,
       itemMarginInline: 0,
       itemSelectedColor: 'black',
       itemHoverBg: 'rgba(96, 57, 204, 0.25)',
