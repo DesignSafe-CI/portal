@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigProvider, Menu, MenuProps, Flex  } from 'antd';
+import { ConfigProvider, Menu, MenuProps, Flex } from 'antd';
 import { NavLink } from 'react-router-dom';
 import styles from './AppsSideNav.module.css';
 import { TAppCategory, TPortalApp } from '@client/hooks';
@@ -9,11 +9,7 @@ const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
   to,
   children,
 }) => {
-  return (
-    <NavLink to={to}>
-      {children}
-    </NavLink>
-  );
+  return <NavLink to={to}>{children}</NavLink>;
 };
 
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
@@ -128,8 +124,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
 
   return (
     <>
-    <h5 style={{paddingLeft: 50
-    }}>Applications:</h5>
+      <h5 style={{ paddingLeft: 50 }}>Applications:</h5>
       <Menu
         mode="inline"
         defaultOpenKeys={[
@@ -140,6 +135,6 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         items={items}
         inlineIndent={10}
       />
-      </>
+    </>
   );
 };
