@@ -25,7 +25,7 @@ def get_systems_to_configure(username):
     """ Get systems to configure either during startup or for new user """
 
     systems = []
-    for system in settings.AGAVE_SYSTEMS_TO_CONFIGURE:
+    for system in settings.TAPIS_SYSTEMS_TO_CONFIGURE:
         system_copy = system.copy()
         system_copy['path'] = system_copy['path'].format(username=username)
         systems.append(system_copy)

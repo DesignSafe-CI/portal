@@ -549,7 +549,7 @@ AGAVE_SUPER_TOKEN = 'example_com_client_token'
 AGAVE_STORAGE_SYSTEM = 'storage.example.com'
 AGAVE_WORKING_SYSTEM = 'storage.example.work'
 
-AGAVE_SYSTEMS_TO_CONFIGURE = [
+TAPIS_SYSTEMS_TO_CONFIGURE = [
     {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
     {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
     {"system_id": "cloud.data", "path": "/ ", "create_path": False},
