@@ -13,7 +13,7 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
-  DownloadCitation
+  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
@@ -113,7 +113,7 @@ export const PublishedEntityDisplay: React.FC<{
   defaultOpenChildren = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
-  const [isModalVisible, setIsModalVisible] = useState(false); 
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
@@ -125,8 +125,8 @@ export const PublishedEntityDisplay: React.FC<{
 
   const closeModal = () => {
     setIsModalVisible(false);
-  }; 
-  
+  };
+
   return (
     <section>
       <div
@@ -151,9 +151,8 @@ export const PublishedEntityDisplay: React.FC<{
         )}
         <br></br>
         <DownloadCitation projectId={projectId} entityUuid={treeData.uuid} />
-
       </article>
-      <Collapse 
+      <Collapse
         expandIcon={() => null}
         activeKey={active ? '0' : undefined}
         onChange={(key) => {

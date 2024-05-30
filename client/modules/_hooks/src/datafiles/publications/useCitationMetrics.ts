@@ -7,7 +7,7 @@ export type TCitationMetrics = {
     downloadCount: number;
     viewCount: number;
   };
-}
+};
 
 export type TCitationMetricsResponse = {
   data: TCitationMetrics;
@@ -20,7 +20,9 @@ async function getCitationMetrics({
   doi: string;
   signal: AbortSignal;
 }) {
-  const endpoint1 = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(doi)}`;
+  const endpoint1 = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
+    doi
+  )}`;
   const endpoint2 = `/api/publications/data-cite/${encodeURIComponent(doi)}/`;
 
   // Fetch data from both endpoints simultaneously
@@ -37,9 +39,15 @@ export function useCitationMetrics(doi: string) {
     queryKey: ['datafiles', 'metrics', doi],
     queryFn: async ({ signal }) => {
       const resp1 = await apiClient.get<TCitationMetricsResponse>(
-        `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(doi)}`, { signal });
+        `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
+          doi
+        )}`,
+        { signal }
+      );
       const resp2 = await apiClient.get<TCitationMetricsResponse>(
-        `/api/publications/data-cite/${doi}/`, { signal });
+        `/api/publications/data-cite/${doi}/`,
+        { signal }
+      );
       return { data1: resp1.data, data2: resp2.data };
     },
   });
