@@ -1,5 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import './styles/modal.css';
+@import './styles/button.css';
+@import './styles/link.css';
 
 .ant-spin-nested-loading {
   height: 100%;
@@ -69,32 +71,8 @@
   top: 20px !important;
 }
 
-.ant-btn-link {
-  padding-inline: 0px !important;
-  height: unset;
-  padding: 0px !important;
-  color: #337ab7 !important;
-}
-
-.ant-btn-link:hover span {
-  color: #23527c !important;
-  text-decoration: underline !important;
-}
-
 .listing-nav-link {
   text-decoration: none !important;
-}
-
-.success-button {
-  background-color: #1cb500 !important;
-  border: 1px solid #158600;
-}
-.success-button:hover {
-  background-color: #158600 !important;
-}
-.success-button:disabled {
-  color: #ffffff !important;
-  background-color: rgb(140, 187, 132) !important;
 }
 
 .flex-1 {

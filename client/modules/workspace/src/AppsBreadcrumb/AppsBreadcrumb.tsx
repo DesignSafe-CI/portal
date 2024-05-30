@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { Breadcrumb, Button } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './AppsBreadcrumb.module.css';
+import './AppsBreadcrumb.global.css';
 import { useGetApps, TAppResponse } from '@client/hooks';
 import { useGetAppParams } from '../utils';
 

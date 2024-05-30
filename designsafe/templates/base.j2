@@ -22,20 +22,26 @@
       {% endif %}
       {% block head_extra %}{% endblock %}
       <!-- styles -->
-      <link href="{% static 'vendor/bootstrap-ds/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/angular-toastr/dist/angular-toastr.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/slick-carousel/slick/slick.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
-      <!--<link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css"> -->
-      <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css %>">
-      <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
-      <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
-      <link href="{% static 'styles/DesignSafe-Icons.css' %}" rel="stylesheet" type="text/css">
+    <style>
+        @layer antd, project;
+
+        @import "{% static 'vendor/bootstrap-ds/css/bootstrap.css' %}" layer(project);
+        @import "{% static 'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css' %}" laye(project);
+        @import "{% static 'vendor/font-awesome/css/font-awesome.css' %}" layer(project);
+        @import "{% static 'vendor/angular-toastr/dist/angular-toastr.css' %}" layer(project);
+        @import "{% static 'vendor/slick-carousel/slick/slick.css' %}" layer(project);
+        @import "{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" layer(project);
+        @import "{% static 'styles/typekit.css' %}" layer(project);
+        /*
+        @import "{% static 'styles/main.css' %}" layer(project);
+        @import "{% static 'styles/corner-ribbon.css' %}" layer(project);
+        @import "{% static 'styles/base.css' %}" layer(project);
+        */
+        @import "<%= htmlWebpackPlugin.files.css %>" layer(project);
+        @import "{% static 'vendor/angular-material/angular-material.css' %}" layer(project);
+        @import "{% static 'styles/ng-designsafe.css' %}" layer(project);
+        @import "{% static 'styles/DesignSafe-Icons.css' %}" layer(project);
+    </style>
       {% block styles %}{% endblock %}
       {% render_block "css" %}
       {% render_block "react_assets" %}

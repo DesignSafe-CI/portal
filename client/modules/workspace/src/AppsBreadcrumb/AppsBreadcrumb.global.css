@@ -1,0 +1,4 @@
+.ant-breadcrumb,
+.ant-breadcrumb .ant-btn {
+  font-size: var(--global-font-size--x-small);
+}
