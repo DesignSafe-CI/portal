@@ -10,7 +10,7 @@ export const PublishedEntityListingLayout: React.FC = () => {
   if (!projectId || !data) return null;
 
   return (
-    <div style={{ width: '100%' }}>
+    <div>
       <PublicationView projectId={projectId} />
       {['other', 'field_reconnaissance'].includes(
         data.baseProject.projectType
@@ -24,6 +24,7 @@ export const PublishedEntityListingLayout: React.FC = () => {
               ?.basePath ?? ''
           )}
           baseRoute="."
+          fileTags={data.fileTags}
         />
       )}
     </div>

@@ -39,8 +39,9 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
               <li>
                 If you need to publish subsequent dataset(s),&nbsp;
                 <a
-                  href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+PRJ-3986"
+                  href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
                   target="_blank"
+                  rel="noopener noreferrer"
                   aria-describedby="msg-open-new-window"
                 >
                   submit a ticket
@@ -48,7 +49,9 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
                 with your project number and the name of the dataset(s).
               </li>
             </ul>
-            <NavLink to={`/projects/${projectId}/prepare-to-publish/pipeline`}>
+            <NavLink
+              to={`/projects/${projectId}/prepare-to-publish/pipeline?operation=publish`}
+            >
               <button
                 className="btn btn-small btn-add"
                 disabled={has_published_entities}

@@ -128,9 +128,13 @@ const ExperimentFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -157,10 +161,11 @@ const SimulationFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Simulation Type">
+      <Form.Item label="Simulation Type" required>
         <Form.Item
           className="inner-form-item"
           name={['value', 'simulationType']}
+          rules={[{ required: true }]}
         >
           <DropdownSelectSingleValue
             options={simulationTypeOptions}
@@ -202,9 +207,13 @@ const SimulationFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -231,10 +240,11 @@ const HybridSimFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Hybrid Simulation Type">
+      <Form.Item label="Hybrid Simulation Type" required>
         <Form.Item
           className="inner-form-item"
           name={['value', 'simulationType']}
+          rules={[{ required: true }]}
         >
           <DropdownSelectSingleValue
             options={HybridSimTypeOptions}
@@ -276,9 +286,13 @@ const HybridSimFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -349,7 +363,7 @@ const MissionFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
         <Form.Item
           name={['value', 'authors']}
@@ -441,9 +455,13 @@ const DocumentFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -483,6 +501,9 @@ export const PublishableEntityForm: React.FC<{
   const { data } = useProjectDetail(projectId ?? '');
 
   const entity = data?.entities.find((e) => e.uuid === entityUuid);
+  const entityDisplayName = entityName
+    ? constants.DISPLAY_NAMES[entityName]
+    : 'Category';
 
   const setValues = useCallback(() => {
     if (data && entity && mode === 'edit') {
@@ -527,8 +548,7 @@ export const PublishableEntityForm: React.FC<{
         <Button type="primary" className="success-button" htmlType="submit">
           {mode === 'create' ? (
             <span>
-              <i role="none" className="fa fa-plus"></i>
-              Add Category
+              <i role="none" className="fa fa-plus"></i> Add {entityDisplayName}
             </span>
           ) : (
             <span>Update</span>
