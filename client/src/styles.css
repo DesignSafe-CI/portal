@@ -60,6 +60,11 @@
   right: -20px !important;
 }
 
+.ant-layout-sider-children {
+  border-right: 2px solid var(--global-color-primary--light) !important;
+  overflow: auto;
+}
+
 .ant-table-tbody tr:nth-child(odd) td {
   background-color: #f9f9f9;
 }
