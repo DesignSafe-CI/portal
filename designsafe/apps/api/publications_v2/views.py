@@ -184,6 +184,9 @@ class PublicationListingView(BaseApiView):
                 "projectId": pub.value["projectId"],
                 "title": pub.value["title"],
                 "description": pub.value["description"],
+                "keywords": pub.value["keywords"],
+                "type": pub.value["projectType"],
+                "dataTypes": [t["name"] for t in pub.value.get("dataTypes", None)],
                 "pi": next(
                     (user for user in pub.value["users"] if user["role"] == "pi"), None
                 ),
@@ -204,9 +207,20 @@ class PublicationDetailView(BaseApiView):
         except Publication.DoesNotExist as exc:
             raise ApiException(status=404, message="Publication not found.") from exc
 
-        tree_json = nx.tree_data(nx.node_link_graph(pub_meta.tree), "NODE_ROOT")
+        pub_tree: nx.DiGraph = nx.node_link_graph(pub_meta.tree)
+        file_tags = []
+        for file_tag_arr in [
+            node.get("value", {}).get("fileTags", [])
+            for (_, node) in pub_tree.nodes.data()
+        ]:
+            for tag in file_tag_arr:
+                file_tags.append(tag)
 
-        return JsonResponse({"tree": tree_json, "baseProject": pub_meta.value})
+        tree_json = nx.tree_data(pub_tree, "NODE_ROOT")
+
+        return JsonResponse(
+            {"tree": tree_json, "fileTags": file_tags, "baseProject": pub_meta.value}
+        )
 
 
 class PublicationPublishView(BaseApiView):

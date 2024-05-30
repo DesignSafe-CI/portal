@@ -113,7 +113,9 @@ export const PipelineOrderAuthors: React.FC<{
                 {(entity.value.authors ?? [])
                   .map((author, idx) =>
                     idx === 0
-                      ? `${author.lname}, ${author.fname[0]}.`
+                      ? `${author.lname}, ${author.fname[0]}${
+                          (entity.value.authors?.length ?? 1) > 1 ? '.' : ''
+                        }`
                       : `${author.fname[0]}. ${author.lname}`
                   )
                   .join(', ')}

@@ -181,7 +181,8 @@ export const BaseProjectForm: React.FC<{
 
       {projectType === 'field_recon' && (
         <Form.Item label="Field Research Type" required>
-          Specify the Field Research being performed.
+          Specify the Field Research being performed. Enter a custom value by
+          typing it into the field and pressing "return".
           <Form.Item
             name="frTypes"
             className="inner-form-item"
@@ -193,7 +194,8 @@ export const BaseProjectForm: React.FC<{
       )}
 
       <Form.Item label="Natural Hazard Types" required>
-        Specify the natural hazard being researched.
+        Specify the natural hazard being researched. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item
           name="nhTypes"
           className="inner-form-item"
@@ -206,7 +208,8 @@ export const BaseProjectForm: React.FC<{
       {projectType === 'other' && (
         <>
           <Form.Item label="Data Types" required>
-            The nature or genre of the content.
+            The nature or genre of the content. Enter a custom value by typing
+            it into the field and pressing "return".
             <Form.Item
               className="inner-form-item"
               name="dataTypes"
@@ -217,7 +220,8 @@ export const BaseProjectForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Facilities">
-            Specify the facilities involved in this research.
+            Specify the facilities involved in this research. Enter a custom
+            value by typing it into the field and pressing "return".
             <Form.Item
               className="inner-form-item"
               name="facilities"
@@ -267,7 +271,7 @@ export const BaseProjectForm: React.FC<{
 
       {projectType === 'other' && (
         <>
-          <Form.Item label="Assign Authorship">
+          <Form.Item label="Assign Authorship" required>
             You can order the authors during the publication process.
             <Form.Item
               name={['authors']}
@@ -283,11 +287,6 @@ export const BaseProjectForm: React.FC<{
             </Form.Item>
           </Form.Item>
 
-          <Form.Item label="Award Info">
-            Recommended for funded projects.
-            <AwardsInput name="awardNumbers" />
-          </Form.Item>
-
           <Form.Item label="Referenced Data and Software">
             Published data used in the creation of this dataset.
             <ReferencedDataInput name="referencedData" />
@@ -301,6 +300,11 @@ export const BaseProjectForm: React.FC<{
         </>
       )}
 
+      <Form.Item label="Award Info">
+        Recommended for funded projects.
+        <AwardsInput name="awardNumbers" />
+      </Form.Item>
+
       <Form.Item label="Events">
         Details related to specific events such as natural hazards (ex.
         Hurricane Katrina).
@@ -309,6 +313,7 @@ export const BaseProjectForm: React.FC<{
 
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
         <Form.Item
           name="keywords"
           rules={[{ required: true }]}

@@ -6,7 +6,7 @@ from designsafe.apps.api.publications_v2.views import (
     PublicationDetailView,
     PublicationPublishView,
     PublicationAmendView,
-    PublicationVersionView
+    PublicationVersionView,
 )
 
 urlpatterns = [

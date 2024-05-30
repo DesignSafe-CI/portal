@@ -4,6 +4,7 @@ import { Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import { TPreviewTreeData } from '@client/hooks';
 import { PublishedEntityDisplay } from '../ProjectPreview/ProjectPreview';
+import { PublishableEntityButton } from '../PublishableEntityButton';
 
 export const PipelineProofreadPublications: React.FC<{
   projectId: string;
@@ -48,7 +49,16 @@ export const PipelineProofreadPublications: React.FC<{
         </Button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <PublishableEntityButton projectId={projectId} verb="Manage" editonly />
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          marginTop: '12px',
+        }}
+      >
         {sortedChildren.map((child) => (
           <section key={child.id}>
             <PublishedEntityDisplay

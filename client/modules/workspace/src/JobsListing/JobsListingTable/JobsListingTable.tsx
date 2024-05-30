@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styles from './JobsListingTable.module.css';
 import { Table, TableColumnType, TableProps } from 'antd';
 import { useJobsListing, TTapisJob } from '@client/hooks';
+import styles from './JobsListingTable.module.css';
 
 type TableRef = {
   nativeElement: HTMLDivElement;
@@ -95,7 +95,7 @@ export const JobsListingTable: React.FC<
           isLoading || isFetchingNextPage ? (
             <div style={{ padding: '50px' }}>&nbsp;</div>
           ) : (
-            <div>Placeholder for empty data.</div>
+            <div>No recent jobs.</div>
           ),
       }}
       {...props}
