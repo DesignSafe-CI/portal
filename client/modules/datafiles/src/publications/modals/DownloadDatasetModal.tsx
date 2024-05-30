@@ -271,14 +271,16 @@ export const DownloadDatasetModal: React.FC<{
                   rel="noreferrer"
                   aria-describedby="msg-open-new-window"
                 >
+                  {' '}
                   create an account
-                </a>
+                </a>{' '}
                 and follow the
                 <a
                   href="/user-guide/managingdata/#data-transfer-guides"
                   target="_blank"
                   aria-describedby="msg-open-new-window"
                 >
+                  {' '}
                   Data Transfer Guide
                 </a>
                 . Alternatively, download files individually by selecting the
