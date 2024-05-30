@@ -12,6 +12,7 @@ import {
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import { PublishableEntityForm } from '../forms/PublishableEntityForm';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
+import { DISPLAY_NAMES } from '../constants';
 
 const CategoryDetail: React.FC<{
   value?: TEntityValue;
@@ -59,8 +60,9 @@ const CategoryDetail: React.FC<{
 export const ManagePublishableEntityModal: React.FC<{
   projectId: string;
   entityName: string;
+  editOnly?: boolean;
   children: TModalChildren;
-}> = ({ projectId, entityName, children }) => {
+}> = ({ projectId, entityName, editOnly = false, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data } = useProjectDetail(projectId);
   const showModal = () => setIsModalOpen(true);
@@ -80,21 +82,23 @@ export const ManagePublishableEntityModal: React.FC<{
         open={isModalOpen}
         onCancel={handleClose}
         width="900px"
-        title={<h2>Manage Categories</h2>}
+        title={<h2>Manage {DISPLAY_NAMES[entityName]}s</h2>}
         footer={null}
       >
-        <section style={{ backgroundColor: '#f5f5f5', padding: '20px' }}>
-          <PublishableEntityForm
-            entityName={entityName}
-            mode="create"
-            projectId={projectId}
-            projectType={projectType}
-            onSubmit={(v: Record<string, unknown>) => {
-              console.log(v);
-              mutate({ formData: { name: entityName, value: v } });
-            }}
-          />
-        </section>
+        {!editOnly && (
+          <section style={{ backgroundColor: '#f5f5f5', padding: '20px' }}>
+            <PublishableEntityForm
+              entityName={entityName}
+              mode="create"
+              projectId={projectId}
+              projectType={projectType}
+              onSubmit={(v: Record<string, unknown>) => {
+                console.log(v);
+                mutate({ formData: { name: entityName, value: v } });
+              }}
+            />
+          </section>
+        )}
 
         <article style={{ marginTop: '5px' }}>
           {data.entities

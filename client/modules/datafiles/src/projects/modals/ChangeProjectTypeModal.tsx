@@ -73,11 +73,12 @@ const ProjectTypeSelector: React.FC<{
   );
 };
 
-const ProjectInfoDisplay: React.FC<{
+export const ProjectInfoDisplay: React.FC<{
   projectType: TBaseProjectValue['projectType'];
+  showOptions?: boolean;
   onGoBack: () => void;
   onComplete: () => void;
-}> = ({ projectType, onGoBack, onComplete }) => {
+}> = ({ projectType, showOptions, onGoBack, onComplete }) => {
   const steps = useMemo(() => {
     switch (projectType) {
       case 'experimental':
@@ -85,7 +86,7 @@ const ProjectInfoDisplay: React.FC<{
       case 'simulation':
         return SimulationSteps;
       case 'field_recon':
-        return fieldReconSteps;
+        return showOptions ? fieldReconSteps : fieldReconSteps.slice(0, -1);
       default:
         return [
           {
