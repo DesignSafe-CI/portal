@@ -42,6 +42,11 @@ export const PublishedCitation: React.FC<{
   );
   if (!data || !entityDetails) return null;
 
+  const doi =
+    entityDetails.value.dois && entityDetails.value.dois.length > 0
+      ? entityDetails.value.dois[0]
+      : '';
+
   return (
     <div>
       {(entityDetails.value.authors ?? [])
@@ -53,7 +58,17 @@ export const PublishedCitation: React.FC<{
         .join(', ')}{' '}
       ({new Date(entityDetails.publicationDate).getFullYear()}). "
       {entityDetails.value.title}", in <i>{data.baseProject.title}</i>.
-      DesignSafe-CI. ({entityDetails.value.dois && entityDetails.value.dois[0]})
+      DesignSafe-CI.{' '}
+      {doi && (
+        <a
+          href={`https://doi.org/${doi}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          https://doi.org/{doi}
+        </a>
+      )}
+      {/* DesignSafe-CI. ({entityDetails.value.dois && entityDetails.value.dois[0]}) */}
     </div>
   );
 };
