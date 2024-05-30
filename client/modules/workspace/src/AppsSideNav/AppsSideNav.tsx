@@ -138,7 +138,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         ]}
         defaultSelectedKeys={[defaultKey]}
         items={items}
-        inlineIndent={15}
+        inlineIndent={10}
       />
       </>
   );

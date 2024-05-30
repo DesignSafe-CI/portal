@@ -60,6 +60,10 @@
   right: -20px !important;
 }
 
+.ant-layout-sider-children {
+  border-right: 1px solid #333333 !important;
+}
+
 .ant-table-tbody tr:nth-child(odd) td {
   background-color: #f9f9f9;
 }
