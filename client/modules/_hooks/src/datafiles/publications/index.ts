@@ -6,3 +6,4 @@ export { usePublicationVersions } from './usePublicationVersions';
 export { usePublishProject } from './usePublishProject';
 export { useVersionProject } from './useVersionProject';
 export { useAmendProject } from './useAmendProject';
+export { useCreateFeedbackTicket } from './useCreateFeedbackTicket';

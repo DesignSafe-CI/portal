@@ -65,7 +65,7 @@ export const BaseProjectUpdateModal: React.FC<{
       <Modal
         open={isModalOpen}
         onCancel={handleClose}
-        width="900px"
+        width="1000px"
         title={<h2>Editing Project {projectId}</h2>}
         footer={null}
       >

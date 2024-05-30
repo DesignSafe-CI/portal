@@ -236,6 +236,8 @@ export const BaseProjectForm: React.FC<{
       <div style={{ display: 'flex', gap: '1rem' }}>
         <Form.Item label="Principal Investigator" required className="flex-1">
           These users can view, edit, curate, and publish. Include Co-PI(s).
+          Users can be looked up using their <strong>exact username</strong>{' '}
+          only.
           <Form.Item
             name="pi"
             rules={[{ required: true }]}
@@ -245,7 +247,8 @@ export const BaseProjectForm: React.FC<{
           </Form.Item>
         </Form.Item>
         <Form.Item label="Co-Principal Investigators" className="flex-1">
-          &nbsp;
+          <br />
+          <br />
           <Form.Item name="coPis" initialValue={[]} className="inner-form-item">
             <UserSelect userRole="co_pi" />
           </Form.Item>
@@ -253,7 +256,8 @@ export const BaseProjectForm: React.FC<{
       </div>
 
       <Form.Item label="Project Members">
-        These users can view, edit, curate, and publish.
+        These users can view, edit, curate, and publish. Users can be looked up
+        using their <strong>exact username</strong> only.
         <Form.Item
           name="teamMembers"
           initialValue={[]}
