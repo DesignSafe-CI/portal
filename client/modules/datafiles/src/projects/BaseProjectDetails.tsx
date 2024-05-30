@@ -6,6 +6,7 @@ import { Button, Col, Popover, Row, Select, Tooltip } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import { RelateDataModal } from './modals';
 import { ProjectInfoModal } from './modals/ProjectInfoModal';
+import { VersionChangesModal } from './modals/VersionChangesModal';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
   children,
@@ -159,6 +160,10 @@ export const BaseProjectDetails: React.FC<{
       return prevParams;
     });
   };
+
+  const currentVersion = versions
+    ? parseInt(searchParams.get('version') ?? Math.max(...versions).toString())
+    : 1;
 
   return (
     <section style={{ marginBottom: '20px' }}>
@@ -381,12 +386,15 @@ export const BaseProjectDetails: React.FC<{
                   style={{ width: '200px' }}
                   size="small"
                   options={versions.map((v) => ({ value: v, label: v }))}
-                  value={parseInt(
-                    searchParams.get('version') ??
-                      Math.max(...versions).toString()
-                  )}
+                  value={currentVersion}
                   onChange={(newVal) => setSelectedVersion(newVal)}
-                />
+                />{' '}
+                {currentVersion > 1 && (
+                  <VersionChangesModal
+                    projectId={projectValue.projectId}
+                    version={currentVersion}
+                  />
+                )}
               </td>
             </tr>
           )}

@@ -9,6 +9,8 @@ export type TPublicationTree<T> = {
   basePath: string;
   value: T;
   publicationDate: string;
+  versionDate?: string;
+  versionInfo?: string;
   status: string;
   order: number;
   version?: number;
