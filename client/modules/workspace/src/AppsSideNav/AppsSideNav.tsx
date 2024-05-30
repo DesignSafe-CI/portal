@@ -1,7 +1,6 @@
 import React from 'react';
-import { ConfigProvider, Menu, MenuProps, Flex } from 'antd';
+import { Menu, MenuProps } from 'antd';
 import { NavLink } from 'react-router-dom';
-import styles from './AppsSideNav.module.css';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
 
