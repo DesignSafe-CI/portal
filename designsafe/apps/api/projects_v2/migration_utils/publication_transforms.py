@@ -322,16 +322,18 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     file_objs = entity.get("fileObjs", None)
     # Some legacy experiment/hybrid sim entities have file_objs incorrectly
     # populated from their children. In these cases, _filepaths is empty.
-    if file_objs and entity.get("_filePaths", None) != []:
+    if file_objs and not (
+        entity.get("_filePaths", None) == []
+        and (
+            entity["name"]
+            in [
+                "designsafe.project.experiment",
+                "designsafe.project.hybrid_simulation",
+            ]
+        )
+    ):
         entity["value"]["fileObjs"] = file_objs
         # Avoid "fixing" tags for legacy projects that don't have tree-based file layouts
-        if entity["value"].get("fileTags", False):
-            # entity["value"]["fileTags"] = update_file_tag_paths(
-            #    entity, base_path
-            # )
-            entity["value"]["fileTags"] = update_file_tag_paths_legacy(
-                entity, base_path
-            )
 
         # new_file_objs, path_mapping = update_file_objs(
         #    entity, base_path, system_id=settings.PUBLISHED_SYSTEM
@@ -343,6 +345,13 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         entity["value"]["fileObjs"] = new_file_objs
     else:
         path_mapping = {}
+
+    if entity["value"].get("fileTags", False):
+        # entity["value"]["fileTags"] = update_file_tag_paths(
+        #    entity, base_path
+        # )
+        entity["value"]["fileTags"] = update_file_tag_paths_legacy(entity, base_path)
+
     validated_model = model.model_validate(entity["value"])
 
     if getattr(validated_model, "project_type", None) == "other":

@@ -2,9 +2,11 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FileListing } from '@client/datafiles';
 import { DatafilesBreadcrumb } from '@client/common-components';
+import { usePublicationDetail } from '@client/hooks';
 
 export const PublishedFileListingLayout: React.FC = () => {
   const { projectId, path } = useParams();
+  const { data } = usePublicationDetail(projectId ?? '');
   if (!projectId) return null;
   return (
     <>
@@ -33,6 +35,7 @@ export const PublishedFileListingLayout: React.FC = () => {
           api="tapis"
           system="designsafe.storage.published"
           path={path ?? ''}
+          fileTags={data?.fileTags}
           scroll={{ y: 500 }}
         />
       </div>
