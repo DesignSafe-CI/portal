@@ -57,7 +57,13 @@ const WorkspaceRoot: React.FC = () => {
             gap: '20px',
           }}
         >
-          <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0} className={styles['appSider']}>
+          <Sider
+            width={200}
+            theme="light"
+            breakpoint="md"
+            collapsedWidth={0}
+            className={styles['appSider']}
+          >
             <JobStatusNav />
             <AppsSideNav categories={data.categories} />
           </Sider>
