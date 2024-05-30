@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
-import { StyleProvider } from '@ant-design/cssinjs';
 
 const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
@@ -53,9 +52,7 @@ if (appsElement) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
-          <StyleProvider layer>
-            <RouterProvider router={workspaceRouter} />
-          </StyleProvider>
+          <RouterProvider router={workspaceRouter} />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>

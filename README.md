@@ -46,32 +46,25 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    Make a copy of [external_resource_secrets.sample.py](designsafe/settings/external_resource_secrets.sample.py)
    and rename it to `external_resource_secrets.py`.
 
-3. Build the containers and frontend packages
+3. Build the containers and frontend package
 
-   1. Containers:
-      ```sh
-      make build-dev
-      ```
-      or
-      ```sh
-      docker-compose -f conf/docker/docker-compose-dev.yml build
-      ```
+   ```
+   $ make build-dev
+   ```
+   or
+   ```
+   $ docker-compose -f conf/docker/docker-compose-dev.yml build
+   ```
 
-   2. Angular Frontend + static assets:
-      ```sh
-      npm ci
-      docker run -v `pwd`:`pwd` -w `pwd` -it node:16  /bin/bash -c "npm run build"
-      ```
+   These lines install the node packages required for DesignSafe,
+   and build the frontend package.
+   ```
+   $ npm ci
+   $ npm run build
+   ```
 
-      > [!NOTE]
-      > If you are working with the frontend code and want it to automatically update, use `npm run dev` rather than `npm run build` to have it build upon saving the file.
-
-   3. React Frontend (in another terminal):
-      ```sh
-      cd client
-      npm ci
-      npm run start
-      ```
+   If you are working with the frontend code and want it to automatically update,
+   use `npm run dev` rather than `npm run build` to have it build upon saving the file.
 
 4. Start local containers
 
@@ -86,7 +79,7 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    ```
    $ docker exec -it des_django bash
    $ ./manage.py migrate
-   $ ./manage.py collectstatic --ignore demo --no-input
+   $ ./manage.py collectstatic -i demo
    $ ./manage.py createsuperuser
    ```
 

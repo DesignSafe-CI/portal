@@ -1,3 +1,9 @@
+.root,
+.root a {
+  font-size: 16px;
+  font-weight: medium;
+}
+
 .root li:has(span, a) {
   align-self: center;
 }
