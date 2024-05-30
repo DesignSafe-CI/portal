@@ -98,10 +98,7 @@ export const DownloadCitation: React.FC<{
       : '';
   const { data: citationMetrics, isLoading, isError } = useCitationMetrics(doi);
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const openModal = () => setIsModalVisible(true);
-  const closeModal = () => setIsModalVisible(false);
+  const [, setIsModalVisible] = useState(false);
 
   return (
     <div>
