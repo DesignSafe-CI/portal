@@ -93,12 +93,11 @@ export const DownloadCitation: React.FC<{
   }
 
   const doi =
-    entityDetails.value.dois && entityDetails.value.dois.length > 0
+    entityDetails?.value.dois && entityDetails.value.dois.length > 0
       ? entityDetails.value.dois[0]
       : '';
-  const { data: citationMetrics, isLoading, isError } = useCitationMetrics(doi);
 
-  const [, setIsModalVisible] = useState(false);
+  const { data: citationMetrics, isLoading, isError } = useCitationMetrics(doi);
 
   return (
     <div>
