@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   useCitationMetrics,
   useProjectDetail,
@@ -81,16 +81,12 @@ export const DownloadCitation: React.FC<{
     data,
     isLoading: isProjectLoading,
     isError: isProjectError,
+    error: projectError,
   } = usePublicationDetail(projectId);
+
   const entityDetails = (data?.tree.children ?? []).find(
     (child) => child.uuid === entityUuid
   );
-
-  if (!data || !entityDetails) {
-    if (isProjectLoading) return <div>Loading project details...</div>;
-    if (isProjectError) return <div>Error fetching project details</div>;
-    return null;
-  }
 
   const doi =
     entityDetails?.value.dois && entityDetails.value.dois.length > 0
@@ -98,6 +94,11 @@ export const DownloadCitation: React.FC<{
       : '';
 
   const { data: citationMetrics, isLoading, isError } = useCitationMetrics(doi);
+
+  if (isProjectLoading) return <div>Loading project details...</div>;
+  if (isProjectError)
+    return <div>Error fetching project details: {projectError.message}</div>;
+  if (!entityDetails) return null;
 
   return (
     <div>
