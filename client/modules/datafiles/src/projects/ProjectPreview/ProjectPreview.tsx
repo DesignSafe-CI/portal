@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   TPreviewTreeData,
-  useCitationMetrics,
   useProjectPreview,
   usePublicationDetail,
   usePublicationVersions,
@@ -14,6 +13,7 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
+  DownloadCitation
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
@@ -21,7 +21,6 @@ import {
 } from '../../FileListing/FileListingTable/FileListingTable';
 import { NavLink } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
-import { MetricsModal } from '../modals/MetricsModal'; 
 
 const columns: TFileListingColumns = [
   {
@@ -98,7 +97,6 @@ function RecursiveTree({
   );
 }
 
-
 export const PublishedEntityDisplay: React.FC<{
   projectId: string;
   preview?: boolean;
@@ -120,9 +118,6 @@ export const PublishedEntityDisplay: React.FC<{
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
-  
-  const dois = treeData.value.dois && treeData.value.dois.length > 0 ? treeData.value.dois[0] : '';
-  const { data: citationMetrics, isLoading, isError, error } = useCitationMetrics(dois);
 
   const openModal = () => {
     setIsModalVisible(true);
@@ -130,14 +125,7 @@ export const PublishedEntityDisplay: React.FC<{
 
   const closeModal = () => {
     setIsModalVisible(false);
-  };
-  console.log(isModalVisible)
-
-  useEffect(() => {
-    if (isError) {
-      console.error("Error fetching citation metrics:", error);
-    }
-  }, [isLoading, isError, error]);  
+  }; 
   
   return (
     <section>
@@ -161,31 +149,8 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
-        {isLoading && <div>Loading citation metrics...</div>}
-        {isError && <div>Error fetching citation metrics</div>}
-        {citationMetrics && (
-          <div>
-            <strong>Download Citation:</strong>
-            <div>
-              <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'} Downloads
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data2?.data.attributes.viewCount ?? '--'} Views
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data2?.data.attributes.citationCount ?? '--'} Citations
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span onClick={openModal} style={{ cursor: 'pointer', color: '#337AB7', fontWeight: 'bold'}}>
-                Details
-              </span>
-              <MetricsModal isOpen={isModalVisible} handleCancel={closeModal} data1={citationMetrics?.data1}/>
-            </div>
-          </div>
-        )}
+        <br></br>
+        <DownloadCitation projectId={projectId} entityUuid={treeData.uuid} />
 
       </article>
       <Collapse 
