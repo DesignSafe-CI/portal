@@ -1,4 +1,4 @@
-import { MetricsModal } from './MetricsModal';
+// import { MetricsModal } from './MetricsModal';
 export { BaseProjectUpdateModal } from './BaseProjectUpdateModal';
 export { RelateDataModal } from './RelateDataModal';
 export { ManageCategoryModal } from './ManageCategoryModal';

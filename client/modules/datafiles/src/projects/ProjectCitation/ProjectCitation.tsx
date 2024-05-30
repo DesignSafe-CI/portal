@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   useCitationMetrics,
   useProjectDetail,
   usePublicationDetail,
 } from '@client/hooks';
-import { MetricsModal } from '../modals/MetricsModal';
+// import { MetricsModal } from '../modals/MetricsModal';
 import styles from './ProjectCitation.module.css';
 
 export const ProjectCitation: React.FC<{
@@ -77,23 +77,26 @@ export const DownloadCitation: React.FC<{
   projectId: string;
   entityUuid: string;
 }> = ({ projectId, entityUuid }) => {
-  const { data } = usePublicationDetail(projectId);
-  console.log(data);
+  const {
+    data,
+    isLoading: isProjectLoading,
+    isError: isProjectError,
+  } = usePublicationDetail(projectId);
   const entityDetails = (data?.tree.children ?? []).find(
     (child) => child.uuid === entityUuid
   );
 
-  if (!data || !entityDetails) return null;
+  if (!data || !entityDetails) {
+    if (isProjectLoading) return <div>Loading project details...</div>;
+    if (isProjectError) return <div>Error fetching project details</div>;
+    return null;
+  }
 
-  const dois =
+  const doi =
     entityDetails.value.dois && entityDetails.value.dois.length > 0
       ? entityDetails.value.dois[0]
       : '';
-  const {
-    data: citationMetrics,
-    isLoading,
-    isError,
-  } = useCitationMetrics(dois);
+  const { data: citationMetrics, isLoading, isError } = useCitationMetrics(doi);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -108,7 +111,7 @@ export const DownloadCitation: React.FC<{
         <div>
           <strong>Download Citation: </strong>
           <a
-            href={`https://data.datacite.org/application/vnd.datacite.datacite+xml/${dois}`}
+            href={`https://data.datacite.org/application/vnd.datacite.datacite+xml/${doi}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -116,7 +119,7 @@ export const DownloadCitation: React.FC<{
           </a>{' '}
           |
           <a
-            href={`https://data.datacite.org/application/x-research-info-systems/${dois}`}
+            href={`https://data.datacite.org/application/x-research-info-systems/${doi}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -125,7 +128,7 @@ export const DownloadCitation: React.FC<{
           </a>{' '}
           |
           <a
-            href={`https://data.datacite.org/application/x-bibtex/${dois}`}
+            href={`https://data.datacite.org/application/x-bibtex/${doi}`}
             target="_blank"
             rel="noopener noreferrer"
           >

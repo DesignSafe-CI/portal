@@ -1,4 +1,4 @@
-import { useProjectDetail, usePublicationDetail } from '@client/hooks';
+import { usePublicationDetail } from '@client/hooks';
 
 export const ProjectMetrics: React.FC<{
   projectId: string;
