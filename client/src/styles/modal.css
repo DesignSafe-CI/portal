@@ -54,5 +54,5 @@
 .ant-modal-body {
   overflow: auto;
   max-height: 60vh;
-  padding: 0;
+  padding: 0px 15px !important;
 }

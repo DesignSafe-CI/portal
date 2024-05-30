@@ -44,7 +44,7 @@ export const SubEntityDetails: React.FC<{
             </tr>
           )}
 
-          {entityValue.modes && (
+          {entityValue.modes && entityValue.modes.length > 0 && (
             <tr className={styles['prj-row']}>
               <td>Mode(s) of Collection</td>
               <td style={{ fontWeight: 'bold' }}>
@@ -55,16 +55,17 @@ export const SubEntityDetails: React.FC<{
             </tr>
           )}
 
-          {entityValue.sampleApproach && (
-            <tr className={styles['prj-row']}>
-              <td>Sampling Approach(es)</td>
-              <td style={{ fontWeight: 'bold' }}>
-                {entityValue.sampleApproach.map((approach) => (
-                  <div key={approach}>{approach}</div>
-                ))}
-              </td>
-            </tr>
-          )}
+          {entityValue.sampleApproach &&
+            entityValue.sampleApproach.length > 0 && (
+              <tr className={styles['prj-row']}>
+                <td>Sampling Approach(es)</td>
+                <td style={{ fontWeight: 'bold' }}>
+                  {entityValue.sampleApproach.map((approach) => (
+                    <div key={approach}>{approach}</div>
+                  ))}
+                </td>
+              </tr>
+            )}
 
           {entityValue.sampleSize && (
             <tr className={styles['prj-row']}>

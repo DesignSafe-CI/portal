@@ -58,8 +58,9 @@ const CategoryDetail: React.FC<{
 
 export const ManageCategoryModal: React.FC<{
   projectId: string;
+  editOnly?: boolean;
   children: TModalChildren;
-}> = ({ projectId, children }) => {
+}> = ({ projectId, editOnly = false, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data } = useProjectDetail(projectId);
   const showModal = () => setIsModalOpen(true);
@@ -85,16 +86,18 @@ export const ManageCategoryModal: React.FC<{
         title={<h2>Manage Categories</h2>}
         footer={null}
       >
-        <section style={{ backgroundColor: '#f5f5f5', padding: '20px' }}>
-          <ProjectCategoryForm
-            mode="create"
-            projectId={projectId}
-            projectType={projectType}
-            onSubmit={(v: { name: string; value: Record<string, unknown> }) =>
-              mutate({ formData: v })
-            }
-          />
-        </section>
+        {!editOnly && (
+          <section style={{ backgroundColor: '#f5f5f5', padding: '20px' }}>
+            <ProjectCategoryForm
+              mode="create"
+              projectId={projectId}
+              projectType={projectType}
+              onSubmit={(v: { name: string; value: Record<string, unknown> }) =>
+                mutate({ formData: v })
+              }
+            />
+          </section>
+        )}
         <article style={{ marginTop: '5px' }}>
           <strong>Category Inventory</strong>
           {categories.map((category) =>

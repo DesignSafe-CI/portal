@@ -128,7 +128,7 @@ class SocialScienceCollection(MetadataModel):
     unit: str = ""
     modes: Annotated[list[str], BeforeValidator(handle_array_of_none)] = []
     sample_approach: Annotated[list[str], BeforeValidator(handle_array_of_none)] = []
-    sample_size: str
+    sample_size: str = ""
     date_start: str
     date_end: Optional[str] = None
     data_collectors: list[ProjectUser] = []

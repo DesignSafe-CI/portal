@@ -17,10 +17,15 @@ const PipelineValidationAlert: React.FC<{
     <Alert
       type="error"
       style={{ marginBottom: '24px' }}
-      description={
-        <div>
+      message={
+        <span>
+          {' '}
           Your selection has missing data or incomplete requirements. Please
           review the following fields:
+        </span>
+      }
+      description={
+        <div>
           {(validationErrors ?? [])
             .filter((e) => e.errorType === 'MISSING_ENTITY')
             .map((validationError) => (
@@ -33,6 +38,14 @@ const PipelineValidationAlert: React.FC<{
                     <li key={missingReq}>{DISPLAY_NAMES[missingReq]}</li>
                   ))}
                 </ul>
+              </div>
+            ))}
+          {(validationErrors ?? [])
+            .filter((e) => e.errorType === 'MISSING_FILES')
+            .map((validationError) => (
+              <div key={validationError.title}>
+                The {DISPLAY_NAMES[validationError.name]}{' '}
+                <strong>{validationError.title}</strong> has no associated data.
               </div>
             ))}
           {(validationErrors ?? [])
@@ -150,6 +163,28 @@ export const PipelineSelectForPublish: React.FC<{
           Continue
         </Button>
       </div>
+      {operation !== 'publish' && (
+        <Alert
+          showIcon
+          style={{ marginBottom: '12px' }}
+          description={
+            <span>
+              Amending or revising a project will impact all previously
+              published works. New datasets cannot be published through this
+              process. If you need to publish subsequent dataset(s), please{' '}
+              <a
+                href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-describedby="msg-open-new-window"
+              >
+                submit a ticket
+              </a>{' '}
+              with your project number and the name of the dataset(s)
+            </span>
+          }
+        />
+      )}
       {(validationErrors?.length ?? 0) > 0 && (
         <PipelineValidationAlert validationErrors={validationErrors} />
       )}
