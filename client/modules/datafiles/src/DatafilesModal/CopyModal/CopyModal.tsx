@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
 import { Button, Modal, Select, Table } from 'antd';
 import {
+  TFileListing,
   useAuthenticatedUser,
   useFileCopy,
   usePathDisplayName,
-  useSelectedFiles,
 } from '@client/hooks';
 import {
   FileListingTable,
@@ -113,14 +113,14 @@ export const CopyModal: React.FC<{
   api: string;
   system: string;
   path: string;
+  selectedFiles: TFileListing[];
   children: TModalChildren;
-}> = ({ api, system, path, children }) => {
+}> = ({ api, system, path, selectedFiles, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
 
-  const { selectedFiles } = useSelectedFiles(api, system, path);
   const { user } = useAuthenticatedUser();
 
   const defaultDestParams = useMemo(

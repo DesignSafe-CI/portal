@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
-import { Link } from 'react-router-dom';
 import { usePublicationDetail } from '@client/hooks';
 
 export const VersionChangesModal: React.FC<{
