@@ -61,7 +61,8 @@
 }
 
 .ant-layout-sider-children {
-  border-right: 1px solid #333333 !important;
+  border-right: 2px solid var(--global-color-primary--light) !important;
+  overflow: auto;
 }
 
 .ant-table-tbody tr:nth-child(odd) td {

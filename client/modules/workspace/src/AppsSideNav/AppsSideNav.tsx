@@ -4,13 +4,6 @@ import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
 
-const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
-  to,
-  children,
-}) => {
-  return <NavLink to={to}>{children}</NavLink>;
-};
-
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
@@ -45,14 +38,14 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         if (bundles[bundleKey]) {
           bundles[bundleKey].apps.push(
             getItem(
-              <AppsNavLink
+              <NavLink
                 to={
                   `${app.app_id}` +
                   (app.version ? `?appVersion=${app.version}` : '')
                 }
               >
                 {app.label || app.bundle_label}
-              </AppsNavLink>,
+              </NavLink>,
               `${app.app_id}${app.version}${app.bundle_id}`
             )
           );
@@ -60,14 +53,14 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           bundles[bundleKey] = {
             apps: [
               getItem(
-                <AppsNavLink
+                <NavLink
                   to={
                     `${app.app_id}` +
                     (app.version ? `?appVersion=${app.version}` : '')
                   }
                 >
                   {app.label || app.bundle_label}
-                </AppsNavLink>,
+                </NavLink>,
                 `${app.app_id}${app.version}${app.bundle_id}`
               ),
             ],
@@ -77,14 +70,14 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
       } else {
         categoryItems.push(
           getItem(
-            <AppsNavLink
+            <NavLink
               to={
                 `${app.app_id}` +
                 (app.version ? `?appVersion=${app.version}` : '')
               }
             >
               {app.label || app.bundle_label}
-            </AppsNavLink>,
+            </NavLink>,
             `${app.app_id}${app.version}${app.bundle_id}`
           )
         );
@@ -123,7 +116,16 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
 
   return (
     <>
-      <h5 style={{ paddingLeft: 50 }}>Applications:</h5>
+      <div
+        style={{
+          display: 'grid',
+          justifyContent: 'center',
+          padding: 10,
+          fontWeight: 700,
+        }}
+      >
+        Applications:
+      </div>
       <Menu
         mode="inline"
         defaultOpenKeys={[
