@@ -63,8 +63,7 @@ If you are on a Mac or a Windows machine, the recommended method is to install
       docker run -v `pwd`:`pwd` -w `pwd` -it node:16  /bin/bash -c "npm run build"
       ```
 
-      > [!NOTE]
-      > If you are working with the frontend code and want it to automatically update, use `npm run dev` rather than `npm run build` to have it build upon saving the file.
+      **Note:** If you are working with the frontend code and want it to automatically update, use `npm run dev` rather than `npm run build` to have it build upon saving the file.
 
    3. React Frontend (in another terminal):
       ```sh
