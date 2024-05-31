@@ -309,7 +309,9 @@ export const SelectModal: React.FC<{
     >
       <article className={styles.modalContent}>
         <div className={styles.modalPanel}>
-          <div className={styles.dataFilesModalColHeader}>Select {inputLabel}</div>
+          <div className={styles.dataFilesModalColHeader}>
+            Select {inputLabel}
+          </div>
           <div className={styles.selectRowContainer}>
             <div className={styles.systemSelectRow}>
               <ConfigProvider theme={systemSelectThemeConfig}>
