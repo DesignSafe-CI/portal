@@ -176,6 +176,12 @@ class AppVariant(models.Model):
         blank=True,
     )
 
+    shortLabel = models.CharField(
+        help_text="The display name of this app in the Apps side navigation. If not defined, uses notes.shortLabel from app definition.",
+        max_length=64,
+        blank=True,
+    )
+
     bundle = models.ForeignKey(
         AppListingEntry,
         help_text="Bundle that the app belongs to.",
