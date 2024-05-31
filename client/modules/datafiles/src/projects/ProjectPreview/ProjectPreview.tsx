@@ -13,6 +13,7 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
+  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
@@ -174,6 +175,7 @@ export const PublishedEntityDisplay: React.FC<{
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
+
   return (
     <section>
       <div
@@ -211,6 +213,8 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
+        <br></br>
+        <DownloadCitation projectId={projectId} entityUuid={treeData.uuid} />
       </article>
       <Collapse
         expandIcon={() => null}
