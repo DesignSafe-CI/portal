@@ -171,7 +171,13 @@ class AppVariant(models.Model):
     )
 
     label = models.CharField(
-        help_text="The display name of this app in the Apps Tray. If not defined, uses notes.label from app definition.",
+        help_text="The display name of this app on the Apps submission form. If not defined, uses notes.label from app definition.",
+        max_length=64,
+        blank=True,
+    )
+
+    shortLabel = models.CharField(
+        help_text="The display name of this app in the Apps Tray. If not defined, uses notes.shortLabel from app definition.",
         max_length=64,
         blank=True,
     )
