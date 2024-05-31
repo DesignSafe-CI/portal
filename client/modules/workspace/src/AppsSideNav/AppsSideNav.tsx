@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, MenuProps } from 'antd';
+import { Menu, MenuProps, ConfigProvider, ThemeConfig } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
@@ -8,6 +8,15 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
   type MenuItem = Required<MenuProps>['items'][number];
+
+  const AppMenuItemTheme: ThemeConfig = {
+    components: {
+      Menu: {
+        itemHoverBg: "#cbdded",
+        itemSelectedBg: "#cbdded",
+      },
+    },
+  }
 
   function getItem(
     label: React.ReactNode,
@@ -44,7 +53,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                   (app.version ? `?appVersion=${app.version}` : '')
                 }
               >
-                {app.label || app.bundle_label}
+                {app.shortLabel || app.label || app.bundle_label}
               </NavLink>,
               `${app.app_id}${app.version}${app.bundle_id}`
             )
@@ -59,7 +68,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                     (app.version ? `?appVersion=${app.version}` : '')
                   }
                 >
-                  {app.label || app.bundle_label}
+                  {app.shortLabel || app.label || app.bundle_label}
                 </NavLink>,
                 `${app.app_id}${app.version}${app.bundle_id}`
               ),
@@ -76,7 +85,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                 (app.version ? `?appVersion=${app.version}` : '')
               }
             >
-              {app.label || app.bundle_label}
+              {app.shortLabel || app.label || app.bundle_label}
             </NavLink>,
             `${app.app_id}${app.version}${app.bundle_id}`
           )
@@ -126,16 +135,18 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
       >
         Applications:
       </div>
-      <Menu
-        mode="inline"
-        defaultOpenKeys={[
-          (currentCategory as TAppCategory)?.title,
-          currentSubMenu,
-        ]}
-        defaultSelectedKeys={[defaultKey]}
-        items={items}
-        inlineIndent={10}
-      />
+      <ConfigProvider theme={AppMenuItemTheme}>
+        <Menu
+          mode="inline"
+          defaultOpenKeys={[
+            (currentCategory as TAppCategory)?.title,
+            currentSubMenu,
+          ]}
+          defaultSelectedKeys={[defaultKey]}
+          items={items}
+          inlineIndent={10}
+        />
+      </ConfigProvider>
     </>
   );
 };
