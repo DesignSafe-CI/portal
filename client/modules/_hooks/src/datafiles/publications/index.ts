@@ -7,3 +7,4 @@ export { useCitationMetrics } from './useCitationMetrics';
 export { usePublishProject } from './usePublishProject';
 export { useVersionProject } from './useVersionProject';
 export { useAmendProject } from './useAmendProject';
+export { useCreateFeedbackTicket } from './useCreateFeedbackTicket';

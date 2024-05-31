@@ -164,7 +164,6 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
         <DatafilesModal.Download
           api={api}
           system={system}
-          path={path}
           selectedFiles={selectedFiles}
         >
           {({ onClick }) => (

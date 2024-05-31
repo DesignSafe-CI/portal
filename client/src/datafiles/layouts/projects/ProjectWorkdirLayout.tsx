@@ -40,8 +40,8 @@ export const ProjectWorkdirLayout: React.FC = () => {
           message="No Project Type Selected"
           description={
             <span>
-              Please {changeTypeModal} in order to access advanced curation
-              features and publish your data set.
+              Please {changeTypeModal} in order to access data curation features
+              and publish your data set.
             </span>
           }
         />
