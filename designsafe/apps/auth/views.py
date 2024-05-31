@@ -67,27 +67,11 @@ def tapis_oauth(request):
 
 def launch_setup_checks(user):
     """Perform any onboarding checks or non-onboarding steps that may spawn celery tasks"""
-    systems_to_configure = get_systems_to_configure(user.username)
-    client = user.tapis_oauth.client
-
-    for system in systems_to_configure:
-        system_id = system["system_id"]
-        path = system["path"]
-        create_path = system["create_path"]
-        try:
-            client.files.listFiles(systemId=system_id, path=path)
-            logger.debug(
-                f"Checking system:{system_id} (by performing a listing during login) has succeeded."
-            )
-        except BaseTapyException as e:
-            logger.info(
-                f"Checking system:{system_id} (by performing a listing during login) has failed "
-                f"({e}: {e.response.status_code}. Starting task to configure the system "
-                f"correctly."
-            )
-            check_or_configure_system_and_user_directory.apply_async(
-                args=(user.username, system_id, path, create_path), queue="files"
-            )
+    logger.info("Starting tasks to check or configure systems for %s", user.username)
+    for system in get_systems_to_configure(user.username):
+        check_or_configure_system_and_user_directory.apply_async(
+            args=(user.username, system["system_id"], system["path"], system["create_path"]), queue="files"
+        )
     logger.info("Creating/updating cached allocation information for %s", user.username)
     cache_allocations.apply_async(args=(user.username,))
 
