@@ -12,11 +12,11 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   const AppMenuItemTheme: ThemeConfig = {
     components: {
       Menu: {
-        itemHoverBg: "#cbdded",
-        itemSelectedBg: "#cbdded",
+        itemHoverBg: '#cbdded',
+        itemSelectedBg: '#cbdded',
       },
     },
-  }
+  };
 
   function getItem(
     label: React.ReactNode,
