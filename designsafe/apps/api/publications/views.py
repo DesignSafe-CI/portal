@@ -7,7 +7,8 @@ from designsafe.apps.api.publications import operations
 from designsafe.apps.projects.managers import datacite as DataciteManager
 import json
 import logging
-# Create your views here.
+import requests
+
 
 logger = logging.getLogger(__name__)
 
@@ -47,3 +48,21 @@ class PublicationDataCiteView(BaseApiView):
             return JsonResponse(response)
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
+
+"""
+View for getting DataCite metrics details from publications.
+"""
+class PublicationDataCiteEventsView(BaseApiView):
+    def get(self, request):
+        doi = request.GET.get('doi', '')
+        source_id = request.GET.get('source-id', 'datacite-usage')
+
+        url = f'https://api.datacite.org/events?source-id={source_id}&doi={doi}'
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  
+            events = response.json()     
+            return JsonResponse(events)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

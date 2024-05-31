@@ -24,6 +24,7 @@ export const FileListingTable: React.FC<
     disabled?: boolean;
     className?: string;
     emptyListingDisplay?: React.ReactNode;
+    searchTerm?: string | null;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
   api,
@@ -35,6 +36,7 @@ export const FileListingTable: React.FC<
   disabled = false,
   className,
   emptyListingDisplay,
+  searchTerm = '',
   ...props
 }) => {
   const limit = 100;
@@ -56,6 +58,7 @@ export const FileListingTable: React.FC<
     path: path ?? '',
     scheme,
     disabled,
+    searchTerm,
     pageSize: limit,
   });
 

@@ -10,7 +10,7 @@ import {
   Flex,
 } from 'antd';
 import { useFormContext, useWatch, FieldValues } from 'react-hook-form';
-import { z } from 'zod';
+import { z, ZodTypeAny } from 'zod';
 import { TField } from '../AppsWizard/AppsFormSchema';
 import { PrimaryButton } from '@client/common-components';
 import styles from './AppsSubmissionDetails.module.css';
@@ -41,6 +41,20 @@ const descriptionCardStyle = {
   border: '1px solid #dbdbdb',
 };
 
+// For summary, it is considered required : only if it is required and value is not valid.
+function isFieldRequired(
+  fieldSchema: ZodTypeAny | undefined,
+  value: unknown
+): boolean {
+  return (
+    (!(value instanceof Object) &&
+      fieldSchema &&
+      !fieldSchema.isOptional() &&
+      !fieldSchema.safeParse(value).success) ??
+    false
+  );
+}
+
 export const AppsSubmissionDetails: React.FC<{
   schema: { [dynamic: string]: z.ZodType };
   fields: {
@@ -67,21 +81,15 @@ export const AppsSubmissionDetails: React.FC<{
       if (!Object.keys(value).length) return <span>-</span>;
       const items: DescriptionsProps['items'] = [];
       Object.entries(value).forEach(([k, v], childIndex) => {
-        const fieldSchema = parent?.shape?.[k];
-        // For summary, it is considered required :
-        // only if it is required and value is not valid.
-        const isRequired =
-          !(v instanceof Object) &&
-          fieldSchema &&
-          !fieldSchema.isOptional() &&
-          !fieldSchema?.safeParse(v)?.success;
         if (v instanceof Object) {
           Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
+            const nestedFieldSchema = parent?.shape?.[k]?.shape?.[kk];
+            const isRequired = isFieldRequired(nestedFieldSchema, vv);
             items.push({
               key: kk,
               label: (
                 <span>
-                  {fields[key]?.[kk]?.label || kk}{' '}
+                  {String(fields[key]?.[kk]?.label || kk)}{' '}
                   {isRequired && (
                     <ConfigProvider theme={tagTheme}>
                       <Tag className="required" style={{ marginLeft: 10 }}>
@@ -105,11 +113,13 @@ export const AppsSubmissionDetails: React.FC<{
             });
           });
         } else {
+          const fieldSchema = parent?.shape?.[k];
+          const isRequired = isFieldRequired(fieldSchema, v);
           items.push({
             key: k,
             label: (
               <span>
-                {fields[key]?.[k]?.label || k}{' '}
+                {String(fields[key]?.[k]?.label || k)}{' '}
                 {isRequired && (
                   <ConfigProvider theme={tagTheme}>
                     <Tag className="required" style={{ marginLeft: 10 }}>
