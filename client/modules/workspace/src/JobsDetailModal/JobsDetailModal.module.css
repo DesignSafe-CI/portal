@@ -57,9 +57,6 @@ dl.header-details dt {
   display: block;
   width: 100%;
 }
-.submit-button + .submit-button {
-  margin-top: whatever;
-}
 
 .left-panel {
   border-right: var(--border);

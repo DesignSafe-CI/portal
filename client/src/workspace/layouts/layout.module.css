@@ -44,3 +44,8 @@
 .appDetail-placeholder-message {
   font-size: 1.4rem;
 }
+
+.appSider {
+  border-right: 2px solid var(--global-color-primary--light) !important;
+  overflow: auto;
+}

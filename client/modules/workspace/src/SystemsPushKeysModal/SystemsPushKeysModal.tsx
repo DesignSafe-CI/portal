@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
-import { Button, Modal, Form, Input } from 'antd';
+import React, { useEffect } from 'react';
+import { Modal, Form, Input, Alert } from 'antd';
 import { usePushKeys, TTapisSystem, TPushKeysBody } from '@client/hooks';
+import { PrimaryButton } from '@client/common-components';
 
-export const SystemsPushKyesModalBody: React.FC<{
+export const SystemsPushKeysModalBody: React.FC<{
   system?: TTapisSystem;
   onSuccess?: () => void;
   handleCancel: () => void;
 }> = ({ system, onSuccess, handleCancel }) => {
-  const { mutate } = usePushKeys();
+  const {
+    mutate: pushKeys,
+    error: pushKeysError,
+    isPending,
+    isSuccess,
+  } = usePushKeys();
   const [form] = Form.useForm();
 
   const initialValues = {
@@ -17,49 +23,65 @@ export const SystemsPushKyesModalBody: React.FC<{
     token: '',
   };
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (data: TPushKeysBody) => {
-    setIsSubmitting(true);
-    try {
-      await mutate({
-        ...data,
-      });
-
+  useEffect(() => {
+    if (isSuccess) {
       // Keys pushed successfully, close the modal and call onSuccess()
-      setIsSubmitting(false);
       handleCancel();
-      form.resetFields();
-
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error) {
-      console.error('Error during form submission:', error);
-      // Handle error if needed
-      setIsSubmitting(false);
     }
+  }, [isSuccess]);
+
+  const getErrorMessage = (error?: string) => {
+    if (!error) return 'There was a problem pushing your keys to the server.';
+
+    if (error?.includes('SYSAPI_CRED_VALID_FAIL'))
+      return 'Invalid credentials. Please input a valid TACC Token and password.';
+
+    return error;
   };
 
   return (
     <Modal
       title={<h2>Authenticate with TACC Token</h2>}
-      width="60%"
+      width="600px"
       open={!!system}
-      footer={null} // Remove the footer from here
+      destroyOnClose
       onCancel={handleCancel}
+      footer={null}
     >
+      <Alert
+        type="info"
+        message={
+          <>
+            To proceed, you must authenticate to this system with a six-digit
+            one time passcode at least once. If you have not yet created an MFA
+            pairing for your account, navigate to your{' '}
+            <a href="https://tacc.utexas.edu/portal/account" target="_blank">
+              TACC User Portal Account
+            </a>
+            . A public key will be pushed to your <code>authorized_keys</code>{' '}
+            file on the system below. This will allow you to access this system
+            from this portal.
+          </>
+        }
+        showIcon
+        style={{ margin: '15px 10px' }}
+      />
       <Form
         autoComplete="off"
         layout="vertical"
-        onFinish={handleSubmit}
+        onFinish={(data: TPushKeysBody) => pushKeys(data)}
         initialValues={initialValues}
+        form={form}
+        preserve={false}
       >
         <Form.Item label="System ID" name="systemId">
-          <Input readOnly />
+          <span className="ant-form-text">{initialValues.systemId}</span>
         </Form.Item>
         <Form.Item label="Host" name="hostname">
-          <Input readOnly />
+          <span className="ant-form-text">{initialValues.hostname}</span>
         </Form.Item>
         <Form.Item
           label="Password"
@@ -74,22 +96,32 @@ export const SystemsPushKyesModalBody: React.FC<{
           rules={[
             {
               required: true,
-              message: 'Please input your 6-digit numerical TACC Token',
+              message: 'Please input your 6-digit numerical TACC Token.',
             },
           ]}
         >
           <Input.OTP length={6} />
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button
-            type="primary"
-            htmlType="submit"
-            disabled={isSubmitting}
-            loading={isSubmitting}
-          >
-            Submit
-          </Button>
-        </Form.Item>
+        <div>
+          {pushKeysError && (
+            <Alert
+              message={getErrorMessage(pushKeysError.response?.data.message)}
+              type="error"
+              showIcon
+              style={{ margin: '15px 10px' }}
+            />
+          )}
+          <Form.Item style={{ float: 'right' }}>
+            <PrimaryButton
+              type="primary"
+              htmlType="submit"
+              disabled={isPending}
+              loading={isPending}
+            >
+              Authenticate
+            </PrimaryButton>
+          </Form.Item>
+        </div>
       </Form>
     </Modal>
   );
@@ -107,7 +139,7 @@ export const SystemsPushKeysModal: React.FC<{
   };
 
   return (
-    <SystemsPushKyesModalBody
+    <SystemsPushKeysModalBody
       system={isModalOpen}
       onSuccess={onSuccess}
       handleCancel={handleCancel}

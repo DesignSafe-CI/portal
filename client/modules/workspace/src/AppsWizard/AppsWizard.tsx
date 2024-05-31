@@ -26,29 +26,6 @@ import { SecondaryButton } from '@client/common-components';
 //   return context;
 // }
 
-/**
- * AdjustValuesWhenQueueChanges is a component that makes uses of
- * useFormikContext to ensure that when users switch queues, some
- * variables are updated to match the queue specifications (i.e.
- * correct node count, runtime etc)
- */
-// const AdjustValuesWhenQueueChanges = ({ app }) => {
-//   const [previousValues, setPreviousValues] = useState();
-
-//   // Grab values and update if queue changes
-//   const { values, setValues } = useFormikContext();
-//   React.useEffect(() => {
-//     if (
-//       previousValues &&
-//       previousValues.execSystemLogicalQueue !== values.execSystemLogicalQueue
-//     ) {
-//       setValues(updateValuesForQueue(execSystems, values));
-//     }
-//     setPreviousValues(values);
-//   }, [app, values, setValues]);
-//   return null;
-// };
-
 export const AppsWizard: React.FC<{
   step: {
     title: string;
