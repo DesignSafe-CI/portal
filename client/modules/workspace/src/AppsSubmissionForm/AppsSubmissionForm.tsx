@@ -38,8 +38,6 @@ import {
 } from '../AppsWizard/Steps';
 import { SystemsPushKeysModal } from '../SystemsPushKeysModal/SystemsPushKeysModal';
 import {
-  // AppFormProvider,
-  // useAppFormState,
   // getSystemName,
   getExecSystemFromId,
   getQueueValueForExecSystem,
@@ -53,7 +51,6 @@ import {
   getDefaultExecSystem,
   getAllocationList,
 } from '../utils';
-// import styles from './layout.module.css';
 
 export const AppsSubmissionForm: React.FC = () => {
   const { data: app } = useGetAppsSuspense(useGetAppParams());
@@ -68,8 +65,6 @@ export const AppsSubmissionForm: React.FC = () => {
   } = useAuthenticatedUser() as { user: TUser };
 
   const { definition, license, defaultSystemNeedsKeys } = app;
-
-  // const [state, setState] = useAppFormState();
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -354,6 +349,7 @@ export const AppsSubmissionForm: React.FC = () => {
     isSuccess,
     data: submitResult,
     error: submitError,
+    variables: submitVariables,
   } = usePostJobs();
 
   const [pushKeysSystem, setPushKeysSystem] = useState<
@@ -504,7 +500,7 @@ export const AppsSubmissionForm: React.FC = () => {
               )}
             </Flex>
           </Header>
-          {submitResult && (
+          {submitResult && !submitResult.execSys && (
             <Alert
               message={
                 <>
@@ -601,6 +597,7 @@ export const AppsSubmissionForm: React.FC = () => {
       <SystemsPushKeysModal
         isModalOpen={pushKeysSystem}
         setIsModalOpen={setPushKeysSystem}
+        onSuccess={() => submitVariables && submitJob(submitVariables)}
       />
     </>
   );
