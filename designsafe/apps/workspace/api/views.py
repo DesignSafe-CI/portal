@@ -275,6 +275,7 @@ class AppsTrayView(AuthenticatedApiView):
                     "icon": getattr(app.notes, "icon", None),
                     "is_bundled": False,
                     "label": getattr(app.notes, "label", app.id),
+                    "shortLabel": getattr(app.notes, "shortLabel", None),
                     "version": app.version,
                 },
                 apps_listing,
@@ -311,6 +312,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "shortLabel",
             "version",
         ]
 
@@ -323,6 +325,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "shortLabel",
             "version",
         ]
 
