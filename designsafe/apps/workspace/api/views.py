@@ -10,7 +10,9 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
+from django.contrib.auth import get_user_model
 from django.urls import reverse
+from pytas.http import TASClient
 from tapipy.errors import InternalServerError, UnauthorizedError
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.users.utils import get_user_data
@@ -23,6 +25,7 @@ from designsafe.apps.workspace.models.app_entries import (
     AppTrayCategory,
     AppVariant,
 )
+from designsafe.apps.workspace.models.allocations import UserAllocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
 
 
@@ -108,6 +111,61 @@ def _get_app(app_id, app_version, user):
         data["license"]["enabled"] = lic is not None
 
     return data
+
+
+def _get_tas_allocations(username):
+    """Returns user allocations on TACC resources
+
+    : returns: allocations
+    : rtype: dict
+    """
+
+    tas_client = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            "username": settings.TAS_CLIENT_KEY,
+            "password": settings.TAS_CLIENT_SECRET,
+        },
+    )
+    tas_projects = tas_client.projects_for_user(username)
+
+    with open(
+        "designsafe/apps/workspace/api/tas_to_tacc_resources.json", encoding="utf-8"
+    ) as file:
+        tas_to_tacc_resources = json.load(file)
+
+    hosts = {}
+
+    for tas_proj in tas_projects:
+        # Each project from tas has an array of length 1 for its allocations
+        alloc = tas_proj["allocations"][0]
+        charge_code = tas_proj["chargeCode"]
+        if alloc["resource"] in tas_to_tacc_resources:
+            resource = dict(tas_to_tacc_resources[alloc["resource"]])
+            resource["allocation"] = dict(alloc)
+
+            # Separate active and inactive allocations and make single entry for each project
+            if resource["allocation"]["status"] == "Active":
+                if (
+                    resource["host"] in hosts
+                    and charge_code not in hosts[resource["host"]]
+                ):
+                    hosts[resource["host"]].append(charge_code)
+                elif resource["host"] not in hosts:
+                    hosts[resource["host"]] = [charge_code]
+    return {
+        "hosts": hosts,
+    }
+
+
+def _get_latest_allocations(username):
+    """
+    Creates or updates allocations cache for a given user and returns new allocations
+    """
+    user = get_user_model().objects.get(username=username)
+    allocations = _get_tas_allocations(username)
+    UserAllocations.objects.update_or_create(user=user, defaults={"value": allocations})
+    return allocations
 
 
 def test_system_needs_keys(tapis, system_id):
@@ -781,4 +839,47 @@ class JobsView(AuthenticatedApiView):
                 "response": response,
             },
             encoder=BaseTapisResultSerializer,
+        )
+
+
+class AllocationsView(AuthenticatedApiView):
+    """Allocations API View"""
+
+    def _get_allocations(self, user, force=False):
+        """
+        Returns indexed allocation data stored in Django DB, or fetches
+        allocations from TAS and stores them.
+        Parameters
+            ----------
+            username: str
+                TACC username to fetch allocations for.
+            Returns
+            -------
+            dict
+        """
+        username = user.username
+        try:
+            if force:
+                logger.info(f"Forcing TAS allocation retrieval for user:{username}")
+                raise ObjectDoesNotExist
+            result = {"hosts": {}}
+            result.update(UserAllocations.objects.get(user=user).value)
+            return result
+        except ObjectDoesNotExist:
+            # Fall back to getting allocations from TAS
+            return _get_latest_allocations(username)
+
+    def get(self, request):
+        """Returns active user allocations on TACC resources
+
+        : returns: {'response': {'active': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive, 'hosts': hosts}}
+        : rtype: dict
+        """
+        data = self._get_allocations(request.user)
+
+        return JsonResponse(
+            {
+                "status": 200,
+                "response": data,
+            }
         )

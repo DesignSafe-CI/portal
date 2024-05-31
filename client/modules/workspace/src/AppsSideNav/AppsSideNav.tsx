@@ -1,34 +1,25 @@
 import React from 'react';
 import { Menu, MenuProps, ConfigProvider, ThemeConfig } from 'antd';
 import { NavLink } from 'react-router-dom';
-import styles from './AppsSideNav.module.css';
+import { Menu, MenuProps } from 'antd';
+import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
-
-const AppsNavLink: React.FC<React.PropsWithChildren<{ to: string }>> = ({
-  to,
-  children,
-}) => {
-  return (
-    <NavLink to={to} className={styles.navLink}>
-      <div>{children}</div>
-    </NavLink>
-  );
-};
-
-const AppMenuItemTheme: ThemeConfig = {
-  components: {
-    Menu: {
-      itemHoverBg: "#cbdded",
-      itemSelectedBg: "#cbdded",
-    },
-  },
-}
 
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
+  
   type MenuItem = Required<MenuProps>['items'][number];
+
+  const AppMenuItemTheme: ThemeConfig = {
+    components: {
+      Menu: {
+        itemHoverBg: "#cbdded",
+        itemSelectedBg: "#cbdded",
+      },
+    },
+  }
 
   function getItem(
     label: React.ReactNode,
@@ -59,14 +50,14 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         if (bundles[bundleKey]) {
           bundles[bundleKey].apps.push(
             getItem(
-              <AppsNavLink
+              <NavLink
                 to={
                   `${app.app_id}` +
                   (app.version ? `?appVersion=${app.version}` : '')
                 }
               >
                 {app.shortLabel || app.label || app.bundle_label}
-              </AppsNavLink>,
+              </NavLink>,
               `${app.app_id}${app.version}${app.bundle_id}`
             )
           );
@@ -74,14 +65,14 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           bundles[bundleKey] = {
             apps: [
               getItem(
-                <AppsNavLink
+                <NavLink
                   to={
                     `${app.app_id}` +
                     (app.version ? `?appVersion=${app.version}` : '')
                   }
                 >
                   {app.shortLabel || app.label || app.bundle_label}
-                </AppsNavLink>,
+                </NavLink>,
                 `${app.app_id}${app.version}${app.bundle_id}`
               ),
             ],
@@ -91,14 +82,14 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
       } else {
         categoryItems.push(
           getItem(
-            <AppsNavLink
+            <NavLink
               to={
                 `${app.app_id}` +
                 (app.version ? `?appVersion=${app.version}` : '')
               }
             >
               {app.shortLabel || app.label || app.bundle_label}
-            </AppsNavLink>,
+            </NavLink>,
             `${app.app_id}${app.version}${app.bundle_id}`
           )
         );
@@ -136,8 +127,17 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   const defaultKey = `${appId}${appVersion || ''}${currentApp?.bundle_id}`;
 
   return (
-    <div className={styles.appsBrowserSidebar}>
-      <h3 className={styles.appsNavHeader}>Applications:</h3>
+    <>
+      <div
+        style={{
+          display: 'grid',
+          justifyContent: 'center',
+          padding: 10,
+          fontWeight: 700,
+        }}
+      >
+        Applications:
+      </div>
       <ConfigProvider theme={AppMenuItemTheme}>
         <Menu
           mode="inline"
@@ -147,8 +147,9 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           ]}
           defaultSelectedKeys={[defaultKey]}
           items={items}
+          inlineIndent={10}
         />
       </ConfigProvider>
-    </div>
+    </>
   );
 };

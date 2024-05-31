@@ -134,7 +134,12 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
             </ToolbarButton>
           )}
         </DatafilesModal.Preview>
-        <DatafilesModal.Copy api={api} system={system} path={path}>
+        <DatafilesModal.Copy
+          api={api}
+          system={system}
+          path={path}
+          selectedFiles={selectedFiles}
+        >
           {({ onClick }) => (
             <ToolbarButton
               onClick={onClick}
@@ -156,7 +161,12 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           <i role="none" className="fa fa-trash" />
           <span>Trash</span>
         </TrashButton>
-        <DatafilesModal.Download api={api} system={system} path={path}>
+        <DatafilesModal.Download
+          api={api}
+          system={system}
+          path={path}
+          selectedFiles={selectedFiles}
+        >
           {({ onClick }) => (
             <ToolbarButton
               onClick={onClick}

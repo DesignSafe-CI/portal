@@ -6,8 +6,9 @@ export const DropdownSelect: React.FC<{
   maxCount?: number;
   options: SelectProps['options'];
   value?: DropdownValue[];
+  placeholder?: string;
   onChange?: (value: DropdownValue[]) => void;
-}> = ({ value, onChange, options, maxCount }) => {
+}> = ({ value, onChange, options, maxCount, placeholder }) => {
   const handleChange = (newVal: { label?: string; value: string }[]) => {
     const formValue = newVal.map((v) =>
       v.label ? { id: v.value, name: v.label } : { id: 'other', name: v.value }
@@ -30,12 +31,12 @@ export const DropdownSelect: React.FC<{
     <Select
       virtual={false}
       placement="bottomLeft"
+      placeholder={placeholder}
       maxCount={maxCount}
       value={getValue(value)}
       mode="tags"
       options={options}
       labelInValue
-      popupMatchSelectWidth={false}
       onChange={handleChange}
     />
   );

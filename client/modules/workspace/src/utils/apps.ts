@@ -4,8 +4,8 @@ import {
   TAppParamsType,
   TTapisSystem,
   TTapisApp,
-  TAppResponse,
   TTapisSystemQueue,
+  TTasAllocations,
 } from '@client/hooks';
 import { TFormValues } from '../AppsWizard/AppsFormSchema';
 import { UseFormSetValue } from 'react-hook-form';
@@ -58,19 +58,19 @@ export const getExecSystemsFromApp = (
  * Otherwise, get the first entry.
  */
 export const getDefaultExecSystem = (
-  app: TAppResponse,
+  definition: TTapisApp,
   execSystems: TTapisSystem[]
 ) => {
   // If dynamic exec system is not setup, use from job attributes.
-  if (!app.definition.notes.dynamicExecSystems) {
+  if (!definition.notes.dynamicExecSystems) {
     return getExecSystemFromId(
       execSystems,
-      app.definition.jobAttributes.execSystemId
+      definition.jobAttributes.execSystemId
     );
   }
 
   if (execSystems?.length) {
-    const execSystemId = app.definition.jobAttributes.execSystemId;
+    const execSystemId = definition.jobAttributes.execSystemId;
 
     // Check if the app's default execSystemId is in provided list
     // If not found, return the first execSystem from the provided list
@@ -421,6 +421,21 @@ export const getExecSystemLogicalQueueValidation = (
       ...string[]
     ]
   );
+};
+
+/**
+ * Provides allocation list matching
+ * the execution host of the selected app.
+ */
+export const getAllocationList = (
+  execSystem: TTapisSystem,
+  allocations: TTasAllocations
+) => {
+  const matchingExecutionHost = Object.keys(allocations.hosts).find(
+    (host) => execSystem.host === host || execSystem.host.endsWith(`.${host}`)
+  );
+
+  return matchingExecutionHost ? allocations.hosts[matchingExecutionHost] : [];
 };
 
 export const useGetAppParams = () => {

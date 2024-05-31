@@ -21,8 +21,8 @@ const DataFilesRoot: React.FC = () => {
         gap: '20px',
         paddingLeft: '20px',
         paddingRight: '20px',
-        overflowX: 'auto',
-        overflowY: 'hidden',
+        //overflowX: 'auto',
+        //overflowY: 'hidden',
       }}
     >
       <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0}>

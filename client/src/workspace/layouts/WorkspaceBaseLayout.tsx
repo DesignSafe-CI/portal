@@ -13,15 +13,16 @@ import {
   usePrefetchGetApps,
   useAppsListing,
   usePrefetchGetSystems,
+  usePrefetchGetAllocations,
 } from '@client/hooks';
 import styles from './layout.module.css';
-
 
 const { Sider, Header } = Layout;
 
 const WorkspaceRoot: React.FC = () => {
   usePrefetchGetApps(useGetAppParams());
   usePrefetchGetSystems();
+  usePrefetchGetAllocations();
 
   const { data, isLoading } = useAppsListing();
 
@@ -56,7 +57,13 @@ const WorkspaceRoot: React.FC = () => {
             gap: '20px',
           }}
         >
-          <Sider width={200} theme="light" breakpoint="md" collapsedWidth={0} className={styles.workspaceSidebar}>
+          <Sider
+            width={200}
+            theme="light"
+            breakpoint="md"
+            collapsedWidth={0}
+            className={styles['appSider']}
+          >
             <JobStatusNav />
             <AppsSideNav categories={data.categories} />
           </Sider>

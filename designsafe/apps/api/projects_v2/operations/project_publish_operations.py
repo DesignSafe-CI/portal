@@ -46,7 +46,31 @@ REQUIRED_ENTITIES = {
         constants.HYBRID_SIM_SIM_SUBSTRUCTURE,
         constants.HYBRID_SIM_EXP_SUBSTRUCTURE,
     ],
+    constants.FIELD_RECON_REPORT: [],
 }
+
+ENTITIES_WITH_REQUIRED_FILES = [
+    constants.EXPERIMENT_MODEL_CONFIG,
+    constants.EXPERIMENT_SENSOR,
+    constants.EXPERIMENT_EVENT,
+    constants.SIMULATION_MODEL,
+    constants.SIMULATION_INPUT,
+    constants.SIMULATION_OUTPUT,
+    constants.SIMULATION_REPORT,
+    constants.FIELD_RECON_SOCIAL_SCIENCE,
+    constants.FIELD_RECON_GEOSCIENCE,
+    constants.FIELD_RECON_PLANNING,
+    constants.HYBRID_SIM_GLOBAL_MODEL,
+    constants.HYBRID_SIM_COORDINATOR,
+    constants.HYBRID_SIM_SIM_SUBSTRUCTURE,
+    constants.HYBRID_SIM_EXP_SUBSTRUCTURE,
+    constants.HYBRID_SIM_COORDINATOR_OUTPUT,
+    constants.HYBRID_SIM_EXP_OUTPUT,
+    constants.HYBRID_SIM_SIM_OUTPUT,
+    constants.FIELD_RECON_REPORT,
+    constants.HYBRID_SIM_REPORT,
+    constants.HYBRID_SIM_ANALYSIS,
+]
 
 
 def check_missing_entities(
@@ -59,7 +83,7 @@ def check_missing_entities(
     """
 
     project_tree = ProjectMetadata.get_project_by_id(project_id)
-    project_graph: nx.DiGraph = nx.node_link_graph(project_tree.project_graph.value)
+    project_graph: nx.DiGraph = add_values_to_tree(project_id)
 
     entity_node = next(
         (
@@ -75,6 +99,7 @@ def check_missing_entities(
         project_graph.nodes[node]
         for node in nx.dfs_preorder_nodes(project_graph, entity_node)
     ]
+    logger.debug(child_nodes)
     missing_entities = []
 
     for required_entity_name in REQUIRED_ENTITIES.get(entity_name, []):
@@ -91,7 +116,17 @@ def check_missing_entities(
         # At least one of the required entity types is associated
         missing_entities = []
 
-    return missing_entities
+    # Check for entities with missing files:
+    missing_file_objs = []
+    for child_node in child_nodes:
+        if child_node["name"] in ENTITIES_WITH_REQUIRED_FILES and not child_node[
+            "value"
+        ].get("fileObjs", []):
+            missing_file_objs.append(
+                {"name": child_node["name"], "title": child_node["value"]["title"]}
+            )
+
+    return missing_entities, missing_file_objs
 
 
 def validate_entity_selection(project_id: str, entity_uuids: list[str]):
@@ -101,7 +136,9 @@ def validate_entity_selection(project_id: str, entity_uuids: list[str]):
         entity_meta = ProjectMetadata.objects.get(uuid=uuid)
         match entity_meta.name:
             case constants.EXPERIMENT | constants.SIMULATION | constants.HYBRID_SIM:
-                missing_entities = check_missing_entities(project_id, uuid)
+                missing_entities, missing_file_objs = check_missing_entities(
+                    project_id, uuid
+                )
                 if len(missing_entities) > 0:
                     validation_errors.append(
                         {
@@ -111,8 +148,17 @@ def validate_entity_selection(project_id: str, entity_uuids: list[str]):
                             "missing": missing_entities,
                         }
                     )
-            case constants.FIELD_RECON_MISSION:
-                missing_entities = check_missing_entities(
+                for missing_file_obj in missing_file_objs:
+                    validation_errors.append(
+                        {
+                            "errorType": "MISSING_FILES",
+                            "name": missing_file_obj["name"],
+                            "title": missing_file_obj["title"],
+                        }
+                    )
+
+            case constants.FIELD_RECON_MISSION | constants.FIELD_RECON_REPORT:
+                missing_entities, missing_file_objs = check_missing_entities(
                     project_id, uuid, default_operator="OR"
                 )
                 if len(missing_entities) > 0:
@@ -122,6 +168,14 @@ def validate_entity_selection(project_id: str, entity_uuids: list[str]):
                             "name": entity_meta.name,
                             "title": entity_meta.value["title"],
                             "missing": missing_entities,
+                        }
+                    )
+                for missing_file_obj in missing_file_objs:
+                    validation_errors.append(
+                        {
+                            "errorType": "MISSING_FILES",
+                            "name": missing_file_obj["name"],
+                            "title": missing_file_obj["title"],
                         }
                     )
     return validation_errors

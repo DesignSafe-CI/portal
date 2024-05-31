@@ -5,6 +5,8 @@ import styles from './BaseProjectDetails.module.css';
 import { Button, Col, Popover, Row, Select, Tooltip } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import { RelateDataModal } from './modals';
+import { ProjectInfoModal } from './modals/ProjectInfoModal';
+import { VersionChangesModal } from './modals/VersionChangesModal';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
   children,
@@ -159,6 +161,10 @@ export const BaseProjectDetails: React.FC<{
     });
   };
 
+  const currentVersion = versions
+    ? parseInt(searchParams.get('version') ?? Math.max(...versions).toString())
+    : 1;
+
   return (
     <section style={{ marginBottom: '20px' }}>
       <table
@@ -207,7 +213,15 @@ export const BaseProjectDetails: React.FC<{
           {projectValue.projectType !== 'other' && (
             <tr className={styles['prj-row']}>
               <td>Project Type</td>
-              <td style={{ fontWeight: 'bold' }}>{projectType}</td>
+              <td style={{ fontWeight: 'bold' }}>
+                {projectType}
+                {!isPublished && (
+                  <>
+                    {' '}
+                    <ProjectInfoModal projectType={projectValue.projectType} />
+                  </>
+                )}
+              </td>
             </tr>
           )}
           {(projectValue.dataTypes?.length ?? 0) > 0 && (
@@ -292,12 +306,28 @@ export const BaseProjectDetails: React.FC<{
               <td style={{ fontWeight: 'bold' }}>
                 {projectValue.associatedProjects.map((assoc) => (
                   <div key={JSON.stringify(assoc)}>
+                    {assoc.type} |{' '}
                     <a
                       href={assoc.href}
                       rel="noopener noreferrer"
                       target="_blank"
                     >
                       {assoc.title}
+                    </a>
+                  </div>
+                ))}
+              </td>
+            </tr>
+          )}
+          {(projectValue.referencedData?.length ?? 0) > 0 && (
+            <tr className={styles['prj-row']}>
+              <td>Referenced Data and Software</td>
+              <td style={{ fontWeight: 'bold' }}>
+                {projectValue.referencedData.map((ref) => (
+                  <div key={JSON.stringify(ref)}>
+                    {ref.hrefType && `${ref.hrefType} | `}
+                    <a href={ref.doi} rel="noopener noreferrer" target="_blank">
+                      {ref.title}
                     </a>
                   </div>
                 ))}
@@ -356,12 +386,15 @@ export const BaseProjectDetails: React.FC<{
                   style={{ width: '200px' }}
                   size="small"
                   options={versions.map((v) => ({ value: v, label: v }))}
-                  value={parseInt(
-                    searchParams.get('version') ??
-                      Math.max(...versions).toString()
-                  )}
+                  value={currentVersion}
                   onChange={(newVal) => setSelectedVersion(newVal)}
-                />
+                />{' '}
+                {currentVersion > 1 && (
+                  <VersionChangesModal
+                    projectId={projectValue.projectId}
+                    version={currentVersion}
+                  />
+                )}
               </td>
             </tr>
           )}
@@ -393,10 +426,12 @@ export const BaseProjectDetails: React.FC<{
           </Button>
         </section>
       )}
-      <DescriptionExpander>
-        <strong>Description: </strong>
-        {projectValue.description}
-      </DescriptionExpander>
+      {projectValue.description && (
+        <DescriptionExpander>
+          <strong>Description: </strong>
+          {projectValue.description}
+        </DescriptionExpander>
+      )}
     </section>
   );
 };

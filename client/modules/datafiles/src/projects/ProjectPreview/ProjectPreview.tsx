@@ -13,9 +13,11 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
+  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
+  FileTypeIcon,
   TFileListingColumns,
 } from '@client/common-components';
 import { Link } from 'react-router-dom';
@@ -56,22 +58,19 @@ const EntityFileListingTable: React.FC<{
               {data}
             </Link>
           ) : (
-            <Button
-              type="link"
-              disabled={preview}
-              onClick={() =>
-                setPreviewModalState({ isOpen: true, path: record.path })
-              }
-            >
-              <i
-                role="none"
-                style={{ color: '#333333' }}
-                className="fa fa-file-o"
+            <>
+              <FileTypeIcon name={record.name} />
+              &nbsp;&nbsp;
+              <Button
+                type="link"
+                disabled={preview}
+                onClick={() =>
+                  setPreviewModalState({ isOpen: true, path: record.path })
+                }
               >
-                &nbsp;&nbsp;
-              </i>
-              {data}
-            </Button>
+                {data}
+              </Button>
+            </>
           )}
           <div>
             {treeData.value.fileTags
@@ -94,6 +93,7 @@ const EntityFileListingTable: React.FC<{
         path={treeData.uuid}
         scheme="public"
         columns={columns}
+        scroll={{ x: 500, y: 500 }}
         dataSource={treeData.value.fileObjs}
         disabled
       />
@@ -175,13 +175,29 @@ export const PublishedEntityDisplay: React.FC<{
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
+
   return (
     <section>
       <div
         className={styles['pub-show-button']}
-        style={{ padding: '16px 12px', width: '100%' }}
+        style={{
+          padding: '16px 12px',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
-        {DISPLAY_NAMES[treeData.name]} | <strong>{treeData.value.title}</strong>
+        <span>
+          {DISPLAY_NAMES[treeData.name]} |{' '}
+          <strong>{treeData.value.title}</strong>
+        </span>
+        {preview &&
+          ((treeData.value.dois?.length ?? 0) > 0 ? (
+            <Tag color="#1cb500">Published</Tag>
+          ) : (
+            <Tag>Unpublished</Tag>
+          ))}
       </div>
       <article
         style={{
@@ -197,6 +213,8 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
+        <br></br>
+        <DownloadCitation projectId={projectId} entityUuid={treeData.uuid} />
       </article>
       <Collapse
         expandIcon={() => null}
@@ -326,7 +344,7 @@ export const PublicationView: React.FC<{
             license={data.baseProject.license}
             projectId={projectId}
             treeData={child}
-            defaultOpen={idx === 0}
+            defaultOpen={idx === 0 && sortedChildren.length === 1}
             key={child.id}
           />
         ))}
