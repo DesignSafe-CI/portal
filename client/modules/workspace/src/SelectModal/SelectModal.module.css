@@ -3,6 +3,9 @@
   max-height: 60vh;
   min-height: 400px;
   gap: 50px;
+  padding-bottom: 40px !important;
+  padding-right: 40px !important;
+  padding-left: 40px !important;
 }
 
 .modalContent td {
