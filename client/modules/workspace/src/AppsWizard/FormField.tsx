@@ -119,6 +119,7 @@ export const FormField: React.FC<{
        */}
       {tapisFile && (
         <SelectModal
+          inputLabel={label}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSelect={(value: string) => setValue(name, value)}

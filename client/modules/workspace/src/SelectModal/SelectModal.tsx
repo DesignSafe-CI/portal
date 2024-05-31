@@ -164,10 +164,11 @@ function getFilesColumns(
 }
 
 export const SelectModal: React.FC<{
+  inputLabel: string;
   isOpen: boolean;
   onClose: () => void;
   onSelect: (value: string) => void;
-}> = ({ isOpen, onClose, onSelect }) => {
+}> = ({ inputLabel, isOpen, onClose, onSelect }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchPlaceHolder, setSearchPlaceHolder] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
@@ -308,7 +309,7 @@ export const SelectModal: React.FC<{
     >
       <article className={styles.modalContent}>
         <div className={styles.modalPanel}>
-          <div className={styles.dataFilesModalColHeader}>Select Input</div>
+          <div className={styles.dataFilesModalColHeader}>Select {inputLabel}</div>
           <div className={styles.selectRowContainer}>
             <div className={styles.systemSelectRow}>
               <ConfigProvider theme={systemSelectThemeConfig}>
@@ -357,7 +358,7 @@ export const SelectModal: React.FC<{
                 setSearchTerm(null);
               }
             }}
-            style={{ display: 'inline-flex', marginBottom: '10px' }}
+            style={{ display: 'inline-flex', marginBottom: '20px' }}
           >
             <Button htmlType="submit" className="ant-btn">
               <i className="fa fa-search" style={{ marginRight: '8px' }}></i>
