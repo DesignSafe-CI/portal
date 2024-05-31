@@ -6,7 +6,7 @@ import {
 import { Alert, Button } from 'antd';
 import { FileListing } from '../../FileListing/FileListing';
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useSearchParams } from 'react-router-dom';
 
 export const PipelineOtherSelectFiles: React.FC<{
   projectId: string;
@@ -18,6 +18,7 @@ export const PipelineOtherSelectFiles: React.FC<{
   const [canContinue, setCanContinue] = useState(false);
   const [showError, setShowError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [searchParams] = useSearchParams();
 
   const { mutate } = useSetFileAssociations(projectId);
 
@@ -31,10 +32,14 @@ export const PipelineOtherSelectFiles: React.FC<{
     setSelectedFiles([]);
   }, [setSelectedFiles, projectId]);
 
+  // If amending, skip this step. Published data cannot be changed without versioning.
+  useEffect(() => {
+    if (searchParams.get('operation') === 'amend') setCanContinue(true);
+  }, [searchParams]);
+
   const onSaveSelections = () => {
     console.log(selectedFiles);
     if (selectedFiles.length > 0 && !!data) {
-      // TODO: mutation to set project's fileObjs attribute to the selected files.
       mutate(
         { fileObjs: selectedFiles, entityUuid: data.baseProject.uuid },
         {
@@ -118,19 +123,37 @@ export const PipelineOtherSelectFiles: React.FC<{
             message="Please select at least 1 file or folder."
           />
         )}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <h3>Select Files</h3>{' '}
-          <Button type="primary" onClick={onSaveSelections}>
-            Save Selections
-          </Button>
-        </div>
-        <FileListing api="tapis" system={`project-${data.baseProject.uuid}`} />
+        {searchParams.get('operation') === 'amend' ? (
+          <Alert
+            showIcon
+            description={
+              <span>
+                File selections cannot be changed when amending a publication.
+                If you need to make a change to published files, please create a
+                new version instead.
+              </span>
+            }
+          />
+        ) : (
+          <>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <h3>Select Files</h3>{' '}
+              <Button type="primary" onClick={onSaveSelections}>
+                Save Selections
+              </Button>
+            </div>
+            <FileListing
+              api="tapis"
+              system={`project-${data.baseProject.uuid}`}
+            />
+          </>
+        )}
       </section>
     </>
   );

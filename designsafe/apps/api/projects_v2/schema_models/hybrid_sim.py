@@ -1,4 +1,5 @@
 """Pydantic schema models for Hybrid Simulation entities"""
+
 from typing import Annotated, Optional
 from pydantic import BeforeValidator, Field, model_validator
 from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
@@ -29,8 +30,8 @@ class HybridSimulation(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_value(v, HYBRID_SIM_TYPES)),
     ]
     simulation_type_other: Optional[str] = Field(exclude=True, default=None)
-    procedure_start: str = ""
-    procedure_end: str = ""
+    procedure_start: Optional[str] = None
+    procedure_end: Optional[str] = None
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []

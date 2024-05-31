@@ -3,6 +3,7 @@ import { TPreviewTreeData, useProjectPreview } from '@client/hooks';
 import { Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import { PublishedEntityDisplay } from '../ProjectPreview/ProjectPreview';
+import { ManageCategoryModal } from '../modals';
 
 export const PipelineProofreadCategories: React.FC<{
   projectId: string;
@@ -43,11 +44,26 @@ export const PipelineProofreadCategories: React.FC<{
           type="primary"
           onClick={nextStep}
         >
-          Continue
+          `` Continue
         </Button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <ManageCategoryModal projectId={projectId} editOnly={true}>
+        {({ onClick }) => (
+          <Button onClick={onClick} type="link" style={{ fontWeight: 'bold' }}>
+            Manage Categories
+          </Button>
+        )}
+      </ManageCategoryModal>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          marginTop: '12px',
+        }}
+      >
         {sortedChildren.map((child) => (
           <section key={child.id}>
             <PublishedEntityDisplay

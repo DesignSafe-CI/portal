@@ -1,0 +1,51 @@
+.listing-main {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+}
+
+.listing-container {
+  max-height: 1000px;
+  overflow: auto;
+  flex: 1 0 0;
+}
+
+.layoutContainer {
+  background-color: transparent;
+  gap: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.appDetail-wrapper {
+  --space-top: 1.25rem; /* 20px (~17px design * 1.2 design-to-app ratio) */
+  --space-bottom: 2.25rem; /* 36px (~30px design * 1.2 design-to-app ratio) */
+
+  /* As a flex item */
+  flex-grow: 1;
+
+  /* As a flex container */
+  display: flex;
+
+  height: 100%;
+  /* To ensure flex children stretch to height of scrolled content */
+  /* FAQ: For cross-axis to include scrollHeight, flex must be "multi-line" */
+  /* SEE: https://bugzilla.mozilla.org/show_bug.cgi?id=1267060 */
+  flex-flow: row wrap;
+}
+.appDetail-wrapper.has-message,
+.appDetail-wrapper.is-loading,
+.appDetail-wrapper.has-external-app {
+  justify-content: center;
+  align-items: center;
+}
+
+.appDetail-placeholder-message {
+  font-size: 1.4rem;
+}
+
+.appSider {
+  border-right: 2px solid var(--global-color-primary--light) !important;
+  overflow: auto;
+}

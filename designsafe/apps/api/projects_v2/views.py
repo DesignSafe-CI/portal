@@ -4,27 +4,48 @@ import logging
 import json
 import networkx as nx
 from django.http import HttpRequest, JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.db import models
 from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
+from designsafe.apps.api.projects_v2.tasks import alert_sensitive_data
+from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
+    ALLOWED_RELATIONS,
+)
+from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.operations.graph_operations import (
     reorder_project_nodes,
     add_node_to_project,
     remove_nodes_from_project,
+    initialize_project_graph,
+    remove_nodes_for_entity,
 )
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     patch_metadata,
     add_file_associations,
     set_file_associations,
+    create_entity_metadata,
+    delete_entity,
     remove_file_associations,
     set_file_tags,
     change_project_type,
+    create_project_metdata,
+    get_changed_users,
 )
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     add_values_to_tree,
     validate_entity_selection,
 )
+from designsafe.apps.api.projects_v2.operations.project_system_operations import (
+    increment_workspace_count,
+    setup_project_file_system,
+    add_user_to_project_async,
+    remove_user_from_project_async,
+)
 from designsafe.apps.api.projects_v2.schema_models.base import FileObj
+from designsafe.apps.api.decorators import tapis_jwt_login
 
 
 logger = logging.getLogger(__name__)
@@ -44,6 +65,7 @@ def get_search_filter(query_string):
 class ProjectsView(BaseApiView):
     """View for listing and creating projects"""
 
+    @method_decorator(tapis_jwt_login)
     def get(self, request: HttpRequest):
         """Return the list of projects for a given user."""
         offset = int(request.GET.get("offset", 0))
@@ -71,11 +93,33 @@ class ProjectsView(BaseApiView):
 
     def post(self, request: HttpRequest):
         """Create a new project."""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+        req_body = json.loads(request.body)
+        metadata_value = req_body.get("value", {})
+        # Projects are initialized as type None
+
+        # increment project count
+        prj_number = increment_workspace_count()
+        # create metadata and graph
+        metadata_value["projectType"] = "None"
+        metadata_value["projectId"] = f"PRJ-{prj_number}"
+        project_meta = create_project_metdata(metadata_value)
+        initialize_project_graph(project_meta.project_id)
+        project_users = [user.username for user in project_meta.users.all()]
+        # create project system
+        setup_project_file_system(project_uuid=project_meta.uuid, users=project_users)
+        # add users to system
+
+        return JsonResponse({"result": "OK"})
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class ProjectInstanceView(BaseApiView):
     """View for listing/updating project entities."""
 
+    @method_decorator(tapis_jwt_login)
     def get(self, request: HttpRequest, project_id: str):
         """Return all project metadata for a project ID"""
         user = request.user
@@ -109,7 +153,7 @@ class ProjectInstanceView(BaseApiView):
             raise ApiException("Unauthenticated user", status=401)
 
         try:
-            user.projects.get(
+            project: ProjectMetadata = user.projects.get(
                 models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
             )
         except ProjectMetadata.DoesNotExist as exc:
@@ -118,22 +162,28 @@ class ProjectInstanceView(BaseApiView):
             ) from exc
 
         # Get the new value from the request data
-        new_value = request.data.get("new_value")
+        req_body = json.loads(request.body)
+        new_value = req_body.get("value", {})
+        sensitive_data_option = req_body.get("sensitiveData", False)
+        if sensitive_data_option:
+            logger.debug("PROJECT %s INDICATES SENSITIVE DATA", project_id)
+            alert_sensitive_data.apply_async([project_id, request.user.username])
 
         # Call the change_project_type function to update the project type
         updated_project = change_project_type(project_id, new_value)
 
-        entities = ProjectMetadata.objects.filter(base_project=updated_project)
-        return JsonResponse(
-            {
-                "updatedProject": updated_project.to_dict(),
-                "entities": [e.to_dict() for e in entities],
-                "tree": nx.tree_data(
-                    nx.node_link_graph(updated_project.project_graph.value), "NODE_ROOT"
-                ),
-            }
+        users_to_add, users_to_remove = get_changed_users(
+            BaseProject.model_validate(project.value),
+            BaseProject.model_validate(updated_project.value),
         )
+        for user_to_add in users_to_add:
+            add_user_to_project_async.apply_async([project.uuid, user_to_add])
+        for user_to_remove in users_to_remove:
+            remove_user_from_project_async.apply_async([project_id, user_to_remove])
 
+        return JsonResponse({"result": "OK"})
+
+    @method_decorator(tapis_jwt_login)
     def patch(self, request: HttpRequest, project_id: str):
         """Update a project's root metadata"""
         user = request.user
@@ -150,7 +200,18 @@ class ProjectInstanceView(BaseApiView):
             ) from exc
 
         request_body = json.loads(request.body).get("patchMetadata", {})
-        patch_metadata(project.uuid, request_body)
+        prev_metadata = BaseProject.model_validate(project.value)
+        updated_project = patch_metadata(project.uuid, request_body)
+        updated_metadata = BaseProject.model_validate(updated_project.value)
+
+        users_to_add, users_to_remove = get_changed_users(
+            prev_metadata, updated_metadata
+        )
+        for user_to_add in users_to_add:
+            add_user_to_project_async.apply_async([project.uuid, user_to_add])
+        for user_to_remove in users_to_remove:
+            remove_user_from_project_async.apply_async([project_id, user_to_remove])
+
         return JsonResponse({"result": "OK"})
 
 
@@ -172,6 +233,47 @@ class ProjectEntityView(BaseApiView):
         request_body = json.loads(request.body).get("patchMetadata", {})
         logger.debug(request_body)
         patch_metadata(entity_uuid, request_body)
+        return JsonResponse({"result": "OK"})
+
+    def delete(self, request: HttpRequest, entity_uuid: str):
+        """Delete an entity's metadata and remove the entity from the graph"""
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        entity_meta = ProjectMetadata.objects.get(uuid=entity_uuid)
+        if user not in entity_meta.base_project.users.all():
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            )
+
+        remove_nodes_for_entity(entity_meta.project_id, entity_uuid)
+        delete_entity(entity_uuid)
+        return JsonResponse({"result": "OK"})
+
+    def post(self, request: HttpRequest, project_id: str):
+        """Add a new entity to a project"""
+
+        user = request.user
+        if not request.user.is_authenticated:
+            raise ApiException("Unauthenticated user", status=401)
+
+        try:
+            project: ProjectMetadata = user.projects.get(
+                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+            )
+        except ProjectMetadata.DoesNotExist as exc:
+            raise ApiException(
+                "User does not have access to the requested project", status=403
+            ) from exc
+
+        req_body = json.loads(request.body)
+        value = req_body.get("value", {})
+        name = req_body.get("name", "")
+
+        new_meta = create_entity_metadata(project.project_id, name, value)
+        if name in ALLOWED_RELATIONS[constants.PROJECT]:
+            add_node_to_project(project_id, "NODE_ROOT", new_meta.uuid, name)
         return JsonResponse({"result": "OK"})
 
 

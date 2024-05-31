@@ -5,12 +5,11 @@
 
 
 import logging
-from future.utils import python_2_unicode_compatible
 from elasticsearch_dsl import Q, Index
 from django.conf import settings
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 
-@python_2_unicode_compatible
+
 class CMSSearchManager(BaseSearchManager):
     """ Search manager handling CMS data.
     """
