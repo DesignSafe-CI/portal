@@ -38,7 +38,7 @@ import {
 } from '../AppsWizard/Steps';
 import { SystemsPushKeysModal } from '../SystemsPushKeysModal/SystemsPushKeysModal';
 import {
-  // getSystemName,
+  getSystemName,
   getExecSystemFromId,
   getQueueValueForExecSystem,
   isAppTypeBATCH,
@@ -71,12 +71,10 @@ export const AppsSubmissionForm: React.FC = () => {
     (s) => defaultStorageHost?.endsWith(s)
   );
   const hasDefaultAllocation =
-    // state.allocations.loading ||
-    // state.systems.storage.loading ||
     tasAllocations.hosts[defaultStorageHost] || hasCorral;
   const hasStorageSystems = !!storageSystems.length;
 
-  let missingAllocation = false;
+  let missingAllocation = null;
 
   const execSystems = getExecSystemsFromApp(
     definition,
@@ -116,21 +114,9 @@ export const AppsSubmissionForm: React.FC = () => {
     !hasDefaultAllocation &&
     hasStorageSystems
   ) {
-    // jobSubmission.error = true;
-    // jobSubmission.response = {
-    //   message: `You need an allocation on ${getSystemName(
-    //     defaultStorageHost
-    //   )} to run this application.`,
-    // };
-    missingAllocation = true;
+    missingAllocation = getSystemName(defaultStorageHost);
   } else if (!allocations.length) {
-    // jobSubmission.error = true;
-    // jobSubmission.response = {
-    //   message: `You need an allocation on ${getSystemName(
-    //     app.exec_sys.host
-    //   )} to run this application.`,
-    // };
-    missingAllocation = true;
+    missingAllocation = getSystemName(defaultExecSystem.host);
   }
 
   // const exec_sys = getExecSystemFromId(app, state.execSystemId);
@@ -166,7 +152,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const readOnly =
     !!missingLicense ||
     !hasStorageSystems ||
-    (definition.jobType === 'BATCH' && missingAllocation) ||
+    (definition.jobType === 'BATCH' && !!missingAllocation) ||
     !!defaultSystemNeedsKeys;
 
   const methods = useForm({
@@ -339,7 +325,6 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [current, methods]);
   const handlePreviousStep = useCallback(() => {
-    // setState({ ...state, ...data });
     const prevPage = steps[current].prevPage;
     prevPage && setCurrent(prevPage);
   }, [current]);
@@ -510,6 +495,13 @@ export const AppsSubmissionForm: React.FC = () => {
               }
               type="success"
               closable
+              showIcon
+            />
+          )}
+          {missingAllocation && (
+            <Alert
+              message={`You need an allocation on ${missingAllocation} to run this application.`}
+              type="warning"
               showIcon
             />
           )}
