@@ -481,7 +481,9 @@ export const AppsSubmissionForm: React.FC = () => {
                 {definition.notes.label || definition.id}
               </div>
               {definition.notes.helpUrl && (
-                <a href={definition.notes.helpUrl}>View User Guide</a>
+                <a href={definition.notes.helpUrl} target="_blank">
+                  View User Guide
+                </a>
               )}
             </Flex>
           </Header>
