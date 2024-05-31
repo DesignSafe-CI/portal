@@ -32,7 +32,7 @@ def get_systems_to_configure(username):
     return systems
 
 
-@shared_task(default_retry_delay=30, max_retries=3)
+@shared_task(default_retry_delay=30, max_retries=3, queue='onboarding')
 def check_or_configure_system_and_user_directory(username, system_id, path, create_path):
     try:
         user_client = get_user_model().objects.get(username=username).tapis_oauth.client
