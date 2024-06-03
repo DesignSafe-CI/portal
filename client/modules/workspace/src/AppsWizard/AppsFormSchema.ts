@@ -32,8 +32,6 @@ export type TParameterSetDefaults = {
   [dynamic: string]: TDynamicString;
 };
 export type TFileInputsDefaults = TDynamicString;
-//export type TConfigurationDefaults = TDynamicString;
-//export type TOutputsDefaults = TDynamicString;
 
 export type TFieldOptions = {
   label: string;
@@ -96,6 +94,12 @@ export type TAppFormSchema = {
     schema: { [dynamic: string]: ZodType };
   };
 };
+
+// See https://github.com/colinhacks/zod/issues/310 for Zod issue
+const emptyStringToUndefined = z.literal('').transform(() => undefined);
+function asOptionalField<T extends z.ZodTypeAny>(schema: T) {
+  return schema.optional().or(emptyStringToUndefined);
+}
 
 // Configuration Schema is pulled out of the default Schema
 // building logic because configuration can change based on queue
@@ -326,8 +330,9 @@ const FormSchema = (
         }
 
         if (!field.required) {
-          parameterSetSchema[field.label] =
-            parameterSetSchema[field.label].optional();
+          parameterSetSchema[field.label] = asOptionalField(
+            parameterSetSchema[field.label]
+          );
         }
         if (param.notes?.validator?.regex && param.notes?.validator?.message) {
           try {
@@ -386,8 +391,9 @@ const FormSchema = (
     );
 
     if (!field.required) {
-      appFields.fileInputs.schema[input.name] =
-        appFields.fileInputs.schema[input.name].optional();
+      appFields.fileInputs.schema[input.name] = asOptionalField(
+        appFields.fileInputs.schema[input.name]
+      );
     }
 
     appFields.fileInputs.fields[input.name] = field;
