@@ -375,6 +375,7 @@ class AppsTrayView(AuthenticatedApiView):
         reduced_values = [
             "app_id",
             "app_type",
+            "bundle_href",
             "bundle_id",
             "bundle_label",
             "html",
