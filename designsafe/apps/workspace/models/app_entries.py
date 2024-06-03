@@ -176,7 +176,7 @@ class AppVariant(models.Model):
         blank=True,
     )
 
-    shortLabel = models.CharField(
+    short_label = models.CharField(
         help_text="The display name of this app in the Apps side navigation. If not defined, uses notes.shortLabel from app definition.",
         max_length=64,
         blank=True,
