@@ -2,7 +2,12 @@ import React, { ReactNode } from 'react';
 import { Breadcrumb, Button } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './AppsBreadcrumb.module.css';
-import { useGetApps, TAppResponse } from '@client/hooks';
+import {
+  useGetApps,
+  TAppResponse,
+  useAppsListing,
+  TAppCategories,
+} from '@client/hooks';
 import { useGetAppParams } from '../utils';
 
 function getPathRoutes(path: string = '') {
@@ -19,6 +24,13 @@ function getPathRoutes(path: string = '') {
 export const AppsBreadcrumb: React.FC = () => {
   const { pathname } = useLocation();
   const { appId, appVersion } = useGetAppParams();
+  const {
+    data: { categories },
+  } = useAppsListing() as { data: TAppCategories };
+  const currentAppFromCategories = categories
+    .map((cat) => cat.apps)
+    .flat()
+    .find((app) => app.app_id === appId && app.version === (appVersion || ''));
 
   const breadcrumbItems = [
     { title: 'Home', path: window.location.origin },
@@ -28,6 +40,13 @@ export const AppsBreadcrumb: React.FC = () => {
       href: '/use-designsafe/tools-applications/',
     },
   ];
+
+  if (currentAppFromCategories?.bundle_href) {
+    breadcrumbItems.push({
+      title: `${currentAppFromCategories.bundle_label} Overview`,
+      href: currentAppFromCategories.bundle_href,
+    });
+  }
 
   return (
     <Breadcrumb
