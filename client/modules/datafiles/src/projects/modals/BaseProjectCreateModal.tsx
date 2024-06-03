@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Modal, notification } from 'antd';
 import { useCreateProject } from '@client/hooks';
+import { useNavigate } from 'react-router-dom';
 
 export const BaseProjectCreateModal: React.FC<{
   children: TModalChildren;
@@ -17,18 +18,21 @@ export const BaseProjectCreateModal: React.FC<{
   };
 
   const { mutate } = useCreateProject();
+  const navigate = useNavigate();
 
   const onSubmit = (v: Record<string, unknown>) => {
     mutate(
       { projectValue: v },
       {
-        onSuccess: () =>
+        onSuccess: () => {
+          navigate('projects');
           notifApi.open({
             type: 'success',
             message: '',
             description: 'Your project was successfully created.',
             placement: 'bottomLeft',
-          }),
+          });
+        },
         onError: () =>
           notifApi.open({
             type: 'error',

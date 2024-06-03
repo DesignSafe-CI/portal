@@ -38,9 +38,7 @@ import {
 } from '../AppsWizard/Steps';
 import { SystemsPushKeysModal } from '../SystemsPushKeysModal/SystemsPushKeysModal';
 import {
-  // AppFormProvider,
-  // useAppFormState,
-  // getSystemName,
+  getSystemName,
   getExecSystemFromId,
   getQueueValueForExecSystem,
   isAppTypeBATCH,
@@ -53,7 +51,6 @@ import {
   getDefaultExecSystem,
   getAllocationList,
 } from '../utils';
-// import styles from './layout.module.css';
 
 export const AppsSubmissionForm: React.FC = () => {
   const { data: app } = useGetAppsSuspense(useGetAppParams());
@@ -69,19 +66,15 @@ export const AppsSubmissionForm: React.FC = () => {
 
   const { definition, license, defaultSystemNeedsKeys } = app;
 
-  // const [state, setState] = useAppFormState();
-
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
     (s) => defaultStorageHost?.endsWith(s)
   );
   const hasDefaultAllocation =
-    // state.allocations.loading ||
-    // state.systems.storage.loading ||
     tasAllocations.hosts[defaultStorageHost] || hasCorral;
   const hasStorageSystems = !!storageSystems.length;
 
-  let missingAllocation = false;
+  let missingAllocation = null;
 
   const execSystems = getExecSystemsFromApp(
     definition,
@@ -121,21 +114,9 @@ export const AppsSubmissionForm: React.FC = () => {
     !hasDefaultAllocation &&
     hasStorageSystems
   ) {
-    // jobSubmission.error = true;
-    // jobSubmission.response = {
-    //   message: `You need an allocation on ${getSystemName(
-    //     defaultStorageHost
-    //   )} to run this application.`,
-    // };
-    missingAllocation = true;
+    missingAllocation = getSystemName(defaultStorageHost);
   } else if (!allocations.length) {
-    // jobSubmission.error = true;
-    // jobSubmission.response = {
-    //   message: `You need an allocation on ${getSystemName(
-    //     app.exec_sys.host
-    //   )} to run this application.`,
-    // };
-    missingAllocation = true;
+    missingAllocation = getSystemName(defaultExecSystem.host);
   }
 
   // const exec_sys = getExecSystemFromId(app, state.execSystemId);
@@ -171,7 +152,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const readOnly =
     !!missingLicense ||
     !hasStorageSystems ||
-    (definition.jobType === 'BATCH' && missingAllocation) ||
+    (definition.jobType === 'BATCH' && !!missingAllocation) ||
     !!defaultSystemNeedsKeys;
 
   const methods = useForm({
@@ -344,7 +325,6 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [current, methods]);
   const handlePreviousStep = useCallback(() => {
-    // setState({ ...state, ...data });
     const prevPage = steps[current].prevPage;
     prevPage && setCurrent(prevPage);
   }, [current]);
@@ -354,6 +334,7 @@ export const AppsSubmissionForm: React.FC = () => {
     isSuccess,
     data: submitResult,
     error: submitError,
+    variables: submitVariables,
   } = usePostJobs();
 
   const [pushKeysSystem, setPushKeysSystem] = useState<
@@ -500,11 +481,13 @@ export const AppsSubmissionForm: React.FC = () => {
                 {definition.notes.label || definition.id}
               </div>
               {definition.notes.helpUrl && (
-                <a href={definition.notes.helpUrl}>View User Guide</a>
+                <a href={definition.notes.helpUrl} target="_blank">
+                  View User Guide
+                </a>
               )}
             </Flex>
           </Header>
-          {submitResult && (
+          {submitResult && !submitResult.execSys && (
             <Alert
               message={
                 <>
@@ -514,6 +497,13 @@ export const AppsSubmissionForm: React.FC = () => {
               }
               type="success"
               closable
+              showIcon
+            />
+          )}
+          {missingAllocation && (
+            <Alert
+              message={`You need an allocation on ${missingAllocation} to run this application.`}
+              type="warning"
               showIcon
             />
           )}
@@ -601,6 +591,7 @@ export const AppsSubmissionForm: React.FC = () => {
       <SystemsPushKeysModal
         isModalOpen={pushKeysSystem}
         setIsModalOpen={setPushKeysSystem}
+        onSuccess={() => submitVariables && submitJob(submitVariables)}
       />
     </>
   );

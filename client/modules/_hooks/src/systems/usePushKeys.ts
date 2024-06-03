@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import apiClient from '../apiClient';
+import apiClient, { type TApiError } from '../apiClient';
 
 export type TPushKeysBody = {
   systemId: string;
@@ -18,6 +18,7 @@ export function usePushKeys() {
     mutationFn: (body: TPushKeysBody) => {
       return pushKeys(body);
     },
+    onError: (err: TApiError) => err,
   });
 }
 
