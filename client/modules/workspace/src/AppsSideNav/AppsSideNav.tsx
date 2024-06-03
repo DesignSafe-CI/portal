@@ -131,6 +131,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           justifyContent: 'center',
           padding: 10,
           fontWeight: 700,
+          borderRight: '1px solid var(--global-color-primary--normal)',
         }}
       >
         Applications:

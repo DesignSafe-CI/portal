@@ -15,8 +15,9 @@ export const JobStatusNav: React.FC = () => {
   const headerStyle = {
     background: 'transparent',
     padding: 0,
-    borderBottom: '1px solid #707070',
+    borderBottom: '1px solid var(--global-color-primary--normal)',
     fontSize: 14,
+    borderRight: '1px solid var(--global-color-primary--normal)',
   };
   return (
     <Header style={headerStyle}>
