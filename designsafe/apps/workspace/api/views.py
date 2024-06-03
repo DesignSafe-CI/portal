@@ -307,7 +307,9 @@ class AppsTrayView(AuthenticatedApiView):
                 valid_tapis_apps.append(
                     {
                         **portal_app,
-                        "label": portal_app["label"] or matching_app.notes.label,
+                        "label": portal_app["label"] or matching_app.notes.get("label"),
+                        "shortLabel": portal_app["short_label"]
+                        or matching_app.notes.get("shortLabel"),
                     }
                 )
         return valid_tapis_apps
@@ -333,6 +335,7 @@ class AppsTrayView(AuthenticatedApiView):
                     "icon": getattr(app.notes, "icon", None),
                     "is_bundled": False,
                     "label": getattr(app.notes, "label", app.id),
+                    "shortLabel": getattr(app.notes, "shortLabel", None),
                     "version": app.version,
                 },
                 apps_listing,
@@ -369,6 +372,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "short_label",
             "version",
         ]
 
@@ -382,6 +386,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "short_label",
             "version",
         ]
 

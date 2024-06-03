@@ -11,6 +11,7 @@ export type TPortalApp = {
   icon?: string;
   is_bundled: boolean;
   label: string;
+  shortLabel?: string;
   version?: string;
 };
 
