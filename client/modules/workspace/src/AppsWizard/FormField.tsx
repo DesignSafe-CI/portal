@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Form, Input, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -29,6 +29,10 @@ export const FormField: React.FC<{
   const { resetField, control, getValues, setValue } = useFormContext();
   const fieldState = useWatch({ control, name });
   let parameterSetLabel: React.ReactElement | null = null;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleSelectModalOpen = () => {
+    setIsModalOpen(true);
+  };
 
   if (parameterSet) {
     parameterSetLabel = (
@@ -71,13 +75,9 @@ export const FormField: React.FC<{
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {tapisFile && (
               <Form.Item name="prefix" noStyle>
-                <SelectModal
-                  onSelect={(value: string) => setValue(name, value)}
-                >
-                  {({ onClick }) => (
-                    <SecondaryButton onClick={onClick}>Select</SecondaryButton>
-                  )}
-                </SelectModal>
+                <SecondaryButton onClick={handleSelectModalOpen}>
+                  Select
+                </SecondaryButton>
               </Form.Item>
             )}
             <Input
@@ -113,6 +113,17 @@ export const FormField: React.FC<{
         >
           {description}
         </small>
+      )}
+      {/* Select Modal has Form and input which cause state sharing with above FormItem
+          So, SelectModal is outside FormItem.
+       */}
+      {tapisFile && (
+        <SelectModal
+          inputLabel={label}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSelect={(value: string) => setValue(name, value)}
+        />
       )}
     </div>
   );

@@ -1,5 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Modal, Select } from 'antd';
+import {
+  Button,
+  Modal,
+  Select,
+  Input,
+  Form,
+  ConfigProvider,
+  ThemeConfig,
+} from 'antd';
+import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
+
 import {
   useAuthenticatedUser,
   usePathDisplayName,
@@ -8,17 +18,13 @@ import {
   TUser,
 } from '@client/hooks';
 
-import { BaseFileListingBreadcrumb } from '@client/common-components';
-import styles from './SelectModal.module.css';
 import {
+  BaseFileListingBreadcrumb,
   FileListingTable,
   TFileListingColumns,
 } from '@client/common-components';
+import styles from './SelectModal.module.css';
 import { SelectModalProjectListing } from './SelectModalProjectListing';
-
-type TModalChildren = (props: {
-  onClick: React.MouseEventHandler<HTMLElement>;
-}) => React.ReactElement;
 
 const api = 'tapis';
 const portalName = 'DesignSafe';
@@ -38,7 +44,65 @@ const HeaderTitle: React.FC<{
   );
 };
 
-// Use isMyData is note as an indicate of private vs public
+const SystemSuffixIcon = () => {
+  return (
+    <div
+      style={{
+        paddingTop: '5px',
+        paddingBottom: '5px',
+        position: 'relative',
+        width: '16px',
+        height: '24px',
+        marginTop: '5px',
+        marginRight: '-10px',
+        pointerEvents: 'none',
+      }}
+    >
+      <CaretUpOutlined
+        style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+      />
+      <CaretDownOutlined
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          transform: `translateY(-5px)`,
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
+  );
+};
+
+const modalStyles = {
+  header: {
+    borderRadius: 0,
+    borderBottom: 0,
+    paddingBottom: '20px',
+    paddingTop: '20px',
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    backgroundColor: '#f4f4f4',
+  },
+  body: {
+    paddingLeft: '40px',
+    paddingRight: '40px',
+    paddingBottom: '20px',
+    paddingTop: '20px',
+  },
+  content: {
+    boxShadow: '0 0 30px #999',
+    padding: '0px',
+  },
+};
+
+const systemSelectThemeConfig: ThemeConfig = {
+  token: {
+    borderRadius: 4,
+  },
+};
+
+// Use isMyData in notes as an indicate of private vs public
 const getScheme = (storageSystem: TTapisSystem): string => {
   return storageSystem.notes?.isMyData ? 'private' : 'public';
 };
@@ -100,16 +164,35 @@ function getFilesColumns(
 }
 
 export const SelectModal: React.FC<{
+  inputLabel: string;
+  isOpen: boolean;
+  onClose: () => void;
   onSelect: (value: string) => void;
-  children: TModalChildren;
-}> = ({ onSelect, children }) => {
+}> = ({ inputLabel, isOpen, onClose, onSelect }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => setIsModalOpen(true);
-  const handleClose = () => setIsModalOpen(false);
+  const [searchPlaceHolder, setSearchPlaceHolder] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
+  const [form] = Form.useForm();
+
+  const handleClose = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+    onClose();
+  };
+  useEffect(() => {
+    if (isModalOpen) {
+      form.resetFields();
+      setSearchTerm(null);
+    }
+  }, [form, isModalOpen]);
   const { user } = useAuthenticatedUser();
+  useEffect(() => {
+    setIsModalOpen(isOpen);
+  }, [isOpen]);
   const {
     data: { storageSystems, defaultStorageSystem },
   } = useGetSystems();
+
   // only pick up enabled systems in this portal
   const includedSystems = storageSystems.filter(
     (s) => s.enabled && s.notes?.portalNames?.includes(portalName)
@@ -152,9 +235,9 @@ export const SelectModal: React.FC<{
   );
   const dropdownCallback = (newValue: string) => {
     setDropdownValue(newValue);
-
     if (newValue === 'myprojects') {
       setShowProjects(true);
+      setSearchPlaceHolder('My Projects');
       return;
     }
 
@@ -168,6 +251,7 @@ export const SelectModal: React.FC<{
       selectedPath: getPath(system, user),
       scheme: getScheme(system),
     });
+    setSearchPlaceHolder(system.notes.label ?? system.id);
   };
 
   const onProjectSelect = (uuid: string, projectId: string) => {
@@ -178,6 +262,8 @@ export const SelectModal: React.FC<{
       selectedPath: '',
       projectId: projectId,
     });
+    // Intended to indicate searching the root path of a project.
+    setSearchPlaceHolder('root');
   };
 
   const navCallback = useCallback(
@@ -197,7 +283,7 @@ export const SelectModal: React.FC<{
       onSelect(path);
       handleClose();
     },
-    [selectedApi, selectedSystem]
+    [selectedApi, selectedSystem, handleClose, onSelect]
   );
 
   const FileColumns = useMemo(
@@ -209,78 +295,111 @@ export const SelectModal: React.FC<{
         (selection: string) => selectCallback(selection),
         navCallback
       ),
-    [navCallback, selectedApi, selectedSystem, selectedPath]
+    [navCallback, selectedApi, selectedSystem, selectedPath, selectCallback]
   );
 
   return (
-    <>
-      {React.createElement(children, { onClick: showModal })}
-      <Modal
-        open={isModalOpen}
-        onCancel={handleClose}
-        width="40%"
-        title={<h2>SELECT FILE</h2>}
-        footer={null}
-      >
-        <article className={styles.modalContent}>
-          <div className={styles.modalPanel}>
-            <Select
-              options={systemOptions}
-              style={{ marginBottom: '12px' }}
-              virtual={false}
-              value={dropdownValue}
-              onChange={(newValue) => dropdownCallback(newValue)}
-            />
-            <section className={styles.filesSection}>
-              {!showProjects && (
-                <>
-                  <BaseFileListingBreadcrumb
-                    api={selectedApi}
-                    system={selectedSystem}
-                    path={decodeURIComponent(selectedPath)}
-                    systemRootAlias={selection.projectId}
-                    initialBreadcrumbs={
-                      selectedSystem.startsWith('project-')
-                        ? [{ title: 'My Projects', path: 'PROJECT_LISTING' }]
-                        : []
-                    }
-                    itemRender={(item) => {
-                      return (
-                        <Button
-                          type="link"
-                          onClick={() => navCallback(item.path ?? '')}
-                        >
-                          {item.title}
-                        </Button>
-                      );
-                    }}
-                  />
-                  <div className={styles.filesTableContainer}>
-                    <FileListingTable
-                      api={selectedApi}
-                      system={selectedSystem}
-                      path={selectedPath}
-                      columns={FileColumns}
-                      rowSelection={undefined}
-                      scheme={scheme}
-                      scroll={undefined}
-                    />
-                  </div>
-                </>
-              )}
-              {showProjects && (
-                <div className={styles.destFilesTableContainer}>
-                  <SelectModalProjectListing
-                    onSelect={(uuid, projectId) =>
-                      onProjectSelect(uuid, projectId)
-                    }
-                  />
-                </div>
-              )}
-            </section>
+    <Modal
+      open={isModalOpen}
+      onCancel={handleClose}
+      width="40%"
+      footer={null}
+      styles={modalStyles}
+      title={<span className={styles.modalTitle}>Select</span>}
+    >
+      <article className={styles.modalContent}>
+        <div className={styles.modalPanel}>
+          <div className={styles.dataFilesModalColHeader}>
+            Select {inputLabel}
           </div>
-        </article>
-      </Modal>
-    </>
+          <div className={styles.selectRowContainer}>
+            <div className={styles.systemSelectRow}>
+              <ConfigProvider theme={systemSelectThemeConfig}>
+                <Select
+                  options={systemOptions}
+                  virtual={false}
+                  value={dropdownValue}
+                  onChange={(newValue) => dropdownCallback(newValue)}
+                  className={styles.systemSelect}
+                  popupMatchSelectWidth={false}
+                  suffixIcon={<SystemSuffixIcon />}
+                />
+              </ConfigProvider>
+            </div>
+            <div className={styles.selectRowItem}>
+              <BaseFileListingBreadcrumb
+                className={styles.breadCrumbItem}
+                api={selectedApi}
+                system={selectedSystem}
+                path={decodeURIComponent(selectedPath)}
+                systemRootAlias={selection.projectId}
+                initialBreadcrumbs={
+                  selectedSystem.startsWith('project-')
+                    ? [{ title: 'My Projects', path: 'PROJECT_LISTING' }]
+                    : []
+                }
+                itemRender={(item) => {
+                  return (
+                    <Button
+                      type="link"
+                      onClick={() => navCallback(item.path ?? '')}
+                    >
+                      {item.title}
+                    </Button>
+                  );
+                }}
+              />
+            </div>
+          </div>
+          <Form
+            form={form}
+            onFinish={(data) => {
+              if (data.query) {
+                setSearchTerm(data.query);
+              } else {
+                setSearchTerm(null);
+              }
+            }}
+            style={{ display: 'inline-flex', marginBottom: '20px' }}
+          >
+            <Button htmlType="submit" className="ant-btn">
+              <i className="fa fa-search" style={{ marginRight: '8px' }}></i>
+              Search
+            </Button>
+            <Form.Item name="query" style={{ marginBottom: 0, width: '100%' }}>
+              <Input
+                placeholder={`Search ${searchPlaceHolder}`}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+          </Form>
+          <section className={styles.filesSection}>
+            {!showProjects && (
+              <div className={styles.filesTableContainer}>
+                <FileListingTable
+                  api={selectedApi}
+                  system={selectedSystem}
+                  path={selectedPath}
+                  columns={FileColumns}
+                  rowSelection={undefined}
+                  scheme={scheme}
+                  scroll={undefined}
+                  searchTerm={searchTerm}
+                />
+              </div>
+            )}
+            {showProjects && (
+              <div className={styles.destFilesTableContainer}>
+                <SelectModalProjectListing
+                  onSelect={(uuid, projectId) =>
+                    onProjectSelect(uuid, projectId)
+                  }
+                />
+              </div>
+            )}
+          </section>
+        </div>
+      </article>
+    </Modal>
   );
 };

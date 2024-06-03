@@ -3,6 +3,7 @@ import styles from './FileListingTable.module.css';
 import { Alert, Table, TableColumnType, TableProps } from 'antd';
 import { useFileListing, TFileListing, useSelectedFiles } from '@client/hooks';
 import { FileListingTableCheckbox } from './FileListingTableCheckbox';
+import parse from 'html-react-parser';
 
 type TableRef = {
   nativeElement: HTMLDivElement;
@@ -24,6 +25,7 @@ export const FileListingTable: React.FC<
     disabled?: boolean;
     className?: string;
     emptyListingDisplay?: React.ReactNode;
+    searchTerm?: string | null;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
   api,
@@ -35,6 +37,7 @@ export const FileListingTable: React.FC<
   disabled = false,
   className,
   emptyListingDisplay,
+  searchTerm = '',
   ...props
 }) => {
   const limit = 100;
@@ -56,6 +59,7 @@ export const FileListingTable: React.FC<
     path: path ?? '',
     scheme,
     disabled,
+    searchTerm,
     pageSize: limit,
   });
 
@@ -158,7 +162,16 @@ export const FileListingTable: React.FC<
                   type="error"
                   description={
                     <span style={{ color: '#d9534f' }}>
-                      {error.response?.data.message}
+                      {parse(error.response?.data.message ?? '')}
+                      {system?.includes('project') && (
+                        <div>
+                          <strong>
+                            If this is a newly created project, it may take a
+                            few minutes for file system permissions to
+                            propagate.
+                          </strong>
+                        </div>
+                      )}
                     </span>
                   }
                 />

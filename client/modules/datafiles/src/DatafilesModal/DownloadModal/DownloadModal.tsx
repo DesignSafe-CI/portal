@@ -8,10 +8,9 @@ export const DownloadModal: React.FC<{
   api: string;
   system: string;
   scheme?: string;
-  path: string;
   selectedFiles: TFileListing[];
   children: TModalChildren;
-}> = ({ api, system, scheme, path, selectedFiles, children }) => {
+}> = ({ api, system, scheme, selectedFiles, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [searchParams] = useSearchParams();

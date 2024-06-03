@@ -112,7 +112,7 @@ class ProjectsView(BaseApiView):
         setup_project_file_system(project_uuid=project_meta.uuid, users=project_users)
         # add users to system
 
-        return JsonResponse({"result": "OK"})
+        return JsonResponse({"projectId": project_meta.project_id})
 
 
 @method_decorator(csrf_exempt, name="dispatch")
