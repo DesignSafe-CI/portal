@@ -14,6 +14,7 @@ const themeConfig: ThemeConfig = {
     colorPrimary: '#337ab7',
     colorError: '#d9534f',
     colorPrimaryTextHover: 'black',
+    colorBorderSecondary: '#b7b7b7',
   },
   components: {
     Table: {

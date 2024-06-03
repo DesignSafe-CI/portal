@@ -46,6 +46,5 @@
 }
 
 .appSider {
-  border-right: 2px solid var(--global-color-primary--light) !important;
   overflow: auto;
 }
