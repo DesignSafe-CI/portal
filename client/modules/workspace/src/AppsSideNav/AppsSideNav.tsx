@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, MenuProps, ConfigProvider, ThemeConfig } from 'antd';
+import { Menu, MenuProps} from 'antd';
 import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
@@ -8,15 +8,6 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
   type MenuItem = Required<MenuProps>['items'][number];
-
-  const AppMenuItemTheme: ThemeConfig = {
-    components: {
-      Menu: {
-        itemHoverBg: '#cbdded',
-        itemSelectedBg: '#cbdded',
-      },
-    },
-  };
 
   function getItem(
     label: React.ReactNode,
@@ -136,18 +127,16 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
       >
         Applications:
       </div>
-      <ConfigProvider theme={AppMenuItemTheme}>
-        <Menu
-          mode="inline"
-          defaultOpenKeys={[
-            (currentCategory as TAppCategory)?.title,
-            currentSubMenu,
-          ]}
-          defaultSelectedKeys={[defaultKey]}
-          items={items}
-          inlineIndent={10}
-        />
-      </ConfigProvider>
+      <Menu
+        mode="inline"
+        defaultOpenKeys={[
+          (currentCategory as TAppCategory)?.title,
+          currentSubMenu,
+        ]}
+        defaultSelectedKeys={[defaultKey]}
+        items={items}
+        inlineIndent={10}
+      />
     </>
   );
 };

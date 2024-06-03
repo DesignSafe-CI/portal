@@ -36,8 +36,8 @@ const themeConfig: ThemeConfig = {
       itemHeight: 45,
       itemMarginInline: 0,
       itemSelectedColor: 'black',
-      itemHoverBg: 'rgba(96, 57, 204, 0.25)',
-      itemSelectedBg: 'rgba(96, 57, 204, 0.25)',
+      itemHoverBg: '#cbdded',
+      itemSelectedBg: '#cbdded',
     },
     Form: {
       itemMarginBottom: 16,
