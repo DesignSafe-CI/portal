@@ -5,6 +5,10 @@
     background-color: #F4F4F4;
     padding: 20px;
 }
+.s-app-version-list:not(:has(article)) {
+    text-align: center;
+    padding: 60px;
+}
 
 /* List Title */
 .s-app-version-list > h2 {
