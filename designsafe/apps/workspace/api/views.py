@@ -308,7 +308,7 @@ class AppsTrayView(AuthenticatedApiView):
                     {
                         **portal_app,
                         "label": portal_app["label"] or matching_app.notes.get("label"),
-                        "shortLabel": portal_app["label"]
+                        "shortLabel": portal_app["short_label"]
                         or matching_app.notes.get("shortLabel"),
                     }
                 )
