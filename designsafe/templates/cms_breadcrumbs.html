@@ -3,16 +3,20 @@
 
 <style>
   @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/trumps/s-breadcrumbs.css");
-  @import url("https://cdn.jsdelivr.net/gh/TACC/tup-ui@v1.1.10/apps/tup-cms/src/taccsite_custom/tup_cms/static/tup_cms/css/for-tup-cms/trumps/s-breadcrumbs.css");
 
   {# To negate `.navbar-ds` padding bottom #}
   {# https://github.com/DesignSafe-CI/portal/blob/8048436/designsafe/static/styles/main.css#L168 #}
   div:has(.navbar-ds) + main > .s-breadcrumbs {
     margin-top: -2.5em;
   }
-  {# https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/elements/links.css #}
+  {# https://github.com/TACC/Core-Styles/blob/v2.26.0/dist/elements/links.css #}
   .s-breadcrumbs a:not([href]) {
     pointer-events: none;
+  }
+  {# https://github.com/TACC/tup-ui/blob/v1.1.10/apps/tup-cms/src/taccsite_custom/tup_cms/static/tup_cms/css/for-tup-cms/trumps/s-breadcrumbs.css #}
+  .s-breadcrumbs:is(nav) a:not([href]) {
+    opacity: 0.75;
+    color: unset;
   }
 </style>
 <nav class="s-breadcrumbs  {{className}}" id="cms-breadcrumbs">
