@@ -1,7 +1,8 @@
 {# @var className #}
-{% load menu_tags %}
+{% load menu_tags sekizai_tags %}
 
-<style>
+{% addtoblock "css" %}
+<style id="cms_breadcrumbs">
   @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/trumps/s-breadcrumbs.css");
 
   {# To negate `.navbar-ds` padding bottom #}
@@ -19,6 +20,8 @@
     color: unset;
   }
 </style>
+{% endaddtoblock %}
+
 <nav class="s-breadcrumbs  {{className}}" id="cms-breadcrumbs">
 
   {# To support structured data, item* attributes are used #}
@@ -32,9 +35,11 @@
   </ol>
 
 </nav>
+
+{# To disable 2nd-level breadcrumb #}
+{# NOTE: Not using `block`, so markup is loaded first #}
+{# NOTE: Not using `block` nor `type="module"`, so effect is quicker #}
 <script>
-  {# To disable 2nd-level breadcrumb #}
-  {# NOTE: Not using module, so effect is quicker (and code is minimal) #}
   {# FAQ: Attempts to do this server-side failed cuz useful props are blank #}
   {# https://docs.django-cms.org/en/release-3.11.x/reference/navigation.html#properties-of-navigation-nodes-in-templates #}
   document
