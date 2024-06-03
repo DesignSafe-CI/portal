@@ -372,7 +372,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
-            "shortLabel",
+            "short_label",
             "version",
         ]
 
@@ -386,7 +386,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
-            "shortLabel",
+            "short_label",
             "version",
         ]
 
