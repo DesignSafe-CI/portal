@@ -41,7 +41,7 @@ const HeaderTitle: React.FC<{
       <i role="none" className="fa fa-folder-o">
         &nbsp;&nbsp;
       </i>
-      {getPathName(api, system, path)}
+      {getPathName(api, system, path, label)}
     </span>
   );
 };
