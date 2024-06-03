@@ -2,6 +2,9 @@
 {% load cms_tags static sekizai_tags %}
 {% block page_class %}s-app-page{% endblock page_class %}
 
+{% block breadcrumb %}
+    {% include "cms_breadcrumbs.html" with className="container-fluid" %}
+{% endblock %}
 {% block styles %}
     {% addtoblock "css" %}
     <link href="{% static 'styles/app-page.css' %}" rel="stylesheet" />
