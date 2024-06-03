@@ -119,7 +119,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     cat.apps.includes(currentApp as TPortalApp)
   );
   const currentSubMenu = currentApp?.is_bundled
-    ? `${currentApp.bundle_id}`
+    ? `${currentApp.bundle_label}${currentApp.bundle_id}`
     : '';
   const defaultKey = `${appId}${appVersion || ''}${currentApp?.bundle_id}`;
 
