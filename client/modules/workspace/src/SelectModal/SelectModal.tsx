@@ -377,6 +377,7 @@ export const SelectModal: React.FC<{
                     ? [{ title: 'My Projects', path: 'PROJECT_LISTING' }]
                     : []
                 }
+                systemLabel={systemLabel}
                 itemRender={(item) => {
                   return (
                     <Button
