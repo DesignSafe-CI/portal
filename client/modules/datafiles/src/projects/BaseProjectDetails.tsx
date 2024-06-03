@@ -7,6 +7,7 @@ import { useSearchParams } from 'react-router-dom';
 import { RelateDataModal } from './modals';
 import { ProjectInfoModal } from './modals/ProjectInfoModal';
 import { VersionChangesModal } from './modals/VersionChangesModal';
+import { SubmitFeedbackModal } from '../publications/modals/SubmitFeedbackModal';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
   children,
@@ -68,7 +69,7 @@ export const LicenseDisplay: React.FC<{ licenseType: string }> = ({
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <i className={ENTITY_ICON_MAP[licenseType]} />
       &nbsp;
-      {licenseType}
+      <strong>{licenseType}</strong>
     </div>
   );
 };
@@ -421,9 +422,10 @@ export const BaseProjectDetails: React.FC<{
               |{' '}
             </>
           )}
-          <Button type="link">
-            <strong>Leave Feedback (REPLACE ME)</strong>
-          </Button>
+          <SubmitFeedbackModal
+            projectId={projectValue.projectId}
+            title={projectValue.title}
+          />
         </section>
       )}
       {projectValue.description && (

@@ -1,6 +1,7 @@
 import {
   BaseProjectDetails,
   DatafilesToolbar,
+  DownloadDatasetModal,
   PublishedCitation,
 } from '@client/datafiles';
 import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
@@ -81,11 +82,24 @@ export const PublishedDetailLayout: React.FC = () => {
         <DatafilesToolbar searchInput={<FileListingSearchBar />} />
       </div>
       <div
-        className="prj-head-title"
-        style={{ marginTop: '20px', marginBottom: '20px' }}
+        style={{
+          marginTop: '20px',
+          marginBottom: '20px',
+          fontSize: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1rem',
+        }}
       >
-        <strong>{data.baseProject.projectId}</strong>&nbsp;|&nbsp;
-        {data.baseProject.title}
+        <span>
+          <strong>{data.baseProject.projectId}</strong> |{' '}
+          {data.baseProject.title}
+        </span>
+        <DownloadDatasetModal
+          projectId={projectId}
+          license={data.baseProject.license}
+        />
       </div>
 
       {data.baseProject.projectType === 'other' && (
