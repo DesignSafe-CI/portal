@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, MenuProps} from 'antd';
+import { Menu, MenuProps } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
