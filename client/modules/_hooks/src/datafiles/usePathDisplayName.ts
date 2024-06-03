@@ -39,7 +39,7 @@ function _getPathDisplayName(
     return 'HPC Work';
   }
 
-  return decodeURIComponent(path).split('/').slice(-1)[0] || 'Data Files';
+  return decodeURIComponent(path).split('/').slice(-1)[0] || label;
 }
 
 export function usePathDisplayName() {
