@@ -307,7 +307,9 @@ class AppsTrayView(AuthenticatedApiView):
                 valid_tapis_apps.append(
                     {
                         **portal_app,
-                        "label": portal_app["label"] or matching_app.notes.label,
+                        "label": portal_app["label"] or matching_app.notes.get("label"),
+                        "shortLabel": portal_app["label"]
+                        or matching_app.notes.get("shortLabel"),
                     }
                 )
         return valid_tapis_apps
