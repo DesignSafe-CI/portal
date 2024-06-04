@@ -279,6 +279,8 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     reprsentation of the `value` attribute."""
     model = SCHEMA_MAPPING[entity["name"]]
     authors = entity["value"].get("authors", None)
+    if not authors:
+        authors = entity.get("authors", None)
     schema_version = base_pub_meta.get("version", 1)
     if authors and schema_version == 1:
         updated_authors = get_v1_authors(entity, base_pub_meta["users"])
@@ -286,6 +288,24 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     if authors and schema_version > 1:
         fixed_authors = list(map(convert_v2_user, entity["authors"]))
         entity["value"]["authors"] = sorted(fixed_authors, key=lambda a: a["order"])
+
+    data_collectors = entity["value"].get("dataCollectors", None)
+    if data_collectors:
+        fixed_data_collectors = []
+        for collector in data_collectors:
+            if collector.get("guest", None):
+                fixed_data_collectors.append(collector)
+            else:
+                fixed_data_collectors.append(
+                    {**collector, **get_user_info(collector["name"])}
+                )
+        entity["value"]["dataCollectors"] = sorted(
+            fixed_data_collectors, key=lambda a: a["order"]
+        )
+
+    legacy_doi = entity.get("doi", None)
+    if legacy_doi:
+        entity["value"]["dois"] = [legacy_doi.lstrip("doi:")]
 
     tombstone_uuids = base_pub_meta.get("tombstone", [])
     if entity["uuid"] in tombstone_uuids:
@@ -302,16 +322,18 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
     file_objs = entity.get("fileObjs", None)
     # Some legacy experiment/hybrid sim entities have file_objs incorrectly
     # populated from their children. In these cases, _filepaths is empty.
-    if file_objs and entity.get("_filePaths", None) != []:
+    if file_objs and not (
+        entity.get("_filePaths", None) == []
+        and (
+            entity["name"]
+            in [
+                "designsafe.project.experiment",
+                "designsafe.project.hybrid_simulation",
+            ]
+        )
+    ):
         entity["value"]["fileObjs"] = file_objs
         # Avoid "fixing" tags for legacy projects that don't have tree-based file layouts
-        if entity["value"].get("fileTags", False):
-            # entity["value"]["fileTags"] = update_file_tag_paths(
-            #    entity, base_path
-            # )
-            entity["value"]["fileTags"] = update_file_tag_paths_legacy(
-                entity, base_path
-            )
 
         # new_file_objs, path_mapping = update_file_objs(
         #    entity, base_path, system_id=settings.PUBLISHED_SYSTEM
@@ -323,6 +345,13 @@ def transform_entity(entity: dict, base_pub_meta: dict, base_path: str):
         entity["value"]["fileObjs"] = new_file_objs
     else:
         path_mapping = {}
+
+    if entity["value"].get("fileTags", False):
+        # entity["value"]["fileTags"] = update_file_tag_paths(
+        #    entity, base_path
+        # )
+        entity["value"]["fileTags"] = update_file_tag_paths_legacy(entity, base_path)
+
     validated_model = model.model_validate(entity["value"])
 
     if getattr(validated_model, "project_type", None) == "other":

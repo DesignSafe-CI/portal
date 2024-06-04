@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FileListingTable,
+  FileTypeIcon,
   TFileListingColumns,
-} from '../../FileListing/FileListingTable/FileListingTable';
+} from '@client/common-components';
 import { toBytes } from '../../FileListing/FileListing';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { NavLink } from 'react-router-dom';
@@ -195,6 +196,7 @@ const FileCurationSelector: React.FC<{
       <li style={{ display: 'flex', gap: '4rem' }}>
         <section style={{ display: 'flex', flex: 1 }}>
           <Select<string>
+            virtual={false}
             value={selectedEntity}
             allowClear
             onChange={(newVal) => setSelectedEntity(newVal)}
@@ -205,10 +207,13 @@ const FileCurationSelector: React.FC<{
           {selectedEntity && (
             <Button
               onClick={() =>
-                addFileAssociation({
-                  fileObjs: [fileObj],
-                  entityUuid: selectedEntity,
-                })
+                addFileAssociation(
+                  {
+                    fileObjs: [fileObj],
+                    entityUuid: selectedEntity,
+                  },
+                  { onSuccess: () => setSelectedEntity(undefined) }
+                )
               }
               type="link"
             >
@@ -231,14 +236,14 @@ export const ProjectCurationFileListing: React.FC<{
   const tagMapping = useFileTags(projectId);
   const options: DefaultOptionType[] = useMemo(
     () =>
-      ENTITIES_WITH_FILES[data?.baseProject.value.projectType ?? 'None'].map(
-        (t) => ({
+      ENTITIES_WITH_FILES[data?.baseProject.value.projectType ?? 'None']
+        .map((t) => ({
           label: DISPLAY_NAMES[t],
           options: data?.entities
             .filter((e) => e.name === t)
             .map((e) => ({ label: e.value.title, value: e.uuid })),
-        })
-      ),
+        }))
+        .filter((t) => (t.options?.length ?? 0) > 0),
     [data]
   );
 
@@ -273,21 +278,18 @@ export const ProjectCurationFileListing: React.FC<{
                   {data}
                 </NavLink>
               ) : (
-                <Button
-                  type="link"
-                  onClick={() =>
-                    setPreviewModalState({ isOpen: true, path: record.path })
-                  }
-                >
-                  <i
-                    role="none"
-                    style={{ color: '#333333' }}
-                    className="fa fa-file-o"
+                <>
+                  <FileTypeIcon name={record.name} />
+                  &nbsp;&nbsp;
+                  <Button
+                    type="link"
+                    onClick={() =>
+                      setPreviewModalState({ isOpen: true, path: record.path })
+                    }
                   >
-                    &nbsp;&nbsp;
-                  </i>
-                  {data}
-                </Button>
+                    {data}
+                  </Button>
+                </>
               )}
             </div>{' '}
             <FileCurationSelector

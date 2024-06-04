@@ -1,14 +1,18 @@
 from datetime import datetime, timedelta
 import requests
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from agavepy.agave import Agave, AgaveException
+from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
 from designsafe.apps.api.tasks import agave_indexer
 from designsafe.apps.api.notifications.models import Notification
 from celery import shared_task
 from django.contrib.auth import get_user_model
 from pytas.http import TASClient
-
+from tapipy.errors import NotFoundError, BaseTapyException
+from designsafe.utils.system_access import register_public_key, create_system_credentials
+from designsafe.utils.encryption import createKeyPair
 from requests import HTTPError
 from django.contrib.auth import get_user_model
 import logging
@@ -17,76 +21,73 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@shared_task(default_retry_delay=30, max_retries=3)
-def check_or_create_agave_home_dir(username, systemId):
+def get_systems_to_configure(username):
+    """ Get systems to configure either during startup or for new user """
+
+    systems = []
+    for system in settings.TAPIS_SYSTEMS_TO_CONFIGURE:
+        system_copy = system.copy()
+        system_copy['path'] = system_copy['path'].format(username=username)
+        systems.append(system_copy)
+    return systems
+
+
+@shared_task(default_retry_delay=30, max_retries=3, queue='onboarding')
+def check_or_configure_system_and_user_directory(username, system_id, path, create_path):
     try:
-        # TODO should use OS calls to create directory.
-        logger.info(
-            "Checking home directory for user=%s on "
-            "default storage systemId=%s",
-            username,
-            systemId
+        user_client = get_user_model().objects.get(username=username).tapis_oauth.client
+        user_client.files.listFiles(
+            systemId=system_id, path=path
         )
-        ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                   token=settings.AGAVE_SUPER_TOKEN)
-        try:
-            listing_response = ag.files.list(
-                systemId=systemId,
-                filePath=username)
-            logger.info('check home dir response: {}'.format(listing_response))
+        logger.info(f"System Works: "
+                    f"Checked and there is no need to configure system:{system_id} path:{path} for {username}")
+        return
+    except ObjectDoesNotExist:
+        # User is missing; handling email confirmation process where user has not logged in
+        logger.info(f"New User: "
+                    f"Checked and there is a need to configure system:{system_id} path:{path} for {username} ")
+    except BaseTapyException as e:
+        logger.info(f"Unable to list system/files: "
+                    f"Checked and there is a need to configure system:{system_id} path:{path} for {username}: {e}")
 
-        except HTTPError as e:
-            if e.response.status_code == 404:
-                logger.info("Creating the home directory for user=%s then going to run setfacl", username)
-                body = {'action': 'mkdir', 'path': username}
-                fm_response = ag.files.manage(systemId=systemId,
-                                              filePath='',
-                                              body=body)
-                logger.info('mkdir response: {}'.format(fm_response))
+    try:
+        if create_path:
+            tg458981_client = get_tg458981_client()
+            try:
+                # User tg account to check if path exists
+                tg458981_client.files.listFiles(systemId=system_id, path=path)
+                logger.info(f"Directory for user={username} on system={system_id}/{path} exists and works. ")
+            except NotFoundError:
+                logger.info("Creating the directory for user=%s then going to run setfacl on system=%s path=%s",
+                            username,
+                            system_id,
+                            path)
 
-                ds_admin_client = Agave(
-                    api_server=getattr(
-                        settings,
-                        'AGAVE_TENANT_BASEURL'
-                    ),
-                    token=getattr(
-                        settings,
-                        'AGAVE_SUPER_TOKEN'
-                    ),
-                )
+                tg458981_client.files.mkdir(systemId=system_id, path=path)
+                tg458981_client.files.setFacl(systemId=system_id,
+                                              path=path,
+                                              operation="ADD",
+                                              recursionMethod="PHYSICAL",
+                                              aclString=f"d:u:{username}:rwX,u:{username}:rwX")
+                agave_indexer.apply_async(kwargs={'systemId': system_id, 'filePath': path, 'recurse': False},
+                                          queue='indexing')
 
-                if systemId == settings.AGAVE_STORAGE_SYSTEM:
-                    job_body = {
-                        'parameters': {
-                            'username': username,
-                            'directory': 'shared/{}'.format(username)
-                        },
-                        'name': f'setfacl mydata for user {username}',
-                        'appId': 'setfacl_corral3-0.1'
-                    }
-                elif systemId == settings.AGAVE_WORKING_SYSTEM:
-                    job_body = {
-                        'parameters': {
-                            'username': username,
-                        },
-                        'name': f'setfacl work for user {username}',
-                        'appId': 'setfacl_frontera_work-0.1'
-                    }
-                else:
-                    logger.error('Attempting to set permissions on unsupported system: {}'.format(systemId))
-                    return
-
-                jobs_response = ds_admin_client.jobs.submit(body=job_body)
-                logger.info('setfacl response: {}'.format(jobs_response))
-
-                # add dir to index
-                logger.info("Indexing the home directory for user=%s", username)
-                agave_indexer.apply_async(kwargs={'username': username, 'systemId': systemId, 'filePath': username}, queue='indexing')
-
-    except AgaveException:
-        logger.exception('Failed to create home directory.',
+        # create keys, push to key service and use as credential for Tapis system
+        logger.info("Creating credentials for user=%s on system=%s", username, system_id)
+        (private_key, public_key) = createKeyPair()
+        register_public_key(username, public_key, system_id)
+        service_account = get_service_account_client()
+        create_system_credentials(service_account,
+                                  username,
+                                  public_key,
+                                  private_key,
+                                  system_id)
+    except BaseTapyException:
+        logger.exception('Failed to configure system (i.e. create directory, set acl, create credentials).',
                          extra={'user': username,
-                                'systemId': systemId})
+                                'systemId': system_id,
+                                'path': path})
+        raise self.retry(exc=exc)
 
 
 @shared_task(default_retry_delay=30, max_retries=3)
@@ -97,7 +98,7 @@ def new_user_alert(username):
                                                     'Name: ' + user.first_name + ' ' + user.last_name + '\n' +
                                                     'Id: ' + str(user.id) + '\n',
               settings.DEFAULT_FROM_EMAIL, settings.NEW_ACCOUNT_ALERT_EMAILS.split(','),)
-    
+
     tram_headers = {"tram-services-key": settings.TRAM_SERVICES_KEY}
     tram_body = {"project_id": settings.TRAM_PROJECT_ID,
                  "email": user.email}

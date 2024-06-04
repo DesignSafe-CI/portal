@@ -1,12 +1,18 @@
-import { Button, Checkbox, Modal } from 'antd';
+import {
+  useAmendProject,
+  usePublishProject,
+  useVersionProject,
+} from '@client/hooks';
+import { Button, Checkbox, Input, Modal } from 'antd';
 import React, { useState } from 'react';
 
 export const PipelinePublishModal: React.FC<{
   projectId: string;
   entityUuids: string[];
+  operation: string;
   projectType: string;
   disabled: boolean;
-}> = ({ projectId, entityUuids, projectType, disabled }) => {
+}> = ({ projectId, entityUuids, operation, projectType, disabled }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -17,12 +23,39 @@ export const PipelinePublishModal: React.FC<{
     setIsModalOpen(false);
   };
 
+  const [versionInfo, setVersionInfo] = useState('');
+
+  const { mutate: publishMutation } = usePublishProject();
+  const { mutate: amendMutation } = useAmendProject();
+  const { mutate: versionMutation } = useVersionProject();
+
+  const doPublish = () => {
+    switch (operation) {
+      case 'publish':
+        publishMutation({ projectId, entityUuids });
+        break;
+      case 'amend':
+        amendMutation({ projectId });
+        break;
+      case 'version':
+        versionMutation({ projectId, entityUuids, versionInfo });
+        break;
+    }
+  };
+
+  const publishButtonText: Record<string, string> = {
+    amend: 'Submit Amendments',
+    version: 'Create a New Version',
+    publish: 'Request DOI & Publish',
+  };
+
   const [protectedDataAgreement, setProtectedDataAgreement] = useState(false);
   const [publishingAgreement, setPublishingAgreement] = useState(false);
 
   const canPublish =
     publishingAgreement &&
-    (projectType === 'field_recon' ? protectedDataAgreement : true);
+    (projectType === 'field_recon' ? protectedDataAgreement : true) &&
+    (operation === 'version' ? !!versionInfo : true);
 
   return (
     <>
@@ -33,7 +66,8 @@ export const PipelinePublishModal: React.FC<{
         type="primary"
         onClick={showModal}
       >
-        <i role="none" className="fa fa-globe"></i>Request DOI and Publish
+        <i role="none" className="fa fa-globe"></i>&nbsp;
+        {publishButtonText[operation]}
       </Button>
       <Modal
         width="60%"
@@ -58,11 +92,11 @@ export const PipelinePublishModal: React.FC<{
             </span>
             <Button
               disabled={!canPublish}
-              onClick={handleCancel}
+              onClick={doPublish}
               type="primary"
               className="success-button"
             >
-              Request DOI and Publish
+              {publishButtonText[operation]}
             </Button>
           </div>
         )}
@@ -230,23 +264,15 @@ export const PipelinePublishModal: React.FC<{
             >
               <span>
                 <Checkbox
-                  id="publication-agreement-checkbox"
+                  id="publication-protected-checkbox"
                   checked={protectedDataAgreement}
                   onChange={(e) => setProtectedDataAgreement(e.target.checked)}
                 />
-                <label htmlFor="publication-agreement-checkbox">
+                <label htmlFor="publication-protected-checkbox">
                   &nbsp;The data I am publishing adheres to the procedures
                   listed above
                 </label>
               </span>
-              <Button
-                disabled={!publishingAgreement}
-                onClick={handleCancel}
-                type="primary"
-                className="success-button"
-              >
-                Request DOI and Publish
-              </Button>
             </div>
           </div>
         )}
@@ -330,6 +356,24 @@ export const PipelinePublishModal: React.FC<{
             issues that may arise from the publication.
           </p>
         </div>
+        {operation === 'version' && (
+          <>
+            {' '}
+            <label htmlFor="version-info-input">
+              Version Changes (required)
+            </label>{' '}
+            <div>
+              Specify what files you are adding, removing, or replacing, and why
+              these changes are needed. This will be displayed to those viewing
+              your publication, so be detailed and formal in your explanation.
+            </div>
+            <Input.TextArea
+              autoSize={{ minRows: 3 }}
+              onChange={(e) => setVersionInfo(e.target.value)}
+              id="version-info-input"
+            />
+          </>
+        )}
       </Modal>
     </>
   );

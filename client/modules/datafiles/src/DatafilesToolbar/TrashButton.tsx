@@ -42,7 +42,12 @@ const TrashButton: React.FC<TrashButtonProps<{ path: string }>> = React.memo(
     return (
       <ConfigProvider
         theme={{
-          components: { Button: { colorPrimaryHover: 'rgba(0, 0, 0, 0.88)' } },
+          components: {
+            Button: {
+              colorPrimaryHover: 'rgba(0, 0, 0, 0.88)',
+              motionDurationMid: '0',
+            },
+          },
         }}
       >
         <Button

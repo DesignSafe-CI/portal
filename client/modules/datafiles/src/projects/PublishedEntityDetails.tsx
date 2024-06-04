@@ -56,7 +56,7 @@ export const PublishedEntityDetails: React.FC<{
 
           {(entityValue.authors ?? []).length > 0 && (
             <tr className={styles['prj-row']}>
-              <td>Authors</td>
+              <td>Author(s)</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.authors
                   ?.filter((a) => a.authorship !== false)
@@ -76,7 +76,7 @@ export const PublishedEntityDetails: React.FC<{
 
           {entityValue.facility && (
             <tr className={styles['prj-row']}>
-              <td>Experiment Type</td>
+              <td>Facility</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.facility?.name}
               </td>
@@ -173,14 +173,14 @@ export const PublishedEntityDetails: React.FC<{
             </tr>
           )}
 
-          {publicationDate && (
-            <tr className={styles['prj-row']}>
-              <td>Date Published</td>
-              <td style={{ fontWeight: 'bold' }}>
-                {new Date(publicationDate).toISOString().split('T')[0]}
-              </td>
-            </tr>
-          )}
+          <tr className={styles['prj-row']}>
+            <td>Date Published</td>
+            <td style={{ fontWeight: 'bold' }}>
+              {publicationDate
+                ? new Date(publicationDate).toISOString().split('T')[0]
+                : '(Appears after publication)'}
+            </td>
+          </tr>
 
           {entityValue.dois && entityValue.dois[0] && (
             <tr className={styles['prj-row']}>

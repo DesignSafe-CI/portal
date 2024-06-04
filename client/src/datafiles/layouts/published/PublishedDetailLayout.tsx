@@ -1,7 +1,12 @@
-import { BaseProjectDetails, DatafilesToolbar } from '@client/datafiles';
+import {
+  BaseProjectDetails,
+  DatafilesToolbar,
+  DownloadDatasetModal,
+  PublishedCitation,
+} from '@client/datafiles';
 import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
 import React, { useEffect } from 'react';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
 
 const FileListingSearchBar = () => {
@@ -22,7 +27,10 @@ const FileListingSearchBar = () => {
       style={{ display: 'inline-flex' }}
     >
       <Form.Item name="query" style={{ marginBottom: 0 }}>
-        <Input placeholder="Search Data Files" style={{ width: '250px' }} />
+        <Input
+          placeholder="Search within Publication"
+          style={{ width: '250px' }}
+        />
       </Form.Item>
       <Button htmlType="submit">
         <i className="fa fa-search"></i>
@@ -46,14 +54,20 @@ export const PublishedDetailLayout: React.FC = () => {
     }
   }, [version, searchParams, setSearchParams]);
 
-  if (!projectId || !data) return null;
+  if (!projectId || !data)
+    return (
+      <Layout style={{ position: 'relative' }}>
+        <Spin style={{ position: 'absolute', top: '50%', left: '50%' }} />
+      </Layout>
+    );
 
   if (searchParams.get('q') && !path) {
     return (
       <Navigate
-        to={`/public/designsafe.storage.published/${projectId}/${projectId}?q=${searchParams.get(
+        to={`/public/designsafe.storage.published/${projectId}/%2F${projectId}?q=${searchParams.get(
           'q'
         )}`}
+        replace
       />
     );
   }
@@ -63,21 +77,54 @@ export const PublishedDetailLayout: React.FC = () => {
   )?.publicationDate;
 
   return (
-    <div style={{ width: '100%', paddingBottom: '100px' }}>
-      <DatafilesToolbar searchInput={<FileListingSearchBar />} />
-      <div
-        className="prj-head-title"
-        style={{ marginTop: '20px', marginBottom: '20px' }}
-      >
-        <strong>{data.baseProject.projectId}</strong>&nbsp;|&nbsp;
-        {data.baseProject.title}
+    <Layout style={{ paddingBottom: '100px' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+        <DatafilesToolbar searchInput={<FileListingSearchBar />} />
       </div>
+      <div
+        style={{
+          marginTop: '20px',
+          marginBottom: '20px',
+          fontSize: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1rem',
+        }}
+      >
+        <span>
+          <strong>{data.baseProject.projectId}</strong> |{' '}
+          {data.baseProject.title}
+        </span>
+        <DownloadDatasetModal
+          projectId={projectId}
+          license={data.baseProject.license}
+        />
+      </div>
+
+      {data.baseProject.projectType === 'other' && (
+        <section
+          style={{
+            backgroundColor: '#eef9fc',
+            padding: '10px 20px',
+            margin: '10px 0px',
+          }}
+        >
+          <strong>Cite This Data:</strong>
+
+          <PublishedCitation
+            projectId={projectId}
+            entityUuid={data.tree.children[0].uuid}
+          />
+        </section>
+      )}
       <BaseProjectDetails
         projectValue={data?.baseProject}
         publicationDate={publicationDate}
         versions={allVersions}
+        isPublished
       />
       <Outlet />
-    </div>
+    </Layout>
   );
 };

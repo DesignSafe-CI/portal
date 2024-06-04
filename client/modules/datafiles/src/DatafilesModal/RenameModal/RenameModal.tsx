@@ -61,34 +61,42 @@ export const RenameModalBody: React.FC<{
 
   return (
     <Modal
-      title={<h2>Rename {selectedFilesName[0].name}</h2>}
+      title={<h2>Rename {selectedFilesName[0]?.name}</h2>}
       width="60%"
       open={isOpen}
+      destroyOnClose
       footer={null} // Remove the footer from here
       onCancel={handleCancel}
     >
-      <Form autoComplete="off" layout="vertical" onFinish={handleRenameFinish}>
-        <Form.Item
-          label="New Name"
-          name="newName"
-          rules={[
-            {
-              validator: validateNewName,
-            },
-          ]}
+      {isOpen && (
+        <Form
+          autoComplete="off"
+          layout="vertical"
+          initialValues={{ newName: selectedFiles[0]?.name }}
+          onFinish={handleRenameFinish}
         >
-          <Input
-            type="textarea"
-            placeholder="Please enter a new name for this file/folder."
-          />
-        </Form.Item>
+          <Form.Item
+            label="New Name"
+            name="newName"
+            rules={[
+              {
+                validator: validateNewName,
+              },
+            ]}
+          >
+            <Input
+              type="textarea"
+              placeholder="Please enter a new name for this file/folder."
+            />
+          </Form.Item>
 
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <Button type="primary" htmlType="submit">
-            Rename
-          </Button>
-        </div>
-      </Form>
+          <div style={{ marginTop: '20px', textAlign: 'right' }}>
+            <Button type="primary" htmlType="submit">
+              Rename
+            </Button>
+          </div>
+        </Form>
+      )}
     </Modal>
   );
 };
