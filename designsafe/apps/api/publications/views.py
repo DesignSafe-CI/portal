@@ -43,7 +43,7 @@ View for getting DataCite DOI details from publications.
 """
 class PublicationDataCiteView(BaseApiView):
     def get(self, request, doi):
-        url = f'https://api.datacite.org/dois/{doi}'
+        url = f'https://api.datacite.org/dois/{doi}' 
 
         try:
             response = requests.get(url)
