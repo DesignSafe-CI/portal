@@ -21,7 +21,7 @@ import {
 } from '../../FileListing/FileListingTable/FileListingTable';
 import { NavLink } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
-import { MetricsModal } from '../modals/MetricsModal'; 
+import { MetricsModal } from '../modals/MetricsModal';
 
 const columns: TFileListingColumns = [
   {
@@ -98,7 +98,6 @@ function RecursiveTree({
   );
 }
 
-
 export const PublishedEntityDisplay: React.FC<{
   projectId: string;
   preview?: boolean;
@@ -115,14 +114,22 @@ export const PublishedEntityDisplay: React.FC<{
   defaultOpenChildren = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
-  const [isModalVisible, setIsModalVisible] = useState(false); 
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
-  
-  const dois = treeData.value.dois && treeData.value.dois.length > 0 ? treeData.value.dois[0] : '';
-  const { data: citationMetrics, isLoading, isError, error } = useCitationMetrics(dois);
+
+  const dois =
+    treeData.value.dois && treeData.value.dois.length > 0
+      ? treeData.value.dois[0]
+      : '';
+  const {
+    data: citationMetrics,
+    isLoading,
+    isError,
+    error,
+  } = useCitationMetrics(dois);
 
   const openModal = () => {
     setIsModalVisible(true);
@@ -131,14 +138,14 @@ export const PublishedEntityDisplay: React.FC<{
   const closeModal = () => {
     setIsModalVisible(false);
   };
-  console.log(isModalVisible)
+  console.log(isModalVisible);
 
   useEffect(() => {
     if (isError) {
-      console.error("Error fetching citation metrics:", error);
+      console.error('Error fetching citation metrics:', error);
     }
-  }, [isLoading, isError, error]);  
-  
+  }, [isLoading, isError, error]);
+
   return (
     <section>
       <div
@@ -167,28 +174,42 @@ export const PublishedEntityDisplay: React.FC<{
           <div>
             <strong>Download Citation:</strong>
             <div>
-              <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'} Downloads
+              <span className={styles['yellow-highlight']}>
+                {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'}{' '}
+                Downloads
               </span>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data2?.data.attributes.viewCount ?? '--'} Views
+              <span className={styles['yellow-highlight']}>
+                {citationMetrics?.data2?.data.attributes.viewCount ?? '--'}{' '}
+                Views
               </span>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles["yellow-highlight"]}>
-                {citationMetrics?.data2?.data.attributes.citationCount ?? '--'} Citations
+              <span className={styles['yellow-highlight']}>
+                {citationMetrics?.data2?.data.attributes.citationCount ?? '--'}{' '}
+                Citations
               </span>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <span onClick={openModal} style={{ cursor: 'pointer', color: '#337AB7', fontWeight: 'bold'}}>
+              <span
+                onClick={openModal}
+                style={{
+                  cursor: 'pointer',
+                  color: '#337AB7',
+                  fontWeight: 'bold',
+                }}
+              >
                 Details
               </span>
-              <MetricsModal isOpen={isModalVisible} handleCancel={closeModal} data1={citationMetrics?.data1} data2={citationMetrics?.data2}/>
+              <MetricsModal
+                isOpen={isModalVisible}
+                handleCancel={closeModal}
+                data1={citationMetrics?.data1}
+                data2={citationMetrics?.data2}
+              />
             </div>
           </div>
         )}
-
       </article>
-      <Collapse 
+      <Collapse
         expandIcon={() => null}
         activeKey={active ? '0' : undefined}
         onChange={(key) => {

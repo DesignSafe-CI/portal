@@ -2,12 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../apiClient';
 
 export type TCitationMetrics = {
+  data: { attributes: { 'relation-type-id': string; total: number } }[];
   attributes: {
     citationCount: number;
     downloadCount: number;
     viewCount: number;
-    viewsOverTime?: { yearMonth: string; total: number; }[];
-    downloadsOverTime?: { yearMonth: string; total: number; }[];
+    viewsOverTime?: { yearMonth: string; total: number }[];
+    downloadsOverTime?: { yearMonth: string; total: number }[];
   };
 };
 
@@ -22,7 +23,9 @@ async function getCitationMetrics({
   doi: string;
   signal: AbortSignal;
 }) {
-  const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(doi)}`;
+  const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
+    doi
+  )}`;
   const datacite = `/api/publications/data-cite/${encodeURIComponent(doi)}/`;
 
   // Fetch data from both endpoints simultaneously
@@ -39,9 +42,15 @@ export function useCitationMetrics(doi: string) {
     queryKey: ['datafiles', 'metrics', doi],
     queryFn: async ({ signal }) => {
       const resp1 = await apiClient.get<TCitationMetricsResponse>(
-        `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(doi)}`, { signal });
+        `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
+          doi
+        )}`,
+        { signal }
+      );
       const resp2 = await apiClient.get<TCitationMetricsResponse>(
-        `/api/publications/data-cite/${doi}/`, { signal });
+        `/api/publications/data-cite/${doi}/`,
+        { signal }
+      );
       return { data1: resp1.data, data2: resp2.data };
     },
   });
