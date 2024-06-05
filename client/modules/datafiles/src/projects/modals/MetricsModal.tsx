@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, Popover, Select, Table } from 'antd';
 const { Option } = Select;
 
@@ -7,26 +7,43 @@ export const MetricsModal: React.FC<{
     handleCancel: () => void;
     data1: { 
       data: { attributes: { 'relation-type-id': string; total: number } }[];
-      meta: {
-        total: number;
-        occurred: { id: string; title: string; count: number }[];
-        'relation-types': {
-          id: string;
-          title: string;
-          count: number;
-          'year-months': { id: string; title: string; sum: number }[];
-        }[];
-      };
      }; 
+     data2: {
+      data: {
+        attributes: {
+          viewsOverTime: {
+            yearMonth: string;
+            total: number;
+          }[];
+          downloadsOverTime: {
+            yearMonth: string;
+            total: number;
+          }[];
+        }
+      };
+    };
     
 
-  }> = ({ isOpen, handleCancel, data1 }) => {
+  }> = ({ isOpen, handleCancel, data1, data2 }) => {
     interface DataEntry {
       attributes: {
         'relation-type-id': string;
         total: number;
       };
     }
+
+    const latestYearMonth = useMemo(() => {
+      const views = data2.data.attributes.viewsOverTime;
+      if (views && views.length > 0) {
+        const sortedViews = views.sort((a, b) => b.yearMonth.localeCompare(a.yearMonth));
+        const mostRecentDate = sortedViews[0].yearMonth;
+        const [year, month] = mostRecentDate.split('-');
+        return `${month}/${year}`;
+      }
+      return null;
+    }, [data2.data.attributes.viewsOverTime]);
+
+    const title = `Dataset Metrics${latestYearMonth ? ` - Updated ${latestYearMonth}` : ''}`;
 
     // Table 1: Usage Breakdown
     const uniqueInvestigations = data1.data.filter((entry: DataEntry) => entry.attributes["relation-type-id"] === 'unique-dataset-investigations-regular');
@@ -93,21 +110,21 @@ export const MetricsModal: React.FC<{
 
     // Table 2: Quarters Data
     // Function to calculate quarter sums for a specific relation type
-    function calculateQuarterSums(relationTypeId: string, yearMonthsData: any[], year: string): { [key: string]: number } {
+    function calculateQuarterSums(yearMonthsData: any[], year: string): { [key: string]: number } {
       const sumsByQuarter: { [key: string]: number } = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
 
       yearMonthsData.forEach(month => {
-        const monthYear = month.id.substr(0, 4);
+        const monthYear = month.yearMonth.substring(0, 4);
         if (monthYear === year) {
-          const monthNumber = parseInt(month.id.substr(5, 2), 10);
+          const monthNumber = parseInt(month.yearMonth.substring(5, 7), 10);
           if (monthNumber >= 1 && monthNumber <= 3) {
-            sumsByQuarter.Q1 += month.sum;
+            sumsByQuarter.Q1 += month.total;
           } else if (monthNumber >= 4 && monthNumber <= 6) {
-            sumsByQuarter.Q2 += month.sum;
+            sumsByQuarter.Q2 += month.total;
           } else if (monthNumber >= 7 && monthNumber <= 9) {
-            sumsByQuarter.Q3 += month.sum;
+            sumsByQuarter.Q3 += month.total;
           } else if (monthNumber >= 10 && monthNumber <= 12) {
-            sumsByQuarter.Q4 += month.sum;
+            sumsByQuarter.Q4 += month.total;
           }
         }
       });
@@ -119,82 +136,89 @@ export const MetricsModal: React.FC<{
     const [selectedYear, setSelectedYear] = useState<string | undefined>(undefined);
 
     const [quarterSums, setQuarterSums] = useState<{ [key: string]: number | { [key: string]: number } }>(() => {
-      const defaultYear = data1.meta.occurred.length > 0 ? data1.meta.occurred[0].id : undefined;
+      const defaultYear = data2.data.attributes.viewsOverTime.length > 0
+        ? data2.data.attributes.viewsOverTime[data2.data.attributes.viewsOverTime.length - 1].yearMonth.substring(0, 4)
+        : undefined;
       const defaultSums: { [key: string]: number | { [key: string]: number } } = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
 
       if (defaultYear) {
-        data1.meta["relation-types"].forEach(relationType => {
-          const yearMonthsData = relationType?.["year-months"];
-          if (yearMonthsData) {
-            const sumsByQuarter = calculateQuarterSums(relationType.id, yearMonthsData, defaultYear);
-            defaultSums[relationType.id] = sumsByQuarter;
-          }
-        });
+        const viewsByQuarter = calculateQuarterSums(data2.data.attributes.viewsOverTime, defaultYear);
+        const downloadsByQuarter = calculateQuarterSums(data2.data.attributes.downloadsOverTime, defaultYear);
+        defaultSums['views'] = viewsByQuarter;
+        defaultSums['downloads'] = downloadsByQuarter;
       }
 
       return defaultSums;
     });
 
     useEffect(() => {
-      // Set selectedYear to the most recent year from the data
-      if (data1.meta.occurred.length > 0) {
-        setSelectedYear(data1.meta.occurred[0].id);
+      if (data2.data.attributes.viewsOverTime && data2.data.attributes.viewsOverTime.length > 0) {
+        const lastItem = data2.data.attributes.viewsOverTime[data2.data.attributes.viewsOverTime.length - 1];
+        const latestYear = lastItem.yearMonth.substring(0, 4);
+        setSelectedYear(latestYear);
       }
-    }, [data1.meta.occurred]);
+    }, [data2.data.attributes.viewsOverTime]); 
+    
 
     const handleYearChange = (value: string) => {
       setSelectedYear(value);
-
-      const sumsByQuarter: { [key: string]: number | { [key: string]: number } } = {};
-
-      data1.meta["relation-types"].forEach(relationType => {
-        const yearMonthsData = relationType?.["year-months"];
-        if (yearMonthsData) {
-          const sums = calculateQuarterSums(relationType.id, yearMonthsData, value);
-          sumsByQuarter[relationType.id] = sums;
-        }
+    
+      const viewsByQuarter = calculateQuarterSums(data2.data.attributes.viewsOverTime, value);
+      const downloadsByQuarter = calculateQuarterSums(data2.data.attributes.downloadsOverTime, value);
+      
+      setQuarterSums({
+        views: viewsByQuarter,
+        downloads: downloadsByQuarter
       });
-
-      setQuarterSums(sumsByQuarter);
     };
 
-    const years = data1.meta.occurred.map((item) => (
-      <Option key={item.id} value={item.id}>{item.id}</Option>
-    ));
+    const years = useMemo(() => {
+      if (data2.data.attributes.viewsOverTime && data2.data.attributes.viewsOverTime.length > 0) {
+        const uniqueYears = new Set(
+          data2.data.attributes.viewsOverTime.map((item) =>
+            item.yearMonth.substring(0, 4) 
+          )
+        );
+        return Array.from(uniqueYears).map((year) => (
+          <Option key={year} value={year}>{year}</Option>
+        ));
+      }
+      return []; 
+    }, [data2.data.attributes.viewsOverTime]);
 
     const quartersData = [
       {
         key: '1',
         quarters: 'Jan-Mar',
-        uniqueInvestigations: (quarterSums['unique-dataset-investigations-regular'] as { [key: string]: number }).Q1 !== undefined ? (quarterSums['unique-dataset-investigations-regular'] as { [key: string]: number }).Q1 : '--',
-        uniqueRequests: (quarterSums['unique-dataset-requests-regular'] as { [key: string]: number }).Q1 !== undefined ? (quarterSums['unique-dataset-requests-regular'] as { [key: string]: number }).Q1 : '--',
-        totalRequests: (quarterSums['total-dataset-requests-regular'] as { [key: string]: number }).Q1 !== undefined ? (quarterSums['total-dataset-requests-regular'] as { [key: string]: number }).Q1 : '--',
+        uniqueInvestigations: (quarterSums.views as { [key: string]: number }).Q1 || '--', 
+        uniqueRequests: (quarterSums.downloads as { [key: string]: number }).Q1 || '--',   
+        totalRequests: '--', // Leave as placeholder if no total requests data
       },
-      {
-        key: '2',
-        quarters: 'Apr-Jul',
-        uniqueInvestigations: (quarterSums['unique-dataset-investigations-regular'] as { [key: string]: number }).Q2 !== undefined ? (quarterSums['unique-dataset-investigations-regular'] as { [key: string]: number }).Q2 : '--',
-        uniqueRequests: (quarterSums['unique-dataset-requests-regular'] as { [key: string]: number }).Q2 !== undefined ? (quarterSums['unique-dataset-requests-regular'] as { [key: string]: number }).Q2 : '--',
-        totalRequests: (quarterSums['total-dataset-requests-regular'] as { [key: string]: number }).Q2 !== undefined ? (quarterSums['total-dataset-requests-regular'] as { [key: string]: number }).Q2 : '--',
-      },
-      {
-        key: '3',
-        quarters: 'Aug-Oct',
-        uniqueInvestigations: (quarterSums['unique-dataset-investigations-regular'] as { [key: string]: number }).Q3 !== undefined ? (quarterSums['unique-dataset-investigations-regular'] as { [key: string]: number }).Q3 : '--',
-        uniqueRequests: (quarterSums['unique-dataset-requests-regular'] as { [key: string]: number }).Q3 !== undefined ? (quarterSums['unique-dataset-requests-regular'] as { [key: string]: number }).Q3 : '--',
-        totalRequests: (quarterSums['total-dataset-requests-regular'] as { [key: string]: number }).Q3 !== undefined ? (quarterSums['total-dataset-requests-regular'] as { [key: string]: number }).Q3 : '--',
-      },
-      {
-        key: '4',
-        quarters: 'Nov-Dec',
-        uniqueInvestigations: (quarterSums['unique-dataset-investigations-regular'] as { [key: string]: number }).Q4 !== undefined ? (quarterSums['unique-dataset-investigations-regular'] as { [key: string]: number }).Q4 : '--',
-        uniqueRequests: (quarterSums['unique-dataset-requests-regular'] as { [key: string]: number }).Q4 !== undefined ? (quarterSums['unique-dataset-requests-regular'] as { [key: string]: number }).Q4 : '--',
-        totalRequests: (quarterSums['total-dataset-requests-regular'] as { [key: string]: number }).Q4 !== undefined ? (quarterSums['total-dataset-requests-regular'] as { [key: string]: number }).Q4 : '--',
-      },
-    ];
+        {
+          key: '2',
+          quarters: 'Apr-Jul',
+          uniqueInvestigations: (quarterSums.views as { [key: string]: number }).Q2 || '--', 
+          uniqueRequests: (quarterSums.downloads as { [key: string]: number }).Q2 || '--',   
+          totalRequests: '--', // Leave as placeholder if no total requests data
+        },
+        {
+          key: '3',
+          quarters: 'Aug-Oct',
+          uniqueInvestigations: (quarterSums.views as { [key: string]: number }).Q3 || '--', 
+          uniqueRequests: (quarterSums.downloads as { [key: string]: number }).Q3 || '--',   
+          totalRequests: '--', // Leave as placeholder if no total requests data
+        },
+        {
+          key: '4',
+          quarters: 'Nov-Dec',
+          uniqueInvestigations: (quarterSums.views as { [key: string]: number }).Q4 || '--', 
+          uniqueRequests: (quarterSums.downloads as { [key: string]: number }).Q4 || '--',   
+          totalRequests: '--', // Leave as placeholder if no total requests data
+        },
+      ];
 
-    
-    const quartersColumns = [
+      
+      const quartersColumns = [
       {
         title: (
           <span>
@@ -232,7 +256,7 @@ export const MetricsModal: React.FC<{
 
     return (
       <Modal
-        title="Dataset Metrics"
+        title={title}
         open={isOpen} 
         onCancel={handleCancel} 
         footer={

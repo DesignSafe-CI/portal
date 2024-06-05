@@ -6,8 +6,10 @@ export type TCitationMetrics = {
     citationCount: number;
     downloadCount: number;
     viewCount: number;
+    viewsOverTime?: { yearMonth: string; total: number; }[];
+    downloadsOverTime?: { yearMonth: string; total: number; }[];
   };
-}
+};
 
 export type TCitationMetricsResponse = {
   data: TCitationMetrics;
@@ -20,16 +22,16 @@ async function getCitationMetrics({
   doi: string;
   signal: AbortSignal;
 }) {
-  const endpoint1 = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(doi)}`;
-  const endpoint2 = `/api/publications/data-cite/${encodeURIComponent(doi)}/`;
+  const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(doi)}`;
+  const datacite = `/api/publications/data-cite/${encodeURIComponent(doi)}/`;
 
   // Fetch data from both endpoints simultaneously
-  const [response1, response2] = await Promise.all([
-    apiClient.get<TCitationMetricsResponse>(endpoint1, { signal }),
-    apiClient.get<TCitationMetricsResponse>(endpoint2, { signal }),
+  const [respDataciteEvents, respDatacite] = await Promise.all([
+    apiClient.get<TCitationMetricsResponse>(dataciteEvents, { signal }),
+    apiClient.get<TCitationMetricsResponse>(datacite, { signal }),
   ]);
 
-  return { data1: response1.data, data2: response2.data };
+  return { data1: respDataciteEvents.data, data2: respDatacite.data };
 }
 
 export function useCitationMetrics(doi: string) {

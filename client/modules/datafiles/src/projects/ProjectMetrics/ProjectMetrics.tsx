@@ -6,12 +6,12 @@ export const ProjectMetrics: React.FC<{
     version?: number;
   }> = ({ projectId, entityUuid, version = 1 }) => {
     const { data } = usePublicationDetail(projectId);
-  
+
     const entityDetails = (data?.tree.children ?? []).find(
       (child) => child.uuid === entityUuid && child.version === version
     );
     if (!data || !entityDetails) return null;
-  
+
     return (
       <div>
         {(entityDetails.value.authors ?? [])

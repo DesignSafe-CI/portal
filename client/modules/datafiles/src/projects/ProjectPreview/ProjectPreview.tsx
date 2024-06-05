@@ -182,7 +182,7 @@ export const PublishedEntityDisplay: React.FC<{
               <span onClick={openModal} style={{ cursor: 'pointer', color: '#337AB7', fontWeight: 'bold'}}>
                 Details
               </span>
-              <MetricsModal isOpen={isModalVisible} handleCancel={closeModal} data1={citationMetrics?.data1}/>
+              <MetricsModal isOpen={isModalVisible} handleCancel={closeModal} data1={citationMetrics?.data1} data2={citationMetrics?.data2}/>
             </div>
           </div>
         )}
