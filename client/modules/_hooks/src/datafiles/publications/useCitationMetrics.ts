@@ -1,19 +1,35 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../apiClient';
 
-export type TCitationMetrics = {
-  data: { attributes: { 'relation-type-id': string; total: number } }[];
+export interface Data1Item {
   attributes: {
-    citationCount: number;
-    downloadCount: number;
-    viewCount: number;
-    viewsOverTime?: { yearMonth: string; total: number }[];
-    downloadsOverTime?: { yearMonth: string; total: number }[];
+    'relation-type-id': string;
+    total: number;
   };
-};
+}
+
+export interface Data2Attributes {
+  citationCount: number;
+  downloadCount: number;
+  viewCount: number;
+  viewsOverTime: { yearMonth: string; total: number }[];
+  downloadsOverTime: { yearMonth: string; total: number }[];
+  citationsOverTime: { yearMonth: string; total: number }[];
+}
+
+export interface DataciteEventsResponse {
+  data: Data1Item[];
+}
+
+export interface DataciteAttributesResponse {
+  data: {
+    attributes: Data2Attributes;
+  };
+}
 
 export type TCitationMetricsResponse = {
-  data: TCitationMetrics;
+  data1: DataciteEventsResponse;
+  data2: DataciteAttributesResponse; 
 };
 
 export async function getCitationMetrics({
@@ -23,15 +39,13 @@ export async function getCitationMetrics({
   doi: string;
   signal: AbortSignal;
 }) {
-  const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
-    doi
-  )}`;
+  const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(doi)}`;
   const datacite = `/api/publications/data-cite/${encodeURIComponent(doi)}/`;
 
   // Fetch data from both endpoints simultaneously
   const [respDataciteEvents, respDatacite] = await Promise.all([
-    apiClient.get<TCitationMetricsResponse>(dataciteEvents, { signal }),
-    apiClient.get<TCitationMetricsResponse>(datacite, { signal }),
+    apiClient.get<DataciteEventsResponse>(dataciteEvents, { signal }),
+    apiClient.get<DataciteAttributesResponse>(datacite, { signal }),
   ]);
 
   return { data1: respDataciteEvents.data, data2: respDatacite.data };
@@ -39,19 +53,12 @@ export async function getCitationMetrics({
 
 export function useCitationMetrics(doi: string) {
   return useQuery({
-    queryKey: ['datafiles', 'metrics', doi],
+    queryKey: ['citationMetrics', doi], // This should be an object
     queryFn: async ({ signal }) => {
-      const resp1 = await apiClient.get<TCitationMetricsResponse>(
-        `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
-          doi
-        )}`,
-        { signal }
-      );
-      const resp2 = await apiClient.get<TCitationMetricsResponse>(
-        `/api/publications/data-cite/${doi}/`,
-        { signal }
-      );
-      return { data1: resp1.data, data2: resp2.data };
+      return getCitationMetrics({ doi, signal });
     },
+    // Add any additional options you need, like refetch, stale time, etc.
   });
 }
+
+

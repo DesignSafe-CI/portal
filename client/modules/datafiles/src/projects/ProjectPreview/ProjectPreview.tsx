@@ -138,7 +138,6 @@ export const PublishedEntityDisplay: React.FC<{
   const closeModal = () => {
     setIsModalVisible(false);
   };
-
   useEffect(() => {
     if (isError) {
       console.error('Error fetching citation metrics:', error);

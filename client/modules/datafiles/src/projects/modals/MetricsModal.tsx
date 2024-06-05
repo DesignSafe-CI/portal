@@ -3,36 +3,41 @@ import { Modal, Popover, Select, Table } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
+interface Data1Type {
+  data: { 
+    attributes: { 
+      'relation-type-id': string; 
+      total: number;
+    };
+  }[];
+}
+
+interface Data2Type {
+  data: {
+    attributes: {
+      citationCount: number;
+      downloadCount: number;
+      viewCount: number;
+      viewsOverTime: { yearMonth: string; total: number }[];
+      downloadsOverTime: { yearMonth: string; total: number }[];
+      citationsOverTime: { yearMonth: string; total: number }[];
+    };
+  }
+}
+
+interface MetricsModalProps {
+  isOpen: boolean;
+  handleCancel: () => void;
+  data1: Data1Type;
+  data2: Data2Type;
+}
+
 interface YearMonthEntry {
   yearMonth: string;
   total: number;
 }
 
-export const MetricsModal: React.FC<{
-  isOpen: boolean;
-  handleCancel: () => void;
-  data1: {
-    data: { attributes: { 'relation-type-id': string; total: number } }[];
-  };
-  data2: {
-    data: {
-      attributes: {
-        viewsOverTime: {
-          yearMonth: string;
-          total: number;
-        }[];
-        downloadsOverTime: {
-          yearMonth: string;
-          total: number;
-        }[];
-        citationsOverTime: {
-          yearMonth: string;
-          total: number;
-        }[];
-      };
-    };
-  };
-}> = ({ isOpen, handleCancel, data1, data2 }) => {
+export const MetricsModal: React.FC<MetricsModalProps> = ({ isOpen, handleCancel, data1, data2 }) => {
   interface DataEntry {
     attributes: {
       'relation-type-id': string;
