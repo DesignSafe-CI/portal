@@ -4,9 +4,9 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 interface Data1Type {
-  data: { 
-    attributes: { 
-      'relation-type-id': string; 
+  data: {
+    attributes: {
+      'relation-type-id': string;
       total: number;
     };
   }[];
@@ -22,7 +22,7 @@ interface Data2Type {
       downloadsOverTime: { yearMonth: string; total: number }[];
       citationsOverTime: { yearMonth: string; total: number }[];
     };
-  }
+  };
 }
 
 interface MetricsModalProps {
@@ -37,7 +37,12 @@ interface YearMonthEntry {
   total: number;
 }
 
-export const MetricsModal: React.FC<MetricsModalProps> = ({ isOpen, handleCancel, data1, data2 }) => {
+export const MetricsModal: React.FC<MetricsModalProps> = ({
+  isOpen,
+  handleCancel,
+  data1,
+  data2,
+}) => {
   interface DataEntry {
     attributes: {
       'relation-type-id': string;

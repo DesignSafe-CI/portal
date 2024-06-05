@@ -29,7 +29,7 @@ export interface DataciteAttributesResponse {
 
 export type TCitationMetricsResponse = {
   data1: DataciteEventsResponse;
-  data2: DataciteAttributesResponse; 
+  data2: DataciteAttributesResponse;
 };
 
 export async function getCitationMetrics({
@@ -39,7 +39,9 @@ export async function getCitationMetrics({
   doi: string;
   signal: AbortSignal;
 }) {
-  const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(doi)}`;
+  const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
+    doi
+  )}`;
   const datacite = `/api/publications/data-cite/${encodeURIComponent(doi)}/`;
 
   // Fetch data from both endpoints simultaneously
@@ -60,5 +62,3 @@ export function useCitationMetrics(doi: string) {
     // Add any additional options you need, like refetch, stale time, etc.
   });
 }
-
-
