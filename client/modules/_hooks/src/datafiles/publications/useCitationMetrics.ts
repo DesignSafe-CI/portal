@@ -16,7 +16,7 @@ export type TCitationMetricsResponse = {
   data: TCitationMetrics;
 };
 
-async function getCitationMetrics({
+export async function getCitationMetrics({
   doi,
   signal,
 }: {

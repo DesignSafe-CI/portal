@@ -3,6 +3,11 @@ import { Modal, Popover, Select, Table } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
+interface YearMonthEntry {
+  yearMonth: string;
+  total: number;
+}
+
 export const MetricsModal: React.FC<{
   isOpen: boolean;
   handleCancel: () => void;
@@ -142,7 +147,7 @@ export const MetricsModal: React.FC<{
 
   // Table 2: Quarters Data
   function calculateQuarterSums(
-    yearMonthsData: any[],
+    yearMonthsData: YearMonthEntry[],
     year: string
   ): { [key: string]: number } {
     const sumsByQuarter: { [key: string]: number } = {

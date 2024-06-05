@@ -138,7 +138,6 @@ export const PublishedEntityDisplay: React.FC<{
   const closeModal = () => {
     setIsModalVisible(false);
   };
-  console.log(isModalVisible);
 
   useEffect(() => {
     if (isError) {
