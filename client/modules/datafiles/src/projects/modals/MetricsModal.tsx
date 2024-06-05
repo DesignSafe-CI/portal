@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, Popover, Select, Table } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 export const MetricsModal: React.FC<{
@@ -7,6 +8,7 @@ export const MetricsModal: React.FC<{
     handleCancel: () => void;
     data1: { 
       data: { attributes: { 'relation-type-id': string; total: number } }[];
+      
      }; 
      data2: {
       data: {
@@ -16,6 +18,10 @@ export const MetricsModal: React.FC<{
             total: number;
           }[];
           downloadsOverTime: {
+            yearMonth: string;
+            total: number;
+          }[];
+          citationsOverTime: {
             yearMonth: string;
             total: number;
           }[];
@@ -43,7 +49,7 @@ export const MetricsModal: React.FC<{
       return null;
     }, [data2.data.attributes.viewsOverTime]);
 
-    const title = `Dataset Metrics${latestYearMonth ? ` - Updated ${latestYearMonth}` : ''}`;
+    const title = `Dataset Metrics${latestYearMonth ? ` [Updated ${latestYearMonth}]` : ''}`;
 
     // Table 1: Usage Breakdown
     const uniqueInvestigations = data1.data.filter((entry: DataEntry) => entry.attributes["relation-type-id"] === 'unique-dataset-investigations-regular');
@@ -54,13 +60,13 @@ export const MetricsModal: React.FC<{
       {
         key: '1',
         usage: (
-          <span>
+          <span> 
             Unique Investigations{' '}
-            <span style={{ fontSize: '80%', fontStyle: 'italic' }}>(views)</span>
+            <span style={{ fontSize: '80%', fontStyle: 'italic' }}>(views) </span>
             <Popover overlayStyle={{ maxWidth: '400px' }} title= "Unique Investigations (Views)" 
                       content="Refers to the number of one-hour sessions during which a user viewed 
                       metadata or previewed/downloaded/copied files associated with this DOI." >
-              <a href="#">?</a>
+              <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
             </Popover>
           </span>
         ),
@@ -71,10 +77,10 @@ export const MetricsModal: React.FC<{
         usage: (
           <span>
             Unique Requests{' '}
-            <span style={{ fontSize: '80%', fontStyle: 'italic' }}>(downloads)</span>
+            <span style={{ fontSize: '80%', fontStyle: 'italic' }}>(downloads) </span>
             <Popover overlayStyle={{ maxWidth: '400px' }} title= "Unique Requests (Downloads)" 
                       content="Refers to the number of one-hour sessions during which a user   previewed/downloaded/copied files associated with this DOI." >
-              <a href="#">?</a>
+              <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
             </Popover>
           </span>
         ),
@@ -84,10 +90,10 @@ export const MetricsModal: React.FC<{
         key: '3',
         usage: (
           <span>
-            Dataset Total Requests
+            Dataset Total Requests {' '}
             <Popover overlayStyle={{ maxWidth: '400px' }} title= "Dataset Total Requests" 
                       content="All downloads, previews, and copies of files plus Project Downloads." >
-              <a href="#">?</a>
+              <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
             </Popover>
           </span>
         ),
@@ -109,7 +115,6 @@ export const MetricsModal: React.FC<{
     ];
 
     // Table 2: Quarters Data
-    // Function to calculate quarter sums for a specific relation type
     function calculateQuarterSums(yearMonthsData: any[], year: string): { [key: string]: number } {
       const sumsByQuarter: { [key: string]: number } = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
 
@@ -132,7 +137,6 @@ export const MetricsModal: React.FC<{
       return sumsByQuarter;
     };
 
-    // Table 2: Quarters Data
     const [selectedYear, setSelectedYear] = useState<string | undefined>(undefined);
 
     const [quarterSums, setQuarterSums] = useState<{ [key: string]: number | { [key: string]: number } }>(() => {
@@ -144,8 +148,10 @@ export const MetricsModal: React.FC<{
       if (defaultYear) {
         const viewsByQuarter = calculateQuarterSums(data2.data.attributes.viewsOverTime, defaultYear);
         const downloadsByQuarter = calculateQuarterSums(data2.data.attributes.downloadsOverTime, defaultYear);
+        const citationsByQuarter = calculateQuarterSums(data2.data.attributes.citationsOverTime, defaultYear);
         defaultSums['views'] = viewsByQuarter;
         defaultSums['downloads'] = downloadsByQuarter;
+        defaultSums['citations'] = citationsByQuarter;
       }
 
       return defaultSums;
@@ -165,10 +171,12 @@ export const MetricsModal: React.FC<{
     
       const viewsByQuarter = calculateQuarterSums(data2.data.attributes.viewsOverTime, value);
       const downloadsByQuarter = calculateQuarterSums(data2.data.attributes.downloadsOverTime, value);
+      const citationsByQuarter = calculateQuarterSums(data2.data.attributes.citationsOverTime, value);
       
       setQuarterSums({
         views: viewsByQuarter,
-        downloads: downloadsByQuarter
+        downloads: downloadsByQuarter,
+        citations: citationsByQuarter
       });
     };
 
@@ -192,28 +200,28 @@ export const MetricsModal: React.FC<{
         quarters: 'Jan-Mar',
         uniqueInvestigations: (quarterSums.views as { [key: string]: number }).Q1 || '--', 
         uniqueRequests: (quarterSums.downloads as { [key: string]: number }).Q1 || '--',   
-        totalRequests: '--', // Leave as placeholder if no total requests data
+        totalRequests: (quarterSums.citations as { [key: string]: number }).Q1 || '--',
       },
         {
           key: '2',
           quarters: 'Apr-Jul',
           uniqueInvestigations: (quarterSums.views as { [key: string]: number }).Q2 || '--', 
           uniqueRequests: (quarterSums.downloads as { [key: string]: number }).Q2 || '--',   
-          totalRequests: '--', // Leave as placeholder if no total requests data
+          totalRequests: (quarterSums.citations as { [key: string]: number }).Q2 || '--',
         },
         {
           key: '3',
           quarters: 'Aug-Oct',
           uniqueInvestigations: (quarterSums.views as { [key: string]: number }).Q3 || '--', 
           uniqueRequests: (quarterSums.downloads as { [key: string]: number }).Q3 || '--',   
-          totalRequests: '--', // Leave as placeholder if no total requests data
+          totalRequests: (quarterSums.citations as { [key: string]: number }).Q3 || '--',
         },
         {
           key: '4',
           quarters: 'Nov-Dec',
           uniqueInvestigations: (quarterSums.views as { [key: string]: number }).Q4 || '--', 
           uniqueRequests: (quarterSums.downloads as { [key: string]: number }).Q4 || '--',   
-          totalRequests: '--', // Leave as placeholder if no total requests data
+          totalRequests: (quarterSums.citations as { [key: string]: number }).Q4 || '--',
         },
       ];
 
@@ -221,12 +229,12 @@ export const MetricsModal: React.FC<{
       const quartersColumns = [
       {
         title: (
-          <span>
-            Quarters
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            Quarter
             <Select
               value={selectedYear}
               onChange={handleYearChange}
-              style={{ marginLeft: 8, width: 120 }}
+              style={{ marginLeft: 8, width: 80 }}
             >
               {years}
             </Select>
@@ -271,7 +279,7 @@ export const MetricsModal: React.FC<{
       >
         {/* Content of the modal */}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div style={{ width: '40%' }}> {/* Adjust the width as needed */}
+          <div style={{ width: '40%', marginRight: '20px' }}> 
             <Table dataSource={dataSource} columns={columns} pagination={false} />
           </div>
           <div>
