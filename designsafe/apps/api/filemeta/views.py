@@ -2,10 +2,10 @@
 import logging
 import json
 from django.http import JsonResponse, HttpRequest
-from designsafe.apps.api.datafiles.operations.agave_operations import listing
+from designsafe.apps.api.datafiles.operations.tapis_operations import listing
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.filemeta.models import FileMetaModel
-from designsafe.apps.api.views import AuthenticatedApiView
+from designsafe.apps.api.views import AuthenticatedAllowJwtApiView
 
 
 logger = logging.getLogger(__name__)
@@ -28,8 +28,7 @@ def check_access(request, system_id: str, path: str, check_for_writable_access=F
         raise ApiException(error_msg, status=403)
 
     try:
-        # TODO_V3 update to use renamed (i.e. "tapis") client
-        listing(request.user.agave_oauth.client, system_id, path)
+        listing(request.user.tapis_oauth.client, system_id, path)
     except Exception as exc:  # pylint:disable=broad-exception-caught
         logger.error(
             f"user cannot access any related metadata as listing failed for {system_id}/{path} with error {str(exc)}."
@@ -37,8 +36,7 @@ def check_access(request, system_id: str, path: str, check_for_writable_access=F
         raise ApiException("User forbidden to access metadata", status=403) from exc
 
 
-# TODO_V3 update to allow JWT access DES-2706: https://github.com/DesignSafe-CI/portal/pull/1192
-class FileMetaView(AuthenticatedApiView):
+class FileMetaView(AuthenticatedAllowJwtApiView):
     """View for creating and getting file metadata"""
 
     def get(self, request: HttpRequest, system_id: str, path: str):
@@ -65,8 +63,7 @@ class FileMetaView(AuthenticatedApiView):
         return JsonResponse(result, safe=False)
 
 
-# TODO_V3 update to allow JWT access DES-2706: https://github.com/DesignSafe-CI/portal/pull/1192
-class CreateFileMetaView(AuthenticatedApiView):
+class CreateFileMetaView(AuthenticatedAllowJwtApiView):
     """View for creating (and updating) file metadata"""
 
     def post(self, request: HttpRequest):

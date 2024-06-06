@@ -176,6 +176,12 @@ class AppVariant(models.Model):
         blank=True,
     )
 
+    short_label = models.CharField(
+        help_text="The display name of this app in the Apps side navigation. If not defined, uses notes.shortLabel from app definition.",
+        max_length=64,
+        blank=True,
+    )
+
     bundle = models.ForeignKey(
         AppListingEntry,
         help_text="Bundle that the app belongs to.",
@@ -216,9 +222,9 @@ class AppVariant(models.Model):
     @property
     def href(self):
         """Retrieve the app's URL in the Tools & Applications space"""
-        app_href = f"/rw/workspace/applications/{self.app_id}"
+        app_href = f"/rw/workspace/{self.app_id}"
         if self.version:
-            app_href += f"?version={self.version}"
+            app_href += f"?appVersion={self.version}"
         return app_href
 
     def __str__(self):

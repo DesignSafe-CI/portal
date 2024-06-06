@@ -42,6 +42,8 @@ CELERY_TASK_QUEUES = (
     Queue('files', Exchange('io'), routing_key='io.files'),
     #Use to queue tasks which mainly call external APIs
     Queue('api', Exchange('api'), routing_key='api.agave'),
+    # Use to queue tasks which handle user onboarding
+    Queue('onboarding', Exchange('onboarding'), routing_key='onboarding'),
     )
 CELERY_TASK_DEFAULT_QUEUE = 'default'
 CELERY_TASK_DEFAULT_EXCHANGE = 'default'

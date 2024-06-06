@@ -16,7 +16,8 @@ export const UserSelect: React.FC<{
   onChange?: (value: TProjectUser[]) => void;
   userRole?: string;
   maxCount?: number;
-}> = ({ value, onChange, userRole, maxCount }) => {
+  disabled?: boolean;
+}> = ({ value, onChange, userRole, maxCount, disabled }) => {
   const initialOptions: SelectProps['options'] = useMemo(
     () =>
       value?.map((u) => ({
@@ -69,6 +70,7 @@ export const UserSelect: React.FC<{
       options={debouncedSearchTerm ? data : initialOptions}
       onSearch={setSearchTerm}
       onChange={changeCallback}
+      disabled={disabled}
     />
   );
 };
