@@ -300,10 +300,8 @@ export const SelectModal: React.FC<{
 
   useEffect(() => {
     if (isModalOpen) {
-      let systemValue = system;
-      if (!system) {
-        systemValue = defaultStorageSystem.id;
-      } else if (system.startsWith('project-')) {
+      let systemValue = system ?? defaultStorageSystem.id;
+      if (systemValue.startsWith('project-')) {
         systemValue = 'myprojects';
       }
       dropdownCallback(systemValue);
