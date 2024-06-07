@@ -85,7 +85,9 @@ export const AppsSubmissionForm: React.FC = () => {
     execSystems
   ) as TTapisSystem;
   const allocations = getAllocationList(defaultExecSystem, tasAllocations);
-  const portalAlloc = allocations.find((a) => a.startsWith('DS-HPC'));
+  const portalAlloc = allocations.find(
+    (a) => a.startsWith('DesignSafe-DCV') || a.startsWith('DS-HPC')
+  );
 
   const { fileInputs, parameterSet, configuration, outputs } = FormSchema(
     definition,
