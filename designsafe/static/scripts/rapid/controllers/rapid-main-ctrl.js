@@ -46,7 +46,12 @@ export default class RapidMainCtrl {
         );
         this.map = L.map('map', {
             layers: [streets, satellite],
-            scrollWheelZoom: true
+            scrollWheelZoom: true,
+            minZoom: 2, // 2 typically prevents zooming out to far to see multiple earths
+            maxBounds: [
+                [-90, -180], // Southwest coordinates
+                [90, 180], // Northeast coordinates
+            ]
         });
         this.map.setView([30.2672, -97.7431], 2);
         this.map.zoomControl.setPosition('topright');
