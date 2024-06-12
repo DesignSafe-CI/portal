@@ -7,8 +7,9 @@ import { useGetNotifications } from '@client/hooks';
 
 export const JobStatusNav: React.FC = () => {
   const { data } = useGetNotifications({
-    event_types: ['interactive_session_ready', 'job'],
+    eventTypes: ['interactive_session_ready', 'job'],
     read: false,
+    markRead: false,
   });
   const unreadNotifs = new Set(data?.notifs.map((x) => x.extra.uuid)).size;
 

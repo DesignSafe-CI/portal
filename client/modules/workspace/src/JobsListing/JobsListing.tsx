@@ -11,6 +11,7 @@ import {
   usePostJobs,
   TJobPostOperations,
   useReadNotifications,
+  TGetNotificationsResponse,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -89,29 +90,36 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
 }) => {
   const queryClient = useQueryClient();
   const { data: interactiveSessionNotifs } = useGetNotifications({
-    event_types: ['interactive_session_ready'],
+    eventTypes: ['interactive_session_ready'],
   });
   const { mutate: readNotifications } = useReadNotifications();
 
   // mark all as read on component mount
   useEffect(() => {
     readNotifications({
-      event_types: ['interactive_session_ready', 'job'],
+      eventTypes: ['interactive_session_ready', 'job'],
     });
-  }, []);
 
-  // update unread count state
-  queryClient.setQueryData(
-    [
-      'workspace',
-      'notifications',
-      'badge',
-      {
-        event_types: ['interactive_session_ready', 'job'],
-      },
-    ],
-    0
-  );
+    // update unread count state
+    queryClient.setQueryData(
+      [
+        'workspace',
+        'notifications',
+        {
+          eventTypes: ['interactive_session_ready', 'job'],
+          read: false,
+          markRead: false,
+        },
+      ],
+      (oldData: TGetNotificationsResponse) => {
+        return {
+          ...oldData,
+          notifs: [],
+          unread: 0,
+        };
+      }
+    );
+  }, []);
 
   const columns: TJobsListingColumns = useMemo(
     () => [

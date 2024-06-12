@@ -17,6 +17,9 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         page = request.GET.get("page", 0)
         read = request.GET.get("read")
         event_types = request.GET.getlist("eventTypes")
+        mark_read = request.GET.get(
+            "markRead", True
+        )  # mark read by default to support legacy behavior
 
         query_params = {}
         if read is not None:
@@ -54,9 +57,10 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
             offset = page * limit
             notifs = notifs[offset : offset + limit]
 
-        for n in notifs:
-            if not n.read:
-                n.mark_read()
+        if mark_read:
+            for n in notifs:
+                if not n.read:
+                    n.mark_read()
 
         notifs = [n.to_dict() for n in notifs]
         return JsonResponse(
