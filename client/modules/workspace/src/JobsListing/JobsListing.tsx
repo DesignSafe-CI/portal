@@ -1,9 +1,10 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { TableProps, Row, Flex } from 'antd';
+import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
 import { PrimaryButton, SecondaryButton } from '@client/common-components';
+import { BaseButtonProps } from 'antd/es/button/button';
 import {
   useGetNotifications,
   TJobStatusNotification,
@@ -30,17 +31,21 @@ export const JobActionButton: React.FC<{
   uuid: string;
   operation: TJobPostOperations;
   title: string;
-  type?: 'primary' | 'secondary';
+  type?: BaseButtonProps['type'];
   size?: ButtonSize;
-}> = ({ uuid, operation, title, type, size, ...props }) => {
+  danger?: boolean;
+}> = ({ uuid, operation, title, type, size, danger = false }) => {
   const { mutate: mutateJob, isPending, isSuccess } = usePostJobs();
-  const Button = type === 'primary' ? PrimaryButton : SecondaryButton;
+  const Button =
+    type === 'primary' ? (danger ? AntButton : PrimaryButton) : SecondaryButton;
   return (
     <Button
       size={size || 'middle'}
       onClick={() => mutateJob({ uuid, operation })}
       loading={isPending}
-      disabled={isPending}
+      disabled={isPending || isSuccess}
+      danger={danger}
+      type={type}
     >
       {title}
       {isSuccess && <i className="fa fa-check" style={{ marginLeft: 5 }} />}

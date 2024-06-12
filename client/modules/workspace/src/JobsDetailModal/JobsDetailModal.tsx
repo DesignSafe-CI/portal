@@ -66,6 +66,7 @@ export const JobsDetailModalBody: React.FC<{
             title="Cancel Job"
             operation="cancelJob"
             type="primary"
+            danger
           />
         )}
       </div>
