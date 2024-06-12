@@ -124,7 +124,7 @@
 
 /* Do NOT scroll "Applications:" and "Job Status" */
 .ant-layout-sider-children {
-  overflow-y: hidden;
+  overflow-y: scroll;
   display: flex;
   flex-flow: column;
 }
