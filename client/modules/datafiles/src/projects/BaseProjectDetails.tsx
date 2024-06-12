@@ -167,7 +167,9 @@ export const BaseProjectDetails: React.FC<{
     ? parseInt(searchParams.get('version') ?? Math.max(...versions).toString())
     : 1;
 
-  const filteredHazmapperMaps = filterHazmapperMaps(projectValue.hazmapperMaps ?? []);
+  const filteredHazmapperMaps = filterHazmapperMaps(
+    projectValue.hazmapperMaps ?? []
+  );
 
   return (
     <section style={{ marginBottom: '20px' }}>
