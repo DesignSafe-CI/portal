@@ -8,6 +8,7 @@ import { RelateDataModal } from './modals';
 import { ProjectInfoModal } from './modals/ProjectInfoModal';
 import { VersionChangesModal } from './modals/VersionChangesModal';
 import { SubmitFeedbackModal } from '../publications/modals/SubmitFeedbackModal';
+import { filterHazmapperMaps, getHazmapperUrl } from './utils';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
   children,
@@ -165,6 +166,8 @@ export const BaseProjectDetails: React.FC<{
   const currentVersion = versions
     ? parseInt(searchParams.get('version') ?? Math.max(...versions).toString())
     : 1;
+
+  const filteredHazmapperMaps = filterHazmapperMaps(projectValue.hazmapperMaps ?? []);
 
   return (
     <section style={{ marginBottom: '20px' }}>
@@ -341,16 +344,16 @@ export const BaseProjectDetails: React.FC<{
               {projectValue.keywords.join(', ')}
             </td>
           </tr>
-          {(projectValue.hazmapperMaps?.length ?? 0) > 0 && (
+          {(filteredHazmapperMaps?.length ?? 0) > 0 && (
             <tr className={styles['prj-row']}>
               <td>Hazmapper Maps</td>
               <td style={{ fontWeight: 'bold' }}>
-                {(projectValue.hazmapperMaps ?? []).map((m) => (
+                {(filteredHazmapperMaps ?? []).map((m) => (
                   <div key={m.uuid}>
                     {m.name}&nbsp;
                     <Tooltip title="Open in HazMapper">
                       <a
-                        href={`https://hazmapper.tacc.utexas.edu/hazmapper/project-public/${m.uuid}`}
+                        href={getHazmapperUrl(m, isPublished)}
                         rel="noopener noreferrer"
                         target="_blank"
                       >
