@@ -233,7 +233,7 @@ export const getConfigurationFields = (
 
 const FormSchema = (
   definition: TTapisApp,
-  executionSystems: [TTapisSystem],
+  executionSystems: TTapisSystem[],
   allocations: string[],
   defaultStorageSystem: TTapisSystem,
   username: string,
