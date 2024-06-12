@@ -149,12 +149,6 @@ export const AppsSubmissionForm: React.FC = () => {
 
   const missingLicense = license.type && !license.enabled;
 
-  const readOnly =
-    !!missingLicense ||
-    !hasStorageSystems ||
-    (definition.jobType === 'BATCH' && !!missingAllocation) ||
-    !!defaultSystemNeedsKeys;
-
   const methods = useForm({
     defaultValues: initialValues,
     resolver: zodResolver(z.object(schema)),
@@ -340,6 +334,13 @@ export const AppsSubmissionForm: React.FC = () => {
   const [pushKeysSystem, setPushKeysSystem] = useState<
     TTapisSystem | undefined
   >();
+
+  const readOnly =
+    !!missingLicense ||
+    !hasStorageSystems ||
+    (definition.jobType === 'BATCH' && !!missingAllocation) ||
+    !!defaultSystemNeedsKeys ||
+    isPending;
 
   useEffect(() => {
     if (submitResult?.execSys) {
