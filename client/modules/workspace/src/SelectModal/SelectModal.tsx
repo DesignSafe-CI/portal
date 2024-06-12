@@ -8,7 +8,11 @@ import {
   ConfigProvider,
   ThemeConfig,
 } from 'antd';
-import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
+import {
+  CaretDownOutlined,
+  CaretUpOutlined,
+  LeftOutlined,
+} from '@ant-design/icons';
 
 import {
   useAuthenticatedUser,
@@ -16,6 +20,7 @@ import {
   useGetSystems,
   TTapisSystem,
   TUser,
+  TFileListing,
 } from '@client/hooks';
 
 import {
@@ -29,22 +34,6 @@ import { SelectModalProjectListing } from './SelectModalProjectListing';
 
 const api = 'tapis';
 const portalName = 'DesignSafe';
-const HeaderTitle: React.FC<{
-  api: string;
-  system: string;
-  path: string;
-  label: string;
-}> = ({ api, system, path, label }) => {
-  const getPathName = usePathDisplayName();
-  return (
-    <span style={{ fontWeight: 'normal' }}>
-      <i role="none" className="fa fa-folder-o">
-        &nbsp;&nbsp;
-      </i>
-      {getPathName(api, system, path, label)}
-    </span>
-  );
-};
 
 const SystemSuffixIcon = () => {
   return (
@@ -109,73 +98,128 @@ const getScheme = (storageSystem: TTapisSystem): string => {
   return storageSystem.notes?.isMyData ? 'private' : 'public';
 };
 
-const getPath = (
-  storageSystem: TTapisSystem,
+const getSystemRootPath = (
+  storageSystem: TTapisSystem | undefined,
   user: TUser | undefined
 ): string => {
-  return storageSystem.notes?.isMyData
+  return storageSystem?.notes?.isMyData
     ? encodeURIComponent('/' + user?.username)
     : '';
 };
 
+const getBackPath = (
+  encodedPath: string,
+  searchTerm: string | null,
+  clearSearchTerm: () => void,
+  system: TTapisSystem | undefined,
+  user: TUser | undefined
+): string => {
+  if (searchTerm) {
+    clearSearchTerm();
+    return encodedPath;
+  }
+  const pathParts = decodeURIComponent(encodedPath).split('/');
+  const isRootPath = pathParts.join('/') === getSystemRootPath(system, user);
+  if (!isRootPath) {
+    pathParts.pop();
+  }
+  return encodeURIComponent(pathParts.join('/'));
+};
+
+const getParentFolder = (
+  name: string,
+  system: string,
+  path: string
+): TFileListing => {
+  return {
+    format: 'folder',
+    lastModified: '',
+    length: 1,
+    type: 'dir',
+    mimeType: '',
+    name: name,
+    permissions: '',
+    path: decodeURIComponent(path),
+    system: system,
+  };
+};
+
 function getFilesColumns(
   api: string,
-  system: string,
   path: string,
-  systemLabel: string,
   selectionMode: string,
+  searchTerm: string | null,
+  clearSearchTerm: () => void,
   selectionCallback: (path: string) => void,
-  navCallback: (path: string) => void
+  navCallback: (path: string) => void,
+  user: TUser | undefined,
+  selectedSystem?: TTapisSystem
 ): TFileListingColumns {
   return [
     {
       title: (
-        <HeaderTitle
-          api={api}
-          system={system}
-          path={path}
-          label={systemLabel}
-        />
+        <div>
+          <Button
+            type="link"
+            onClick={() =>
+              navCallback(
+                getBackPath(
+                  path,
+                  searchTerm,
+                  clearSearchTerm,
+                  selectedSystem,
+                  user
+                )
+              )
+            }
+          >
+            <LeftOutlined />
+            Back
+          </Button>
+        </div>
       ),
       dataIndex: 'name',
       ellipsis: true,
 
-      render: (data, record) =>
-        record.format === 'folder' ? (
-          <Button
-            style={{
-              marginLeft: '3rem',
-              textAlign: 'center',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-            onClick={() => navCallback(encodeURIComponent(record.path))}
-            type="link"
-          >
+      render: (data, record, index) => {
+        const isFolder = record.format === 'folder';
+        const marginLeft = index === 0 ? '3rem' : '6rem';
+        const commonStyle = {
+          marginLeft,
+          textAlign: 'center' as const,
+          display: 'flex',
+          alignItems: 'center',
+        };
+        const iconClassName = isFolder ? 'fa fa-folder-o' : 'fa fa-file-o';
+
+        if (isFolder && index > 0) {
+          return (
+            <Button
+              style={commonStyle}
+              onClick={() => navCallback(encodeURIComponent(record.path))}
+              type="link"
+            >
+              <i
+                role="none"
+                className={iconClassName}
+                style={{ color: '#333333', marginRight: '8px' }}
+              ></i>
+              {data}
+            </Button>
+          );
+        }
+
+        return (
+          <span style={commonStyle}>
             <i
               role="none"
-              className="fa fa-folder-o"
-              style={{ color: '#333333', marginRight: '8px' }}
-            ></i>
-            {data}
-          </Button>
-        ) : (
-          <span
-            style={{
-              marginLeft: '3rem',
-              textAlign: 'center',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <i
-              role="none"
-              className="fa fa-file-o"
+              className={iconClassName}
               style={{ color: '#333333', marginRight: '8px' }}
             ></i>
             {data}
           </span>
-        ),
+        );
+      },
     },
     {
       dataIndex: 'path',
@@ -212,16 +256,20 @@ export const SelectModal: React.FC<{
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [form] = Form.useForm();
+  const getPathName = usePathDisplayName();
 
   const handleClose = () => {
     setIsModalOpen(false);
     form.resetFields();
     onClose();
   };
+  const clearSearchTerm = () => {
+    form.resetFields();
+    setSearchTerm(null);
+  };
   useEffect(() => {
     if (isModalOpen) {
-      form.resetFields();
-      setSearchTerm(null);
+      clearSearchTerm();
     }
   }, [form, isModalOpen]);
   const { user } = useAuthenticatedUser();
@@ -251,8 +299,9 @@ export const SelectModal: React.FC<{
   const defaultParams = useMemo(
     () => ({
       selectedApi: api,
-      selectedSystem: defaultStorageSystem.id,
-      selectedPath: getPath(defaultStorageSystem, user),
+      selectedSystemId: defaultStorageSystem.id,
+      selectedSystem: defaultStorageSystem,
+      selectedPath: getSystemRootPath(defaultStorageSystem, user),
       scheme: getScheme(defaultStorageSystem),
     }),
     [defaultStorageSystem, user]
@@ -260,16 +309,23 @@ export const SelectModal: React.FC<{
 
   const [selection, setSelection] = useState<{
     selectedApi: string;
-    selectedSystem: string;
+    selectedSystemId: string;
     selectedPath: string;
     scheme?: string;
     projectId?: string;
+    selectedSystem?: TTapisSystem;
   }>(defaultParams);
   const [systemLabel, setSystemLabel] = useState<string>(
     defaultStorageSystem.notes.label ?? defaultStorageSystem.id
   );
   const [showProjects, setShowProjects] = useState<boolean>(false);
-  const { selectedApi, selectedSystem, selectedPath, scheme } = selection;
+  const {
+    selectedApi,
+    selectedSystemId,
+    selectedSystem,
+    selectedPath,
+    scheme,
+  } = selection;
   useEffect(() => setSelection(defaultParams), [isModalOpen, defaultParams]);
   const [dropdownValue, setDropdownValue] = useState<string>(
     defaultStorageSystem.id
@@ -278,6 +334,13 @@ export const SelectModal: React.FC<{
     setDropdownValue(newValue);
     if (newValue === 'myprojects') {
       setShowProjects(true);
+      setSelection({
+        selectedApi: api,
+        selectedSystemId: '',
+        selectedSystem: undefined,
+        selectedPath: '',
+        scheme: '',
+      });
       setSystemLabel('My Projects');
       return;
     }
@@ -288,8 +351,9 @@ export const SelectModal: React.FC<{
     setShowProjects(false);
     setSelection({
       selectedApi: api,
-      selectedSystem: system.id,
-      selectedPath: getPath(system, user),
+      selectedSystemId: system.id,
+      selectedSystem: system,
+      selectedPath: getSystemRootPath(system, user),
       scheme: getScheme(system),
     });
     setSystemLabel(system.notes.label ?? system.id);
@@ -299,9 +363,10 @@ export const SelectModal: React.FC<{
     setShowProjects(false);
     setSelection({
       selectedApi: api,
-      selectedSystem: `project-${uuid}`,
+      selectedSystemId: `project-${uuid}`,
       selectedPath: '',
       projectId: projectId,
+      selectedSystem: undefined, //not using system for project
     });
     // Intended to indicate searching the root path of a project.
     setSystemLabel('root');
@@ -341,16 +406,19 @@ export const SelectModal: React.FC<{
     () =>
       getFilesColumns(
         selectedApi,
-        selectedSystem,
         selectedPath,
-        systemLabel,
         selectionMode,
+        searchTerm,
+        clearSearchTerm,
         (selection: string) => selectCallback(selection),
-        navCallback
+        navCallback,
+        user,
+        selectedSystem
       ),
     [
       navCallback,
       selectedApi,
+      selectedSystemId,
       selectedSystem,
       selectedPath,
       systemLabel,
@@ -391,11 +459,11 @@ export const SelectModal: React.FC<{
               <BaseFileListingBreadcrumb
                 className={styles.breadCrumbItem}
                 api={selectedApi}
-                system={selectedSystem}
+                system={selectedSystemId}
                 path={decodeURIComponent(selectedPath)}
                 systemRootAlias={selection.projectId}
                 initialBreadcrumbs={
-                  selectedSystem.startsWith('project-')
+                  selectedSystemId.startsWith('project-')
                     ? [{ title: 'My Projects', path: 'PROJECT_LISTING' }]
                     : []
                 }
@@ -440,13 +508,23 @@ export const SelectModal: React.FC<{
               <div className={styles.filesTableContainer}>
                 <FileListingTable
                   api={selectedApi}
-                  system={selectedSystem}
+                  system={selectedSystemId}
                   path={selectedPath}
                   columns={FileColumns}
                   rowSelection={undefined}
                   scheme={scheme}
                   scroll={undefined}
                   searchTerm={searchTerm}
+                  currentDisplayPath={getParentFolder(
+                    getPathName(
+                      selectedApi,
+                      selectedSystemId,
+                      selectedPath,
+                      systemLabel
+                    ),
+                    selectedSystemId,
+                    selectedPath
+                  )}
                 />
               </div>
             )}

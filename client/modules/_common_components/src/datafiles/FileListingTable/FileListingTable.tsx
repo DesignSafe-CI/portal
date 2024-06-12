@@ -14,6 +14,14 @@ export type TFileListingColumns = (TableColumnType<TFileListing> & {
   dataIndex: keyof TFileListing;
 })[];
 
+function getLastPathComponent(path: string = '', relativeTo: string = '') {
+  const pathComponents = path
+    .replace(relativeTo, '')
+    .split('/')
+    .filter((p) => !!p);
+  return pathComponents[pathComponents.length - 1];
+}
+
 export const FileListingTable: React.FC<
   {
     api: string;
@@ -26,6 +34,7 @@ export const FileListingTable: React.FC<
     className?: string;
     emptyListingDisplay?: React.ReactNode;
     searchTerm?: string | null;
+    currentDisplayPath?: TFileListing | undefined;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
   api,
@@ -38,6 +47,7 @@ export const FileListingTable: React.FC<
   className,
   emptyListingDisplay,
   searchTerm = '',
+  currentDisplayPath = null,
   ...props
 }) => {
   const limit = 100;
@@ -69,8 +79,12 @@ export const FileListingTable: React.FC<
     if (filterFn) {
       return filterFn(cl);
     }
+    if (currentDisplayPath) {
+      return [currentDisplayPath, ...cl];
+    }
+
     return cl;
-  }, [data, filterFn]);
+  }, [data, filterFn, path, system]);
 
   /* HANDLE FILE SELECTION */
   const { selectedFiles, setSelectedFiles } = useSelectedFiles(
