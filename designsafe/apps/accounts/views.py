@@ -3,20 +3,21 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
                                              NotificationPreferences)
-from designsafe.apps.auth.tasks import check_or_create_agave_home_dir
+from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory, get_systems_to_configure
 from designsafe.apps.accounts.tasks import create_report
 from pytas.http import TASClient
 from pytas.models import User as TASUser
 import logging
 import json
+import requests
 import re
 from termsandconditions.models import TermsAndConditions
 
@@ -257,67 +258,44 @@ def nees_migration(request, step=None):
                           {'form': form})
     return HttpResponseRedirect(reverse('designsafe_accounts:nees_migration'))
 
+class MissingCaptchaError(Exception):
+    pass
 
 def register(request):
-    if request.user.is_authenticated():
-        messages.info(request, 'You are already logged in!')
-        return HttpResponseRedirect('designsafe_accounts:index')
-
+    logger.debug("formatting %s", {"hello": "world"})
+    context={"RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY}
     if request.method == 'POST':
-        account_form = forms.UserRegistrationForm(request.POST)
-        if account_form.is_valid():
-            try:
-                account_form.save()
-                return HttpResponseRedirect(
-                    reverse('designsafe_accounts:registration_successful'))
-            except Exception as e:
-                logger.info('error: {}'.format(e))
+        try:
+            # Verify captcha
+            captcha_resp = requests.post("https://www.google.com/recaptcha/api/siteverify",
+                                         data={"secret": settings.RECAPTCHA_PRIVATE_KEY,
+                                               "response": request.POST.get("g-recaptcha-response")
+                                               },
+                                         timeout=10
+                                        )
+            captcha_resp.raise_for_status()
+            captcha_json = captcha_resp.json()
+            if not captcha_json.get("success", False):
+                messages.error(request, "Please complete the reCAPTCHA before submitting your account request.")
+                return render(request,'designsafe/apps/accounts/register.html', context)
 
-                error_type = e.args[1] if len(e.args) > 1 else ''
+            # Once captcha is verified, send request to TRAM.
+            tram_headers = {"tram-services-key": settings.TRAM_SERVICES_KEY}
+            tram_body = {"project_id": settings.TRAM_PROJECT_ID,
+                         "email": request.POST.get("email")}
+            tram_resp = requests.post(f"{settings.TRAM_SERVICES_URL}/project_invitations/create",
+                                      headers=tram_headers,
+                                      json=tram_body,
+                                      timeout=15)
+            tram_resp.raise_for_status()
+            logger.info("Received response from TRAM: %s", tram_resp.json())
+            messages.success(request, "Your request has been received. Please check your email for a project invitation.")
 
-                if 'DuplicateLoginException' in error_type:
-                    err_msg = (
-                        'The username you chose has already been taken. Please '
-                        'choose another. If you already have an account with TACC, '
-                        'please log in using those credentials.')
-                    account_form._errors.setdefault('username', [err_msg])
-                elif 'DuplicateEmailException' in error_type:
-                    err_msg = (
-                        'This email is already registered. If you already have an '
-                        'account with TACC, please log in using those credentials.')
-                    account_form._errors.setdefault('email', [err_msg])
-                    err_msg = '%s <a href="%s">Did you forget your password?</a>' % (
-                        err_msg,
-                        reverse('designsafe_accounts:password_reset'))
-                elif 'PasswordInvalidException' in error_type:
-                    err_msg = (
-                        'The password you provided did not meet the complexity '
-                        'requirements.')
-                    account_form._errors.setdefault('password', [err_msg])
-                else:
+        except requests.HTTPError as exc:
+            logger.debug(exc)
+            messages.error(request, "An unknown error occurred. Please try again later.")
 
-                    safe_data = account_form.cleaned_data.copy()
-                    safe_data['password'] = safe_data['confirmPassword'] = '********'
-                    logger.exception('User Registration Error!', extra=safe_data)
-                    err_msg = (
-                        'An unexpected error occurred. If this problem persists '
-                        'please create a support ticket.')
-                messages.error(request, err_msg)
-        else:
-            messages.error(request, 'There were errors processing your registration. '
-                                    'Please see below for details.')
-    else:
-        account_form = forms.UserRegistrationForm()
-
-    context = {
-        'account_form': account_form
-    }
-    return render(request, 'designsafe/apps/accounts/register.html', context)
-
-
-def registration_successful(request):
-    return render(request, 'designsafe/apps/accounts/registration_successful.html')
-
+    return render(request,'designsafe/apps/accounts/register.html', context)
 
 @login_required
 def profile_edit(request):
@@ -330,29 +308,19 @@ def profile_edit(request):
     pro_form = forms.ProfessionalProfileForm(request.POST or None, instance=ds_profile)
 
     if request.method == 'POST':
-        form = forms.UserProfileForm(request.POST, initial=tas_user)
-        if form.is_valid() and pro_form.is_valid():
-            existing_user = (tas.get_user(email=form.cleaned_data['email']))
-            if existing_user and (existing_user['email'] != tas_user['email']):
-                messages.error(request, 'The submitted email already exists! Your email has not been updated!')
-                return HttpResponseRedirect(reverse('designsafe_accounts:profile_edit'))
+        if pro_form.is_valid():
+
 
             pro_form.save()
 
-            data = form.cleaned_data
             pro_data = pro_form.cleaned_data
             # punt on PI Eligibility for now
-            data['piEligibility'] = tas_user['piEligibility']
 
             # retain original account source
-            data['source'] = tas_user['source']
-            tas.save_user(tas_user['id'], data)
             messages.success(request, 'Your profile has been updated!')
 
             try:
                 ds_profile = user.profile
-                ds_profile.ethnicity = data['ethnicity']
-                ds_profile.gender = data['gender']
                 ds_profile.bio = pro_data['bio']
                 ds_profile.website = pro_data['website']
                 ds_profile.orcid_id = pro_data['orcid_id']
@@ -363,13 +331,11 @@ def profile_edit(request):
                 logger.info('exception e: {} {}'.format(type(e), e ))
                 ds_profile = DesignSafeProfile(
                     user=user,
-                    ethnicity=data['ethnicity'],
-                    gender=data['gender'],
                     bio=pro_data['bio'],
                     website=pro_data['website'],
                     orcid_id=pro_data['orcid_id'],
                     professional_level=pro_data['professional_level'],
-                    nh_interests_primary=pro_data['nh_interests_primary']
+                    nh_interests_primary=pro_data['nh_interests_primary'],
                     )
 
             ds_profile.update_required = False
@@ -500,7 +466,12 @@ def email_confirmation(request, code=None):
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
                     logger.info('TAS Account activation succeeded.')
-                    check_or_create_agave_home_dir.apply(args=(user["username"],))
+                    systems_to_configure = get_systems_to_configure(username)
+                    for system in systems_to_configure:
+                        check_or_configure_system_and_user_directory.apply_async(args=(user.username,
+                                                                                       system["system_id"],
+                                                                                       system["path"],
+                                                                                       system["create_path"]))
                     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,

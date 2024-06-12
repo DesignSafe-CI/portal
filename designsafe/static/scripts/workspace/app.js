@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import angular from 'angular';
 import _ from 'underscore';
+import dndlists from 'angular-drag-and-drop-lists';
 
 
 import { agaveFilePicker } from '../workspace/directives/agave-file-picker';
@@ -42,7 +43,7 @@ function config(
         (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
         window.location.hostname +
         (window.location.port ? ':' + window.location.port : '') +
-        '/ws/websockets?subscribe-broadcast&subscribe-user'
+        '/ws/websockets/?subscribe-broadcast&subscribe-user'
     );
 
     $urlRouterProvider.otherwise('/');

@@ -4,17 +4,7 @@ import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
 import { uuid } from 'uuidv4';
 
 export class FileListingService {
-    constructor(
-        $http,
-        $uibModal,
-        $rootScope,
-        $q,
-        $timeout,
-        ProjectService,
-        ProjectEntitiesService,
-        FileOperationService,
-        Django
-    ) {
+    constructor($http, $uibModal, $rootScope, $q, $timeout, ProjectService, FileOperationService, Django) {
         'ngInject';
         this.count = 0;
         this.$rootScope = $rootScope;
@@ -25,8 +15,8 @@ export class FileListingService {
         this.$timeout = $timeout;
         this.ProjectService = ProjectService;
         this.FileOperationService = FileOperationService;
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.from = from; // bind rxjs method for mocking
+        this.currentDOI = null;
 
         this.modalCloseSubject = new Subject();
         this.listingStartSubject = new Subject();
@@ -88,6 +78,14 @@ export class FileListingService {
                 breadcrumbParams: {
                     skipRoot: true,
                     customRoot: { label: 'My Data', path: this.Django.user },
+                },
+            },
+            agaveWork: {
+                api: 'agave',
+                scheme: 'private',
+                breadcrumbParams: {
+                    skipRoot: true,
+                    customRoot: { label: 'HPC Work', path: this.Django.user },
                 },
             },
             shared: {
@@ -279,8 +277,19 @@ export class FileListingService {
      * @param {number} params.limit Number of results to return.
      * @param {string} params.query_string Optional query string for search.
      */
-    browse({ section, api, scheme, system, path, offset, limit, query_string }) {
-        const params = { section, api, scheme, system, path, offset: offset || 0, limit: limit || 100, query_string };
+    browse({ section, api, scheme, system, path, offset, limit, query_string, doi, exclude }) {
+        const params = {
+            section,
+            api,
+            scheme,
+            system,
+            path,
+            offset: offset || 0,
+            limit: limit || 100,
+            query_string,
+            doi,
+            exclude,
+        };
         this.updateParams(section, params);
         // Deselect any selected files and update permissions on operations.
         if (section === 'main') {
@@ -312,7 +321,7 @@ export class FileListingService {
      * @param {number} params.limit Number of results to return.
      * @param {string} params.query_string Optional query string for search.
      */
-    mapParamsToListing({ section, api, scheme, system, path, offset, limit, query_string }) {
+    mapParamsToListing({ section, api, scheme, system, path, offset, limit, query_string, exclude }) {
         const operation = query_string ? 'search' : 'listing';
         const listingUrl = this.removeDuplicateSlashes(
             `/api/datafiles/${api}/${scheme}/${operation}/${system}/${path}/`
@@ -322,7 +331,7 @@ export class FileListingService {
             params: { offset, limit, query_string },
         });
         const listingObservable$ = this.from(request).pipe(
-            tap(this.listingSuccessCallback(section)),
+            tap(this.listingSuccessCallback(section, exclude)),
             catchError(this.listingErrorCallback(section))
         );
         return listingObservable$;
@@ -333,10 +342,12 @@ export class FileListingService {
      * to each file and determines whether it is possible to list more files.
      * @param {string} section
      */
-    listingSuccessCallback(section) {
+    listingSuccessCallback(section, exclude) {
         return (resp) => {
             this.listings[section].error = null;
-            this.listings[section].listing = resp.data.listing.map((f) => ({ ...f, key: uuid(), selected: false }));
+            this.listings[section].listing = resp.data.listing
+                .map((f) => ({ ...f, key: uuid(), selected: false }))
+                .filter((f) => exclude ? !exclude.includes(f.name) : true);
             this.listings[section].loading = false;
             resp.data.nextPageToken && this.updateParams(section, { nextPageToken: resp.data.nextPageToken });
             this.listings[section].reachedEnd =
@@ -490,7 +501,7 @@ export class FileListingService {
             // Filter for entities whose associationIds contain a file path matching the provided path.
             return associationIds.some((asc) => {
                 const comps = asc.href.split('project-' + projectId, 2);
-                return comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
+                return path && comps.length === 2 && path.replace(/^\/+/, '') === comps[1].replace(/^\/+/, '');
             });
         });
 
@@ -552,7 +563,25 @@ export class FileListingService {
 
         const listingObservable$ = from(request).pipe(
             tap(this.abstractListingSuccessCallback(entitiesPerPath)),
-            catchError(() => {})
+            catchError(() => {
+                // If the listing fails, construct a synthetic listing as placeholder.
+                const children = Object.keys(entitiesPerPath).filter((k) => k.startsWith(path));
+                const syntheticListing = children.map((path) => {
+                    // Assume path is a dir if it doesn't contain a '.' character.
+                    const type = path.search(/\./) > 0 ? 'file' : 'dir';
+                    return {
+                        name: path.split('/').slice(-1)[0],
+                        path,
+                        system,
+                        permissions: 'ALL',
+                        type,
+                        format: type === 'dir' ? 'folder' : 'raw',
+                    };
+                });
+                const synthResponse = { data: { listing: syntheticListing } };
+                this.abstractListingSuccessCallback(entitiesPerPath)(synthResponse);
+                return of(null);
+            })
         );
         return listingObservable$;
     }
@@ -596,9 +625,11 @@ export class FileListingService {
             this.addSection(entity.uuid);
             this.listings[entity.uuid].listing = [];
             this.listings[entity.uuid].params = { section: entity.uuid, ...abstractListingParams };
-            entity._filePaths.forEach((path) => {
-                entitiesPerPath[path] = [...(entitiesPerPath[path] || []), entity];
-            });
+            entity._filePaths
+                .filter((s) => s !== '/')
+                .forEach((path) => {
+                    entitiesPerPath[path] = [...(entitiesPerPath[path] || []), entity];
+                });
         });
         // Concatenate all entity._filePath arrays.
         const allPaths = Object.keys(entitiesPerPath);
@@ -658,17 +689,20 @@ export class FileListingService {
      * @param {Object} entity Entity to perform the abstract listing for.
      */
     publishedListing(publication, entity) {
+        const basePath = publication.revision
+            ? `${publication.projectId}v${publication.revision}`
+            : publication.projectId;
         const publicationListingParams = {
             api: 'agave',
             scheme: 'public',
             system: 'designsafe.storage.published',
-            path: publication.projectId,
+            path: basePath,
         };
         this.listings.main.params = { section: 'main', ...publicationListingParams };
         const entityFiles = entity.fileObjs.map((f) => ({
             ...f,
             system: 'designsafe.storage.published',
-            path: publication.projectId + f.path,
+            path: basePath + f.path,
             format: f.type === 'dir' ? 'folder' : 'raw',
             permissions: 'READ',
             _entities: [entity],

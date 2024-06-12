@@ -24,13 +24,13 @@
                             ds-data-draggable
                             data-ds-data="agave://{{file.system}}/{{file.path}}"
                         >
-                            <i class="fa {{$ctrl.icon(file.name, file.type)}}"></i>
+                            <i role="none" class="fa {{$ctrl.icon(file.name, file.type)}}"></i>
                             <span>{{file.name}}</span>
                         </a>
                     </td>
                     <td>{{file.length|bytes}}</td>
                 </tr>
-                <tr ng-if="$ctrl.listing.loading"><td colspan="3"><p class="lead"><i class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
+                <tr ng-if="$ctrl.listing.loading"><td colspan="3"><p class="lead"><i role="none" class="fa fa-spin fa-circle-o-notch"></i> Loading files...</p></td></tr>
             </tbody>
         </table>
     </div>

@@ -14,6 +14,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import json
+from django.urls import reverse_lazy
+from django.utils.text import format_lazy
 
 
 gettext = lambda s: s
@@ -34,15 +36,14 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+RENDER_REACT = False
+TEST = True
 
 ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
-    'djangocms_admin_style',
-    'djangocms_text_ckeditor',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
+
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,6 +54,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
+    'djangocms_admin_style',
+    'djangocms_text_ckeditor',
+    'django_select2',
+    'cmsplugin_cascade',
+    'cmsplugin_cascade.extra_fields',
 
     'cms',
     'treebeard',
@@ -74,15 +80,13 @@ INSTALLED_APPS = (
     'termsandconditions',
     'impersonate',
 
-    'oauth2client.contrib.django_util',
-
-    #websockets
-    'ws4redis',
-
     # custom
     'designsafe.apps.auth',
     'designsafe.apps.api',
     'designsafe.apps.api.notifications',
+    'designsafe.apps.api.projects_v2',
+    'designsafe.apps.api.publications_v2',
+    'designsafe.apps.api.filemeta',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -108,29 +112,28 @@ INSTALLED_APPS = (
     'designsafe.apps.rapid',
 
     #haystack integration
-    'haystack'
+    # 'haystack'
 )
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
 
-CACHES = {
-  'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-      'LOCATION': 'memcached:11211',
-  },
-}
+#CACHES = {
+#  'default': {
+#      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#      'LOCATION': 'memcached:11211',
+#  },
+#}
 
-MIDDLEWARE_CLASSES = (
-    'designsafe.middleware.RequestProfilingMiddleware',
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
+    'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -162,12 +165,10 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
-                'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
-                'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -186,6 +187,10 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
@@ -231,6 +236,10 @@ STATICFILES_FINDERS = (
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
 
+FIXTURE_DIRS = [
+    os.path.join(BASE_DIR, 'designsafe', 'fixtures'),
+]
+
 
 #####
 #
@@ -247,6 +256,7 @@ CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
+    ('cms_page_no_footer.html', 'Footerless Page'),
 )
 CMSPLUGIN_CASCADE = {
     'alien_plugins': (
@@ -259,7 +269,7 @@ CMSPLUGIN_CASCADE = {
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = (
-    'cmsplugin_cascade.bootstrap3',
+    # 'cmsplugin_cascade.bootstrap3',
     'cmsplugin_cascade.link',
 )
 CMSPLUGIN_CASCADE_ALIEN_PLUGINS = (
@@ -284,7 +294,10 @@ THUMBNAIL_PROCESSORS = (
 )
 
 CKEDITOR_SETTINGS = {
-    'allowedContent': True
+'language': '{{ language }}',
+'skin': 'moono-lisa',
+'toolbar': 'CMS',
+'stylesSet': format_lazy('default:{}', reverse_lazy('admin:cascade_texteditor_config')),
 }
 
 MIGRATION_MODULES = {
@@ -317,6 +330,8 @@ DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
     'password': ('form-control', ),
 }
 DJANGOCMS_FORMS_DATETIME_FORMAT = '%d-%b-%Y %H:%M'
+
+DJANGOCMS_FORMS_FORMAT_CHOICES = ()
 
 #####
 #
@@ -410,18 +425,6 @@ NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@
 #
 DEFAULT_TERMS_SLUG = 'terms'
 
-##
-# django-websockets-redis
-#
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_CONNECTION = {
-    'host': os.environ.get('WS_BACKEND_HOST'),
-    'port': os.environ.get('WS_BACKEND_PORT'),
-    'db': os.environ.get('WS_BACKEND_DB'),
-}
-WS4REDIS_EXPIRE = 0
-
 # Analytics
 #
 GOOGLE_ANALYTICS_PROPERTY_ID = os.environ.get('GOOGLE_ANALYTICS_PROPERTY_ID', False)
@@ -447,6 +450,7 @@ AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
+AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
@@ -476,23 +480,25 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'auth': json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
     }
 }
+PROJECT_ADMIN_USERS = ["test_prjadmin"]
 
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
 
 # RECAPTCHA SETTINGS FOR LESS SPAMMO
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
-RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY', '')
+RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY', '')
 NOCAPTCHA = True
 
 #FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
+DESIGNSAFE_PROJECTS_PATH = '/corral-repl/tacc/NHERI/projects/'
 DESIGNSAFE_PUBLISHED_PATH = '/corral-repl/tacc/NHERI/published/'
 DATACITE_USER = os.environ.get('DATACITE_USER')
 DATACITE_PASS = os.environ.get('DATACITE_PASS')
-DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER')
-DATACITE_URL = os.environ.get('DATACITE_URL')
+DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER', '')
+DATACITE_URL = os.environ.get('DATACITE_URL', '')
 
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
 if os.environ.get('PORTAL_PROFILE') == 'True':
@@ -528,8 +534,8 @@ CELERY_ALWAYS_EAGER = True
 BROKER_BACKEND = 'memory'
 
 # No token refreshes during testing
-MIDDLEWARE_CLASSES = [c for c in MIDDLEWARE_CLASSES if c !=
-                      'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware']
+MIDDLEWARE= [c for c in MIDDLEWARE if c !=
+                      'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware']
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '.media')
@@ -541,6 +547,23 @@ AGAVE_CLIENT_KEY = 'example_com_client_key'
 AGAVE_CLIENT_SECRET = 'example_com_client_secret'
 AGAVE_SUPER_TOKEN = 'example_com_client_token'
 AGAVE_STORAGE_SYSTEM = 'storage.example.com'
+AGAVE_WORKING_SYSTEM = 'storage.example.work'
+
+TAPIS_SYSTEMS_TO_CONFIGURE = [
+    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
+    {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
+    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
+]
+
+# Tapis Client Configuration
+PORTAL_ADMIN_USERNAME = ''
+TAPIS_TENANT_BASEURL = 'https://designsafe.tapis.io'
+TAPIS_CLIENT_ID = 'client_id'
+TAPIS_CLIENT_KEY = 'client_key'
+TAPIS_ADMIN_JWT = 'admin_jwt'
+TAPIS_TG458981_JWT = 'tg_jwt'
+
+KEY_SERVICE_TOKEN = ''
 
 MIGRATION_MODULES = {
     'data': None,
@@ -669,6 +692,11 @@ ES_INDICES = {
         'alias': ES_INDEX_PREFIX.format('publications'),
         'document': 'designsafe.apps.data.models.elasticsearch.IndexedPublication',
         'kwargs': {'index.mapping.total_fields.limit': 3000}
+    },
+        'publications_v2': {
+        'alias': ES_INDEX_PREFIX.format('publications_v2'),
+        'document': 'designsafe.apps.api.publications_v2.elasticsearch.IndexedPublication',
+        'kwargs': {}
     },
     'web_content': {
         'alias': ES_INDEX_PREFIX.format('web-content'),

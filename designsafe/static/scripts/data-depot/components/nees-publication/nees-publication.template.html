@@ -65,7 +65,7 @@
                                         <th style="border-top:none; width:25%">Sponsor</th>
                                         <td style="border-top:none; width:75%" id="sponsor">
                                             <div ng-repeat="sponsor in $ctrl.project.metadata.project.sponsor">
-                                                <a ng-href="{{sponsor.url}}" target="_blank">{{sponsor.name}}</a>
+                                                <a ng-href="{{sponsor.url}}" target="_blank" aria-describedby="msg-open-new-window">{{sponsor.name}}</a>
                                             </div>
                                         </td>
                                     </tr>

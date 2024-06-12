@@ -1,225 +1,110 @@
-import ManageExperimentsTemplate from './manage-experiments.component.html';
-import experimentalData from '../../../projects/components/manage-experiments/experimental-data.json';
-import _ from 'underscore';
+import ManageExperimentsTemplate from './manage-experiments.template.html';
+const ExperimentDefaults = require('./experiment-form-defaults.json');
+const ExperimentalData = require('../facility-data.json');
 
 class ManageExperimentsCtrl {
 
-    constructor($q, $uibModal, Django, UserService, ProjectEntitiesService) {
+    constructor(ProjectEntitiesService, $uibModal) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.UserService = UserService;
-        this.Django = Django;
-        this.$q = $q;
         this.$uibModal = $uibModal;
     }
 
     $onInit() {
         this.project = this.resolve.project;
+        this.experiments = this.project.experiment_set;
         this.edit = this.resolve.edit;
-
-        let remData = (data) => {
-            data.atlss = data.atlss.filter(a => a.name != "hybrid_simulation"); 
-            return data;
+        this.ExperimentDefaults = ExperimentDefaults;
+        this.ui = {
+            loading: false,
+            editing: false,
+            require: {
+                relatedWork: false,
+                referencedData: false,
+            },
+            relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
+            experimentalFacilities: ExperimentalData.facility.facilities_list,
+            equipmentTypes: ExperimentalData.equipmentTypes,
+            experimentTypes: ExperimentalData.experimentTypes,
         };
+        this.configureForm(this.edit);
+        this.form.authors = this.configureAuthors(this.edit, false);
+    }
 
-        this.efs = experimentalData.experimentalFacility;
-        this.experimentTypes = remData(experimentalData.experimentTypes);
-        this.equipmentTypes = remData(experimentalData.equipmentTypes);
+    configureForm(experiment) {
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
+        let form = structuredClone(this.ExperimentDefaults)
+        this.uuid = '';
+        this.ui.error = false;
+        if (experiment) {
+            this.ui.editing = true;
+            form.name = experiment.name;
+            this.uuid = experiment.uuid;
+            for (let key in form) {
+                if (experiment.value[key] instanceof Array && experiment.value[key].length) {
+                    form[key] = experiment.value[key];
+                } else if (['procedureStart', 'procedureEnd'].includes(key)) {
+                    form[key] = new Date(experiment.value[key]);
+                } else if (typeof experiment.value[key] === 'string' && experiment.value[key]) {
+                    form[key] = experiment.value[key];
+                }
+            }
+        }
+        this.ui.require.relatedWork = this.requireField(form.relatedWork);
+        this.ui.require.referencedData = this.requireField(form.referencedData);
+        this.form = structuredClone(form);
+    }
 
-        var members = [this.project.value.pi].concat(
+    resetForm() {
+        this.configureForm();
+        this.form.authors = this.configureAuthors(null, false);
+        this.ui.editing = false;
+    }
+
+    configureAuthors(experiment, amending) {
+        /*  Configure Authors for Experiment Editing
+            - check and remove authors from experiments that don't exist on the project
+            - format project users as authors for experiment metadata
+        */
+        if (amending) return structuredClone(experiment.value.authors);
+
+        let projectMembers = [this.project.value.pi].concat(
             this.project.value.coPis,
             this.project.value.teamMembers,
-            this.project.value.guestMembers.filter((g) => (g && (typeof g === 'object'))).map((g) => g.user)
+            this.project.value.guestMembers
         );
-        members = [...new Set(members)];
-        members.forEach((m, i) => {
-            if (typeof m == 'string') {
-                // if user is guest append their data
-                if (m.slice(0, 5) === 'guest') {
-                    let guestData = this.project.value.guestMembers.find((x) => x.user === m);
-                    members[i] = {
-                        name: m,
-                        order: i,
-                        authorship: false,
-                        guest: true,
-                        fname: guestData.fname,
-                        lname: guestData.lname,
-                        email: guestData.email,
-                        inst: guestData.inst,
-                    };
-                } else {
-                    members[i] = { name: m, order: i, authorship: false };
-                }
-            }
+        projectMembers = projectMembers.map((member, i) => {
+            if (typeof member == 'string') {
+                // registered users
+                return { name: member, order: i, authorship: false };
+            } else {
+                // nonregistered users
+                return {
+                    name: member.user,
+                    order: i,
+                    authorship: false,
+                    guest: true,
+                    fname: member.fname,
+                    lname: member.lname,
+                    email: member.email,
+                    inst: member.inst,
+                };
+            };
         });
+        if (experiment) {
+            let projectUsers = projectMembers.map((member) => { return member.name });
+            let experimentUsers = experiment.value.authors.map((author) => { return author.name });
+            // drop members who are no longer listed in the project...
+            // add members who are aren't listed in the experiment...
+            let currentAuthors = experiment.value.authors.filter((author) => { return projectUsers.includes(author.name) });
+            let newAuthors = projectMembers.filter((author) => { return !experimentUsers.includes(author.name) });
 
-        this.data = {
-            busy: false,
-            experiments: this.project.experiment_set,
-            project: this.project,
-            users: [...new Set(members)],
-            form: {},
-        };
-
-        this.ui = {
-            experiments: {},
-            efs: this.efs,
-            experimentTypes: this.experimentTypes,
-            equipmentTypes: this.equipmentTypes,
-            updateExperiments: {},
-            showAddReport: {},
-        };
-
-        this.form = {
-            curExperiments: [],
-            addExperiments: [{}],
-            deleteExperiments: [],
-            addGuest: [{}],
-            entitiesToAdd: [],
-        };
-
-        this.form.curExperiments = this.data.project.experiment_set;
-
-        if (this.edit) {
-            this.editExp(this.edit);
+            //combine and return unique
+            let authors = currentAuthors.concat(newAuthors);
+            authors.forEach((author, i) => { author.order = i });
+            return structuredClone(authors);
         }
-    }
-
-    isValid(ent) {
-        if (ent && ent != '' && ent != 'None') {
-            return true;
-        }
-        return false;
-    }
-
-    addExperiment() {
-        this.form.addExperiments.push({});
-    }
-
-    addGuests() {
-        this.form.addGuest.push({});
-    }
-
-    cancel() {
-        this.close();
-    }
-
-    getExpFacility(str) {
-        let efs = this.ui.efs[this.data.project.value.projectType];
-        let ef = _.find(efs, function(ef) {
-            return ef.name === str;
-        });
-        return ef.label;
-    }
-
-    getExpType(exp) {
-        let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
-        let et = _.find(ets, (x) => {
-            return x.name === exp.value.experimentType;
-        });
-        return et.label;
-    }
-
-    getEquipment(exp) {
-        let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
-        let eqt = _.find(eqts, (x) => {
-            return x.name === exp.value.equipmentType;
-        });
-        return eqt.label;
-    }
-
-    configureAuthors(exp) {
-        // combine project and experiment users then check if any authors need to be built into objects
-        let usersToClean = [...new Set([...this.data.users, ...exp.value.authors.slice()])];
-        let modAuths = false;
-        let auths = [];
-
-        usersToClean.forEach((a) => {
-            if (typeof a == 'string') {
-                modAuths = true;
-            }
-            if (a.authorship) {
-                auths.push(a);
-            }
-        });
-        // create author objects for each user
-        if (modAuths) {
-            usersToClean.forEach((auth, i) => {
-                if (typeof auth == 'string') {
-                    // if user is guest append their data
-                    if (auth.slice(0, 5) === 'guest') {
-                        let guestData = this.project.value.guestMembers.find((x) => x.user === auth);
-                        usersToClean[i] = {
-                            name: auth,
-                            order: i,
-                            authorship: false,
-                            guest: true,
-                            fname: guestData.fname,
-                            lname: guestData.lname,
-                            email: guestData.email,
-                            inst: guestData.inst,
-                        };
-                    } else {
-                        usersToClean[i] = { name: auth, order: i, authorship: false };
-                    }
-                } else {
-                    auth.order = i;
-                }
-            });
-        }
-        usersToClean = _.uniq(usersToClean, 'name');
-
-        /*
-        It is possible that a user added to an experiment may no longer be on a project
-        Remove any users on the experiment that are not on the project
-        */
-        usersToClean = usersToClean.filter((m) => this.data.users.find((u) => u.name === m.name));
-
-        /*
-        Restore previous authorship status and order if any
-        */
-        usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
-
-        /*
-        Reorder to accomodate blank spots in order and give order to users with no order
-        */
-        usersToClean = usersToClean.sort((a, b) => a.order - b.order);
-        usersToClean.forEach((u, i) => {
-            u.order = i;
-        });
-
-        return usersToClean;
-    }
-
-    editExp(experiment) {
-        let exp = jQuery.extend(true, {}, experiment);
-        let auths = this.configureAuthors(exp);
-        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
-
-        if (exp.value.procedureEnd && exp.value.procedureEnd !== exp.value.procedureStart) {
-                exp.value.procedureEnd = new Date(exp.value.procedureEnd);
-        } else {
-            exp.value.procedureEnd = '';
-        }
-        exp.value.procedureStart = new Date(exp.value.procedureStart);
-
-        this.editExpForm = {
-            exp: exp,
-            authors: auths,
-            selectedAuthor: '',
-            start: exp.value.procedureStart,
-            end: exp.value.procedureEnd,
-            title: exp.value.title,
-            facility: (exp.value.experimentalFacility === 'other' ?
-                exp.value.experimentalFacilityOther : this.getExpFacility(exp.value.experimentalFacility)),
-            type: (exp.value.experimentType === 'other' ?
-                exp.value.experimentTypeOther : this.getExpType(exp)),
-            equipment: exp.value.equipmentType,
-            equipmentOther: exp.value.equipmentTypeOther,
-            equipmentList: this.equipmentTypes[exp.value.experimentalFacility],
-            description: exp.value.description,
-        };
-        this.ui.showEditExperimentForm = true;
+        return structuredClone(projectMembers);
     }
 
     editAuthors(user, i) {
@@ -230,131 +115,198 @@ class ManageExperimentsCtrl {
         }
     }
 
-    addAuthors(user, i) {
-        if (document.getElementById('newAuthor' + i).checked) {
-            user.authorship = true;
-        } else {
-            user.authorship = false;
+    validAuthors(){
+        for(let i = 0; i < this.form.authors.length; i++) {
+            if (this.form.authors[i].authorship === true) {
+                return false;
+            }
         }
+        return true;
     }
 
-    orderAuthors(up) {
-        if (!this.editExpForm.selectedAuthor) {
-            return;
-        }
-        let a,
-            b;
-        if (up) {
-            if (this.editExpForm.selectedAuthor.order <= 0) {
-                return;
-            }
-            // move up
-            a = this.editExpForm.authors.find((x) => x.order === this.editExpForm.selectedAuthor.order - 1);
-            b = this.editExpForm.authors.find((x) => x.order === this.editExpForm.selectedAuthor.order);
-            a.order = a.order + b.order;
-            b.order = a.order - b.order;
-            a.order = a.order - b.order;
-        } else {
-            if (this.editExpForm.selectedAuthor.order >= this.editExpForm.authors.length - 1) {
-                return;
-            }
-            // move down
-            a = this.editExpForm.authors.find((x) => x.order === this.editExpForm.selectedAuthor.order + 1);
-            b = this.editExpForm.authors.find((x) => x.order === this.editExpForm.selectedAuthor.order);
-            a.order = a.order + b.order;
-            b.order = a.order - b.order;
-            a.order = a.order - b.order;
-        }
-    }
+    validInputs(objArray, reqKeys, objValue) {
+        /* 
+        Validate Inputs
+        - check each object provided for defined key values
+        - return the object or a value within the object
 
-    saveEditExperiment() {
-        let exp = this.editExpForm.exp;
-        exp.value.title = this.editExpForm.title;
-        exp.value.description = this.editExpForm.description;
-        exp.value.procedureStart = this.editExpForm.start;
-        if (this.editExpForm.end) {
-            exp.value.procedureEnd = this.editExpForm.end;
-        } else if (this.editExpForm.start && !this.editExpForm.end) {
-            exp.value.procedureEnd = this.editExpForm.start;
-        }
-        exp.value.authors = this.editExpForm.authors;
-        exp.value.guests = this.editExpForm.guests;
-        exp.value.equipmentType = this.editExpForm.equipment;
-        exp.value.equipmentTypeOther = (this.editExpForm.equipment === 'other' ?
-            this.editExpForm.equipmentOther : ''
-        )
-        this.ui.savingEditExp = true;
-        this.ProjectEntitiesService.update({
-            data: {
-                uuid: exp.uuid,
-                entity: exp,
-            },
-        }).then((e) => {
-            let ent = this.data.project.getRelatedByUuid(e.uuid);
-            ent.update(e);
-            this.ui.savingEditExp = false;
-            this.data.experiments = this.data.project.experiment_set;
-            this.ui.showEditExperimentForm = false;
-            if (window.sessionStorage.experimentData) {
-                this.close({ $value: e });
-            }
-            return e;
+        objArray - The array of objects to check
+        reqKeys  - The required keys for those objects
+        objValue - Include if you want to return just the values from the 
+                   object array (ex: returning an array of strings
+                   from valid objects)
+        */
+        return objArray.filter((obj) => {
+            return obj && reqKeys.every((key) => {
+                return typeof obj[key] !== 'undefined' && obj[key] !== '';
+            });
+        }).map((obj) => {
+            return obj[objValue] || obj;
         });
     }
 
-    deleteExperiment(ent) {
-        if (this.editExpForm) {
-            this.editExpForm = {};
-            this.ui.showEditExperimentForm = false;
+    addObjField(fieldName) {
+        if (this.form[fieldName].length === 1 && !this.ui.require[fieldName]) {
+            this.ui.require[fieldName] = true;
+        } else {
+            this.form[fieldName].push({...this.ExperimentDefaults[fieldName][0]});
         }
+    }
+
+    dropObjField(fieldName, index) {
+        if (this.form[fieldName].length === 1) {
+            this.form[fieldName].pop();
+            this.form[fieldName].push({...this.ExperimentDefaults[fieldName][0]});
+            this.ui.require[fieldName] = false;
+        } else if (Number.isInteger(index)) {
+            this.form[fieldName].splice(index,1);
+        } else {
+            this.form[fieldName].pop();
+        }
+    }
+
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.experimentalFacilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }   
+    }
+
+    getET(exp) {
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+            exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+            exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+            exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+            {
+                let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+                let et = ets.find((x) => {
+                    return x.name === exp.value.experimentType;
+                });
+                return et.label; 
+        } else {
+            return exp.value.experimentType = "";
+        }
+    }
+
+    getEQ(exp) {
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+        exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+        exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+        {
+            let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+            let eqt = eqts.find((x) => {
+                return x.name === exp.value.equipmentType;
+            });
+            return eqt.label;
+        } else {
+            return exp.value.equipmentType = "";
+        }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+
+    requireField(field) {
+        // Sets the field to disabled or enabled during init
+        if (field.length > 1) return true;
+        return (Object.keys(field[0]).every(input => !field[0][input]) ? false : true );
+    }
+
+    prepareData() {
+        // drop or reformat inputs before for submission
+        const fields = [
+            'experimentalFacility',
+            'experimentType',
+            'equipmentType'
+        ]
+        fields.forEach((field) => {
+            if(this.form[field] != 'other') {
+                this.form[field+'Other'] = '';
+            }
+        })
+        this.form.relatedWork = this.validInputs(this.form.relatedWork, ['title', 'href']);
+        this.form.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
+        if (isNaN(Date.parse(this.form.procedureEnd))) {
+            this.form.procedureEnd = new Date(this.form.procedureStart);
+        }
+    }
+
+    createExperiment() {
+        this.prepareData();
+        const uuid = this.project.uuid;
+        const name = 'designsafe.project.experiment';
+        this.ProjectEntitiesService.create({
+            data: { uuid: uuid, name: name, entity: this.form }
+        })
+        .then((resp) => {
+            this.project.addEntity(resp);
+            this.experiments = this.project.experiment_set;
+            this.resetForm();
+        });
+    }
+
+    editExperiment(experiment) {
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
+        this.configureForm(experiment);
+        this.form.authors = this.configureAuthors(experiment, false);
+        if (this.form.procedureEnd &&
+            this.form.procedureEnd !== this.form.procedureStart) {
+                this.form.procedureEnd = new Date(this.form.procedureEnd);
+        } else {
+            this.form.procedureEnd = '';
+        }
+        this.form.procedureStart = new Date(
+            this.form.procedureStart
+        );
+    }
+
+    updateExperiment() {
+        this.prepareData();
+        let experiment = this.project.getRelatedByUuid(this.uuid);
+        const updatedExperiment = { ...experiment, value: this.form };
+        this.ProjectEntitiesService.update({
+            data: { uuid: this.uuid, entity: updatedExperiment }
+        })
+        .then((resp) => {
+            experiment.update(resp);
+            this.resetForm();
+        })
+        .catch((err) => {
+            this.ui.error = true;
+        });
+    }
+
+    deleteExperiment(experiment) {
         let confirmDelete = (msg) => {
             let modalInstance = this.$uibModal.open({
                 component: 'confirmMessage',
                 resolve: {
                     message: () => msg,
                 },
-                size: 'sm',
+                size: 'sm'
             });
 
             modalInstance.result.then((res) => {
                 if (res) {
                     this.ProjectEntitiesService.delete({
-                        data: {
-                            uuid: ent.uuid,
-                        },
-                    }).then((entity) => {
-                        this.data.project.removeEntity(entity);
-                        this.data.experiments = this.data.project.experiment_set;
+                        data: { uuid: experiment.uuid }
+                    })
+                    .then((resp) => {
+                        this.project.removeEntity(resp);
+                        this.experiments = this.project.experiment_set;
                     });
                 }
             });
         };
-        confirmDelete('Are you sure you want to delete ' + ent.value.title + '?');
-    }
-
-    saveExperiment($event) {
-        $event.preventDefault();
-        this.data.busy = true;
-        // This modal needs some tidying up.
-        // we will never be adding more than one experiment at a time.
-        this.form.addExperiments[0].authors = this.data.users;
-        let experiment = this.form.addExperiments[0];
-        this.ProjectEntitiesService.create({
-            data: {
-                uuid: this.data.project.uuid,
-                name: 'designsafe.project.experiment',
-                entity: experiment
-            }
-        }).then((res) => {
-            this.data.project.addEntity(res);
-            this.data.experiments = this.data.project.experiment_set;
-        }).then(() => {
-            this.data.busy = false;
-            this.form.addExperiments = [{}];
-            this.data.users.forEach((user) => {
-                user.authorship = false;
-            });
-        });
+        confirmDelete(`Are you sure you want to delete ${experiment.value.title}?`);
     }
 }
 

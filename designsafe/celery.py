@@ -26,9 +26,17 @@ app.conf.update(
             'task': 'designsafe.apps.search.tasks.update_search_index',
             'schedule': crontab(minute=0, hour=0),
         },
+        'clear_expired_sessions': {
+            'task': 'designsafe.apps.search.tasks.clear_expired_sessions',
+            'schedule': crontab(minute=0, hour=0),
+        },
         'reindex_projects': {
             'task': 'designsafe.apps.api.tasks.reindex_projects',
             'schedule': crontab(hour=0, minute=0)
+        },
+        'clear_old_notifications': {
+            'task': 'designsafe.apps.auth.tasks.clear_old_notifications',
+            'schedule': crontab(hour=0, minute=1)
         }
     }
 )

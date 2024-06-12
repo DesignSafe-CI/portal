@@ -1,170 +1,25 @@
 <div style="background:white;">
     <!-- Project Header Start -->
     <div ng-if="!$ctrl.ui.loading">
-        <div class="prj-head-container">
-            <span class="prj-head-title">
-                {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-            </span>
-            <div class="prj-head-buttons">
-                <button class="btn-sm btn-secondary prj-head-download" ng-click="$ctrl.download()" ng-if="$ctrl.readOnly">
-                    <span class="curation-download"></span>
-                    &nbsp;&nbsp;Download Dataset
-                </button>
-            </div>
-        </div>
-        <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
-            <colgroup>
-                <col style="width: 15%">
-                <col style="width: 84%">
-            </colgroup>
-            <tr class="prj-row">
-                <td>PI</td>
-                <td class="prj-data">
-                    <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
-                </td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.coPis.length">
-                <td>Co-PIs</td>
-                <td class="prj-data">
-                    <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.readOnly && $ctrl.browser.publication.project.value.dois.length">
-                <td>
-                    <span>DOI</span>
-                    <button class="btn btn-info btn-sm btn-cite" data-ng-click="$ctrl.showCitation()">
-                        Citation
-                    </button>
-                </td>
-                <td>
-                    <strong>{{ $ctrl.browser.publication.project.value.dois[0] }}</strong>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Project Type</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.projectType.replace('_', ' ') }}</td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.nhTypes.length">
-                <td>Natural Hazard Type</td>
-                <td class="prj-data">
-                    <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
-                        <span ng-if="!$last">{{ nhtype }},</span>
-                        <span ng-if="$last">{{ nhtype }}</span>
-                    </span>
-                </td>
-            </tr>
-            <tr ng-repeat="doi in $ctrl.expDOIList">
-                <td ng-if="$first">DOI(s) in Project</td>
-                <td ng-if="!$first"></td>
-                <td>
-                    <strong>
-                        <a
-                            ng-click="$ctrl.goToHash(doi.hash)"
-                            data-toggle="collapse"
-                            data-target="#data-{{doi.uuid}}"
-                        >
-                            {{ doi.value }}
-                        </a>
-                    </strong>
-                </td>
-            </tr>
-            <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-                <td>Data Type</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
-            </tr>
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index"
-                ng-if="!$ctrl.readOnly">
-                <td ng-if="$first">Awards</td>
-                <td ng-if="!$first"></td>
-                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-            </tr>
-            <tr ng-repeat="award in $ctrl.browser.project.value.awardNumbers | orderBy:'order' track by $index"
-                ng-if="$ctrl.readOnly">
-                <td ng-if="$first">Awards</td>
-                <td ng-if="!$first"></td>
-                <td><strong>{{ award.name }} - {{ award.number }}</strong></td>
-            </tr>
-            <tr
-                ng-if="!$ctrl.relatedWorkEmpty()"
-                ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index"
-            >
-                <td ng-if="$first">Related Work</td>
-                <td ng-if="!$first"></td>
-                <td><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
-            </tr>
-            <tr class="prj-row">
-                <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
-                <td class="prj-data">{{ $ctrl.browser.project.value.keywords }}</td>
-            </tr>
-            <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
-                <td>Hazmapper Maps</td>
-                <td>
-                    <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
-                    </hazmapper-maps>
-                </td>
-            </tr>
-        </table>
-        <div class="pad-content">
-            <a ng-click="$ctrl.treeDiagram()">
-                <strong>View Data Diagram</strong>
-            </a>
-            <span ng-if="$ctrl.readOnly">
-                |<a ng-click="$ctrl.metrics()">
-                    &nbsp;<img src='/static/images/ds-icons/icon-metrics.svg' style="height: 12px;">
-                    <strong>&nbsp;View Data Metrics</strong>
-                </a>
-                |<a ng-click="$ctrl.leaveFeedback()">
-                    &nbsp;<img src='/static/images/ds-icons/icon-feedback.svg' style="width: 12px;">
-                    <strong>&nbsp;Leave Feedback</strong>
-                </a>
-            </span>
-        </div>
-        <div ng-if="$ctrl.browser.project.value.description">
-            <p>
-                <show-more
-                    label="'Description'"
-                    content="$ctrl.browser.project.value.description"
-                >
-                </show-more>
-            </p>
-        </div>
+        <!-- pub preview metadata -->
+        <prj-pub-preview-metadata></prj-pub-preview-metadata>
+        <!-- Project Nav -->
+        <span class="project-preview-nav" ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
+            <button class="btn btn-project-l grayed-out" ng-click="$ctrl.goWork()">
+                Working Directory
+            </button>
+            <button class="btn btn-project-m grayed-out" ng-click="$ctrl.goCuration()">
+                Curation Directory
+            </button>
+            <button class="btn btn-project-r" ng-click="$ctrl.goPreview()">
+                Publication Preview
+            </button>
+            <div style="flex-grow: 1"></div>
+            <button class="btn btn-add" ng-click="$ctrl.prepareModal()">
+                Publish / Amend / Version
+            </button>
+        </span>
     </div>
-    <!-- Project Header End -->
-    <table class="tg" style="table-layout: fixed; width: 100%;" ng-if="!$ctrl.readOnly && !$ctrl.ui.loading">
-        <colgroup>
-            <col style="width: 46%">
-            <col style="width: 50%">
-        </colgroup>
-        <tr>
-            <td class="tg-0lax">
-                <button class="btn btn-project-l grayed-out"
-                        ng-click="$ctrl.goWork()"
-                        ng-disabled="$ctrl.ui.loading"
-                >
-                    Working Directory
-                </button>
-                <button class="btn btn-project-m grayed-out"
-                        ng-click="$ctrl.goCuration()"
-                        ng-disabled="$ctrl.ui.loading"
-                >
-                    Curation Directory
-                </button>
-                <button class="btn btn-project-r"
-                        ng-click="publicationPreview()"
-                        ng-disabled="$ctrl.ui.loading"
-                >
-                    Publication Preview
-                </button>
-            </td>
-            <td class="tg-0lax">
-                <div class="btn-group pull-right" role="group" aria-label="Publish buttons">
-                    <button class="btn btn-add" ng-click="$ctrl.prepareModal()" ng-disabled="$ctrl.ui.loading">
-                        Prepare to Publish <i class="fa fa-arrow-right"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    </table>
     <br>
     <div style="margin-bottom: 2px;" ng-if="!$ctrl.ui.fileNav && !$ctrl.ui.loading">
         <breadcrumb
@@ -177,13 +32,13 @@
     </div>
     <div ng-show="$ctrl.ui.loading">
         <h3 class="text-center">
-            <i class="fa fa-spinner fa-spin"></i> Loading...
+            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <!-- Project Reports -->
-    <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'">
+    <div ng-if="$ctrl.matchingGroup(experiment, report) && !$ctrl.ui.fileNav && !$ctrl.ui.loading" ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'">
         <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-            <button class="btn tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
+            <button class="btn tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}" style="width:100%;">
                 <div class="collapse-tab">
                     <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
                     <span class="collapse-tab-content-right curation-chevron"></span>
@@ -193,7 +48,7 @@
                 <div class="well" ng-if="report.value.description">
                     <p>{{ report.value.description }}</p>
                 </div>
-                <files-listing show-select="true" show-tags="true"
+                <files-listing show-select="true" show-tags="true" published="true"
                 on-scroll="$ctrl.scrollToBottom()"
                 listing="$ctrl.FileListingService.listings[report.uuid]"
                 on-browse="$ctrl.onBrowse(file)"
@@ -208,36 +63,117 @@
             custom-root="$ctrl.breadcrumbParams.root"
             skip-root="$ctrl.breadcrumbParams.skipRoot"
         ></breadcrumb>
-        <files-listing show-select="true" show-tags="true"
+        <files-listing show-select="true" show-tags="true" published="true"
         on-scroll="$ctrl.scrollToBottom()"
         listing="$ctrl.FileListingService.listings.main"
         on-browse="$ctrl.onBrowse(file)"
     >&nbsp;</files-listing>    </div>
     <!-- Experiments -->
-    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.browser.project.experiment_set">
+    <div ng-if="!$ctrl.ui.fileNav" ng-hide="$ctrl.ui.loading" ng-repeat="experiment in $ctrl.project.experiment_set" style="margin-bottom:20px">
         <div class="dropdown dropdown-spacer-sm" id="details-{{experiment.uuid}}">
-            <button class="btn tab-experiment collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
+            <div class="citation-gray" id="anchor-{{ experiment.uuid }}">
+                <tr>
+                    <td class="tab-cell">
+                        <div>
+                            Experiment | <strong>{{experiment.value.title}}</strong>
+                        </div>
+                        <div ng-if="!$ctrl.readOnly">
+                            <span ng-if="experiment.value.dois.toString() === ''" class="unpublished-grey">
+                                 Unpublished
+                             </span>
+                             <span ng-if="experiment.value.dois.toString() !== ''" class="published-green">
+                                 Published
+                             </span> 
+                         </div>
+                    </td>
+                </tr>
+            </div>
+            <div class="citation-blue">
+                <div class="entity-meta-data" style="line-height: 1.6;">
+                    <span ng-if="experiment.value.dois.toString() === ''">
+                        Draft Citation. Authors can be reordered before publication. 
+                    </span>
+                    <span ng-if="experiment.value.dois.toString() !== ''">
+                        Cite this Data: 
+                    </span>
+                </div>
+                <!-- Refer to publication-citation.template.html to see how projectGen is handled/used -->
+                <div ng-if="$ctrl.projectGen === 1" style="padding-bottom: 5px; line-height: 1.6;"> 
+                    {{ $ctrl.listAuthors(experiment.authors) }}
+                    ({{ $ctrl.doiList[experiment.uuid].created | date:'yyyy' }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
+                </div>
+                <div ng-if="$ctrl.projectGen > 1" style="padding-bottom: 5px; line-height: 1.6;"> 
+                    {{ $ctrl.listAuthors(experiment.authors) }}
+                    ({{ $ctrl.doiList[experiment.uuid].created | date:'yyyy' }}) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                    <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
+                    v{{$ctrl.version}}
+                </div>
+                <div ng-if="!$ctrl.readOnly" style="padding-bottom: 5px; line-height: 1.6;"> 
+                    <ds-author-list format="citation" authors="experiment.value.authors"></ds-author-list>
+                    <span ng-if="experiment.value.dois.toString() === ''">
+                        (Year of Publication) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        (DOI)
+                    </span>
+                    <span ng-if="experiment.value.dois.toString() !== ''">
+                        (Year appears in Published) "{{ experiment.value.title }}", in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI.
+                        <a href="https://doi.org/{{experiment.value.dois.toString()}}">https://doi.org/{{experiment.value.dois.toString()}}</a>
+                    </span>
+                </div>
+                
+                <div class="entity-meta-data" style="padding-bottom: 5px; padding-top: 5px;">
+                    <span ng-if="experiment.value.dois.toString() !== ''">
+                        Download Citation: 
+                        <a href="https://data.datacite.org/application/vnd.datacite.datacite+xml/{{experiment.value.dois.toString()}}">DataCite XML</a> |
+                        <a href="https://data.datacite.org/application/x-research-info-systems/{{experiment.value.dois.toString()}}">RIS</a> |
+                        <a href="https://data.datacite.org/application/x-bibtex/{{experiment.value.dois.toString()}}">BibTeX</a>
+                    </span>
+                    <span ng-if="experiment.value.dois.toString() === ''">
+                        Download Citation: <span style="color:#9f9f9f"> DataCite XML | RIS | BibTeX</span>
+                    </span>
+                </div>
+                <div style="padding-bottom: 5px;"> 
+                    <span ng-if="$ctrl.readOnly">
+                        <span style="background-color: #ECE4BF;">
+                            {{ $ctrl.metricDisplay($ctrl.downloadCounts[experiment.value.dois]) }} Downloads
+                        </span>
+                        &nbsp;&nbsp;
+                        <span style="background-color: #ECE4BF;">        
+                            {{ $ctrl.metricDisplay($ctrl.viewCounts[experiment.value.dois]) }} Views
+                        </span>
+                        &nbsp;&nbsp;
+                        <span style="background-color: #ECE4BF;">        
+                            {{ $ctrl.metricDisplay($ctrl.citationCounts[experiment.value.dois]) }} Citations
+                        </span>
+                        &nbsp;&nbsp;
+                        <span>
+                            <a ng-click="$ctrl.entityMetrics(experiment.doi, 'Experiment')">
+                                <strong>Details</strong>
+                            </a>
+                        </span>
+                    </span>
+                </div>
+            </div> 
+            <button ng-init="toggle = true" ng-click="$ctrl.logEntity(experiment, 'experimentsList'); toggle = !toggle" class="btn-view tab-gray collapsed" data-toggle="collapse" data-target="#data-{{experiment.uuid}}" style="width:100%;">
                 <table style="width:100%" id="anchor-{{ experiment.uuid }}">
                     <tr>
-                        <td class="tab-cell">
-                            <span>Experiment | <strong>{{experiment.value.title}}</strong></span>
-                        </td>
-                        <td style="text-align: right;">
-                            <span class="curation-chevron" style="font-size: 18px;"></span>
+                        <td style="text-align: center;">  
+                            <span class="curation-chevron">{{toggle ? ' View Data' : ' Hide Data'}}</span>
                         </td>
                     </tr>
                 </table>
             </button>
             <div id="data-{{experiment.uuid}}" class="collapse dropdown-spacer-lg">
                 <div class="well">
-                    <div class="entity-meta-field">
-                        <div class="entity-meta-label">Experiment Type</div>
-                        <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
-                            {{ $ctrl.getET(experiment) }}
-                        </span>
-                        <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
-                            {{ experiment.value.experimentTypeOther }}
-                        </span>
+                    <!-- Tombstone Banner -->
+                    <div class="alert alert-warning flex-container" ng-if="$ctrl.publication.tombstone.includes(experiment.uuid)">
+                        <i role="none" class="fa fa-warning notification-icon"></i>
+                        <div>
+                            <strong>The following Dataset does not exist anymore</strong><br>
+                            The Dataset with DOI:
+                            <a href="https://doi.org/{{experiment.value.dois[0]}}">https://doi.org/{{experiment.value.dois[0]}}</a>
+                            was incomplete and removed. The metadata is still available.
+                        </div>
                     </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label-multi">Author(s)</div>
@@ -252,23 +188,54 @@
                             </span>
                         </div>
                     </div>
-                    <div class="entity-meta-field">
-                        <div class="entity-meta-label">Experimental Facility</div>
-                        <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
-                            {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
-                        </span>
-                        <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
-                            {{ experiment.value.experimentalFacilityOther }}
-                        </span>
+                    <span ng-if="experiment.value.experimentalFacility.length && experiment.value.experimentalFacility !=='None'"> 
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Experimental Facility</div>
+                            <span ng-if="!$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                                {{ $ctrl.getEF(experiment.value.experimentalFacility) }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(experiment.value.experimentalFacilityOther)" class="entity-meta-data">
+                                {{ experiment.value.experimentalFacilityOther }}
+                            </span>
+                        </div>
+                    </span>
+                    <span ng-if="experiment.value.experimentType.length">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Experiment Type</div>
+                            <span ng-if="!$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                                {{ $ctrl.getET(experiment) }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(experiment.value.experimentTypeOther)" class="entity-meta-data">
+                                {{ experiment.value.experimentTypeOther }}
+                            </span>
+                        </div>
+                    </span>
+                    <span ng-if="experiment.value.equipmentType.length">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Equipment Type</div>
+                            <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                                {{ $ctrl.getEQ(experiment) }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
+                                {{ experiment.value.equipmentTypeOther }}
+                            </span>
+                        </div>
+                    </span>
+                    <div class="entity-meta-field" ng-if="experiment.value.relatedWork.length">
+                        <div class="entity-meta-label-multi">Related Work</div>
+                        <div class="entity-meta-data">
+                            <div ng-repeat="work in experiment.value.relatedWork track by $index">
+                                <related-work></related-work>
+                            </div>
+                        </div>
                     </div>
-                    <div class="entity-meta-field">
-                        <div class="entity-meta-label">Equipment Type</div>
-                        <span ng-if="!$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
-                            {{ $ctrl.getEQ(experiment) }}
-                        </span>
-                        <span ng-if="$ctrl.isValid(experiment.value.equipmentTypeOther)" class="entity-meta-data">
-                            {{ experiment.value.equipmentTypeOther }}
-                        </span>
+                    <div class="entity-meta-field" ng-if="experiment.value.referencedData.length">
+                        <div class="entity-meta-label-multi">Referenced Data and Software</div>
+                        <div class="entity-meta-data">
+                            <div ng-repeat="reference in experiment.value.referencedData track by $index">
+                                <referenced-data></referenced-data>
+                            </div>
+                        </div>
                     </div>
                     <div class="entity-meta-field" ng-show="experiment.value.procedureStart">
                         <div class="entity-meta-label">Date of Experiment</div>
@@ -281,60 +248,39 @@
                     </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">Date of Publication</div>
-                        <span class="entity-meta-data"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </span>
-                        <span class="entity-meta-data"
-                                data-ng-if="$ctrl.readOnly">
-                            {{ $ctrl.browser.publication.created | date:'MM-dd-yyyy' }}
-                        </span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() === ''">
+                            <span>(Appears when published)</span>
+                        </div>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() !== ''">
+                            <span>(Appears in Published)</span>
+                        </div>
+                        <div class="entity-meta-data" ng-if="$ctrl.readOnly && experiment.value.dois.toString() !== ''">
+                            <span>{{ $ctrl.doiList[experiment.uuid].created | date:'MM-dd-yyyy' }}</span>
+                        </div>
                     </div>
                     <div class="entity-meta-field">
                         <div class="entity-meta-label">
                             DOI
-                            <button class="btn btn-info btn-sm btn-cite"
-                                    ng-disabled="!$ctrl.readOnly"
-                                    data-ng-click="$ctrl.showCitation(experiment)">
-                                Citation
-                            </button>
                         </div>
-                        <span class="entity-meta-data"
-                                data-ng-if="!$ctrl.readOnly">
-                            (Appears when published)
-                        </span>
-                        <span class="entity-meta-data"
-                                data-ng-if="$ctrl.readOnly">
-                            {{ experiment.doi }}
-                        </span>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() === ''">
+                            <span>(Appears when published)</span>
+                        </div>
+                        <div class="entity-meta-data" ng-if="$ctrl.readOnly || experiment.value.dois.toString() !== ''">
+                            <span>{{experiment.value.dois.toString()}}</span>
+                        </div>
                     </div>
                     <div class="entity-meta-field">
-                        <div class="entity-meta-label-multi">License(s)</div>
-                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly">
+                        <div class="entity-meta-label-multi" ng-if="(!$ctrl.readOnly && experiment.value.dois.toString() === '') || $ctrl.readOnly">License(s)</div>
+                        <div class="entity-meta-data" ng-if="!$ctrl.readOnly && experiment.value.dois.toString() === ''">
                             <span>(Appears when published)</span>
                         </div>
                         <div class="entity-meta-data" ng-if="$ctrl.readOnly">
-                            <div data-ng-if="$ctrl.browser.publication.licenses.datasets" class="license-element">
-                                <span class="curation-odc" style="font-size:32px;"></span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.datasets }}</span>
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.works" class="license-element">
-                                <span
-                                    class="curation-cc-share"
-                                    style="font-size:32px;"
-                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
-                                </span>
-                                <span
-                                    class="curation-cc-zero"
-                                    style="font-size:32px;"
-                                    ng-if="$ctrl.browser.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
-                                </span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.works }}</span>
-                            </div>
-                            <div data-ng-if="$ctrl.browser.publication.licenses.software" class="license-element">
-                                <span class="curation-gpl" style="font-size:32px;"></span>&nbsp;
-                                <span>{{ $ctrl.browser.publication.licenses.software }}</span>
-                            </div>
+                            <strong>
+                                <div class="license-element">
+                                    <span ng-class="$ctrl.ui.licenseType"></span>
+                                    &nbsp;{{$ctrl.ui.license}}
+                                </div>
+                            </strong>
                         </div>
                     </div>
                     <p>
@@ -342,10 +288,11 @@
                     </p>
                     <div>
                         <!-- Experiment Reports -->
-                        <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
+                        <div ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, report)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
                                 <button
-                                    class="btn collapsed tab-report"
+                                    ng-click="$ctrl.logEntity(report, 'reportsList')"
+                                    class="btn collapsed tab-gray"
                                     data-toggle="collapse"
                                     data-target="#files-{{report.uuid}}-{{experiment.uuid}}"
                                     style="width:100%;"
@@ -359,19 +306,25 @@
                                     <div class="well" ng-if="report.value.description">
                                         <p>{{ report.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[report.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)"
-                                >&nbsp;</files-listing>                               </div>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       published="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[report.uuid]"
+                                                       on-browse="$ctrl.onBrowse(file, experiment.doi)"
+                                                       doi="experiment.doi">&nbsp;
+                                        </files-listing>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- Model Configs -->
-                        <div ng-repeat="modelConfig in $ctrl.browser.project.modelconfig_set | orderBy: 'value.title'"
+                        <div ng-repeat="modelConfig in $ctrl.project.modelconfig_set | orderBy: 'value.title'"
                             ng-if="$ctrl.matchingGroup(experiment, modelConfig)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{modelConfig.uuid}}">
-                                <button class="btn collapsed tab-model-conf"
+                                <button class="btn collapsed tab-blue"
                                         data-toggle="collapse"
                                         data-target="#files-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                         style="width:100%;">
@@ -384,14 +337,20 @@
                                     <div class="well" ng-if="modelConfig.value.description">
                                         <p>{{ modelConfig.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[modelConfig.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)"
-                                >&nbsp;</files-listing>                                </div>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       published="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[modelConfig.uuid]"
+                                                       doi="experiment.doi"
+                                                       on-browse="$ctrl.onBrowse(file, experiment.doi)">&nbsp;
+                                        </files-listing>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Sensors -->
-                            <div ng-repeat="sensorList in $ctrl.browser.project.sensorlist_set | orderBy: 'value.title'"
+                            <div ng-repeat="sensorList in $ctrl.project.sensorlist_set | orderBy: 'value.title'"
                                 ng-if="$ctrl.matchingGroup(experiment, sensorList) && $ctrl.matchingGroup(modelConfig, sensorList)"
                             >
                                 <div class="dropdown dropdown-spacer-sm"
@@ -402,11 +361,11 @@
                                         <tr>
                                             <td style="padding-right: 10px;" valign="top">
                                                 <span style="font-size: 20px; color: #1568C9">
-                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                    <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm"
+                                                <button class="btn collapsed tab-teal dropdown-spacer-sm"
                                                         data-toggle="collapse"
                                                         data-target="#files-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                                         style="width:100%;"
@@ -420,16 +379,22 @@
                                                 <div class="well" ng-if="sensorList.value.description">
                                                     <p>{{ sensorList.value.description }}</p>
                                                 </div>
-                                                <files-listing show-select="true" show-tags="true"
-                                                on-scroll="$ctrl.scrollToBottom()"
-                                                listing="$ctrl.FileListingService.listings[sensorList.uuid]"
-                                                on-browse="$ctrl.onBrowse(file)"
-                                            >&nbsp;</files-listing>                                            </div>
+                                                <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                                    <files-listing show-select="true"
+                                                                   show-tags="true"
+                                                                   published="true"
+                                                                   on-scroll="$ctrl.scrollToBottom()"
+                                                                   listing="$ctrl.FileListingService.listings[sensorList.uuid]"
+                                                                   doi="experiment.doi"
+                                                                   on-browse="$ctrl.onBrowse(file, experiment.doi)">&nbsp;
+                                                    </files-listing>
+                                                </div>
+                                            </div>
                                             </td>
                                         </tr>
                                     </table>
                                     <!-- Events -->
-                                    <div ng-repeat="event in $ctrl.browser.project.event_set | orderBy: 'value.title'"
+                                    <div ng-repeat="event in $ctrl.project.event_set | orderBy: 'value.title'"
                                         ng-if="$ctrl.matchingGroup(experiment, event) && $ctrl.matchingGroup(modelConfig, event) && $ctrl.matchingGroup(sensorList, event)"
                                     >
                                         <div class="dropdown dropdown-spacer-sm"
@@ -440,11 +405,11 @@
                                                 <tr>
                                                     <td style="padding-right: 10px" valign="top">
                                                         <span style="font-size: 20px; color: #43A59D">
-                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                            <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-event"
+                                                        <button class="btn collapsed tab-yellow"
                                                                 data-toggle="collapse"
                                                                 data-target="#files-{{event.uuid}}-{{sensorList.uuid}}-{{modelConfig.uuid}}-{{experiment.uuid}}"
                                                                 style="width:100%;">
@@ -457,11 +422,17 @@
                                                             <div class="well" ng-if="event.value.description">
                                                                 <p>{{ event.value.description }}</p>
                                                             </div>
-                                                            <files-listing show-select="true" show-tags="true"
-                                                            on-scroll="$ctrl.scrollToBottom()"
-                                                            listing="$ctrl.FileListingService.listings[event.uuid]"
-                                                            on-browse="$ctrl.onBrowse(file)"
-                                                        >&nbsp;</files-listing>                                                        </div>
+                                                            <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                                                <files-listing show-select="true"
+                                                                               show-tags="true"
+                                                                               published="true"
+                                                                               on-scroll="$ctrl.scrollToBottom()"
+                                                                               listing="$ctrl.FileListingService.listings[event.uuid]"
+                                                                               doi="experiment.doi"
+                                                                               on-browse="$ctrl.onBrowse(file, experiment.doi)">&nbsp;
+                                                                </files-listing>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -474,9 +445,9 @@
                         </div>
                         <!-- Model Configs -->
                         <!-- Analysis -->
-                        <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, analysis)">
+                        <div ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(experiment, analysis)">
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                                <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{experiment.uuid}}" style="width:100%;">
+                                <button class="btn collapsed tab-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}-{{experiment.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
                                         <span class="collapse-tab-content-right curation-chevron"></span>
@@ -497,11 +468,17 @@
                                         </table>
                                         <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
                                     </div>
-                                    <files-listing show-select="true" show-tags="true"
-                                    on-scroll="$ctrl.scrollToBottom()"
-                                    listing="$ctrl.FileListingService.listings[analysis.uuid]"
-                                    on-browse="$ctrl.onBrowse(file)"
-                                >&nbsp;</files-listing>                                </div>
+                                    <div ng-if="!$ctrl.publication.tombstone.includes(experiment.uuid)">
+                                        <files-listing show-select="true"
+                                                       show-tags="true"
+                                                       published="true"
+                                                       on-scroll="$ctrl.scrollToBottom()"
+                                                       listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                                       doi="experiment.doi"
+                                                       on-browse="$ctrl.onBrowse(file, experiment.doi)">&nbsp;
+                                        </files-listing>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

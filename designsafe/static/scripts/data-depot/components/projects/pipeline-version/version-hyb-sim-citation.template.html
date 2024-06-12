@@ -1,0 +1,85 @@
+<div class="pipeline-nav">
+    <a ng-click="$ctrl.goSelection()">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goChanges()"
+            ng-disabled="!$ctrl.ui.confirmed || $ctrl.ui.loading">
+        Continue
+    </button>
+</div>
+<div class="pipeline-page">
+    <div class="pipeline-header">
+        <h3>Confirm Author Order</h3>
+        Before proceeding, please review the list of authors and their order on your citation(s) and click "Save" to confirm. Your citation(s) will be updated accordingly.
+        <div ng-if="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+    </div>
+    <div ng-if="!$ctrl.ui.loading">
+        <div ng-repeat="primEnt in $ctrl.selectedEnts | orderBy: primEnt.value.title" style="margin-bottom: 40px;">
+            <!-- Order Authors -->
+            <div class="well">
+                <div class="prj-head-title" style="padding-bottom:20px">
+                    {{$ctrl.ui.placeholder}} | <strong>{{ primEnt.value.title }}</strong>
+                </div>
+                <!-- Success Alert -->
+                <div class="alert alert-success text-center" ng-if="$ctrl.ui.savedStatus[primEnt.uuid]">
+                    <h4>Success</h4>
+                    The author order for this {{$ctrl.ui.placeholder}} has been saved.
+                </div>
+                <div ng-hide="$ctrl.validAuths">
+                    Your authors need to be updated. Edit your {{$ctrl.ui.placeholder}} and select which users are authors for the {{$ctrl.ui.placeholder}}.
+                </div>
+                <div ng-show="$ctrl.ui.loading">
+                    <h3 class="text-center">
+                        <i class="fa fa-spinner fa-spin"></i> Loading...
+                    </h3>
+                </div>
+                <!-- Citation Preview -->
+                <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
+                <div class="well" style="margin-bottom:20px; background-color: white;">
+                    <div>
+                        <!-- <ds-author-list format="hname" authors="primEnt.value.authors"></ds-author-list> -->
+                        <ds-author-list format="hname" authors="$ctrl.revisionAuthors[primEnt.uuid]"></ds-author-list>
+                        <span style="background: #f5f5f5;">
+                            ({{ $ctrl.curDate }}) “{{ primEnt.value.title }}”, in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI. <a>https://doi.org/10.12345/ABCDEF</a>.
+                        </span>
+                    </div>
+                </div>
+                <table class="tg" style="table-layout: fixed; width: 100%;" ng-show="!$ctrl.ui.loading">
+                    <tr>
+                        <td>
+                            <div ng-repeat="author in $ctrl.revisionAuthors[primEnt.uuid] | orderBy: 'order'">
+                                <input type="radio" name="author" format="lname" ng-model="$ctrl.selectedAuthor" ng-value="author"
+                                    ng-if="author.authorship">
+                                <span ng-if="!author.guest">
+                                    <ds-user    username="author.name"
+                                                format="lname"
+                                                ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                                    >
+                                        {{ author.name }}
+                                    </ds-user>
+                                </span>
+                                <span   ng-if="author.guest"
+                                        ng-style="!author.authorship && {'text-decoration':'line-through'}"
+                                >
+                                    {{ author.lname }}, {{ author.fname }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, primEnt)"></i>
+                            <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, primEnt)"></i>
+                            <a class="sort-arrows" ng-click="$ctrl.saveAuthors(primEnt, true)">Save</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

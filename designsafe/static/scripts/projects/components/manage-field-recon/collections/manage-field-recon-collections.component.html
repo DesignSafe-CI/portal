@@ -2,7 +2,7 @@
     <h4 class="modal-title" style="border: none;">
         <span>Add Collections</span>
         <span class="pull-right" data-ng-click="$ctrl.close()">
-            <i class="fa fa-times">&nbsp;</i>
+            <i role="none" class="fa fa-times">&nbsp;</i>
         </span>
     </h4>
 </div>
@@ -20,25 +20,25 @@
                         </div>
                     </label>
                     <div>
-                        <span class="category-sensor-info">Research Planning Collection</span>
+                        <span class="category-teal">Research Planning Collection</span>
                         Groups files related to planning and logistics, permits, administration,
                         design, gathering, institutional review board (IRB), and processing,
                         of the data obtained in a particular mission.
                         These files help others understand the context of your data.
                     </div>
                     <div>
-                        <span class="category-event">Engineering/Geosciences Collection</span>
+                        <span class="category-yellow">Engineering/Geosciences Collection</span>
                         Groups related data from the engineering/geosciences domain.
                     </div>
                     <div>
-                        <span class="category-event">Social Sciences Collection</span>
+                        <span class="category-yellow">Social Sciences Collection</span>
                         Groups related data from the social sciences domain.
                     </div>
-                    <div>
-                        <span class="category-report">Documents Collection</span>
+                    <!-- <div>
+                        <span class="category-gray">Documents Collection</span>
                         Can include instruments, protocols, and different reports (Virtual Recon, Field Assessment, Preliminary Virtual Assessment, etc).
                         These documents are published separately with their own DOI.
-                    </div>
+                    </div> -->
                 </div>
                 <div>
                     <select class="form-control"
@@ -103,8 +103,8 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.modes)"
-                            ng-disabled="$ctrl.minimumInputs($ctrl.form.modes)">
+                            ng-click="$ctrl.form.modes.pop()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.modes)">
                             &#x2212; Remove Mode of Collection
                     </button>
                 </div>
@@ -127,8 +127,8 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.sampleApproach)"
-                            ng-disabled="$ctrl.minimumInputs($ctrl.form.sampleApproach)">
+                            ng-click="$ctrl.form.sampleApproach.pop()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.sampleApproach)">
                             &#x2212; Remove Sampling Approach
                     </button>
                 </div>
@@ -177,8 +177,8 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.observationTypes); $ctrl.removeInput($ctrl.form.observationTypesOther)"
-                            ng-disabled="$ctrl.minimumInputs($ctrl.form.observationTypes)">
+                            ng-click="$ctrl.form.observationTypes.pop(); $ctrl.form.observationTypesOther.pop()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.observationTypes)">
                             &#x2212; Remove Observation Type
                     </button>
                 </div>
@@ -329,8 +329,8 @@
                         </button>
                         |
                         <button class="btn-project-add-rm"
-                                ng-click="$ctrl.removeInput($ctrl.form.equipment); $ctrl.removeInput($ctrl.form.equipmentOther)"
-                                ng-disabled="$ctrl.minimumInputs($ctrl.form.equipment)">
+                                ng-click="$ctrl.form.equipment.pop(); $ctrl.form.equipmentOther.pop()"
+                                ng-disabled="$ctrl.checkEmpty($ctrl.form.equipment)">
                                 &#x2212; Remove Equipment
                         </button>
                     </div>
@@ -347,7 +347,7 @@
                         data-ng-required="false"
                         class="form-control" />
                 </div>
-                <div class="referenced-data form-group">
+                <!-- <div class="referenced-data form-group">
                     <div style="width:45%; display:inline-block;">
                         <label>
                             Referenced Data Title
@@ -382,11 +382,11 @@
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.removeInput($ctrl.form.referencedData)"
-                            ng-disabled="$ctrl.minimumInputs($ctrl.form.referencedData)">
+                            ng-click="$ctrl.form.referencedData.pop()"
+                            ng-disabled="$ctrl.checkEmpty($ctrl.form.referencedData)">
                             &#x2212; Remove Referenced Data
                     </button>
-                </div>
+                </div> -->
                 <div class="description form-group">
                     <label for="id-description">
                         <div class="label-form">
@@ -397,15 +397,21 @@
                             <span style="display:block; font-weight:normal;">
                                 Summarized the purpose of the collection and its files.
                                 What is it about? What are its features?
+                                Description must be between 50 and 5000 characters in length.
                             </span>
                         </div>
                     </label>
-                    <textarea style="width:100%; height:3em; resize: vertical;"
+                    <textarea class="form-textbox"
                             id="id-description"
                             data-ng-model="$ctrl.form.description"
-                            data-ng-required="true">
+                            data-ng-required="true"
+                            ng-minlength="50"
+                            ng-maxlength="5000">
                         &nbsp;
                     </textarea>
+                    <span ng-if="projForm.$error.minlength[0].$invalid || projForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                        Description length is invalid 
+                    </span>
                 </div>
             </div>
             <div ng-if="$ctrl.form.collectionType">
@@ -426,7 +432,7 @@
                         data-ng-if="!$ctrl.data.editCollection"
                         type="submit"
                     >
-                        <i class="fa fa-plus">&nbsp;</i>
+                        <i role="none" class="fa fa-plus">&nbsp;</i>
                         Add Collection
                     </button>
                 </div>
@@ -440,7 +446,7 @@
         <!-- Old Collections -->
         <div ng-repeat="collection in $ctrl.data.collections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-old-collection" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-danger" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Collection | <strong>{{collection.value.title}} (COLLECTION TYPE NO LONGER SUPPORTED)</strong></span>
@@ -511,7 +517,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div ng-if="collection.value.referencedData.length">
+                        <!-- <div ng-if="collection.value.referencedData.length">
                             <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
@@ -522,7 +528,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
@@ -546,7 +552,7 @@
         <!-- Social Science -->
         <div ng-repeat="collection in $ctrl.data.socialScienceCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -651,7 +657,7 @@
                                 <span>{{collection.value.restriction}}</span>
                             </div>
                         </div>
-                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                        <!-- <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                             <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
@@ -662,7 +668,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
@@ -686,7 +692,7 @@
         <!-- GeoscienceEngineering -->
         <div ng-repeat="collection in $ctrl.data.geoscienceCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -762,7 +768,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                        <!-- <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                             <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
@@ -773,7 +779,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
@@ -797,7 +803,7 @@
         <!-- Research Planning -->
         <div ng-repeat="collection in $ctrl.data.planningCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
@@ -824,7 +830,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
+                        <!-- <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                             <div class="entity-meta-label-multi">
                                 Referenced Data
                             </div>
@@ -835,7 +841,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="entity-meta-field" ng-if="collection.value.description">
                             <p>{{ collection.value.description }}</p>
                         </div>
@@ -857,9 +863,9 @@
             </div>
         </div>
         <!-- Reports -->
-        <div ng-repeat="collection in $ctrl.data.reportCollections | orderBy: 'value.title'">
+        <!-- <div ng-repeat="collection in $ctrl.data.reportCollections | orderBy: 'value.title'">
             <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                <button class="btn collapsed tab-experiment" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
+                <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{collection.uuid}}"
                     style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left"> Documents | <strong>{{collection.value.title}}</strong></span>
@@ -917,6 +923,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>

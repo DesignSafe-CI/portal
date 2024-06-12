@@ -1,11 +1,12 @@
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model, signals
 from unittest import skip
 import mock
 import requests_mock
 
 
+@skip("anonymous tickets disabled due to spam.")
 class AnonymousViewTests(TestCase):
     """
     Almost all views by anonymous trigger a redirect. However, anonymous CAN create

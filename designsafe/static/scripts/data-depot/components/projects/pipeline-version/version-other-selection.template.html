@@ -1,0 +1,51 @@
+<div class="pipeline-nav">
+    <a ng-click="$ctrl.goStart()">
+        <i role="none" class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goCitation()"
+            ng-disabled="!$ctrl.selectedListings"
+    >
+        Continue
+    </button>
+</div>
+<div class="pipeline-page">
+    <div class="pipeline-header">
+        <h3>Version Selection</h3>
+        If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">curation office hours</a>.
+        <div ng-if="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+    </div>
+    <div ng-if="!$ctrl.ui.loading">
+        <div class="pipeline-section">
+            <div class="alert alert-warning">
+                <i role="none" class="fa fa-exclamation-triangle"></i>
+                The new version will only include the files selected here. Select any previously published files that you still want in
+                the new version.
+            </div>
+        </div>
+        <div ng-if="$ctrl.selectedListings">
+            <div class="pipeline-nav">
+                <h3>These files will be published</h3>
+                <button class="btn btn-danger" ng-click="$ctrl.undoSelections()">Undo Selections</button>
+            </div>
+            <files-listing listing=$ctrl.selectedListings show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
+        </div>
+        <div ng-if="!$ctrl.selectedListings">
+            <div class="pipeline-nav">
+                <h3>Select files</h3>
+                <button class="btn btn-primary" ng-click="$ctrl.saveSelections()">Save Selections</button>
+            </div>
+            <breadcrumb
+                path="$ctrl.FileListingService.listings.main.params.path"
+                system="$ctrl.FileListingService.listings.main.params.path"
+                on-browse="$ctrl.onBrowse(file)"
+                custom-root="{label: $ctrl.project.value.projectId, path: ''}"
+            ></breadcrumb>
+            <files-listing listing="$ctrl.FileListingService.listings.main" show-select="true" show-tags="true" on-browse="$ctrl.onBrowse(file)"></files-listing>
+        </div>
+    </div>
+</div>

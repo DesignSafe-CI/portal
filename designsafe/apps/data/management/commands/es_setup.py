@@ -1,6 +1,6 @@
 import logging
 from django.core.management import BaseCommand, CommandError
-from django.utils.six.moves import input
+from six.moves import input
 from django.conf import settings
 import elasticsearch
 import getpass
@@ -29,58 +29,53 @@ class Command(BaseCommand):
         parser.add_argument('--local', help='Remote role to index from, either staging or default', default="dev")
 
     def handle(self, *args, **options):
-        HOSTS = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
         password = getpass.getpass('Enter password for remote ES cluster ')
         username = options.get('username')
         remote = options.get('remote')
         local = options.get('local')
 
-        local_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[local]['hosts'])
+        local_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[local]['hosts'],
+                                                      timeout=300)
         remote_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[remote]['hosts'],
-            **{'http_auth': "designsafe_{}:{}".format(remote, password)})
+            **{'http_auth': "designsafe_{}:{}".format(remote, password)},
+                                                       timeout=300)
+        def reindex(source_index, target_index, query=None):
+            try:
+                response = elasticsearch.helpers.reindex(
+                    client=remote_es_client,
+                    target_client=local_es_client,
+                    source_index=source_index,
+                    target_index=target_index,
+                    query=query,
+                )
+                logger.info(f"Reindexed {response} documents from {source_index} to {target_index}")
+            except elasticsearch.helpers.BulkIndexError as e:
+                logger.error(f"BulkIndexError: {e.errors}")
+                logger.error(f"Failed to reindex documents from {source_index} to {target_index}")
+                return False
+            return response
 
+        indexes = ["designsafe-{}-files",
+                   "designsafe-{}-publications",
+                   "designsafe-{}-publications-legacy",
+                   "designsafe-{}-projects",
+                   "designsafe-{}-rapid-events",
+                   "designsafe-{}-rapid-event-types"
+                   ]
 
-        elasticsearch.helpers.reindex(
-            client=remote_es_client,
-            target_client=local_es_client,
-            source_index="designsafe-{}-files".format(remote),
-            target_index="designsafe-{}-files".format(local),
-            query={"query": {"prefix": {"path._exact": "/{}".format(username)}}}
-        )
-
-        elasticsearch.helpers.reindex(
-            client=remote_es_client,
-            target_client=local_es_client,
-            source_index="designsafe-{}-publications".format(remote),
-            target_index="designsafe-{}-publications".format(local)
-        )
-
-        elasticsearch.helpers.reindex(
-            client=remote_es_client,
-            target_client=local_es_client,
-            source_index="designsafe-{}-publications-legacy".format(remote),
-            target_index="designsafe-{}-publications-legacy".format(local)
-        )
-
-        elasticsearch.helpers.reindex(
-            client=remote_es_client,
-            target_client=local_es_client,
-            source_index="designsafe-{}-projects".format(remote),
-            target_index="designsafe-{}-projects".format(local)
-        )
-
-        elasticsearch.helpers.reindex(
-            client=remote_es_client,
-            target_client=local_es_client,
-            source_index="designsafe-{}-rapid-events".format(remote),
-            target_index="designsafe-{}-rapid-events".format(local)
-        )
-
-        elasticsearch.helpers.reindex(
-            client=remote_es_client,
-            target_client=local_es_client,
-            source_index="designsafe-{}-rapid-event-types".format(remote),
-            target_index="designsafe-{}-rapid-event-types".format(local)
-        )
-
-        logger.debug(remote_es_client.info())
+        failed_indexes = []
+        for index in indexes:
+            query = {"query": {"prefix": {"path._exact": "/{}".format(username)}}} if "files" in index else None
+            result = reindex(
+                source_index=index.format(remote),
+                target_index=index.format(local),
+                query=query
+            )
+            if not result:
+                failed_indexes.append(index.format(local))
+        logger.info("Finished indexing.")
+        if failed_indexes:
+            logger.error(f"Successfully reindex {len(indexes) - len(failed_indexes)}"
+                         f" of {len(indexes)} indexes\n"
+                         f"failed indexes are: {', '.join(failed_indexes)}\n"
+                         f"(check logs above for errors related to failures)")

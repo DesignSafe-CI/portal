@@ -1,26 +1,28 @@
 import logging
 from designsafe.apps.api.datafiles.notifications import notify
-from designsafe.apps.api.datafiles.operations import agave_operations
+from designsafe.apps.api.datafiles.operations import tapis_operations
 from designsafe.apps.api.datafiles.operations import googledrive_operations
 from designsafe.apps.api.datafiles.operations import dropbox_operations
 from designsafe.apps.api.datafiles.operations import box_operations
 from designsafe.apps.api.datafiles.operations import shared_operations
 from designsafe.apps.api.exceptions import ApiException
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from tapipy.errors import BaseTapyException
+from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
 allowed_actions = {
     'private': ['listing', 'detail', 'search', 'copy', 'download', 'mkdir',
-                'move', 'rename', 'trash', 'preview', 'upload'],
-    'public': ['listing', 'detail', 'search', 'copy', 'download', 'preview'],
-    'community': ['listing', 'detail', 'search', 'copy', 'download', 'preview'],
+                'move', 'rename', 'trash', 'preview', 'upload', 'logentity'],
+    'public': ['listing', 'detail', 'search', 'copy', 'download', 'preview', 'logentity'],
+    'community': ['listing', 'detail', 'search', 'copy', 'download', 'preview', 'logentity'],
 }
 notify_actions = ['move', 'copy', 'rename', 'trash', 'mkdir', 'upload']
 
 operations_mapping = {
-    'agave': agave_operations,
+    'agave': tapis_operations,
+    'tapis': tapis_operations,
     'googledrive': googledrive_operations,
     'box': box_operations,
     'dropbox': dropbox_operations,
@@ -33,7 +35,10 @@ def datafiles_get_handler(api, client, scheme, system, path, operation, username
         raise PermissionDenied
     op = getattr(operations_mapping[api], operation)
 
-    return op(client, system, path, username=username, **kwargs)
+    try:
+        return op(client, system, path, username=username, **kwargs)
+    except BaseTapyException as exc:
+        raise ApiException(message=exc.message, status=500) from exc
 
 
 def datafiles_post_handler(api, username, client, scheme, system,

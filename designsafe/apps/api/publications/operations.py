@@ -38,6 +38,7 @@ def listing(offset=0, limit=100, limit_fields=True, *args):
                                             'project.value.dataType',
                                             'created',
                                             'projectId',
+                                            'project.uuid',
                                             'users',
                                             'system',
                                             'revision'])
@@ -75,18 +76,13 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
 
     # Query string fields
-    author = query_dict['queries']['author']
-    title = query_dict['queries']['title']
-    keywords = query_dict['queries']['keyword']
-    description = query_dict['queries']['description']
-    if author:
-        query_filters.append(search_utils.author_query(author))
-    if title:
-        query_filters.append(search_utils.title_query(title))
-    if keywords:
-        query_filters.append(search_utils.keyword_query(keywords))
-    if description:
-        query_filters.append(search_utils.description_query(description))
+    search_string = query_dict['queries']['searchString']
+    if search_string:
+        query_filters.append(search_utils.search_string_query(search_string))
+
+    pub_year = query_dict['queries']['publicationYear']
+    if pub_year:
+        query_filters.append(search_utils.pub_date_query(pub_year))
 
     # Experimental advanced filters
     facility = query_dict['advancedFilters']['experimental']['experimentalFacility']
@@ -94,30 +90,46 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
     if facility['name']:
         query_filters.append(search_utils.experimental_facility_query(facility))
     if experiment_type:
-        query_filters.append(search_utils.experiment_type_query)
+        query_filters.append(search_utils.experiment_type_query(experiment_type))
 
     # Simulation advanced filters
     simulation_type = query_dict['advancedFilters']['simulation']['simulationType']
     if simulation_type:
         query_filters.append(search_utils.simulation_type_query(simulation_type))
+    facility = query_dict['advancedFilters']['simulation']['facility']
+    if facility:
+        query_filters.append(search_utils.simulation_facility_query(facility))
 
     # Field recon advanced filters
     nh_type = query_dict['advancedFilters']['field_recon']['naturalHazardType']
-    nh_event = query_dict['advancedFilters']['field_recon']['naturalHazardEvent']
+    fr_type = query_dict['advancedFilters']['field_recon']['frType']
+    fr_date = query_dict['advancedFilters']['field_recon']['frDate']
+    facility = query_dict['advancedFilters']['field_recon']['facility']
+
     if nh_type:
         query_filters.append(search_utils.nh_type_query(nh_type))
-    if nh_event:
-        query_filters.append(search_utils.nh_event_query(nh_event))
+    if fr_date:
+        query_filters.append(search_utils.fr_date_query(fr_date))
+    if fr_type:
+        query_filters.append(search_utils.fr_type_query(fr_type))
+    if facility:
+        query_filters.append(search_utils.fr_facility_query(facility))
 
     # Other advanced filters
     data_type = query_dict['advancedFilters']['other']['dataType']
+    facility = query_dict['advancedFilters']['other']['facility']
     if data_type:
         query_filters.append(search_utils.other_type_query(data_type))
+    if facility:
+        query_filters.append(search_utils.other_facility_query(facility))
 
     # Hybrid sim advanced filters
     sim_type = data_type = query_dict['advancedFilters']['hybrid_simulation']['hybridSimulationType'] 
+    facility = query_dict['advancedFilters']['hybrid_simulation']['facility']
     if sim_type:
         query_filters.append(search_utils.hybrid_sim_type_query(sim_type))
+    if facility:
+        query_filters.append(search_utils.hybrid_sim_facility_query(facility))
 
     search = search.filter('bool', must=query_filters)
     search = search.filter(Q('term', status='published'))
@@ -131,7 +143,8 @@ def search(offset=0, limit=100, query_string='', limit_fields=True, *args):
                                         'created',
                                         'projectId',
                                         'users',
-                                        'system'])
+                                        'system',
+                                        'revision'])
 
     search = search.sort(
         {'created': {'order': 'desc'}})
@@ -159,7 +172,7 @@ def neeslisting(offset=0, limit=100, limit_fields=True, *args):
     pub_query = IndexedPublicationLegacy.search(using=client)
     pub_query = pub_query.extra(from_=offset, size=limit)
     if limit_fields:
-        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
+        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path', 'description'])
     pub_query = pub_query.sort(
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}
         )
@@ -184,7 +197,7 @@ def neessearch(offset=0, limit=100, query_string='', limit_fields=True, *args):
     pub_query = IndexedPublicationLegacy.search(using=client).filter(nees_pi_query | nees_query_string_query)
     pub_query = pub_query.extra(from_=offset, size=limit)
     if limit_fields:
-        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path'])
+        pub_query = pub_query.source(includes=['project', 'pis', 'title', 'startDate', 'path', 'description'])
     pub_query = pub_query.sort(
             {'created': {'order': 'desc', 'unmapped_type': 'long'}}
         )
@@ -210,7 +223,7 @@ def neesdescription(project_id, *args):
     return {'description': desc}
 
 
-def initilize_publication(publication, status='publishing', revision=None, revision_text=None):
+def initilize_publication(publication, status='publishing', revision=None, revision_text=None, revision_titles=None):
         """initilize publication."""
         publication['projectId'] = publication['project']['value']['projectId']
         publication['status'] = status
@@ -224,7 +237,9 @@ def initilize_publication(publication, status='publishing', revision=None, revis
             publication['revision'] = revision
             publication['revisionDate'] = datetime.datetime.now().isoformat()
             publication['revisionText'] = revision_text
-        else:
+            if revision_titles:
+                publication['revisionTitles'] = revision_titles
+        elif 'created' not in publication:
             publication['created'] = datetime.datetime.now().isoformat()
         try:
             pub = IndexedPublication.from_id(publication['projectId'], revision=revision, using=es_client)
@@ -232,6 +247,7 @@ def initilize_publication(publication, status='publishing', revision=None, revis
         except DocumentNotFound:
             pub = IndexedPublication(project_id=publication['projectId'], **publication)
             pub.save(using=es_client)
+
         pub.save(using=es_client)
 
         # Refresh index so that search works in subsequent pipeline operations.

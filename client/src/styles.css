@@ -1,0 +1,134 @@
+/* You can add global styles to this file, and also import other style files */
+@import './styles/modal.css';
+
+.ant-spin-nested-loading {
+  height: 100%;
+}
+
+.ant-spin.ant-spin.ant-spin {
+  max-height: 100%;
+}
+
+.table--pull-spinner-bottom .ant-spin.ant-spin {
+  height: fit-content;
+  top: calc(100% - 20px);
+}
+
+.ant-spin-container {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.ant-table {
+  overflow: auto;
+}
+
+.ant-table .ant-table-body .ant-table-placeholder > td {
+  border-bottom-color: transparent;
+}
+.ant-table .ant-table-tbody .ant-table-placeholder > td {
+  border-bottom-color: transparent;
+}
+
+.ant-table-container {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.ant-table-header th {
+  border-bottom: 1px solid #333333 !important;
+}
+
+.ant-table-header {
+  flex: none;
+}
+
+.ant-table-body {
+  overflow: scroll;
+}
+
+.ant-table-pagination {
+  flex: none;
+}
+
+.ant-layout-sider-collapsed {
+  margin-right: 30px;
+}
+.ant-layout-sider-collapsed .ant-layout-sider-zero-width-trigger {
+  right: -20px !important;
+}
+
+.ant-table-tbody tr:nth-child(odd) td {
+  background-color: #f9f9f9;
+}
+
+.ant-layout-sider-zero-width-trigger {
+  right: 0px !important;
+  top: 20px !important;
+}
+
+.ant-btn-link {
+  padding-inline: 0px !important;
+  height: unset;
+  padding: 0px !important;
+  color: #337ab7 !important;
+}
+
+.ant-btn-link:hover span {
+  color: #23527c !important;
+  text-decoration: underline !important;
+}
+
+.listing-nav-link {
+  text-decoration: none !important;
+}
+
+.success-button {
+  background-color: #1cb500 !important;
+  border: 1px solid #158600;
+}
+.success-button:hover {
+  background-color: #158600 !important;
+}
+.success-button:disabled {
+  color: #ffffff !important;
+  background-color: rgb(140, 187, 132) !important;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-2 {
+  flex: 2;
+}
+
+.inner-form-item {
+  margin-bottom: 0;
+}
+
+.ant-collapse-header:focus-visible {
+  outline: -webkit-focus-ring-color auto 1px !important;
+}
+
+.o-site__body,
+#apps-root,
+#apps-root > div.ant-flex,
+.ant-layout-has-sider,
+.ant-layout-sider {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Do NOT scroll "Applications:" and "Job Status" */
+.ant-layout-sider-children {
+  overflow-y: hidden;
+}
+
+/* DO scroll app category menu */
+.ant-layout-sider-children > header + div + ul {
+  overflow: auto;
+  height: 100%;
+}

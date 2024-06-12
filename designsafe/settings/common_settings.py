@@ -14,6 +14,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import json
+from django.urls import reverse_lazy
+from django.utils.text import format_lazy
+from django.utils.translation import gettext_lazy as _
 
 
 gettext = lambda s: s
@@ -28,20 +31,20 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '__CHANGE_ME_!__')
 
 # SESSIONS
 SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN')
+SESSION_COOKIE_SECURE = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+RENDER_REACT = os.environ.get('RENDER_REACT', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
-    'djangocms_admin_style',
-    'djangocms_text_ckeditor',
-    'cmsplugin_cascade',
-    'cmsplugin_cascade.extra_fields',
 
+    'daphne',
+    'djangocms_admin_style',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,6 +54,12 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
+
+    'cmsplugin_cascade',
+    'cmsplugin_cascade.extra_fields',
+
+    'djangocms_text_ckeditor',
+    'django_select2',
 
     'cms',
     'treebeard',
@@ -69,17 +78,16 @@ INSTALLED_APPS = (
     'bootstrap3',
     'termsandconditions',
     'impersonate',
-
-    'oauth2client.contrib.django_util',
-
-    #websockets
-    'ws4redis',
+    'captcha',
 
     # custom
     'designsafe.apps.auth',
     'designsafe.apps.api',
     'designsafe.apps.api.notifications',
     'designsafe.apps.api.datafiles',
+    'designsafe.apps.api.projects_v2',
+    'designsafe.apps.api.publications_v2',
+    'designsafe.apps.api.filemeta',
     'designsafe.apps.accounts',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
@@ -109,40 +117,41 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'designsafe.apps.auth.backends.AgaveOAuthBackend',
+    'designsafe.apps.auth.backends.TapisOAuthBackend',
     'designsafe.apps.auth.backends.TASBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
+LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL', '/auth/logged-out/')
 
 CACHES = {
   'default': {
-      'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+      'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
       'LOCATION': 'memcached:11211',
   },
 }
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'designsafe.middleware.RequestProfilingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
+    'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
     'designsafe.middleware.DesignSafeTermsMiddleware',
     'designsafe.middleware.DesignsafeProfileUpdateMiddleware',
+    'designsafe.middleware.SiteMessageMiddleware',
 )
 
 ROOT_URLCONF = 'designsafe.urls'
@@ -156,6 +165,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -165,12 +175,10 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
-                'ws4redis.context_processors.default',
                 'designsafe.context_processors.analytics',
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
-                'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -178,16 +186,25 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'designsafe.wsgi.application'
+ASGI_APPLICATION = 'designsafe.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.get('WS_BACKEND_HOST'),
+                       os.environ.get('WS_BACKEND_PORT'))],
+        },
+    },
+}
 
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 if os.environ.get('DATABASE_HOST'):
-    # mysql connection
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get('DATABASE_NAME'),
             'HOST': os.environ.get('DATABASE_HOST'),
             'PORT': os.environ.get('DATABASE_PORT'),
@@ -203,6 +220,9 @@ else:
         }
     }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 HAYSTACK_ROUTERS = ['aldryn_search.router.LanguageRouter', ]
 ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
@@ -248,14 +268,21 @@ STATICFILES_DIRS = [
     ('vendor/font-awesome', os.path.join(BASE_DIR, 'node_modules', 'font-awesome')),
     ('vendor/angular-toastr', os.path.join(BASE_DIR, 'node_modules', 'angular-toastr')),
     ('vendor/slick-carousel', os.path.join(BASE_DIR, 'node_modules', 'slick-carousel')),
-    ('vendor/angular-drag-and-drop-lists', os.path.join(BASE_DIR, 'node_modules', 'angular-drag-and-drop-lists')),
     ('vendor/angular-xeditable', os.path.join(BASE_DIR, 'node_modules', 'angular-xeditable')),
     ('vendor/leaflet-measure', os.path.join(BASE_DIR, 'node_modules', 'leaflet-measure')),
     ('vendor/exif-js', os.path.join(BASE_DIR, 'node_modules', 'exif-js')),
     ('vendor/angular-native-dragdrop', os.path.join(BASE_DIR, 'node_modules', 'angular-native-dragdrop')),
     ('vendor/d3plus', os.path.join(BASE_DIR, 'node_modules', 'd3plus')),
 ]
-STATICFILES_STORAGE = 'designsafe.storage.CustomPipelineCachedStorage'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -281,6 +308,8 @@ CMS_TEMPLATES = (
     ('cms_homepage.html', 'Homepage Navigation'),
     ('ef_cms_page.html', 'EF Site Page'),
     ('cms_page.html', 'Main Site Page'),
+    ('cms_page_for_app.html', 'Main Site App Page'),
+    ('cms_page_no_footer.html', 'Footerless Page'),
 )
 CMSPLUGIN_CASCADE = {
     'alien_plugins': (
@@ -290,6 +319,9 @@ CMSPLUGIN_CASCADE = {
         'FormPlugin',
         'MeetingFormPlugin',
         'ResponsiveEmbedPlugin',
+        'AppCategoryListing',
+        'RelatedApps',
+        'AppVariants'
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = [
@@ -309,6 +341,7 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 
+
 CKEDITOR_SETTINGS = {
     'allowedContent': True
 }
@@ -327,6 +360,12 @@ DJANGOCMS_FORMS_PLUGIN_MODULE = 'Generic'
 DJANGOCMS_FORMS_PLUGIN_NAME = 'Form'
 DJANGOCMS_FORMS_TEMPLATES = (
     ('djangocms_forms/form_template/default.html', 'Default'),
+)
+DJANGOCMS_FORMS_FORMAT_CHOICES = (
+    ("csv", _("CSV")),
+    ("json", _("JSON")),
+    ("yaml", _("YAML")),
+    ("xlsx", _("Microsoft Excel")),
 )
 DJANGOCMS_FORMS_USE_HTML5_REQUIRED = False
 DJANGOCMS_FORMS_WIDGET_CSS_CLASSES = {
@@ -430,24 +469,14 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@designsafe-c
 MEETING_REQUEST_EMAIL = os.environ.get('MEETING_REQUEST_EMAIL', 'info@designsafe-ci.org')
 
 NEW_ACCOUNT_ALERT_EMAILS = os.environ.get('NEW_ACCOUNT_ALERT_EMAILS', 'no-reply@designsafe-ci.org,')
+PROJECT_ADMIN_USERS = ['ds_admin', 'prjadmin']
 PROJECT_ADMINS_EMAIL = ['maria@tacc.utexas.edu', 'gendlerk@tacc.utexas.edu']
+DEV_PROJECT_ADMINS_EMAIL = ['tbrown@tacc.utexas.edu', 'sgray@tacc.utexas.edu', 'vgonzalez@tacc.utexas.edu']
 
 ###
 # Terms and Conditions
 #
 DEFAULT_TERMS_SLUG = 'terms'
-
-##
-# django-websockets-redis
-#
-WSGI_APPLICATION = 'ws4redis.django_runserver.application'
-WEBSOCKET_URL = '/ws/'
-WS4REDIS_CONNECTION = {
-    'host': os.environ.get('WS_BACKEND_HOST'),
-    'port': os.environ.get('WS_BACKEND_PORT'),
-    'db': os.environ.get('WS_BACKEND_DB'),
-}
-WS4REDIS_EXPIRE = 0
 
 # Analytics
 #
@@ -460,6 +489,15 @@ GOOGLE_SITE_VERIFICATION_ID = os.environ.get('GOOGLE_SITE_VERIFICATION_ID', Fals
 # RAMP Verification
 #
 RAMP_VERIFICATION_ID = os.environ.get('RAMP_VERIFICATION_ID', False)
+
+# Project registration credentials
+TRAM_SERVICES_URL = os.environ.get('TRAM_SERVICES_URL', None)
+TRAM_SERVICES_KEY = os.environ.get('TRAM_SERVICES_KEY', None)
+TRAM_PROJECT_ID = os.environ.get('TRAM_PROJECT_ID', None)
+
+TAS_CLIENT_KEY = os.environ.get('TAS_CLIENT_KEY', None)
+TAS_CLIENT_SECRET = os.environ.get('TAS_CLIENT_SECRET', None)
+TAS_URL = os.environ.get('TAS_URL', None)
 
 ###
 # Agave Integration
@@ -483,14 +521,36 @@ AGAVE_SANDBOX_SUPER_TOKEN = os.environ.get('AGAVE_SANDBOX_SUPER_TOKEN', '')
 
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
+AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM', 'designsafe.storage.frontera.work')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
 AGAVE_JWT_HEADER = os.environ.get('AGAVE_JWT_HEADER')
 AGAVE_JWT_USER_CLAIM_FIELD = os.environ.get('AGAVE_JWT_USER_CLAIM_FIELD')
+AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
+
+TAPIS_SYSTEMS_TO_CONFIGURE = [
+    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
+    {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
+    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
+]
+
+# Tapis Client Configuration
+PORTAL_ADMIN_USERNAME = os.environ.get('PORTAL_ADMIN_USERNAME')
+TAPIS_TENANT_BASEURL = os.environ.get('TAPIS_TENANT_BASEURL')
+TAPIS_CLIENT_ID = os.environ.get('TAPIS_CLIENT_ID')
+TAPIS_CLIENT_KEY = os.environ.get('TAPIS_CLIENT_KEY')
+TAPIS_ADMIN_JWT = os.environ.get('TAPIS_ADMIN_JWT')
+TAPIS_TG458981_JWT = os.environ.get('TAPIS_TG458981_JWT')
+
+KEY_SERVICE_TOKEN = os.environ.get('KEY_SERVICE_TOKEN')
+
+PORTAL_NAMESPACE = 'DESIGNSAFE'
+
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
 
 DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
@@ -519,7 +579,11 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 
+PROJECT_STORAGE_SYSTEM_CREDENTIALS = json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
+
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
+COMMUNITY_SYSTEM = 'designsafe.storage.community'
+NEES_PUBLIC_SYSTEM = 'nees.public'
 
 # RECAPTCHA SETTINGS FOR LESS SPAMMO
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
@@ -530,7 +594,8 @@ NOCAPTCHA = True
 
 #FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
-DESIGNSAFE_PUBLISHED_PATH = '/corral-repl/tacc/NHERI/published/'
+DESIGNSAFE_PROJECTS_PATH = os.environ.get('DESIGNSAFE_PROJECTS_PATH', '/corral-repl/tacc/NHERI/projects/')
+DESIGNSAFE_PUBLISHED_PATH = os.environ.get('DESIGNSAFE_PUBLISHED_PATH', '/corral-repl/tacc/NHERI/published/')
 DATACITE_URL = os.environ.get('DATACITE_URL', 'https://doi.test.datacite.org/')
 DATACITE_USER = os.environ.get('DATACITE_USER')
 DATACITE_PASS = os.environ.get('DATACITE_PASS')
@@ -627,4 +692,6 @@ SUPPORTED_PREVIEW_EXTENSIONS = (SUPPORTED_IMAGE_PREVIEW_EXTS +
 FEDORA_URL = os.environ.get('FEDORA_URL')
 FEDORA_USERNAME = os.environ.get('FEDORA_USERNAME')
 FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
-FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'publications-test')
+FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')
+
+CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('SESSION_COOKIE_DOMAIN')}"]

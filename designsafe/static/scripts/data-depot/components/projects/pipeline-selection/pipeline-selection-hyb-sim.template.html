@@ -2,7 +2,7 @@
     <!-- progression map -->
     <div class="pull-right" style="padding-bottom: 20px;">
         <a ng-click="$ctrl.goWork()">
-            <i class="fa fa-times"></i> Exit Prepare to Publish
+            <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
         </a>
     </div>
     <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
@@ -18,44 +18,44 @@
             <td>
                 <strong>Selection</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Project</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Hybrid Simulation</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Categories</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Order Authors</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Licenses</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
         </tr>
     </table>
     <br>
     <div>
-        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i role="none" class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedEnts.length">Continue</button>
     </div>
@@ -79,13 +79,13 @@
             <h3 style="text-align: center">Select what you want to publish</h3>
             <li>Click "Select this Hybrid Simulation and all of its files" for each Hybrid Simulation you want to publish.</li>
             <li>If you want to deselect individual files, deselect the checkboxes.</li>
-            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">Curation office hours</a> for help with publishing.</li>
+            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
         <!-- Hybrid Simulations -->
         <div ng-show="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
         <!-- Hybrid Simulation Reports -->
@@ -93,7 +93,7 @@
              ng-if="$ctrl.matchingGroup(hybsim, report)"
         >
             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                <button class="btn collapsed tab-report" data-toggle="collapse"
+                <button class="btn collapsed tab-gray" data-toggle="collapse"
                         data-target="#files-{{report.uuid}}" style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
@@ -115,8 +115,8 @@
         <div ng-hide="$ctrl.ui.loading" ng-repeat="hybsim in $ctrl.browser.project.hybridsimulation_set">
             <div class="dropdown dropdown-spacer-lg" id="details-{{hybsim.uuid}}" style="margin-top: 15px">
                 <a ng-click="$ctrl.selectEntity(hybsim)">Select this Hybrid Simulation and all of its files</a>
-                <span ng-if="$ctrl.selectedEnts.includes(hybsim)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
-                <button class="btn tab-experiment collapsed" data-toggle="collapse"
+                <span ng-if="$ctrl.selectedEnts.includes(hybsim)"><i role="none" class="fa fa-check" style="color: #1CB500;"></i></span>
+                <button class="btn tab-gray collapsed" data-toggle="collapse"
                         data-target="#data-{{hybsim.uuid}}" style="width:100%;">
                     <div class="collapse-tab">
                         <span class="collapse-tab-content-left">Hybrid Simulation | <strong>{{hybsim.value.title}}</strong></span>
@@ -138,6 +138,30 @@
                             <div class="entity-meta-label-multi">Author(s)</div>
                             <div class="entity-meta-data">
                                 <ds-author-list authors="hybsim.value.authors"></ds-author-list>
+                            </div>
+                        </div>
+                        <span ng-if="hybsim.value.facility.name"> 
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Facility</div>
+                                <span class="entity-meta-data">
+                                    {{ hybsim.value.facility.name }}
+                                </span>
+                            </div>
+                        </span>
+                        <div class="entity-meta-field" ng-if="hybsim.value.relatedWork.length">
+                            <div class="entity-meta-label-multi">Related Work</div>
+                            <div class="entity-meta-data">
+                                <div ng-repeat="work in hybsim.value.relatedWork track by $index">
+                                    <related-work></related-work>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="entity-meta-field" ng-if="hybsim.value.referencedData.length">
+                            <div class="entity-meta-label-multi">Referenced Data and Software</div>
+                            <div class="entity-meta-data">
+                                <div ng-repeat="reference in hybsim.value.referencedData track by $index">
+                                    <referenced-data></referenced-data>
+                                </div>
                             </div>
                         </div>
                         <div class="entity-meta-field">
@@ -171,7 +195,7 @@
                              ng-if="$ctrl.matchingGroup(hybsim, report)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
-                                <button class="btn collapsed tab-report" data-toggle="collapse"
+                                <button class="btn collapsed tab-gray" data-toggle="collapse"
                                         data-target="#files-{{report.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
@@ -195,7 +219,7 @@
                              ng-if="$ctrl.matchingGroup(hybsim, model)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
-                                <button class="btn collapsed tab-model-conf" data-toggle="collapse"
+                                <button class="btn collapsed tab-blue" data-toggle="collapse"
                                         data-target="#files-{{model.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Global Model | <strong>{{model.value.title}}</strong></span>
@@ -225,11 +249,11 @@
                                         <tr>
                                             <td style="padding-right: 10px;" valign="top">
                                                 <span style="font-size: 20px; color: #1568C9">
-                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                    <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                 </span>
                                             </td>
                                             <td style="width: 100%;">
-                                                <button class="btn collapsed tab-sensor-info dropdown-spacer-sm" data-toggle="collapse"
+                                                <button class="btn collapsed tab-teal dropdown-spacer-sm" data-toggle="collapse"
                                                         data-target="#files-{{coordinator.uuid}}{{model.uuid}}" style="width:100%;">
                                                     <div class="collapse-tab">
                                                         <span class="collapse-tab-content-left">Coordinator | <strong>{{coordinator.value.title}}</strong></span>
@@ -263,11 +287,11 @@
                                                 <tr>
                                                     <td style="padding-right: 10px" valign="top">
                                                         <span style="font-size: 20px; color: #43A59D">
-                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                            <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-event" data-toggle="collapse"
+                                                        <button class="btn collapsed tab-yellow" data-toggle="collapse"
                                                                 data-target="#files-{{cout.uuid}}{{model.uuid}}" style="width:100%;">
                                                             <div class="collapse-tab">
                                                                 <span class="collapse-tab-content-left">Coordinator Output | <strong>{{cout.value.title}}</strong></span>
@@ -302,11 +326,11 @@
                                                 <tr>
                                                     <td style="padding-right: 10px;" valign="top">
                                                         <span style="font-size: 20px; color: #43A59D">
-                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                            <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-sim-subst dropdown-spacer-sm" data-toggle="collapse"
+                                                        <button class="btn collapsed tab-orange dropdown-spacer-sm" data-toggle="collapse"
                                                                 data-target="#files-{{simsub.uuid}}{{model.uuid}}" style="width:100%;">
                                                             <div class="collapse-tab">
                                                                 <span class="collapse-tab-content-left">Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
@@ -341,11 +365,11 @@
                                                         <tr>
                                                             <td style="padding-right: 10px;" valign="top">
                                                                 <span style="font-size: 20px; color: #BD5717">
-                                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                                    <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                                 </span>
                                                             </td>
                                                             <td style="width: 100%;">
-                                                                <button class="btn collapsed tab-event dropdown-spacer-sm" data-toggle="collapse"
+                                                                <button class="btn collapsed tab-yellow dropdown-spacer-sm" data-toggle="collapse"
                                                                         data-target="#files-{{sout.uuid}}{{model.uuid}}{{simsub.uuid}}" style="width:100%;">
                                                                     <div class="collapse-tab">
                                                                         <span class="collapse-tab-content-left">Simulation Output | <strong>{{sout.value.title}}</strong></span>
@@ -383,11 +407,11 @@
                                                 <tr>
                                                     <td style="padding-right: 10px;" valign="top">
                                                         <span style="font-size: 20px; color: #43A59D">
-                                                            <i class="fa fa-level-up fa-rotate-90"></i>
+                                                            <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                         </span>
                                                     </td>
                                                     <td style="width: 100%;">
-                                                        <button class="btn collapsed tab-exp-subst dropdown-spacer-sm" data-toggle="collapse"
+                                                        <button class="btn collapsed tab-purple dropdown-spacer-sm" data-toggle="collapse"
                                                                 data-target="#files-{{expsub.uuid}}{{model.uuid}}" style="width:100%;">
                                                             <div class="collapse-tab">
                                                                 <span class="collapse-tab-content-left">Experimental Substructure | <strong>{{expsub.value.title}}</strong></span>
@@ -422,11 +446,11 @@
                                                         <tr>
                                                             <td style="padding-right: 10px;" valign="top">
                                                                 <span style="font-size: 20px; color: #4B3181">
-                                                                    <i class="fa fa-level-up fa-rotate-90"></i>
+                                                                    <i role="none" class="fa fa-level-up fa-rotate-90"></i>
                                                                 </span>
                                                             </td>
                                                             <td style="width: 100%;">
-                                                                <button class="btn collapsed tab-event" data-toggle="collapse"
+                                                                <button class="btn collapsed tab-yellow" data-toggle="collapse"
                                                                         data-target="#files-{{eout.uuid}}{{model.uuid}}{{expsub.uuid}}" style="width:100%;">
                                                                     <div class="collapse-tab">
                                                                         <span class="collapse-tab-content-left">Experimental Output | <strong>{{eout.value.title}}</strong></span>
@@ -462,7 +486,7 @@
                              ng-if="$ctrl.matchingGroup(hybsim, analysis)"
                         >
                             <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
-                                <button class="btn collapsed tab-analysis" data-toggle="collapse"
+                                <button class="btn collapsed tab-light-blue" data-toggle="collapse"
                                         data-target="#files-{{analysis.uuid}}" style="width:100%;">
                                     <div class="collapse-tab">
                                         <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>

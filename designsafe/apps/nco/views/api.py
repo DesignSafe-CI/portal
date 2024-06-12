@@ -6,11 +6,11 @@
 import json
 import logging
 from designsafe.apps.api.views import BaseApiView
-from designsafe.apps.nco.managers import NcoProjectsManager
+from designsafe.apps.nco.managers import NcoProjectsManager, NcoTtcGrantsManager
 from designsafe.libs.mongo.response import MongoJsonResponse
 
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class ProjectsListView(BaseApiView):
@@ -66,4 +66,41 @@ class FiltersListView(BaseApiView):
         return MongoJsonResponse({
             "status": "OK",
             "response": filters,
+        })
+
+class TtcGrantsView(BaseApiView):
+    """NCO TTC Grants View."""
+
+    def get(self,request):
+        """Return a list of all TTC Grants."""
+        ttc_mgr = NcoTtcGrantsManager(request.user)
+        facility = request.GET.get('facility')
+        category = request.GET.get('category')
+        sort = request.GET.get('sort')
+        grants = ttc_mgr.ttc_grants(facility,category,sort)
+        return MongoJsonResponse({
+            "status": "OK",
+            "response": grants,
+        })
+
+class TtcFacilitiesView(BaseApiView):
+    """NCO TTC Grants Facilities View."""
+
+    def get(self,request):
+        ttc_mgr = NcoTtcGrantsManager(request.user)
+        facilities = ttc_mgr.ttc_facilities()
+        return MongoJsonResponse({
+            "status": "OK",
+            "response": facilities,
+        })
+
+class TtcCategoriesView(BaseApiView):
+    """NCO TTC Grants Facilities View."""
+
+    def get(self,request):
+        ttc_mgr = NcoTtcGrantsManager(request.user)
+        categories = ttc_mgr.ttc_categories()
+        return MongoJsonResponse({
+            "status": "OK",
+            "response": categories,
         })

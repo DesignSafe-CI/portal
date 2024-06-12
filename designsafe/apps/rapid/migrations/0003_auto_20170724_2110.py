@@ -11,7 +11,7 @@ def add_group(apps, scema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rapid', '0002_auto_20170627_2004'),
+        ('designsafe_rapid', '0002_auto_20170627_2004'),
     ]
 
     operations = [

@@ -1,6 +1,8 @@
 import publicationAdvancedSearchTemplate from './publication-advanced-search.template.html';
-const exptJson = require('../../../../projects/components/manage-experiments/experimental-data.json');
+const facilityJson = require('../../../../projects/components/facility-data.json');
 const { simulationTypes } = require('../../../../projects/components/manage-simulations/simulation-types.json');
+const { nhTypes } = require('../../../../projects/components/manage-project/project-form-options.json');
+const { otherTypes } = require('../../../../projects/components/manage-project/project-form-options.json');
 
 class PublicationAdvancedSearchCtrl {
     constructor($state, $stateParams) {
@@ -9,46 +11,17 @@ class PublicationAdvancedSearchCtrl {
         this.$stateParams = $stateParams;
     }
     $onInit() {
-        this.experimentOptions = exptJson;
+        this.experimentOptions = facilityJson;
         this.experimentFacilityOptions = [
             { name: '', label: 'All Types' },
-            ...exptJson.experimentalFacility.experimental.map(({ label }) => ({ name: label, label: label })),
+            ...facilityJson.experimentalFacility.experimental.map(({ label }) => ({ name: label, label: label })),
         ];
         this.simulationTypes = [{ name: '', label: 'All Types' }, ...simulationTypes];
 
-        this.rapidEventTypes = [
-            'Other',
-            'Earthquake',
-            'Flood',
-            'Hurricane',
-            'Landslide',
-            'Tornado',
-            'Tsunami',
-        ].map((type) => ({ name: type, label: type }));
+        this.rapidEventTypes = nhTypes.map((type) => ({ name: type, label: type }));
         this.rapidEventTypes = [{ name: '', label: 'All Types' }, ...this.rapidEventTypes];
 
-        this.otherTypes = [
-            'Check Sheet',
-            'Code',
-            'Database',
-            'Dataset',
-            'Image',
-            'Jupyter Notebook',
-            'Learning Object',
-            'Model',
-            'Paper',
-            'Proceeding',
-            'Poster',
-            'Presentation',
-            'Report',
-            'REU',
-            'Social Sciences',
-            'Software',
-            'Survey',
-            'Video',
-            'White Paper',
-            'Other',
-        ].map((type) => ({ name: type, label: type }));
+        this.otherTypes = otherTypes.map((type) => ({ name: type, label: type }));
         this.otherTypes = [{ name: '', label: 'All Types' }, ...this.otherTypes];
 
         this.hybridSimulationTypes = [
@@ -109,7 +82,7 @@ class PublicationAdvancedSearchCtrl {
         };
 
         this.validExperimentTypes = {};
-        this.getValidExperimentTypes();
+        this.getValidExperimentTypes(false);
         this.isCollapsed = true;
         Object.keys(this.params.advancedFilters).forEach((key) => {
             Object.values(this.params.advancedFilters[key]).forEach((value) => {
@@ -119,8 +92,8 @@ class PublicationAdvancedSearchCtrl {
             });
         });
     }
-    getValidExperimentTypes() {
-        this.params.advancedFilters.experimental.experimentType = '';
+    getValidExperimentTypes(reset) {
+        if (reset) this.params.advancedFilters.experimental.experimentType = '';
         const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
         const facilityName = (
             this.experimentOptions.experimentalFacility.experimental.filter((x) => x.label === facilityLabel)[0] || {}

@@ -1,6 +1,6 @@
 {% extends "designsafe/apps/rapid/rapid_base.html" %}
 {% load ds_filters %}
-{% load bootstrap3 sekizai_tags staticfiles %}
+{% load bootstrap3 sekizai_tags static %}
 
 {% block main %}
 
@@ -21,7 +21,7 @@
           {% csrf_token %}
           {% bootstrap_form form %}
           <div class="form-group">
-            <button type="submit" class="btn btn-success"> <i class="fa fa-file"></i> Save</button>
+            <button type="submit" class="btn btn-success"> <i role="none" class="fa fa-file"></i> Save</button>
           </div>
         </form>
       </div>

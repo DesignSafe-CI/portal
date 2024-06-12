@@ -20,7 +20,7 @@ angular.module('designsafe.portal').requires.push('ds-data');
 /**
  * @function
  * @param {Object} $httpProvider
- * @param {Object} $locationProvider 
+ * @param {Object} $locationProvider
  * @param {Object} $stateProvider
  * @param {Object} $urlRouterProvider
  * @param {Object} Django
@@ -80,7 +80,39 @@ function config(
                         type: 'authn',
                         context: Django.context,
                     });
-                
+                },
+            },
+        })
+        .state('myDataWork', {
+            url: '/agave/{systemId}/{filePath:any}/?query_string&offset&limit',
+            component: 'dataDepotBrowser',
+            params: {
+                systemId: 'designsafe.storage.frontera.work',
+                filePath: Django.user,
+            },
+            resolve: {
+                apiParams: ()=> {
+                    return {
+                        fileMgr: 'agave',
+                    };
+                },
+                path: ($stateParams, Django) => {
+                    'ngInject';
+                    if ($stateParams.filePath.replace(/^\/+/, '') === '') {
+                        return Django.user;
+                    }
+                    return $stateParams.filePath;
+                },
+                auth: ($q, Django) => {
+                    'ngInject';
+                    if (Django.context.authenticated) {
+                        return true;
+                    }
+
+                    return $q.reject({
+                        type: 'authn',
+                        context: Django.context,
+                    });
                 },
             },
         })
@@ -106,7 +138,6 @@ function config(
                         type: 'authn',
                         context: Django.context,
                     });
-                
                 },
             },
         })
@@ -308,9 +339,9 @@ function config(
                 }]
             }
         })
-        .state('projects.pipelineAmend', {
-            url: '/projects/{projectId}/curation/amend',
-            component: 'pipelineAmend',
+        .state('projects.amendOther', {
+            url: '/projects/{projectId}/curation/amend/other',
+            component: 'amendOther',
             params: {
                 project: null,
                 publication: null,
@@ -323,50 +354,240 @@ function config(
                 }]
             }
         })
-        .state('projects.pipelineVersion', {
-            url: '/projects/{projectId}/curation/version/{filePath:any}',
-            component: 'pipelineVersion',
+        .state('projects.amendExperiment', {
+            url: '/projects/{projectId}/curation/amend/exp',
+            component: 'amendExperiment',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
+        .state('projects.amendFieldRecon', {
+            url: '/projects/{projectId}/curation/amend/fr',
+            component: 'amendFieldRecon',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
+        .state('projects.amendSimulation', {
+            url: '/projects/{projectId}/curation/amend/sim',
+            component: 'amendSimulation',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
+        .state('projects.amendHybSim', {
+            url: '/projects/{projectId}/curation/amend/hybsim',
+            component: 'amendHybSim',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
+        .state('projects.amendCitation', {
+            url: '/projects/{projectId}/curation/amend/citation',
+            component: 'amendCitation',
+            params: {
+                project: null,
+                publication: null,
+                amendment: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.amendment = $stateParams.amendment;
+                }]
+            }
+        })
+        .state('projects.versionOtherSelection', {
+            url: '/projects/{projectId}/curation/version-other/{filePath:any}',
+            component: 'versionOtherSelection',
             params: {
                 filePath: '',
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedListings: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.filePath = $stateParams.filePath || '/';
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing || null;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings || null;
                 }]
             }
         })
-        .state('projects.pipelineVersionProject', {
-            url: '/projects/{projectId}/curation/versionProject',
-            component: 'pipelineVersionProject',
+        .state('projects.versionOtherCitation', {
+            url: '/projects/{projectId}/curation/citation-other',
+            component: 'versionOtherCitation',
             params: {
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedListings: null,
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
                 }]
             }
         })
-        .state('projects.pipelineVersionChanges', {
-            url: '/projects/{projectId}/curation/versionChanges',
-            component: 'pipelineVersionChanges',
+        .state('projects.versionExperimentSelection', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'versionExperimentSelection',
             params: {
+                project: null,
                 publication: null,
-                selectedListing: null,
+                selectedEnts: [],
+                selectedListings: null
             },
             resolve: {
                 projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
                     ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
                     ProjectService.resolveParams.publication = $stateParams.publication;
-                    ProjectService.resolveParams.selectedListing = $stateParams.selectedListing;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
+        .state('projects.versionFieldReconSelection', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'versionFieldReconSelection',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
+        .state('projects.versionSimulationSelection', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'versionSimulationSelection',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
+        .state('projects.versionHybSimSelection', {
+            url: '/projects/{projectId}/curation/version/{filePath:any}',
+            component: 'versionHybSimSelection',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
+        .state('projects.versionCitation', {
+            url: '/projects/{projectId}/curation/citation',
+            component: 'versionCitation',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                }]
+            }
+        })
+        .state('projects.versionChanges', {
+            url: '/projects/{projectId}/curation/changes',
+            component: 'versionChanges',
+            params: {
+                project: null,
+                publication: null,
+                selectedEnts: [],
+                selectedListings: null,
+                revisionAuthors: {},
+            },
+            resolve: {
+                projectId: ['$stateParams', 'ProjectService', ($stateParams, ProjectService) => {
+                    ProjectService.resolveParams.projectId = $stateParams.projectId;
+                    ProjectService.resolveParams.project = $stateParams.project;
+                    ProjectService.resolveParams.publication = $stateParams.publication;
+                    ProjectService.resolveParams.selectedEnts = $stateParams.selectedEnts;
+                    ProjectService.resolveParams.selectedListings = $stateParams.selectedListings;
+                    ProjectService.resolveParams.revisionAuthors = $stateParams.revisionAuthors;
                 }]
             }
         })
@@ -898,7 +1119,7 @@ function config(
             },
         })
         .state('publishedData',  {
-            url: '/public/designsafe.storage.published/{filePath:any}?query_string',
+            url: '/public/designsafe.storage.published/{filePath:any}?query_string&doi',
             component: 'publishedParent',
             resolve: {
                 version: ($stateParams) => {
@@ -933,7 +1154,7 @@ function config(
                             // citation_doi is also an entity tag
                             while(el[1]) el[1].parentNode.removeChild(el[1]);
                         }
-                        
+
                     }
                 );
                 const entityTags = [
@@ -950,12 +1171,12 @@ function config(
                 });
             },
         })
-       
+
         .state('trainingMaterials', {
             url: '/training/',
             template: '<pre>local/trainingMaterials.html</pre>',
         });
-        
+
 
     $urlRouterProvider.otherwise(function($injector) {
         var $state = $injector.get('$state');
@@ -1019,7 +1240,7 @@ ddModule.config([
             (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
                 window.location.hostname +
                 (window.location.port ? ':' + window.location.port : '') +
-                '/ws/websockets?subscribe-broadcast&subscribe-user'
+                '/ws/websockets/?subscribe-broadcast&subscribe-user'
         );
     },
 ]);

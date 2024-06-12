@@ -12,7 +12,7 @@
 <div ng-if="data.bin" class="app-dropdown">
     <p compile="data.bin.description" class="app-form-wrapper" ng-if="data.bin.description"></p>
     <div>Select a version of <b>{{data.bin.value.definition.label}}</b> from the dropdown:</div>
-    <select ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin.applications | orderBy: 'value.definition.label'">
+    <select ng-model="data.selectedApp" ng-options="app.value.definition.label for app in data.bin.applications | orderBy: 'value.definition.label'" style="color:initial;">
         <option value=''disabled selected>-- Please Select --</option>
     </select>
 </div>
@@ -20,7 +20,7 @@
   <p compile="data.app"></p>
   <div ng-if="data.launching">
         <span class="label label-info">
-            <i class="fa fa-refresh fa-spin"></i>
+            <i role="none" class="fa fa-refresh fa-spin"></i>
             Launching...
         </span>
     </div>
@@ -31,7 +31,7 @@
             <h2>Academic License Eligibility Verification Required</h2>
             <p>
                 The DesignSafe MATLAB license requires verification that you are an academic user.
-                Please visit the <a href="/account/licenses/" target="_blank">manage software licenses</a>
+                Please visit the <a href="/account/licenses/" target="_blank" aria-describedby="msg-open-new-window">manage software licenses</a>
                 section on the Manage Account page to request activation of this license for your
                 DesignSafe user account.
             </p>
@@ -45,9 +45,9 @@
         </p>
     </div>
     <div class="lead alert alert-warning" ng-if="data.systemDown">
-        <h2>Application Unavailable</h2>
         <p>
-            This application's execution system ({{data.app.executionSystem}}) is not currently accepting requests. Please try again later,
+            This application's execution system host ({{data.app.exec_sys.login.host}}) is not reachable and may be down for maintenance. Check
+            <a href="https://tacc.utexas.edu/portal/dashboard" target="_blank">System Status</a> for updates,
             or submit a ticket for assistance.
         </p>
     </div>
@@ -60,8 +60,8 @@
     <h2>Run <em>{{data.app.label}} <small class="version-label">ver. {{data.app.version}}</small></em></h2>
     <p ng-bind-html="data.app.longDescription"></p>
     <p ng-if="data.app.helpURI">
-        <a href="{{data.app.helpURI}}" target="_blank">
-            <i class="fa fa-book"></i> <span><em>{{data.app.label}}</em> Documentation</span>
+        <a href="{{data.app.helpURI}}" target="_blank" aria-describedby="msg-open-new-window">
+            <i role="none" class="fa fa-book"></i> <span><em>{{data.app.label}}</em> Documentation</span>
         </a>
     </p>
     <form name="appForm"
@@ -78,7 +78,7 @@
 
     <div ng-if="data.submitting">
         <span class="label label-info">
-            <i class="fa fa-refresh fa-spin"></i>
+            <i role="none" class="fa fa-refresh fa-spin"></i>
             Submitting job...
         </span>
     </div>

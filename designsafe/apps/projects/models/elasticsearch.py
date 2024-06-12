@@ -1,5 +1,4 @@
 from __future__ import unicode_literals, absolute_import
-from future.utils import python_2_unicode_compatible
 import logging
 import json
 from django.conf import settings
@@ -17,7 +16,6 @@ from designsafe.libs.elasticsearch.analyzers import path_analyzer
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
-@python_2_unicode_compatible
 class IndexedProject(Document):
     uuid = Text(fields={'_exact': Keyword()})
     schemaId = Text(fields={'_exact': Keyword()})
@@ -29,6 +27,7 @@ class IndexedProject(Document):
     owner = Text(fields={'_exact': Keyword()})
     value = Object(
         properties={
+            'authors': Text(analyzer='english', multi=True),
             'teamMembers': Text(fields={'_exact': Keyword()}, multi=True),
             'teamMember': Text(fields={'_exact': Keyword()}, multi=True),
             'guestMembers': Nested(properties={
@@ -58,18 +57,17 @@ class IndexedProject(Document):
                 'path': Text(fields={'_exact': Keyword()})
 
             }, multi=True),
-            
-            'nhEventStart': Date(),
-            'nhEventEnd': Date(),
+
+            # 'nhEventStart': Date(),
+            # 'nhEventEnd': Date(),
             'nhTypes': Text(fields={'_exact': Keyword()}),
-            'nhType': Text(fields={'_exact': Keyword()}),   
+            'nhType': Text(fields={'_exact': Keyword()}),
             'nhTypeOther': Text(fields={'_exact': Keyword()}),
             'nhEvent': Text(fields={'_exact': Keyword()}),
             'nhLocation': Text(fields={'_exact': Keyword()}),
             'nhLatitude': Text(fields={'_exact': Keyword()}),
             'nhLongitude': Text(fields={'_exact': Keyword()}),
-            'fr_types': Text(fields={'_exact': Keyword()}, multi=True),
-
+            'frTypes': Text(fields={'_exact': Keyword()}, multi=True),
             'coPis': Text(fields={'_exact': Keyword()}, multi=True),
             'projectType': Text(fields={'_exact': Keyword()}, analyzer='english'),
             'description': Text(analyzer='english'),
@@ -78,11 +76,15 @@ class IndexedProject(Document):
             'title': Text(analyzer='english'),
             'keywords': Text(analyzer='english'),
             'ef': Text(analyzer='english'),
+            # 'referencedData': Text(fields={'_exact': Keyword()}, analyzer='english', multi=True),
+            # 'relatedFiles': Text(fields={'_exact': Keyword()}),
             'associatedProjects': Nested(properties={
                 'title': Text(analyzer='english'),
                 'href': Text(fields={'_exact':Keyword()}),
                 'order': Long(),
-                'delete': Boolean()
+                'delete': Boolean(),
+                'type': Text(fields={'_exact':Keyword()}),
+                'hrefType': Text(fields={'_exact':Keyword()}),
             }),
             'pi': Text(fields={'_exact': Keyword()}),
             'awardNumber': Nested(properties={
@@ -100,17 +102,18 @@ class IndexedProject(Document):
                 'name': Text(fields={'_exact':Keyword()}),
                 'path': Text(fields={'_exact':Keyword()}),
                 'uuid': Text(fields={'_exact':Keyword()}),
-                'deployment': Text(fields={'_exact':Keyword()})
+                'deployment': Text(fields={'_exact':Keyword()}),
+                # 'href': Text(fields={'_exact':Keyword()})
             }),
+            # 'users': Text(fields={'_exact': Keyword()}, multi=True)
         })
 
     class Index:
-        name = settings.ES_INDICES['projects']['alias'] 
+        name = settings.ES_INDICES['projects']['alias']
 
     class Meta:
         dynamic = MetaField('strict')
 
-@python_2_unicode_compatible
 class IndexedEntity(Document):
     uuid = Text(fields={'_exact': Keyword()})
     schemaId = Text(fields={'_exact': Keyword()})
@@ -136,6 +139,6 @@ class IndexedEntity(Document):
 
     class Index:
         name = settings.ES_INDICES['project_entities']['alias']
-        
+
     class Meta:
         dynamic = MetaField('strict')

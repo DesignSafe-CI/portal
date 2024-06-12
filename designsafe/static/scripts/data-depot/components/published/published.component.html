@@ -16,11 +16,11 @@
         <strong>&nbsp;Download Project</strong>
       </a>
       <a class="prj-head-download" ng-click="$ctrl.metrics()">
-        <img src='/static/images/ds-icons/icon-metrics.svg' style="width: 20px;">
-        <strong>&nbsp;View Data Metrics</strong>
+        <img src='/static/images/ds-icons/icon-metrics.svg' alt="icon of line graph with rising line" alt="text bubble icon" style="width: 20px;">
+        <strong>&nbsp;View Project Metrics</strong>
     </a>
     <a class="prj-head-download" ng-click="$ctrl.leaveFeedback()">
-      <img src='/static/images/ds-icons/icon-feedback.svg' style="width: 20px;">
+      <img src='/static/images/ds-icons/icon-feedback.svg' alt="icon of chat bubble" style="width: 20px;">
       <strong>Leave Feedback</strong>
     </a>
   </div>
@@ -113,7 +113,7 @@
 
           <tr ng-if="$ctrl.project.value.associatedProjects.length">
             <td style="padding:0px;">
-              <table class="table" style="margin-botto:0;">
+              <table class="table" style="margin-bottom:0;">
                 <tbody>
                   <tr>
                     <th style="border-top:none; width:25%">Associated Projects</th>
@@ -139,7 +139,7 @@
     </div>
   </div>
   <div ng-if="$ctrl.ui.loadingProjectMeta">
-    Loading... <i class="fa fa-spinner fa-spin"></i>
+    Loading... <i role="none" class="fa fa-spinner fa-spin"></i>
   </div>
   <hr>
 
@@ -158,15 +158,14 @@
 <div ng-if="$ctrl.project.value.projectType != 'experimental' &&
             $ctrl.project.value.projectType != 'simulation' &&
             $ctrl.project.value.projectType != 'hybrid_simulation'
-            || $ctrl.filePathComps.length > 1 || $ctrl.$stateParams.query_string"><!-- File Listing View -->
+            || $ctrl.filePathComps.length > 1 || $ctrl.$stateParams.query_string">
+ <!-- File Listing View -->
  <div class="ds-table-display-wrapper" ds-infinite-scroll
         data-scroll-bottom="$ctrl.scrollToBottom()"
         data-scroll-top="$ctrl.scrollToTop()"
         data-bottom-height="0">
     <files-listing show-select="true" on-browse="$ctrl.onBrowse(file)" listing="$ctrl.FileListingService.listings.main"></files-listing>
   </div>
-
-
 </div><!-- Closing file listing view -->
 
 <div ng-if="$ctrl.project.value.projectType == 'experimental' && $ctrl.filePathComps.length <= 1 && !$ctrl.$stateParams.query_string">
@@ -177,7 +176,7 @@
         <div class="dropdown entity-preview-header" id="details-{{experiment.uuid}}">
           <button class="btn btn-default btn-sm " data-toggle="collapse" data-target="#data-{{experiment.uuid}}"
                   style="width:100%;">
-            Experiment {{experiment.value.title}}  <i class="fa dropdown-caret"></i>
+            Experiment {{experiment.value.title}}  <i role="none" class="fa dropdown-caret"></i>
           </button>
           <div id="data-{{experiment.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; margin-bottom:15px;">
@@ -389,7 +388,7 @@
       <div class="dropdown entity-preview-header" id="details-{{modelConfig.uuid}}">
         <button class="btn btn-sm btn-default collapsed ds-text-blue" data-toggle="collapse" data-target="#files-{{modelConfig.uuid}}"
                 style="width:100%;">
-          Model Config {{modelConfig.value.title}}  <i class="fa dropdown-caret"></i>
+          Model Config {{modelConfig.value.title}}  <i role="none" class="fa dropdown-caret"></i>
         </button>
         <div id="files-{{modelConfig.uuid}}" class="collapse">
           <files-listing show-select="true" on-browse="$ctrl.onBrowse(file)" listing="$ctrl.FileListingService.listings[modelConfig.uuid]"></files-listing>
@@ -400,7 +399,7 @@
       <div class="dropdown entity-preview-header" id="details-{{sensorList.uuid}}">
         <button class="btn btn-sm btn-default collapsed ds-text-green" data-toggle="collapse" data-target="#files-{{sensorList.uuid}}"
                 style="width:100%;">
-          Sensor List {{sensorList.value.title}}  <i class="fa dropdown-caret"></i>
+          Sensor List {{sensorList.value.title}}  <i role="none" class="fa dropdown-caret"></i>
         </button>
         <div id="files-{{sensorList.uuid}}" class="collapse">
           <files-listing show-select="true" on-browse="$ctrl.onBrowse(file)" listing="$ctrl.FileListingService.listings[sensorList.uuid]"></files-listing>
@@ -413,7 +412,7 @@
         <div class="dropdown entity-preview-header" id="details-{{analysis.uuid}}">
           <button class="btn btn-default btn-sm ds-text-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                   style="width:100%;">
-            Analysis {{analysis.value.title}}  <i class="fa dropdown-caret"></i>
+            Analysis {{analysis.value.title}}  <i role="none" class="fa dropdown-caret"></i>
           </button>
           <div id="files-{{analysis.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
@@ -422,7 +421,7 @@
                 <span style="font-weight:bold;">Description: </span>{{analysis.value.description}}</p>
                 <button class="btn btn-link btn-sm"
                         ng-click="$ctrl.showText(analysis.value.description)">
-                  <i class="fa fa-external-link"></i> Show
+                  <i role="none" class="fa fa-external-link"></i> Show
                 </button>
               </div>
             </div>
@@ -448,7 +447,7 @@
         <div class="dropdown entity-preview-header" id="details-{{report.uuid}}">
           <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                   style="width:100%;">
-            Report {{report.value.title}}  <i class="fa dropdown-caret"></i>
+            Report {{report.value.title}}  <i role="none" class="fa dropdown-caret"></i>
           </button>
           <div id="files-{{report.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
@@ -460,7 +459,7 @@
                 </p>
                 <button class="btn btn-link btn-sm"
                         ng-click="$ctrl.showText(analysis.value.description)">
-                  <i class="fa fa-external-link"></i> Show
+                  <i role="none" class="fa fa-external-link"></i> Show
                 </button>
               </div>
             <div style="padding:5px; margin:5px 0px; height:60px; overflow:hidden; word-wrap:overflow; display:inline-block; float:right;">
@@ -477,13 +476,13 @@
   </div>
 </div>
 
-<div ng-if="$ctrl.project.value.projectType == 'simulation' && $ctrl.filePathComps.length <= 1 && !$ctrl.$stateParams.query_string">  <!-- simulation publishe dview -->
+<div ng-if="$ctrl.project.value.projectType == 'simulation' && $ctrl.filePathComps.length <= 1 && !$ctrl.$stateParams.query_string">  <!-- simulation published view -->
 
   <div ng-repeat="simulation in $ctrl.browser.publication.simulations | orderBy: 'value.title'" style="#fff;">
     <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">
       <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
               style="width:100%">
-        Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
+        Simulation {{simulation.value.title}} <i role="none" class="fa dropdown-caret"></i>
       </button>
       <div id="data-{{simulation.uuid}}" class="collapse">
 
@@ -645,7 +644,7 @@
               style="width:100%">
         <span ng-if="!analysis.value.simulations.length">Analysis {{analysis.value.title}} </span>
         <span ng-if="analysis.value.simulations.length">Simulation Analysis {{analysis.value.title}} </span>
-        <i class="fa dropdown-caret"></i>
+        <i role="none" class="fa dropdown-caret"></i>
       </button>
           <div id="data-{{analysis.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
@@ -665,7 +664,7 @@
               style="width:100%" class="ds-text-black">
         <span ng-if="!report.value.simulations.length">Report {{report.value.title}} </span>
         <span ng-if="report.value.simulations.length">Simulation Report {{report.value.title}} </span>
-        <i class="fa dropdown-caret"></i>
+        <i role="none" class="fa dropdown-caret"></i>
       </button>
           <div id="data-{{report.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
@@ -684,7 +683,7 @@
     <div class="dropdown entity-preview-header" id="details-{{simulation.uuid}}">
       <button class="btn btn-default btn-sm" data-toggle="collapse" data-target="#data-{{simulation.uuid}}"
               style="width:100%">
-        Hybrid Simulation {{simulation.value.title}} <i class="fa dropdown-caret"></i>
+        Hybrid Simulation {{simulation.value.title}} <i role="none" class="fa dropdown-caret"></i>
       </button>
       <div id="data-{{simulation.uuid}}" class="collapse">
 
@@ -915,7 +914,7 @@
               style="width:100%">
         <span ng-if="!analysis.value.simulations.length">Analysis {{analysis.value.title}} </span>
         <span ng-if="analysis.value.simulations.length">Simulation Analysis {{analysis.value.title}} </span>
-        <i class="fa dropdown-caret"></i>
+        <i role="none" class="fa dropdown-caret"></i>
       </button>
           <div id="data-{{analysis.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">
@@ -934,7 +933,7 @@
               style="width:100%">
         <span ng-if="!report.value.simulations.length">Report1 {{report.value.title}} </span>
         <span ng-if="report.value.simulations.length">Simulation Report {{report.value.title}} </span>
-        <i class="fa dropdown-caret"></i>
+        <i role="none" class="fa dropdown-caret"></i>
       </button>
           <div id="data-{{report.uuid}}" class="collapse">
             <div style="border:1px solid black; background:white; padding:5px; margin-bottom:15px;">

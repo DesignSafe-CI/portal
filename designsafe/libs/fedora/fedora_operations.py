@@ -2,15 +2,18 @@ import requests
 from requests import HTTPError
 from django.conf import settings
 import json
-import magic
 import os
+import io
+import sys
 import hashlib
 from urllib import parse
+from io import StringIO
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.api.publications.operations import _get_user_by_username
 import logging
+from fido.fido import Fido
 logger = logging.getLogger(__name__)
 
 FEDORA_HEADERS = {
@@ -22,6 +25,9 @@ PUBLICATIONS_CONTAINER = settings.FEDORA_CONTAINER
 PUBLICATIONS_MOUNT_ROOT = '/corral-repl/tacc/NHERI/published/'
 
 FEDORA_CONTEXT = {
+    "abstract": {
+        "@id": "http://purl.org/dc/elements/1.1/abstract"
+    },
     "available": {
         "@id": "http://purl.org/dc/elements/1.1/available"
     },
@@ -40,6 +46,9 @@ FEDORA_CONTEXT = {
     "creator": {
         "@id": "http://purl.org/dc/elements/1.1/creator"
     },
+    "coverage": {
+        "@id": "http://purl.org/dc/elements/1.1/coverage"
+    },
     "license": {
         "@id": "http://purl.org/dc/elements/1.1/license"
     },
@@ -55,6 +64,9 @@ FEDORA_CONTEXT = {
     "date": {
         "@id": "http://purl.org/dc/elements/1.1/date"
     },
+    "hasVersion": {
+       "@id": "http://purl.org/dc/elements/1.1/hasVersion"
+    },
     "_created": {
         "@id": "http://purl.org/dc/elements/1.1/created"
     },
@@ -63,6 +75,9 @@ FEDORA_CONTEXT = {
     },
     "references": {
         "@id": "http://purl.org/dc/elements/1.1/references"
+    },
+    "isReferencedBy": {
+        "@id": "http://purl.org/dc/elements/1.1/isReferencedBy"
     },
     "relation": {
         "@id": "http://purl.org/dc/elements/1.1/relation"
@@ -99,6 +114,9 @@ FEDORA_CONTEXT = {
     },
     "influenced": {
         "@id": "https://www.w3.org/TR/2013/REC-prov-o-20130430/#influenced"
+    },
+    "Influence": {
+        "@id": "https://www.w3.org/TR/2013/REC-prov-o-20130430/#Influence"
     }
 }
 
@@ -201,13 +219,25 @@ def format_metadata_for_fedora(project_id, version=None):
                                                               member.fname),
                                ordered_team))
     except AttributeError:
-        author_list = [_get_user_by_username(doc, pub_meta.pi)]
+        try:
+            ordered_team = sorted(doc.authors, key=lambda member: member.order)
+
+            author_list = list(map(lambda member: "{}, {}".format(member.lname,
+                                                                member.fname),
+                                ordered_team))
+        except AttributeError:
+            author_list = [_get_user_by_username(doc, pub_meta.pi)]
 
     award_numbers = getattr(pub_meta, 'awardNumbers', [])
     contributors = []
     for award in award_numbers:
         contributors.append(award['name'] or None)
         contributors.append(award['number'] or None)
+    
+
+    facilities = getattr(pub_meta, "facilities", [])
+    for facility in facilities:
+        contributors.append(facility["name"])
 
     identifiers = [pub_meta.projectId,
                    'https://www.designsafe-ci.org/'
@@ -221,23 +251,45 @@ def format_metadata_for_fedora(project_id, version=None):
     if project_type == 'other':
         project_type = getattr(pub_meta, 'dataType', "other"),
 
+    coverage = []
+    nh_start = getattr(pub_meta, 'nhEventStart', None)
+    nh_end = getattr(pub_meta, 'nhEventEnd', None)
+    nh_location = getattr(pub_meta, 'nhLocation', None)
+    if nh_start:
+        coverage.append(nh_start.isoformat())
+    if nh_end:
+        coverage.append(nh_end.isoformat())
+    if nh_location:
+        coverage.append(nh_location)
+    subject = []\
+            + pub_meta.keywords.split(', ')\
+            + [getattr(pub_meta, 'nhEvent', None)]\
+            + list(getattr(pub_meta, 'frTypes', []) or [])\
+            + list(getattr(pub_meta, 'nhTypes', []) or [])
+    # Remove duplicate/null values
+    subject = list(filter(bool, subject))
+    subject = [s for (i,s) in enumerate(subject) if s not in subject[:i]]
+
     fc_meta = {
         'title': pub_meta.title,
-        'entity': 'Project',
+        'entity': 'Projdoc ect',
         'description': pub_meta.description,
         'identifier': identifiers,
-        'subject': pub_meta.keywords.split(', '),
+        'subject': subject,
+        'coverage': coverage,
         'creator': author_list,
         'issued': doc.project.created.isoformat(),
         'contributor': contributors,
         'type': project_type,
         'publisher': 'Designsafe',
+        'hasVersion': version
     }
 
     licenses = getattr(doc, 'licenses', None)
     if licenses:
         fc_meta['license'] = list(licenses.to_dict().values())
 
+    # Will we need to update this since the object now has a "type" and "hrefType"?
     associated_projects = getattr(pub_meta, 'associatedProjects', None)
     if associated_projects:
         references = list(map(lambda assoc: assoc['title'], associated_projects))
@@ -252,6 +304,53 @@ def format_metadata_for_fedora(project_id, version=None):
     return fc_meta
 
 
+def generate_manifest_other(project_id, version=None):
+    fido_client = Fido()
+    doc = IndexedPublication.from_id(project_id, revision=version)
+    uuid = doc.project.uuid
+    file_tags = getattr(doc.project.value, 'fileTags', [])
+
+    if version:
+        project_id = '{}v{}'.format(project_id, str(version))
+    manifest = []
+    archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
+
+    for path in get_child_paths(archive_path):
+        rel_path = os.path.relpath(path, archive_path)
+
+        tags = filter(lambda t: t['path'].strip('/') == rel_path.strip('/'), file_tags)
+        manifest.append({
+            'parent_entity': uuid,
+            'corral_path': path,
+            'checksum': get_sha1_hash(path),
+            'tags': [t['tagName'] for t in tags],
+            'ffi': get_fido_output(fido_client, path)
+        })
+
+    return manifest
+
+
+def upload_manifest_other(project_id, version=None):
+    manifest_dict = generate_manifest_other(project_id, version=version)
+
+    if version:
+        project_id = '{}v{}'.format(project_id, str(version))
+    fedora_root = parse.urljoin(settings.FEDORA_URL, PUBLICATIONS_CONTAINER)
+    project_root = os.path.join(fedora_root, project_id)
+    manifest_url = os.path.join(project_root, 'manifest.json')
+
+    with StringIO() as f:
+        json.dump(manifest_dict, f, ensure_ascii=False, indent=4)
+        f.seek(0)
+        headers = {'Content-Type': 'text/plain'}
+        request = requests.put(manifest_url,
+                                       auth=(settings.FEDORA_USERNAME,
+                                             settings.FEDORA_PASSWORD),
+                                       headers=headers,
+                                       data=f)
+        request.raise_for_status()
+
+
 def create_fc_version(container_path):
     """Create a new version of the publication in Fedora. This uses Fedora's
     versioning system and is meant to be used for amendments in the publication
@@ -263,57 +362,17 @@ def create_fc_version(container_path):
                                 auth=(settings.FEDORA_USERNAME,
                                       settings.FEDORA_PASSWORD))
         request.raise_for_status()
+        return fedora_get(container_path)
     except HTTPError as error:
         if error.response.status_code == 409:
             return fedora_get(container_path)
         raise error
 
 
-def ingest_files_other(project_id, version=None):
-    """
-    Ingest an Other type publication's files into fedora. All files are ingested
-    as children of the base project, with a slug that indicates the path in the
-    directory hierarchy.
-    """
-
-    retry_strategy = Retry(
-        total=3,
-        backoff_factor=5
-    )
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
-    http.mount("http://", adapter)
-
-    archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
-    fedora_root = parse.urljoin(settings.FEDORA_URL, PUBLICATIONS_CONTAINER)
-    for root, _, files in os.walk(archive_path):
-
-        for file in files:
-            headers = {'Content-Type': 'text/plain'}
-            mime = magic.Magic(mime=True)
-            headers['Content-Type'] = mime.from_file(os.path.join(root, file))
-            # project_archive_path will be something like /corral-repl/tacc/NHERI/published/PRJ-1234
-            project_archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
-            # fc_relative_path is of form /PRJ-1234/data/path/to/folder/file
-            fc_relative_path = os.path.join(project_id, 'data', root.replace(project_archive_path, '', 1).strip('/'), file)
-            fc_put_url = os.path.join(fedora_root, parse.quote(fc_relative_path))
-            with open(os.path.join(root, file), 'rb') as _file:
-                try:
-                    request = http.put(fc_put_url,
-                                       auth=(settings.FEDORA_USERNAME,
-                                             settings.FEDORA_PASSWORD),
-                                       headers=headers,
-                                       data=_file)
-                    request.raise_for_status()
-                except HTTPError:
-                    logger.error('Fedora ingest failed: {}'.format(fc_put_url))
-
-
-def ingest_project(project_id, upload_files=False, version=None):
+def ingest_project(project_id, version=None):
     """
     Ingest a project into Fedora by creating a record in the repo, updating it
-    with the published metadata, and uploading its files.
+    with the published metadata, and uploading its file manifest.
     """
     container_path = project_id
     if version:
@@ -321,8 +380,7 @@ def ingest_project(project_id, upload_files=False, version=None):
     fedora_post(container_path)
     project_meta = format_metadata_for_fedora(project_id, version=version)
     res = fedora_update(container_path, project_meta)
-    if upload_files:
-        ingest_files_other(container_path)
+    upload_manifest_other(project_id, version=version)
     return res
 
 
@@ -339,7 +397,14 @@ def amend_project_fedora(project_id, version=None):
     return res
 
 
-def walk_experimental(project_id):
+def has_associations(child, parents):
+    for parent in parents:
+        if parent.uuid not in child.associationIds:
+            return False
+    return True
+
+
+def walk_experimental(project_id, version=None):
     """
     Walk an experimental project and reconstruct parent/child relationships
 
@@ -356,17 +421,20 @@ def walk_experimental(project_id):
                         'fedora_mapping': {}}}
     """
     from urllib import parse
-    doc = IndexedPublication.from_id(project_id)
+    doc = IndexedPublication.from_id(project_id, revision=version)
     relation_map = []
 
-    project_meta = format_metadata_for_fedora(project_id)
+    project_meta = format_metadata_for_fedora(project_id, version=version)
+    if version:
+        project_id = '{}v{}'.format(project_id, str(version))
     license = project_meta.get('license', None)
     full_author_list = []
     project_map = {
         'uuid': doc.project.uuid,
         'container_path': project_id,
         'fedora_mapping': {**project_meta, 'generated': [], 'license': None},
-        'fileObjs': []
+        'fileObjs': [],
+        'fileTags': []
     }
 
     experiments_list = doc.experimentsList
@@ -381,7 +449,8 @@ def walk_experimental(project_id):
             'uuid': expt.uuid,
             'container_path': expt_container_path,
             'fedora_mapping': {**format_experiment(expt), 'license': license, 'wasGeneratedBy': project_id, 'generated': []},
-            'fileObjs': expt.fileObjs
+            'fileObjs': expt.fileObjs,
+            'fileTags': getattr(expt.value, 'fileTags', []),
         }
 
         full_author_list += experiment_map['fedora_mapping']['creator']
@@ -398,6 +467,7 @@ def walk_experimental(project_id):
             report_map = {
                 'uuid': report.uuid,
                 'fileObjs': report.fileObjs,
+                'fileTags': getattr(report.value, 'fileTags', []),
                 'container_path': report_container_path,
                 'fedora_mapping': {**format_report(report), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
             }
@@ -415,6 +485,7 @@ def walk_experimental(project_id):
             analysis_map = {
                 'uuid': analysis.uuid,
                 'fileObjs': analysis.fileObjs,
+                'fileTags': getattr(analysis.value, 'fileTags', []),
                 'container_path': analysis_container_path,
                 'fedora_mapping': {**format_analysis(analysis), 'wasGeneratedBy': 'Experiment: {}'.format(exp_doi)}
 
@@ -433,6 +504,7 @@ def walk_experimental(project_id):
             mc_map = {
                 'uuid': mc.uuid,
                 'fileObjs': mc.fileObjs,
+                'fileTags': getattr(mc.value, 'fileTags', []),
                 'container_path': configs_container_path,
                 'fedora_mapping': {**format_model_config(mc), 'wasGeneratedBy': exp_doi}
             }
@@ -449,6 +521,7 @@ def walk_experimental(project_id):
                 sl_map = {
                     'uuid': sl.uuid,
                     'fileObjs': sl.fileObjs,
+                    'fileTags': getattr(sl.value, 'fileTags', []),
                     'container_path': sl_container_path,
                     'fedora_mapping': {**format_sensor_info(sl),
                                        'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
@@ -469,6 +542,7 @@ def walk_experimental(project_id):
                     event_map = {
                         'uuid': event.uuid,
                         'fileObjs': event.fileObjs,
+                        'fileTags': getattr(event.value, 'fileTags', []),
                         'container_path': evt_container_path,
                         'fedora_mapping': {**format_event(event),
                                            'wasGeneratedBy': 'Experiment: {}'.format(exp_doi),
@@ -577,21 +651,24 @@ def format_analysis(analysis):
     }
 
 
-def ingest_project_experimental(project_id, upload_files=False, version=None):
+def ingest_project_experimental(project_id, version=None, amend=False):
     """
     Ingest a project into Fedora by creating a record in the repo, updating it
     with the published metadata, and uploading its files.
     """
     container_path = project_id
+    if version:
+        container_path = '{}v{}'.format(container_path, str(version))
 
-    walk_result = walk_experimental(project_id)
-    # Sort by length of container path to prevent children from being ingested before their parents
-    # sorted_keys = sorted(walk_result.keys(), key=lambda x: len(walk_result[x]['container_path'][0].split('/')))
+    walk_result = walk_experimental(project_id, version=version)
     for entity in walk_result:
+        if amend:
+            create_fc_version(entity['container_path'])
         fedora_post(entity['container_path'])
-        print(entity['fedora_mapping'])
-        res = fedora_update(entity['container_path'], entity['fedora_mapping'])
-        # ingest_entity_files(project_id, container_path, entity['fileObjs'])
+        fedora_update(entity['container_path'], entity['fedora_mapping'])
+
+    if not amend:
+        upload_manifest_experimental(project_id, version=version)
 
 
 def get_sha1_hash(file_path):
@@ -611,35 +688,95 @@ def get_child_paths(dir_path):
             yield os.path.join(root, file)
 
 
-def generate_manifest(project_id):
-    walk_result = walk_experimental(project_id)
+def generate_manifest(walk_result, project_id, version=None):
+    fido_client = Fido()
+    if version:
+        project_id = '{}v{}'.format(project_id, str(version))
     manifest = []
     archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
     for entity in walk_result:
-        fileObjs = entity['fileObjs']
-        for file in fileObjs:
+        file_objs = entity['fileObjs']
+        file_tags = entity.get('fileTags', [])
+        for file in file_objs:
+
+            
 
             file_path = os.path.join(archive_path, file['path'].strip('/'))
             rel_path = os.path.join(parse.unquote(entity['container_path']), file['path'].strip('/'))
 
             if file['type'] == 'dir':
                 for path in get_child_paths(file_path):
+                    tag_path = os.path.relpath(path, archive_path)
+                    tags = filter(lambda t: t['path'].strip('/') == tag_path.strip('/'), file_tags)
+
                     manifest.append({
                         'parent_entity': entity['uuid'],
                         'corral_path': path,
-                        'rel_path': path.replace(file_path, rel_path, 1),
-                        'checksum': get_sha1_hash(path)
+                        'project_path': path.replace(file_path, rel_path, 1),
+                        'checksum': get_sha1_hash(path),
+                        'tags': [t['tagName'] for t in tags],
+                        'ffi': get_fido_output(fido_client, path)
                     })
 
             else:
+                tags = filter(lambda t: t['path'] == file['path'], file_tags)
                 manifest.append({
                     'parent_entity': entity['uuid'],
                     'corral_path': file_path,
-                    'rel_path': rel_path,
-                    'checksum': get_sha1_hash(file_path)
+                    'project_path': rel_path,
+                    'checksum': get_sha1_hash(file_path),
+                    'tags': [t['tagName'] for t in tags],
+                    'ffi': get_fido_output(fido_client, file_path)
                 })
 
     return manifest
+
+
+def get_fido_output(fido_client: Fido, file_path: str) -> str:
+    """
+    Fido methods pipe directly to stdout, so we need to redirect the output
+    to a string buffer.
+    """
+    old_stdout = sys.stdout
+    new_stdout = io.StringIO()
+    sys.stdout = new_stdout
+    try:
+        fido_client.identify_file(file_path)
+    finally:
+        sys.stdout = old_stdout
+        res = new_stdout.getvalue()
+        new_stdout.close()
+
+    return res
+
+
+def generate_manifest_experimental(project_id, version=None):
+    walk_result = walk_experimental(project_id, version=version)
+    return generate_manifest(walk_result, project_id, version)
+
+
+def upload_manifest(manifest_dict, project_id, version=None):
+    if version:
+        project_id = '{}v{}'.format(project_id, str(version))
+    fedora_root = parse.urljoin(settings.FEDORA_URL, PUBLICATIONS_CONTAINER)
+    project_root = os.path.join(fedora_root, project_id)
+    manifest_url = os.path.join(project_root, 'manifest.json')
+
+    with StringIO() as f:
+        json.dump(manifest_dict, f, ensure_ascii=False, indent=4)
+        f.seek(0)
+        headers = {'Content-Type': 'text/plain'}
+        request = requests.put(manifest_url,
+                                       auth=(settings.FEDORA_USERNAME,
+                                             settings.FEDORA_PASSWORD),
+                                       headers=headers,
+                                       data=f)
+        request.raise_for_status()
+
+def upload_manifest_experimental(project_id, version=None):
+    manifest_dict = generate_manifest_experimental(project_id, version=version)
+    return upload_manifest(manifest_dict, project_id, version)
+
 
 def generate_package(project_id):
     from zipfile import ZipFile
@@ -652,8 +789,8 @@ def generate_package(project_id):
 
     with ZipFile(archive_path, 'w') as zf:
         for file in manifest:
-            print(file['rel_path'])
-            zf.write(file['corral_path'], file['rel_path'])
+            print(file['project_path'])
+            zf.write(file['corral_path'], file['project_path'])
         zf.writestr('{}/manifest.json'.format(project_id), manifest_json)
         zf.writestr('{}/metadata.json'.format(project_id), report_json)
 
@@ -671,15 +808,18 @@ def generate_report_experimental(project_id):
         print(entity)
         entity_json = fedora_get(entity, relative_to_root=False)
         # remove fedora-specicic meta- bypassAdmin etc
-        for key in ['@context', 'created', 'createdBy', 'lastModified', 'lastModifiedBy']:
-            del entity_json[key]
-        report_json.append(entity_json)
 
         children = entity_json.get('contains', [])
         if type(children) == str:
             children = [children]
 
         for child in children:
-            entity_queue.append(child)
-
+            if not child.endswith('manifest.json'):
+                entity_queue.append(child)
+        for key in ['@type', '@context', 'created', 'createdBy', 'lastModified', 'lastModifiedBy', 'contains', '@id']:
+            try:
+                del entity_json[key]
+            except KeyError:
+                pass
+        report_json.append(entity_json)
     return report_json

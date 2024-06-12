@@ -3,7 +3,7 @@ import { map, tap, catchError } from 'rxjs/operators';
 import { takeLatestSubscriber } from './_rxjs-utils';
 
 export class FileOperationService {
-    constructor($http, $state, $rootScope, $uibModal, $q, ProjectService, Django, toastr) {
+    constructor($http, $state, $stateParams, $rootScope, $uibModal, $q, ProjectService, Django, toastr) {
         'ngInject';
         this.$state = $state;
         this.$uibModal = $uibModal;
@@ -12,6 +12,7 @@ export class FileOperationService {
         this.toastr = toastr;
         this.$rootScope = $rootScope;
         this.$http = $http;
+        this.$stateParams = $stateParams;
         this.ProjectService = ProjectService;
         this.from = from; // bind rxjs method for mocking
 
@@ -49,7 +50,7 @@ export class FileOperationService {
 
     getTests(files) {
         const externalDataStates = ['boxData', 'dropboxData', 'googledriveData'];
-        const agaveDataStates = ['myData', 'projects.view', 'projects.curation'];
+        const agaveDataStates = ['myData', 'myDataWork', 'projects.view', 'projects.curation'];
         let isHazmapper = files.length > 0 ? files.some((e) => e.name.endsWith('hazmapper')) : false;
         const tests = {
             copy: this.Django.context.authenticated && !isHazmapper && files.length > 0,
@@ -125,7 +126,7 @@ export class FileOperationService {
      * @param {string} params.system System to copy files from.
      * @param {Object[]} params.files Array of file objects {name, system, path} to copy.
      */
-    openCopyModal({ api, scheme, system, files }) {
+    openCopyModal({ api, scheme, system, files, doi }) {
         this.operations.copy.status = {};
         var modal = this.$uibModal.open({
             component: 'copyModal',
@@ -134,6 +135,7 @@ export class FileOperationService {
                 scheme: () => scheme,
                 system: () => system,
                 files: () => files,
+                doi: () => doi,
             },
             size: 'lg',
         });
@@ -154,7 +156,7 @@ export class FileOperationService {
      * @param {string} params.destPath Path of directory to copy files into.
      * @param {function} params.successCallback Callback on successful copy of all files.
      */
-    handleCopy({ srcApi, srcFiles, destApi, destSystem, destPath, successCallback }) {
+    handleCopy({ srcApi, srcFiles, destApi, destSystem, destPath, successCallback, doi}) {
         const copyParams = {
             srcApi,
             srcFiles,
@@ -162,6 +164,7 @@ export class FileOperationService {
             destSystem,
             destPath,
             successCallback,
+            doi,
         };
 
         const copyMapping = () => this.mapParamsToCopy(copyParams);
@@ -180,7 +183,7 @@ export class FileOperationService {
      * @param {Object[]} params.files Array of file objects {name, system, path} to copy.
      * @param {function} params.successCallback Callback on successful copy of all files.
      */
-    mapParamsToCopy({ srcApi, destApi, destSystem, destPath, srcFiles, successCallback }) {
+    mapParamsToCopy({ srcApi, destApi, destSystem, destPath, srcFiles, successCallback, doi }) {
         // Treat Shared Data as Agave for the purpose of copying files.
         if (srcApi === 'shared') {
             srcApi = 'agave';
@@ -193,7 +196,7 @@ export class FileOperationService {
             // Copying files between APIs requires the transfer endpoint.
             if (srcApi === destApi) {
                 const copyUrl = this.removeDuplicateSlashes(
-                    `/api/datafiles/${srcApi}/private/copy/${f.system}/${f.path}/`
+                    `/api/datafiles/${srcApi}/private/copy/${f.system}/${f.path}/?doi=${doi}`
                 );
                 copyRequest = this.$http.put(copyUrl, {
                     dest_system: destSystem,
@@ -340,13 +343,14 @@ export class FileOperationService {
      * @param {string} params.scheme Scheme (private, published, community) of files to preview.
      * @param {Object} params.file File object {name, system, path} to preview.
      */
-    openPreviewModal({ api, scheme, file }) {
+    openPreviewModal({ api, scheme, file, doi }) {
         var modal = this.$uibModal.open({
             component: 'preview',
             resolve: {
                 file: () => file,
                 api: () => api,
                 scheme: () => scheme,
+                doi: () => doi,
             },
             size: 'lg',
         });
@@ -359,9 +363,9 @@ export class FileOperationService {
      * @param {string} params.api API of current listing.
      * @param {string} params.scheme Scheme (private, published, community) of files to preview.
      */
-    getPreviewHref({ file, api, scheme }) {
+    getPreviewHref({ file, api, scheme, doi }) {
         const previewUrl = this.removeDuplicateSlashes(
-            `/api/datafiles/${api}/${scheme}/preview/${file.system}/${encodeURIComponent(file.path)}/`
+            `/api/datafiles/${api}/${scheme}/preview/${file.system}/${encodeURIComponent(file.path)}/?doi=${doi}`
         );
         switch (api) {
             case 'shared':
@@ -693,13 +697,13 @@ export class FileOperationService {
      * @param {string} params.scheme Scheme (private, published, community) of current listing.
      * @param {Object} params.files File objects ({name, system, path}) to download.
      */
-    download({ api, scheme, files }) {
+    download({ api, scheme, files, doi }) {
         if (!Array.isArray(files)) {
             files = [files];
         }
         if (api === 'agave') {
             const system = files[0].system;
-            const zipUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/download/${system}/`);
+            const zipUrl = this.removeDuplicateSlashes(`/api/datafiles/${api}/${scheme}/download/${system}/?doi=${doi}`);
             const request = this.$http
                 .put(zipUrl, { paths: files.map((f) => f.path) })
                 .then((resp) => {

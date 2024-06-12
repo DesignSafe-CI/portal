@@ -1,0 +1,307 @@
+<div class="pipeline-nav">
+    <a ng-click="$ctrl.goStart()">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goCitation()"
+            ng-disabled="$ctrl.ui.loading">
+        Continue
+    </button>
+</div>
+<div class="pipeline-page">
+    <!-- Error Messages -->
+    <div class="alert alert-danger" ng-if="$ctrl.missing.length">
+        <p class="lead" style="text-align:center;">Your Selection is Incomplete!</p>
+        <p>
+            Your selection has missing data or incomplete requirements.
+            Please review the following fields:
+        </p>
+        <div ng-repeat="entity in $ctrl.missing">
+            <div ng-if="entity.missing.length">
+                In the {{entity.type}} <strong>{{entity.title}}</strong>, the following requirements are missing or incomplete:
+                <li ng-if="entity.missing.length" ng-repeat="err in entity.missing">{{ err }}</li>
+            </div>
+        </div>
+    </div>
+    <div class="pipeline-header">
+        <h3>Version Selection</h3>
+        <ul>
+            <li>A new version of your project will be created with the information shown below.</li>
+            <li>The selected datasets will be included the the new version.</li>
+            <li>You may select additional datasets to publish with the new version.</li>
+            <li>Previously published datasets can not be excluded.</li>
+            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">curation office hours</a>.</li>
+        </ul>
+    </div>
+    <div ng-if="$ctrl.ui.loading">
+        <h3 class="text-center">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+        </h3>
+    </div>
+    <div ng-if="!$ctrl.ui.loading">
+        <!-- Project Header Start -->
+        <div class="pipeline-section">
+            <!-- Project Metadata -->
+            <prj-metadata></prj-metadata>
+        </div>
+        <!-- Published Simulations -->
+        <div ng-hide="$ctrl.ui.loading" ng-repeat="sim in $ctrl.project.simulation_set">
+            <div class="dropdown dropdown-spacer-sm" id="details-{{sim.uuid}}">
+                <div class="pipeline-selection">
+                    <div ng-if="!sim.value.dois.length">
+                        <a ng-click="$ctrl.selectEntity(sim)">Select this Simulation and all of its files</a>
+                        <span ng-if="$ctrl.selectedEnts.includes(sim)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                    </div>
+                    <div ng-if="sim.value.dois.length">
+                        <span>This Simulation is Required</span>
+                        <span><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                    </div>
+                </div>
+                <button class="btn tab-gray collapsed" data-toggle="collapse" data-target="#data-{{sim.uuid}}" style="width:100%;">
+                    <table style="width:100%" id="anchor-{{ sim.uuid }}">
+                        <tr>
+                            <td class="tab-cell">
+                                <span>Simulation | <strong>{{sim.value.title}}</strong></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <span class="curation-chevron" style="font-size: 18px;"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </button>
+                <div id="data-{{sim.uuid}}" class="collapse dropdown-spacer-lg">
+                    <div class="well">
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Simulation Type</div>
+                            <span ng-if="!$ctrl.isValid(sim.value.simulationTypeOther)" class="entity-meta-data">
+                                {{ sim.value.simulationType.replace('_', ' ') }}
+                            </span>
+                            <span ng-if="$ctrl.isValid(sim.value.simulationTypeOther)" class="entity-meta-data">
+                                {{ sim.value.simulationTypeOther }}
+                            </span>
+                        </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label-multi">Author(s)</div>
+                            <div class="entity-meta-data">
+                                <ds-author-list authors="sim.value.authors"></ds-author-list>
+                            </div>
+                        </div>
+                        <span ng-if="simulation.value.facility.name"> 
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label">Facility</div>
+                                <span class="entity-meta-data">
+                                    {{ simulation.value.facility.name }}
+                                </span>
+                            </div>
+                        </span>
+                        <div class="entity-meta-field" ng-if="sim.value.relatedWork.length">
+                            <div class="entity-meta-label-multi">Related Work</div>
+                            <div class="entity-meta-data">
+                                <div ng-repeat="work in sim.value.relatedWork track by $index">
+                                    <related-work></related-work>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="entity-meta-field" ng-if="sim.value.referencedData.length">
+                            <div class="entity-meta-label-multi">Referenced Data and Software</div>
+                            <div class="entity-meta-data">
+                                <div ng-repeat="reference in sim.value.referencedData track by $index">
+                                    <referenced-data></referenced-data>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="entity-meta-field">
+                            <div class="entity-meta-label">Date of Publication</div>
+                            <!-- TODO: Change this to make the call to DataCite for DOI publication date -->
+                            <span class="entity-meta-data">
+                                {{ sim.value.created | date:'MM-dd-yyyy' }}
+                            </span>
+                        </div>
+                        <p>
+                            <br>{{ sim.value.description }}
+                        </p>
+                        <br>
+                        <div>
+                            <!-- Simulation Reports -->
+                            <div ng-repeat="report in $ctrl.project.report_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(sim, report)">
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{report.uuid}}">
+                                    <button
+                                        class="btn collapsed tab-gray"
+                                        data-toggle="collapse"
+                                        data-target="#files-{{report.uuid}}-{{sim.uuid}}"
+                                        style="width:100%;"
+                                    >
+                                        <div class="collapse-tab">
+                                            <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>
+                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                        </div>
+                                    </button>
+                                    <div id="files-{{report.uuid}}-{{sim.uuid}}" class="collapse">
+                                        <div class="well" ng-if="report.value.description">
+                                            <p>{{ report.value.description }}</p>
+                                        </div>
+                                        <files-listing show-tags="true"
+                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                        listing="$ctrl.FileListingService.listings[report.uuid]"
+                                                        on-browse="$ctrl.onBrowse(file)">
+                                                        &nbsp;
+                                        </files-listing>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Models -->
+                            <div ng-repeat="model in $ctrl.project.model_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(sim, model)">
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{model.uuid}}">
+                                    <button class="btn collapsed tab-blue"
+                                            data-toggle="collapse"
+                                            data-target="#files-{{model.uuid}}-{{sim.uuid}}"
+                                            style="width:100%;">
+                                        <div class="collapse-tab">
+                                            <span class="collapse-tab-content-left">Simulation Model | <strong>{{model.value.title}}</strong></span>
+                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                        </div>
+                                    </button>
+                                    <div id="files-{{model.uuid}}-{{sim.uuid}}" class="collapse">
+                                        <div class="well" ng-if="model.value.description">
+                                            <p>{{ model.value.description }}</p>
+                                        </div>
+                                        <files-listing show-tags="true"
+                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                        listing="$ctrl.FileListingService.listings[model.uuid]"
+                                                        on-browse="$ctrl.onBrowse(file)">
+                                                        &nbsp;
+                                        </files-listing>
+                                    </div>
+                                </div>
+                                <!-- Inputs -->
+                                <div ng-repeat="input in $ctrl.project.input_set | orderBy: 'value.title'"
+                                    ng-if="$ctrl.matchingGroup(sim, input) && $ctrl.matchingGroup(model, input)"
+                                >
+                                    <div class="dropdown dropdown-spacer-sm"
+                                        id="details-{{input.uuid}}"
+                                        style="margin-left: 10px"
+                                    >
+                                        <table>
+                                            <tr>
+                                                <td style="padding-right: 10px;" valign="top">
+                                                    <span style="font-size: 20px; color: #1568C9">
+                                                        <i class="fa fa-level-up fa-rotate-90"></i>
+                                                    </span>
+                                                </td>
+                                                <td style="width: 100%;">
+                                                    <button class="btn collapsed tab-teal dropdown-spacer-sm"
+                                                            data-toggle="collapse"
+                                                            data-target="#files-{{input.uuid}}-{{model.uuid}}-{{sim.uuid}}"
+                                                            style="width:100%;"
+                                                    >
+                                                        <div class="collapse-tab">
+                                                            <span class="collapse-tab-content-left">Simulation Input | <strong>{{input.value.title}}</strong></span>
+                                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                                        </div>
+                                                    </button>
+                                                    <div id="files-{{input.uuid}}-{{model.uuid}}-{{sim.uuid}}" class="collapse">
+                                                        <div class="well" ng-if="input.value.description">
+                                                            <p>{{ input.value.description }}</p>
+                                                        </div>
+                                                        <files-listing show-tags="true"
+                                                                        on-scroll="$ctrl.scrollToBottom()"
+                                                                        listing="$ctrl.FileListingService.listings[input.uuid]"
+                                                                        on-browse="$ctrl.onBrowse(file)">
+                                                                        &nbsp;
+                                                        </files-listing>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <!-- Outputs -->
+                                        <div ng-repeat="output in $ctrl.project.output_set | orderBy: 'value.title'"
+                                            ng-if="$ctrl.matchingGroup(sim, output) && $ctrl.matchingGroup(model, output) && $ctrl.matchingGroup(input, output)"
+                                        >
+                                            <div class="dropdown dropdown-spacer-sm"
+                                                id="details-{{output.uuid}}"
+                                                style="margin-left: 30px"
+                                            >
+                                                <table>
+                                                    <tr>
+                                                        <td style="padding-right: 10px" valign="top">
+                                                            <span style="font-size: 20px; color: #43A59D">
+                                                                <i class="fa fa-level-up fa-rotate-90"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td style="width: 100%;">
+                                                            <button class="btn collapsed tab-yellow"
+                                                                    data-toggle="collapse"
+                                                                    data-target="#files-{{output.uuid}}-{{input.uuid}}-{{model.uuid}}-{{sim.uuid}}"
+                                                                    style="width:100%;">
+                                                                <div class="collapse-tab">
+                                                                    <span class="collapse-tab-content-left">Simulation Output | <strong>{{output.value.title}}</strong></span>
+                                                                    <span class="collapse-tab-content-right curation-chevron"></span>
+                                                                </div>
+                                                            </button>
+                                                            <div id="files-{{output.uuid}}-{{input.uuid}}-{{model.uuid}}-{{sim.uuid}}" class="collapse">
+                                                                <div class="well" ng-if="output.value.description">
+                                                                    <p>{{ output.value.description }}</p>
+                                                                </div>
+                                                                <files-listing show-tags="true"
+                                                                                on-scroll="$ctrl.scrollToBottom()"
+                                                                                listing="$ctrl.FileListingService.listings[output.uuid]"
+                                                                                on-browse="$ctrl.onBrowse(file)">
+                                                                                &nbsp;
+                                                                </files-listing>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <!-- Outputs End -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Inputs End -->
+                            </div>
+                            <!-- Models -->
+                            <!-- Analysis -->
+                            <div ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: 'value.title'" ng-if="$ctrl.matchingGroup(sim, analysis)">
+                                <div class="dropdown dropdown-spacer-sm" id="details-{{analysis.uuid}}">
+                                    <button 
+                                        class="btn collapsed tab-light-blue" 
+                                        data-toggle="collapse" 
+                                        data-target="#files-{{analysis.uuid}}-{{sim.uuid}}" 
+                                        style="width:100%;"
+                                    >
+                                        <div class="collapse-tab">
+                                            <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
+                                            <span class="collapse-tab-content-right curation-chevron"></span>
+                                        </div>
+                                    </button>
+                                    <div id="files-{{analysis.uuid}}-{{sim.uuid}}" class="collapse">
+                                        <div class="well" ng-if="analysis.value.refs && analysis.value.description">
+                                            <table class="tg" style="table-layout: fixed; width: 100%;">
+                                                <colgroup>
+                                                    <col style="width: 15%">
+                                                    <col style="width: 84%">
+                                                </colgroup>
+                                                <tr ng-repeat="ref in analysis.value.refs">
+                                                    <td class="tg-0lax" ng-if="$first">Referenced Work</td>
+                                                    <td class="tg-0lax" ng-if="!$first"></td>
+                                                    <td class="tg-0lax"><strong><a href="{{ ref.referencedoi }}" rel="noopener noreferrer" target=”_blank”>{{ ref.reference }}</a></strong></td>
+                                                </tr>
+                                            </table>
+                                            <p ng-if="analysis.value.description">{{ analysis.value.description }}</p>
+                                            <files-listing show-tags="true"
+                                                            on-scroll="$ctrl.scrollToBottom()"
+                                                            listing="$ctrl.FileListingService.listings[analysis.uuid]"
+                                                            on-browse="$ctrl.onBrowse(file)">
+                                                            &nbsp;
+                                            </files-listing>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

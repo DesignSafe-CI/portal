@@ -5,21 +5,22 @@
         ( <span ng-bind-html="match.label.email | uibTypeaheadHighlight:query"></span> )
     </a>
 </script>
-<div class="modal-header" style="background: #e6e6e6;">
-    <h4 class="modal-title" style="border:none;">
+<div class="modal-header manage-prj-header">
+    <h4 class="modal-title">
         <span>Amend Project</span>
         <span class="pull-right" ng-click="$ctrl.close()">
-            <i class="fa fa-times"></i>
+            <i role="none" class="fa fa-times"></i>
         </span>
     </h4>
 </div>
 <div class="modal-body" style="padding: 30px;">
     <div ng-if="$ctrl.ui.loading">
         <h3 class="text-center">
-            <i class="fa fa-spinner fa-spin"></i> Loading...
+            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <form name="projForm" autocomplete="off" ng-if="!$ctrl.ui.loading">
+        <input autocomplete="false" name="hidden" type="text" style="display:none;">
         <!-- Amend Project Section -->
         <div>
             <!-- Natural Hazard Type -->
@@ -62,7 +63,7 @@
                 </button>
             </div>
             <!-- Project Other Data Types -->
-            <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.form.projectType === 'other'">
+            <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
                 <label class="label-form">
                     <div>
                         <span class="label-form-name">Data Type</span>
@@ -88,71 +89,119 @@
                     />
                 </div>
             </div>
-            <!-- Project Awards -->
-            <div class="form-group" style="width:100%; display:inline-block;">
-                <table class="tg" style="table-layout: fixed; width: 100%;">
+            <!-- Project Other Facility -->
+            <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
+                <label class="label-form">
+                    <div>
+                        <span class="pull-left" style="margin-right: 5px">Facility</span>
+                    </div>
+                </label>
+                <select class="form-control"
+                ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
+                ng-model="$ctrl.form.facility">
+                <option value="">-- Select a Facility --</option>
+                </select>
+                <input  class="form-control"
+                        type="text"
+                        placeholder="Custom Facility"
+                        ng-model="$ctrl.form.facilityOther"
+                        ng-if="$ctrl.form.facility == 'other'"/>
+            </div>
+            <!-- Project Referenced Data -->
+            <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
+                <table class="manage-prj-table">
                     <colgroup>
-                        <col style="width: 70%">
-                        <col style="width: 28%">
+                        <col style="width: 60%">
+                        <col style="width: 38%">
+                        <col style="width: 2%">
                     </colgroup>
                     <tr>
-                        <label for="id-project-awards">
+                        <label for="id-project-referenced-data">
                             <div class="label-form">
                                 <div>
-                                    <span class="label-form-name">Award Info</span>
+                                    <span class="label-form-name">Referenced Data and Software</span>
                                 </div>
                                 <span class="label-form-desc">
-                                    Recommended for funded projects.
+                                    Published data used in the creation of this dataset.
                                 </span>
                             </div>
                         </label>
                     </tr>
                     <tr>
-                        <td class="tg-0lax">
-                            Award Name
+                        <td>
+                            Title
                         </td>
-                        <td class="tg-0lax">
-                            Award Number
+                        <td>
+                            URL or DOI for the referenced data, in URL format
                         </td>
                     </tr>
-                    <tr ng-repeat="award in $ctrl.form.awardNumber | orderBy:'order' track by $index">
-                        <td class="tg-0lax">
+                    <tr ng-repeat="reference in $ctrl.form.referencedData track by $index">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
-                                    id="id_awardName"
-                                    name="awardName"
-                                    style="width:94%;"
-                                    ng-model="award.name">
+                                    id="reference-name{{$index}}"
+                                    name="reference-name"
+                                    ng-model="reference.title"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData"
+                                    required>
                         </td>
-                        <td class="tg-0lax">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
-                                    id="id_awardNumber"
-                                    name="awardNumber"
-                                    style="width:100%;"
-                                    ng-model="award.number">
+                                    id="reference-href{{$index}}"
+                                    name="reference-href-type"
+                                    placeholder="https://"
+                                    ng-model="reference.doi"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <input type="radio"
+                                    id="reference-href-type-doi{{$index}}"
+                                    name="reference-href-type{{$index}}"
+                                    value="DOI"
+                                    ng-model="reference.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <label for="DOI">DOI</label>
+                            <input type="radio"
+                                    id="reference-href-type-url{{$index}}"
+                                    name="reference-href-type{{$index}}"
+                                    value="URL"
+                                    ng-model="reference.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <label for="URL">URL</label>
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-if="$ctrl.ui.require.referencedData"
+                                    ng-click="$ctrl.dropObjField('referencedData', $index)">
+                                <i role="none" class="fa fa-times"></i>
+                            </button>
                         </td>
                     </tr>
                 </table>
                 <div>
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.addAwardField($ctrl.form.awardNumber)">
-                            &#x2b; Add another Award
+                            ng-click="$ctrl.addObjField('referencedData')">
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Referenced Data/Software
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.dropField($ctrl.form.awardNumber, true)"
-                            ng-disabled="$ctrl.checkEmpty($ctrl.form.awardNumber)">
-                            &#x2212; Remove Award
+                            ng-click="$ctrl.dropObjField('referencedData')"
+                            ng-disabled="!$ctrl.ui.require.referencedData">
+                            &#x2212; Remove Referenced Data/Software
                     </button>
                 </div>
             </div>
             <!-- Related Works -->
-            <div class="form-group" style="width:100%; display:inline-block;">
-                <table class="tg" style="table-layout: fixed; width: 100%;">
+            <div class="form-group" ng-if="$ctrl.form.projectType === 'other'">
+                <table class="manage-prj-table">
                     <colgroup>
-                        <col style="width: 48%">
-                        <col style="width: 50%">
+                        <col style="width: 20%">
+                        <col style="width: 40%">
+                        <col style="width: 38%">
+                        <col style="width: 2%">
                     </colgroup>
                     <tr>
                         <label for="id-project-works">
@@ -161,137 +210,197 @@
                                     <span class="label-form-name">Related Work</span>
                                 </div>
                                 <span class="label-form-desc">
-                                    Other projects, publications, or datasets related to this project.
+                                    Information giving context, a linked dataset on DesignSafe, or works citing the DOI for this dataset.
                                 </span>
                             </div>
                         </label>
                     </tr>
                     <tr>
-                        <td class="tg-0lax">
+                        <td>
+                            Type
+                        </td>
+                        <td>
                             Title
                         </td>
-                        <td class="tg-0lax" valign="top">
-                            Related Work DOI or URL
+                        <td valign="top">
+                            URL or DOI for the related work, in URL format
                         </td>
                     </tr>
-                    <tr ng-repeat="work in $ctrl.form.associatedProjects | orderBy:'order' track by $index">
-                        <td class="tg-0lax">
-                            <input  class="project-form-input"
-                                    type="text"
-                                    id="id_workTitle"
-                                    name="workTitle"
-                                    style="width:94%;"
-                                    ng-model="work.title">
+                    <tr ng-repeat="work in $ctrl.form.associatedProjects track by $index">
+                        <td class="manage-prj-td align-top">
+                            <select class="project-form-input"
+                                    id="work-type{{$index}}"
+                                    name="related-work"
+                                    ng-options="item for item in $ctrl.relatedWorkTypes"
+                                    ng-model="work.type"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
+                                    <option value="">-- Type --</option>
+                            </select>
                         </td>
-                        <td class="tg-0lax">
+                        <td class="manage-prj-td align-top">
                             <input  class="project-form-input"
                                     type="text"
-                                    id="id_workHref"
-                                    name="workHref"
-                                    style="width:100%;"
-                                    ng-model="work.href">
+                                    id="work-title{{$index}}"
+                                    name="related-work"
+                                    ng-model="work.title"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
+                        </td>
+                        <td class="manage-prj-td align-top">
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="work-href{{$index}}"
+                                    name="related-work"
+                                    placeholder="https://"
+                                    ng-model="work.href"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
+                            <input type="radio"
+                                    id="work-href-type-doi{{$index}}"
+                                    name="related-work{{$index}}"
+                                    value="DOI"
+                                    ng-model="work.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
+                            <label for="DOI">DOI</label>
+                            <input type="radio"
+                                    id="work-href-type-url{{$index}}"
+                                    name="related-work{{$index}}"
+                                    value="URL"
+                                    ng-model="work.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.associatedProjects"
+                                    ng-required="$ctrl.ui.require.associatedProjects">
+                            <label for="URL">URL</label>
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-if="$ctrl.ui.require.associatedProjects"
+                                    ng-click="$ctrl.dropUserField('associatedProjects', $index)">
+                                <i role="none" class="fa fa-times"></i>
+                            </button>
                         </td>
                     </tr>
                 </table>
                 <div>
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.addWorkField($ctrl.form.associatedProjects)">
-                            &#x2b; Add another Related Work
+                            ng-click="$ctrl.addObjField('associatedProjects')">
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.associatedProjects">another</span> Related Work
                     </button>
                     |
                     <button class="btn-project-add-rm"
-                            ng-click="$ctrl.dropField($ctrl.form.associatedProjects, true)"
-                            ng-disabled="$ctrl.checkEmpty($ctrl.form.associatedProjects)">
+                            ng-click="$ctrl.dropObjField('associatedProjects')"
+                            ng-disabled="!$ctrl.ui.require.associatedProjects">
                             &#x2212; Remove Related Work
                     </button>
                 </div>
             </div>
-            <!-- FR Fields -->
-            <div ng-if="$ctrl.form.projectType === 'field_recon'">
-                <div style="width: 100%;">
-                    <!-- Event -->
-                    <div style="width:45%; display:inline-block;" class="pull-left form-group">
-                        <label for="id-nh-event">
-                            <span class="pull-left">Event</span>
-                            <span class="label label-danger" style="margin-left: 5px">Required</span>
-                            <br>
-                            <span style="font-weight:normal;">
-                                Name given to the event (ex. Hurricane Katrina)
-                            </span>
+            <!-- NH Fields -->
+            <div class="form-group">
+                <table class="manage-prj-table">
+                    <colgroup>
+                        <col style="width: 60%">
+                        <col style="width: 20%">
+                        <col style="width: 20%">
+                    </colgroup>
+                    <tr>
+                        <label for="id-project-events">
+                            <div class="label-form">
+                                <div>
+                                    <span class="label-form-name">Event</span>
+                                </div>
+                                <span class="label-form-desc">
+                                    Details related to a specific event such as a natural hazard (ex. Hurricane Katrina).
+                                </span>
+                            </div>
                         </label>
-                        <input class="project-form-input"
-                                type="text"
-                                id="id-nh-event"
-                                name="nh-event"
-                                style="width:100%"
-                                ng-model="$ctrl.form.nhEvent"
-                                ng-required="true"/>
-                    </div>
-                    <!-- Event Dates -->
-                    <div style="width:50%;" class="form-group">
-                        <label for="id-nh-event-date">
-                            <span class="pull-left">Event Date(s)</span>
-                            <span class="label label-danger" style="margin-left: 5px">Required</span>
-                            <br>
-                            <span style="font-weight:normal;">
-                                If you only want to enter a single date, fill in the first field.
-                            </span>
-                        </label>
-                        <div style="display:flex;">
-                            <input  class="form-control"
+                    </tr>
+                    <tr>
+                        <td>
+                            Event Name
+                        </td>
+                        <td>
+                            Start Date
+                        </td>
+                        <td>
+                            End Date (optional)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input"
+                                    type="text"
+                                    id="id-nh-event"
+                                    name="nh-event"
+                                    ng-model="$ctrl.form.nhEvent"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents"/>
+                        </td>
+                        <td class="manage-prj-td">
+                            <input  class="project-form-input"
                                     type="date"
                                     ng-model="$ctrl.form.nhEventStart"
-                                    ng-required="true">
-                            <span style="padding:6px;">&#8213;</span>
-                            <input  class="form-control"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents">
+                        </td>
+                        <td class="manage-prj-td">
+                            <input  class="project-form-input"
                                     type="date"
                                     ng-model="$ctrl.form.nhEventEnd"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
                                     ng-required="false">
-                        </div>
-                    </div>
-                </div>
-                <!-- Event Location -->
-                <div class="form-group">
-                    <label for="id-location">
-                        <div class="label-form">
-                            <div>
-                                <span class="label-form-name pull-left">Event Location</span>
-                                <span class="label label-danger">Required</span>
-                            </div>
-                        </div>
-                    </label>
-                    <div>
-                        <div style="width: 55%; display:inline-block;">
-                            <label for="id-location" class="label-secondary">
-                                Location
-                            </label>
-                            <input type="text"
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Location
+                        </td>
+                        <td>
+                            Latitude
+                        </td>
+                        <td>
+                            Longitude
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input"
+                                    type="text"
                                     id="id-location"
                                     ng-model="$ctrl.form.nhLocation"
-                                    ng-required="true"
-                                    class="form-control"/>
-                        </div>
-                        <div style="width: 21%; display:inline-block; margin-left:5px;">
-                            <label for="id-location" class="label-secondary">
-                                Latitude
-                            </label>
-                            <input type="text"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents"/>
+                        </td>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input"
+                                    type="text"
                                     id="id-latitude"
                                     ng-model="$ctrl.form.nhLatitude"
-                                    ng-required="true"
-                                    class="form-control"/>
-                        </div>
-                        <div style="width: 21%; display:inline-block; margin-left:5px;">
-                            <label for="id-location" class="label-secondary">
-                                Longitude
-                            </label>
-                            <input type="text"
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents"/>
+                        </td>
+                        <td class="manage-prj-td">
+                            <input class="project-form-input"
+                                    type="text"
                                     id="id-longitude"
                                     ng-model="$ctrl.form.nhLongitude"
-                                    ng-required="true"
-                                    class="form-control" />
-                        </div>
-                    </div>
+                                    ng-disabled="!$ctrl.ui.require.nhEvents"
+                                    ng-required="$ctrl.ui.require.nhEvents"/>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.ui.require.nhEvents = !$ctrl.ui.require.nhEvents"
+                            ng-disabled="$ctrl.ui.require.nhEvents">
+                            &#x2b; Add Event
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropEvent()"
+                            ng-disabled="!$ctrl.ui.require.nhEvents">
+                            &#x2212; Remove Event
+                    </button>
                 </div>
             </div>
             <!-- Project Keywords -->
@@ -310,14 +419,13 @@
                 <div>
                     <input  class="project-form-input"
                             type="text"
-                            style="width:100%;"
                             id="id_keywords"
                             ng-model="$ctrl.form.keywords"
                             ng-required="$ctrl.project && $ctrl.ui.hasType"><br>
                 </div>
             </div>
             <!-- Project Description -->
-            <div class="form-group" style="width:100%; display:inline-block;">
+            <div class="form-group">
                 <label for="id-project-description">
                     <div class="label-form">
                         <div>
@@ -327,30 +435,37 @@
                         <span class="label-form-desc">
                             Make sure this is understandable to a wider audience.
                             Answer questions such as what, how, and why. Define all acronyms.
+
+                            Description must be between 50 and 5000 characters in length.
                         </span>
                     </div>
                 </label>
                 <div>
                     <textarea type="text"
-                              style="width:100%; height:3em; resize: vertical;"
+                              class="form-textbox"
                               id="id_description"
                               ng-model="$ctrl.form.description"
+                              ng-minlength="50"
+                              ng-maxlength="5000"
                     >
                     </textarea>
+                    <span ng-if="projForm.$error.minlength[0].$invalid || projForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                        Description length is invalid 
+                    </span>
                 </div>
             </div>
         </div>
         <!-- update, save, and help buttons -->
         <div class="form-group">
-            <table class="tg" style="table-layout: fixed; width: 100%; margin-top:20px;">
+            <table class="manage-prj-table">
                 <colgroup>
-                    <col style="width: 48%">
+                    <col style="width: 50%">
                     <col style="width: 50%">
                 </colgroup>
                 <tr style="height: 40px;">
-                    <td class="tg-0lax" valign="center">
+                    <td valign="center">
                     </td>
-                    <td class="tg-0lax" valign="center" style="text-align: right;">
+                    <td valign="center" style="text-align: right;">
                         <div ng-if="!$ctrl.ui.loading">
                             <button class="btn btn-add"
                                     type="submit"
@@ -361,7 +476,7 @@
                         </div>
                         <div>
                             <span ng-if="$ctrl.ui.loading">
-                                <i class="fa fa-spinner fa-spin"></i>
+                                <i role="none" class="fa fa-spinner fa-spin"></i>
                                 Saving project...
                             </span>
                         </div>

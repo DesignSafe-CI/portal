@@ -3,13 +3,13 @@ import PipelineSubEntityExpTemplate from './pipeline-sub-entity-exp.template.htm
 import PipelineSubEntitySimTemplate from './pipeline-sub-entity-sim.template.html';
 import PipelineSubEntityHybSimTemplate from './pipeline-sub-entity-hyb-sim.template.html';
 import PipelineSubEntityFieldTemplate from './pipeline-sub-entity-field.template.html';
+import facilityData from '../../../../projects/components/facility-data.json';
+
 
 class PipelineSubEntityCtrl {
 
-    constructor(ProjectEntitiesService, ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
+    constructor(ProjectService, FileListingService, FileOperationService, $uibModal, $state, $q) {
         'ngInject';
-
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.browser = {}
         this.FileListingService = FileListingService;
@@ -33,6 +33,7 @@ class PipelineSubEntityCtrl {
         };
         this.ui = {
             loading: true,
+            efs: facilityData.facility,
         };
 
 
@@ -91,6 +92,23 @@ class PipelineSubEntityCtrl {
         }
     }
 
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.efs.facilities_list;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
+        }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+
     ordered(parent, entities) {
         let order = (ent) => {
             if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
@@ -137,7 +155,6 @@ class PipelineSubEntityCtrl {
         this.$uibModal.open({
             component: this.modalName,
             resolve: {
-                browser: () => this.browser,
                 project: () => this.browser.project,
                 edit: () => selection,
             },

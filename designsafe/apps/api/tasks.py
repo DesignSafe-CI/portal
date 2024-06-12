@@ -7,8 +7,9 @@ import json
 import urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 from celery import shared_task
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
+from pytas.models import User as TASUser
 from django.conf import settings
 from requests.exceptions import HTTPError
 
@@ -16,6 +17,7 @@ from designsafe.apps.api.notifications.models import Notification, Broadcast
 from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
+from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
 from designsafe.apps.data.tasks import agave_indexer
 from elasticsearch_dsl.query import Q
@@ -23,6 +25,8 @@ from elasticsearch.helpers import bulk
 from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
+
+django_user_model = get_user_model()
 
 @shared_task(bind=True)
 def box_download(self, username, src_resource, src_file_id, dest_resource, dest_file_id):
@@ -467,20 +471,41 @@ def index_projects_listing(projects):
 
         project_dict = dict(_project)
         project_dict = {key: value for key, value in project_dict.items() if key != '_links'}
+
+        pi_id = project_dict['value'].get('pi', None)
+        coPis_id = project_dict['value'].get('coPis',[])
+        team_members = project_dict['value'].get('teamMembers',[])
+
+        if not project_dict['value'].get('users', None):
+            users = coPis_id + team_members
+            if pi_id:
+                users.append(pi_id)
+            user_list = []
+            for user in users: 
+                try:
+                    user_profile = django_user_model.objects.get(username=user)
+                    user_list.append(user_profile.last_name)
+                    user_list.append(user_profile.first_name)
+                except (django_user_model.DoesNotExist, AttributeError):
+                    continue
+            project_dict['value']['authors'] = user_list
+
         award_number = project_dict['value'].get('awardNumber', []) 
         if not isinstance(award_number, list):
-            award_number = [{'number': project_dict['value']['awardNumber'] }]
+            award_number = [{'number': project_dict['value']['awardNumber']}]
         if not all(isinstance(el, dict) for el in award_number):
             # Punt if the list items are some type other than dict.
             award_number = []
         project_dict['value']['awardNumber'] = award_number
 
-        if project_dict['value'].get('guestMembers', []) == [None]:
-            project_dict['value']['guestMembers'] = []
-        if project_dict['value'].get('nhEventStart', []) == '':
-            project_dict['value']['nhEventStart'] = None
-        if project_dict['value'].get('nhEventEnd', []) == '':
-            project_dict['value']['nhEventEnd'] = None
+        project_dict['value'].pop('nhEventStart', None)
+        project_dict['value'].pop('fileObjs', None)
+        project_dict['value'].pop('project', None)
+        project_dict['value'].pop('nhEventEnd', None)
+        project_dict['value'].pop('referencedData', None)
+        project_dict['value'].pop('relatedFiles', None)
+        project_dict['value'].pop('hazmapperMaps', None)
+        project_dict['value'].pop('guestMembers', None)
 
         ops.append({
             '_index': idx,
@@ -538,13 +563,13 @@ def reindex_projects(self):
 def copy_publication_files_to_corral(self, project_id, revision=None, selected_files=None):
     """
     Takes a project ID and copies project files to a published directory.
-    
+
     :param str project_id: Project ID
     :param int revision: The revision number of the publication
     :param list of selected_files strings: Only provided if project type == other.
     """
-    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-    import shutil
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+        return
 
     es_client = new_es_client()
     publication = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
@@ -607,14 +632,12 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
     os.chmod(prefix_dest, 0o555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
 
-    # Only save to fedora while in prod
-    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') in ['default', 'staging']:
-        save_to_fedora.apply_async(args=[project_id, revision])
+    save_to_fedora.apply_async(args=[project_id, revision])
 
     index_path = '/' + project_id
     if revision:
-        index_path += 'r{}'.format(revision)
-    agave_indexer.apply_async(kwargs={'username': 'ds_admin', 'systemId': 'designsafe.storage.published', 'filePath': index_path, 'recurse':True}, queue='indexing')
+        index_path += 'v{}'.format(revision)
+    agave_indexer.apply_async(kwargs={'systemId': 'designsafe.storage.published', 'filePath': index_path, 'recurse':True}, queue='indexing')
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
@@ -638,7 +661,7 @@ def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None, 
 
 
 @shared_task(bind=True, max_retries=1, default_retry_delay=60)
-def amend_publication_data(self, project_id, authors=None, revision=None):
+def amend_publication_data(self, project_id, amendments=None, authors=None, revision=None):
     """Amend publication.
 
     This task will update the published metadata in Elasticsearch and DataCite
@@ -647,11 +670,24 @@ def amend_publication_data(self, project_id, authors=None, revision=None):
     :param list of entity_uuid strings: Main entity uuid.
     """
     from designsafe.apps.projects.managers import publication as PublicationManager
-    from designsafe.libs.fedora.fedora_operations import amend_project_fedora
+    from designsafe.libs.fedora.fedora_operations import amend_project_fedora, ingest_project_experimental
+    from designsafe.libs.fedora.sim_operations import ingest_project_sim
+    from designsafe.libs.fedora.fr_operations import ingest_project_fr
+    from designsafe.libs.fedora.hyb_sim_operations import ingest_project_hyb_sim
     try:
-        amended_pub = PublicationManager.amend_publication(project_id, authors, revision)
+        amended_pub = PublicationManager.amend_publication(project_id, amendments, authors, revision)
         PublicationManager.amend_datacite_doi(amended_pub)
-        amend_project_fedora(project_id, version=revision)
+
+        if amended_pub.project.value.projectType == 'other':
+           amend_project_fedora(project_id, version=revision)
+        if amended_pub.project.value.projectType == 'experimental':
+            ingest_project_experimental(project_id, version=revision, amend=True)
+        if amended_pub.project.value.projectType == 'simulation':
+            ingest_project_sim(project_id, version=revision, amend=True)
+        if amended_pub.project.value.projectType == 'hybrid_simulation':
+            ingest_project_hyb_sim(project_id, version=revision, amend=True)
+        if amended_pub.project.value.projectType == 'field_recon':
+            ingest_project_fr(project_id, version=revision, amend=True)
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
         raise self.retry(exc=exc)
@@ -744,41 +780,22 @@ def save_to_fedora(self, project_id, revision=None):
            from designsafe.libs.fedora.fedora_operations import ingest_project
            ingest_project(project_id, version=revision)
            return
-
-        _root = os.path.join('/corral-repl/tacc/NHERI/published', project_id)
-        fedora_base = 'http://fedoraweb01.tacc.utexas.edu:8080/fcrepo/rest/publications_01'
-        res = requests.get(fedora_base)
-        if res.status_code == 404 or res.status_code == 410:
-            requests.put(fedora_base)
-
-        fedora_project_base = ''.join([fedora_base, '/', project_id])
-        res = requests.get(fedora_project_base)
-        if res.status_code == 404 or res.status_code == 410:
-            requests.put(fedora_project_base)
-
-        headers = {'Content-Type': 'text/plain'}
-        #logger.debug('walking: %s', _root)
-        for root, dirs, files in os.walk(_root):
-            for name in files:
-                mime = magic.Magic(mime=True)
-                headers['Content-Type'] = mime.from_file(os.path.join(root, name))
-                #files
-                full_path = os.path.join(root, name)
-                _path = full_path.replace(_root, '', 1)
-                _path = _path.replace('[', '-')
-                _path = _path.replace(']', '-')
-                url = ''.join([fedora_project_base, urllib.parse.quote(_path)])
-                #logger.debug('uploading: %s', url)
-                with open(os.path.join(root, name), 'rb') as _file:
-                    requests.put(url, data=_file, headers=headers)
-
-            for name in dirs:
-                #dirs
-                full_path = os.path.join(root, name)
-                _path = full_path.replace(_root, '', 1)
-                url = ''.join([fedora_project_base, _path])
-                #logger.debug('creating: %s', _path)
-                requests.put(url)
+        if pub.project.value.projectType == 'experimental':
+            from designsafe.libs.fedora.fedora_operations import ingest_project_experimental
+            ingest_project_experimental(project_id, version=revision)
+            return
+        if pub.project.value.projectType == 'simulation':
+            from designsafe.libs.fedora.sim_operations import ingest_project_sim
+            ingest_project_sim(project_id, version=revision)
+            return
+        if pub.project.value.projectType == 'hybrid_simulation':
+            from designsafe.libs.fedora.hyb_sim_operations import ingest_project_hyb_sim
+            ingest_project_hyb_sim(project_id, version=revision)
+            return
+        if pub.project.value.projectType == 'field_recon':
+            from designsafe.libs.fedora.fr_operations import ingest_project_fr
+            ingest_project_fr(project_id, version=revision)
+            return
 
     except Exception as exc:
         logger.error('Proj Id: %s. %s', project_id, exc)
@@ -868,10 +885,10 @@ def email_user_publication_request_confirmation(self, username):
     email_subject = 'Your DesignSafe Publication Request Has Been Issued'
     email_body = """
     <p>Depending on the size of your data, the publication might take a few minutes or a couple of hours to appear in the <a href=\"{pub_url}\">Published Directory.</a></p>
-    <p>During this time, check-in to see if your publication appears. 
+    <p>During this time, check-in to see if your publication appears.
     If your publication does not appear, is incomplete, or does not have a DOI, <a href=\"{ticket_url}\">please submit a ticket.</a></p>
     <p><strong>Do not</strong> attempt to republish by clicking Request DOI & Publish again.</p>
-    <p>This is a programmatically generated message. <strong>Do NOT</strong> reply to this message. 
+    <p>This is a programmatically generated message. <strong>Do NOT</strong> reply to this message.
     If you have any feedback or questions, please feel free to <a href=\"{ticket_url}\">submit a ticket.</a></p>
     """.format(pub_url="https://www.designsafe-ci.org/data/browser/public/", ticket_url="https://www.designsafe-ci.org/help/new-ticket/")
     try:
@@ -885,3 +902,91 @@ def email_user_publication_request_confirmation(self, username):
             [user.email],
             html_message=email_body
         )
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=60)
+def check_published_files(self, project_id, revision=None, selected_files=None):
+
+    # do not attempt to check for files for local publication attempts
+    if getattr(settings, 'DESIGNSAFE_ENVIRONMENT', 'dev') == 'dev':
+        return
+
+    #get list of files that should be in the publication
+    es_client = new_es_client()
+    publication = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
+    if selected_files:
+        #it's type other, use this for comparison
+        filepaths = selected_files
+    else:
+        filepaths = publication.related_file_paths()
+
+    #empty dirs
+    missing_files = []
+    existing_files = []
+    empty_folders = []
+
+    #strip leading forward slash from file paths
+    updated_filepaths = [
+            file_path.strip('/') for file_path in filepaths if (file_path != '.Trash')
+        ]
+
+    pub_directory = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
+    if revision:
+        pub_directory += 'v{}'.format(revision)
+
+    #navigate through publication files paths and
+    #compare to the previous list of files
+    for pub_file in updated_filepaths:
+        file_to_check = os.path.join(pub_directory, pub_file)
+        try:
+            if os.path.isfile(file_to_check):
+                existing_files.append(pub_file)
+            elif os.path.isdir(file_to_check):
+                #check directory for items in it
+                dir_list = os.listdir(file_to_check)
+                if dir_list != []:
+                    existing_files.append(pub_file)
+                else:
+                    empty_folders.append(pub_file)
+            else:
+                missing_files.append(pub_file)
+        except OSError as exc:
+            logger.info(exc)
+
+    #send email if there are files/folders missing/empty
+    if(missing_files or empty_folders):
+        #log for potential later queries
+        logger.info("check_published_files missing files: " + project_id + " " + str(missing_files))
+        logger.info("check_published_files empty folders: " + project_id + " " + str(empty_folders))
+
+        #send email to dev admins
+        service = get_service_account_client()
+        prj_admins = settings.DEV_PROJECT_ADMINS_EMAIL
+        for admin in prj_admins:
+            email_body = """
+                <p>Hello,</p>
+                <p>
+                    The following project has been published with either missing files/folders or empty folders:
+                    <br>
+                    <b>{prjID} - revision {revision}</b>
+                    <br>
+                    Path to publication files: {pubFiles}
+                </p>
+                <p>
+                    These are the missing files/folders for this publication:
+                    <br>
+                    {missingFiles}
+                </p>
+                <p>
+                    These are the empty folders for this publication:
+                    <br>
+                    {emptyFolders}
+                </p>
+                This is a programmatically generated message. Do NOT reply to this message.
+                """.format(pubFiles=pub_directory, prjID=project_id, missingFiles=missing_files, emptyFolders = empty_folders,revision=revision)
+
+            send_mail(
+                "DesignSafe Alert: Published Project has missing files/folders",
+                email_body,
+                settings.DEFAULT_FROM_EMAIL,
+                [admin],
+                html_message=email_body)

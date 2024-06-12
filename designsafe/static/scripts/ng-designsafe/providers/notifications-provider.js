@@ -25,7 +25,6 @@ function NotificationService(
      * @return {string} url
      */
     function renderLink(msg) {
-        console.log('rendering link?')
         const eventType = msg.event_type.toLowerCase();
         let url = '';
         if (typeof processors[eventType] !== 'undefined' &&
@@ -120,6 +119,10 @@ function NotificationService(
      * @param {Object} msg
      */
     function processToastr(e, msg) {
+        if (msg.event_type === 'job' || msg.event_type ==='WEB' || msg.event_type === 'interactive_session_ready') {
+            return;
+        }
+
         try {
             // msg.extra = JSON.parse(msg.extra);
             msg.extra = (typeof msg.extra === 'string') ? JSON.parse(msg.extra) : msg.extra;

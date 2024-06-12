@@ -4,6 +4,10 @@
   "description": "",
   "private": true,
   "main": "manage.py",
+  "engines": {
+   "node": "~16.20.2",
+   "npm": "~8.19.4"
+ },
   "scripts": {
     "test": "./node_modules/.bin/karma start karma.conf.js --single-run",
     "report-coverage": "./node_modules/.bin/codecov",
@@ -21,7 +25,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.0",
     "elasticdump": "^3.3.7",
-    "eslint": "^7.2.0",
+    "eslint": "^6.0.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.7.0",
     "eslint-config-standard": "^14.1.0",

@@ -2,6 +2,10 @@ import _ from 'underscore';
 import FilesListingTemplate from './files-listing.template.html';
 import PublicationsListingTemplate from './publications-listing.template.html';
 import PublicationsLegacyListingTemplate from './publications-legacy-listing.template.html';
+const exptJson = require('../../../projects/components/facility-data.json');
+const { simulationTypes } = require('../../../projects/components/manage-simulations/simulation-types.json');
+const { nhTypes, frTypes } = require('../../../projects/components/manage-project/project-form-options.json');
+const { otherTypes } = require('../../../projects/components/manage-project/project-form-options.json');
 
 class PublicationListingCtrl {
     constructor($state, PublicationService, $stateParams, $uibModal){
@@ -11,7 +15,159 @@ class PublicationListingCtrl {
         this.$stateParams = $stateParams;
         this.$uibModal = $uibModal;
     }
+    $onInit() {
+        this.experimentOptions = exptJson;
+        this.experimentFacilityOptions = [
+            { name: '', label: 'All Types' },
+            ...exptJson.facility.facilities_list.map(({ label }) => ({ name: label, label: label })),
+        ];
+        this.facilityOptions = [{name: '', label: 'All Facilities'}, ...exptJson.facility.facilities_list]
+        this.simulationTypes = [{ name: '', label: 'All Types' }, ...simulationTypes];
 
+        this.rapidEventTypes = nhTypes.map((type) => ({ name: type, label: type }));
+        this.rapidEventTypes = [{ name: '', label: 'All Types' }, ...this.rapidEventTypes];
+
+        this.frTypes = frTypes.filter(t => t !== 'Something Else').map((type) => ({ name: type, label: type }));
+        this.frTypes = [{ name: '', label: 'All Types' }, ...this.frTypes];
+
+        this.otherTypes = otherTypes.map((type) => ({ name: type, label: type }));
+        this.otherTypes = [{ name: '', label: 'All Types' }, ...this.otherTypes];
+
+        this.currentYear = new Date(Date.now()).getUTCFullYear();
+        //Show events going back 10 years
+        this.datesInRange = []
+        for (var i = this.currentYear; i >=2015; i--) {
+            this.datesInRange.push(i);
+        }
+        this.nhYears = this.datesInRange.map((type) => ({ name: type, label: type }));
+        this.nhYears = [{ name: '', label: 'All Years' }, ...this.nhYears];
+
+        this.hybridSimulationTypes = [
+            { name: '', label: 'All Types' },
+            {
+                name: 'Earthquake',
+                label: 'Earthquake',
+            },
+            {
+                name: 'Wind',
+                label: 'Wind',
+            },
+            {
+                name: 'Other',
+                label: 'Other',
+            },
+        ];
+
+        const currentParams =
+            this.$stateParams.query_string && JSON.parse(decodeURIComponent(this.$stateParams.query_string));
+        if (currentParams)
+            currentParams.advancedFilters.experimental.experimentalFacility =
+                currentParams.advancedFilters.experimental.experimentalFacility.label;
+
+        this.params = currentParams || {
+            queries: {
+                searchString: '',
+                publicationYear: '',
+            },
+            typeFilters: {
+                experimental: false,
+                simulation: false,
+                field_recon: false,
+                other: false,
+                hybrid_simulation: false,
+            },
+            advancedFilters: {
+                experimental: {
+                    experimentType: '',
+                    experimentalFacility: '',
+                },
+                simulation: {
+                    simulationType: '',
+                    facility: ''
+
+                },
+                field_recon: {
+                    naturalHazardType: '',
+                    naturalHazardEvent: '',
+                    frType: '',
+                    frDate: '',
+                    facility: ''
+                },
+                other: {
+                    dataType: '',
+                    facility: ''
+                },
+                hybrid_simulation: {
+                    hybridSimulationType: '',
+                    facility: ''
+                },
+            },
+        };
+
+        this.validExperimentTypes = {};
+        this.getValidExperimentTypes(false);
+        this.isCollapsed = true;
+        Object.keys(this.params.advancedFilters).forEach((key) => {
+            Object.values(this.params.advancedFilters[key]).forEach((value) => {
+                if (value) {
+                    this.isCollapsed = false;
+                }
+            });
+        });
+    }
+    getValidExperimentTypes(reset, browse) {
+        if (reset) this.params.advancedFilters.experimental.experimentType = '';
+        const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
+        const facilityName = (
+            this.experimentOptions.facility.facilities_list.filter((x) => x.label === facilityLabel)[0] || {}
+        ).name;
+
+        if (facilityName) {
+            this.validExperimentTypes = [
+                { name: '', label: 'All Types' },
+                ...this.experimentOptions.experimentTypes[facilityName] ?? [],
+            ];
+        } else {
+            this.validExperimentTypes = [{ name: '', label: 'All Types' }];
+        }
+        
+
+        if (browse) this.browse();
+    }
+    toggleSearchPanel(e) {
+        e.preventDefault();
+        this.isCollapsed = !this.isCollapsed;
+    }
+    toggleFilter(type) {
+        this.params.typeFilters[type] = !this.params.typeFilters[type];
+
+        // null out advanced filters if type filter is deselected
+        !this.params.typeFilters[type] &&
+            Object.keys(this.params.advancedFilters[type]).forEach((key) => {
+                this.params.advancedFilters[type][key] = '';
+            });
+        this.browse();
+    }
+    constructQueryString() {
+       
+        const facilityLabel = this.params.advancedFilters.experimental.experimentalFacility;
+        const facilityName = (
+            this.experimentOptions.facility.facilities_list.filter((x) => x.label === facilityLabel)[0] || {}
+        ).name;
+        const queryParams = { ...this.params };
+        queryParams.advancedFilters.experimental.experimentalFacility = {
+            name: facilityName || '',
+            label: this.params.advancedFilters.experimental.experimentalFacility,
+        };
+        return encodeURIComponent(JSON.stringify(queryParams));
+    }
+    browse() {
+        this.$state.go('publicData', { query_string: this.constructQueryString() }, { reload: true });
+    }
+    cancel() {
+        this.$state.go('publicData', { query_string: null }, { reload: true, inherit: false, location: true });
+    }
+    
     href(publication) {
         let path = (publication.revision
             ? `${publication.projectId}v${publication.revision}`
@@ -75,6 +231,7 @@ class FilesListingCtrl {
         this.FileOperationService = FileOperationService;
         this.PublicationService = PublicationService;
         this.handleScroll = this.handleScroll.bind(this);
+        this.filterTrash = this.filterTrash.bind(this);
     }
 
     $onInit() {
@@ -87,9 +244,16 @@ class FilesListingCtrl {
         }
     }
 
+    filterTrash(f) {
+        // Don't display the trash folder in Community listings.
+        return !(['designsafe.storage.community', 'designsafe.storage.published'].includes(this.listing.params.system) 
+            && f.name.toLowerCase() === '.trash')
+    }
+
     browse($event, file) {
         $event.preventDefault();
         $event.stopPropagation();
+        if (this.doi) file.doi = this.doi;
         this.onBrowse({ file });
     }
 
@@ -100,6 +264,7 @@ class FilesListingCtrl {
 
     onSelect(idx) {
         this.FileListingService.select(this.listing.params.section, idx)
+        this.FileListingService.currentDOI = this.doi;
     }
 
     icon(name, type) {
@@ -204,7 +369,9 @@ export const FilesListingComponent = {
         operationLabel: '<', //button text for move/copy operation.
         operation: '&', // Callback for move/copy operation.
         showTags: '<',
-        editTags: '<'
+        editTags: '<', 
+        published: '<',
+        doi: '<'
     },
 };
 

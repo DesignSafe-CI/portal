@@ -1,151 +1,36 @@
 <div class="project">
-  <div ng-if="$ctrl.browser.project" class="project-detail" style="background:white;">
+  <div ng-if="$ctrl.project" class="project-detail" style="background:white;">
     <!-- Project Header Start -->
     <div>
-      <div class="prj-head-container">
-        <span class="prj-head-title" id="test-prj-title">
-            {{$ctrl.browser.project.value.projectId}} | <strong>{{ $ctrl.browser.project.value.title }}</strong>
-        </span>
-        <a class="prj-head-edit" ng-click="$ctrl.manageProject($event)"><strong>Edit Project</strong></a>
-      </div>
-      <table style="table-layout: fixed; width: 100%; margin-top: 10px; margin-bottom: 10px;">
-        <colgroup>
-          <col style="width: 15%">
-          <col style="width: 84%">
-        </colgroup>
-        <tr class="prj-row">
-          <td>PI</td>
-          <td class="prj-data" id="test-prj-pi">
-            <ds-user-list usernames="[$ctrl.browser.project.value.pi]"></ds-user-list>
-          </td>
-        </tr>
-        <tr ng-if="$ctrl.browser.project.value.coPis.length">
-          <td>Co-PIs</td>
-          <td class="prj-data" id="test-prj-copi">
-            <ds-user-list usernames="$ctrl.browser.project.value.coPis"></ds-user-list>
-          </td>
-        </tr>
-        <tr class="prj-row" ng-hide="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-          <td>Project Type</td>
-          <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType !== 'field_recon'" id="test-prj-type">
-            {{ $ctrl.browser.project.value.projectType.replace('_', ' ') }} &nbsp;
-            <a ng-if="['experimental', 'simulation'].includes($ctrl.browser.project.value.projectType)"
-                ng-click="$ctrl.overview()">
-                View Overview
-            </a>
-          </td>
-          <td class="prj-data" ng-if="$ctrl.browser.project.value.projectType === 'field_recon'" id="test-prj-type">
-            Field Research
-            <span ng-if="!$ctrl.browser.project.value.frTypes.length">&nbsp;</span>
-            <span ng-if="$ctrl.browser.project.value.frTypes.length">
-              |
-              <span ng-repeat="frType in $ctrl.browser.project.value.frTypes">
-                <span ng-if="!$last">{{ frType }},</span>
-                <span ng-if="$last">{{ frType }}</span>
-              </span>
-            </span>
-            <a ng-click="$ctrl.overview()">View Overview</a>
-          </td>
-        </tr>
-        <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'other' && $ctrl.browser.project.value.dataType">
-          <td>Data Type</td>
-          <td class="prj-data">{{ $ctrl.browser.project.value.dataType }}</td>
-        </tr>
-        <tr class="prj-row" ng-if="$ctrl.browser.project.value.nhTypes.length">
-          <td>Natural Hazard Type</td>
-          <td class="prj-data">
-              <span ng-repeat="nhtype in $ctrl.browser.project.value.nhTypes">
-                  <span ng-if="!$last">{{ nhtype }},</span>
-                  <span ng-if="$last">{{ nhtype }}</span>
-              </span>
-          </td>
-        </tr>
-        <!-- FR -->
-        <tr class="prj-row" ng-if="$ctrl.browser.project.value.projectType === 'field_recon' && $ctrl.browser.project.value.nhEvent">
-            <td>Event</td>
-            <td class="prj-data">
-                {{ $ctrl.browser.project.value.nhEvent }} |
-                <span ng-if="$ctrl.browser.project.value.nhLocation">{{ $ctrl.browser.project.value.nhLocation }} |</span>
-                {{$ctrl.browser.project.value.nhEventStart | date:'MM-dd-yyyy'}}
-                <span ng-if="$ctrl.browser.project.value.nhEventEnd && $ctrl.browser.project.value.nhEventStart !== $ctrl.browser.project.value.nhEventEnd">
-                    ― {{$ctrl.browser.project.value.nhEventEnd | date:'MM-dd-yyyy'}}
-                </span>
-                <span ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLatitude">|</span>
-                <a href="http://www.google.com/maps/place/{{ $ctrl.browser.project.value.nhLatitude }},{{ $ctrl.browser.project.value.nhLongitude }}"
-                    rel="noopener noreferrer" target=”_blank” ng-if="$ctrl.browser.project.value.nhLatitude && $ctrl.browser.project.value.nhLongitude">
-                    Lat {{ $ctrl.browser.project.value.nhLatitude }} Long {{ $ctrl.browser.project.value.nhLongitude }}
-                </a>
-            </td>
-        </tr>
-        <!-- FR -->
-        <!-- older projects will have awards listed as strings -->
-        <tr ng-if="$ctrl.isSingle($ctrl.browser.project.value.awardNumber) && $ctrl.browser.project.value.awardNumber.length">
-          <td>Awards</td>
-          <td class="test-prj-award"><strong>{{ $ctrl.browser.project.value.awardNumber.join("") }}</strong></td>
-        </tr>
-        <tr ng-if="!$ctrl.isSingle($ctrl.browser.project.value.awardNumber)" ng-repeat="award in $ctrl.browser.project.value.awardNumber | orderBy:'order' track by $index">
-          <td ng-if="$first">Awards</td>
-          <td ng-if="!$first"></td>
-          <td class="test-prj-award"><strong>{{ award.name }} - {{ award.number }}</strong></td>
-        </tr>
-        <tr ng-repeat="work in $ctrl.browser.project.value.associatedProjects | orderBy:'order' track by $index">
-          <td ng-if="$first">Related Work</td>
-          <td ng-if="!$first"></td>
-          <td id="test-prj-related"><strong><a href="{{ work.href }}" rel="noopener noreferrer" target=”_blank”>{{ work.title }}</a></strong></td>
-        </tr>
-        <tr class="prj-row">
-          <td ng-if="$ctrl.browser.project.value.keywords">Keywords</td>
-          <td class="prj-data" id="test-prj-keywords">{{ $ctrl.browser.project.value.keywords }}</td>
-        </tr>
-        <tr ng-if="$ctrl.browser.project.value.hazmapperMaps.length">
-          <td>Hazmapper Maps</td>
-          <td>
-            <hazmapper-maps maps="$ctrl.browser.project.value.hazmapperMaps" on-browse="$ctrl.onBrowse(file)">
-            </hazmapper-maps>
-          </td>
-        </tr>
-      </table>
-      <div ng-if="$ctrl.browser.project.value.description">
-        <p>{{ $ctrl.browser.project.value.description }}</p>
-      </div>
-    </div>
-    <!-- Project Header End -->
-    <div style="width:100%; max-width: 100%;" role="group" aria-label="Listing views">
-      <table class="tg" style="table-layout: fixed; width: 100%;">
-        <colgroup>
-          <col style="width: 46%">
-          <col style="width: 50%">
-        </colgroup>
-        <tr>
-          <td>
-            <button class="btn btn-project-l"
-                    ng-click="$ctrl.workingDirectory()"
-                    ng-disabled="$ctrl.loading"
-            >
-              Working Directory</button>
-            <button class="btn btn-project-m grayed-out"
-                    ng-click="$ctrl.curationDirectory()"
-                    ng-disabled="$ctrl.loading"
-            >
-              Curation Directory
-            </button>
-            <button class="btn btn-project-r grayed-out"
-                    ng-click="$ctrl.publicationPreview()"
-                    ng-disabled="$ctrl.loading"
-            >
-              Publication Preview
-            </button>
-          </td>
-          <td>
-          </td>
-        </tr>
-      </table>
+      <!--Project Metadata-->
+      <prj-metadata></prj-metadata>
+      <!-- Project Nav -->
+      <span class="project-nav">
+        <button class="btn btn-project-l"
+                ng-click="$ctrl.workingDirectory()"
+                ng-disabled="$ctrl.loading"
+        >
+            Working Directory
+        </button>
+        <button class="btn btn-project-m  grayed-out"
+                ng-click="$ctrl.curationDirectory()"
+                ng-disabled="$ctrl.loading"
+        >
+            Curation Directory
+        </button>
+        <button class="btn btn-project-r grayed-out"
+                ng-click="$ctrl.publicationPreview()"
+                ng-disabled="$ctrl.loading"
+        >
+            Publication Preview
+        </button>
+    </span>
     </div>
     <br>
   </div>
   <div ng-if="$ctrl.loading">
       <h3 class="text-center">
-          <i class="fa fa-spinner fa-spin"></i> Loading...
+          <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
       </h3>
   </div>
   <div ng-if="!$ctrl.loading">
@@ -153,7 +38,7 @@
     path="$ctrl.FileListingService.listings.main.params.path"
     system="$ctrl.FileListingService.listings.main.params.system"
     on-browse="$ctrl.onBrowse(file)"
-    custom-root="{label: $ctrl.browser.project.value.projectId, path: ''}"
+    custom-root="{label: $ctrl.project.value.projectId, path: ''}"
 ></breadcrumb>
     <files-listing
     on-scroll="$ctrl.scrollToBottom()"

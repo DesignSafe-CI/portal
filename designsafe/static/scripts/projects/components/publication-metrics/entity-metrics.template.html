@@ -1,0 +1,108 @@
+<div class="modal-header" style="background: #e6e6e6">
+    <h4 class="modal-title" style="border: none">
+        {{$ctrl.resolve.type}} Data Metrics
+        <span ng-if="!$ctrl.loading && !$ctrl.error">(<span ng-if="$ctrl.lastUpdated">Starting {{$ctrl.initialDate | date:'MMMM yyyy'}}, </span>updated every month)</span>
+        <span ng-if="!$ctrl.loading && $ctrl.error">(Newly published project - initial metric report will be posted after the end of the month)</span>
+        <span class="pull-right" ng-click="$ctrl.close()">
+            <i role="none" class="fa fa-times"></i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <div
+        data-ng-if="$ctrl.loading"
+        style="padding: 10px; font-size: large; width: 100%"
+        class="bg-info"
+    >
+        <span> <i role="none" class="fa fa-spinner fa-spin"></i> Loading... </span>
+    </div>
+    <div ng-if="!$ctrl.loading">
+        <div style="display: flex; flex-direction: row" >
+            <div style="flex-grow: 1; margin-right: 100px">
+                <table class="table table-borderless">
+                    <tr style="border-top: hidden">
+                        <td>Data Reuse Breakdown</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Total Requests
+                        </td>
+                        <td>{{$ctrl.cumMetrics.fileViews}}</td>
+                    </tr>
+                    <tr style="border-top: hidden">
+                        <td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;File Downloads
+                            <a
+                                uib-tooltip="Total file downloads to a user’s machine or copies to their workspace in DesignSafe"
+                                tooltip-placement="right"
+                                ><i role="none" class="fa fa-info-circle"></i
+                            ></a>
+                        </td>
+                        <td>{{$ctrl.cumMetrics.fileDownloads}}</td>
+                    </tr>
+                    <tr style="border-top: hidden">
+                        <td>
+                            &nbsp;&nbsp;&nbsp;&nbsp;File Previews
+                            <a
+                                uib-tooltip="Total user’s requests for file previews in a browser window"
+                                tooltip-placement="right"
+                                ><i role="none" class="fa fa-info-circle"></i
+                            ></a>
+                        </td>
+                        <td>{{$ctrl.cumMetrics.filePreviews}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="flex-grow: 1">
+                <table class="table table-borderless">
+                    <tr style="border-top: hidden">
+                        <td>Quarterly Reuse</td>
+                        <td>
+                            <select
+                                data-ng-if="$ctrl.error"
+                                disabled
+                            >
+                                <option>2021</option>
+                            </select>
+                            <select
+                                data-ng-if="!$ctrl.error"
+                                ng-model="$ctrl.selectedYear"
+                                ng-options="item for item in $ctrl.years"
+                                ng-change="$ctrl.onYearSelect()"
+                            ></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Jan-Mar</td>
+                        <td>{{$ctrl.qMetrics[0]}}</td>
+                    </tr>
+                    <tr style="border-top: hidden">
+                        <td>Apr-Jun</td>
+                        <td>{{$ctrl.qMetrics[1]}}</td>
+                    </tr>
+                    <tr style="border-top: hidden">
+                        <td>Jul-Sep</td>
+                        <td>{{$ctrl.qMetrics[2]}}</td>
+                    </tr>
+                    <tr style="border-top: hidden">
+                        <td>Oct-Dec</td>
+                        <td>{{$ctrl.qMetrics[3]}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+            <div style="width:100%; border-bottom:1px solid #e6e6e6; font-size:16px">
+    Make Your Data Count Statistics
+    </div>
+    These metrics are presented according to the <a target="_blank" aria-describedby="msg-open-ext-site-new-window" href="https://makedatacount.org/">Make Your Data Count</a> standard.
+    <p></p>
+    <p>
+        <b>Unique Request:</b> Any downloads, previews, or copies of files by a user in a one-hour session counts as 1 Unique Request.
+    </p>
+    <p></p>
+    <p style="font-size:16px; width:100%">
+        <span style="padding-right:15%">Unique Requests (Since January 2022)</span> <b>{{$ctrl.cumMetrics.uniqueRequests || "(not applicable)"}}</b>
+    </p>
+    </div>
+</div>

@@ -2,13 +2,13 @@
     <h4 class="modal-title" style="border:none;">
         <span>Add Categories</span>
         <span class="pull-right" ng-click="$ctrl.cancel()">
-            <i class="fa fa-times"></i>
+            <i role="none" class="fa fa-times"></i>
         </span>
     </h4>
 </div>
 <div class="modal-body" ng-show="$ctrl.ui.loading">
     <h3 class="text-center">
-        <i class="fa fa-spinner fa-spin"></i> Loading...
+        <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
     </h3>
 </div>
 <div class="modal-body" ng-hide="$ctrl.ui.loading">
@@ -24,86 +24,87 @@
                 <!-- Experimental Categories -->
                 <div ng-if="$ctrl.ui.experimental">
                     <div>
-                        <span class="category-model-conf">Model Configuration</span> Files describing the design and layout
+                        <span class="category-blue">Model Configuration</span> Files describing the design and layout
                         of what is being tested (some call this a specimen).
                     </div>
                     <div>
-                        <span class="category-sensor-info">Sensor Information</span> Files about the sensor instrumentation
+                        <span class="category-teal">Sensor Information</span> Files about the sensor instrumentation
                         used in a model configuration to conduct one or more event.
                     </div>
                     <div>
-                        <span class="category-event">Event</span> Files from unique occurrences during which data are
+                        <span class="category-yellow">Event</span> Files from unique occurrences during which data are
                         generated.
                     </div>
                     <div>
-                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        <span class="category-light-blue">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
                         or other representations of the results.
                     </div>
                     <div>
-                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        <span class="category-gray">Report</span> Written accounts made to convey information about an
                         entire project or experiment.
                     </div>
                 </div>
                 <!-- Simulation Categories -->
                 <div ng-if="$ctrl.ui.simulation">
                     <div>
-                        <span class="category-model-conf">Simulation Model</span> Files and/or information describing the design, geometry, and/or code of a simulation.
+                        <span class="category-blue">Simulation Model</span> Information and/or files describing the design, geometry, workflow, 
+                        runtime environment and/or code of a simulation. This includes referencing research software or a community model and version when applicable.
                     </div>
                     <div>
-                        <span class="category-sensor-info">Simulation Input</span> Files containing the parameters of the simulation.
+                        <span class="category-teal">Simulation Input</span> Files and references to the files containing the parameters of the simulation.
                     </div>
                     <div>
-                        <span class="category-event">Simulation Output</span> Files containing the results of a simulation.
+                        <span class="category-yellow">Simulation Output</span> Files containing the results of a simulation.
                     </div>
                     <div>
-                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
-                        or other representations of the results.
+                        <span class="category-light-blue">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks, or other representations of the results.
                     </div>
                     <div>
-                        <span class="category-report">Report</span> Written accounts made to convey information about an
-                        entire project or simulation.
+                        <span class="category-gray">Report</span> Detailed written account/s to convey information about the way in which the simulation was organized, 
+                        how to run it, about the file contents and the file naming convention used. It could be one or a group of files including a readme file and 
+                        a data dictionary, depending on the complexity and components of the simulation.
                     </div>
                 </div>
                 <!-- Hybrid Simulation Categories -->
                 <div ng-if="$ctrl.ui.hybridSim">
                     <div>
-                        <span class="category-model-conf">Global Model</span>
+                        <span class="category-blue">Global Model</span>
                         Files describing the entire structure, loading protocol, and components of the hybrid simulation.
                     </div>
                     <br>
                     <div>
-                        <span class="category-sensor-info">Master Simulation Coordinator</span>
+                        <span class="category-teal">Master Simulation Coordinator</span>
                         Software files that communicate with the simulation and experimental substructure simultaneously to give commands and receive feedback data.
                     </div>
                     <div>
-                        <span class="category-event">Coordinator Output</span>
+                        <span class="category-yellow">Coordinator Output</span>
                         Data generated by the master simulation coordinator.
                     </div>
                     <br>
                     <div>
-                        <span class="category-sim-subst">Simulation Substructure</span>
+                        <span class="category-orange">Simulation Substructure</span>
                         Files and/or information describing the planning and design of the numerical model.
                     </div>
                     <div>
-                        <span class="category-event">Simulation Output</span>
+                        <span class="category-yellow">Simulation Output</span>
                         Data generated by the simulation substructure.
                     </div>
                     <br>
                     <div>
-                        <span class="category-exp-subst">Experimental Substructure</span>
+                        <span class="category-purple">Experimental Substructure</span>
                         Files describing the design and layout of the physical model.
                     </div>
                     <div>
-                        <span class="category-event">Experimental Output</span>
+                        <span class="category-yellow">Experimental Output</span>
                         Data generated by the experimental substructure.
                     </div>
                     <br>    
                     <div>
-                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        <span class="category-light-blue">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
                         or other representations of the results.
                     </div>
                     <div>
-                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        <span class="category-gray">Report</span> Written accounts made to convey information about an
                         entire project or hybrid simulation.
                     </div>
                 </div>
@@ -131,7 +132,7 @@
                     ng-required="true">
             </div>
             <!-- Referenced Data for Analysis -->
-            <div    class="form-group"
+            <!-- <div    class="form-group"
                     style="width:100%; display:inline-block;"
                     ng-if="$ctrl.ui.isAnalysis">
                 <table class="tg" style="table-layout: fixed; width: 100%;">
@@ -169,7 +170,7 @@
                             &#x2212; Remove Referenced Data
                     </button>
                 </div>
-            </div>
+            </div> -->
             <!-- Category Description -->
             <div class="form-group">
                 <label>Category Description</label>
@@ -177,14 +178,15 @@
                     Summarize the purpose of the category and its files. What is it about? What are its features?
                 </div>
                 <div>
-                    <textarea type="text" style="width:100%; height:3em; resize: vertical;" id="add-exp-desc" ng-model="$ctrl.form.projectTagToAdd.description">
-            </textarea>
+                    <textarea ng-required="$ctrl.form.projectTagToAdd.name === 'designsafe.project.simulation.model'" 
+                              class="form-textbox" type="text" id="add-exp-desc" ng-model="$ctrl.form.projectTagToAdd.description" ng-minlength="50" ng-maxlength="5000"></textarea>
+                    <span ng-if="addForm.$error.minlength[0].$invalid || addForm.$error.maxlength[0].$invalid" class="label-form-desc-error">Description length is invalid </span>
                 </div>
             </div>
             <!-- Add Category Btn -->
             <div class="text-right">
                 <button class="btn btn-add" type="submit" ng-click="addForm.$valid && $ctrl.addCategory($event)">
-                    <i class="fa fa-plus"></i> Add Category
+                    <i role="none" class="fa fa-plus"></i> Add Category
                 </button>
             </div>
         </form>
@@ -199,86 +201,86 @@
                 <!-- Experimental Categories -->
                 <div ng-if="$ctrl.ui.experimental">
                     <div>
-                        <span class="category-model-conf">Model Configuration</span> Files describing the design and layout
+                        <span class="category-blue">Model Configuration</span> Files describing the design and layout
                         of what is being tested (some call this a specimen).
                     </div>
                     <div>
-                        <span class="category-sensor-info">Sensor Information</span> Files about the sensor instrumentation
+                        <span class="category-teal">Sensor Information</span> Files about the sensor instrumentation
                         used in a model configuration to conduct one or more event.
                     </div>
                     <div>
-                        <span class="category-event">Event</span> Files from unique occurrences during which data are
+                        <span class="category-yellow">Event</span> Files from unique occurrences during which data are
                         generated.
                     </div>
                     <div>
-                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        <span class="category-light-blue">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
                         or other representations of the results.
                     </div>
                     <div>
-                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        <span class="category-gray">Report</span> Written accounts made to convey information about an
                         entire project or experiment.
                     </div>
                 </div>
                 <!-- Simulation Categories -->
                 <div ng-if="$ctrl.ui.simulation">
                     <div>
-                        <span class="category-model-conf">Simulation Model</span> Files and/or information describing the design, geometry, and/or code of a simulation.
+                        <span class="category-blue">Simulation Model</span> Files and/or information describing the design, geometry, and/or code of a simulation.
                     </div>
                     <div>
-                        <span class="category-sensor-info">Simulation Input</span> Files containing the parameters of the simulation.
+                        <span class="category-teal">Simulation Input</span> Files containing the parameters of the simulation.
                     </div>
                     <div>
-                        <span class="category-event">Simulation Output</span> Files containing the results of a simulation.
+                        <span class="category-yellow">Simulation Output</span> Files containing the results of a simulation.
                     </div>
                     <div>
-                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        <span class="category-light-blue">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
                         or other representations of the results.
                     </div>
                     <div>
-                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        <span class="category-gray">Report</span> Written accounts made to convey information about an
                         entire project or simulation.
                     </div>
                 </div>
                 <!-- Hybrid Simulation Categories -->
                 <div ng-if="$ctrl.ui.hybridSim">
                     <div>
-                        <span class="category-model-conf">Global Model</span>
+                        <span class="category-blue">Global Model</span>
                         Files describing the entire structure, loading protocol, and components of the hybrid simulation.
                     </div>
                     <br>
                     <div>
-                        <span class="category-sensor-info">Master Simulation Coordinator</span>
+                        <span class="category-teal">Master Simulation Coordinator</span>
                         Software files that communicate with the simulation and experimental substructure simultaneously to give commands and receive feedback data.
                     </div>
                     <div>
-                        <span class="category-event">Coordinator Output</span>
+                        <span class="category-yellow">Coordinator Output</span>
                         Data generated by the master simulation coordinator.
                     </div>
                     <br>
                     <div>
-                        <span class="category-sim-subst">Simulation Substructure</span>
+                        <span class="category-orange">Simulation Substructure</span>
                         Files and/or information describing the planning and design of the numerical model.
                     </div>
                     <div>
-                        <span class="category-event">Simulation Output</span>
+                        <span class="category-yellow">Simulation Output</span>
                         Data generated by the simulation substructure.
                     </div>
                     <br>
                     <div>
-                        <span class="category-exp-subst">Experimental Substructure</span>
+                        <span class="category-purple">Experimental Substructure</span>
                         Files describing the design and layout of the physical model.
                     </div>
                     <div>
-                        <span class="category-event">Experimental Output</span>
+                        <span class="category-yellow">Experimental Output</span>
                         Data generated by the experimental substructure.
                     </div>
                     <br>    
                     <div>
-                        <span class="category-analysis">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
+                        <span class="category-light-blue">Analysis</span> Tables, graphs, visualizations, Jupyter Notebooks,
                         or other representations of the results.
                     </div>
                     <div>
-                        <span class="category-report">Report</span> Written accounts made to convey information about an
+                        <span class="category-gray">Report</span> Written accounts made to convey information about an
                         entire project or hybrid simulation.
                     </div>
                 </div>
@@ -289,7 +291,7 @@
                                 ng-change="$ctrl.tagType($ctrl.form.projectTagToAdd.name)"
                                 ng-disabled
                                 ng-required="true">
-                                <option option="$ctrl.editForm.type" class="category-model-conf">{{ $ctrl.editForm.type }}</option>
+                                <option option="$ctrl.editForm.type" class="category-blue">{{ $ctrl.editForm.type }}</option>
                         </select>
                     </div>
                 </div>
@@ -310,7 +312,7 @@
                         ng-required="true">
             </div>
             <!-- Edit Referenced Data for Analysis -->
-            <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.ui.isAnalysis">
+            <!-- <div class="form-group" style="width:100%; display:inline-block;" ng-if="$ctrl.ui.isAnalysis">
                 <table class="tg" style="table-layout: fixed; width: 100%;">
                     <colgroup>
                         <col style="width: 48%">
@@ -346,19 +348,25 @@
                             &#x2212; Remove Referenced Data
                     </button>
                 </div>
-            </div>
+            </div> -->
             <!-- Edit Category Description -->
             <div class="form-group">
                 <label>Category Description</label>
                 <div>
                     Summarize the purpose of the category and its files. What is it about? What are its features?
+                    Description must be between 50 and 5000 characters in length.
                 </div>
                 <div>
                     <textarea   type="text"
-                                style="width:100%; height:3em; resize: vertical;"
+                                class="form-textbox"
                                 placeholder="{{ $ctrl.editForm.description }}"
-                                ng-model="$ctrl.editForm.description">
-            </textarea>
+                                ng-model="$ctrl.editForm.description"
+                                ng-minlength="50"
+                                ng-maxlength="5000">
+                    </textarea>
+                    <span ng-if="editForm.$error.minlength[0].$invalid || editForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                        Description length is invalid 
+                    </span>
                 </div>
             </div>
             <!-- Edit Category Btn -->
@@ -376,9 +384,9 @@
         </div>
         <div class="dropdown">
             <!-- Model Config -->
-            <div ng-repeat="modelConf in $ctrl.browser.project.modelconfig_set | orderBy: ['value.title']">
+            <div ng-repeat="modelConf in $ctrl.project.modelconfig_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{modelConf.uuid}}"
+                    <button class="btn collapsed tab-blue" data-toggle="collapse" data-target="#files-{{modelConf.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Model Configuration | <strong>{{modelConf.value.title}}</strong></span>
@@ -404,9 +412,9 @@
                 </div>
             </div>
             <!-- Sensor Info -->
-            <div ng-repeat="sensorInfo in $ctrl.browser.project.sensorlist_set | orderBy: ['value.title']">
+            <div ng-repeat="sensorInfo in $ctrl.project.sensorlist_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{sensorInfo.uuid}}"
+                    <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{sensorInfo.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Sensor Information | <strong>{{sensorInfo.value.title}}</strong></span>
@@ -432,9 +440,9 @@
                 </div>
             </div>
             <!-- Events -->
-            <div ng-repeat="event in $ctrl.browser.project.event_set | orderBy: ['value.title']">
+            <div ng-repeat="event in $ctrl.project.event_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{event.uuid}}"
+                    <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{event.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Event | <strong>{{event.value.title}}</strong></span>
@@ -461,9 +469,9 @@
                 </div>
             </div>
             <!-- Simulation Model -->
-            <div ng-repeat="model in $ctrl.browser.project.model_set | orderBy: ['value.title']">
+            <div ng-repeat="model in $ctrl.project.model_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{model.uuid}}"
+                    <button class="btn collapsed tab-blue" data-toggle="collapse" data-target="#files-{{model.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Simulation Model | <strong>{{model.value.title}}</strong></span>
@@ -490,9 +498,9 @@
                 </div>
             </div>
             <!-- Simulation Input -->
-            <div ng-repeat="input in $ctrl.browser.project.input_set | orderBy: ['value.title']">
+            <div ng-repeat="input in $ctrl.project.input_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{input.uuid}}"
+                    <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{input.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Simulation Input | <strong>{{input.value.title}}</strong></span>
@@ -519,9 +527,9 @@
                 </div>
             </div>
             <!-- Simulation Output -->
-            <div ng-repeat="output in $ctrl.browser.project.output_set | orderBy: ['value.title']">
+            <div ng-repeat="output in $ctrl.project.output_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{output.uuid}}"
+                    <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{output.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Simulation Output | <strong>{{output.value.title}}</strong></span>
@@ -548,9 +556,9 @@
                 </div>
             </div>
             <!-- Global Model -->
-            <div ng-repeat="gm in $ctrl.browser.project.globalmodel_set | orderBy: ['value.title']">
+            <div ng-repeat="gm in $ctrl.project.globalmodel_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-model-conf" data-toggle="collapse" data-target="#files-{{gm.uuid}}"
+                    <button class="btn collapsed tab-blue" data-toggle="collapse" data-target="#files-{{gm.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Global Model | <strong>{{gm.value.title}}</strong></span>
@@ -577,9 +585,9 @@
                 </div>
             </div>
             <!-- Coordinator -->
-            <div ng-repeat="coordinator in $ctrl.browser.project.coordinator_set | orderBy: ['value.title']">
+            <div ng-repeat="coordinator in $ctrl.project.coordinator_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-sensor-info" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}"
+                    <button class="btn collapsed tab-teal" data-toggle="collapse" data-target="#files-{{coordinator.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Coordinator | <strong>{{coordinator.value.title}}</strong></span>
@@ -606,9 +614,9 @@
                 </div>
             </div>
             <!-- Simulation Substructure -->
-            <div ng-repeat="simsub in $ctrl.browser.project.simsubstructure_set | orderBy: ['value.title']">
+            <div ng-repeat="simsub in $ctrl.project.simsubstructure_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-sim-subst" data-toggle="collapse" data-target="#files-{{simsub.uuid}}"
+                    <button class="btn collapsed tab-orange" data-toggle="collapse" data-target="#files-{{simsub.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Simulation Substructure | <strong>{{simsub.value.title}}</strong></span>
@@ -635,9 +643,9 @@
                 </div>
             </div>
             <!-- Experimental Substructure -->
-            <div ng-repeat="expsub in $ctrl.browser.project.expsubstructure_set | orderBy: ['value.title']">
+            <div ng-repeat="expsub in $ctrl.project.expsubstructure_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-exp-subst" data-toggle="collapse" data-target="#files-{{expsub.uuid}}"
+                    <button class="btn collapsed tab-purple" data-toggle="collapse" data-target="#files-{{expsub.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Experimental Substructure | <strong>{{expsub.value.title}}</strong></span>
@@ -664,9 +672,9 @@
                 </div>
             </div>
             <!-- Coordinator Output -->
-            <div ng-repeat="cout in $ctrl.browser.project.coordinatoroutput_set | orderBy: ['value.title']">
+            <div ng-repeat="cout in $ctrl.project.coordinatoroutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{cout.uuid}}"
+                    <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{cout.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Coordinator Output | <strong>{{cout.value.title}}</strong></span>
@@ -693,9 +701,9 @@
                 </div>
             </div>
             <!-- Experiment Output -->
-            <div ng-repeat="eout in $ctrl.browser.project.expoutput_set | orderBy: ['value.title']">
+            <div ng-repeat="eout in $ctrl.project.expoutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{eout.uuid}}"
+                    <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{eout.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Experiment Output | <strong>{{eout.value.title}}</strong></span>
@@ -722,9 +730,9 @@
                 </div>
             </div>
             <!-- Simulation Output -->
-            <div ng-repeat="sout in $ctrl.browser.project.simoutput_set | orderBy: ['value.title']">
+            <div ng-repeat="sout in $ctrl.project.simoutput_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-event" data-toggle="collapse" data-target="#files-{{sout.uuid}}"
+                    <button class="btn collapsed tab-yellow" data-toggle="collapse" data-target="#files-{{sout.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Simulation Output | <strong>{{sout.value.title}}</strong></span>
@@ -751,9 +759,9 @@
                 </div>
             </div>
             <!-- Analysis -->
-            <div ng-repeat="analysis in $ctrl.browser.project.analysis_set | orderBy: ['value.title']">
+            <div ng-repeat="analysis in $ctrl.project.analysis_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-analysis" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
+                    <button class="btn collapsed tab-light-blue" data-toggle="collapse" data-target="#files-{{analysis.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Analysis | <strong>{{analysis.value.title}}</strong></span>
@@ -791,9 +799,9 @@
                 </div>
             </div>
             <!-- Reports -->
-            <div ng-repeat="report in $ctrl.browser.project.report_set | orderBy: ['value.title']">
+            <div ng-repeat="report in $ctrl.project.report_set | orderBy: ['value.title']">
                 <div class="dropdown dropdown-spacer-sm">
-                    <button class="btn collapsed tab-report" data-toggle="collapse" data-target="#files-{{report.uuid}}"
+                    <button class="btn collapsed tab-gray" data-toggle="collapse" data-target="#files-{{report.uuid}}"
                         style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Report | <strong>{{report.value.title}}</strong></span>

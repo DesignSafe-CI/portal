@@ -10,9 +10,14 @@
 
   $('#search_button').on('keypress click', function (ev) {
     ev.preventDefault();
+    var radioValue = $('input[name="search-radio"]:checked').val();
     var searchstring = $('#searchfield').val();
     if (ev.which === 13 || ev.type === 'click') {
-      window.location = '/search?type_filter=all&query_string=' + searchstring;
+      if (radioValue==='website') window.location = '/search?q=' + searchstring;
+      if (radioValue ==='datasets') {
+        var datasetSearchUrl = `/data/browser/public/?query_string=%257B%2522queries%2522%253A%257B%2522searchString%2522%253A%2522${searchstring}%2522%252C%2522publicationYear%2522%253A%2522%2522%257D%252C%2522typeFilters%2522%253A%257B%2522experimental%2522%253Afalse%252C%2522simulation%2522%253Afalse%252C%2522field_recon%2522%253Afalse%252C%2522other%2522%253Afalse%252C%2522hybrid_simulation%2522%253Afalse%257D%252C%2522advancedFilters%2522%253A%257B%2522experimental%2522%253A%257B%2522experimentType%2522%253A%2522%2522%252C%2522experimentalFacility%2522%253A%257B%2522name%2522%253A%2522%2522%252C%2522label%2522%253A%2522%2522%257D%257D%252C%2522simulation%2522%253A%257B%2522simulationType%2522%253A%2522%2522%252C%2522facility%2522%253A%2522%2522%257D%252C%2522field_recon%2522%253A%257B%2522naturalHazardType%2522%253A%2522%2522%252C%2522naturalHazardEvent%2522%253A%2522%2522%252C%2522frType%2522%253A%2522%2522%252C%2522frDate%2522%253A%2522%2522%252C%2522facility%2522%253A%2522%2522%257D%252C%2522other%2522%253A%257B%2522dataType%2522%253A%2522%2522%252C%2522facility%2522%253A%2522%2522%257D%252C%2522hybrid_simulation%2522%253A%257B%2522hybridSimulationType%2522%253A%2522%2522%252C%2522facility%2522%253A%2522%2522%257D%257D%257D`
+        window.location = datasetSearchUrl;
+      }
     }
   });
 

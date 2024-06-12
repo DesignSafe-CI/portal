@@ -14,15 +14,14 @@
                 <tr>
                     <th>
                         <span ng-if="$ctrl.showSelect">
-                            <i class="fa fa-lg fa-check-square" style="color:#337ab7;" ng-click="$ctrl.FileListingService.selectAll($ctrl.listing.params.section)"></i>
+                            <i role="none" class="fa fa-lg fa-check-square" style="color:#337ab7;" ng-click="$ctrl.FileListingService.selectAll($ctrl.listing.params.section)"></i>
                             <span>Name</span>
                         </span>
                         <span ng-if="!$ctrl.showSelect">Name</span>
                     </th>
                     <th>Size</th>
-                    <th>Last modified</th>
+                    <th ng-if="!$ctrl.published">Last modified</th>
                     <th ng-if="$ctrl.operationLabel">Operation</th>
-                    <th ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()">Open with</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,15 +32,15 @@
                     <td class="unselectable">
                         <span ng-if="$ctrl.showSelect">
                             <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="item.selected" data-ng-click="$ctrl.onSelect($index)">
-                                <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
-                                <i class="fa fa-check-square fa-stack-1x" style="color:#1CB500;"></i>
+                                <i role="none" class="fa fa-square fa-stack-1x" style="color: white;"></i>
+                                <i role="none" class="fa fa-check-square fa-stack-1x" style="color:#1CB500;"></i>
                             </span>
                             <span class="fa-stack fa-lg" style="margin: -8px;" ng-if="!item.selected" data-ng-click="$ctrl.onSelect($index)">
-                                <i class="fa fa-square fa-stack-1x" style="color: white;"></i>
-                                <i class="fa fa-square-o fa-stack-1x" style="color:lightgray;"></i>
+                                <i role="none" class="fa fa-square fa-stack-1x" style="color: white;"></i>
+                                <i role="none" class="fa fa-square-o fa-stack-1x" style="color:lightgray;"></i>
                             </span>
                         </span>
-                        <i class="fa {{ $ctrl.icon(item.name, item.type) }} test-file-icon">&nbsp;</i>
+                        <i role="none" class="fa {{ $ctrl.icon(item.name, item.type) }} test-file-icon">&nbsp;</i>
                         <a data-ng-href="{{$ctrl.href(item.system, item.path)}}" data-ng-click="$ctrl.browse($event, item)" class="test-file-name">
                             {{ item.name }}
                         </a>
@@ -50,7 +49,7 @@
                         </a> -->
                         <div class="project-categories">
                             <div class="file-categories"
-                                 data-ng-if="$ctrl.editTags || $ctrl.showTags">
+                                 data-ng-if="item.name != '.Trash' && $ctrl.editTags || $ctrl.showTags">
                                 <file-categories 
                                                  data-file="item"
                                                  data-show-tags="$ctrl.showTags"
@@ -60,7 +59,7 @@
                                 </file-categories>
                             </div>
                             <div class="file-categories-selector"
-                                 data-ng-if="$ctrl.editTags">
+                                 data-ng-if="item.name != '.Trash' && $ctrl.editTags">
                             
                                 <file-category-selector data-project="$ctrl.browser.project"
                                                         data-file="item"
@@ -70,26 +69,23 @@
           
                             </div>
                             <div data-ng-if="$ctrl.browser.loadingEntities">
-                                <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading ...
+                                <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i> Loading ...
                             </div>
                         </div>
                     </td>
                     <td data-ng-if="item.format== 'folder'" class="test-length-folder">--</td>
                     <td data-ng-if="item.format== 'raw'" class="test-length-file">{{ item.length|bytes }}</td>
-                    <td data-ng-if="item.lastModified" class="test-date">{{ item.lastModified|date:"short" }}</td>
-                    <td data-ng-if="!item.lastModified"class="test-date-missing">--</td>
+                    <td data-ng-if="item.lastModified && !$ctrl.published" class="test-date">{{ item.lastModified|date:"short" }}</td>
+                    <td data-ng-if="!item.lastModified && !$ctrl.published"class="test-date-missing">--</td>
                     <td data-ng-if="$ctrl.operationLabel" class="test-op-label">
                         <button class="btn btn-primary test-op-btn" ng-if="item.type==='dir'" ng-click="$ctrl.operation({file: item})">{{$ctrl.operationLabel}}
-
-                        </button></td>
-                    <td data-ng-if="!$ctrl.FileListingService.listings.main.loading && $ctrl.hasNotebooks()">
-                        <a href="{{$ctrl.openInApp(item)}}" target="_blank" rel="noopener" data-ng-if="$ctrl.isNotebook(item)">Jupyter</span>
+                        </button>
                     </td>
                 </tr>
                 <tr >
                     <td ng-if="$ctrl.listing.loadingScroll" colspan="4" style="height: 37px;">
                         <span class="bg-info text-info" >
-                            <i class="fa fa-spinner fa-spin">&nbsp;</i>
+                            <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i>
                             Loading...
                         </span>
                     </td>
@@ -111,7 +107,7 @@
                      class="bg-info"
                  >
                     <span>
-                        <i class="fa fa-spinner fa-spin">&nbsp;</i>
+                        <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i>
                         Loading...
                     </span>
                 </div>
@@ -132,21 +128,32 @@
                      style="background-color: #fff;border: 1px solid #ddd;padding:8px;"
                      class="text-center"
                 >
-                    <p class="lead" style="margin-top:20px" ng-if="!($ctrl.listing.params.system.includes('project-') && $ctrl.editTags)">
+                    <p class="lead" style="margin-top:20px" ng-if="(!($ctrl.listing.params.system.includes('project-') && $ctrl.editTags)
+                                                                    && $ctrl.listing.params.query_string == null)">
                         This folder is empty! <br />
-                        <i class="fa fa-folder-open-o">&nbsp;</i><br/>
+                        <i role="none" class="fa fa-folder-open-o">&nbsp;</i><br/>
                         <a data-ng-if="$ctrl.listing.params.system.includes('project-')"
-                           href="https://www.youtube.com/watch?v=ITf4hlBamGU&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
-                           target="_blank"
-                        >
-                            <i class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
+                        href="https://www.youtube.com/watch?v=ITf4hlBamGU&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
+                        target="_blank" aria-describedby="msg-open-ext-site-new-window"
+                        > 
+                            <i role="none" class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
                             Learn how to move files to a project
                         </a>
                     </p>
+                    <p class="lead" style="margin-top:20px" ng-if="($ctrl.listing.params.query_string != null)">
+                        No results found! <br />
+                        <a data-ng-if="$ctrl.listing.params.system.includes('project-')"
+                        href="https://www.youtube.com/watch?v=ITf4hlBamGU&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV"
+                        target="_blank" aria-describedby="msg-open-ext-site-new-window"
+                        >
+                         <i role="none" class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
+                         Learn how to move files to a project
+                        </a>
+                    </p>
                     <p class="lead" style="margin-top:20px" ng-if="$ctrl.editTags">
-                        <i class="fa fa-file-text-o">&nbsp;</i><br/>
-                        <a href="https://www.youtube.com/watch?v=lfBe04ihQUs&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank">
-                            <i class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
+                        <i role="none" class="fa fa-file-text-o">&nbsp;</i><br/>
+                        <a href="https://www.youtube.com/watch?v=lfBe04ihQUs&list=PL2GxvrdFrBlkwHBgQ47pZO-77ZLrJKYHV" target="_blank" aria-describedby="msg-open-ext-site-new-window">
+                            <i role="none" class="fa fa-question-circle" style="font-size: 18px;">&nbsp;</i>
                             Learn how to assign files to categories<br/>
                         </a>
                     </p>

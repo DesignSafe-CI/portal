@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model, signals
 from django.contrib.auth.models import Permission
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from unittest import skip
 from mock import patch
 import pytest
@@ -38,7 +38,7 @@ class AccountsTests(TestCase):
         self.client.login(username='ds_user', password='user/password')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 403)
-        self.client.logout()
+
         user = get_user_model().objects.get(pk=2)
         perm = Permission.objects.get(codename='view_notification_subscribers')
         user.user_permissions.add(perm)
@@ -137,15 +137,16 @@ class AccountsTests(TestCase):
 
         # pass test for duplicate email check
         mock_tas().get_user.side_effect = mock_user_side_effect
+        mock_tas().save_user.side_effect = mock_user_side_effect
 
         edit_url = reverse('designsafe_accounts:profile_edit')
         self.client.login(username='ds_admin', password='admin/password')
 
         data = {'firstName': 'DS',
-                'lastName': 'User', 'email': 'test@test.test',
+                'lastName': 'User',
                 'phone': '555-555-5555', 'institutionId': '1',
                 'title': 'Center Non-Researcher Staff',
-                'countryId': '1', 'citizenshipId': '1',
+                'countryId': '1',
                 'ethnicity': 'White', 'gender': 'Other',
                 'bio': 'NEW TEST BIO',
                 'website': 'NEW_WEBSITE', 'orcid_id': 'NEW_ORCID_ID', 'nh_interests': '13',
@@ -161,8 +162,3 @@ class AccountsTests(TestCase):
         assert 'NEW TEST BIO' in str(resp.content)
         assert 'NEW_WEBSITE' in str(resp.content)
         assert 'NEW_ORCID_ID' in str(resp.content)
-
-        data['email'] = 'error@test.test'
-        resp = self.client.post(edit_url, data)
-        resp = self.client.get(manage_url)
-        assert 'The submitted email already exists! Your email has not been updated!' in str(resp.content)

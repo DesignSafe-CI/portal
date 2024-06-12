@@ -1,5 +1,5 @@
 <div class="loading" ng-if="$ctrl._ui.busy">
-    <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+    <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
 </div>
 <form ng-if="$ctrl.selectMultiple() && $ctrl.project.value.projectType !== 'other'" ng-disabled="$ctrl._ui.busy">
     <select name="project-category"

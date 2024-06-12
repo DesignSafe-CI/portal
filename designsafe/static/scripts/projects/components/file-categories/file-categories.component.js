@@ -22,16 +22,16 @@ class FileCategoriesCtrl {
 
     $onInit() {
         this.scheme = this.FileListingService.listings[this.section].params.scheme
+        this.version = 0;
         if(this.scheme === 'private') {
             this.project = this.ProjectService.current;
         }
         else {
             this.project = this.PublicationService.current.project
+            if ('revision' in this.PublicationService.current) {
+                this.version = this.PublicationService.current.revision;
+            }
         }
-
-
-        
-        
 
         this._ui = {
             busy: false,
@@ -42,7 +42,6 @@ class FileCategoriesCtrl {
         };
 
         this.parentPath = this.file.path.replace(/\/[^\/]+\/?$/, '')
-
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
     }
 
@@ -94,6 +93,7 @@ class FileCategoriesCtrl {
                 }
                 this.rmUuid(entity.associationIds, file.uuid);
                 this.rmUuid(entity.value.files, file.uuid);
+                entity.value.fileObjs = (entity.value.fileObjs ?? []).filter(f => f.path !== this.file.path)
                 this.updateEntity(entity, this.file);
             });
         } else {
@@ -102,6 +102,7 @@ class FileCategoriesCtrl {
             }
             this.rmUuid(entity.associationIds, this.file.uuid);
             this.rmUuid(entity.value.files, this.file.uuid);
+            entity.value.fileObjs = (entity.value.fileObjs ?? []).filter(f => f.path !== this.file.path)
             this.updateEntity(entity, this.file);
         }
     }
@@ -287,7 +288,14 @@ class FileCategoriesCtrl {
 
         if (this.scheme === 'public') {
             return tags.filter((tag) => {
-                return tag.path == this.file.path.replace(/(\/*PRJ-[0-9]+)?(v([0-9]+))?/g, '');
+                let substring = `${this.project.value.projectId}`;
+                if (this.file.path.startsWith('/')) {
+                    substring = `/${substring}`
+                }
+                if (this.version > 0) {
+                    substring = substring + `v${this.version}`;
+                }
+                return tag.path == this.file.path.replace(substring, '');
             });
         }
    

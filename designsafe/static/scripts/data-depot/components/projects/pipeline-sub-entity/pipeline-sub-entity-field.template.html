@@ -2,7 +2,7 @@
     <!-- progression map -->
     <div class="pull-right" style="padding-bottom: 20px;">
         <a ng-click="$ctrl.goWork()">
-            <i class="fa fa-times"></i> Exit Prepare to Publish
+            <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
         </a>
     </div>
     <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
@@ -18,37 +18,37 @@
             <td>
                 <strong>Selection</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Project</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Mission</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Collections</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Order Authors</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Licenses</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
         </tr>
@@ -56,7 +56,7 @@
     <br>
     <div>
         <a class="pull-left" ng-click="$ctrl.goPrimaryEntity()">
-            <i class="fa fa-arrow-left"></i> Back to Proofread Field Research 
+            <i role="none" class="fa fa-arrow-left"></i> Back to Proofread Field Research 
         </a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goAuthors()">Continue</button>
     </div>
@@ -64,11 +64,8 @@
     <div style="padding-top: 40px; padding-bottom: 40px;">
         <p>
             <h3 style="text-align: center">Proofread your Collection Metadata</h3>
-            <h3 style="text-align: center; color: orange;">
-                <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
-            </h3>
             <li>In order to remove collections from publication, go back to Selection and deselect the files in the collection.</li>
-            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">Curation office hours</a> for help with publishing.</li>
+            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
     <!-- Root Sets -->
@@ -88,9 +85,15 @@
                     <ds-author-list authors="mission.value.authors"></ds-author-list>
                 </div>
             </div>
+            <span ng-if="mission.value.facility.name">
+                <div class="entity-meta-field">
+                    <div class="entity-meta-label">Facility</div>
+                    <span class="entity-meta-data-cap">{{ mission.value.facility.name }}</span>
+                </div>
+            </span>
             <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
                 <div class="entity-meta-label-multi">
-                    Referenced Data
+                    Referenced Data and Software
                 </div>
                 <div class="entity-meta-data">
                     <ul class="collection-list">
@@ -150,7 +153,7 @@
                 <!-- Social Science -->
                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                        <button class="btn tab-experiment" data-toggle="collapse"
+                        <button class="btn tab-yellow" data-toggle="collapse"
                                 data-target="#files-{{collection.uuid}}" style="width:100%;">
                             <div class="collapse-tab">
                                 <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -243,7 +246,7 @@
                                 </div>
                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                     <div class="entity-meta-label-multi">
-                                        Referenced Data
+                                        Referenced Data and Software
                                     </div>
                                     <div class="entity-meta-data">
                                         <ul class="collection-list">
@@ -270,7 +273,7 @@
                 <!-- GeoscienceEngineering -->
                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.geoscience'">
                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                        <button class="btn tab-experiment" data-toggle="collapse"
+                        <button class="btn tab-yellow" data-toggle="collapse"
                                 data-target="#files-{{collection.uuid}}" style="width:100%;">
                             <div class="collapse-tab">
                                 <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -334,7 +337,7 @@
                                 </div>
                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                     <div class="entity-meta-label-multi">
-                                        Referenced Data
+                                        Referenced Data and Software
                                     </div>
                                     <div class="entity-meta-data">
                                         <ul class="collection-list">
@@ -361,7 +364,7 @@
                 <!-- Research Planning Collection -->
                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.planning'">
                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                        <button class="btn tab-sensor-info" data-toggle="collapse"
+                        <button class="btn tab-teal" data-toggle="collapse"
                                 data-target="#files-{{collection.uuid}}" style="width:100%;">
                             <div class="collapse-tab">
                                 <span class="collapse-tab-content-left">Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
@@ -380,7 +383,7 @@
                                 </div>
                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                     <div class="entity-meta-label-multi">
-                                        Referenced Data
+                                        Referenced Data and Software
                                     </div>
                                     <div class="entity-meta-data">
                                         <ul class="collection-list">

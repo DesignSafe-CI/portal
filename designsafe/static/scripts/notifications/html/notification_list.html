@@ -72,10 +72,10 @@
               </div> -->
             </dl>
             <!-- <div ng-if="x.fields.body.action_link">
-              <a href="{{x.fields.body.action_link.value}}" target="_blank" class="btn btn-primary">{{x.fields.body.action_link.label}}</a>
+              <a href="{{x.fields.body.action_link.value}}" target="_blank" aria-describedby="msg-open-new-window" class="btn btn-primary">{{x.fields.body.action_link.label}}</a>
             </div> -->
             <div>
-              <a href="{{x.action_link}}" target="_blank" class="btn btn-primary">View</a>
+              <a href="{{x.action_link}}" target="_blank" aria-describedby="msg-open-new-window" class="btn btn-primary">View</a>
             </div>
           </div>
         </li>
@@ -89,11 +89,9 @@
 </div>
 
 <div ng-if="data.notifications.length === 0" class="jumbotron text-center">
-  <i class="fa fa-bell fa-2x text-muted"></i>
+  <i role="none" class="fa fa-bell fa-2x text-muted"></i>
   <h2>No unread notifications.</h2>
   <p>
     You have no unread notifications.
-    <a href="/account/notifications/settings/">Click here</a>
-    to manage your notification settings.
   </p>
 </div>

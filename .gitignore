@@ -11,6 +11,8 @@ settings.json
 designsafe/apps/rapid/static/designsafe/apps/rapid/build/bundle.*
 designsafe/apps/geo/static/designsafe/apps/geo/build/bundle.*
 designsafe/static/build/
+designsafe/static/react-assets/
+designsafe/templates/react-assets.html
 # designsafe/static/styles/base.*
 /static
 
@@ -25,13 +27,14 @@ mysql.cnf
 designsafe/templates/base.html
 designsafe/apps/applications/templates/designsafe/apps/applications/index.html
 designsafe/apps/data/templates/data/data_depot.html
-designsafe/apps/workspace/templates/designsafe/apps/workspace/index.html
 designsafe/apps/rapid/templates/designsafe/apps/rapid/rapid_base.html
+designsafe/apps/workspace/templates/designsafe/apps/workspace/index.html
 designsafe/apps/geo/templates/designsafe/apps/geo/index.html
 designsafe/apps/search/templates/designsafe/apps/search/index.html
 designsafe/apps/dashboard/templates/designsafe/apps/dashboard/index.html
 designsafe/apps/notifications/templates/designsafe/apps/notifications/index.html
 designsafe/apps/nco/templates/designsafe/apps/nco/nco_index.html
+designsafe/apps/nco/templates/designsafe/apps/nco/ttc_grants.html
 
 # local config files
 conf/elasticsearch/logging.yml
@@ -52,9 +55,8 @@ data/NEHRI/
 # stats
 stats/
 
-# no node modules or package-lock
+# no node modules
 node_modules/
-package-lock.json
 
 # in case you leave that here
 datadump.json
@@ -93,6 +95,7 @@ docs/_build/
 target/
 venv/
 metrics/
+.python-version
 
 # ignore Google Drive API secrets
 *secrets.json

@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.test import RequestFactory
 
 from django.utils.html import strip_tags
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from cms.models import Title, CMSPlugin, Page
 # from cms.toolbar.toolbar import CMSToolbar
@@ -24,7 +24,7 @@ def _strip_tags(value):
     whitespace in between replaced tags to make sure words are not erroneously
     concatenated.
     """
-    return re.sub(r'<[^>]*?>', ' ', force_text(value))
+    return re.sub(r'<[^>]*?>', ' ', force_str(value))
 
 
 class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
@@ -61,12 +61,16 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         plugins = CMSPlugin.objects.filter(placeholder__in=obj.page.placeholders.all())
         text = ''
         for base_plugin in plugins:
-            instance, plugin_type = base_plugin.get_plugin_instance()
+            try:
+                instance, plugin_type = base_plugin.get_plugin_instance()
+            except Exception as e:
+                logger.debug(f"{type(e)}: {e}")
+                continue
             if instance is None:
                 # this is an empty plugin
                 continue
             if hasattr(instance, 'search_fields'):
-                text += ' '.join(force_text(strip_tags(getattr(instance, field, ''))) for field in instance.search_fields)
+                text += ' '.join(force_str(strip_tags(getattr(instance, field, ''))) for field in instance.search_fields)
             if getattr(instance, 'search_fulltext', False) or getattr(plugin_type, 'search_fulltext', False):
                 text += _strip_tags(instance.render_plugin(context=RequestContext(request))) + ' '
         text += page.get_meta_description() or ''
@@ -75,7 +79,7 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         self.prepared_data['text'] = text
         self.prepared_data["body"] = text
         self.prepared_data["slug"] = obj.slug
-        self.prepared_data["url"] = "https://" + obj.page.site.domain + '/' + obj.path
+        self.prepared_data["url"] = "https://designsafe-ci.org" + '/' + obj.path
         self.prepared_data["title"] = obj.title
 
         # self.prepared_data['language'] = self._language

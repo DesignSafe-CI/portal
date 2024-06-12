@@ -15,12 +15,12 @@
     ng-mouseleave="vm.title_hover=false">
   <span class="strong map-title"> {{vm.project.name}} </span>
 
-  <i class="fa fa-pencil pull-right" ng-click="vm.edit_title=!vm.edit_title"></i>
+  <i role="none" class="fa fa-pencil pull-right" ng-click="vm.edit_title=!vm.edit_title"></i>
 </li>
 
 <li class="list-group-item menu clearfix action" ng-click="vm.createLayerGroup()">
   <div uib-tooltip="Create a new Layer Group">
-    <i class="fa fa-plus"> </i> <span class="strong"> New Layer Group </span>
+    <i role="none" class="fa fa-plus"> </i> <span class="strong"> New Layer Group </span>
   </div>
 </li>
 
@@ -35,27 +35,27 @@
              ng-click="lg.show_contents= !lg.show_contents"></i>
     </div>
     <!-- <div>
-      <i class="fa fa-database"></i>
+      <i role="none" class="fa fa-database"></i>
     </div> -->
     <div ng-click="vm.selectActiveLayerGroup(lg)">
       <span class="pull-left" ng-hide="lg.show_edit_label"> {{lg.label}} </span>
       <div ng-show="lg.show_edit_label">
         <input type="text" ng-model="lg.label">
-        <i class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
+        <i role="none" class="fa fa-check" ng-click="lg.show_edit_label=false"></i>
       </div>
       <span class="lg-count" ng-show="!lg.show_edit_label"> {{lg.numFeatures()}} features </span>
     </div>
     <div class="pull-right">
-      <i class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
+      <i role="none" class="fa fa-pencil" ng-show="lg.show_edit_icon" ng-click="lg.show_edit_label=true"></i>
       <input type="checkbox" ng-model="lg.show" ng-change="vm.showHideLayerGroup(lg)"></input>
-      <i class="fa fa-gear" ng-click="lg.show_tools= !lg.show_tools" uib-tooltip="Show/Hide tools" tooltip-placement="left" tooltip-popup-delay="1000"></i>
+      <i role="none" class="fa fa-gear" ng-click="lg.show_tools= !lg.show_tools" uib-tooltip="Show/Hide tools" tooltip-placement="left" tooltip-popup-delay="1000"></i>
     </div>
   </li>
   <li class="list-group-item menu lg-tools clearfix" ng-show="lg.show_tools">
     <div>
       <span> Tools: </span>
-      <i class="fa fa-trash" ng-click="vm.deleteLayerGroup(lg, $index)" uib-tooltip="Delete this layer group" > </i>
-      <i class="fa fa-crosshairs" ng-click="vm.zoomTo(lg.feature_group)" uib-tooltip="Zoom to group"></i>
+      <i role="none" class="fa fa-trash" ng-click="vm.deleteLayerGroup(lg, $index)" uib-tooltip="Delete this layer group" > </i>
+      <i role="none" class="fa fa-crosshairs" ng-click="vm.zoomTo(lg.feature_group)" uib-tooltip="Zoom to group"></i>
     </div>
   </li>
   <li class="list-group-item menu clearfix subgroup"
@@ -81,10 +81,10 @@
       <div ng-if="feature.options.label"> {{ feature.options.label }} </div>
       <div class="pull-right">
         <div class="pull-left">
-          <i class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(lg, feature); $event.stopPropagation()"></i>
+          <i role="none" class="fa fa-trash" ng-show="feature.hover" ng-click="vm.delete_feature(lg, feature); $event.stopPropagation()"></i>
         </div>
         <div class="pull-right">
-          <i class="fa fa-crosshairs" ng-click="vm.zoomTo(feature); $event.stopPropagation()"> </i>
+          <i role="none" class="fa fa-crosshairs" ng-click="vm.zoomTo(feature); $event.stopPropagation()"> </i>
         </div>
       </div>
   </li>
@@ -95,7 +95,7 @@
 
 <div id="current_layer_details" ng-if="vm.current_layer">
   <div class="tools">
-    <i class="fa fa-close" ng-click="vm.current_layer=null"></i>
+    <i role="none" class="fa fa-close" ng-click="vm.current_layer=null"></i>
   </div>
   <li class="list-group-item menu clearfix">
     <div class="left">
@@ -191,7 +191,7 @@
       <textarea class="form-control input-sm kv-textarea" ng-model="meta.value"></textarea>
     </div>
     <div class="kv-buttons">
-      <i class="fa fa-trash" ng-click="vm.metadataDelete($index, vm.current_layer)"> </i>
+      <i role="none" class="fa fa-trash" ng-click="vm.metadataDelete($index, vm.current_layer)"> </i>
     </div>
   </li>
 
@@ -214,7 +214,7 @@
   </li>
 
   <li class="list-group-item menu clearfix action" ng-click="vm.adding_metadata = true">
-    <i class="fa fa-plus"> </i> Add record
+    <i role="none" class="fa fa-plus"> </i> Add record
   </li>
 
 </div> <!-- End of current layer details -->
@@ -239,7 +239,7 @@
         <div class="btn-group" role="group">
           <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             File
-            <span class="caret"></span>
+            <span class="caret" role="presentation"></span>
           </button>
           <ul class="dropdown-menu">
             <!-- <li ng-click="vm.open_existing_project()">Open Existing Project</li> -->
@@ -256,7 +256,7 @@
         <div class="btn-group" role="group">
           <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Import Data
-            <span class="caret"></span>
+            <span class="caret" role="presentation"></span>
           </button>
           <ul class="dropdown-menu">
             <li ng-click="vm.openFileDialog()"> Import data locally</li>
@@ -276,11 +276,11 @@
         </div> -->
       </div>
       <!-- <div class="btn-group" role="group">
-        <button class="btn btn-xs btn-default" tooltip="undo" tooltip-placement="bottom"> <i class="fa fa-undo"></i></button>
-        <button class="btn btn-xs btn-default" tooltip="redo" tooltip-placement="bottom"> <i class="fa fa-repeat"></i></button>
+        <button class="btn btn-xs btn-default" tooltip="undo" tooltip-placement="bottom"> <i role="none" class="fa fa-undo"></i></button>
+        <button class="btn btn-xs btn-default" tooltip="redo" tooltip-placement="bottom"> <i role="none" class="fa fa-repeat"></i></button>
       </div> -->
 
-      <i class="fa fa-spin fa-refresh blue" ng-show="vm.loading"></i>
+      <i role="none" class="fa fa-spin fa-refresh blue" ng-show="vm.loading"></i>
 
       <div id="mouse_coordinates" class="pull-right">
         <span> Lat: {{vm.current_mouse_coordinates.lat | number:4}} Lon: {{vm.current_mouse_coordinates.lng| number:4 }} </span>

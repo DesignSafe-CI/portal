@@ -17,7 +17,7 @@
                 <h3>
                     {{license.license_type}}
                     {% if license.current_user_license %}
-                        <span class="label label-success"><i class="fa fa-check-circle"></i> ACTIVE </span>
+                        <span class="label label-success"><i role="none" class="fa fa-check-circle"></i> ACTIVE </span>
                     {% else %}
                         <span class="label label-danger"> NOT ACTIVE </span>
                     {% endif %}
@@ -27,7 +27,7 @@
                     <p>
                         <a class="btn btn-lg btn-default"
                            href="{% url 'djangoRT:ticketcreate' %}?category=OTHER&subject={{license.license_type}}+license+activation+request{% if license.license_type == 'LS-DYNA' %}&problem_description=Department+Name%3A%0DInstitution+Name%3A{% endif %}"
-                           target="_blank"
+                           target="_blank" aria-describedby="msg-open-new-window"
                         >
                             Request Activation
                         </a>

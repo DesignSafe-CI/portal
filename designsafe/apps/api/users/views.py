@@ -4,15 +4,25 @@ from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.users import utils as users_utils
 from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
-from django.http import HttpResponseNotFound, JsonResponse, HttpResponse
+from django.http import HttpResponseNotFound, JsonResponse, HttpResponse, HttpRequest
 from django.views.generic.base import View
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
-
-from designsafe.apps.data.models.elasticsearch import IndexedFile
+from designsafe.apps.api.views import BaseApiView, ApiException
+from designsafe.apps.data.models.elasticsearch import IndexedFile, IndexedPublication
+from designsafe.libs.elasticsearch.utils import new_es_client
 from elasticsearch_dsl import Q, Search
 
 logger = logging.getLogger(__name__)
+
+def check_public_availability(username):
+    es_client = new_es_client()
+    query = Q({'multi_match': {'fields': ['project.value.teamMembers',
+                                          'project.value.coPis',
+                                          'project.value.pi'],
+                               'query': username}})
+    res = IndexedPublication.search(using=es_client).filter(query).execute()
+    return res.hits.total.value > 0
 
 
 class UsageView(SecureMixin, View):
@@ -40,22 +50,26 @@ class AuthenticatedView(View):
                 "last_name": u.last_name,
                 "email": u.email,
                 "oauth": {
-                    "access_token": u.agave_oauth.access_token,
-                    "expires_in": u.agave_oauth.expires_in,
-                    "scope": u.agave_oauth.scope,
-                }
+                    "expires_in": u.tapis_oauth.expires_in,
+                },
+                "isStaff": u.is_staff,
             }
 
             return JsonResponse(out)
-        return HttpResponse('Unauthorized', status=401)
+        return JsonResponse({'message': 'Unauthorized'}, status=401)
 
 
-class SearchView(SecureMixin, View):
+class SearchView(View):
 
     def get(self, request):
         resp_fields = ['first_name', 'last_name', 'email', 'username']
         model = get_user_model()
         q = request.GET.get('username')
+
+        # Do not return user details if the user is not part of a public project.
+        if not request.user.is_authenticated and not check_public_availability(q):
+            return JsonResponse({})
+
         if q:
             try:
                 user = model.objects.get(username=q)
@@ -79,6 +93,10 @@ class SearchView(SecureMixin, View):
 
             return JsonResponse(res_dict)
 
+        # Prevent unauthenticated users from performing a query
+        if not request.user.is_authenticated:
+            return JsonResponse({})
+
         q = request.GET.get('q')
         role = request.GET.get('role')
         user_rs = model.objects.filter()
@@ -91,11 +109,35 @@ class SearchView(SecureMixin, View):
         if role:
             logger.info(role)
             user_rs = user_rs.filter(groups__name=role)
+
+        # Prevent endpoint from returning unfiltered user list.
+        if not q and not role:
+            return HttpResponseNotFound()
+
         resp = [model_to_dict(u, fields=resp_fields) for u in user_rs]
         if len(resp):
             return JsonResponse(resp, safe=False)
         else:
             return HttpResponseNotFound()
+
+
+class ProjectUserView(BaseApiView):
+    """View for handling search for project users"""
+    def get(self, request: HttpRequest):
+        """retrieve a user by their exact TACC username."""
+        if not request.user.is_authenticated:
+            raise ApiException(message="Authentication required", status=401)
+
+        username_query = request.GET.get("q")
+        user_match = get_user_model().objects.filter(username__iexact=username_query)
+        user_resp = [{"fname": u.first_name,
+                     "lname": u.last_name,
+                     "inst": u.profile.institution,
+                     "email": u.email,
+                     "username": u.username} for u in user_match]
+
+        return JsonResponse({"result": user_resp})
+
 
 
 class PublicView(View):
@@ -109,6 +151,9 @@ class PublicView(View):
         try:
             users = []
             for username in nl:
+                # Do not return user details if the user is not part of a public project.
+                if not request.user.is_authenticated and not check_public_availability(username):
+                    continue
                 try:
                     users.append(model.objects.get(username=username))
                 except model.DoesNotExist:

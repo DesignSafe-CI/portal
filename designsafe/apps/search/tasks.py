@@ -11,7 +11,15 @@ logger = logging.getLogger(__name__)
 def update_search_index():
     logger.info("Updating search index")
     if not settings.DEBUG:
-        call_command("update_index", interactive=False)
+        call_command("rebuild_index", interactive=False)
+
+
+@shared_task()
+def clear_expired_sessions():
+    logger.info("Clearing expired sessions.")
+    if not settings.DEBUG:
+        call_command("clearsessions")
+
 
 @shared_task(bind=True)
 def index_community_data(self):

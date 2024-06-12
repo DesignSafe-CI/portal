@@ -1,11 +1,9 @@
 import PipelineLicensesTemplate from './pipeline-licenses.component.html';
 
 class PipelineLicensesCtrl {
-
-    constructor(ProjectEntitiesService, ProjectService, $uibModal, $state) {
+    constructor(ProjectService, $uibModal, $state) {
         'ngInject';
 
-        this.ProjectEntitiesService = ProjectEntitiesService;
         this.ProjectService = ProjectService;
         this.$uibModal = $uibModal;
         this.$state = $state;
@@ -17,13 +15,9 @@ class PipelineLicensesCtrl {
         this.primaryEntities = this.ProjectService.resolveParams.primaryEntities;
         this.secondaryEntities = this.ProjectService.resolveParams.secondaryEntities;
         this.selectedListings = this.ProjectService.resolveParams.selectedListings;
-        this.license = {
-            datasets: '',
-            works: '',
-            software: '',
-        };
+        this.selectedLicense = '';
         this.ui = {
-            loading: true
+            loading: true,
         };
 
         if (!this.project) {
@@ -64,31 +58,11 @@ class PipelineLicensesCtrl {
             if (typeof this.project.value.projectType === 'undefined') {
                 return false;
             }
-            if (this.license.datasets ||
-                this.license.works ||
-                this.license.software) {
+            if (this.selectedLicense) {
                 return true;
             }
             return false;
         }
-    }
-
-    reset() {
-        let ids = [
-            'odca',
-            'odcpdd',
-            'ccasa',
-            'ccpdd',
-            'gnu',
-        ];
-        ids.forEach((id) => {
-            document.getElementById(id).checked = false;
-        });
-        this.license = {
-            datasets: '',
-            works: '',
-            software: '',
-        };
     }
 
     goWork() {
@@ -101,33 +75,58 @@ class PipelineLicensesCtrl {
     }
 
     goAuthors() {
-        this.$state.go('projects.pipelineAuthors', {
-            projectId: this.projectId,
-            project: this.project,
-            primaryEntities: this.primaryEntities,
-            secondaryEntities: this.secondaryEntities,
-            selectedListings: this.selectedListings,
-        }, { reload: true });
+        this.$state.go(
+            'projects.pipelineAuthors',
+            {
+                projectId: this.projectId,
+                project: this.project,
+                primaryEntities: this.primaryEntities,
+                secondaryEntities: this.secondaryEntities,
+                selectedListings: this.selectedListings,
+            },
+            { reload: true }
+        );
     }
 
     goData() {
-        this.$state.go('projects.pipelineOther', {
-            projectId: this.projectId,
-            project: this.project,
-            selectedListings: this.selectedListings,
-        }, { reload: true });
+        this.$state.go(
+            'projects.pipelineOther',
+            {
+                projectId: this.projectId,
+                project: this.project,
+                selectedListings: this.selectedListings,
+            },
+            { reload: true }
+        );
     }
 
     goTeam() {
-        this.$state.go('projects.pipelineTeam', {
-            projectId: this.projectId,
-            project: this.project,
-            selectedListings: this.selectedListings,
-        }, { reload: true });
+        this.$state.go(
+            'projects.pipelineTeam',
+            {
+                projectId: this.projectId,
+                project: this.project,
+                selectedListings: this.selectedListings,
+            },
+            { reload: true }
+        );
     }
 
     // Modal for accept and publish...
     prepareModal() {
+        // Ugly fix to revert original license design without changing the schema
+        this.license = {
+            datasets: ['Open Data Commons Attribution', 'Open Data Commons Public Domain Dedication'],
+            works: ['Creative Commons Attribution', 'Creative Commons Public Domain Dedication'],
+            software: ['3-Clause BSD License'],
+        };
+        Object.keys(this.license).forEach((key) => {
+            this.license[key] = (this.license[key].includes(this.selectedLicense)
+                ? this.selectedLicense
+                : ''
+            )
+        });
+
         if (this.project.value.projectType === 'field_recon'){
             this.$uibModal.open({
                 component: 'pipelinePrivacyPublishModal',

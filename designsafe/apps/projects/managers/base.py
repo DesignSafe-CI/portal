@@ -6,14 +6,13 @@
 from __future__ import unicode_literals, absolute_import
 import logging
 import json
-from future.utils import python_2_unicode_compatible
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 
 
 LOG = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
+
 class ProjectsManager(object):
     """Base projects manager."""
 
@@ -49,10 +48,13 @@ class ProjectsManager(object):
             project_id=project_id
         )
         if len(metas) > 1:
+            affected_uuids = []
+            for meta in metas:
+                affected_uuids.append(meta['uuid'])
             LOG.info(
-                "More than one record with project id: %(project_id)s found."
-                "Using only the first one",
-                {project_id: project_id}
+                "More than one record with project id: {prj_id} found. "
+                "Affected project UUIDs: {uuids}"
+                .format(prj_id=project_id, uuids=affected_uuids)
             )
 
         prj_json = metas[0]

@@ -3,10 +3,8 @@ import _ from 'underscore';
 
 class ConfirmMessageCtrl {
 
-    constructor(ProjectEntitiesService, ProjectModel) {
+    constructor() {
         'ngInject';
-        this.ProjectEntitiesService = ProjectEntitiesService;
-        this.ProjectModel = ProjectModel;
     }
 
     $onInit() {

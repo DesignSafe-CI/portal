@@ -82,7 +82,7 @@
                                 ng-disabled="!$ctrl.params.typeFilters.experimental"
                                 id="exp-facility-select"
                                 ng-model="$ctrl.params.advancedFilters.experimental.experimentalFacility"
-                                ng-change="$ctrl.getValidExperimentTypes()"
+                                ng-change="$ctrl.getValidExperimentTypes(true)"
                                 ng-options="ef.name as ef.label for ef in $ctrl.experimentFacilityOptions"
                                 class="form-control"
                                 ></select
@@ -167,8 +167,8 @@
             <div class="col-xs-2" style="height: 50px; display: flex; justify-content: center; align-items: center;">
                 <div style="text-align: center;">
                     <a href="#" ng-click="$ctrl.toggleSearchPanel($event)">
-                        <span ng-if="$ctrl.isCollapsed"> More Options <span class="fa fa-chevron-down"></span> </span>
-                        <span ng-if="!$ctrl.isCollapsed"> Less Options <span class="fa fa-chevron-up"></span> </span>
+                        <span ng-if="$ctrl.isCollapsed"> More Options <span role="none" class="fa fa-chevron-down"></span> </span>
+                        <span ng-if="!$ctrl.isCollapsed"> Less Options <span role="none" class="fa fa-chevron-up"></span> </span>
                     </a>
                 </div>
             </div>

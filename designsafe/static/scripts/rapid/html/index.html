@@ -3,7 +3,7 @@
     <div class="sidebar-handle"
          uib-tooltip="Expand sidebar"
          tooltip-placement="right">
-      <i class="fa fa-chevron-right"> </i>
+      <i role="none" class="fa fa-chevron-right"> </i>
     </div>
   </div>
   <div id="sidebar" ng-show="vm.show_sidebar" class="slide-in">
@@ -11,14 +11,11 @@
          ng-click="vm.show_sidebar = !vm.show_sidebar"
          uib-tooltip="Collapse sidebar"
          tooltip-placement="right">
-      <i class="fa fa-chevron-left"> </i>
+      <i role="none" class="fa fa-chevron-left"> </i>
     </div>
     <div class="sidebar-content">
-      <div class="sidebar-header">
-        <img class="img-responsive" src="/static/scripts/rapid/images/logo.png" height="50px"></img>
-      </div>
       <div style="padding-left:10px;">
-          <a href="/rw/user-guides/tools-applications/recon-portal/"><i class="fa fa-question-circle"></i> <b>Learn more about contributing.</b></a>
+          <a href="/rw/user-guides/tools-applications/recon-portal/"><i role="none" class="fa fa-question-circle"></i> <b>Learn more about contributing.</b></a>
       </div>
       <div ng-show="vm.active_rapid_event" class="fade recon-event-details">
         <div class="text-center">
@@ -31,7 +28,7 @@
           <div class="input-group">
             <input type="text" class="form-control" ng-model="vm.filter_options.search_text" ng-change="vm.search()"></input>
             <span class="input-group-btn">
-              <button class="btn btn-default"> <i class="fa fa-trash" ng-click="vm.clear_filters()"></i></button>
+              <button class="btn btn-default"> <i role="none" class="fa fa-trash" ng-click="vm.clear_filters()"></i></button>
             </span>
           </div>
         </div>

@@ -2,7 +2,7 @@
     <!-- progression map -->
     <div class="pull-right" style="padding-bottom: 20px;">
         <a ng-click="$ctrl.goWork()">
-            <i class="fa fa-times"></i> Exit Prepare to Publish
+            <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
         </a>
     </div>
     <table class="tg"
@@ -19,44 +19,44 @@
             <td>
                 <strong>Selection</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Project</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Mission</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Collections</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Order Authors</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td>
                 <strong>Licenses</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
         </tr>
     </table>
     <br>
     <div>
-        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i role="none" class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedEnts.length">Continue</button>
     </div>
@@ -80,22 +80,23 @@
             <h3 style="text-align: center">Select what you want to publish</h3>
             <li>Click "Select this Mission and all of its files" for each Mission you want to publish.</li>
             <li>If you want to deselect individual files, deselect the checkboxes.</li>
-            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">Curation office hours</a> for help with publishing.</li>
+            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
         <!-- Missions -->
         <div ng-show="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
         <!-- Reports Collection -->
         <div ng-repeat="mission in $ctrl.orderedPrimary" ng-hide="$ctrl.ui.loading">
             <div ng-if="mission.name == 'designsafe.project.field_recon.report'">
                 <a ng-click="$ctrl.selectEntity(mission)">Select this Report and all of its files</a>
-                <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
+                <span ng-if="$ctrl.selectedEnts.includes(mission)"><i role="none" class="fa fa-check" style="color: #1CB500;"></i></span>
+
                 <div class="dropdown dropdown-spacer-lg" id="details-{{mission.uuid}}">
-                    <button class="btn collapsed tab-experiment" data-toggle="collapse"
+                    <button class="btn collapsed tab-gray" data-toggle="collapse"
                             data-target="#files-{{mission.uuid}}" style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Documents | <strong>{{mission.value.title}}</strong></span>
@@ -112,16 +113,26 @@
                                     <ds-author-list authors="mission.value.authors"></ds-author-list>
                                 </div>
                             </div>
-                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
-                                <div class="entity-meta-label-multi">
-                                    Referenced Data
+                            <span ng-if="mission.value.facility.name">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Facility</div>
+                                    <span class="entity-meta-data-cap">{{ mission.value.facility.name }}</span>
                                 </div>
+                            </span>
+                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
                                 <div class="entity-meta-data">
-                                    <ul class="collection-list">
-                                        <li data-ng-repeat="data in mission.value.referencedData">
-                                            <a href="{{ data.url }}" rel="noopener noreferrer" target=”_blank”>{{ data.title }}</a>
-                                        </li>
-                                    </ul>
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <related-work></related-work>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
+                                <div class="entity-meta-label-multi">Referenced Data and Software</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="reference in mission.value.referencedData track by $index">
+                                        <referenced-data></referenced-data>
+                                    </div>
                                 </div>
                             </div>
                             <div class="entity-meta-field">
@@ -166,8 +177,8 @@
             <div ng-if="!$ctrl.ui.fileNav && mission.name == 'designsafe.project.field_recon.mission'">
                 <div class="dropdown dropdown-spacer-lg" id="details-{{experiment.uuid}}">
                     <a ng-click="$ctrl.selectEntity(mission)">Select this Mission and all of its files</a>
-                    <span ng-if="$ctrl.selectedEnts.includes(mission)"><i class="fa fa-check" style="color: #1CB500;"></i></span>
-                    <button class="btn tab-experiment collapsed" data-toggle="collapse"
+                    <span ng-if="$ctrl.selectedEnts.includes(mission)"><i role="none" class="fa fa-check" style="color: #1CB500;"></i></span>
+                    <button class="btn tab-gray collapsed" data-toggle="collapse"
                             data-target="#data-{{mission.uuid}}" style="width:100%;">
                         <div class="collapse-tab">
                             <span class="collapse-tab-content-left">Mission | <strong>{{mission.value.title}}</strong></span>
@@ -190,6 +201,12 @@
                                     <ds-author-list authors="mission.value.authors"></ds-author-list>
                                 </div>
                             </div>
+                            <span ng-if="mission.value.facility.name">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Facility</div>
+                                    <span class="entity-meta-data-cap">{{ mission.value.facility.name }}</span>
+                                </div>
+                            </span>
                             <div class="entity-meta-field">
                                 <div class="entity-meta-label-multi">
                                     Date of Mission
@@ -199,6 +216,22 @@
                                     <span data-ng-if="mission.value.dateEnd && mission.value.dateEnd !== mission.value.dateStart">
                                         &#8213; {{mission.value.dateEnd | date:'MM-dd-yyyy' }}
                                     </span>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="work in mission.value.relatedWork track by $index">
+                                        <related-work></related-work>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="mission.value.referencedData.length">
+                                <div class="entity-meta-label-multi">Referenced Data and Software</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="reference in mission.value.referencedData track by $index">
+                                        <referenced-data></referenced-data>
+                                    </div>
                                 </div>
                             </div>
                             <div class="entity-meta-field">
@@ -246,7 +279,7 @@
                             <!-- Social Science -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.social_science'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-experiment" data-toggle="collapse"
+                                        <button class="btn collapsed tab-yellow" data-toggle="collapse"
                                                 data-target="#files-{{collection.uuid}}" style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Social Sciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -339,7 +372,7 @@
                                                 </div>
                                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                     <div class="entity-meta-label-multi">
-                                                        Referenced Data
+                                                        Referenced Data and Software
                                                     </div>
                                                     <div class="entity-meta-data">
                                                         <ul class="collection-list">
@@ -363,7 +396,7 @@
                                 <!-- GeoscienceEngineering -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.geoscience'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-experiment" data-toggle="collapse"
+                                        <button class="btn collapsed tab-yellow" data-toggle="collapse"
                                                 data-target="#files-{{collection.uuid}}" style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Engineering/Geosciences Collection | <strong>{{collection.value.title}}</strong></span>
@@ -427,7 +460,7 @@
                                                 </div>
                                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                     <div class="entity-meta-label-multi">
-                                                        Referenced Data
+                                                        Referenced Data and Software
                                                     </div>
                                                     <div class="entity-meta-data">
                                                         <ul class="collection-list">
@@ -451,7 +484,7 @@
                                 <!-- Research Planning Collection -->
                                 <div ng-if="$ctrl.matchingGroup(mission, collection) && collection.name == 'designsafe.project.field_recon.planning'">
                                     <div class="dropdown dropdown-spacer-sm" id="details-{{collection.uuid}}">
-                                        <button class="btn collapsed tab-sensor-info" data-toggle="collapse"
+                                        <button class="btn collapsed tab-teal" data-toggle="collapse"
                                                 data-target="#files-{{collection.uuid}}" style="width:100%;">
                                             <div class="collapse-tab">
                                                 <span class="collapse-tab-content-left">Research Planning Collection | <strong>{{collection.value.title}}</strong></span>
@@ -470,7 +503,7 @@
                                                 </div>
                                                 <div class="entity-meta-field" ng-if="collection.value.referencedData.length">
                                                     <div class="entity-meta-label-multi">
-                                                        Referenced Data
+                                                        Referenced Data and Software
                                                     </div>
                                                     <div class="entity-meta-data">
                                                         <ul class="collection-list">

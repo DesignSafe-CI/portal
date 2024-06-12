@@ -1,9 +1,10 @@
 import dataDepotToolbarTemplate from './data-depot-toolbar.component.html'
 
 class DataDepotToolbarCtrl {
-    constructor($state, $uibModal, Django, UserService, FileListingService, FileOperationService, PublicationService) {
+    constructor($state, $stateParams, $uibModal, Django, UserService, FileListingService, FileOperationService, PublicationService) {
         'ngInject';
         this.$state = $state;
+        this.$stateParams = $stateParams
         this.search = { queryString: '' };
         this.UserService = UserService;
         this.FileListingService = FileListingService
@@ -16,6 +17,7 @@ class DataDepotToolbarCtrl {
     placeholder() {
         var stateNames = {
             'myData': 'My Data',
+            'myDataWork': 'HPC Work',
             'projects.list': 'My Projects',
             'sharedData': 'Shared Data',
             'boxData': 'Box',
@@ -49,12 +51,14 @@ class DataDepotToolbarCtrl {
             const projectId = this.PublicationService.current.projectId;
             this.FileOperationService.microsurvey({projectId})
         }
-        this.FileOperationService.download({api, scheme, files});
+        const doi = this.FileListingService.currentDOI || this.$stateParams.doi
+        this.FileOperationService.download({api, scheme, files, doi});
     }
     preview() {
         const { api, scheme } = this.FileListingService.listings.main.params;
         const file = this.getAllSelected()[0];
-        this.FileOperationService.openPreviewModal({api, scheme, file});
+        const doi = this.FileListingService.currentDOI || this.$stateParams.doi
+        this.FileOperationService.openPreviewModal({api, scheme, file, doi});
     }
     previewImages() {
         const { api, scheme, system } = this.FileListingService.listings.main.params;
@@ -64,7 +68,8 @@ class DataDepotToolbarCtrl {
     copy() {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;
         const files = this.getAllSelected();
-        this.FileOperationService.openCopyModal({api, scheme, system, path, files});
+        const doi = this.FileListingService.currentDOI || this.$stateParams.doi;
+        this.FileOperationService.openCopyModal({api, scheme, system, path, files, doi});
     }
     move() {
         const { api, scheme, system, path } = this.FileListingService.listings.main.params;

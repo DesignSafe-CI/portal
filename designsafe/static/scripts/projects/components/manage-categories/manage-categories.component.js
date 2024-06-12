@@ -1,5 +1,4 @@
 import ManageCategoriesTemplate from './manage-categories.component.html';
-import _ from 'underscore';
 
 class ManageCategoriesCtrl {
 
@@ -15,9 +14,8 @@ class ManageCategoriesCtrl {
     }
 
     $onInit() {
-        this.browser = this.resolve.browser;
+        this.project = this.resolve.project;
         this.edit = this.resolve.edit;
-        this.browser.categories = [];
         this.form = {
             tagSelected: '',
             projectTagToAdd: {
@@ -43,16 +41,23 @@ class ManageCategoriesCtrl {
         };
 
         if (this.edit) {
-            this.editCategory(this.edit);
-            this.ui.loading = false;
+            if (this.edit.constructor.name != 'ProjectEntity') {
+                this.ProjectEntitiesService.get({'uuid': this.edit.uuid}).then((entity) => {
+                    this.editCategory(entity);
+                    this.ui.loading = false;
+                })
+            } else {
+                this.editCategory(this.edit);
+                this.ui.loading = false;
+            }
         } else {
-            let entities = this.browser.project.getAllRelatedObjects();
-            this.FileListingService.abstractListing(entities, this.browser.project.uuid).then((_) => {
+            let entities = this.project.getAllRelatedObjects();
+            this.FileListingService.abstractListing(entities, this.project.uuid).then((_) => {
                 this.ui.loading = false;
             });
         }
 
-        if (this.browser.project.value.projectType === 'experimental') {
+        if (this.project.value.projectType === 'experimental') {
             this.ui.experimental = true;
             this.ui.tagTypes = [
                 {
@@ -81,7 +86,7 @@ class ManageCategoriesCtrl {
                     yamzId: ''
                 }
             ];
-        } else if (this.browser.project.value.projectType === 'simulation') {
+        } else if (this.project.value.projectType === 'simulation') {
             this.ui.simulation = true;
             this.ui.tagTypes = [
                 {
@@ -110,7 +115,7 @@ class ManageCategoriesCtrl {
                     yamzId: ''
                 },
             ];
-        } else if (this.browser.project.value.projectType === 'hybrid_simulation') {
+        } else if (this.project.value.projectType === 'hybrid_simulation') {
             this.ui.hybridSim = true;
             this.ui.tagTypes = [
                 {
@@ -133,11 +138,6 @@ class ManageCategoriesCtrl {
                     name: 'designsafe.project.hybrid_simulation.exp_substructure',
                     yamzId: ''
                 },
-                // {
-                //     label: 'Outputs',
-                //     name: 'designsafe.project.hybrid_simulation.output',
-                //     yamzId: ''
-                // },
                 {
                     label: 'Coordinator Output',
                     name: 'designsafe.project.hybrid_simulation.coordinator_output',
@@ -204,18 +204,10 @@ class ManageCategoriesCtrl {
 
     addCategory() {
         var entity = this.form.projectTagToAdd;
-        var nameComps = entity.name.split('.');
-        var name = nameComps[nameComps.length - 1];
         entity.description = entity.description || '';
-        //if (typeof this.browser.files !== 'undefined') {
-        //    entity.filePaths = _.map(this.browser.files,
-        //        (file) => {
-        //            return file.path;
-        //        });
-        //}
         this.ProjectEntitiesService.create({
             data: {
-                uuid: this.browser.project.uuid,
+                uuid: this.project.uuid,
                 name: entity.name,
                 entity: entity
             }
@@ -223,14 +215,7 @@ class ManageCategoriesCtrl {
             .then(
                 (resp) => {
                     this.form.projectTagToAdd = { optional: {}, refs: new Array (1) };
-                    this.browser.project.addEntity(resp);
-                    this.browser.listings[resp.uuid] = {
-                        name: this.browser.listing.name,
-                        path: this.browser.listing.path,
-                        system: this.browser.listing.system,
-                        trail: this.browser.listing.trail,
-                        children: [],
-                    }; 
+                    this.project.addEntity(resp);
                 },
                 (err) => {
                     this.ui.error = err;
@@ -241,6 +226,7 @@ class ManageCategoriesCtrl {
     editCategory(cat) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
         this.tagType(cat.name);
+        let displayName = cat.getDisplayName();
         if (cat.value.refs){
             if (!cat.value.refs.length) {
                 cat.value.refs = new Array(1);
@@ -254,7 +240,8 @@ class ManageCategoriesCtrl {
         var catCopy = JSON.parse(JSON.stringify( cat ));
         this.editForm = {
             entity: catCopy,
-            type: catCopy._displayName,
+            // type: catCopy._displayName,
+            type: displayName,
             title: catCopy.value.title,
             refs: catCopy.value.refs,
             description: catCopy.value.description
@@ -282,7 +269,7 @@ class ManageCategoriesCtrl {
                 entity: cat
             }
         }).then((e) => {
-            var ent = this.browser.project.getRelatedByUuid(e.uuid);
+            var ent = this.project.getRelatedByUuid(e.uuid);
             ent.update(e);
             this.editForm = {};
             this.ui.showEditCategory = false;
@@ -311,12 +298,12 @@ class ManageCategoriesCtrl {
                             uuid: ent.uuid
                         }
                     }).then((entity) => {
-                        this.browser.project.removeEntity(entity);
+                        this.project.removeEntity(entity);
                     });
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete(`Are you sure you want to delete ${ent.value.title}?`);
     }
 
     onBrowse(file) {

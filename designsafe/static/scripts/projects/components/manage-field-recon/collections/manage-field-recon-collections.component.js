@@ -3,13 +3,10 @@ import ManageFieldReconCollectionsTemplate from './manage-field-recon-collection
 import collectionEquipment from './equipment-list.json';
 
 class ManageFieldReconCollectionsCtrl {
-    constructor($q, $uibModal, $window, UserService, ProjectEntitiesService) {
+    constructor($uibModal, ProjectEntitiesService) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.UserService = UserService;
-        this.$q = $q;
         this.$uibModal = $uibModal;
-        this.$window = $window;
     }
 
     $onInit() {
@@ -25,15 +22,15 @@ class ManageFieldReconCollectionsCtrl {
                 )
         );
 
-        members.forEach((m, i) => {
-            if (typeof m == 'string') {
+        members.forEach((member, i) => {
+            if (typeof member == 'string') {
                 // if user is guest append their data
-                if(m.slice(0,5) === 'guest') {
+                if(member.slice(0,5) === 'guest') {
                     let guestData = this.project.value.guestMembers.find(
-                        (x) => x.user === m
+                        (x) => x.user === member
                     );
                     members[i] = {
-                        name: m,
+                        name: member,
                         order: i,
                         authorship: false,
                         guest: true,
@@ -43,7 +40,7 @@ class ManageFieldReconCollectionsCtrl {
                         inst: guestData.inst,
                     };
                 } else {
-                    members[i] = { name: m, order: i, authorship: false };
+                    members[i] = { name: member, order: i, authorship: false };
                 }
             }
         });
@@ -58,14 +55,14 @@ class ManageFieldReconCollectionsCtrl {
             socialScienceCollections: this.project.socialscience_set,
             planningCollections: this.project.planning_set,
             geoscienceCollections: this.project.geoscience_set,
-            reportCollections: this.project.report_set,
+            // reportCollections: this.project.report_set,
             project: this.project,
             users: [... new Set(members)],
             collectionTypes: [
                 {name: 'designsafe.project.field_recon.planning', label:'Research Planning Collection'},
                 {name: 'designsafe.project.field_recon.geoscience', label:'Engineering/Geosciences Collection'},
                 {name: 'designsafe.project.field_recon.social_science', label:'Social Sciences Collection'},
-                {name: 'designsafe.project.field_recon.report', label:'Documents Collection'},
+                // {name: 'designsafe.project.field_recon.report', label:'Documents Collection'},
             ],
             observationTypes: [
                 'Wind',
@@ -87,7 +84,7 @@ class ManageFieldReconCollectionsCtrl {
 
     formFields(field) {
         let researchFields = ['collectors'];
-        let reportFields = ['authors'];
+        // let reportFields = ['authors'];
         let engineeringFields = [
             'collectors',
             'obsType',
@@ -112,10 +109,10 @@ class ManageFieldReconCollectionsCtrl {
             return engineeringFields.includes(field);
         } else if (this.form.collectionType === 'designsafe.project.field_recon.social_science') {
             return socialFields.includes(field);
-        } else if (this.form.collectionType === 'designsafe.project.field_recon.report') {
-            return reportFields.includes(field);
-        } else {
-            return reportFields.includes(field);
+        // } else if (this.form.collectionType === 'designsafe.project.field_recon.report') {
+        //     return reportFields.includes(field);
+        // } else {
+        //     return reportFields.includes(field);
         }
     }
 
@@ -128,7 +125,7 @@ class ManageFieldReconCollectionsCtrl {
             sampleApproach: [null],
             equipment: [null],
             equipmentOther: [null],
-            referencedData: [{}],
+            // referencedData: [{}],
             dataCollectors: angular.copy(this.data.users),
         };
     }
@@ -179,7 +176,7 @@ class ManageFieldReconCollectionsCtrl {
 
     addEquipment() {
         let last = this.form.equipment.length - 1;
-        if (this.form.equipment[last].length && !this.form.equipment.includes('None')) {
+        if (this.form.equipment[last] && !this.form.equipment.includes('None')) {
             this.form.equipment.push(null);
             this.form.equipmentOther.push(null);
         }
@@ -192,12 +189,12 @@ class ManageFieldReconCollectionsCtrl {
         }
     }
 
-    addReferenced() {
-        let last = this.form.referencedData.length - 1;
-        if (this.form.referencedData[last] && this.form.referencedData[last].title) {
-            this.form.referencedData.push({});
-        }
-    }
+    // addReferenced() {
+    //     let last = this.form.referencedData.length - 1;
+    //     if (this.form.referencedData[last] && this.form.referencedData[last].title) {
+    //         this.form.referencedData.push({});
+    //     }
+    // }
 
     addObservationType() {
         let last = this.form.observationTypes.length - 1;
@@ -207,11 +204,7 @@ class ManageFieldReconCollectionsCtrl {
         }
     }
 
-    removeInput(group) {
-        group.pop();
-    }
-
-    minimumInputs(group) {
+    checkEmpty(group) {
         if (group.length <= 1) {
             return true;
         }
@@ -324,13 +317,13 @@ class ManageFieldReconCollectionsCtrl {
                     })
                     .filter(input => input),
                 restriction: this.form.restriction || '',
-                referencedData: this.form.referencedData.filter(input => input.title && input.url),
+                // referencedData: this.form.referencedData.filter(input => input.title && input.url),
                 description: this.form.description,
             },
             'designsafe.project.field_recon.planning': {
                 title: this.form.title,
                 dataCollectors: this.form.dataCollectors,
-                referencedData: this.form.referencedData.filter(input => input.title && input.url),
+                // referencedData: this.form.referencedData.filter(input => input.title && input.url),
                 description: this.form.description,
             },
             'designsafe.project.field_recon.geoscience': {
@@ -357,15 +350,15 @@ class ManageFieldReconCollectionsCtrl {
                         return type;
                     })
                     .filter(input => input),
-                referencedData: this.form.referencedData.filter(input => input.title && input.url),
+                // referencedData: this.form.referencedData.filter(input => input.title && input.url),
                 description: this.form.description,
             },
-            'designsafe.project.field_recon.report': {
-                title: this.form.title,
-                authors: this.form.dataCollectors,
-                referencedData: this.form.referencedData.filter(input => input.title && input.url),
-                description: this.form.description,
-            },
+            // 'designsafe.project.field_recon.report': {
+            //     title: this.form.title,
+            //     authors: this.form.dataCollectors,
+            //     referencedData: this.form.referencedData.filter(input => input.title && input.url),
+            //     description: this.form.description,
+            // },
         }
         if ('dateEnd' in collection[type]) {
             if (isNaN(Date.parse(collection[type].dateEnd))) {
@@ -394,7 +387,7 @@ class ManageFieldReconCollectionsCtrl {
             this.data.socialScienceCollections = this.project.socialscience_set;
             this.data.planningCollections = this.project.planning_set;
             this.data.geoscienceCollections = this.project.geoscience_set;
-            this.data.reportCollections = this.project.report_set;
+            // this.data.reportCollections = this.project.report_set;
             this.clearForm();
         }, (err) => {
             this.data.error = err;
@@ -422,9 +415,12 @@ class ManageFieldReconCollectionsCtrl {
             this.data.editCollection.value.sampleApproach = [null];
         }
         let auths = this.configureAuthors(collection);
-        if (!this.data.editCollection.value.referencedData || !this.data.editCollection.value.referencedData.length) {
-            this.data.editCollection.value.referencedData = new Array (1);
-        }
+        // if (!this.data.editCollection.value.referencedData || !this.data.editCollection.value.referencedData.length) {
+        //     this.data.editCollection.value.referencedData = [{
+        //         title: '',
+        //         url: ''
+        //     }];
+        // }
 
         let formEquipment = [];
         let formEquipmentOther = [];
@@ -472,7 +468,7 @@ class ManageFieldReconCollectionsCtrl {
             latitude: this.data.editCollection.value.latitude,
             equipment: formEquipment,
             equipmentOther: formEquipmentOther,
-            referencedData: this.data.editCollection.value.referencedData,
+            // referencedData: this.data.editCollection.value.referencedData,
             description: this.data.editCollection.value.description,
         };
     }
@@ -516,12 +512,13 @@ class ManageFieldReconCollectionsCtrl {
                 this.data.editCollection.value.dateEnd = new Date(this.data.editCollection.value.dateStart);
             }
         }
-        if (['designsafe.project.field_recon.report'].includes(this.form.collectionType)) {
-            this.data.editCollection.value.authors = this.form.dataCollectors;
-        } else {
-            this.data.editCollection.value.dataCollectors = this.form.dataCollectors;
-        }
-        this.data.editCollection.value.referencedData = this.form.referencedData.filter(input => input.title && input.url);
+        // if (['designsafe.project.field_recon.report'].includes(this.form.collectionType)) {
+        //     this.data.editCollection.value.authors = this.form.dataCollectors;
+        // } else {
+        //     this.data.editCollection.value.dataCollectors = this.form.dataCollectors;
+        // }
+        this.data.editCollection.value.dataCollectors = this.form.dataCollectors;
+        // this.data.editCollection.value.referencedData = this.form.referencedData.filter(input => input.title && input.url);
         this.data.editCollection.value.description = this.form.description;
 
         this.ProjectEntitiesService.update({
@@ -536,7 +533,7 @@ class ManageFieldReconCollectionsCtrl {
             this.data.socialScienceCollections = this.project.socialscience_set;
             this.data.planningCollections = this.project.planning_set;
             this.data.geoscienceCollections = this.project.geoscience_set;
-            this.data.reportCollections = this.project.report_set;
+            // this.data.reportCollections = this.project.report_set;
             delete this.data.editCollection;
             if (window.sessionStorage.experimentData) {
                 this.close({ $value: collection });
@@ -574,12 +571,12 @@ class ManageFieldReconCollectionsCtrl {
                         this.data.socialScienceCollections = this.project.socialscience_set;
                         this.data.planningCollections = this.project.planning_set;
                         this.data.geoscienceCollections = this.project.geoscience_set;
-                        this.data.reportCollections = this.project.report_set;
+                        // this.data.reportCollections = this.project.report_set;
                     });
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete(`Are you sure you want to delete ${ent.value.title}?`);
     }
 }
 

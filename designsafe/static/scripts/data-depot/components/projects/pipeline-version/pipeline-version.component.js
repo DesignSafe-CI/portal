@@ -1,24 +1,25 @@
-import PipelineVersionTemplate from './pipeline-version.template.html';
-import PipelineVersionProjectTemplate from './pipeline-version-project.template.html';
-import PipelineVersionChangesTemplate from './pipeline-version-changes.template.html';
+import VersionExperimentSelectionTemplate from './version-experiment-selection.template.html';
+import VersionFieldReconSelectionTemplate from './version-field-recon-selection.template.html';
+import VersionSimulationSelectionTemplate from './version-simulation-selection.template.html';
+import VersionHybSimSelectionTemplate from './version-hyb-sim-selection.template.html';
+import VersionCitationTemplate from './version-citation.template.html';
+import experimentalData from '../../../../projects/components/facility-data.json';
 
 class PipelineVersionCtrl {
     constructor(
+        ProjectEntitiesService,
         FileOperationService,
         FileListingService,
-        PublicationService,
         ProjectService,
-        $uibModal,
         $state,
         $http,
         $q
     ) {
         'ngInject';
+        this.ProjectEntitiesService = ProjectEntitiesService;
         this.FileOperationService = FileOperationService;
         this.FileListingService = FileListingService;
-        this.PublicationService = PublicationService;
         this.ProjectService = ProjectService;
-        this.$uibModal = $uibModal
         this.$state = $state;
         this.$http = $http;
         this.$q = $q;
@@ -27,39 +28,209 @@ class PipelineVersionCtrl {
     $onInit() {
         this.ui = {
             loading: true,
-            success: false,
-            warning: false,
-            error: false,
-            submitted: false,
-            confirmed: false
+            confirmed: false,
+            selectionComp: '',
+            citationComp: '',
+            placeholder: '',
+            savedStatus: {},
+            efs: experimentalData.facility,
+            equipmentTypes: experimentalData.equipmentTypes,
+            experimentTypes: experimentalData.experimentTypes
         };
         this.projectId = this.ProjectService.resolveParams.projectId;
         this.filePath = this.ProjectService.resolveParams.filePath;
         this.publication = this.ProjectService.resolveParams.publication;
-        this.selectedListing = this.ProjectService.resolveParams.selectedListing;
-        this.revisionText = '';
+        this.selectedListings = this.ProjectService.resolveParams.selectedListings;
+        this.selectedEnts = this.ProjectService.resolveParams.selectedEnts;
+        this.curDate = new Date().getFullYear();
+        this.revisionAuthors = {}
+        this.selectedAuthor = '';
         if (!this.publication) {
             this.goStart();
         } else {
             this.$q.all([
                 this.ProjectService.get({ uuid: this.projectId }),
-                this.FileListingService.browse({
-                    section: 'main',
-                    api: 'agave',
-                    scheme: 'private',
-                    system: 'project-' + this.projectId,
-                    path: this.filePath,
-                }),
-            ]).then(([project, listing]) => {
+                this.ProjectEntitiesService.listEntities({ uuid: this.projectId, name: 'all' }),
+            ])
+            .then(([project, entities]) => {
                 this.project = project;
-                this.listing = listing;
-                this.authors = this.publication.project.value.teamOrder;
-                this.pubData = {
-                    project: { uuid: this.project.uuid, value: { projectId: this.project.value.projectId } },
-                    license: this.publication.licenses
-                };
-                this.ui.loading = false;
+                this.project.appendEntitiesRel(entities);
+                const prjType = this.project.value.projectType;
+                this.doiList = {};
+                if (prjType === 'experimental') {
+                    this.ui.selectionComp = 'projects.versionExperimentSelection';
+                    this.ui.citationComp = 'projects.versionCitation';
+                    this.ui.placeholder = 'Experiment';
+                    this.matchingGroupKey = 'experiments';
+                    this.publishedKeyNames = ['experimentsList'];
+                    this.subEntities = ['modelconfig_set', 
+                                        'sensorlist_set', 
+                                        'event_set', 
+                                        'report_set', 
+                                        'analysis_set'];
+                } else if (prjType === 'simulation') {
+                    this.ui.selectionComp = 'projects.versionSimulationSelection';
+                    this.ui.citationComp = 'projects.versionCitation';
+                    this.ui.placeholder = 'Simulation';
+                    this.matchingGroupKey = 'simulations';
+                    this.publishedKeyNames = ['simulation'];
+                    this.subEntities = ['simulation_set', 
+                                        'model_set',  
+                                        'input_set', 
+                                        'output_set', 
+                                        'analysis_set', 
+                                        'report_set'];
+                } else if (prjType === 'hybrid_simulation') {
+                    this.ui.selectionComp = 'projects.versionHybSimSelection';
+                    this.ui.citationComp = 'projects.versionCitation';
+                    this.ui.placeholder = 'HybSim';
+                    this.matchingGroupKey = 'hybrid_simulations';
+                    this.publishedKeyNames = ['hybrid_simulation'];
+                    this.subEntities = ['hybridsimulation_set', 
+                                        'globalmodel_set',  
+                                        'coordinator_set', 
+                                        'simsubstructure_set', 
+                                        'expsubstructure_set', 
+                                        'coordinatoroutput_set', 
+                                        'simoutput_set', 
+                                        'expoutput_set', 
+                                        'analysis_set', 
+                                        'report_set'];
+                } else if (prjType === 'field_recon') {
+                    this.ui.selectionComp = 'projects.versionFieldReconSelection';
+                    this.ui.citationComp = 'projects.versionCitation';
+                    this.ui.placeholder = 'Mission';
+                    this.matchingGroupKey = 'missions';
+                    this.publishedKeyNames = ['missions', 'reports'];
+                    this.subEntities = ['planning_set', 
+                                        'socialscience_set', 
+                                        'geoscience_set'];
+
+                    this.primaryEnts = [].concat(
+                        this.project.mission_set || [],
+                        this.project.report_set || []
+                    );
+                    this.secondaryEnts = [].concat(
+                        this.project.socialscience_set || [],
+                        this.project.planning_set || [],
+                        this.project.geoscience_set || []
+                        // TODO: throw error if collections found in publication or project
+                    );
+                    this.orderedPrimary = this.ordered(this.project, this.primaryEnts);
+                    this.orderedSecondary = {};
+                    this.orderedPrimary.forEach((primEnt) => {
+                        if (primEnt.name === 'designsafe.project.field_recon.mission') {
+                            this.orderedSecondary[primEnt.uuid] = this.ordered(primEnt, this.secondaryEnts);
+                        }
+                    });
+                    this.orderedPrimary.forEach((ent) => {
+                        if (ent.value.dois && ent.value.dois.length) {
+                            this.doiList[ent.uuid] = {
+                                doi: ent.value.dois[0], 
+                                type: ent.name.split('.').pop(),
+                                hash: `details-${ent.uuid}`
+                            }
+                        }
+                    });
+                    if (this.doiList) {
+                        let dataciteRequests = Object.values(this.doiList).map(({doi}) => {
+                            return this.$http.get(`/api/publications/data-cite/${doi}`);
+                        });
+                        this.$q.all(dataciteRequests).then((responses) => {
+                            let citations = responses.map((resp) => {
+                                if (resp.status == 200) {
+                                    return resp.data.data.attributes
+                                }
+                            });
+                            citations.forEach((cite) => {
+                                let doiObj = Object.values(this.doiList).find(x => x.doi === cite.doi);
+                                doiObj['created'] = cite.created;
+                            })
+                        });
+                    } 
+                } 
+                else {
+                    this.goStart();
+                }
+                
+                this.FileListingService.abstractListing(entities, project.uuid).then((_) => {
+                    // autoselect the published entities from the project
+                    if (!this.selectedEnts.length) {
+                        entities.forEach((ent) => {
+                            if ('dois' in ent.value && ent.value.dois.length) {
+                                this.selectEntity(ent);
+                            }
+                        })
+                    } else {
+                        this.configureCitations();
+                    }
+                    this.ui.loading = false;
+                })
             });
+        }
+    }
+
+    configureCitations() {
+        this.selectedEnts.forEach((ent) => {
+            this.revisionAuthors[ent.uuid] = ent.value.authors;
+            this.ui.savedStatus[ent.uuid] = false;
+        })
+
+        this.publishedKeyNames.forEach((key) => {
+            if (key in this.publication) {
+                this.publication[key].forEach((pubEnt) => {
+                    if (pubEnt.uuid in this.revisionAuthors) {
+                        this.revisionAuthors[pubEnt.uuid] = pubEnt.authors;
+                    }
+                });
+            }
+        });
+    }
+
+    saveAuthors(entity, status) {
+        this.ui.savedStatus[entity.uuid] = status;
+        let statuses = Object.values(this.ui.savedStatus);
+        const updateAuths = structuredClone(this.revisionAuthors[entity.uuid]);
+        if (status) {
+            this.ui.loading = true;
+            delete this.revisionAuthors[entity.uuid];
+        }
+        if (statuses.every(value => value === true)) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            this.ui.confirmed = true;
+        } else {
+            this.ui.confirmed = false;
+        }
+        if (status) {
+            this.revisionAuthors[entity.uuid] = updateAuths;
+            this.ui.loading = false;
+        }
+    }
+
+    orderAuthors(up, entity) {
+        var a;
+        var b;
+        this.saveAuthors(entity, false)
+        if (up) {
+            if (this.selectedAuthor.order <= 0) {
+                return;
+            }
+            // move up
+            a = this.revisionAuthors[entity.uuid].find(x => x.order === this.selectedAuthor.order - 1);
+            b = this.revisionAuthors[entity.uuid].find(x => x.order === this.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
+        } else {
+            if (this.selectedAuthor.order >= this.revisionAuthors[entity.uuid].length - 1) {
+                return;
+            }
+            // move down
+            a = this.revisionAuthors[entity.uuid].find(x => x.order === this.selectedAuthor.order + 1);
+            b = this.revisionAuthors[entity.uuid].find(x => x.order === this.selectedAuthor.order);
+            a.order = a.order + b.order;
+            b.order = a.order - b.order;
+            a.order = a.order - b.order;
         }
     }
 
@@ -72,88 +243,177 @@ class PipelineVersionCtrl {
         }
     }
 
-    submitVersion() {
-        this.ui.warning = false;
-        if (this.revisionText.length < 10) {
-            return this.ui.warning = true;
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.efs.facilities_list;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
+            });
+            return ef.label;
         }
-        this.ui.loading = true;
-        let filePaths = this.selectedListing.listing.map( file => file.path);
-        this.$http.post(
-            '/api/projects/publication/',
-            {
-                publication: this.pubData,
-                status: 'publishing',
-                revision: true,
-                revisionText: this.revisionText,
-                revisionAuthors: this.authors,
-                selectedFiles: filePaths
+    }
+
+    getET(exp) {
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+        exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+        exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+        {
+            let ets = this.ui.experimentTypes[exp.value.experimentalFacility];
+            let et = ets.find((x) => {
+                return x.name === exp.value.experimentType;
+            });
+            return et.label;
+        }
+    }
+
+    getEQ(exp) {
+        if (exp.value.experimentalFacility == 'ohhwrl-oregon' || exp.value.experimentalFacility == 'eqss-utaustin' ||
+        exp.value.experimentalFacility == 'cgm-ucdavis' || exp.value.experimentalFacility == 'lhpost-sandiego' ||        
+        exp.value.experimentalFacility == 'rtmd-lehigh' || exp.value.experimentalFacility == 'pfsml-florida' ||
+        exp.value.experimentalFacility == 'wwhr-florida' || exp.value.experimentalFacility == 'other') 
+        {
+            let eqts = this.ui.equipmentTypes[exp.value.experimentalFacility];
+            let eqt = eqts.find((x) => {
+                return x.name === exp.value.equipmentType;
+            });
+            return eqt.label;
+        }
+    }
+
+    matchingGroup(primaryEnt, subEnt) {
+        if (!primaryEnt) {
+            // if the sub entity is related to the project and not a primary entity
+            if (!subEnt.value[this.matchingGroupKey]) {
+                return;
+            } else if (
+                subEnt.associationIds.indexOf(this.projectId) > -1 &&
+                !subEnt.value[this.matchingGroupKey].length
+            ) {
+                return true;
             }
-        ).then((resp) => {
-            this.ui.success = true;
-            this.ui.submitted = true;
-            this.ui.loading = false;
-        }, (error) => {
-            this.ui.error = true;
-            this.ui.submitted = true;
-            this.ui.loading = false;
-        });
-    }
-
-    saveAuthors() {
-        this.ui.confirmed = true;
-    }
-
-    saveSelections() {
-        let selectedFiles = this.FileListingService.getSelectedFiles('main')
-        if (!selectedFiles.length) {
-            return;
+            return false;
         }
-        this.selectedListing = {
-            ...this.FileListingService.listings.main,
-            listing: selectedFiles,
-        };
-        this.FileListingService.selectedListing = this.selectedListing;
+        // if the sub entity is related to the primary entity
+        // match appropriate data to corresponding primary entity
+        if (subEnt.associationIds.indexOf(primaryEnt.uuid) > -1) {
+            return true;
+        }
+        return false;
     }
 
-    undoSelections() {
-        this.selectedListing = null;
+    gatherSelections() {
+        let listing = {};
+        Object.keys(this.FileListingService.listings).forEach((key) => {
+            if (this.FileListingService.listings[key].selectedForPublication) {
+                listing[key] = { ...this.FileListingService.listings[key] };
+            } else {
+                delete listing[key];
+            }
+        });
+        return listing;
     }
 
-    returnToProject() {
-        this.$state.go('projects.view', { projectId: this.project.uuid }, { reload: true });
+    selectEntity(ent) {
+        let uuidsToSelect = [];
+        if (this.selectedEnts.find((selEnt) => selEnt.uuid === ent.uuid)) {
+            this.selectedEnts = this.selectedEnts.filter((selEnt) => selEnt.uuid !== ent.uuid);
+        } else {
+            this.selectedEnts.push(ent);
+        }
+        this.selectedEnts.forEach((sEnt) => {
+            uuidsToSelect.push(sEnt.uuid);
+        });
+
+        // iterate over subEntities and select files related to primary entity...
+        if (ent.name.endsWith('field_recon.report')) {
+            if (uuidsToSelect.includes(ent.uuid)) {
+                this.FileListingService.setPublicationSelection(ent.uuid, true);
+            } else {
+                this.FileListingService.setPublicationSelection(ent.uuid, false);
+            }
+        } else {
+            this.subEntities.forEach((subEntSet) => {
+                if (this.project[subEntSet]) {
+                    this.project[subEntSet].forEach((subEnt) => {
+                        if (subEnt.associationIds.some((uuid) => uuidsToSelect.includes(uuid))) {
+                            this.FileListingService.setPublicationSelection(subEnt.uuid, true);
+                        } else {
+                            this.FileListingService.setPublicationSelection(subEnt.uuid, false);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+    }
+
+    navigate(destCompName) {
+        let params = {
+            projectId: this.projectId,
+            project: this.project,
+            publication: this.publication,
+            selectedEnts: this.selectedEnts,
+            selectedListings: this.selectedListings,
+            revisionAuthors: this.revisionAuthors
+        }
+        this.$state.go(destCompName, params, { reload: true });
     }
 
     goStart() {
-        this.$state.go('projects.pipelineStart', { projectId: this.projectId }, { reload: true });
+        this.navigate('projects.pipelineStart');
+    }
+    
+    goSelection() {
+        this.navigate(this.ui.selectionComp);
     }
 
-    goVersion() {
-        this.$state.go('projects.pipelineVersion', {
-            projectId: this.projectId,
-            publication: this.publication
-        }, { reload: true });
+    goCitation() {
+        this.selectedListings = this.gatherSelections();
+        this.missing = this.ProjectService.checkSelectedFiles(
+            this.project,
+            this.selectedEnts,
+            this.selectedListings
+        );
+        if (this.missing.length) { return };
+        this.navigate(this.ui.citationComp);
     }
 
-    goVersionProject() {
-        this.$state.go('projects.pipelineVersionProject', {
-            projectId: this.projectId,
-            publication: this.publication,
-            selectedListing: this.selectedListing
-        }, { reload: true });
+    goChanges() {
+        this.navigate('projects.versionChanges');
     }
 
-    goVersionChanges() {
-        this.$state.go('projects.pipelineVersionChanges', {
-            projectId: this.projectId,
-            publication: this.publication,
-            selectedListing: this.selectedListing
-        }, { reload: true });
+    goProject() {
+        this.navigate('projects.view');
+    }
+
+    ordered(parent, entities) {
+        let order = (ent) => {
+            if (ent._ui && ent._ui.orders && ent._ui.orders.length) {
+                return ent._ui.orders.find(order => order.parent === parent.uuid);
+            }
+            return 0;
+        };
+        entities.sort((a,b) => {
+            if (typeof order(a) === 'undefined' || typeof order(b) === 'undefined') {
+                return -1;
+            }
+            return (order(a).value > order(b).value) ? 1 : -1;
+        });
+
+        return entities;
     }
 }
 
-export const PipelineVersionComponent = {
-    template: PipelineVersionTemplate,
+
+export const VersionExperimentSelectionComponent = {
+    template: VersionExperimentSelectionTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
@@ -163,8 +423,8 @@ export const PipelineVersionComponent = {
     },
 };
 
-export const PipelineVersionProjectComponent = {
-    template: PipelineVersionProjectTemplate,
+export const VersionFieldReconSelectionComponent = {
+    template: VersionFieldReconSelectionTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {
@@ -174,8 +434,30 @@ export const PipelineVersionProjectComponent = {
     },
 };
 
-export const PipelineVersionChangesComponent = {
-    template: PipelineVersionChangesTemplate,
+export const VersionSimulationSelectionComponent = {
+    template: VersionSimulationSelectionTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionHybSimSelectionComponent = {
+    template: VersionHybSimSelectionTemplate,
+    controller: PipelineVersionCtrl,
+    controllerAs: '$ctrl',
+    bindings: {
+        resolve: '<',
+        close: '&',
+        dismiss: '&'
+    },
+};
+
+export const VersionCitationComponent = {
+    template: VersionCitationTemplate,
     controller: PipelineVersionCtrl,
     controllerAs: '$ctrl',
     bindings: {

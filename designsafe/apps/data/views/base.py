@@ -1,11 +1,11 @@
 import json
 import logging
-
+import networkx as nx
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.notifications.views import get_number_unread_notifications
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
@@ -18,9 +18,48 @@ from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicat
 
 from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.apps.api.agave import service_account
+from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.apps.api.projects_v2.operations.datacite_operations import get_datacite_json
 import json
 
 logger = logging.getLogger(__name__)
+
+
+def get_google_scholar_context(project_id):
+    """Get context info for Google Scholar/Datacite"""
+    pub = Publication.objects.get(project_id=project_id)
+    pub_tree = nx.node_link_graph(pub.tree)
+    latest_version = max(
+            pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
+        )
+    published_ents = [node for node in pub_tree.successors("NODE_ROOT") 
+                    if pub_tree.nodes[node]["version"] == latest_version]
+
+    datacite_json_list = []
+    scholar_meta = {}
+    scholar_meta["keywords"] = ", ".join(pub.value.get("keywords", []))
+    scholar_meta["citation_keywords"] = pub.value.get("keywords", [])
+    scholar_meta["entities"] = []
+    for ent in published_ents:
+        ent_meta = pub_tree.nodes[ent]
+        entity_scholar_data = {
+            "title": ent_meta["value"]["title"],
+            "description": ent_meta["value"].get("description"),
+            "doi": ent_meta["value"].get("dois", [])[0],
+            "authors": ent_meta["value"].get("authors", []),
+            "publication_date": ent_meta["publicationDate"]
+        }
+        scholar_meta["entities"].append(entity_scholar_data)
+
+
+        datacite_json_list.append(get_datacite_json(pub_tree, 
+                                                    ent_meta["uuid"], 
+                                                    latest_version))
+
+    return scholar_meta, datacite_json_list
+
+
+     
 
 class  BasePublicTemplate(TemplateView):
     def get_context_data(self, **kwargs):
@@ -195,48 +234,13 @@ class DataDepotPublishedView(TemplateView):
         Update context data to add publication.
         """
         context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
-        logger.info('Get context Data')
-        pub = BaseESPublication(project_id=kwargs['project_id'].strip('/'))
-        logger.debug('pub: %s', pub.to_dict())
-        context['projectId'] = pub.projectId
-        context['citation_title'] = pub.project.value.title
-        context['citation_date'] = pub.created
-        if pub.project.value.to_dict().get('dois') != None: #This is for newer publications
-            context['doi'] = pub.project.value.dois[0]
-        elif pub.project.to_dict().get('doi') != None: #This is for older publications
-            context['doi'] = pub.project.doi
-        context['keywords'] = pub.project.value.keywords.split(',')
-        if 'users' in pub.to_dict():
-            context['authors'] = [{
-                'full_name': '{last_name}, {first_name}'.format(
-                    last_name=user['last_name'], first_name=user['first_name']
-                ),
-                'institution': getattr(getattr(user, 'profile', ''), 'institution', '')
-            } for user in getattr(pub, 'users', [])]
-        elif 'authors' in pub.to_dict():
-            context['authors'] = [{
-                'full_name': '{last_name}, {first_name}'.format(
-                    last_name=author['lname'], first_name=author['fname']
-                ),
-                'institution': getattr(author, 'inst', '')
-            } for author in getattr(pub, 'authors',[])]
-        else:
-            context['authors'] = [{
-                'full_name': '{last_name}, {first_name}'.format(
-                    last_name=author['lname'], first_name=author['fname']
-                ),
-                'institution': getattr(author, 'inst', '')
-            } for author in getattr(pub.project.value, 'teamOrder', [])]
-        context['publication'] = pub
-        context['description'] = pub.project.value.description
-        context['experiments'] = getattr(pub, 'experimentsList', [])
-        context['missions'] = getattr(pub, 'missions', [])
-        context['reports'] = getattr(pub, 'reports', [])
-        context['simulations'] = getattr(pub, 'simulations', [])
-        context['hybrid_simulations'] = getattr(pub, 'hybrid_simulations',[])
-
-        proj = ProjectsManager(service_account()).get_project_by_id(pub.projectId)
-        context['dc_json'] = json.dumps(proj.to_dataset_json())
+        try:
+            scholar_context, datacite_context = get_google_scholar_context(kwargs['project_id'])
+            context['dc_context'] = datacite_context
+            context['scholar_context'] = scholar_context
+        except Exception:
+            # If we can't generate DataCite JSON, render the page without meta tags.
+            pass
 
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({

@@ -1,0 +1,398 @@
+<div class="modal-header" id="modal-header" style="background: #e6e6e6;">
+    <h4 class="modal-title" style="border:none;">
+        <span>Add Documents</span>
+        <span class="pull-right" ng-click="$ctrl.close()">
+            <i role="none" class="fa fa-times">&nbsp;</i>
+        </span>
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="well">
+        <form name="addForm">
+            <div class="form-group">
+                <label for="id-title">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Document Title</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            This is the title of a stand alone publication that will be shown in the citation with a DOI.
+                            Make sure to build a unique title, different from project one.
+                            Use keyword terms and focus on dataset that is being published.
+                        </span>
+                    </div>
+                </label>
+                <input type="text"
+                       id="id-title"
+                       ng-model="$ctrl.form.title"
+                       ng-required="true"
+                       class="form-control"/>
+            </div>
+            <!-- Facilities -->
+            <div class="form-group">
+                <label for="id-facility">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Facility</span>
+                        </div>
+                    </div>
+                </label>
+                <div style="display:flex;flex-direction: row;">
+                    <select class="form-control" ng-options="ef.name as ef.label for ef in $ctrl.ui.facilities"
+                        style="flex: 1; min-width: 150px;" ng-change="$ctrl.clearFacilityIfOther()"
+                        ng-model="$ctrl.form.facility.id">
+                        <option value="">-- Select a Facility --</option>
+                    </select>
+                    <input class="form-control" type="text" placeholder="Custom Facility" ng-required="true" style="margin-left: 5px"
+                        ng-model="$ctrl.form.facility.name" ng-if="$ctrl.form.facility.id == 'other'" />
+                </div>
+            </div>
+            <!-- Referenced Data -->
+            <div class="form-group">
+                <table class="manage-prj-table">
+                    <colgroup>
+                        <col style="width: 60%">
+                        <col style="width: 38%">
+                        <col style="width: 2%">
+                    </colgroup>
+                    <tr>
+                        <label for="id-project-referenced-data">
+                            <div class="label-form">
+                                <div>
+                                    <span class="label-form-name">Referenced Data and Software</span>
+                                </div>
+                                <span class="label-form-desc">
+                                    Published data used in the creation of this dataset.
+                                </span>
+                            </div>
+                        </label>
+                    </tr>
+                    <tr>
+                        <td>
+                            Title
+                        </td>
+                        <td>
+                            URL or DOI for the referenced data, in URL format
+                        </td>
+                    </tr>
+                    <tr ng-repeat="reference in $ctrl.form.referencedData track by $index">
+                        <td class="manage-prj-td align-top">
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="reference-name{{$index}}"
+                                    name="reference-name"
+                                    ng-model="reference.title"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData"
+                                    required>
+                        </td>
+                        <td class="manage-prj-td align-top">
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="reference-href{{$index}}"
+                                    name="reference-href-type"
+                                    placeholder="https://"
+                                    ng-model="reference.doi"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <input type="radio"
+                                    id="reference-href-type-doi{{$index}}"
+                                    name="reference-href-type{{$index}}"
+                                    value="DOI"
+                                    ng-model="reference.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <label for="DOI">DOI</label>
+                            <input type="radio"
+                                    id="reference-href-type-url{{$index}}"
+                                    name="reference-href-type{{$index}}"
+                                    value="URL"
+                                    ng-model="reference.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.referencedData"
+                                    ng-required="$ctrl.ui.require.referencedData">
+                            <label for="URL">URL</label>
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-if="$ctrl.ui.require.referencedData"
+                                    ng-click="$ctrl.dropObjField('referencedData', $index)">
+                                <i role="none" class="fa fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addObjField('referencedData')">
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.referencedData">another</span> Referenced Data/Software
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropObjField('referencedData')"
+                            ng-disabled="!$ctrl.ui.require.referencedData">
+                            &#x2212; Remove Referenced Data/Software
+                    </button>
+                </div>
+            </div>
+            <!-- Related Work -->
+            <div class="form-group">
+                <table class="manage-prj-table">
+                    <colgroup>
+                        <col style="width: 20%">
+                        <col style="width: 40%">
+                        <col style="width: 38%">
+                        <col style="width: 2%">
+                    </colgroup>
+                    <tr>
+                        <label for="id-project-works">
+                            <div class="label-form">
+                                <div>
+                                    <span class="label-form-name">Related Work</span>
+                                </div>
+                                <span class="label-form-desc">
+                                    Information giving context, a linked dataset on DesignSafe, or works citing the DOI for this dataset.
+                                </span>
+                            </div>
+                        </label>
+                    </tr>
+                    <tr>
+                        <td>
+                            Type
+                        </td>
+                        <td>
+                            Title
+                        </td>
+                        <td valign="top">
+                            URL or DOI for the related work, in URL format
+                        </td>
+                    </tr>
+                    <tr ng-repeat="work in $ctrl.form.relatedWork track by $index">
+                        <td class="manage-prj-td align-top">
+                            <select class="project-form-input"
+                                    id="work-type{{$index}}"
+                                    name="related-work"
+                                    ng-options="item for item in $ctrl.ui.relatedWorkTypes"
+                                    ng-model="work.type"
+                                    ng-disabled="!$ctrl.ui.require.relatedWork"
+                                    ng-required="$ctrl.ui.require.relatedWork">
+                                    <option value="">-- Type --</option>
+                            </select>
+                        </td>
+                        <td class="manage-prj-td align-top">
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="work-title{{$index}}"
+                                    name="related-work"
+                                    ng-model="work.title"
+                                    ng-disabled="!$ctrl.ui.require.relatedWork"
+                                    ng-required="$ctrl.ui.require.relatedWork">
+                        </td>
+                        <td class="manage-prj-td align-top">
+                            <input  class="project-form-input"
+                                    type="text"
+                                    id="work-href{{$index}}"
+                                    name="related-work"
+                                    placeholder="https://"
+                                    ng-model="work.href"
+                                    ng-disabled="!$ctrl.ui.require.relatedWork"
+                                    ng-required="$ctrl.ui.require.relatedWork">
+                            <input type="radio"
+                                    id="work-href-type-doi{{$index}}"
+                                    name="related-work{{$index}}"
+                                    value="DOI"
+                                    ng-model="work.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.relatedWork"
+                                    ng-required="$ctrl.ui.require.relatedWork">
+                            <label for="DOI">DOI</label>
+                            <input type="radio"
+                                    id="work-href-type-url{{$index}}"
+                                    name="related-work{{$index}}"
+                                    value="URL"
+                                    ng-model="work.hrefType"
+                                    ng-disabled="!$ctrl.ui.require.relatedWork"
+                                    ng-required="$ctrl.ui.require.relatedWork">
+                            <label for="URL">URL</label>
+                        </td>
+                        <td class="manage-prj-td-last">
+                            <button class="btn btn-danger btn-xs"
+                                    ng-if="$ctrl.ui.require.relatedWork"
+                                    ng-click="$ctrl.dropObjField('relatedWork', $index)">
+                                <i role="none" class="fa fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.addObjField('relatedWork')">
+                            &#x2b; Add <span ng-if="$ctrl.ui.require.relatedWork">another</span> Related Work
+                    </button>
+                    |
+                    <button class="btn-project-add-rm"
+                            ng-click="$ctrl.dropObjField('relatedWork')"
+                            ng-disabled="!$ctrl.ui.require.relatedWork">
+                            &#x2212; Remove Related Work
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id-authorship">
+                        <div style="display: flex; flex-direction: column">
+                            <div>
+                                <span class="pull-left" style="margin-right: 5px">Assign Authorship</span>
+                                <span class="label label-danger">Required</span>
+                            </div>
+                            <span style="display: block; font-weight:normal;">
+                                You can order the authors during the publication process.
+                            </span>
+                        </div>
+                    </label>
+                <div class="form-group">
+                    <div ng-repeat="usr in $ctrl.form.authors track by $index"
+                        style="width:46%; display:inline-block; white-space: nowrap;">
+                        <input type="checkbox"
+                                format="lname"
+                                ng-checked="usr.authorship"
+                                id="{{ 'newAuthor' + $index }}"
+                                ng-model="usr.authorship"
+                                ng-required="$ctrl.validAuthors()">
+                        <ds-user ng-if="!usr.guest" username="usr.name" format="lname">{{ usr.name }}</ds-user>
+                        <span ng-if="usr.guest">{{ usr.lname }}, {{ usr.fname }}</span><br>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id-description">
+                    <div style="display: flex; flex-direction: column">
+                        <div>
+                            <span class="pull-left" style="margin-right: 5px">Document Description</span>
+                            <span class="label label-danger">Required</span>
+                        </div>
+                        <span style="display: block; font-weight:normal;">
+                            What types of damages and structures/natural features were observed?
+                            What methods were used to gather the data?
+                            Description must be between 50 and 5000 characters in length.
+                        </span>
+                    </div>
+                </label>
+                <textarea class="form-textbox"
+                          id="id-description"
+                          ng-model="$ctrl.form.description"
+                          ng-required="true"
+                          ng-minlength="50"
+                          ng-maxlength="5000">
+                    &nbsp;
+                </textarea>
+                <span ng-if="addForm.$error.minlength[0].$invalid || addForm.$error.maxlength[0].$invalid" class="label-form-desc-error">
+                    Description length is invalid 
+                </span>
+            </div>
+            <!-- Notifications -->
+            <div class="alert alert-danger flex-container" ng-if="$ctrl.ui.error">
+                <i role="none" class="fa fa-exclamation notification-icon"></i>
+                <div>
+                    An error has occurred when attempting to save.
+                </div>
+            </div>
+            <!-- Submit Btn -->
+            <div class="text-right">
+                <button class="btn btn-default"
+                        ng-if="$ctrl.ui.editing"
+                        ng-click="$ctrl.resetForm()">
+                    Cancel
+                </button>
+                <button class="btn btn-add"
+                        type="submit"
+                        ng-if="$ctrl.ui.editing"
+                        ng-click="addForm.$valid && $ctrl.updateDocument($event)"
+                >
+                    Update
+                </button>
+            </div>
+            <div class="text-right">
+                <button class="btn btn-add"
+                        ng-click="addForm.$valid && $ctrl.createDocument($event)"
+                        ng-if="!$ctrl.ui.editing"
+                        type="submit"
+                >
+                    <i role="none" class="fa fa-plus">&nbsp;</i>
+                    Add Document
+                </button>
+            </div>
+        </form>
+    </div>
+    <div>
+        <div>
+            <label>Document Inventory</label>
+        </div>
+        <div class="dropdown">
+            <div ng-repeat="doc in $ctrl.documents">
+                <div class="dropdown dropdown-spacer-sm">
+                    <button class="btn collapsed tab-gray" data-toggle="collapse"
+                            data-target="#files-{{doc.uuid}}" style="width: 100%;">
+                        <div class="collapse-tab">
+                            <span class="collapse-tab-content-left">Documents | <strong>{{doc.value.title}}</strong></span>
+                            <span class="collapse-tab collapse-tab-content-right" ng-if="!doc.value.dois[0]">
+                                <span class="curation-chevron"></span>
+                            </span>
+                            <span class="collapse-tab collapse-tab-content-right" ng-if="doc.value.dois[0]">
+                                <span class="label label-success">Published</span>&nbsp;
+                                <span class="curation-chevron"></span>
+                            </span>
+                        </div>
+                    </button>
+                    <div id="files-{{doc.uuid}}" class="collapse dropdown-spacer-lg">
+                        <div class="well">
+                            <div class="entity-meta-field">
+                                <div class="entity-meta-label-multi">Authors</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="author in doc.value.authors | orderBy: 'order'"
+                                         ng-if="!author.length && author.authorship">
+                                        <span ng-if="!author.guest">
+                                            <ds-user data-username="author.name" data-format="lname">
+                                                {{author}}
+                                            </ds-user>
+                                        </span>
+                                        <span ng-if="author.guest">
+                                            {{author.lname}}, {{author.fname}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span ng-if="doc.value.facility.name">
+                                <div class="entity-meta-field">
+                                    <div class="entity-meta-label">Facility</div>
+                                    <span class="entity-meta-data-cap">{{ doc.value.facility.name }}</span>
+                                </div>
+                            </span>
+                            <div class="entity-meta-field" ng-if="doc.value.relatedWork.length">
+                                <div class="entity-meta-label-multi">Related Work</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="work in doc.value.relatedWork track by $index">
+                                        <related-work></related-work>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="entity-meta-field" ng-if="doc.value.referencedData.length">
+                                <div class="entity-meta-label-multi">Referenced Data and Software</div>
+                                <div class="entity-meta-data">
+                                    <div ng-repeat="reference in doc.value.referencedData track by $index">
+                                        <referenced-data></referenced-data>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top:10px;">
+                                {{ doc.value.description}}
+                            </div>
+                            <div><br>
+                                <span ng-click="$ctrl.editDocument(doc)"><a>Edit</a></span>
+                                <span ng-if="!doc.value.dois[0]" ng-click="$ctrl.deleteDocument(doc)"> | <a>Delete </a></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

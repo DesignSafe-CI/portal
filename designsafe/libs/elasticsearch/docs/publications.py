@@ -5,7 +5,7 @@
 """
 
 import logging
-from future.utils import python_2_unicode_compatible
+
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible
+
 class BaseESPublication(BaseESResource):
     """Wrapper class for Elastic Search indexed publication.
 
@@ -158,49 +158,83 @@ class BaseESPublication(BaseESResource):
                 dict_obj['meta']['piLabel'] = '({pi})'.format(pi=pi)
         return dict_obj
 
+
+    def entity_keys(self, publishable=False):
+        """Type specific keys for publication"""
+        prj_type = self.project.value.projectType
+        if prj_type == 'experimental':
+            if publishable:
+                return ['experimentsList']
+            return [
+                'experimentsList',
+                'modelConfigs',
+                'analysisList',
+                'sensorLists',
+                'eventsList',
+                'reportsList'
+            ]
+        elif prj_type == 'simulation':
+            if publishable:
+                return ['simulations']
+            return [
+                'simulations',
+                'models',
+                'inputs',
+                'outputs',
+                'analysiss',
+                'reports'
+            ]
+        elif prj_type == 'hybrid_simulation':
+            if publishable:
+                return ['hybrid_simulations']
+            return [
+                'hybrid_simulations',
+                'global_models',
+                'coordinators',
+                'sim_substructures',
+                'exp_substructures',
+                'coordinator_outputs',
+                'sim_outputs',
+                'exp_outputs',
+                'reports',
+                'analysiss'
+            ]
+        elif prj_type == 'field_recon':
+            if publishable:
+                return ['missions', 'reports']
+            return [
+                'missions',
+                'reports',
+                'collections',
+                'socialscience',
+                'planning',
+                'geoscience'
+            ]
+        else:
+            return []
+
+
+    def entities(self):
+        """Entity uuids"""
+        dict_obj = self._wrapped.to_dict()
+        uuids = []
+        for key in self.entity_keys():
+            if key in dict_obj:
+                for ent in dict_obj[key]:
+                    uuids.append(ent['uuid'])
+        return uuids
+
+
     def related_file_paths(self):
+        """File paths for published files"""
         dict_obj = self._wrapped.to_dict()
         related_objs = []
-        if dict_obj['project']['value']['projectType'] == 'experimental':
-            related_objs = (
-                dict_obj.get('modelConfigs', []) +
-                dict_obj.get('analysisList', []) +
-                dict_obj.get('sensorLists', []) +
-                dict_obj.get('eventsList', []) +
-                dict_obj.get('reportsList', [])
-            )
-        elif dict_obj['project']['value']['projectType'] == 'simulation':
-            related_objs = (
-                dict_obj.get('models', []) +
-                dict_obj.get('inputs', []) +
-                dict_obj.get('outputs', []) +
-                dict_obj.get('analysiss', []) +
-                dict_obj.get('reports', [])
-            )
-        elif dict_obj['project']['value']['projectType'] == 'hybrid_simulation':
-            related_objs = (
-                dict_obj.get('global_models', []) +
-                dict_obj.get('coordinators', []) +
-                dict_obj.get('sim_substructures', []) +
-                dict_obj.get('exp_substructures', []) +
-                dict_obj.get('coordinator_outputs', []) +
-                dict_obj.get('sim_outputs', []) +
-                dict_obj.get('exp_outputs', []) +
-                dict_obj.get('reports', []) +
-                dict_obj.get('analysiss', [])
-            )
-        elif dict_obj['project']['value']['projectType'] == 'field_recon':
-            related_objs = (
-                dict_obj.get('collections', []) +
-                dict_obj.get('socialscience', []) +
-                dict_obj.get('planning', []) +
-                dict_obj.get('reports', []) +
-                dict_obj.get('geoscience', [])
-            )
+        for key in self.entity_keys():
+            related_objs = related_objs + dict_obj.get(key, [])
 
         file_paths = []
         for obj in related_objs:
-            for file_dict in obj['fileObjs']:
-                file_paths.append(file_dict['path'])
-
+            if 'fileObjs' in obj:
+                for file_dict in obj['fileObjs']:
+                    file_paths.append(file_dict['path'])
         return file_paths

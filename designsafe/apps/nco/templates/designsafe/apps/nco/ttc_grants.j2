@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load cms_tags static sekizai_tags%}
+
+{% block title %}
+NHERI Facilities Scheduling Dashbaord
+{% endblock %}
+{% block head_extra %}
+    <base href="{% url 'nco:ttc_grants' %}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+	    <!-- PAGE INTRO ROW -->
+        <div class="top-row ttc-intro">
+	        <!-- TTC INTRO -->
+              <h1>NHERI Grants</h1>
+            These are grants the NCO identified as being related to NHERI projects.
+	    </div>
+        <hr class="top-line"/>
+
+        <!-- Grants VIEW -->
+        <nco-ttc-grants>
+            <div class="bg-info text-info" data-ng-if="!$ctrl.initialized">
+                <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+            </div>
+        </nco-ttc-grants>
+    </div>
+
+	<!-- CLOSING ROW -->
+    <hr />
+	<div class="mid-line"></div>
+
+    {% addtoblock "css" %}
+        <link href="{% static 'scripts/nco/styles/nco_ttc_grants_styles.css' %}" rel="stylesheet">
+    {% endaddtoblock %}
+
+    {% addtoblock "js" %}
+        <script src="<%= htmlWebpackPlugin.files.js %>"></script>
+    {% endaddtoblock %}
+{% endblock %}

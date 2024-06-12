@@ -8,7 +8,7 @@
 
       <a class="btn btn-lg btn-default"
          href="/help/new-ticket/?category=OTHER&subject=App+developer+permissions+request"
-         target="_blank"
+         target="_blank" aria-describedby="msg-open-new-window"
       >
           Request Developer Permissions
       </a>
@@ -23,7 +23,7 @@
 </div>
 <div class="row text-center" ng-show="$ctrl.requesting">
   <div class="col-md-12">
-    <div><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
+    <div><i role="none" class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
     <div>Loading...</div>
   </div>
 </div>
@@ -35,7 +35,7 @@
 
     <a class="btn btn-lg btn-default text-center"
        href="/help/new-ticket/?category=OTHER&subject=App+developer+permissions+request"
-       target="_blank"
+       target="_blank" aria-describedby="msg-open-new-window"
     >
         Request Developer Permissions
     </a>

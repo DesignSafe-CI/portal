@@ -1,0 +1,124 @@
+{
+    "facility": {
+        "facilities_list": [
+            { "name": "rapid-uw", "label": "RAPID - Natural Hazard and Disasters Reconnaissance Facility - University of Washington" },
+            { "name": "converge-boulder", "label": "CONVERGE - Social Science/Interdisciplinary Resources and Extreme Events Coordination - University of Colorado Boulder" },
+            { "name": "geer", "label": "GEER - Geotechnical Extreme Event Reconnaissance" },
+            { "name": "iseeer", "label": "ISEEER - Interdisciplinary Science and Engineering Extreme Events Research" },
+            { "name": "neer", "label": "NEER - Nearshore Extreme Event Reconnaissance" },
+            { "name": "oseer", "label": "OSEER - Operations and Systems Engineering Extreme Events Research" },
+            { "name": "pheer", "label": "PHEER - Public Health Extreme Events Research" },
+            { "name": "summeer", "label": "SUMMEER - Sustainable Material Management Extreme Events Reconnaissance" },
+            { "name": "sseer", "label": "SSEER - Social Science Extreme Events Research" },
+            { "name": "steer", "label": "StEER - Structural Engineering Extreme Event Reconnaissance" },
+            { "name": "ohhwrl-oregon", "label": "Large Wave Flume and Directional Wave Basin - Oregon State University" },
+            { "name": "eqss-utaustin", "label": "Mobile Field Shakers - University of Texas at Austin" },
+            { "name": "cgm-ucdavis", "label": "Center for Geotechnical Modeling - University of California, Davis" },
+            { "name": "lhpost-sandiego", "label": "Six Degree of Freedom Large High-Performance Outdoor Shake Table (LHPOST6) - University of California, San Diego" },
+            { "name": "wwhr-florida", "label": "Wall of Wind - Florida International University" },
+            { "name": "niche", "label": "National Full-Scale Testing Infrastructure for Community Hardening in Extreme Wind, Surge, and Wave Events (NICHE)" },
+            { "name": "pfsml-florida", "label": "Boundary Layer Wind Tunnel - University of Florida" },
+            { "name": "rtmd-lehigh", "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities - LeHigh University" },
+            { "name": "simcntr", "label": "SimCenter" },                                
+            { "name": "nco-purdue", "label": "Network Coordination Office - Purdue University" },
+            { "name": "crbcrp", "label": "Center for Risk-Based Community Resilience Planning" },
+            { "name": "other", "label": "Other" }
+        ],
+        "other": [
+            { "name": "other", "label": "Other" }
+        ]
+    },
+    "equipmentTypes": {
+        "rtmd-lehigh": [
+            { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
+            { "name": "lsrthcshas", "label": "Large-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System" },
+            { "name": "ssrthcshas", "label": "Small-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System "},
+            { "name": "rssb", "label": "Reduced-Scale Soil Box" },
+            { "name": "ssihb", "label":"Soil-Structure Interaction Hybrid Simulation" },
+            { "name": "other", "label": "Other" }
+        ],
+        "cgm-ucdavis": [
+            { "name": "9-m_radius_dynamic_geotechnical_centrifuge", "label": "9m Radius Dynamic Geotechnical Centrifuge" },
+            { "name": "1-m_radius_dynamic_geotechnical_centrifuge", "label": "1m Radius Dynamic Geotechnical Centrifuge" },
+            { "name": "other", "label": "Other" }
+        ],
+        "eqss-utaustin": [
+            { "name": "liquidator", "label": "Low Frequency, Two Axis Shaker (Liquidator)" },
+            { "name": "t-rex", "label": "High Force Three Axis Shaker (T Rex)" },
+            { "name": "tractor-t-rex", "label": "Tractor-Trailer Rig, Big Rig, with T-Rex" },
+            { "name": "raptor", "label": "Single Axis Vertical Shaker (Raptor)" },
+            { "name": "rattler", "label": "Single Axis Horizontal Shaker (Rattler)" },
+            { "name": "thumper", "label": "Urban, Three axis Shaker (Thumper)" },
+            { "name": "other", "label": "Other" }
+        ],
+        "pfsml-florida": [
+            { "name": "blwt", "label": "Boundary Layer Wind Tunnel (BLWT)" },
+            { "name": "abl", "label": "Atmospheric Boundary Layer Wind Tunnel Test (ABL)" },
+            { "name": "wdrt", "label": "Wind Driven Rain Test" },
+            { "name": "wtdt", "label": "Wind Tunnel Destructive Test" },
+            { "name": "dfs", "label": "Dynamic Flow Simulator (DFS)" },
+            { "name": "hapla", "label": "High Airflow Pressure Loading Actuator (HAPLA)" },
+            { "name": "spla", "label": "Spatiotemporal Pressure Loading Actuator (SPLA)" },
+            { "name": "other", "label": "Other" }
+        ],
+        "wwhr-florida": [
+            { "name": "pmtp", "label": "Physical Measurement Test Protocol" },
+            { "name": "fmtp", "label": "Failure Mode Test Protocol" },
+            { "name": "wdrtp", "label": "Wind Driven Rain Test Protocol" },
+            { "name": "other", "label": "Other" }
+        ],
+        "lhpost-sandiego": [
+            { "name": "lhpost", "label": "Large High Performance Outdoor Shake Table (LHPOST)" },
+            { "name": "other", "label": "Other" }
+        ],
+        "ohhwrl-oregon": [
+            { "name": "lwf", "label": "Large Wave Flume (LWF)" },
+            { "name": "dwb", "label": "Directional Wave Basin (DWB)" },
+            { "name": "mobs", "label": "Mobile Shaker" },
+            { "name": "pla", "label": "Pressure Loading Actuator" },
+            { "name": "other", "label": "Other" }
+        ],
+        "other": [
+            { "name": "other", "label": "Other" }
+        ]
+    },
+    "experimentTypes": {
+        "rtmd-lehigh": [
+            { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
+            { "name": "large", "label": "Large-Scale" },
+            { "name": "small", "label": "Small-Scale" },
+            { "name": "char", "label": "Characterization" },
+            { "name": "qstatic", "label": "Quasi-Static" },
+            { "name": "dynamic", "label": "Dynamic" },
+            { "name": "ssi", "label": "Soil-Structure Interaction" },
+            { "name": "other", "label": "Other" }
+        ],
+        "cgm-ucdavis": [
+            { "name": "centrifuge", "label": "Centrifuge" },
+            { "name": "other", "label": "Other" }
+        ],
+        "eqss-utaustin": [
+            { "name": "mobile_shaker", "label": "Mobile Shaker" },
+            { "name": "other", "label": "Other" }
+        ],
+        "pfsml-florida": [
+            { "name": "wind", "label": "Wind" },
+            { "name": "other", "label": "Other" }
+        ],
+        "wwhr-florida": [
+            { "name": "wind", "label": "Wind" },
+            { "name": "other", "label": "Other" }
+        ],
+        "lhpost-sandiego": [
+            { "name": "shake", "label": "Shake" },
+            { "name": "other", "label": "Other" }
+        ],
+        "ohhwrl-oregon": [
+            { "name": "wave", "label": "Wave" },
+            { "name": "other", "label": "Other" }
+        ],
+        "other": [
+            { "name": "other", "label": "Other" }
+        ]
+    }
+}

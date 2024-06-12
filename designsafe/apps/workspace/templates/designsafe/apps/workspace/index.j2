@@ -1,14 +1,16 @@
 {% extends "base_angular.html" %}
-{% load cms_tags staticfiles sekizai_tags%}
+{% load cms_tags static sekizai_tags%}
 {% block title %}Tools & Applications{% endblock %}
 {% block content %}
 
+<div id="apps-root"></div>
+{% if not react_flag %}
 <div class="container">
     <h1 class="headline headline-research">
         <span class="hl hl-research">Tools & Applications</span>
     </h1>
     <div>
-        <a href="{% url 'pages-details-by-slug' slug='rw/user-guide/workspace' %}"><i class="fa fa-question-circle"></i> Learn About <b>Tools & Applications.</b></a>
+        <a href="{% url 'pages-details-by-slug' slug='rw/user-guide/workspace' %}"><i role="none" class="fa fa-question-circle"></i> Learn About <b>Tools & Applications.</b></a>
     </div>
 </div>
 
@@ -40,7 +42,6 @@
 <script type="text/javascript" src="{% static 'vendor/objectpath/lib/ObjectPath.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/schema-form.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/angular-schema-form/dist/bootstrap-decorator.js' %}"></script>
-<script type="text/javascript" src="{% static 'vendor/angular-drag-and-drop-lists/angular-drag-and-drop-lists.js' %}"></script>
 <script type="text/javascript" src="{% static 'vendor/angular-xeditable/dist/js/xeditable.js' %}"></script>
 <script src="{% static 'vendor/angular-ui-codemirror/src/ui-codemirror.js' %}"></script>
 {% endaddtoblock %}
@@ -49,6 +50,23 @@
 <script src="{% static 'scripts/applications/services/apps-wizard-service.js' %}"></script>
 <script src="{% static 'scripts/workspace/directives/asf-agave-file-picker.js' %}"></script>
 <script src="<%= htmlWebpackPlugin.files.js %>"></script>
+{% endaddtoblock %}
+{% endif %}
+
+{% addtoblock "react_assets" %}
+{% if debug and react_flag %}
+  <script type="module">
+      import RefreshRuntime from 'http://localhost:4200/static/react-assets/@react-refresh';
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+  </script>
+  <script type="module" src="http://localhost:4200/static/react-assets/@vite/client"></script>
+  <script type="module" src="http://localhost:4200/static/react-assets/src/main.tsx"></script>
+{% else %}
+  {% include "react-assets.html" %}
+{% endif %}
 {% endaddtoblock %}
 
 {% endblock %}

@@ -14,6 +14,16 @@ from designsafe.apps.data.models.elasticsearch import IndexedPublication, Indexe
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 logger = logging.getLogger(__name__)
 
+class FileObjModel(MetadataModel):
+    _is_nested = True
+    path = fields.CharField('File path', max_length=1024, default='')
+    name = fields.CharField('File name', max_length=1024, default='')
+    system = fields.CharField('System', max_length=512, default='')
+    type = fields.CharField('File type', max_length=512, default='')
+    last_modified = fields.CharField('Last Modified', max_length=512, default='')
+    uuid = fields.CharField('UUID', max_length=512, default='')
+    length = fields.IntField('File Size', default=0)
+
 
 class RelatedEntity(MetadataModel):
     """Model for entities related to projects."""
@@ -25,6 +35,18 @@ class RelatedEntity(MetadataModel):
         for attrname, field in six.iteritems(self._meta._related_fields):
             body_dict['_relatedFields'].append(attrname)
         return body_dict
+    
+    # TODO: uncomment when file_objs are synced.
+    #def save(self, ac):
+    #    """Remove file tags if the file has been un-associated from the entity."""
+    #    file_objs = getattr(self, 'file_objs', [])
+    #    file_tags = getattr(self, 'file_tags', [])
+    #
+    #    if file_objs and file_tags:
+    #        filtered_tags = filter(lambda tag: bool([file for file in file_objs if tag["path"].startswith(file["path"])]), file_tags)
+    #        self.file_tags = list(filtered_tags)
+    #    
+    #    return super().save(ac)
 
     def to_datacite_json(self):
         """Serialize object to datacite JSON.
@@ -87,9 +109,17 @@ class Project(MetadataModel):
     pi = fields.CharField('PI', max_length=255)
     award_number = fields.ListField('Award Number')
     award_numbers = fields.ListField('Award Numbers')
-    associated_projects = fields.ListField('Associated Project')
+    associated_projects = fields.ListField('Associated Project') #AKA Related Work
+    referenced_data = fields.ListField('Referenced Data')
     ef = fields.CharField('Experimental Facility', max_length=512, default='')
+    facilities = fields.ListField('Facilities')
     keywords = fields.CharField('Keywords', default='')
+    nh_event = fields.CharField('Natural Hazard Event', default='')
+    nh_event_start = fields.CharField('Date Start', max_length=1024, default='')
+    nh_event_end = fields.CharField('Date End', max_length=1024, default='')
+    nh_location = fields.CharField('Natural Hazard Location', default='')
+    nh_latitude = fields.CharField('Natural Hazard Latitude', default='')
+    nh_longitude = fields.CharField('Natural Hazard Longitude', default='')
     file_tags = fields.ListField('File Tags')
     nh_types = fields.ListField('Natural Hazard Type')
     dois = fields.ListField('Dois')
@@ -211,25 +241,31 @@ class Project(MetadataModel):
         ents = [lookup_model(rsp)(**rsp) for rsp in resp]
         return ents
 
-    def to_dataset_json(self):
+    def to_dataset_json(self, **kwargs):
         """
-        Serialize project to json for google dataset search
+        Serialize project to json for google dataset and scholar search
         https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/BMNJPS
+        And to work with Google Scholar
         """
-
         dataset_json = {
             "@context": "http://schema.org",
             "@type": "Dataset",
-            "@id": "",
-            "identifier": "",
-            "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
+            "url": "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/" + self.project_id,
+            "identifier":  {
+                "@id": "",
+                "@type": "PropertyValue",
+                "propertyID": "https://registry.identifiers.org/registry/doi",
+                "value": "",
+                "url": ""
+            },
             "name": self.title,
             "creator": [
                 {
                     "name": "",
                     "affiliation": "",
                     "@id": "",
-                    "identifier": ""
+                    "identifier": "",
+                    "@type":"Person",
                 }
             ],
             "author": [
@@ -246,39 +282,32 @@ class Project(MetadataModel):
             "keywords": self.keywords.split(','),
             "license": {
                 "@type": "CreativeWork",
-                "license": ""
+                "license": "",
+                "url":""
             },
-            "hasPart":[],
             "publisher": {
                 "@type": "Organization",
-                "name": "Designsafe-CI"
-            },
-            "provider": {
-                "@type": "Organization",
-                "name": "Designsafe-CI"
+                "name": "Designsafe-CI",
+                "description": "DesignSafe is a comprehensive cyberinfrastructure that is part of the NSF-funded Natural Hazard Engineering Research Infrastructure (NHERI) and provides cloud-based tools to manage, analyze, understand, and publish critical data for research to understand the impacts of natural hazards",
+                "url": "https://designsafe-ci.org",
+                "@id": "https://designsafe-ci.org",
+                "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
             },
             "includedInDataCatalog": {
                 "@type": "DataCatalog",
                 "name": "Designsafe-CI",
                 "url": "https://designsafe-ci.org"
             },
+            "funding": [],
+            "hasPart": [],
         }
-        if self.dois:
-            dataset_json["distribution"] = {
-                    "@type": "DataDownload",
-                    "name": self.to_body_dict()['value']['projectId'] + "_archive.zip",
-                    "fileFormat": "application/zip",
-                    "contentSize": "",
-                    "@id": "",
-                    "identifier": ""
-            }
-
-        if self.dois:
-            dataset_json['@id'] = self.dois[0]
-            dataset_json['identifier'] = self.dois[0]
-        else:
-            related_ents = self.related_entities()
-            logger.debug(related_ents)
+        if len(self.award_number) and type(self.award_number[0]) is not dict:
+            self.award_number = [{'order': 0, 'name': ''.join(self.award_number)}]
+            dataset_json['funding'] = generate_awards(self.award_number)
+        awards = sorted(
+            self.award_number,
+            key=lambda x: (x.get('order', 0), x.get('name', ''), x.get('number', ''))
+        )
         if getattr(self, 'team_order', False):
             authors = sorted(self.team_order, key=lambda x: x['order'])
         else:
@@ -286,22 +315,82 @@ class Project(MetadataModel):
         dataset_json['creator'] = generate_creators(authors)
         dataset_json['author'] = generate_creators(authors)
         try:
-            pub = IndexedPublication.from_id(self.project_id) 
-            dataset_json['hasPart'] = generate_licenses(pub)
-            dataset_json['license'] = dataset_json['hasPart'][0]["url"]
+            pub = IndexedPublication.from_id(self.project_id)
+            license_info =  generate_licenses(pub)
+            dataset_json['license'] = license_info[0]["url"]
         except (DocumentNotFound, AttributeError):
             pass
-        try:
-            pub = IndexedPublicationLegacy.from_id(self.project_id)
-            dataset_json['hasPart'] = generate_licenses(pub)
-            dataset_json['license'] = dataset_json['hasPart'][0]["url"]
+        
 
-        except DocumentNotFound:
-            pass
+        if self.dois:
+            dataset_json['identifier']['@id'] = "https://doi.org/" + self.dois[0]
+            dataset_json['identifier']['url'] = "https://doi.org/" + self.dois[0]
+            dataset_json['identifier']['value'] = "doi:" + self.dois[0]
 
-        return dataset_json
+        else:
+            related_ents = self.related_entities()
+            for i in range(len(related_ents)):
+                if hasattr(related_ents[i], 'dois') and related_ents[i].dois:
 
-    def to_datacite_json(self):
+                    if getattr(related_ents[i], 'team_order', False):
+                        authors = sorted(related_ents[i].team_order, key=lambda x: x['order'])
+                    else:
+                        authors = [{'name': username} for username in [self.pi] + self.co_pis]
+                        
+                    dataset_json['hasPart'].append({
+                        "@context": "http://schema.org",
+                        "@type": "Dataset",
+                        "url": "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/" + self.project_id,
+                        "identifier": {
+                            "@id": "https://doi.org/" + related_ents[i].dois[0],
+                            "@type": "PropertyValue",
+                            "propertyID": "https://registry.identifiers.org/registry/doi",
+                            "value": "doi:" + related_ents[i].dois[0],
+                            "url": "https://doi.org/" + related_ents[i].dois[0],
+                        },
+                        "name": related_ents[i].title,
+                        "creator": generate_creators(authors),
+                        "author": generate_creators(authors),
+                        "datePublished": related_ents[i].created,
+                        "dateModified": related_ents[i].to_body_dict()['lastUpdated'],
+                        "description": related_ents[i].description,
+                        "license": {
+                            "@type": "CreativeWork",
+                            "license": "",
+                            "url": ""
+                        },
+                        "publisher": {
+                            "@type": "Organization",
+                            "name": "Designsafe-CI",
+                            "description": "DesignSafe is a comprehensive cyberinfrastructure that is part of the NSF-funded Natural Hazard Engineering Research Infrastructure (NHERI) and provides cloud-based tools to manage, analyze, understand, and publish critical data for research to understand the impacts of natural hazards",
+                            "url": "https://designsafe-ci.org",
+                            "@id": "https://designsafe-ci.org",
+                            "logo": "https://www.designsafe-ci.org/static/images/nsf-designsafe-logo.014999b259f6.png",
+                            "funder": {
+                                "@type": "Organization",
+                                "name": "U.S. National Science Foundation"
+                            }  
+                        },
+                        "includedInDataCatalog": {
+                            "@type": "DataCatalog",
+                            "name": "Designsafe-CI",
+                            "description": "DesignSafe is a comprehensive cyberinfrastructure that is part of the NSF-funded Natural Hazard Engineering Research Infrastructure (NHERI) and provides cloud-based tools to manage, analyze, understand, and publish critical data for research to understand the impacts of natural hazards",
+                            "url": "https://designsafe-ci.org",
+                            "@id": "https://designsafe-ci.org",
+                            "funder": {
+                                "@type": "Organization",
+                                "name": "U.S. National Science Foundation"
+                            }
+                        },
+                        "funding": generate_awards(awards[i]) if i < len(awards) else '',
+                    })
+                    
+
+        return dataset_json 
+
+    def to_datacite_json(self,project=None):
+        if project is None:
+            project={}
         """Serialize project to datacite json."""
         attributes = {}
         if getattr(self, 'team_order', False):
@@ -342,6 +431,21 @@ class Project(MetadataModel):
         attributes['subjects'] = [
             {'subject': keyword} for keyword in self.keywords.split(',')
         ]
+
+        subjects = attributes.get("subjects", [])
+        contributors = attributes.get("contributors", [])
+
+        for facility in getattr(self, "facilities", []):
+            subjects.append(facility["name"])
+            contributors.append({
+                "contributorType": "HostingInstitution",
+                "nameType": "Organizational",
+                "name": facility["name"],
+            })
+
+        attributes["subjects"] = subjects
+        attributes["contributors"] = contributors
+
         attributes['language'] = 'English'
         attributes['identifiers'] = [
             {
@@ -358,11 +462,32 @@ class Project(MetadataModel):
         attributes['fundingReferences'] = []
         for award in awards:
             attributes['fundingReferences'].append({
-                'funderName': award['name'],
-                'awardNumber': award['number']
+                'awardTitle': award['name'],
+                'awardNumber': award['number'],
+                "funderName": award.get("fundingSource", "N/A"),
                 })
 
         attributes['relatedIdentifiers'] = []
+
+        # remember, related works are not required, so they can be missing...
+        for a_proj in self.associated_projects: #relatedwork
+            identifier = {}
+            mapping = {'Linked Project': 'IsPartOf', 'Linked Dataset': 'IsPartOf', 'Cited By': 'IsCitedBy', 'Context': 'IsDocumentedBy'}
+            if {'type', 'href', 'hrefType'} <= a_proj.keys():
+                identifier['relationType'] = mapping[a_proj['type']]
+                identifier['relatedIdentifierType'] = a_proj['hrefType']
+                identifier['relatedIdentifier'] = a_proj['href']
+                attributes['relatedIdentifiers'].append(identifier)
+
+        for r_data in self.referenced_data:
+            identifier = {}
+            if {'doi', 'hrefType'} <= r_data.keys():
+                identifier['relationType'] = 'References'
+                identifier['relatedIdentifier'] = r_data['doi']
+                identifier['relatedIdentifierType'] = r_data['hrefType']
+                attributes['relatedIdentifiers'].append(identifier)
+
+        # checks related entities for DOIs
         for related_entity in self.related_entities():
             rel_ent_dict = related_entity.to_body_dict()
             if 'dois' in rel_ent_dict['value'] and len(rel_ent_dict['value']['dois']):
@@ -377,6 +502,7 @@ class Project(MetadataModel):
                     'relatedIdentifierType': 'URL',
                     'relationType': 'IsPartOf'
                 })
+
         return attributes
 
 
@@ -429,9 +555,11 @@ def generate_licenses(pub):
     license_details = []
     url = []
     license_type = []
+
     if pub.licenses.datasets == "Open Data Commons Attribution":
         license_details.append({
             "@type": "Dataset",
+            "name": pub.project.value.title,
             "url": "https://opendatacommons.org/licenses/by/1-0/",
             "description": pub.project.value.description,
             "license": pub.licenses.datasets
@@ -439,6 +567,7 @@ def generate_licenses(pub):
     if pub.licenses.datasets == "Open Data Commons Public Domain Dedication":
         license_details.append({
             "@type": "Dataset",
+            "name": pub.project.value.title,
             "url": "https://opendatacommons.org/licenses/pddl/1-0/",
             "description": pub.project.value.description,
             "license": pub.licenses.datasets
@@ -446,6 +575,15 @@ def generate_licenses(pub):
     if pub.licenses.works == "Creative Commons Attribution Share Alike":
         license_details.append({
             "@type": "CreativeWork",
+            "name": pub.project.value.title,
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.works
+        })
+    if pub.licenses.works == "Creative Commons Attribution":
+        license_details.append({
+            "@type": "CreativeWork",
+            "name": pub.project.value.title,
             "url": "https://creativecommons.org/licenses/by/4.0/",
             "description": pub.project.value.description,
             "license": pub.licenses.works
@@ -453,6 +591,7 @@ def generate_licenses(pub):
     if pub.licenses.works == "Creative Commons Public Domain Dedication":
         license_details.append({
             "@type": "CreativeWork",
+            "name": pub.project.value.title,
             "url": "https://creativecommons.org/publicdomain/zero/1.0/",
             "description": pub.project.value.description,
             "license": pub.licenses.works
@@ -460,11 +599,29 @@ def generate_licenses(pub):
     if pub.licenses.software == "GNU General Public License":
         license_details.append({
             "@type": "CreativeWork",
+            "name": pub.project.value.title,
             "url": "http://www.gnu.org/licenses/gpl.html",
             "description": pub.project.value.description,
             "license": pub.licenses.software
         })
+    if pub.licenses.software == "3-Clause BSD License":
+        license_details.append({
+            "@type": "CreativeWork",
+            "name": pub.project.value.title,
+            "url": "https://opensource.org/license/bsd-3-clause/",
+            "description": pub.project.value.description,
+            "license": pub.licenses.software
+        })
     return license_details
+
+def generate_awards(award):
+    awards_list = []
+    awards_list.append({
+        "@type": "Grant",
+        'name': award['name'],
+        'identifier': ')' if 'number' not in award else award['number']
+    })
+    return awards_list
 
 def _process_authors(authors):
     """Process authors.

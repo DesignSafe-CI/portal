@@ -215,118 +215,59 @@ class TestBaseESResource(TestCase):
         mock_to_dict.assert_called_with()
 
 class TestIndexedFile(TestCase):
-    def test_attrs(self):
-        f = IndexedFile()
-        self.assertTrue(hasattr(f, 'name'))
-        self.assertTrue(hasattr(f, 'path'))
-        self.assertTrue(hasattr(f, 'lastModified'))
-        self.assertTrue(hasattr(f, 'length'))
-        self.assertTrue(hasattr(f, 'format'))
-        self.assertTrue(hasattr(f, 'mimeType'))
-        self.assertTrue(hasattr(f, 'type'))
-        self.assertTrue(hasattr(f, 'system'))
-        # self.assertTrue(hasattr(f, 'basePath'))
-        # self.assertTrue(hasattr(f, 'lastUpdated'))
-        # self.assertTrue(hasattr(f, 'pems'))
+
+    def setUp(self):
+        self.depth = 1
 
     @patch('designsafe.apps.data.models.elasticsearch.Document.save')
     def test_save(self, mock_save):
-        f = IndexedFile()
-        f.save()
-        mock_save.assert_called_with()
+        doc = IndexedFile()
+        doc.save()
+        mock_save.assert_called_once()
 
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    @patch('designsafe.apps.data.models.elasticsearch.Index.refresh')
-    def test_from_path_with_404(self, mock_refresh, mock_search):
-        mock_search().filter().execute.side_effect = TransportError(404)
-        with self.assertRaises(TransportError):
-            IndexedFile.from_path('test.system', '/')
+    @patch('designsafe.apps.data.models.elasticsearch.Document.update')
+    def test_update(self, mock_update):
+        doc = IndexedFile()
+        doc.update()
+        mock_update.assert_called_once()
 
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    @patch('designsafe.apps.data.models.elasticsearch.Index.refresh')
-    def test_from_path_raises_when_no_hits(self, mock_refresh, mock_search):
-        mock_search().filter().execute.return_value.hits.total.value = 0
-        with self.assertRaises(DocumentNotFound):
-            IndexedFile.from_path('test.system', '/')
-    
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.get')
-    @patch('designsafe.apps.data.models.elasticsearch.Index.refresh')
-    def test_from_path_1_hit(self, mock_refresh, mock_get, mock_search):
-        search_res = IndexedFile(
-            **{'name': 'res1', 'system': 'test.system', 'path': '/path/to/res1'})
+    @patch('designsafe.apps.data.models.elasticsearch.Document.get')
+    def test_from_path(self, mock_get):
+        IndexedFile.from_path('test.system', '/path/to/file')
+        mock_get.assert_called_once_with('c7765edebe9d7b715865b83a8319703975680be5a3f5f77503bdc47e7978429c')
 
-        sys_filter = Q('term', **{'system._exact': 'test.system'})
-        path_filter = Q('term', **{'path._exact': '/path/to/res1'})
+    @patch('designsafe.apps.data.models.elasticsearch.Document.search')
+    @patch('designsafe.apps.data.models.elasticsearch.Document.get')
+    def test_children(self, mock_get, mock_search):
+        res1 = MagicMock()
+        res1.meta.id = 'id1'
 
-        mock_res = MagicMock()
-        mock_res.hits.total.value = 1
+        def scan_side_effect():
+            yield res1
 
-        mock_search().filter().execute.return_value = mock_res
-        mock_get.return_value = search_res
+        mock_search().filter().filter().scan.side_effect = scan_side_effect
 
-        doc_from_path = IndexedFile.from_path('test.system', '/path/to/res1')
+        doc = IndexedFile(system='test.system', path='/test/path')
+        children = doc.children()
+        next(children)
+        mock_get.assert_called_once_with('id1')
 
-        mock_search().filter.assert_called_with(sys_filter & path_filter)
+    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.children')
+    @patch('designsafe.apps.data.models.elasticsearch.Document.delete')
+    def test_delete(self, mock_delete, mock_children):
+        child = IndexedFile()
 
-        self.assertEqual(doc_from_path, search_res)
+        # Return children only on the first call to prevent infinite recursion
+        def children_side_effect():
+            if self.depth > 0:
+                self.depth -= 1
+                yield child
+            else:
+                return
 
-    
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.delete')
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.get')
-    @patch('designsafe.apps.data.models.elasticsearch.Index.refresh')
-    def test_from_path_multiple_hits(self, mock_refresh, mock_get, mock_search, mock_delete):
-        """
-        When there are multiple files sharing a system and path, ensure we delete
-        all but one and return the remaining document.
-        """
-        search_res = IndexedFile(
-            **{'name': 'res1', 'system': 'test.system', 'path': '/path/to/res1'})
+        mock_children.side_effect = children_side_effect
 
-        sys_filter = Q('term', **{'system._exact': 'test.system'})
-        path_filter = Q('term', **{'path._exact': '/path/to/res1'})
+        parent = IndexedFile()
+        parent.delete_recursive()
 
-        # Need to mock either slicing the result or retrieving a single element.
-  
-        mock_res = MagicMock()
-        mock_res.hits.total.value = 3
-        mock_search().filter().execute.return_value = mock_res
-        mock_get.return_value = search_res
-
-        doc_from_path = IndexedFile.from_path('test.system', '/path/to/res1')
-
-        self.assertEqual(mock_search().filter().delete.call_count, 1)
-
-        self.assertEqual(doc_from_path, search_res)
-
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    def test_children_raises_on_404(self, mock_search):
-        mock_search().filter().filter().sort().extra().execute.side_effect = TransportError(404)
-        with self.assertRaises(TransportError):
-            IndexedFile.children('test_user', system='test.system', path='/')
-
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    def test_children_returns_when_no_hits(self, mock_search):
-        mock_search().filter().filter().sort().extra().execute.return_value.hits.__len__.return_value = 0
-        children = IndexedFile.children('test_user', system='test.system', path='/')
-        self.assertEqual(children, ([], None))
-
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.get')
-    @patch('designsafe.apps.data.models.elasticsearch.IndexedFile.search')
-    def test_children_returns_when_hits(self, mock_search, mock_get):
-        
-        search_res = IndexedFile(
-            **{'name': 'res1', 'system': 'test.system', 'path': '/path/to/res1'})
-
-        search_res.meta.id = 'MOCK ID'
-
-        mock_search().filter().filter().sort().extra().execute.return_value.hits.__len__.return_value = 1
-        mock_search().filter().filter().sort().extra().execute().__iter__.return_value = [search_res]
-        mock_search().filter().filter().sort().extra().execute.return_value.hits.hits = [{'sort': 'MOCK SORTKEY'}]
-
-        mock_get.return_value = search_res
-
-        children = IndexedFile.children('test_user', system='test.system', path='/')
-        mock_get.assert_called_with('MOCK ID')
-        self.assertEqual(children, ([search_res], 'MOCK SORTKEY'))
+        self.assertEqual(mock_delete.call_count, 2)

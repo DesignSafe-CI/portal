@@ -1,5 +1,5 @@
 <div ng-if="$ctrl.ui.loading">
-Loading... <i class="fa fa-spinner fa-spin"></i>
+Loading... <i role="none" class="fa fa-spinner fa-spin"></i>
 </div>
 
 <div 
@@ -9,21 +9,21 @@ Loading... <i class="fa fa-spinner fa-spin"></i>
 
 <div
      data-ng-if="$ctrl.viewToShow() === 'experimental'">
-    <exp-published-view publication=$ctrl.publication></exp-published-view>
+     <exp-published-view publication=$ctrl.publication></exp-published-view>
 </div>
 <div
      data-ng-if="$ctrl.viewToShow() === 'simulation'">
-    <sim-published-view publication=$ctrl.publication></sim-published-view>
+     <sim-published-view publication=$ctrl.publication></sim-published-view>
 </div>
 <div 
      data-ng-if="$ctrl.viewToShow() === 'hybrid_simulation'">
-    <sim-hyb-published-view publication=$ctrl.publication></sim-hyb-published-view>
+     <sim-hyb-published-view publication=$ctrl.publication></sim-hyb-published-view>
 </div>
 <div
      data-ng-if="$ctrl.viewToShow() === 'field_recon'">
-    <field-recon-published-view publication=$ctrl.publication></field-recon-published-view>
+     <field-recon-published-view publication=$ctrl.publication></field-recon-published-view>
 </div>
 <div 
      data-ng-if="$ctrl.viewToShow() === 'other'">
-    <other-published-view publication=$ctrl.publication></other-published-view>
+     <other-published-view publication=$ctrl.publication></other-published-view>
 </div> 

@@ -2,7 +2,7 @@
     <!-- progression map -->
     <div class="pull-right" style="padding-bottom: 20px;">
         <a ng-click="$ctrl.goWork()">
-            <i class="fa fa-times"></i> Exit Prepare to Publish
+            <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
         </a>
     </div>
     <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
@@ -10,38 +10,38 @@
             <td class="tg-0lax">
                 <strong>Selection</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td class="tg-0lax">
                 <strong>Proofread Project</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td class="tg-0lax">
                 <strong>Proofread Data</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td class="tg-0lax">
                 <strong>Order Authors</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
             <td class="tg-0lax">
                 <strong>Licenses</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
         </tr>
     </table>
     <br>
     <div>
-        <a class="pull-left" ng-click="$ctrl.goPreview()"><i class="fa fa-arrow-left"></i> Back to Publication
+        <a class="pull-left" ng-click="$ctrl.goPreview()"><i role="none" class="fa fa-arrow-left"></i> Back to Publication
             Preview</a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goProject()" ng-disabled="!$ctrl.selectedListing.listing.length">Continue</button>
     </div>
@@ -52,13 +52,13 @@
             <li>You may only select files from one directory.</li>
             <li>Select the files you wish to publish and click "Save Selections".</li>
             <li>If you want to deselect individual files, deselect the checkboxes.</li>
-            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">Curation office hours</a> for help with publishing.</li>
+            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
         <!-- file selection -->
         <div ng-if="$ctrl.ui.loading">
             <h3 class="text-center">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
             </h3>
         </div>
         <div ng-if="!$ctrl.ui.loading">

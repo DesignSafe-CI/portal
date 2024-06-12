@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load staticfiles sekizai_tags tz %}
+{% load static sekizai_tags tz %}
 {% block title %}My Tickets{% endblock %}
 
 {% block breadcrumb %}
@@ -16,7 +16,7 @@
   <h1>My Tickets</h1>
 
   <a class="btn btn-primary" href="{% url 'djangoRT:ticketcreate' %}">
-    <i class="fa fa-plus-circle"></i>
+    <i role="none" class="fa fa-plus-circle"></i>
     Create a new ticket
   </a>
 
@@ -43,7 +43,7 @@
   <form action="">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon"><i class="fa fa-filter"></i></span>
+        <span class="input-group-addon"><i role="none" class="fa fa-filter"></i></span>
         <input class="form-control search" type="text" id="search" placeholder="Filter tickets">
       </div>
     </div>

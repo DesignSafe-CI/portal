@@ -3,7 +3,7 @@ import copy
 import logging
 import json
 from celery import group, chain
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.http.response import HttpResponseForbidden
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -96,7 +96,7 @@ class PublicationView(BaseApiView):
         """
         Publish a project or version a publication
         """
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             data = json.loads(request.body)
         else:
             data = request.POST
@@ -104,6 +104,7 @@ class PublicationView(BaseApiView):
         status = data.get('status', 'saved')
         revision = data.get('revision', None)
         revision_text = data.get('revisionText', None)
+        revision_titles = data.get('revisionTitles', None)
         revised_authors = data.get('revisionAuthors', None)
         selected_files = data.get('selectedFiles', None)
 
@@ -115,7 +116,13 @@ class PublicationView(BaseApiView):
             latest_revision = IndexedPublication.max_revision(project_id=project_id)
             current_revision = latest_revision + 1 if latest_revision >= 2 else 2
 
-        pub = initilize_publication(data['publication'], status, revision=current_revision, revision_text=revision_text)
+        pub = initilize_publication(
+                data['publication'],
+                status,
+                revision=current_revision,
+                revision_text=revision_text,
+                revision_titles=revision_titles
+            )
 
         if data.get('status', 'save').startswith('publish'):
             (
@@ -151,9 +158,10 @@ class PublicationView(BaseApiView):
                     revision=current_revision
                 ) |
                 tasks.zip_publication_files.si(pub.projectId, revision=current_revision) |
-                tasks.email_user_publication_request_confirmation.si(request.user.username)
+                tasks.email_user_publication_request_confirmation.si(request.user.username) |
+                tasks.check_published_files.si(pub.projectId, revision=current_revision, selected_files=selected_files)
             ).apply_async()
-        
+
         return JsonResponse({
             'success': 'Project is publishing.'
         }, status=200)
@@ -161,22 +169,24 @@ class PublicationView(BaseApiView):
 class AmendPublicationView(BaseApiView):
     @method_decorator(agave_jwt_login)
     @method_decorator(login_required)
-    def post(self, request, **kwargs):
+    def put(self, request, **kwargs):
         """
         Amend a Publication
         """
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             data = json.loads(request.body)
         else:
-            data = request.POST
-        
+            data = request.PUT
+
         project_id = data['projectId']
-        authors = data['authors'] if 'authors' in data else None
+        authors = data.get('authors', None)
+        amendments = data.get('amendments', None)
         current_revision = IndexedPublication.max_revision(project_id=project_id)
 
         (
             tasks.amend_publication_data.s(
                 project_id,
+                amendments,
                 authors,
                 current_revision
             ).set(queue='api') |
@@ -185,7 +195,7 @@ class AmendPublicationView(BaseApiView):
                 current_revision
             ).set(queue='files')
         ).apply_async()
-        
+
         return JsonResponse({
             'success': 'Publication is being amended.'
         }, status=200)
@@ -279,7 +289,7 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         # portal service account needs to create the objects on behalf of the user
         sa_client = get_service_account_client()
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
@@ -365,6 +375,12 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
             prj.add_team_members([request.user.username])
 
         # Email collaborators
+        """TODO:
+        set_project_id  is being run as a task to prevent duplicate project IDs from being created.
+        A race condition during project creation is caused when we redirect users to their project workspace
+        before the Project ID (PRJ-XXXX) is created, so the user sees NONE after creating a new project
+        sometimes.
+        """
         chain(
             tasks.set_project_id.s(prj.uuid).set(queue="api") |
             tasks.email_collaborator_added_to_project.s(
@@ -426,7 +442,14 @@ class ProjectInstanceView(BaseApiView):
         :param request: 
         :return:
         """
-        if request.is_ajax():
+        """TODO:
+        Changing a project's project type needs to be cleaned up. If a user changes an
+        Experimental project to something else, any associated metadata to the project
+        should be deleted (unless it has a DOI in which case changing project types
+        should be prevented anyways). Once that data is deleted, then we should update
+        the type of project.
+        """
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
@@ -583,7 +606,7 @@ class ProjectMetaView(BaseApiView, SecureMixin):
         """
         sa_client = get_service_account_client()
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()
@@ -628,14 +651,14 @@ class ProjectMetaView(BaseApiView, SecureMixin):
     def put(self, request, uuid):
         """
         Update Project Related Metadata
-        This should create a new entity related to a project
+        This should update an existing entity related to a project
 
         :param request:
         :return:
         """
         client = request.user.agave_oauth.client
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             post_data = json.loads(request.body)
         else:
             post_data = request.POST.copy()

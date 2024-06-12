@@ -1,35 +1,52 @@
 {
     "designsafe.project": {
         "name": "Other",
-        "tags": [
-            "Audiovisual",
-            "Checksheet",
-            "CSV",
-            "Codebook",
-            "Data",
-            "Data Dictionary",
-            "Data Report",
-            "GeoJSON",
-            "IRB",
-            "Image",
-            "Instrument",
-            "Jupyter Notebook",
-            "KML",
-            "Literary Review",
-            "Map",
-            "Matlab Code",
-            "Powerpoint",
-            "Python Code",
-            "README",
-            "Referenced Data",
-            "Report",
-            "Secondary Data Analysis",
-            "Series",
-            "Spreadsheet",
-            "Team Photo",
-            "Transcript",
-            "Variables",
-            "White Paper"
-        ]
+        "tags": {
+            "General": [
+                "Audiovisual",
+                "Checksheet",
+                "CSV",
+                "Codebook",
+                "Data",
+                "Data Dictionary",
+                "Data Report",
+                "GeoJSON",
+                "IRB",
+                "Image",
+                "Instrument",
+                "Jupyter Notebook",
+                "KML",
+                "Literary Review",
+                "Map",
+                "Matlab Code",
+                "Powerpoint",
+                "Python Code",
+                "README",
+                "Referenced Data and Software",
+                "Report",
+                "Secondary Data Analysis",
+                "Series",
+                "Spreadsheet",
+                "Team Photo",
+                "Transcript",
+                "Variables",
+                "White Paper"
+            ],
+            "SimCenter Software": [
+                "Simcenter QuoFEM",
+                "SimCenter PBE Application",
+                "SimCenter Regional Resilience Determination (R2D)",
+                "SimCenter EE-UQ",
+                "SimCenter WE-UQ Application",
+                "SimCenter Hydro-UQ"
+            ],
+            "SimCenter Workflow": [
+                "Exposure",
+                "Hazard",
+                "Damage",
+                "Consequences",
+                "Recovery"
+            ]
+        }
     }
 }

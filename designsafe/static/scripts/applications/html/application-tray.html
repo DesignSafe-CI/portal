@@ -5,7 +5,7 @@
 
     <div ng-show="!data.apps">
         <div class="text-center" ng-show="requesting">
-            <div><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
+            <div><i role="none" class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
             <div>Loading...</div>
         </div>
     </div>
@@ -14,7 +14,7 @@
       <div class="col-lg-12">
         <div class="input-group">
           <span class="input-group-btn">
-            <span class="btn btn-default"><i class="fa fa-filter"></i></span>
+            <span class="btn btn-default"><i role="none" class="fa fa-filter"></i></span>
           </span>
           <input type="text" class="form-control" placeholder="Search" ng-model="query">
         </div>
@@ -22,7 +22,7 @@
     </div>
 
     <div class="pull-right" ng-if="!requesting">
-      <button class="btn btn-default btn-tab ng-scope" ng-click="syncApps()"><i class="fa fa-refresh fa-lg"></i></button>
+      <button class="btn btn-default btn-tab ng-scope" ng-click="syncApps()"><i role="none" class="fa fa-refresh fa-lg"></i></button>
     </div>
 
     <uib-tabset ng-show="!requesting" class="top-buffer" active="activeTab">
@@ -36,22 +36,22 @@
               <span>{{tab.title}} </span>
             </div>
             <div ng-switch-default>
-              <span>{{tab.title}} <i class="fa fa-times" aria-hidden="true" ng-click="removeTab($event, $index, tab)"></i></span>
+              <span>{{tab.title}} <i role="none" class="fa fa-times" aria-hidden="true" ng-click="removeTab($event, $index, tab)"></i></span>
             </div>
           </div>
         </uib-tab-heading>
 
         <div class="top-buffer">
-          <span class="text-left"><i class="fa fa-cube fa-2x enabled"></i> Enabled &nbsp;&nbsp;</span>
-          <span class="text-left"><i class="fa fa-cube fa-2x disabled"></i> Disabled</span>
+          <span class="text-left"><i role="none" class="fa fa-cube fa-2x enabled"></i> Enabled &nbsp;&nbsp;</span>
+          <span class="text-left"><i role="none" class="fa fa-cube fa-2x disabled"></i> Disabled</span>
           <button ng-show="tab.title !== 'Public' && tab.title !== 'Private' && !tab.edit" class="btn btn-default pull-right " ng-click="editTab(tab); tab.edit = !tab.edit">Edit</button>
-          <a ui-sref="applications-systems" ng-show="tab.title === 'Private' && !tab.edit" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add</a>
+          <a ui-sref="applications-systems" ng-show="tab.title === 'Private' && !tab.edit" class="btn btn-primary pull-right"><i role="none" class="fa fa-plus"></i> Add</a>
         </div>
         <div ng-if="!tab.edit && !requesting" class="row top-buffer">
           <div ng-repeat="appMeta in paginate(tab.content | filter: query)[currentPage] | orderBy: 'id' track by $index">
             <div class="col-md-3 text-center">
               <div class="material-card">
-                <i class="fa fa-remove-sign text-right"></i>
+                <i role="none" class="fa fa-remove-sign text-right"></i>
                 <div class="card-body">
                   <i ng-if="appMeta.value.definition.appIcon" class="icon-{{appMeta.value.definition.appIcon | lowercase}}" ng-class="{'enabled': appMeta.value.definition.available, 'disabled': !appMeta.value.definition.available}"></i>
                   <span ng-if="!appMeta.value.definition.appIcon" class="icon-letter" ng-class="{'enabled': appMeta.value.definition.available, 'disabled': !appMeta.value.definition.available}">{{appMeta.value.definition.label[0] | uppercase}}</span>
@@ -63,51 +63,51 @@
                     <div class="btn-group dropdown text-center">
                       <span class="btn btn-primary" href="#" data-toggle="dropdown">
                           Actions
-                          <i class="fa fa-angle-down"></i>
+                          <i role="none" class="fa fa-angle-down"></i>
                       </span>
                       <ul class="dropdown-menu" role="menu">
                           <li ng-show="appMeta.value.type === 'agave' && appMeta.value.definition.available">
-                              <a href="/rw/workspace/#/{{appMeta.value.definition.id}}" target="_blank" role="button"> <i class="fa fa-play"></i> Run </a>
+                              <a href="/rw/workspace/#/{{appMeta.value.definition.id}}" target="_blank" aria-describedby="msg-open-new-window" role="button"> <i role="none" class="fa fa-play"></i> Run </a>
                           </li>
                           <hr ng-show="appMeta.value.type === 'agave' && appMeta.value.definition.available">
 
                           <li ng-if="!appMeta.value.definition.isPublic || appMeta.value.type === 'html'">
-                              <a ng-click="editApp(appMeta)" role="button"> <i class="fa fa-pencil"></i> Edit </a>
+                              <a ng-click="editApp(appMeta)" role="button"> <i role="none" class="fa fa-pencil"></i> Edit </a>
                           </li>
                           <hr ng-if="!appMeta.value.definition.isPublic|| appMeta.value.type === 'html'">
 
                           <li ng-if="!appMeta.value.definition.isPublic || appMeta.value.type === 'html'">
-                              <a ng-click="editPermissions(appMeta)" role="button"> <i class="fa fa-share"></i> Share </a>
+                              <a ng-click="editPermissions(appMeta)" role="button"> <i role="none" class="fa fa-share"></i> Share </a>
                           </li>
                           <hr ng-if="!appMeta.value.definition.isPublic || appMeta.value.type === 'html'">
 
                           <li ng-if="appMeta.value.definition.isPublic && appMeta.value.type === 'html'">
-                            <a ng-click="confirmAction(appMeta, 'private')" role="button"> <i class="fa fa-eye-slash"></i> Make Private </a>
+                            <a ng-click="confirmAction(appMeta, 'private')" role="button"> <i role="none" class="fa fa-eye-slash"></i> Make Private </a>
                           </li>
                           <hr ng-if="appMeta.value.definition.isPublic && appMeta.value.type === 'html'">
 
                           <li>
-                              <a ng-click="cloneApp(appMeta)" role="button"> <i class="fa fa-clone"></i> Clone </a>
+                              <a ng-click="cloneApp(appMeta)" role="button"> <i role="none" class="fa fa-clone"></i> Clone </a>
                           </li>
                           <hr>
 
                           <li ng-if="!appMeta.value.definition.isPublic">
-                              <a ng-click="confirmAction(appMeta, 'publish')" role="button"> <i class="fa fa-eye"></i> Publish </a>
+                              <a ng-click="confirmAction(appMeta, 'publish')" role="button"> <i role="none" class="fa fa-eye"></i> Publish </a>
                           </li>
                           <hr ng-if="!appMeta.value.definition.isPublic">
 
                           <li ng-if="!appMeta.value.definition.available">
-                              <a ng-click="confirmAction(appMeta, 'enable')" role="button"> <i class="fa fa-check"></i> Enable </a>
+                              <a ng-click="confirmAction(appMeta, 'enable')" role="button"> <i role="none" class="fa fa-check"></i> Enable </a>
                           </li>
                           <hr ng-if="!appMeta.value.definition.available">
 
                           <li ng-if="appMeta.value.definition.available">
-                              <a ng-click="confirmAction(appMeta, 'disable')" role="button"> <i class="fa fa-remove"></i> Disable </a>
+                              <a ng-click="confirmAction(appMeta, 'disable')" role="button"> <i role="none" class="fa fa-remove"></i> Disable </a>
                           </li>
                           <hr ng-if="appMeta.value.definition.available">
 
                           <li>
-                             <a ng-click="confirmAction(appMeta, 'delete')" role="button"> <i class="fa fa-trash-o"></i> Delete </a>
+                             <a ng-click="confirmAction(appMeta, 'delete')" role="button"> <i role="none" class="fa fa-trash-o"></i> Delete </a>
                          </li>
                       </ul>
                     </div>
@@ -175,7 +175,7 @@
                         class="app-wrapper"
                         >
                           <div class="app text-center">
-                            <div class="app-icon"><i class="fa fa-cube fa-3x" ng-class="{'enabled': item.value.definition.available, 'disabled': !item.value.definition.available}"></i></div>
+                            <div class="app-icon"><i role="none" class="fa fa-cube fa-3x" ng-class="{'enabled': item.value.definition.available, 'disabled': !item.value.definition.available}"></i></div>
                             <div class="app-title">{{item.value.definition.id}}</div>
                             <div class="app-version">{{item.value.definition.label}}</div>
                             <div class="app-version">{{item.value.definition.version}}</div>
@@ -196,6 +196,6 @@
           <a ui-sref="applications-add" ng-show="tab.title === 'Private' && !tab.edit" class="btn btn-primary">Add</a>
         </div> -->
       </uib-tab>
-      <!-- <button class="btn btn-default btn-tab" ng-click="addTab()" ><i class="fa fa-plus"></i></button> -->
+      <!-- <button class="btn btn-default btn-tab" ng-click="addTab()" ><i role="none" class="fa fa-plus"></i></button> -->
     </uib-tabset>
 </div>

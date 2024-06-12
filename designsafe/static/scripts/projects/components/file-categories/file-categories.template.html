@@ -1,7 +1,7 @@
 <div class="file-categories-content">
     <!--
     <div class="loading" data-ng-if="$ctrl._ui.busy">
-        <i class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
+        <i role="none" class="fa fa-spinner fa-spin">&nbsp;</i> Loading...
     </div>
     -->
     <div ng-if="!$ctrl._ui.isOther">
@@ -195,8 +195,16 @@
                 <div class="other-tag-selector">
                     <select class="form-control project-other-tags-select" data-ng-model="$ctrl.selectedFileTag[$ctrl.project.uuid]">
                         <option value="">-- Select a File Tag --</option>
-                        <option value="other">Other</option>
-                        <option ng-repeat="tag in $ctrl.fileTagsForEntity('designsafe.project').tags">{{tag}}</option>
+                        <option value="other">
+                            Other
+                        </option>
+                        <optgroup data-ng-repeat="(tagName, tags) in $ctrl.fileTagsForEntity().tags"
+                                label="{{tagName}}">
+                            <option data-ng-repeat="tag in tags"
+                                    value="{{tag}}">
+                                {{tag}}
+                            </option>
+                        </optgroup>
                     </select>
                     <div ng-if="$ctrl.selectedFileTag[$ctrl.project.uuid] === 'other' ">
                         <input class="input-tag other"

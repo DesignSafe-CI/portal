@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('refresh_token', models.CharField(max_length=255)),
                 ('token_uri', models.CharField(max_length=255)),
                 ('scopes', models.CharField(max_length=255)),
-                ('user', models.OneToOneField(related_name='googledrive_user_token', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='googledrive_user_token', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
     ]

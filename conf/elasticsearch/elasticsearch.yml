@@ -10,10 +10,10 @@ discovery.zen.ping.unicast.hosts: ["es02"]
 discovery.type: single-node
 #minimum_master_nodes need to be explicitly set when bound on a public IP
 # set to 1 to allow single node clusters
-# Details: https://github.com/elastic/elasticsearch/pull/17288
+# Details: https://git"hub.com/elastic/elasticsearch/pull/17288
 discovery.zen.minimum_master_nodes: 1
 #More info about memory_lock: https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html
 bootstrap.memory_lock: true
 xpack.security.enabled: false
-reindex.remote.whitelist: designsafe-es01.tacc.utexas.edu:*, designsafe-es02.tacc.utexas.edu:*, designsafe-es01-dev.tacc.utexas.edu:*
+reindex.remote.whitelist: wma-es-client.tacc.utexas.edu:*, designsafe-es02.tacc.utexas.edu:*, designsafe-es01-dev.tacc.utexas.edu:*
 path.repo: ["/usr/share/elasticsearch/backups/my_backup"]

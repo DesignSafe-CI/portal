@@ -2,14 +2,14 @@
     <h4 class="modal-title" style="border:none;">
         <span>Agreement</span>
         <span class="pull-right" ng-click="$ctrl.close()">
-            <i class="fa fa-times">&nbsp;</i>
+            <i role="none" class="fa fa-times">&nbsp;</i>
         </span>
     </h4>
 </div>
 <div class="modal-body" style="padding: 30px;">
     <div ng-if="$ctrl.ui.loading">
         <h3 class="text-center">
-            <i class="fa fa-spinner fa-spin"></i> Loading...
+            <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
         </h3>
     </div>
     <div ng-if="!$ctrl.ui.loading">
@@ -18,16 +18,42 @@
         </h3>
         <hr>
         <p class="pad-content">
-            This submission represents my original work. The submission meets the requirements
-            established by DesignSafe-CI available at the
-            <a href="/rw/user-guides/data-publication-guidelines/" target="_blank">
-                Curation and Publication Guidelines.
+            This submission represents my original work and meets the policies and requirements
+            established by the DesignSafe-CI
+            <a href="/rw/user-guides/data-publication-guidelines/" target="_blank" aria-describedby="msg-open-new-window">
+                 Policies and Best Practices.
             </a>
-            I understand the type of license I choose to distribute my data and guarantee that
-            I am entitled to grant the rights contained in them. I agree that when this submission
-            is made public with a unique digital object identifier (DOI), this will result in a
-            publication that cannot be changed. If I have revisions this will result in a new
-            version of the publication including a new DOI.
+            I grant the Data Depot Repository (DDR) all required permissions and licenses to make the work I publish in the 
+            DDR available for archiving and continued access.  These permissions include allowing DesignSafe to:
+            <ol>
+                <li>Disseminate the content in a variety of distribution formats according to the DDR 
+                    <a href="/rw/user-guides/data-publication-guidelines/" target="_blank" aria-describedby="msg-open-new-window">
+                        Policies and Best Practices.
+                    </a>
+                </li>
+                <li>Promote and advertise the content publicly in DesignSafe.</li>
+                <li>Store, translate, copy, or re-format files in any way to ensure its future preservation and accessibility. </li>
+                <li>Improve usability and/or protect respondent confidentiality.</li>
+                <li>Exchange and or incorporate metadata or documentation in the content into public access catalogues.</li>
+                <li>Transfer data, metadata with respective DOI to other institution for long-term accessibility if needed for continued access. </li>
+            </ol>
+        </p>
+        <p>
+            I understand the type of license I choose to distribute my data, and I guarantee that I am entitled to grant the rights contained in them. 
+            I agree that when this submission is made public with a unique digital object identifier (DOI), this will result in a publication that cannot 
+            be changed. If the dataset requires  revision, a new version of the data publication will be published under the same DOI.
+        </p>
+            I warrant that I am lawfully entitled and have full authority to license the content submitted, as described in this agreement. 
+            None of the above supersedes any prior contractual obligations with third parties that require any information to be kept confidential. 
+        <p>
+            If applicable, I warrant that I am following the IRB agreements in place for my research and following 
+            <a href="/rw/user-guides/curating-publishing-projects/best-practices/data-publication/" target="_blank" aria-describedby="msg-open-new-window">
+                Protected Data Best Practices.
+            </a>
+        </p>
+        <p>
+            I understand that the DDR does not approve data publications before they are posted; therefore, I am solely responsible for the submission, 
+            publication, and all possible confidentiality/privacy issues that may arise from the publication.
         </p>
         <div class="prj-agree-select" ng-if="!$ctrl.ui.submitted && !$ctrl.ui.published">
             <span style="display:inline-block; width:75%;">
@@ -37,22 +63,22 @@
             <button class="btn btn-add"
                     ng-click="$ctrl.publish()"
                     ng-disabled="!$ctrl.agreed || $ctrl.busy">
-                <i class="fa fa-globe">&nbsp;</i> Request DOI & Publish
+                <i role="none" class="fa fa-globe">&nbsp;</i> Request DOI & Publish
             </button>
         </div>
         <div class="alert alert-danger" ng-if="$ctrl.ui.error">
-            <i class="fa fa-times"></i>
+            <i role="none" class="fa fa-times"></i>
             There was an issue when attempting to submit your project
             for revision.
             <strong>Do not attempt to publish your project again.</strong> Please
             <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Failure+to+publish:+{{$ctrl.project.value.projectId}}"
-            target="_blank">submit a ticket</a> and we will assist you with this issue.
+            target="_blank" aria-describedby="msg-open-new-window">submit a ticket</a> and we will assist you with this issue.
         </div>
         <div ng-if="$ctrl.ui.submitted && !$ctrl.ui.error">
             <div class="alert alert-warning">
                 Your project is being published. <strong>Do not attempt to publish your project again.</strong>
                 Please wait until the project has finished publishing to edit or add anything in the project.
-                You will find your published project in the "Published" ared of the Data Depot soon.
+                You will find your published project in the "Published" area of the Data Depot soon.
             </div>
             <div style="text-align: center">
                     <button class="btn btn-add"
@@ -68,7 +94,7 @@
                 If you would like to update your existing publication or
                 if you are having trouble viewing your publication please
                 <a href="/help/new-ticket/?category=DATA_CURATION_PUBLICATION&subject=Requesting+update+to+existing+publication:+{{$ctrl.project.value.projectId}}"
-                target="_blank">submit a ticket</a>.
+                target="_blank" aria-describedby="msg-open-new-window">submit a ticket</a>.
             </div>
             <div style="text-align: center">
                     <button class="btn btn-add"

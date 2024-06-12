@@ -2,7 +2,7 @@
     <!-- progression map -->
     <div class="pull-right" style="padding-bottom: 20px;">
         <a ng-click="$ctrl.goWork()">
-            <i class="fa fa-times"></i> Exit Prepare to Publish
+            <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
         </a>
     </div>
     <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
@@ -18,38 +18,38 @@
             <td>
                 <strong>Selection</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread Project</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Proofread {{$ctrl.placeholder}}</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong ng-if="$ctrl.projType != 'field_recon'">Proofread Categories</strong>
                 <strong ng-if="$ctrl.projType === 'field_recon'">Proofread Collections</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Order Authors</strong>
                 <div>
-                    <i class="fa fa-circle" style="color:#1CB500;"></i>
+                    <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                 </div>
             </td>
             <td>
                 <strong>Licenses</strong>
                 <div>
-                    <i class="fa fa-circle-thin"></i>
+                    <i role="none" class="fa fa-circle-thin"></i>
                 </div>
             </td>
         </tr>
@@ -57,7 +57,7 @@
     <br>
     <div>
         <a class="pull-left" ng-click="$ctrl.goCategories()">
-            <i class="fa fa-arrow-left"></i> Back to Proofread Categories
+            <i role="none" class="fa fa-arrow-left"></i> Back to Proofread Categories
         </a>
         <button class="btn btn-add pull-right" ng-click="$ctrl.goLicenses()" ng-disabled="!$ctrl.validAuths || $ctrl.loading">Continue</button>
     </div>
@@ -79,11 +79,8 @@
         </div>
         <p>
             <h3 style="text-align: center">Order the Authors of the {{$ctrl.placeholder}}</h3>
-            <h3 style="text-align: center; color: orange;">
-                <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
-            </h3>
             <li>In order to add or remove authors, go back to Proofread {{$ctrl.placeholder}} and click Edit.</li>
-            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">Curation office hours</a> for help with publishing.</li>
+            <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">Curation office hours</a> for help with publishing.</li>
         </p>
     </div>
     <div ng-repeat="primEnt in $ctrl.primaryEntities | orderBy: primEnt.value.title" style="margin-bottom: 40px;">
@@ -102,14 +99,14 @@
             </div>
             <div ng-show="$ctrl.loading">
                 <h3 class="text-center">
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                    <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                 </h3>
             </div>
             <!-- Citation Preview -->
             <h5 style="font-family: Helvetica Neue">Citation Preview</h5>
             <div class="well" style="margin-bottom:20px; background-color: white;">
                 <div>
-                    <ds-author-list format="hname" authors="primEnt.value.authors"></ds-author-list>
+                    <ds-author-list format="citation" authors="primEnt.value.authors"></ds-author-list>
                     <span style="background: #f5f5f5;">
                         ({{ $ctrl.curDate }}) “{{ primEnt.value.title }}”, in <i>{{ $ctrl.project.value.title }}</i>. DesignSafe-CI. <a>https://doi.org/10.12345/ABCDEF</a>.
                     </span>
@@ -139,8 +136,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, primEnt)"></i>
-                        <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, primEnt)"></i>
+                        <i role="none" class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, primEnt)"></i>
+                        <i role="none" class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, primEnt)"></i>
                         <a class="sort-arrows" ng-click="$ctrl.saveAuthors(primEnt)">Save</a>
                     </td>
                 </tr>
@@ -163,7 +160,7 @@
             </div>
             <div ng-show="$ctrl.loading">
                 <h3 class="text-center">
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                    <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                 </h3>
             </div>
             <!-- Citation Preview -->
@@ -200,8 +197,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <i class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, secEnt)"></i>
-                        <i class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, secEnt)"></i>
+                        <i role="none" class="fa fa-arrow-up fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(true, secEnt)"></i>
+                        <i role="none" class="fa fa-arrow-down fa-lg sort-arrows" ng-click="$ctrl.orderAuthors(false, secEnt)"></i>
                         <a class="sort-arrows" ng-click="$ctrl.saveAuthors(secEnt)">Save</a>
                     </td>
                 </tr>

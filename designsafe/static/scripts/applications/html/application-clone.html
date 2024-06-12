@@ -10,7 +10,7 @@
 
       <a class="btn btn-lg btn-default text-center"
          href="/help/new-ticket/?category=OTHER&subject=App+developer+permissions+request"
-         target="_blank"
+         target="_blank" aria-describedby="msg-open-new-window"
       >
           Request Developer Permissions
       </a>
@@ -20,7 +20,7 @@
 <div class="modal-body" ng-show="clone">
     <p ng-show="error" class="alert alert-danger top-buffer">{{error}}</p>
     <div class="text-center" ng-show="requesting">
-        <div><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
+        <div><i role="none" class="fa fa-circle-o-notch fa-spin fa-3x"></i></div>
         <div>Loading...</div>
     </div>
     <div ng-show="!requesting">

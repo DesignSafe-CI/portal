@@ -1,6 +1,15 @@
 {
+    "rwTypes": [
+        "Context",
+        "Linked Dataset"
+    ],
+    "rwTypesOther": [
+        "Context",
+        "Linked Dataset",
+        "Cited By"
+    ],
     "nhTypes": [
-        "Other",
+        "Drought",
         "Earthquake",
         "Extreme Temperatures",
         "Fire",
@@ -12,23 +21,33 @@
         "Thunderstorm",
         "Storm Surge",
         "Pandemic",
-        "Wind"
+        "Wind",
+        "Other"
     ],
     "frTypes": [
         "Engineering",
-        "Field Experiment",
         "Geosciences",
+        "Public Health",
+        "Social Sciences",
         "Interdisciplinary",
+        "Field Experiment",
+        "Cross-Sectional Study",
         "Longitudinal Study",
         "Reconnaissance",
-        "Social Sciences"
+        "Other"
+        
     ],
     "otherTypes": [
-        "Other",
+        "Archival Materials",
+        "Audio",
+        "Benchmark Dataset",
+        "Check Sheet",
         "Code",
         "Database",
         "Dataset",
+        "Engineering",
         "Image",
+        "Interdisciplinary",
         "Jupyter Notebook",
         "Learning Object",
         "Model",
@@ -37,11 +56,12 @@
         "Poster",
         "Presentation",
         "Report",
-        "REU",
+        "Research Experience for Undergraduates",
+        "SimCenter Testbed",
         "Social Sciences",
-        "Softwarem",
-        "Survey",
+        "Survey Instrument",
+        "Testbed",
         "Video",
-        "White Paper"
+        "Other"
     ]
 }

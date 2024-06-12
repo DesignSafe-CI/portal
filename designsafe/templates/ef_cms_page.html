@@ -1,6 +1,6 @@
-{% load cms_tags staticfiles sekizai_tags menu_tags%}
+{% load cms_tags static sekizai_tags menu_tags%}
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
   <head>
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,11 +17,11 @@
       <link href="{% static 'vendor/slick-carousel/slick/slick.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'styles/main-ef.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
-      <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
+      <link href="{% static 'styles/ng-designsafe-ef.css' %}" rel="stylesheet">
       {% render_block "css" %}
   </head>
   <body>
@@ -42,12 +42,6 @@
       </div>
 
       <div class="site-banner-right">
-        <div class="text-right">
-          <a class="logo" href="https://www.designsafe-ci.org/">
-            <h1 class="sr-only">DesignSafe-CI: A Natural Hazards Engineering Community</h1>
-            <img alt="DesignSafe-CI" src="{% static 'images/ds-logo-horiz.png' %}" height="60" width="225">
-          </a>
-        </div>
       </div>
     </header>
 

@@ -1,13 +1,27 @@
 {
-    "experimentalFacility": {
+    "facility": {
         "experimental": [
-            { "name": "atlss", "label": "Advanced Technology for Large Structural Systems (ATLSS) Engineering Research Center, Lehigh University" },
-            { "name": "cgm-ucdavis", "label": "Center for Geotechnical Modeling, UC Davis" },
-            { "name": "eqss-utaustin", "label": "Field mobile shakers, UT Austin" },
-            { "name": "pfsml-florida", "label": "Powell Family Structures and Materials Laboratory, University of Florida" },
-            { "name": "wwhr-florida", "label": "Wall of Wind International Hurricane Research Center, Florida International University" },
-            { "name": "lhpost-sandiego", "label": "Large High Performance Outdoor Shake Table, University of California San Diego" },
-            { "name": "ohhwrl-oregon", "label": "O.H. Hinsdale Wave Research Laboratory, Oregon State University" },
+            { "name": "rapid-uw", "label": "RAPID - Natural Hazard and Disasters Reconnaissance Facility - University of Washington" },
+            { "name": "converge-boulder", "label": "CONVERGE - Social Science/Interdisciplinary Resources and Extreme Events Coordination - University of Colorado Boulder" },
+            { "name": "geer", "label": "GEER - Geotechnical Extreme Event Reconnaissance" },
+            { "name": "iseeer", "label": "ISEEER - Interdisciplinary Science and Engineering Extreme Events Research" },
+            { "name": "neer", "label": "NEER - Nearshore Extreme Event Reconnaissance" },
+            { "name": "oseer", "label": "OSEER - Operations and Systems Engineering Extreme Events Research" },
+            { "name": "pheer", "label": "PHEER - Public Health Extreme Events Research" },
+            { "name": "summeer", "label": "SUMMEER - Sustainable Material Management Extreme Events Reconnaissance" },
+            { "name": "sseer", "label": "SSEER - Social Science Extreme Events Research" },
+            { "name": "steer", "label": "StEER - Structural Engineering Extreme Event Reconnaissance" },
+            { "name": "ohhwrl-oregon", "label": "Large Wave Flume and Directional Wave Basin - Oregon State University" },
+            { "name": "eqss-utaustin", "label": "Mobile Field Shakers - University of Texas at Austin" },
+            { "name": "cgm-ucdavis", "label": "Center for Geotechnical Modeling - University of California, Davis" },
+            { "name": "lhpost-sandiego", "label": "Six Degree of Freedom Large High-Performance Outdoor Shake Table (LHPOST6) - University of California, San Diego" },
+            { "name": "wwhr-florida", "label": "Wall of Wind - Florida International University" },
+            { "name": "niche", "label": "National Full-Scale Testing Infrastructure for Community Hardening in Extreme Wind, Surge, and Wave Events (NICHE)" },
+            { "name": "pfsml-florida", "label": "Boundary Layer Wind Tunnel - University of Florida" },
+            { "name": "rtmd-lehigh", "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities - LeHigh University" },
+            { "name": "simcntr", "label": "SimCenter" },
+            { "name": "nco-purdue", "label": "Network Coordination Office - Purdue University" },
+            { "name": "crbcrp", "label": "Center for Risk-Based Community Resilience Planning" },            
             { "name": "other", "label": "Other" }
         ],
         "other": [
@@ -15,12 +29,12 @@
         ]
     },
     "equipmentTypes": {
-        "atlss": [
+        "rtmd-lehigh": [
             { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
-            {"name": "lsrthcshas", "label": "Large-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System"},
-            {"name": "ssrthcshas", "label": "Small-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System "},
-            {"name": "rssb", "label": "Reduced-Scale Soil Box"},
-            {"name": "ssihb", "label":"Soil-Structure Interaction Hybrid Simulation" },
+            { "name": "lsrthcshas", "label": "Large-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System" },
+            { "name": "ssrthcshas", "label": "Small-Scale, Real-Time/Hybrid Capable Servo-Hydraulic Actuator System "},
+            { "name": "rssb", "label": "Reduced-Scale Soil Box" },
+            { "name": "ssihb", "label":"Soil-Structure Interaction Hybrid Simulation" },
             { "name": "other", "label": "Other" }
         ],
         "cgm-ucdavis": [
@@ -69,7 +83,7 @@
         ]
     },
     "experimentTypes": {
-        "atlss": [
+        "rtmd-lehigh": [
             { "name": "hybrid_simulation", "label": "Hybrid Simulation" },
             { "name": "large", "label": "Large-Scale" },
             { "name": "small", "label": "Small-Scale" },

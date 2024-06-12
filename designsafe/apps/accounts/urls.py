@@ -1,6 +1,6 @@
-from django.conf.urls import include, url
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.urls import include, re_path as url
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from designsafe.apps.accounts import views
 
 urlpatterns = [
@@ -11,10 +11,8 @@ urlpatterns = [
     url(r'^identities/$', views.manage_identities, name='manage_identities'),
     url(r'^licenses/$', views.manage_licenses, name='manage_licenses'),
     url(r'^applications/$', views.manage_applications, name='manage_applications'),
-    url(r'^notifications/settings/$', views.manage_notifications, name='manage_notifications'),
     url(r'^register/$', views.register, name='register'),
     url(r'^nees-account/(?:(?P<step>\d+)/)?$', views.nees_migration, name='nees_migration'),
-    url(r'^registration-successful/$', views.registration_successful, name='registration_successful'),
     url(r'^password-reset/(?:(?P<code>.+)/)?$', views.password_reset, name='password_reset'),
     url(r'^activate/(?:(?P<code>.+)/)?$', views.email_confirmation, name='email_confirmation'),
 

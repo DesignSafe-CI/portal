@@ -2,19 +2,30 @@
     <h4 class="modal-title" style="border:none;">
         Download Project
         <span class="pull-right" ng-click="$ctrl.close()">
-            <i class="fa fa-times"></i>
+            <i role="none" class="fa fa-times"></i>
         </span>
     </h4>
 </div>
 <div ng-if="!$ctrl.loaded">
     <h3 class="text-center">
-        <i class="fa fa-spinner fa-spin"></i> Loading...
+        <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
     </h3>
 </div>
 <div class="modal-body" ng-if="$ctrl.loaded">
-    <div ng-if="!$ctrl.error" style="margin-top: 5px;">
+    <div ng-if="!$ctrl.error && $ctrl.arcData.length <= 2147483648" style="margin-top: 5px;">
         <p>
             This download is a ZIP file of the complete project dataset. The size of the ZIP file is <strong>{{$ctrl.arcData.length|bytes}}</strong>.
+            <!-- A JSON file is included that contains all of the metadata. -->
+        </p>
+    </div>
+    <div ng-if="!$ctrl.error && $ctrl.arcData.length > 2147483648" style="margin-top: 5px;">
+        <p>
+            This project zipped is <strong>{{$ctrl.arcData.length|bytes}}</strong>, exceeding the <strong>2 GB</strong> download limit. To download, 
+            <a href="https://accounts.tacc.utexas.edu/register" target="_blank" aria-describedby="msg-open-new-window">create an account</a>
+            and follow the 
+            <a href="/user-guide/managingdata/#data-transfer-guides" target="_blank" aria-describedby="msg-open-new-window">Data Transfer Guide</a>. 
+            Alternatively, download files individually by selecting the file and using the download
+            button in the toolbar.
             <!-- A JSON file is included that contains all of the metadata. -->
         </p>
     </div>
@@ -34,7 +45,7 @@
                 &ensp;
                 <strong>Open Data Commons Attribution</strong>
                 &ensp;
-                (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+                (<a href="https://opendatacommons.org/licenses/by/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
             </div>
             <ul>
                 <li>You may freely share, reuse, and adapt this data/database.</li>
@@ -49,10 +60,10 @@
                 <strong>{{$ctrl.publication.licenses.datasets}}</strong>
                 &ensp;
                 <span ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Attribution' ">
-                    (<a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a>)
+                    (<a href="https://opendatacommons.org/licenses/by/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
                 </span>
                 <span ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Public Domain Dedication' ">
-                    (<a href="https://opendatacommons.org/licenses/pddl/1-0/" target="_blank">License Website</a>)
+                    (<a href="https://opendatacommons.org/licenses/pddl/1-0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
                 </span>
             </div>
             <ul ng-if="$ctrl.publication.licenses.datasets == 'Open Data Commons Attribution' ">
@@ -69,7 +80,7 @@
             <div class="btn-container">
                 <span class="curation-cc-share"
                       style="font-size:32px;"
-                      ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+                      ng-if="$ctrl.publication.licenses.works.includes('Creative Commons Attribution')">
                 </span>
                 <span class="curation-cc-zero"
                       style="font-size:32px;"
@@ -78,14 +89,14 @@
                 &ensp;
                 <strong>{{$ctrl.publication.licenses.works}}</strong>
                 &ensp;
-                <span ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
-                    (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">License Website</a>)
+                <span ng-if="$ctrl.publication.licenses.works.includes('Creative Commons Attribution')">
+                    (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
                 </span>
                 <span ng-if="$ctrl.publication.licenses.works == 'Creative Commons Public Domain Dedication' ">
-                    (<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">License Website</a>)
+                    (<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
                 </span>
             </div>
-            <ul ng-if="$ctrl.publication.licenses.works == 'Creative Commons Attribution Share Alike' ">
+            <ul ng-if="$ctrl.publication.licenses.works.includes('Creative Commons Attribution')">
                 <li>You may freely share, reuse, and adapt this work.</li>
                 <li>You must attribute for any public use of this work.</li>
                 <li>Derived work that is published must carry the same terms and conditions of this license.</li>
@@ -96,23 +107,51 @@
             </ul>
         </div>
         <div ng-if="$ctrl.publication.licenses.software">
-            <div class="btn-container">
-                <span class="curation-gpl" style="font-size:32px;"></span>
-                &ensp;
-                <strong>{{$ctrl.publication.licenses.software}}</strong>
-                &ensp;
-                (<a href="http://www.gnu.org/licenses/gpl.html" target="_blank">License Website</a>)
+            <!-- 3-Clause BSD License -->
+            <div ng-if="$ctrl.publication.licenses.software == '3-Clause BSD License' ">
+                <div class="btn-container">
+                    <span class="curation-3bsd" style="font-size:32px;"></span>
+                    &ensp;
+                    <strong>{{$ctrl.publication.licenses.software}}</strong>
+                    &ensp;
+                    (<a href="https://opensource.org/license/bsd-3-clause/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
+                </div>
+                <ul>
+                    <li>
+                        Redistributions in binary form must reproduce the above copyright notice,
+                        this list of conditions and the following disclaimer in the documentation
+                        and/or other materials provided with the distribution.
+                    </li>
+                    <li>
+                        Redistributions of source code must retain the above copyright notice,
+                        this list of conditions and the following disclaimer.
+                    </li>
+                    <li>
+                        Neither the name of the copyright holder nor the names of its contributors may be used to endorse
+                        or promote products derived from this software without specific prior written permission.
+                    </li>
+                </ul>
             </div>
-            <ul>
-                <li>You may modify, copy, and redistribute this work or any derivative version.</li>
-                <li>The licensee is free to choose whether or not to charge a fee for services that use this work.</li>
-                <li>They cannot impose further restrictions on the rights imposed by this license.</li>
-            </ul>
+            <!-- gnu general public license -->
+            <div ng-if="$ctrl.publication.licenses.software == 'GNU General Public License' ">
+                <div class="btn-container">
+                    <span class="curation-gpl" style="font-size:32px;"></span>
+                    &ensp;
+                    <strong>{{$ctrl.publication.licenses.software}}</strong>
+                    &ensp;
+                    (<a href="http://www.gnu.org/licenses/gpl.html" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a>)
+                </div>
+                <ul>
+                    <li>You may modify, copy, and redistribute this work or any derivative version.</li>
+                    <li>The licensee is free to choose whether or not to charge a fee for services that use this work.</li>
+                    <li>They cannot impose further restrictions on the rights imposed by this license.</li>
+                </ul>
+            </div>
         </div>
-        <a href="/rw/user-guides/curating-publishing-projects/policies/publication/" target="_blank">Data Usage Agreement</a>
+        <a href="/rw/user-guides/curating-publishing-projects/policies/publication/" target="_blank" aria-describedby="msg-open-new-window">Data Usage Agreement</a>
     </p>
     <br>
-    <div class="text-right" ng-if="!$ctrl.error">
+    <div class="text-right" ng-if="!$ctrl.error && $ctrl.arcData.length <= 2147483648">
         <button class="btn btn-add" ng-click="$ctrl.download()" ng-disabled="!$ctrl.loaded || $ctrl.retrievingPostit">
             <div class="btn-container" ng-if="!$ctrl.retrievingPostit">
                 <span class="curation-download"></span>
@@ -121,7 +160,7 @@
             </div>
             <div class="btn-container" ng-if="$ctrl.retrievingPostit">
                 <span ng-if="$ctrl.retrievingPostit" style="font-size:18px">
-                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                    <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
                 </span>
             </div>
         </button>

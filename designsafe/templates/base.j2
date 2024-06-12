@@ -1,6 +1,6 @@
-{% load cms_tags staticfiles sekizai_tags menu_tags recaptcha2 %}
+{% load cms_tags static sekizai_tags menu_tags recaptcha2 %}
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
   <head>
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +8,9 @@
       <title>{% block title %}{% page_attribute "page_title" %}{% endblock %} | DesignSafe-CI</title>
       <meta name="viewport" content="width=device-width">
       <meta name="description" content="{{description}}">
+      {% if ds_environment != 'default' %}
+      <meta name="robots" content="noindex">
+      {% endif %}
 
       <link rel="icon" href="{% static 'favicon.ico' %}">
       {% if 'designsafe.storage.published' in request.get_full_path %}
@@ -32,8 +35,10 @@
       <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css %>">
       <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
       <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
+      <link href="{% static 'styles/DesignSafe-Icons.css' %}" rel="stylesheet" type="text/css">
       {% block styles %}{% endblock %}
       {% render_block "css" %}
+      {% render_block "react_assets" %}
       <base href="/">
       {% recaptcha_init 'en' %}
 
@@ -64,19 +69,20 @@
       <meta name="DC.type" content="dataset">
       {% endblock %}
   </head>
-  <body ng-app="designsafe.portal" class="o-site">
+  <body ng-app="designsafe.portal" class="o-site {% block page_class %}{% endblock page_class %}">
     {% cms_toolbar %}
     <div>
         {% include 'includes/header.html' %}
         {% include 'includes/navigation.html' %}
     </div>
-    <div class="o-site__body">
+    <main class="o-site__body">
         {% include 'includes/messages.html' %}
         {% block breadcrumb %}{% endblock %}
         {% block content %}{% endblock %}
-    </div>
-    {% include 'includes/footer.html' %}
+    </main>
 
+    {% block footer %}{% endblock %}
+    <div id="toast-container"></div>
     <!-- scripts -->
     <script src="https://www.google.com/recaptcha/api.js"></script>
 
@@ -136,6 +142,64 @@
                 </div>")
         }
     </script>
+    <script type="module">
+        window.__authenticatedUser__ = "{{request.user.is_authenticated}}" === 'True' && {
+            username: "{{request.user.username}}",
+            firstName: "{{ request.user.first_name }}",
+            lastName: "{{ request.user.last_name }}",
+            email: "{{ request.user.email }}",
+            institution: "{{ request.user.profile.institution }}"
+        };
+    </script>
+
+    <script type="module" id="js-open-pdfs-ext-links-new-window">
+    import findLinksAndSetTargets from 'https://cdn.jsdelivr.net/gh/TACC/Core-CMS@v3.11.0-alpha.1/taccsite_cms/static/site_cms/js/modules/setTargetForExternalLinks.js';
+
+    const pathsToRedirectsToExternal = [
+        '/facilities/simcenter/',
+        '/facilities/rapid-facility/',
+        '/rw/simcenter-research-tools/',
+        '/learning-center/simcenter-learning-tools/',
+        '/community/mechs/',
+        '/rw/user-guides/',
+        '/help/user-guides/',
+        '/help/getting-started/',
+        '/rw/use-cases/',
+        '/faq/',
+    ];
+    const pathsToPDFs = [
+        /\.pdf/
+    ];
+    // NOTE: Some links have `target="_blank"` even though they should not
+    const pathsOfManualNewTabLinks = document.querySelectorAll(
+        '[target="_blank"]:not([aria-describedby])'
+    );
+
+    /** Adds accessibility attribute to links that open in new tab */
+    function supportA11y( link ) {
+        const hasA11yNote = link.querySelector('span.sr-only');
+        const hasA11yDesc = link.hasAttribute('aria-describedby');
+
+        if ( ! hasA11yNote && ! hasA11yDesc ) {
+            link.setAttribute('aria-describedby', 'msg-open-new-window');
+            if (window.DEBUG) {
+                console.debug(`Link ${link} now has "aria-describedby"`);
+            }
+        }
+    }
+
+    /* To make certain links open in new window, and apply a11y attribute */
+    findLinksAndSetTargets({
+        pathsToForceSetTarget: [
+            ...pathsToRedirectsToExternal,
+            ...pathsToPDFs
+        ],
+        setTargetCallback: supportA11y,
+    });
+
+    /* To apply a11y attribute to manual new tab links */
+    [ ...pathsOfManualNewTabLinks ].forEach( supportA11y );
+</script><!-- https://medium.com/@svinkle/why-let-someone-know-when-a-link-opens-a-new-window-8699d20ed3b1#79b2 -->
 
     {% include 'includes/analytics.html' %}
   </body>

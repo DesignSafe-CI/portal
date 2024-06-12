@@ -1,143 +1,163 @@
-import _ from 'underscore';
-import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.component.html';
+import ManageFieldReconMissionsTemplate from './manage-field-recon-missions.template.html';
+const MissionDefaults = require('./mission-form-defaults.json');
+const FacilityData = require('../../facility-data.json');
 
 class ManageFieldReconMissionsCtrl {
-    constructor($q, $uibModal, UserService, ProjectEntitiesService) {
+
+    constructor(ProjectEntitiesService, $uibModal) {
         'ngInject';
         this.ProjectEntitiesService = ProjectEntitiesService;
-        this.UserService = UserService;
-        this.$q = $q;
         this.$uibModal = $uibModal;
     }
 
     $onInit() {
         this.project = this.resolve.project;
+        this.missions = this.project.mission_set;
         this.edit = this.resolve.edit;
-        var members = [this.project.value.pi].concat(
-            this.project.value.coPis,
-            this.project.value.teamMembers,
-            this.project.value.
-                guestMembers.filter( (g) => g).
-                map(
-                    (g) => g.user
-                )
-        );
-
-        members.forEach((m, i) => {
-            if (typeof m == 'string') {
-                // if user is guest append their data
-                if(m.slice(0,5) === 'guest') {
-                    let guestData = this.project.value.guestMembers.find(
-                        (x) => x.user === m
-                    );
-                    members[i] = {
-                        name: m,
-                        order: i,
-                        authorship: false,
-                        guest: true,
-                        fname: guestData.fname,
-                        lname: guestData.lname,
-                        email: guestData.email,
-                        inst: guestData.inst,
-                    };
-                } else {
-                    members[i] = { name: m, order: i, authorship: false };
-                }
-            }
-        });
-
+        this.MissionDefaults = MissionDefaults;
         this.ui = {
             loading: false,
+            editing: false,
+            relatedWorkTypes: ["Context", "Linked Dataset", "Cited By"],
+            facilities: FacilityData.facility.facilities_list,
+            require: {
+                relatedWork: false,
+                referencedData: false,
+            }
         };
+        this.configureForm(this.edit);
+        this.form.authors = this.configureAuthors(this.edit, false);
+    }
 
-        this.data = {
-            busy: false,
-            missions: this.project.mission_set,
-            project: this.project,
-            users: [... new Set(members)],
-            form: {}
-        };
-        this.cleanForm();
-        if (this.edit) {
-            this.editMission(this.edit);
+    requireField(field) {
+        // Sets the field to disabled or enabled during init
+        if (field.length > 1) return true;
+        return (Object.keys(field[0]).every(input => !field[0][input]) ? false : true );
+    }
+
+    addObjField(fieldName) {
+        if (this.form[fieldName].length === 1 && !this.ui.require[fieldName]) {
+            this.ui.require[fieldName] = true;
+        } else {
+            this.form[fieldName].push({title: '', doi: ''});
         }
     }
 
-    cleanForm() {
-        this.form = {'authors' : angular.copy(this.data.users)};
+    dropObjField(fieldName, index) {
+        if (this.form[fieldName].length === 1) {
+            this.form[fieldName].pop();
+            this.form[fieldName].push({title: '', doi: ''});
+            this.ui.require[fieldName] = false;
+        } else if (Number.isInteger(index)) {
+            this.form[fieldName].splice(index, 1);
+        } else {
+            this.form[fieldName].pop();
+        }
     }
 
-    configureAuthors(mission) {
-        // combine project and experiment users then check if any authors need to be built into objects
-        let usersToClean = [
-            ...new Set([
-                ...this.data.users,
-                ...mission.value.authors.slice()])
-        ];
-        let modAuths = false;
-        let auths = [];
-
-        usersToClean.forEach((a) => {
-            if (typeof a == 'string') {
-                modAuths = true;
-            }
-            if (a.authorship) {
-                auths.push(a);
-            }
-        });
-        // create author objects for each user
-        if (modAuths) {
-            usersToClean.forEach((auth, i) => {
-                if (typeof auth == 'string') {
-                    // if user is guest append their data
-                    if(auth.slice(0,5) === 'guest') {
-                        let guestData = this.project.value.guestMembers.find(
-                            (x) => x.user === auth
-                        );
-                        usersToClean[i] = {
-                            name: auth,
-                            order: i,
-                            authorship: false,
-                            guest: true,
-                            fname: guestData.fname,
-                            lname: guestData.lname,
-                            email: guestData.email,
-                            inst: guestData.inst,
-                        };
-                    } else {
-                        usersToClean[i] = {
-                            name: auth,
-                            order: i,
-                            authorship: false
-                        };
-                    }
-                } else {
-                    auth.order = i;
-                }
+    getEF(str) {
+        if (str !='' && str !='None') {
+            let efs = this.ui.facilities;
+            let ef = efs.find((ef) => {
+                return ef.name === str;
             });
+            return ef.label;
         }
-        usersToClean = _.uniq(usersToClean, 'name');
+    }
 
-        /*
-        It is possible that a user added to a mission may no longer be on a project
-        Remove any users on the mission that are not on the project
-        */
-        usersToClean = usersToClean.filter((m) => this.data.users.find((u) => u.name === m.name));
+    isValid(ent) {
+        if (ent && ent != '' && ent != 'None') {
+            return true;
+        }
+        return false;
+      }
+    
+    configureForm(mission) {
+        document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
+        let form = structuredClone(this.MissionDefaults)
+        this.uuid = '';
+        this.ui.error = false;
+        if (mission) {
+            this.ui.editing = true;
+            form.name = mission.name;
+            this.uuid = mission.uuid;
+            for (let key in form) {
+                if (mission.value[key] instanceof Array && mission.value[key].length) {
+                    form[key] = mission.value[key];
+                } else if (['dateStart', 'dateEnd'].includes(key)) {
+                    form[key] = new Date(mission.value[key]);
+                } else if (typeof mission.value[key] === 'string' && mission.value[key]) {
+                    form[key] = mission.value[key];
+                }
+            }
+            if (mission.value.facility && typeof mission.value.facility === 'object') {
+                form.facility = mission.value.facility
+            } else {
+                form.facility = {}
+            }
 
-        /*
-        Restore previous authorship status and order if any
-        */
-        usersToClean = usersToClean.map((u) => auths.find((a) => u.name == a.name) || u);
+        }
+        this.ui.require.relatedWork = this.requireField(form.relatedWork);
+        this.ui.require.referencedData = this.requireField(form.referencedData);
+        this.form = structuredClone(form);
+    }
 
-        /*
-        Reorder to accomodate blank spots in order and give order to users with no order
+    resetForm() {
+        this.configureForm();
+        this.form.authors = this.configureAuthors(null, false);
+        this.ui.editing = false;
+    }
+    
+    clearFacilityIfOther() {
+        if (this.form.facility.id === "other") {
+            this.form.facility.name = ""
+        }
+    }
+
+    configureAuthors(mission, amending) {
+        /*  Configure Authors for Mission Editing
+            - check and remove authors from missions that don't exist on the project
+            - format project users as authors for mission metadata
         */
-        usersToClean = usersToClean.sort((a, b) => a.order - b.order);
-        usersToClean.forEach((u, i) => {
-            u.order = i;
+        if (amending) return structuredClone(mission.value.authors);
+
+        let projectMembers = [this.project.value.pi].concat(
+            this.project.value.coPis,
+            this.project.value.teamMembers,
+            this.project.value.guestMembers
+        );
+        projectMembers = projectMembers.map((member, i) => {
+            if (typeof member == 'string') {
+                // registered users
+                return { name: member, order: i, authorship: false };
+            } else {
+                // nonregistered users
+                return {
+                    name: member.user,
+                    order: i,
+                    authorship: false,
+                    guest: true,
+                    fname: member.fname,
+                    lname: member.lname,
+                    email: member.email,
+                    inst: member.inst,
+                };
+            };
         });
+        if (mission) {
+            let projectUsers = projectMembers.map((member) => { return member.name });
+            let missionUsers = mission.value.authors.map((author) => { return author.name });
+            // drop members who are no longer listed in the project...
+            // add members who are aren't listed in the mission...
+            let currentAuthors = mission.value.authors.filter((author) => { return projectUsers.includes(author.name) });
+            let newAuthors = projectMembers.filter((author) => { return !missionUsers.includes(author.name) });
 
-        return usersToClean;
+            //combine and return unique
+            let authors = currentAuthors.concat(newAuthors);
+            authors.forEach((author, i) => { author.order = i });
+            return structuredClone(authors);
+        }
+        return structuredClone(projectMembers);
     }
 
     editAuthors(user, i) {
@@ -157,109 +177,94 @@ class ManageFieldReconMissionsCtrl {
         return true;
     }
 
-    saveMission($event) {
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.data.busy = true;
-        let mission = {
-            title: this.form.title,
-            event: this.form.event,
-            dateStart: this.form.dateStart,
-            dateEnd: this.form.dateEnd,
-            authors: this.form.authors,
-            location: this.form.location,
-            longitude: this.form.longitude,
-            latitude: this.form.latitude,
-            description: this.form.description
-        };
+    validInputs(objArray, reqKeys, objValue) {
+        /* 
+        Validate Inputs
+        - check each object provided for defined key values
+        - return the object or a value within the object
 
-        if (isNaN(Date.parse(mission.dateEnd))) {
-            mission.dateEnd = new Date(mission.dateStart);
+        objArray - The array of objects to check
+        reqKeys  - The required keys for those objects
+        objValue - Include if you want to return just the values from the 
+                   object array (ex: returning an array of strings
+                   from valid objects)
+        */
+        return objArray.filter((obj) => {
+            return obj && reqKeys.every((key) => {
+                return typeof obj[key] !== 'undefined' && obj[key] !== '';
+            });
+        }).map((obj) => {
+            return obj[objValue] || obj;
+        });
+    }
+
+    prepareData() {
+        // drop or reformat inputs before for submission
+        const facilityId = this.form.facility.id;
+        if (!facilityId) {
+            delete this.form.facility;
+        } else if (facilityId === 'other') {
+            this.form.facility = { id: 'other', name: this.form.facility.name ?? ''};
+        } else {
+            this.form.facility = {
+                id: facilityId,
+                name: this.ui.facilities.find((f) => f.name === facilityId)?.label,
+            };
         }
 
+        if (isNaN(Date.parse(this.form.dateEnd))) {
+            this.form.dateEnd = new Date(this.form.dateStart);
+        }
+        this.form.relatedWork = this.validInputs(this.form.relatedWork, ['title', 'href']);
+        this.form.referencedData = this.validInputs(this.form.referencedData, ['title', 'doi']);
+    }
+
+    createMission() {
+        this.prepareData();
+        const uuid = this.project.uuid;
+        const name = 'designsafe.project.field_recon.mission';
         this.ProjectEntitiesService.create({
-            data: {
-                uuid: this.data.project.uuid,
-                name: 'designsafe.project.field_recon.mission',
-                entity: mission,
-            }
-        }).then((res) => {
-            this.data.project.addEntity(res);
-            this.data.missions = this.project.mission_set;
-            this.cleanForm();
-        }, (err) => {
-            this.data.error = err;
-        }).finally( () => {
-            this.data.busy = false;
+            data: { uuid: uuid, name: name, entity: this.form }
+        })
+        .then((resp) => {
+            this.project.addEntity(resp);
+            this.missions = this.project.mission_set;
+            this.resetForm();
         });
     }
 
     editMission(mission) {
         document.getElementById('modal-header').scrollIntoView({ behavior: 'smooth' });
-        this.data.editMission = Object.assign({}, mission);
-        if (this.data.editMission.value.dateEnd &&
-            this.data.editMission.value.dateEnd !== this.data.editMission.value.dateStart) {
-                this.data.editMission.value.dateEnd = new Date(this.data.editMission.value.dateEnd);
+        this.configureForm(mission);
+        this.form.authors = this.configureAuthors(mission, false);
+        if (this.form.dateEnd &&
+            this.form.dateEnd !== this.form.dateStart) {
+                this.form.dateEnd = new Date(this.form.dateEnd);
         } else {
-            this.data.editMission.value.dateEnd = '';
+            this.form.dateEnd = '';
         }
-        this.data.editMission.value.dateStart = new Date(
-            this.data.editMission.value.dateStart
+        this.form.dateStart = new Date(
+            this.form.dateStart
         );
-        let auths = this.configureAuthors(mission);
-        this.form = {
-            authors: auths,
-            selectedAuthor: '',
-            title: this.data.editMission.value.title,
-            event: this.data.editMission.value.event,
-            dateStart: this.data.editMission.value.dateStart,
-            dateEnd: this.data.editMission.value.dateEnd,
-            location: this.data.editMission.value.location,
-            longitude: this.data.editMission.value.longitude,
-            latitude: this.data.editMission.value.latitude,
-            description: this.data.editMission.value.description
-        };
     }
 
-    updateMission($event) {
-        $event.preventDefault();
-        this.ui.busy = true;
-        this.data.editMission.value.authors = this.form.authors;
-        this.data.editMission.value.title = this.form.title;
-        this.data.editMission.value.event = (this.form.event ? this.form.event : '');
-        this.data.editMission.value.dateStart = this.form.dateStart;
-        this.data.editMission.value.dateEnd = this.form.dateEnd;
-        this.data.editMission.value.location = this.form.location;
-        this.data.editMission.value.longitude = this.form.longitude;
-        this.data.editMission.value.latitude = this.form.latitude;
-        this.data.editMission.value.description = this.form.description;
-
-        if (isNaN(Date.parse(this.data.editMission.value.dateEnd))) {
-            this.data.editMission.value.dateEnd = new Date(this.data.editMission.value.dateStart);
-        }
-
+    updateMission() {
+        this.prepareData();
+        let mission = this.project.getRelatedByUuid(this.uuid);
+        const updatedMission = { ...mission, value: this.form };
         this.ProjectEntitiesService.update({
-            data: {
-                uuid: this.data.editMission.uuid,
-                entity: this.data.editMission,
-            }
-        }).then( (res) => {
-            let mission = this.data.project.getRelatedByUuid(res.uuid);
-            mission.update(res);
-            this.data.missions = this.project.mission_set;
-            delete this.data.editMission;
-            if (window.sessionStorage.experimentData) {
-                this.close({ $value: mission });
-            }
-            this.cleanForm();
-            return res;
-        }).finally(()=>{
-            this.ui.busy = false;
+            data: { uuid: this.uuid, entity: updatedMission }
+        })
+        .then((resp) => {
+            mission.update(resp);
+            this.resetForm();
+        })
+        .catch((err) => {
+            this.ui.error = true;
         });
     }
 
-    deleteMission(ent) {
+    deleteMission(mission) {
         let confirmDelete = (msg) => {
             let modalInstance = this.$uibModal.open({
                 component: 'confirmMessage',
@@ -272,17 +277,16 @@ class ManageFieldReconMissionsCtrl {
             modalInstance.result.then((res) => {
                 if (res) {
                     this.ProjectEntitiesService.delete({
-                        data: {
-                            uuid: ent.uuid
-                        }
-                    }).then((entity) => {
-                        this.project.removeEntity(entity);
-                        this.data.missions = this.project.mission_set;
+                        data: { uuid: mission.uuid }
+                    })
+                    .then((resp) => {
+                        this.project.removeEntity(resp);
+                        this.missions = this.project.mission_set;
                     });
                 }
             });
         };
-        confirmDelete("Are you sure you want to delete " + ent.value.title + "?");
+        confirmDelete(`Are you sure you want to delete ${mission.value.title}?`);
     }
 }
 

@@ -1,7 +1,7 @@
 import { from } from 'rxjs';
 import { map, tap, concatMap, take } from 'rxjs/operators';
 import { takeLeadingSubscriber, takeLatestSubscriber } from './_rxjs-utils';
-import experimentalData from '../../projects/components/manage-experiments/experimental-data.json';
+import facilityData from '../../projects/components/facility-data.json';
 
 export class ProjectService {
     constructor(
@@ -24,9 +24,9 @@ export class ProjectService {
         this.ProjectModel = ProjectModel;
         this.UserService = UserService;
 
-        this.efs = experimentalData.experimentalFacility;
-        this.equipmentTypes = experimentalData.equipmentTypes;
-        this.experimentTypes = experimentalData.experimentTypes;
+        this.efs = facilityData.facility;
+        this.equipmentTypes = facilityData.equipmentTypes;
+        this.experimentTypes = facilityData.experimentTypes;
 
         this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
         this.dataResource = this.httpi.resource('/api/projects/:uuid/data/:fileId').setKeepTrailingSlash(true);
@@ -186,6 +186,7 @@ export class ProjectService {
      */
     save(options) {
         return this.projectResource.post({ data: options }).then((resp) => {
+            this.current = null;
             return new this.ProjectModel(resp.data);
         });
     }
@@ -216,9 +217,10 @@ export class ProjectService {
             sensor_list: 'Sensor Information',
             event: 'Event',
             simulation: 'Simulation',
-            model: 'Model',
+            model: 'Model',      
             input: 'Input',
             output: 'Output',
+            report: 'Report',
             hybrid_simulation: 'Hybrid Simulation',
             global_model: 'Global Model',
             coordinator: 'Coordinator',
@@ -310,13 +312,18 @@ export class ProjectService {
             Simulation Requirements:
             Condition 1)
                 + If a Simulation is published it must have:
-                    - Model Set
+                    - Model Set (no files required)
                     - Input Set
                     - Output Set
+                    - Report Set
                 + Sets must include categorized files
             */
-            let requirements = ['model', 'input', 'output'];
-            let subentities = [].concat(project.model_set || [], project.input_set || [], project.output_set || []);
+            let requirements = ['model', 'input', 'output', 'report'];
+            let subentities = [].concat(
+                project.model_set || [], 
+                project.input_set || [], 
+                project.output_set || [], 
+                project.report_set || []);
             let simulations = selPrimEnts.filter((ent) => ent.name.endsWith('simulation'));
             // let reports = selPrimEnts.filter(ent => ent.name.endsWith('report'));
             if (simulations.length) {
@@ -349,13 +356,11 @@ export class ProjectService {
             /* 
             Field Research Requirements:
             Condition 1)
-                + A report may be published alone and must have:
-                    - Files associated to the Report
-
-            Condition 2)
-                + If a mission is published it must have the following:
-                    - Planning Set OR Social Science Set OR Geoscience Set
-                    - Files within all Sets
+                + A Mission or Documents may be published alone
+                + Missions must have at least one Collection of any type
+                    - Collections must have at least one categorized file
+                + Documents (defined as 'reports' in metadata) must have
+                  at least one categorized file
             
             Since FR is the only model which will require just one of multiple requirement
             types we will check for missing information first and then check that one of

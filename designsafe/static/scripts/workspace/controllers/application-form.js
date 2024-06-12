@@ -76,22 +76,31 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
 
                     $scope.data.app = resp.data;
 
-                    Systems.getSystemStatus(resp.data.executionSystem)
-                        .then((response) => {
-                            let heartbeatStatus = response.heartbeat.status;
-                            $scope.data.systemDown = (heartbeatStatus == false);
-                        }, (err) => {
-                            $scope.data.messages.push({
-                                type: 'warning',
-                                header: 'System status unknown',
-                                body: `Could not access system status for system ${resp.data.executionSystem}.
-                                Jobs may fail.`,
-                            });
-                            $scope.data.systemDown = null;
-                        })
+                    Systems.getSystemStatus(resp.data.exec_sys.login.host)
+                        .then(
+                            (response) => {
+                                $scope.data.systemDown = !(
+                                    response.online &&
+                                    response.reachable &&
+                                    !(response.queues_down || response.in_maintenance)
+                                );
+                            },
+                            (err) => {
+                                $scope.data.systemDown = null;
+                            }
+                        )
                         .finally(() => {
                             $scope.resetForm();
                         });
+                }, (err) => {
+                    $scope.data.app = null;
+                    $mdToast.show(
+                        $mdToast
+                            .simple()
+                            .content($translate.instant('error_app_run'))
+                            .toastClass('warning')
+                            .parent($('#toast-container'))
+                    );
                 });
         } else if (app.value.type === 'html') {
             $scope.data.type = app.value.type;
@@ -108,7 +117,7 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         // reset formValid, var is used for invalid form msg
         $scope.data.formValid = [];
 
-        let readOnly = $scope.data.needsLicense || $scope.data.unavailable || $scope.data.systemDown;
+        let readOnly = $scope.data.needsLicense || $scope.data.unavailable;
 
         /* inputs */
         let items = [];
@@ -118,12 +127,14 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
         if ($scope.form.schema.properties.parameters) {
             items.push('parameters');
         }
-        $scope.form.form.push({
-            type: 'fieldset',
-            readonly: readOnly,
-            title: 'Inputs',
-            items: items,
-        });
+        if (items.length) {
+            $scope.form.form.push({
+                type: 'fieldset',
+                readonly: readOnly,
+                title: 'Inputs',
+                items: items,
+            });
+        }
 
         /* job details */
         items = [];
@@ -200,10 +211,13 @@ export default function ApplicationFormCtrl($scope, $rootScope, $localStorage, $
                 }
             });
 
-            /* To ensure that DCV server is alive, name of job
-            * needs to contain 'dcvserver' */
+            /* To ensure that DCV and VNC server is alive, name of job
+            needs to contain 'dcvserver' or 'tap_' respectively */
             if ($scope.data.app.tags.includes('DCV')) {
                 jobData.name += '-dcvserver';
+            }
+            if ($scope.data.app.tags.includes('VNC')) {
+                jobData.name += 'tap_';
             }
 
             // Calculate processorsPerNode if nodeCount parameter submitted

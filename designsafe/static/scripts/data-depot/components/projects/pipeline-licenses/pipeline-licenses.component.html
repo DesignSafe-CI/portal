@@ -2,7 +2,7 @@
         <!-- progression map -->
         <div class="pull-right" style="padding-bottom: 20px;">
             <a ng-click="$ctrl.goWork()">
-                <i class="fa fa-times"></i> Exit Prepare to Publish
+                <i role="none" class="fa fa-times"></i> Exit Prepare to Publish
             </a>
         </div>
         <table class="tg" style="table-layout: fixed; width: 100%; padding-bottom: 15px;">
@@ -10,19 +10,19 @@
                 <td class="tg-0lax">
                     <strong>Selection</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
                     <strong>Proofread Project</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax" ng-hide="$ctrl.project.value.projectType === 'other'">
                     <strong>Proofread {{$ctrl.placeholder}}</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
@@ -30,19 +30,19 @@
                         <strong ng-if="$ctrl.project.value.projectType === 'field_recon'">Proofread Collections</strong>
                         <strong ng-if="$ctrl.project.value.projectType != 'other' && $ctrl.project.value.projectType != 'field_recon'">Proofread Categories</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
                     <strong>Order Authors</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
                 <td class="tg-0lax">
                     <strong>Licenses</strong>
                     <div>
-                        <i class="fa fa-circle" style="color:#1CB500;"></i>
+                        <i role="none" class="fa fa-circle" style="color:#1CB500;"></i>
                     </div>
                 </td>
             </tr>
@@ -50,32 +50,26 @@
         <br>
         <div>
             <a class="pull-left" ng-click="$ctrl.goAuthors()" ng-if="$ctrl.project.value.projectType !== 'other'">
-                <i class="fa fa-arrow-left"></i> Back to Order Authors
+                <i role="none" class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
             <a class="pull-left" ng-click="$ctrl.goTeam()" ng-if="$ctrl.project.value.projectType === 'other'">
-                <i class="fa fa-arrow-left"></i> Back to Order Authors
+                <i role="none" class="fa fa-arrow-left"></i> Back to Order Authors
             </a>
             <button class="btn btn-small btn-add pull-right" ng-click="$ctrl.prepareModal()" ng-disabled="!$ctrl.validSelection()">
-                <i class="fa fa-globe"></i> Request DOI & Publish
+                <i role="none" class="fa fa-globe"></i> Request DOI & Publish
             </button>
         </div>
         <!-- progression map -->
         <div style="padding-top: 40px; padding-bottom: 40px;">
             <p>
                 <h3 style="text-align: center">Select License(s)</h3>
-                <h3 ng-if="$ctrl.project.value.projectType != 'other'" style="text-align: center; color: orange;">
-                    <i class="fa fa-exclamation-triangle"></i>You cannot make changes after publishing.
-                </h3>
                 <li>Consider the terms of each license carefully.</li>
-                <li>If you want to use a different license than the following, <a href="/help/new-ticket/" target="_blank">submit a ticket</a>.</li>
-                <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank">Curation office hours</a> for help with publishing.</li>
+                <li>If you want to use a different license than the following, <a href="/help/new-ticket/" target="_blank" aria-describedby="msg-open-new-window">submit a ticket</a>.</li>
+                <li>If you need help, attend <a href="/facilities/virtual-office-hours/" target="_blank" aria-describedby="msg-open-new-window">Curation office hours</a> for help with publishing.</li>
             </p>
         </div>
         <div ng-if="!$ctrl.ui.loading">
             <h3>Datasets</h3>
-            <button class="btn-danger pull-right" ng-click="$ctrl.reset()" ng-if="$ctrl.validSelection()">
-                <strong>Clear Selection</strong>
-            </button>
             <p>
                 If you are publishing data, such as simulation or experimental data, choose between:
             </p>
@@ -90,13 +84,12 @@
                             <tr>
                                 <td>
                                     <input type="radio"
-                                            id="odca"
-                                            name="license-datasets"
-                                            ng-model="$ctrl.license.datasets"
+                                            name="license"
+                                            ng-model="$ctrl.selectedLicense"
                                             value="Open Data Commons Attribution"
                                             style="margin-top: -18px; vertical-align: middle;"
                                     >
-                                    <span class="curation-odc" style="font-size: 32px; margin-right:10px; margin-left:10px;"></span>
+                                    <span class="curation-odc" style="margin-right:10px; margin-left:10px;"></span>
                                 </td>
                                 <td>
                                     <strong>Open Data Commons Attribution</strong>
@@ -110,20 +103,19 @@
                             <li>You allow others to freely share, reuse, and adapt your data/database.</li>
                             <li>You expect to be attributed for any public use of the data/database.</li>
                         </p>
-                        <div>Please read the <a href="https://opendatacommons.org/licenses/by/" target="_blank">License Website</a></div>
+                        <div>Please read the <a href="https://opendatacommons.org/licenses/by/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a></div>
                     </td>
                     <td class="tg-0lax" valign="top">
                         <table>
                             <tr>
                                 <td>
                                     <input type="radio"
-                                            id="odcpdd"
-                                            name="license-datasets"
-                                            ng-model="$ctrl.license.datasets"
+                                            name="license"
+                                            ng-model="$ctrl.selectedLicense"
                                             value="Open Data Commons Public Domain Dedication"
                                             style="margin-top: -18px; vertical-align: middle;"
                                     >
-                                    <span class="curation-odc" style="font-size: 32px; margin-right:10px; margin-left:10px;"></span>
+                                    <span class="curation-odc" style="margin-right:10px; margin-left:10px;"></span>
                                 </td>
                                 <td>
                                     <strong>Open Data Commons Public Domain Dedication</strong>
@@ -138,7 +130,7 @@
                                 restrictions.</li>
                             <li>You do not expect to be attributed for it.</li>
                         </p>
-                        <div>Please read the <a href="https://opendatacommons.org/licenses/pddl/1-0/" target="_blank">License Website</a></div>
+                        <div>Please read the <a href="https://opendatacommons.org/licenses/pddl/1-0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a></div>
                     </td>
                 </tr>
             </table>
@@ -159,16 +151,15 @@
                             <tr>
                                 <td>
                                     <input type="radio"
-                                            id="ccasa"
-                                            name="license-works"
-                                            ng-model="$ctrl.license.works"
-                                            value="Creative Commons Attribution Share Alike"
+                                            name="license"
+                                            ng-model="$ctrl.selectedLicense"
+                                            value="Creative Commons Attribution"
                                             style="margin-top: -18px; vertical-align: middle;"
                                     >
-                                    <span class="curation-cc-share" style="font-size: 32px; margin-right:10px; margin-left:10px;"></span>
+                                    <span class="curation-cc-share" style="margin-right:10px; margin-left:10px;"></span>
                                 </td>
                                 <td>
-                                    <strong>Creative Commons Attribution Share Alike</strong>
+                                    <strong>Creative Commons Attribution</strong>
                                     <div style="color:#158600;">
                                         Recommended
                                     </div>
@@ -180,20 +171,19 @@
                             <li>You expect to be attributed for any public use of your work.</li>
                             <li>You retain your copyright.</li>
                         </p>
-                        <div>Please read the <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">License Website</a></div>
+                        <div>Please read the <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a></div>
                     </td>
                     <td class="tg-0lax" valign="top">
                         <table>
                             <tr>
                                 <td>
                                     <input type="radio"
-                                            id="ccpdd"
-                                            name="license-works"
-                                            ng-model="$ctrl.license.works"
+                                            name="license"
+                                            ng-model="$ctrl.selectedLicense"
                                             value="Creative Commons Public Domain Dedication"
                                             style="margin-top: -18px; vertical-align: middle;"
                                     >
-                                    <span class="curation-cc-zero" style="font-size: 32px; margin-right:10px; margin-left:10px;"></span>
+                                    <span class="curation-cc-zero" style="margin-right:10px; margin-left:10px;"></span>
                                 </td>
                                 <td>
                                     <strong>Creative Commons Public Domain Dedication</strong>
@@ -209,7 +199,7 @@
                             <li>You do not expect to be attributed for it.</li>
                             <li>You give all of your rights away.</li>
                         </p>
-                        <div>Please read the <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">License Website</a></div>
+                        <div>Please read the <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a></div>
                     </td>
                 </tr>
             </table>
@@ -223,25 +213,34 @@
                 <tr>
                     <td>
                         <input type="radio"
-                                id="gnu"
-                                name="license-software"
-                                ng-model="$ctrl.license.software"
-                                value="GNU General Public License"
+                                name="license"
+                                ng-model="$ctrl.selectedLicense"
+                                value="3-Clause BSD License"
                                 style="margin-top: -18px; vertical-align: middle;"
                         >
-                        <span class="curation-gpl" style="font-size: 32px; margin-right:10px; margin-left:10px;"></span>
+                        <span class="curation-3bsd" style="margin-right:10px; margin-left:10px;"></span>
                     </td>
                     <td>
-                        <strong>GNU General Public License</strong>
+                        <strong>3-Clause BSD License</strong>
                     </td>
                 </tr>
             </table>
             <p>
-                <li>You give permission to modify, copy, and redistribute the work or any derivative version.</li>
-                <li>The licensee is free to choose whether or not to charge a fee for services that use this work.</li>
-                <li>They cannot impose further restrictions on the rights imposed by this license.</li>
+                <li>
+                    Redistributions in binary form must reproduce the above copyright notice,
+                    this list of conditions and the following disclaimer in the documentation
+                    and/or other materials provided with the distribution.
+                </li>
+                <li>
+                    Redistributions of source code must retain the above copyright notice,
+                    this list of conditions and the following disclaimer.
+                </li>
+                <li>
+                    Neither the name of the copyright holder nor the names of its contributors may be used to endorse
+                    or promote products derived from this software without specific prior written permission.
+                </li>
             </p>
-            <div>Please read the <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">License Website</a></div>
+            <div>Please read the <a href="https://opensource.org/license/bsd-3-clause/" target="_blank" aria-describedby="msg-open-ext-site-new-window">License Website</a></div>
         </div>
 
     </div>

@@ -46,6 +46,12 @@ class DataDepotNavCtrl {
           description: 'Private directory for your data'
         },
         {
+          name: 'HPC Work',
+          collapsible: false,
+          state: 'myDataWork',
+          description: 'Work directory on TACC HPC machines for use with Jupyter'
+        },
+        {
           name: 'My Projects',
           collapsible: false,
           state: 'projects.list',

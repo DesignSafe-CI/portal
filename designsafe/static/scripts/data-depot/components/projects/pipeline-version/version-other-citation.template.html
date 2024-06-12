@@ -1,0 +1,47 @@
+<div class="pipeline-nav">
+    <a ng-click="$ctrl.goSelection()">
+        <i role="none" class="fa fa-arrow-left"></i> Back
+    </a>
+    <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goChanges()"
+            ng-disabled="!$ctrl.selectedListings || !$ctrl.ui.confirmed"
+    >
+        Continue
+    </button>
+</div>
+<div class="pipeline-page">
+    <div class="pipeline-header">
+        <h3>Confirm Author Order</h3>
+        Before proceeding, please review the list of authors and their order on your citation(s) and click "Save" to confirm. Your citation(s) will be updated accordingly.
+        <div ng-if="$ctrl.ui.loading">
+            <h3 class="text-center">
+                <i role="none" class="fa fa-spinner fa-spin"></i> Loading...
+            </h3>
+        </div>
+    </div>
+    <!-- Notifications -->
+    <div class="pipeline-notification">
+        <div class="alert alert-success flex-container" ng-if="$ctrl.ui.confirmed">
+            <i role="none" class="fa fa-check notification-icon"></i>
+            <div>
+                Your authors have been saved. Click the "Continue" button to proceed to the next step.
+            </div>
+        </div>
+        <button class="btn btn-small btn-add"
+            ng-click="$ctrl.goProject()"
+            ng-if="!$ctrl.ui.loading && $ctrl.ui.submitted"
+        >
+            Return to Project
+        </button>
+    </div>
+    <div ng-if="!$ctrl.ui.loading">
+        <div class="pipeline-section">
+            <manage-authors
+                title="$ctrl.project.value.title"
+                label="'Confirm Authors'"
+                authors="$ctrl.authors"
+                submit="$ctrl.saveAuthors()">
+            </manage-authors>
+        </div>
+    </div>
+</div>

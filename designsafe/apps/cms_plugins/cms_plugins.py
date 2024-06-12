@@ -7,7 +7,7 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from designsafe.apps.cms_plugins.models import ResponsiveEmbedPlugin
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class CMSResponsiveEmbedPlugin(CMSPluginBase):
