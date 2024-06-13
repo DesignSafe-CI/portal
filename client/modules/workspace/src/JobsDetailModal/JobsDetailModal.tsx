@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGetJobs, TTapisJob } from '@client/hooks';
 import styles from './JobsDetailModal.module.css';
 import { getStatusText, isOutputState, isTerminalState } from '../utils/jobs';
-import { formatDateTime } from '../utils/timeFormat';
+import { formatDateTimeFromValue } from '../utils/timeFormat';
 import { JobActionButton } from '../JobsListing/JobsListing';
 import { Spinner } from '@client/common-components';
 
@@ -84,9 +84,13 @@ export const JobsDetailModalBody: React.FC<{
         <dt>Status</dt>
         <dd>{getStatusText(jobData.status)}</dd>
         <dt>Submitted</dt>
-        <dd>{formatDateTime(new Date(jobData.created))}</dd>
-        <dt>Finished</dt>
-        <dd>{formatDateTime(new Date(jobData.ended))}</dd>
+        <dd>{formatDateTimeFromValue(jobData.created)}</dd>
+        {jobData.ended && (
+          <>
+            <dt>Finished</dt>
+            <dd>{formatDateTimeFromValue(jobData.ended)}</dd>
+          </>
+        )}
         <dt>Last Status Message</dt>
         <dd>{jobData.lastMessage}</dd>
       </dl>
