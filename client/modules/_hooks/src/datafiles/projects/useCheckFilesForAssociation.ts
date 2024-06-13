@@ -19,10 +19,7 @@ export function useCheckFilesForAssociation(
       //entity.value.fileTags?.forEach((ft) => associatedFiles.push(ft.path));
     });
     let hasAssociations = false;
-    console.log(associatedFiles);
-    console.log(filePaths);
     filePaths.forEach((filePath) => {
-      console.log(associatedFiles);
       if (
         associatedFiles.includes(filePath) ||
         associatedFiles
