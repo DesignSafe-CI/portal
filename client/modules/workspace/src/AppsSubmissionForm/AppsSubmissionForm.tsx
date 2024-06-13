@@ -70,11 +70,12 @@ export const AppsSubmissionForm: React.FC = () => {
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
     (s) => defaultStorageHost?.endsWith(s)
   );
-  const hasDefaultAllocation =
-    tasAllocations.hosts[defaultStorageHost] || hasCorral;
-  const hasStorageSystems = !!storageSystems.length;
 
-  let missingAllocation = null;
+  // Check if user has default allocation if defaultStorageHost is not corral
+  const hasDefaultAllocation =
+    hasCorral || tasAllocations.hosts[defaultStorageHost];
+
+  const hasStorageSystems = !!storageSystems.length;
 
   const execSystems = getExecSystemsFromApp(
     definition,
@@ -86,7 +87,7 @@ export const AppsSubmissionForm: React.FC = () => {
   ) as TTapisSystem;
   const allocations = getAllocationList(defaultExecSystem, tasAllocations);
   const portalAlloc = allocations.find(
-    (a) => a.includes('DesignSafe-DCV') || a.includes('DesignSafe-HPC')
+    (a) => a.startsWith('DesignSafe-DCV') || a.startsWith('DS-HPC')
   );
 
   const { fileInputs, parameterSet, configuration, outputs } = FormSchema(
@@ -109,13 +110,12 @@ export const AppsSubmissionForm: React.FC = () => {
     [definition]
   );
 
-  if (
-    isAppTypeBATCH(definition) &&
-    !hasDefaultAllocation &&
-    hasStorageSystems
-  ) {
+  let missingAllocation;
+  if (!hasDefaultAllocation && hasStorageSystems) {
+    // User does not have default storage allocation
     missingAllocation = getSystemName(defaultStorageHost);
-  } else if (!allocations.length) {
+  } else if (isAppTypeBATCH(definition) && !allocations.length) {
+    // User does not have allocation on execution system for a batch type app
     missingAllocation = getSystemName(defaultExecSystem.host);
   }
 

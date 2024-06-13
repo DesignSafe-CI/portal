@@ -7,8 +7,8 @@ export type TSystemParamsType = {
 };
 
 export type TSystemsResponse = {
-  executionSystems: [TTapisSystem];
-  storageSystems: [TTapisSystem];
+  executionSystems: TTapisSystem[];
+  storageSystems: TTapisSystem[];
   defaultStorageSystem: TTapisSystem;
 };
 

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form, Input, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { TFieldOptions } from '../AppsWizard/AppsFormSchema';
+import { TFieldOptions, inputFileRegex } from '../AppsWizard/AppsFormSchema';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
 
@@ -26,13 +26,27 @@ export const FormField: React.FC<{
   type,
   ...props
 }) => {
-  const { resetField, control, getValues, setValue } = useFormContext();
+  const { resetField, control, getValues, setValue, trigger } =
+    useFormContext();
   const fieldState = useWatch({ control, name });
   let parameterSetLabel: React.ReactElement | null = null;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [storageSystem, setStorageSystem] = useState<string | null>(null);
+
   const handleSelectModalOpen = () => {
     setIsModalOpen(true);
   };
+  useEffect(() => {
+    if (tapisFile) {
+      const inputFileValue = getValues(name);
+      const match = inputFileValue?.match(inputFileRegex);
+      if (match && match.groups) {
+        setStorageSystem(match.groups.storageSystem);
+      } else {
+        setStorageSystem(null);
+      }
+    }
+  }, [tapisFile, name, fieldState]);
 
   if (parameterSet) {
     parameterSetLabel = (
@@ -120,9 +134,13 @@ export const FormField: React.FC<{
       {tapisFile && (
         <SelectModal
           inputLabel={label}
+          system={storageSystem}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onSelect={(value: string) => setValue(name, value)}
+          onSelect={(value: string) => {
+            setValue(name, value);
+            trigger(name);
+          }}
         />
       )}
     </div>

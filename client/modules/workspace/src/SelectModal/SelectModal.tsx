@@ -195,10 +195,11 @@ function getFilesColumns(
 
 export const SelectModal: React.FC<{
   inputLabel: string;
+  system: string | null;
   isOpen: boolean;
   onClose: () => void;
   onSelect: (value: string) => void;
-}> = ({ inputLabel, isOpen, onClose, onSelect }) => {
+}> = ({ inputLabel, system, isOpen, onClose, onSelect }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [form] = Form.useForm();
@@ -296,6 +297,16 @@ export const SelectModal: React.FC<{
     // Intended to indicate searching the root path of a project.
     setSystemLabel('root');
   };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      let systemValue = system ?? defaultStorageSystem.id;
+      if (systemValue.startsWith('project-')) {
+        systemValue = 'myprojects';
+      }
+      dropdownCallback(systemValue);
+    }
+  }, [system, isModalOpen]);
 
   const navCallback = useCallback(
     (path: string) => {
