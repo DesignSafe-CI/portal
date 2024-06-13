@@ -40,13 +40,6 @@ export const ProjectDetailLayout: React.FC = () => {
   const { projectId } = useParams();
   const { data } = useProjectDetail(projectId ?? '');
 
-  if ((!data || !projectId) && user)
-    return (
-      <Layout style={{ position: 'relative' }}>
-        <Spin style={{ position: 'absolute', top: '50%', left: '50%' }} />
-      </Layout>
-    );
-
   if (!user)
     return (
       <Layout>
@@ -59,6 +52,13 @@ export const ProjectDetailLayout: React.FC = () => {
         />
       </Layout>
     );
+
+    if ((!data || !projectId))
+      return (
+        <Layout style={{ position: 'relative' }}>
+          <Spin style={{ position: 'absolute', top: '50%', left: '50%' }} />
+        </Layout>
+      );
 
   return (
     <Layout>
