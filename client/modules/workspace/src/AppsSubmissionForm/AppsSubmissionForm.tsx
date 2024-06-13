@@ -142,7 +142,7 @@ export const AppsSubmissionForm: React.FC = () => {
     fontSize: 16,
   };
   const layoutStyle = {
-    overflow: 'hidden',
+    overflow: 'auto',
   };
 
   const missingLicense = license.type && !license.enabled;
