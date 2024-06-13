@@ -53,12 +53,12 @@ export const ProjectDetailLayout: React.FC = () => {
       </Layout>
     );
 
-    if ((!data || !projectId))
-      return (
-        <Layout style={{ position: 'relative' }}>
-          <Spin style={{ position: 'absolute', top: '50%', left: '50%' }} />
-        </Layout>
-      );
+  if (!data || !projectId)
+    return (
+      <Layout style={{ position: 'relative' }}>
+        <Spin style={{ position: 'absolute', top: '50%', left: '50%' }} />
+      </Layout>
+    );
 
   return (
     <Layout>
