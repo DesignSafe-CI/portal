@@ -152,7 +152,8 @@ export const AppsSubmissionDetails: React.FC<{
           items={items}
           labelStyle={{
             textAlign: 'left',
-            width: '220px',
+            maxWidth: '240px',
+            minWidth: '220px',
             color: 'rgba(0, 0, 0, 0.88)',
             font: 'normal normal 14px Helvetica Neue',
             alignItems: 'center',
