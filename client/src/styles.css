@@ -135,9 +135,9 @@
   height: 100%;
 }
 
-.o-site__body, 
-#datafiles-root, 
+.o-site__body,
+#datafiles-root,
 #datafiles-root > div.ant-layout > .ant-alert-error,
-div[role=alert] {
+div[role='alert'] {
   display: flex !important;
 }

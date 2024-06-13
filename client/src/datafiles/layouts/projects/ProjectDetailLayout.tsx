@@ -46,19 +46,19 @@ export const ProjectDetailLayout: React.FC = () => {
         <Spin style={{ position: 'absolute', top: '50%', left: '50%' }} />
       </Layout>
     );
-  
+
   if (!user)
-    return(
+    return (
       <Layout>
         <DatafilesToolbar searchInput={<FileListingSearchBar />} />
         <Alert
           showIcon
           type="error"
-          style={{marginTop: '16px', color: '#d9534f', textAlign: 'center'}}
-          message={"Please log in to access this feature."}
+          style={{ marginTop: '16px', color: '#d9534f', textAlign: 'center' }}
+          message={'Please log in to access this feature.'}
         />
       </Layout>
-    )
+    );
 
   return (
     <Layout>
