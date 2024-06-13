@@ -141,9 +141,6 @@ export const AppsSubmissionForm: React.FC = () => {
     borderBottom: '1px solid #707070',
     fontSize: 16,
   };
-  const layoutStyle = {
-    overflow: 'auto',
-  };
 
   const missingLicense = license.type && !license.enabled;
 
@@ -471,7 +468,7 @@ export const AppsSubmissionForm: React.FC = () => {
 
   return (
     <>
-      <Layout style={layoutStyle}>
+      <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
         <Space direction="vertical" style={{ width: '100%' }}>
           <Header style={headerStyle}>
             <Flex justify="space-between">
