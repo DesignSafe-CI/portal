@@ -3,37 +3,32 @@
 
 {% addtoblock "css" %}
 <style id="cms_breadcrumbs">
-  @import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/trumps/s-breadcrumbs.css");
+  @import url("https://cdn.jsdelivr.net/gh/TACC/Core-Styles@feat/DES-2806-breadcrumbs-sans-class-s-prefix/dist/components/bootstrap3.breadcrumb.css");
 
   {# To negate `.navbar-ds` padding bottom #}
   {# https://github.com/DesignSafe-CI/portal/blob/8048436/designsafe/static/styles/main.css#L168 #}
-  div:has(.navbar-ds) + main > .s-breadcrumbs {
+  div:has(.navbar-ds) + main .breadcrumb {
     margin-top: -2.5em;
   }
-  {# https://github.com/TACC/Core-Styles/blob/v2.26.0/dist/elements/links.css #}
-  .s-breadcrumbs a:not([href]) {
+  .breadcrumb a:not([href]) {
+    {# https://github.com/TACC/Core-Styles/blob/v2.26.0/dist/elements/links.css #}
     pointer-events: none;
-  }
-  {# https://github.com/TACC/tup-ui/blob/v1.1.10/apps/tup-cms/src/taccsite_custom/tup_cms/static/tup_cms/css/for-tup-cms/trumps/s-breadcrumbs.css #}
-  .s-breadcrumbs:is(nav) a:not([href]) {
+
+    {# https://github.com/TACC/tup-ui/blob/v1.1.10/apps/tup-cms/src/taccsite_custom/tup_cms/static/tup_cms/css/for-tup-cms/trumps/s-breadcrumbs.css #}
     opacity: 0.75;
     color: unset;
   }
 </style>
 {% endaddtoblock %}
 
-<nav class="s-breadcrumbs  {{className}}" id="cms-breadcrumbs">
-
-  {# To support structured data, item* attributes are used #}
-  {# SEE: https://confluence.tacc.utexas.edu/x/5yMFDg #}
-  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+<nav class="{{className}}" id="cms-breadcrumbs">
+  <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
 
     {# To include pages marked to not show in menu, attributes are added #}
     {# SEE: https://docs.django-cms.org/en/release-3.6.x/reference/navigation.html#show-breadcrumb #}
     {% show_breadcrumb 0 "menu/breadcrumb.html" 0 %}
 
   </ol>
-
 </nav>
 
 {# To disable 2nd-level breadcrumb #}
