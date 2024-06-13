@@ -577,6 +577,7 @@ export const AppsSubmissionForm: React.FC = () => {
                         schema={schema}
                         fields={fields}
                         isSubmitting={isPending}
+                        current={current}
                         setCurrent={setCurrent}
                       />
                     </Col>
