@@ -92,6 +92,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   const queryClient = useQueryClient();
   const { data: interactiveSessionNotifs } = useGetNotifications({
     eventTypes: ['interactive_session_ready'],
+    markRead: false,
   });
   const { mutate: readNotifications } = useReadNotifications();
 
