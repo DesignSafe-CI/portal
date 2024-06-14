@@ -82,7 +82,6 @@ def check_missing_entities(
     (e.g. field recon missions require a planning, social science, OR geoscience colleciton but not all 3)
     """
 
-    project_tree = ProjectMetadata.get_project_by_id(project_id)
     project_graph: nx.DiGraph = add_values_to_tree(project_id)
 
     entity_node = next(
@@ -370,40 +369,44 @@ def copy_publication_files(
     `path_mapping` is a dict mapping project paths to their corresponding paths in the
     published area.
     """
-    pub_dirname = project_id
-    if version and version > 1:
-        pub_dirname = f"{project_id}v{version}"
+    os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
+    try:
+        pub_dirname = project_id
+        if version and version > 1:
+            pub_dirname = f"{project_id}v{version}"
 
-    pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
-    os.makedirs(pub_root_dir, exist_ok=True)
+        pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
+        os.makedirs(pub_root_dir, exist_ok=True)
 
-    for src_path in path_mapping:
-        src_path_obj = Path(src_path)
-        if not src_path_obj.exists():
-            raise ProjectFileNotFound(f"File not found: {src_path}")
+        for src_path in path_mapping:
+            src_path_obj = Path(src_path)
+            if not src_path_obj.exists():
+                raise ProjectFileNotFound(f"File not found: {src_path}")
 
-        os.makedirs(src_path_obj.parent, exist_ok=True)
+            os.makedirs(src_path_obj.parent, exist_ok=True)
 
-        if src_path_obj.is_dir():
-            shutil.copytree(
-                src_path,
-                path_mapping[src_path],
-                dirs_exist_ok=True,
-                symlinks=True,
-                copy_function=shutil.copy,
-            )
-        else:
-            shutil.copy(src_path, path_mapping[src_path])
+            if src_path_obj.is_dir():
+                shutil.copytree(
+                    src_path,
+                    path_mapping[src_path],
+                    dirs_exist_ok=True,
+                    symlinks=True,
+                    copy_function=shutil.copy,
+                )
+            else:
+                shutil.copy(src_path, path_mapping[src_path])
 
-    # Lock the publication directory so that non-root users can only read files and list directories
-    subprocess.run(["chmod", "-R", "a-x,a=rX", pub_root_dir], check=True)
+        # Lock the publication directory so that non-root users can only read files and list directories
+        subprocess.run(["chmod", "-R", "a-x,a=rX", pub_root_dir], check=True)
+    finally:
+        os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
 
 
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def publish_project(
     project_id: str,
     entity_uuids: list[str],
-    version: Optional[int] = None,
+    version: Optional[int] = 1,
     version_info: Optional[str] = None,
     dry_run: bool = False,
 ):
@@ -475,7 +478,7 @@ def publish_project(
 def publish_project_async(
     project_id: str,
     entity_uuids: list[str],
-    version: Optional[int] = None,
+    version: Optional[int] = 1,
     version_info: Optional[str] = None,
     dry_run: bool = False,
 ):
