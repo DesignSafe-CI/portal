@@ -25,6 +25,16 @@ interface Data2Type {
   };
 }
 
+interface DataEntryAttributes {
+  'relation-type-id': string;
+  total: number;
+  'occurred-at'?: string;
+}
+
+interface DataEntryA {
+  attributes: DataEntryAttributes;
+}
+
 interface MetricsModalProps {
   isOpen: boolean;
   handleCancel: () => void;
@@ -219,17 +229,9 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
     return defaultSums;
   });
 
-  function getQuarter(month: number): string {
-    if (month >= 1 && month <= 3) return 'Q1';
-    else if (month >= 4 && month <= 6) return 'Q2';
-    else if (month >= 7 && month <= 9) return 'Q3';
-    else if (month >= 10 && month <= 12) return 'Q4';
-    return ''; // Default case if month is out of range, should not happen
-  }
-
-  const processTotalRequests = (data1: any, year: string) => {
+  const processTotalRequests = (data1: Data1Type, year: string) => {
     return data1.data.reduce(
-      (acc: { [key: string]: number }, curr: any) => {
+      (acc: { [key: string]: number }, curr: DataEntryA) => {
         if (
           curr.attributes['relation-type-id'] ===
             'total-dataset-requests-regular' &&
@@ -262,11 +264,6 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
       setQuarterSums({ views, downloads, totals });
     }
   }, [selectedYear, data1, data2.data.attributes]);
-
-  const { totalRequestsQuarterlySums } = processTotalRequests(
-    data1,
-    defaultYear || ''
-  );
 
   useEffect(() => {
     if (
