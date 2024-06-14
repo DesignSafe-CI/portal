@@ -477,7 +477,11 @@ export const AppsSubmissionForm: React.FC = () => {
                 {definition.notes.label || definition.id}
               </div>
               {definition.notes.helpUrl && (
-                <a href={definition.notes.helpUrl} target="_blank">
+                <a
+                  href={definition.notes.helpUrl}
+                  target="_blank"
+                  style={{ marginRight: 10 }}
+                >
                   View User Guide
                 </a>
               )}
