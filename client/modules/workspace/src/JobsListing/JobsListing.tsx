@@ -1,15 +1,17 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { TableProps, Row, Flex } from 'antd';
+import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
 import { PrimaryButton, SecondaryButton } from '@client/common-components';
+import { BaseButtonProps } from 'antd/es/button/button';
 import {
   useGetNotifications,
   TJobStatusNotification,
   usePostJobs,
   TJobPostOperations,
   useReadNotifications,
+  TGetNotificationsResponse,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -25,22 +27,27 @@ import {
 } from '../utils';
 import { InteractiveSessionModal } from '../InteractiveSessionModal';
 import styles from './JobsListing.module.css';
+import { formatDateTimeFromValue } from '../utils/timeFormat';
 
 export const JobActionButton: React.FC<{
   uuid: string;
   operation: TJobPostOperations;
   title: string;
-  type?: 'primary' | 'secondary';
+  type?: BaseButtonProps['type'];
   size?: ButtonSize;
-}> = ({ uuid, operation, title, type, size, ...props }) => {
+  danger?: boolean;
+}> = ({ uuid, operation, title, type, size, danger = false }) => {
   const { mutate: mutateJob, isPending, isSuccess } = usePostJobs();
-  const Button = type === 'primary' ? PrimaryButton : SecondaryButton;
+  const Button =
+    type === 'primary' ? (danger ? AntButton : PrimaryButton) : SecondaryButton;
   return (
     <Button
       size={size || 'middle'}
       onClick={() => mutateJob({ uuid, operation })}
       loading={isPending}
-      disabled={isPending}
+      disabled={isPending || isSuccess}
+      danger={danger}
+      type={type}
     >
       {title}
       {isSuccess && <i className="fa fa-check" style={{ marginLeft: 5 }} />}
@@ -84,29 +91,37 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
 }) => {
   const queryClient = useQueryClient();
   const { data: interactiveSessionNotifs } = useGetNotifications({
-    event_types: ['interactive_session_ready'],
+    eventTypes: ['interactive_session_ready'],
+    markRead: false,
   });
   const { mutate: readNotifications } = useReadNotifications();
 
   // mark all as read on component mount
   useEffect(() => {
     readNotifications({
-      event_types: ['interactive_session_ready', 'job'],
+      eventTypes: ['interactive_session_ready', 'job'],
     });
-  }, []);
 
-  // update unread count state
-  queryClient.setQueryData(
-    [
-      'workspace',
-      'notifications',
-      'badge',
-      {
-        event_types: ['interactive_session_ready', 'job'],
-      },
-    ],
-    0
-  );
+    // update unread count state
+    queryClient.setQueryData(
+      [
+        'workspace',
+        'notifications',
+        {
+          eventTypes: ['interactive_session_ready', 'job'],
+          read: false,
+          markRead: false,
+        },
+      ],
+      (oldData: TGetNotificationsResponse) => {
+        return {
+          ...oldData,
+          notifs: [],
+          unread: 0,
+        };
+      }
+    );
+  }, []);
 
   const columns: TJobsListingColumns = useMemo(
     () => [
@@ -191,27 +206,6 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
         title: 'Time Submitted - Finished',
         dataIndex: 'created',
         render: (_, job) => {
-          const formatDate = (dateString: string) => {
-            if (!dateString) return '';
-            const date = new Date(dateString);
-            const month = date.getMonth() + 1; // getMonth() is zero-indexed
-            const day = date.getDate();
-            const year = date.getFullYear();
-            let hours = date.getHours();
-            const minutes = date.getMinutes();
-            // const amPm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12; // the hour '0' should be '12'
-            // Format the date and time parts to ensure two digits
-            const formattedDate = `${month.toString().padStart(2, '0')}/${day
-              .toString()
-              .padStart(2, '0')}/${year}`;
-            const formattedTime = `${hours
-              .toString()
-              .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-            return `${formattedDate} ${formattedTime}`;
-          };
-
           const formatDuration = (start: string, end: string) => {
             if (!start || !end) return '';
             const startDate = new Date(start).getTime();
@@ -227,8 +221,8 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
               .toString()
               .padStart(2, '0')}`;
           };
-          const formattedStart = formatDate(job.created);
-          const formattedEnd = formatDate(job.ended);
+          const formattedStart = formatDateTimeFromValue(job.created);
+          const formattedEnd = formatDateTimeFromValue(job.ended);
           const runtime = formatDuration(job.created, job.ended);
 
           return (

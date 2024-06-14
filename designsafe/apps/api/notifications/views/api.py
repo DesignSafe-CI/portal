@@ -16,7 +16,10 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
         limit = request.GET.get("limit", 0)
         page = request.GET.get("page", 0)
         read = request.GET.get("read")
-        event_types = request.GET.getlist("eventTypes")
+        event_types = request.GET.getlist("eventTypes[]")
+        mark_read = request.GET.get(
+            "markRead", True
+        )  # mark read by default to support legacy behavior
 
         query_params = {}
         if read is not None:
@@ -54,9 +57,10 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
             offset = page * limit
             notifs = notifs[offset : offset + limit]
 
-        for n in notifs:
-            if not n.read:
-                n.mark_read()
+        if mark_read:
+            for n in notifs:
+                if not n.read:
+                    n.mark_read()
 
         notifs = [n.to_dict() for n in notifs]
         return JsonResponse(
@@ -115,7 +119,7 @@ class NotificationsBadgeView(SecureMixin, JSONResponseMixin, BaseApiView):
 
     def get(self, request, *args, **kwargs):
         """Get count of unread notifications of a certain event type."""
-        event_types = request.GET.getlist("eventTypes")
+        event_types = request.GET.getlist("eventTypes[]")
 
         if event_types:
             unread = Notification.objects.filter(

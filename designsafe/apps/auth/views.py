@@ -12,7 +12,6 @@ from django.contrib.auth import authenticate, login
 from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-from tapipy.errors import BaseTapyException
 from designsafe.apps.auth.tasks import (
     check_or_configure_system_and_user_directory,
     get_systems_to_configure,
@@ -70,7 +69,13 @@ def launch_setup_checks(user):
     logger.info("Starting tasks to check or configure systems for %s", user.username)
     for system in get_systems_to_configure(user.username):
         check_or_configure_system_and_user_directory.apply_async(
-            args=(user.username, system["system_id"], system["path"], system["create_path"]), queue="files"
+            args=(
+                user.username,
+                system["system_id"],
+                system["path"],
+                system["create_path"],
+            ),
+            queue="files",
         )
     logger.info("Creating/updating cached allocation information for %s", user.username)
     cache_allocations.apply_async(args=(user.username,))
@@ -136,9 +141,8 @@ def tapis_oauth_callback(request):
 
         return HttpResponseRedirect(reverse("logout"))
 
-    redirect = getattr(settings, "LOGIN_REDIRECT_URL", "/")
     if "next" in request.session:
-        redirect += "?next=" + request.session.pop("next")
+        next_uri = request.session.pop("next")
+        return HttpResponseRedirect(next_uri)
 
-    response = HttpResponseRedirect(redirect)
-    return response
+    return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)

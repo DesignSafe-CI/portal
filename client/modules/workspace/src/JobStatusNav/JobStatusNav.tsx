@@ -3,12 +3,15 @@ import { NavLink } from 'react-router-dom';
 import { Layout, Badge } from 'antd';
 import { Icon } from '@client/common-components';
 import styles from './JobStatusNav.module.css';
-import { useGetUnreadNotifications } from '@client/hooks';
+import { useGetNotifications } from '@client/hooks';
 
 export const JobStatusNav: React.FC = () => {
-  const { data: unreadNotifs } = useGetUnreadNotifications({
-    event_types: ['interactive_session_ready', 'job'],
+  const { data } = useGetNotifications({
+    eventTypes: ['interactive_session_ready', 'job'],
+    read: false,
+    markRead: false,
   });
+  const unreadNotifs = new Set(data?.notifs.map((x) => x.extra.uuid)).size;
 
   const { Header } = Layout;
 
@@ -21,7 +24,7 @@ export const JobStatusNav: React.FC = () => {
   };
   return (
     <Header style={headerStyle}>
-      <Badge count={unreadNotifs?.unread} size="small" className={styles.badge}>
+      <Badge count={unreadNotifs} size="small" className={styles.badge}>
         <Icon
           className={`ds-icon-Job-Status ${styles.icon}`}
           label="Job-Status"

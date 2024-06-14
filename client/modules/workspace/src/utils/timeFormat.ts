@@ -43,7 +43,12 @@ export function formatDateTime(dateTime: Date) {
  * @param {DateTimeValue} dateTimeValue - A single value date-time representation
  * @returns {string}
  */
-export function formatDateTimeFromValue(dateTimeValue: number) {
+export function formatDateTimeFromValue(
+  dateTimeValue?: string | number | Date
+) {
+  if (!dateTimeValue) {
+    return '';
+  }
   const date = new Date(dateTimeValue);
 
   return formatDateTime(date);

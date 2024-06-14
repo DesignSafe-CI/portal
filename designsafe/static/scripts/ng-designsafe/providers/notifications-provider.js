@@ -33,10 +33,10 @@ function NotificationService(
             url = processors[eventType].renderLink(msg);
         }
         if (msg.status != 'ERROR') {
-            if (msg.event_type == 'job') {
-                url=`/rw/workspace/notification/process/${msg.pk}`
+            if (msg.event_type === 'job') {
+                url = `/rw/workspace/history`;
             } else if (msg.event_type == 'data_depot') {
-                url=`/rw/workspace/notification/process/${msg.pk}`
+                url = `/data/browser`;
             }
         }
         return url;

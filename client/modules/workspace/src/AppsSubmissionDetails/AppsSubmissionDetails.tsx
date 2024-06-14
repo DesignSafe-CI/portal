@@ -63,8 +63,9 @@ export const AppsSubmissionDetails: React.FC<{
     };
   };
   isSubmitting: boolean;
+  current: string;
   setCurrent: CallableFunction;
-}> = ({ schema, fields, isSubmitting, setCurrent }) => {
+}> = ({ schema, fields, isSubmitting, current, setCurrent }) => {
   const {
     control,
     formState: { defaultValues, isValid },
@@ -151,7 +152,8 @@ export const AppsSubmissionDetails: React.FC<{
           items={items}
           labelStyle={{
             textAlign: 'left',
-            width: '220px',
+            maxWidth: '240px',
+            minWidth: '220px',
             color: 'rgba(0, 0, 0, 0.88)',
             font: 'normal normal 14px Helvetica Neue',
             alignItems: 'center',
@@ -182,13 +184,15 @@ export const AppsSubmissionDetails: React.FC<{
             <div style={{ flex: 1 }}>
               {key.charAt(0).toUpperCase() + key.slice(1)}
             </div>
-            <Button
-              type="link"
-              onClick={() => setCurrent(key)}
-              style={{ fontWeight: 'bold' }}
-            >
-              Edit
-            </Button>
+            {current !== key && (
+              <Button
+                type="link"
+                onClick={() => setCurrent(key)}
+                style={{ fontWeight: 'bold' }}
+              >
+                Edit
+              </Button>
+            )}
           </Flex>
         ),
         children: getChildren(key, value, schema[key] as z.AnyZodObject, index),

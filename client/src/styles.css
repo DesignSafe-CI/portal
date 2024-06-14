@@ -73,12 +73,14 @@
   padding-inline: 0px !important;
   height: unset;
   padding: 0px !important;
-  color: #337ab7 !important;
-}
+  &:not(.ant-btn-disabled, [disabled]) {
+    color: #337ab7 !important;
 
-.ant-btn-link:hover span {
-  color: #23527c !important;
-  text-decoration: underline !important;
+    &:hover span {
+      color: #23527c !important;
+      text-decoration: underline !important;
+    }
+  }
 }
 
 .listing-nav-link {
@@ -124,7 +126,7 @@
 
 /* Do NOT scroll "Applications:" and "Job Status" */
 .ant-layout-sider-children {
-  overflow-y: hidden;
+  overflow-y: scroll;
   display: flex;
   flex-flow: column;
 }
