@@ -3,7 +3,7 @@ import { Modal, Popover, Select, Table } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
-interface Data1Type {
+interface EventMetrics {
   data: {
     attributes: {
       'relation-type-id': string;
@@ -13,7 +13,7 @@ interface Data1Type {
   }[];
 }
 
-interface Data2Type {
+interface UsageMetrics {
   data: {
     attributes: {
       citationCount: number;
@@ -38,8 +38,8 @@ interface DataEntryA {
 interface MetricsModalProps {
   isOpen: boolean;
   handleCancel: () => void;
-  data1: Data1Type;
-  data2: Data2Type;
+  eventMetricsData: EventMetrics;
+  usageMetricsData: UsageMetrics;
 }
 
 interface YearMonthEntry {
@@ -50,8 +50,8 @@ interface YearMonthEntry {
 export const MetricsModal: React.FC<MetricsModalProps> = ({
   isOpen,
   handleCancel,
-  data1,
-  data2,
+  eventMetricsData,
+  usageMetricsData,
 }) => {
   interface DataEntry {
     attributes: {
@@ -61,7 +61,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
   }
 
   const latestYearMonth = useMemo(() => {
-    const views = data2.data.attributes.viewsOverTime;
+    const views = usageMetricsData.data.attributes.viewsOverTime;
     if (views && views.length > 0) {
       const sortedViews = views.sort((a, b) =>
         b.yearMonth.localeCompare(a.yearMonth)
@@ -71,23 +71,23 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
       return `${month}/${year}`;
     }
     return null;
-  }, [data2.data.attributes.viewsOverTime]);
+  }, [usageMetricsData.data.attributes.viewsOverTime]);
 
   const title = `Dataset Metrics${
     latestYearMonth ? ` [Updated ${latestYearMonth}]` : ''
   }`;
 
   // Table 1: Usage Breakdown
-  const uniqueInvestigations = data1.data.filter(
+  const uniqueInvestigations = eventMetricsData.data.filter(
     (entry: DataEntry) =>
       entry.attributes['relation-type-id'] ===
       'unique-dataset-investigations-regular'
   );
-  const uniqueRequests = data1.data.filter(
+  const uniqueRequests = eventMetricsData.data.filter(
     (entry: DataEntry) =>
       entry.attributes['relation-type-id'] === 'unique-dataset-requests-regular'
   );
-  const totalRequests = data1.data.filter(
+  const totalRequests = eventMetricsData.data.filter(
     (entry: DataEntry) =>
       entry.attributes['relation-type-id'] === 'total-dataset-requests-regular'
   );
@@ -198,8 +198,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
 
   const defaultYear = useMemo(
     () =>
-      data2.data.attributes.viewsOverTime.slice(-1)[0]?.yearMonth.split('-')[0],
-    [data2.data.attributes.viewsOverTime]
+      usageMetricsData.data.attributes.viewsOverTime.slice(-1)[0]?.yearMonth.split('-')[0],
+    [usageMetricsData.data.attributes.viewsOverTime]
   );
   const [selectedYear, setSelectedYear] = useState(defaultYear);
 
@@ -215,11 +215,11 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
 
     if (defaultYear) {
       const viewsByQuarter = calculateQuarterSums(
-        data2.data.attributes.viewsOverTime,
+        usageMetricsData.data.attributes.viewsOverTime,
         defaultYear
       );
       const downloadsByQuarter = calculateQuarterSums(
-        data2.data.attributes.downloadsOverTime,
+        usageMetricsData.data.attributes.downloadsOverTime,
         defaultYear
       );
       defaultSums['views'] = viewsByQuarter;
@@ -229,8 +229,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
     return defaultSums;
   });
 
-  const processTotalRequests = (data1: Data1Type, year: string) => {
-    return data1.data.reduce(
+  const processTotalRequests = (eventMetricsData: EventMetrics, year: string) => {
+    return eventMetricsData.data.reduce(
       (acc: { [key: string]: number }, curr: DataEntryA) => {
         if (
           curr.attributes['relation-type-id'] ===
@@ -253,45 +253,45 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
   useEffect(() => {
     if (selectedYear) {
       const views = calculateQuarterSums(
-        data2.data.attributes.viewsOverTime,
+        usageMetricsData.data.attributes.viewsOverTime,
         selectedYear
       );
       const downloads = calculateQuarterSums(
-        data2.data.attributes.downloadsOverTime,
+        usageMetricsData.data.attributes.downloadsOverTime,
         selectedYear
       );
-      const totals = processTotalRequests(data1, selectedYear);
+      const totals = processTotalRequests(eventMetricsData, selectedYear);
       setQuarterSums({ views, downloads, totals });
     }
-  }, [selectedYear, data1, data2.data.attributes]);
+  }, [selectedYear, eventMetricsData, usageMetricsData.data.attributes]);
 
   useEffect(() => {
     if (
-      data2.data.attributes.viewsOverTime &&
-      data2.data.attributes.viewsOverTime.length > 0
+      usageMetricsData.data.attributes.viewsOverTime &&
+      usageMetricsData.data.attributes.viewsOverTime.length > 0
     ) {
       const lastItem =
-        data2.data.attributes.viewsOverTime[
-          data2.data.attributes.viewsOverTime.length - 1
+      usageMetricsData.data.attributes.viewsOverTime[
+        usageMetricsData.data.attributes.viewsOverTime.length - 1
         ];
       const latestYear = lastItem.yearMonth.substring(0, 4);
       setSelectedYear(latestYear);
     }
-  }, [data2.data.attributes.viewsOverTime]);
+  }, [usageMetricsData.data.attributes.viewsOverTime]);
 
   const handleYearChange = (value: string) => {
     setSelectedYear(value);
 
     const viewsByQuarter = calculateQuarterSums(
-      data2.data.attributes.viewsOverTime,
+      usageMetricsData.data.attributes.viewsOverTime,
       value
     );
     const downloadsByQuarter = calculateQuarterSums(
-      data2.data.attributes.downloadsOverTime,
+      usageMetricsData.data.attributes.downloadsOverTime,
       value
     );
     const totalRequestsQuarterlySums = processTotalRequests(
-      data1,
+      eventMetricsData,
       defaultYear || ''
     );
 
@@ -303,11 +303,11 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
   };
   const years = useMemo(() => {
     if (
-      data2.data.attributes.viewsOverTime &&
-      data2.data.attributes.viewsOverTime.length > 0
+      usageMetricsData.data.attributes.viewsOverTime &&
+      usageMetricsData.data.attributes.viewsOverTime.length > 0
     ) {
       const uniqueYears = new Set(
-        data2.data.attributes.viewsOverTime.map((item) =>
+        usageMetricsData.data.attributes.viewsOverTime.map((item) =>
           item.yearMonth.substring(0, 4)
         )
       );
@@ -318,7 +318,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
       ));
     }
     return [];
-  }, [data2.data.attributes.viewsOverTime]);
+  }, [usageMetricsData.data.attributes.viewsOverTime]);
 
   const quartersData = [
     {
