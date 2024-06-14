@@ -273,8 +273,8 @@ export const PublishedEntityDisplay: React.FC<{
               <MetricsModal
                 isOpen={isModalVisible}
                 handleCancel={closeModal}
-                data1={citationMetrics?.data1}
-                data2={citationMetrics?.data2}
+                eventMetricsData={citationMetrics?.data1}
+                usageMetricsData={citationMetrics?.data2}
               />
             </div>
           </div>
