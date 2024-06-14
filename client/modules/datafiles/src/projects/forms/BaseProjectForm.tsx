@@ -186,7 +186,12 @@ export const BaseProjectForm: React.FC<{
           <Form.Item
             name="frTypes"
             className="inner-form-item"
-            rules={[{ required: true }]}
+            rules={[
+              { 
+                required: true, 
+                message: 'Please select/enter a field research type' // Custom error message
+              }
+            ]}
           >
             <DropdownSelect options={frTypeOptions} />
           </Form.Item>
@@ -199,7 +204,12 @@ export const BaseProjectForm: React.FC<{
         <Form.Item
           name="nhTypes"
           className="inner-form-item"
-          rules={[{ required: true }]}
+          rules={[
+            { 
+              required: true, 
+              message: 'Please select/enter a natural hazard type' // Custom error message
+            }
+          ]}
         >
           <DropdownSelect options={nhTypeOptions} />
         </Form.Item>
@@ -213,7 +223,12 @@ export const BaseProjectForm: React.FC<{
             <Form.Item
               className="inner-form-item"
               name="dataTypes"
-              rules={[{ required: true }]}
+              rules={[
+                { 
+                  required: true, 
+                  message: 'Please select/enter a data type' // Custom error message
+                }
+              ]}
             >
               <DropdownSelect options={dataTypeOptions} />
             </Form.Item>
@@ -245,7 +260,12 @@ export const BaseProjectForm: React.FC<{
           only.
           <Form.Item
             name="pi"
-            rules={[{ required: true }]}
+            rules={[
+              { 
+                required: true, 
+                message: 'Please enter the Principal Investigator' // Custom error message
+              }
+            ]}
             className="inner-form-item"
           >
             <UserSelect userRole="pi" maxCount={1} />
