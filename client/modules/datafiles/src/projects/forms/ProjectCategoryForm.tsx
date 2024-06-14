@@ -70,10 +70,10 @@ export const ProjectCategoryForm: React.FC<{
           <Form.Item
             name="name"
             rules={[
-              { 
-                required: true, 
-                message: 'Please select a category' // Custom error message
-              }
+              {
+                required: true,
+                message: 'Please select a category', // Custom error message
+              },
             ]}
             className="inner-form-item"
           >
@@ -87,11 +87,11 @@ export const ProjectCategoryForm: React.FC<{
         <Form.Item
           name={['value', 'title']}
           rules={[
-            { 
-              required: true, 
-              message: 'Please enter a title' // Custom error message
-            }
-          ]}  
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
@@ -124,10 +124,10 @@ export const ProjectCategoryForm: React.FC<{
               name={['value', 'observationTypes']}
               className="inner-form-item"
               rules={[
-                { 
-                  required: true, 
-                  message: 'Please select/enter an observation type' // Custom error message
-                }
+                {
+                  required: true,
+                  message: 'Please select/enter an observation type', // Custom error message
+                },
               ]}
             >
               <DropdownSelect options={observationTypeOptions} />
@@ -141,10 +141,10 @@ export const ProjectCategoryForm: React.FC<{
               <Form.Item
                 name={['value', 'dateStart']}
                 rules={[
-                  { 
-                    required: true, 
-                    message: 'Please enter a start date' // Custom error message
-                  }
+                  {
+                    required: true,
+                    message: 'Please enter a start date', // Custom error message
+                  },
                 ]}
                 className="inner-form-item"
               >
@@ -208,10 +208,11 @@ export const ProjectCategoryForm: React.FC<{
               name={['value', 'equipment']}
               className="inner-form-item"
               rules={[
-                { 
-                  required: true, 
-                  message: 'Please select/enter at least one piece of equipment' // Custom error message
-                }
+                {
+                  required: true,
+                  message:
+                    'Please select/enter at least one piece of equipment', // Custom error message
+                },
               ]}
             >
               <DropdownSelect options={equipmentOptions} />
@@ -253,10 +254,10 @@ export const ProjectCategoryForm: React.FC<{
               <Form.Item
                 name={['value', 'dateStart']}
                 rules={[
-                  { 
-                    required: true, 
-                    message: 'Please enter a start date' // Custom error message
-                  }
+                  {
+                    required: true,
+                    message: 'Please enter a start date', // Custom error message
+                  },
                 ]}
                 className="inner-form-item"
               >
@@ -323,10 +324,11 @@ export const ProjectCategoryForm: React.FC<{
               name={['value', 'equipment']}
               className="inner-form-item"
               rules={[
-                { 
-                  required: true, 
-                  message: 'Please select/enter at least one piece of equipment' // Custom error message
-                }
+                {
+                  required: true,
+                  message:
+                    'Please select/enter at least one piece of equipment', // Custom error message
+                },
               ]}
             >
               <DropdownSelect options={equipmentOptions} />
@@ -354,10 +356,10 @@ export const ProjectCategoryForm: React.FC<{
           name={['value', 'description']}
           className="inner-form-item"
           rules={[
-            { 
+            {
               min: 50,
-              message: 'Please enter a description' // Custom error message
-            }
+              message: 'Please enter a description', // Custom error message
+            },
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />

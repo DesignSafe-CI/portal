@@ -39,10 +39,10 @@ const ExperimentFormFields: React.FC<{
         <Form.Item
           name={['value', 'title']}
           rules={[
-            { 
-              required: true, 
-              message: 'Please enter a title' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
           ]}
           className="inner-form-item"
         >
@@ -56,10 +56,10 @@ const ExperimentFormFields: React.FC<{
           <Form.Item
             name={['value', 'procedureStart']}
             rules={[
-              { 
-                required: true, 
-                message: 'Please enter a start date' // Custom error message
-              }
+              {
+                required: true,
+                message: 'Please enter a start date', // Custom error message
+              },
             ]}
             className="inner-form-item"
           >
@@ -133,11 +133,11 @@ const ExperimentFormFields: React.FC<{
           name={['value', 'description']}
           className="inner-form-item"
           rules={[
-            { 
+            {
               min: 50,
-              required: true, 
-              message: 'Please enter a description' 
-            }
+              required: true,
+              message: 'Please enter a description',
+            },
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
@@ -150,10 +150,10 @@ const ExperimentFormFields: React.FC<{
           name={['value', 'authors']}
           className="inner-form-item"
           rules={[
-            { 
-              required: true, 
-              message: 'Please select at least one author' 
-            }
+            {
+              required: true,
+              message: 'Please select at least one author',
+            },
           ]}
         >
           <AuthorSelect projectUsers={projectUsers} />
@@ -176,10 +176,10 @@ const SimulationFormFields: React.FC<{
         <Form.Item
           name={['value', 'title']}
           rules={[
-            { 
-              required: true, 
-              message: 'Please enter a title' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
           ]}
           className="inner-form-item"
         >
@@ -192,10 +192,10 @@ const SimulationFormFields: React.FC<{
           className="inner-form-item"
           name={['value', 'simulationType']}
           rules={[
-            { 
-              required: true, 
-              message: 'Please select/enter a simulation type' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please select/enter a simulation type', // Custom error message
+            },
           ]}
         >
           <DropdownSelectSingleValue
@@ -233,11 +233,11 @@ const SimulationFormFields: React.FC<{
           name={['value', 'description']}
           className="inner-form-item"
           rules={[
-            { 
+            {
               min: 50,
-              required: true, 
-              message: 'Please enter a description' // Custom error message
-            }
+              required: true,
+              message: 'Please enter a description', // Custom error message
+            },
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
@@ -250,10 +250,10 @@ const SimulationFormFields: React.FC<{
           name={['value', 'authors']}
           className="inner-form-item"
           rules={[
-            { 
-              required: true, 
-              message: 'Please select at least one author' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please select at least one author', // Custom error message
+            },
           ]}
         >
           <AuthorSelect projectUsers={projectUsers} />
@@ -276,10 +276,10 @@ const HybridSimFormFields: React.FC<{
         <Form.Item
           name={['value', 'title']}
           rules={[
-            { 
-              required: true, 
-              message: 'Please enter a title' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
           ]}
           className="inner-form-item"
         >
@@ -292,10 +292,10 @@ const HybridSimFormFields: React.FC<{
           className="inner-form-item"
           name={['value', 'simulationType']}
           rules={[
-            { 
-              required: true, 
-              message: 'Please select/enter a hybrid simulation type' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please select/enter a hybrid simulation type', // Custom error message
+            },
           ]}
         >
           <DropdownSelectSingleValue
@@ -333,11 +333,11 @@ const HybridSimFormFields: React.FC<{
           name={['value', 'description']}
           className="inner-form-item"
           rules={[
-            { 
+            {
               min: 50,
-              required: true, 
-              message: 'Please enter a description' // Custom error message
-            }
+              required: true,
+              message: 'Please enter a description', // Custom error message
+            },
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
@@ -350,10 +350,10 @@ const HybridSimFormFields: React.FC<{
           name={['value', 'authors']}
           className="inner-form-item"
           rules={[
-            { 
-              required: true, 
-              message: 'Please select at least one author' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please select at least one author', // Custom error message
+            },
           ]}
         >
           <AuthorSelect projectUsers={projectUsers} />
@@ -376,10 +376,10 @@ const MissionFormFields: React.FC<{
         <Form.Item
           name={['value', 'title']}
           rules={[
-            { 
-              required: true, 
-              message: 'Please enter a title' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
           ]}
           className="inner-form-item"
         >
@@ -400,10 +400,10 @@ const MissionFormFields: React.FC<{
           <Form.Item
             name={['value', 'dateStart']}
             rules={[
-              { 
-                required: true, 
-                message: 'Please enter a start date' // Custom error message
-              }
+              {
+                required: true,
+                message: 'Please enter a start date', // Custom error message
+              },
             ]}
             className="inner-form-item"
           >
@@ -442,10 +442,10 @@ const MissionFormFields: React.FC<{
           name={['value', 'authors']}
           className="inner-form-item"
           rules={[
-            { 
-              required: true, 
-              message: 'Please select at least one author' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please select at least one author', // Custom error message
+            },
           ]}
         >
           <AuthorSelect projectUsers={projectUsers} />
@@ -486,11 +486,11 @@ const MissionFormFields: React.FC<{
           name={['value', 'description']}
           className="inner-form-item"
           rules={[
-            { 
+            {
               min: 50,
-              required: true, 
-              message: 'Please enter a description' // Custom error message
-            }
+              required: true,
+              message: 'Please enter a description', // Custom error message
+            },
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
@@ -513,10 +513,10 @@ const DocumentFormFields: React.FC<{
         <Form.Item
           name={['value', 'title']}
           rules={[
-            { 
-              required: true, 
-              message: 'Please enter a title' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
           ]}
           className="inner-form-item"
         >
@@ -550,10 +550,10 @@ const DocumentFormFields: React.FC<{
           name={['value', 'authors']}
           className="inner-form-item"
           rules={[
-            { 
-              required: true, 
-              message: 'Please select at least one author' // Custom error message
-            }
+            {
+              required: true,
+              message: 'Please select at least one author', // Custom error message
+            },
           ]}
         >
           <AuthorSelect projectUsers={projectUsers} />
@@ -568,11 +568,11 @@ const DocumentFormFields: React.FC<{
           name={['value', 'description']}
           className="inner-form-item"
           rules={[
-            { 
+            {
               min: 50,
-              required: true, 
-              message: 'Please enter a description' // Custom error message
-            }
+              required: true,
+              message: 'Please enter a description', // Custom error message
+            },
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
