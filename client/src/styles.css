@@ -112,3 +112,25 @@
 .ant-collapse-header:focus-visible {
   outline: -webkit-focus-ring-color auto 1px !important;
 }
+
+.o-site__body:has(> #apps-root),
+#apps-root,
+#apps-root > div.ant-flex,
+.ant-layout-has-sider,
+.ant-layout-sider {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Do NOT scroll "Applications:" and "Job Status" */
+.ant-layout-sider-children {
+  overflow-y: hidden;
+  display: flex;
+  flex-flow: column;
+}
+
+/* DO scroll app category menu */
+.ant-layout-sider-children > header + div + ul {
+  overflow: auto;
+  height: 100%;
+}

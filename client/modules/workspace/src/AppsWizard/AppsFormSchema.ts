@@ -95,6 +95,8 @@ export type TAppFormSchema = {
   };
 };
 
+export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)\/[^/]+$/;
+
 // See https://github.com/colinhacks/zod/issues/310 for Zod issue
 const emptyStringToUndefined = z.literal('').transform(() => undefined);
 function asOptionalField<T extends z.ZodTypeAny>(schema: T) {
@@ -231,7 +233,7 @@ export const getConfigurationFields = (
 
 const FormSchema = (
   definition: TTapisApp,
-  executionSystems: [TTapisSystem],
+  executionSystems: TTapisSystem[],
   allocations: string[],
   defaultStorageSystem: TTapisSystem,
   username: string,

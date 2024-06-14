@@ -5,8 +5,8 @@ import {
   DatafilesToolbar,
   ProjectTitleHeader,
 } from '@client/datafiles';
-import { Button, Form, Input, Layout, Spin } from 'antd';
-import { useProjectDetail } from '@client/hooks';
+import { Button, Form, Input, Layout, Spin, Alert } from 'antd';
+import { useProjectDetail, useAuthenticatedUser } from '@client/hooks';
 
 const FileListingSearchBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,8 +36,23 @@ const FileListingSearchBar = () => {
 };
 
 export const ProjectDetailLayout: React.FC = () => {
+  const { user } = useAuthenticatedUser();
   const { projectId } = useParams();
   const { data } = useProjectDetail(projectId ?? '');
+
+  if (!user)
+    return (
+      <Layout>
+        <DatafilesToolbar searchInput={<FileListingSearchBar />} />
+        <Alert
+          showIcon
+          type="error"
+          style={{ marginTop: '16px', color: '#d9534f', textAlign: 'center' }}
+          message={'Please log in to access this feature.'}
+        />
+      </Layout>
+    );
+
   if (!data || !projectId)
     return (
       <Layout style={{ position: 'relative' }}>
