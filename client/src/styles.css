@@ -115,7 +115,7 @@
   outline: -webkit-focus-ring-color auto 1px !important;
 }
 
-.o-site__body,
+.o-site__body:has(> #apps-root),
 #apps-root,
 #apps-root > div.ant-flex,
 .ant-layout-has-sider,
@@ -135,4 +135,11 @@
 .ant-layout-sider-children > header + div + ul {
   overflow: auto;
   height: 100%;
+}
+
+.o-site__body,
+#datafiles-root,
+#datafiles-root > div.ant-layout > .ant-alert-error,
+div[role='alert'] {
+  display: flex !important;
 }
