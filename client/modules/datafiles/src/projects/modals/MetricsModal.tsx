@@ -198,7 +198,9 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
 
   const defaultYear = useMemo(
     () =>
-      usageMetricsData.data.attributes.viewsOverTime.slice(-1)[0]?.yearMonth.split('-')[0],
+      usageMetricsData.data.attributes.viewsOverTime
+        .slice(-1)[0]
+        ?.yearMonth.split('-')[0],
     [usageMetricsData.data.attributes.viewsOverTime]
   );
   const [selectedYear, setSelectedYear] = useState(defaultYear);
@@ -229,7 +231,10 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
     return defaultSums;
   });
 
-  const processTotalRequests = (eventMetricsData: EventMetrics, year: string) => {
+  const processTotalRequests = (
+    eventMetricsData: EventMetrics,
+    year: string
+  ) => {
     return eventMetricsData.data.reduce(
       (acc: { [key: string]: number }, curr: DataEntryA) => {
         if (
@@ -271,8 +276,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
       usageMetricsData.data.attributes.viewsOverTime.length > 0
     ) {
       const lastItem =
-      usageMetricsData.data.attributes.viewsOverTime[
-        usageMetricsData.data.attributes.viewsOverTime.length - 1
+        usageMetricsData.data.attributes.viewsOverTime[
+          usageMetricsData.data.attributes.viewsOverTime.length - 1
         ];
       const latestYear = lastItem.yearMonth.substring(0, 4);
       setSelectedYear(latestYear);
