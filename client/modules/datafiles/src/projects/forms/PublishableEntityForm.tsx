@@ -136,7 +136,7 @@ const ExperimentFormFields: React.FC<{
             { 
               min: 50,
               required: true, 
-              message: 'Please enter a description' // Custom error message
+              message: 'Please enter a description' 
             }
           ]}
         >
@@ -152,7 +152,7 @@ const ExperimentFormFields: React.FC<{
           rules={[
             { 
               required: true, 
-              message: 'Please select at least one author' // Custom error message
+              message: 'Please select at least one author' 
             }
           ]}
         >
