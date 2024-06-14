@@ -25,7 +25,7 @@ services:
       - 127.0.0.1:15673:15673
       - 127.0.0.1:15672:15672
     container_name: des_rabbitmq
-    hostname: des_rabbitmq
+    hostname: des_rabbitmqa
 
   memcached:
     image: memcached:latest
