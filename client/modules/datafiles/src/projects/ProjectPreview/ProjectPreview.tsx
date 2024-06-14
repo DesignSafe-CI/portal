@@ -14,7 +14,6 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
-  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
