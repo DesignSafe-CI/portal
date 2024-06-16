@@ -87,6 +87,7 @@ export const PublishedDetailLayout: React.FC = () => {
           marginBottom: '20px',
           fontSize: '20px',
           display: 'flex',
+          flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '1rem',

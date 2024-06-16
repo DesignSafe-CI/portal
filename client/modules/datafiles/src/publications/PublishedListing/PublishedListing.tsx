@@ -107,7 +107,7 @@ export const PublishedListing: React.FC = () => {
       loading={isLoading}
       columns={columns}
       style={{ height: '100%' }}
-      scroll={{ y: '100%', x: 500 }}
+      scroll={{ y: '100%', x: 1000 }}
       rowKey={(row) => row.projectId}
       pagination={{
         total: data?.total,
