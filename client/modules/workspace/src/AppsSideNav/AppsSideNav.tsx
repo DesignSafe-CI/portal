@@ -112,7 +112,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   const currentSubMenu = currentApp?.is_bundled
     ? `${currentApp.bundle_label}${currentApp.bundle_id}`
     : '';
-  const defaultKey = `${appId}${appVersion || ''}${currentApp?.bundle_id}`;
+  const selectedKey = `${appId}${appVersion || ''}${currentApp?.bundle_id}`;
 
   return (
     <>
@@ -133,7 +133,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           (currentCategory as TAppCategory)?.title,
           currentSubMenu,
         ]}
-        defaultSelectedKeys={[defaultKey]}
+        selectedKeys={[selectedKey]}
         items={items}
         inlineIndent={10}
       />

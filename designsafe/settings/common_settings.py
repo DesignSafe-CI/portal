@@ -122,7 +122,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/dashboard/')
 LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL', '/auth/logged-out/')
 
 CACHES = {

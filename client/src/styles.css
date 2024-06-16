@@ -73,12 +73,14 @@
   padding-inline: 0px !important;
   height: unset;
   padding: 0px !important;
-  color: #337ab7 !important;
-}
+  &:not(.ant-btn-disabled, [disabled]) {
+    color: #337ab7 !important;
 
-.ant-btn-link:hover span {
-  color: #23527c !important;
-  text-decoration: underline !important;
+    &:hover span {
+      color: #23527c !important;
+      text-decoration: underline !important;
+    }
+  }
 }
 
 .listing-nav-link {
@@ -113,7 +115,7 @@
   outline: -webkit-focus-ring-color auto 1px !important;
 }
 
-.o-site__body,
+.o-site__body:has(> #apps-root),
 #apps-root,
 #apps-root > div.ant-flex,
 .ant-layout-has-sider,
@@ -124,7 +126,7 @@
 
 /* Do NOT scroll "Applications:" and "Job Status" */
 .ant-layout-sider-children {
-  overflow-y: hidden;
+  overflow-y: scroll;
   display: flex;
   flex-flow: column;
 }
@@ -133,11 +135,4 @@
 .ant-layout-sider-children > header + div + ul {
   overflow: auto;
   height: 100%;
-}
-
-.o-site__body,
-#datafiles-root,
-#datafiles-root > div.ant-layout > .ant-alert-error,
-div[role='alert'] {
-  display: flex !important;
 }

@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Table, TableColumnType, TableProps } from 'antd';
-import { useJobsListing, TTapisJob } from '@client/hooks';
+import useWebSocket from 'react-use-websocket';
+import {
+  useJobsListing,
+  TTapisJob,
+  TJobStatusNotification,
+  useGetNotifications,
+} from '@client/hooks';
 import styles from './JobsListingTable.module.css';
 
 type TableRef = {
@@ -19,6 +25,14 @@ export const JobsListingTable: React.FC<
     className?: string;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({ filterFn, columns, className, ...props }) => {
+  const { lastMessage } = useWebSocket(
+    `wss://${window.location.host}/ws/websockets/`
+  );
+  const { data: unreadNotifs } = useGetNotifications({
+    eventTypes: ['interactive_session_ready', 'job'],
+    read: false,
+    markRead: false,
+  });
   const limit = 100;
   const [scrollElement, setScrollElement] = useState<Element | undefined>(
     undefined
@@ -77,6 +91,11 @@ export const JobsListingTable: React.FC<
     isLoading,
   ]);
 
+  const lastNotificationJobUUID = lastMessage
+    ? (JSON.parse(lastMessage.data) as TJobStatusNotification).extra.uuid
+    : '';
+  const unreadJobUUIDs = unreadNotifs?.notifs.map((x) => x.extra.uuid) ?? [];
+
   /* RENDER THE TABLE */
   return (
     <Table
@@ -90,6 +109,14 @@ export const JobsListingTable: React.FC<
       dataSource={combinedListing}
       pagination={false}
       loading={isLoading || isFetchingNextPage}
+      rowClassName={(record: TTapisJob) => {
+        if (
+          unreadJobUUIDs.concat(lastNotificationJobUUID).includes(record.uuid)
+        ) {
+          return styles['highlighted-row'];
+        }
+        return '';
+      }}
       locale={{
         emptyText:
           isLoading || isFetchingNextPage ? (

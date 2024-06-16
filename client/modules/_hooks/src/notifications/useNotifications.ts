@@ -36,10 +36,11 @@ export type TGetNotificationsResponse = {
 };
 
 type TGetNotificationsParams = {
-  event_types?: TPortalEventType[];
+  eventTypes?: TPortalEventType[];
   read?: boolean;
   limit?: number;
   skip?: number;
+  markRead?: boolean;
 };
 
 async function getNotifications(params: TGetNotificationsParams) {
@@ -58,14 +59,14 @@ async function getUnreadNotifications(params: TGetNotificationsParams) {
   return res.data;
 }
 
-async function readNotifications(body: { event_types?: TPortalEventType[] }) {
+async function readNotifications(body: { eventTypes?: TPortalEventType[] }) {
   const res = await apiClient.patch('/api/notifications/', body);
   return res.data;
 }
 
 export function useReadNotifications() {
   return useMutation({
-    mutationFn: (body: { event_types?: TPortalEventType[] }) => {
+    mutationFn: (body: { eventTypes?: TPortalEventType[] }) => {
       return readNotifications(body);
     },
   });

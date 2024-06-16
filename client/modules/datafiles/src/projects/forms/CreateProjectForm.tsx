@@ -48,7 +48,12 @@ export const BaseProjectCreateForm: React.FC<{
         system, and research approach. Define all acronyms.
         <Form.Item
           name="title"
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
@@ -97,7 +102,13 @@ export const BaseProjectCreateForm: React.FC<{
         50 and 5000 characters in length.
         <Form.Item
           name="description"
-          rules={[{ required: true }, { min: 50 }]}
+          rules={[
+            {
+              min: 50,
+              required: true,
+              message: 'Please enter a description',
+            },
+          ]}
           className="inner-form-item"
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />

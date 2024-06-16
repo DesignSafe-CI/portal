@@ -58,7 +58,7 @@ const WorkspaceRoot: React.FC = () => {
           }}
         >
           <Sider
-            width={200}
+            width={250}
             theme="light"
             breakpoint="md"
             collapsedWidth={0}
