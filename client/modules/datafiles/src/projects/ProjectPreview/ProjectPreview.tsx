@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   TPreviewTreeData,
+  useCitationMetrics,
   useProjectPreview,
   usePublicationDetail,
   usePublicationVersions,
@@ -13,7 +14,6 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
-  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
@@ -22,6 +22,7 @@ import {
 } from '@client/common-components';
 import { Link } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
+import { MetricsModal } from '../modals/MetricsModal';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
 
@@ -171,10 +172,35 @@ export const PublishedEntityDisplay: React.FC<{
   defaultOpenChildren = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
+
+  const dois =
+    treeData.value.dois && treeData.value.dois.length > 0
+      ? treeData.value.dois[0]
+      : '';
+  const {
+    data: citationMetrics,
+    isLoading,
+    isError,
+    error,
+  } = useCitationMetrics(dois);
+
+  const openModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+  useEffect(() => {
+    if (isError) {
+      console.error('Error fetching citation metrics:', error);
+    }
+  }, [isLoading, isError, error]);
 
   return (
     <section>
@@ -213,8 +239,46 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
-        <br></br>
-        <DownloadCitation projectId={projectId} entityUuid={treeData.uuid} />
+        {isLoading && <div>Loading citation metrics...</div>}
+        {isError && <div>Error fetching citation metrics</div>}
+        {citationMetrics && (
+          <div>
+            <strong>Download Citation:</strong>
+            <div>
+              <span className={styles['yellow-highlight']}>
+                {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'}{' '}
+                Downloads
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span className={styles['yellow-highlight']}>
+                {citationMetrics?.data2?.data.attributes.viewCount ?? '--'}{' '}
+                Views
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span className={styles['yellow-highlight']}>
+                {citationMetrics?.data2?.data.attributes.citationCount ?? '--'}{' '}
+                Citations
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span
+                onClick={openModal}
+                style={{
+                  cursor: 'pointer',
+                  color: '#337AB7',
+                  fontWeight: 'bold',
+                }}
+              >
+                Details
+              </span>
+              <MetricsModal
+                isOpen={isModalVisible}
+                handleCancel={closeModal}
+                eventMetricsData={citationMetrics?.data1}
+                usageMetricsData={citationMetrics?.data2}
+              />
+            </div>
+          </div>
+        )}
       </article>
       <Collapse
         expandIcon={() => null}
