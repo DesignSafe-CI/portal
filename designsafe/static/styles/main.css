@@ -959,7 +959,7 @@ li .popover.right {
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 0;
-  flex-basis: auto;
+  flex-basis: 0;
 }
 
 .o-site__body > .container-fluid {

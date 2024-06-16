@@ -50,15 +50,11 @@ export const AppsWizard: React.FC<{
     background: 'transparent',
     borderBottom: '1px solid #707070',
   };
-  const layoutStyle = {
-    overflow: 'hidden',
-  };
-
   const { Header, Content } = Layout;
 
   return (
     <Flex gap="middle" wrap="wrap">
-      <Layout style={layoutStyle}>
+      <Layout style={{ overflow: 'auto' }}>
         <Header style={headerStyle}>
           <Flex justify="space-between">
             <span>{step.title}</span>

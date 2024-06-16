@@ -67,5 +67,6 @@ Styleguide Components.Footer
 }
 
 .nsflogo {
-  width: 50px;
+  height: 120px;
+  margin-block: -14px; /* to remove extra space within image around content */
 }
