@@ -451,7 +451,7 @@ def publish_project(
             pub_tree.nodes[node]["value"]["dois"] = [doi]
 
     if not settings.DEBUG:
-        copy_publication_files(path_mapping, project_id)
+        copy_publication_files(path_mapping, project_id, version=version)
         for doi in new_dois:
             publish_datacite_doi(doi)
 

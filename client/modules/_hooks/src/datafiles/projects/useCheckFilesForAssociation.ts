@@ -13,6 +13,8 @@ export function useCheckFilesForAssociation(
 
   const hasAssociatedEnities = useMemo(() => {
     if (!data) return false;
+    // Type Other can move associated files since associations are reset in the pipeline.
+    if (data.baseProject.value.projectType === 'other') return false;
     const associatedFiles: string[] = [];
     data?.entities.forEach((entity) => {
       entity.value.fileObjs?.forEach((fo) => associatedFiles.push(fo.path));
