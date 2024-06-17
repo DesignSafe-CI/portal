@@ -880,8 +880,12 @@ class AllocationsView(AuthenticatedApiView):
         """
         data = self._get_allocations(request.user)
         # Exclude allocation based on allocation setting list.
-        for host, allocations in data['hosts'].items():
-            data['hosts'][host] = [allocation for allocation in allocations if allocation not in settings.ALLOCATIONS_TO_EXCLUDE]
+        for host, allocations in data["hosts"].items():
+            data["hosts"][host] = [
+                allocation
+                for allocation in allocations
+                if allocation not in settings.ALLOCATIONS_TO_EXCLUDE
+            ]
 
         return JsonResponse(
             {
