@@ -57,7 +57,6 @@ export const PublishedDetailLayout: React.FC = () => {
     data: citationMetrics,
     isLoading,
     isError,
-    error,
   } = useCitationMetrics(dois);
 
   const openModal = () => {
