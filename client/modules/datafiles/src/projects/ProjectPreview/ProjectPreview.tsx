@@ -244,7 +244,7 @@ export const PublishedEntityDisplay: React.FC<{
         {isError && <div>Error fetching citation metrics</div>}
         {citationMetrics && (
           <div>
-            <strong>Download Citation:</strong>
+            <strong>Download Citation: </strong>
             <a
               href={`https://data.datacite.org/application/vnd.datacite.datacite+xml/${dois}`}
               target="_blank"
