@@ -9,12 +9,14 @@ export const DropdownSelect: React.FC<{
   placeholder?: string;
   onChange?: (value: DropdownValue[]) => void;
 }> = ({ value, onChange, options, maxCount, placeholder }) => {
+  const [open, setOpen] = useState(false);
   const handleChange = (newVal: { label?: string; value: string }[]) => {
     const formValue = newVal.map((v) =>
       v.label ? { id: v.value, name: v.label } : { id: 'other', name: v.value }
     );
 
     onChange && onChange(formValue);
+    setOpen(false);
   };
 
   const getValue = (
@@ -29,6 +31,8 @@ export const DropdownSelect: React.FC<{
 
   return (
     <Select
+      open={open}
+      onDropdownVisibleChange={(visible) => setOpen(visible)}
       virtual={false}
       placement="bottomLeft"
       placeholder={placeholder}
