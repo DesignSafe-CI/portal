@@ -43,11 +43,16 @@ View for getting DataCite DOI details from publications.
 """
 class PublicationDataCiteView(BaseApiView):
     def get(self, request, doi):
+        url = f'https://api.datacite.org/dois/{doi}' 
+
         try:
-            response = DataciteManager.get_doi(doi)
-            return JsonResponse(response)
+            response = requests.get(url)
+            response.raise_for_status()  # Raises an HTTPError for bad responses (4xx and 5xx)
+            return JsonResponse(response.json())  # Assuming the response is JSON
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=500)
 
 """
 View for getting DataCite metrics details from publications.

@@ -1,10 +1,12 @@
 import {
   useAmendProject,
+  useNotifyContext,
   usePublishProject,
   useVersionProject,
 } from '@client/hooks';
-import { Button, Checkbox, Input, Modal } from 'antd';
+import { Button, Checkbox, Input, Modal, Tag } from 'antd';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const PipelinePublishModal: React.FC<{
   projectId: string;
@@ -28,17 +30,34 @@ export const PipelinePublishModal: React.FC<{
   const { mutate: publishMutation } = usePublishProject();
   const { mutate: amendMutation } = useAmendProject();
   const { mutate: versionMutation } = useVersionProject();
+  const navigate = useNavigate();
+  const { notifyApi } = useNotifyContext();
+  const successCallback = () => {
+    navigate(`/projects/${projectId}`);
+    notifyApi?.open({
+      type: 'success',
+      message: '',
+      description: 'Your publication request has been submitted',
+      placement: 'bottomLeft',
+    });
+  };
 
   const doPublish = () => {
     switch (operation) {
       case 'publish':
-        publishMutation({ projectId, entityUuids });
+        publishMutation(
+          { projectId, entityUuids },
+          { onSuccess: successCallback }
+        );
         break;
       case 'amend':
-        amendMutation({ projectId });
+        amendMutation({ projectId }, { onSuccess: successCallback });
         break;
       case 'version':
-        versionMutation({ projectId, entityUuids, versionInfo });
+        versionMutation(
+          { projectId, entityUuids, versionInfo },
+          { onSuccess: successCallback }
+        );
         break;
     }
   };
@@ -73,31 +92,67 @@ export const PipelinePublishModal: React.FC<{
         width="60%"
         open={isModalOpen}
         footer={() => (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <span>
-              <Checkbox
-                id="publication-agreement-checkbox"
-                checked={publishingAgreement}
-                onChange={(e) => setPublishingAgreement(e.target.checked)}
-              />
-              <label htmlFor="publication-agreement-checkbox">
-                &nbsp;I agree
-              </label>
-            </span>
-            <Button
-              disabled={!canPublish}
-              onClick={doPublish}
-              type="primary"
-              className="success-button"
+          <div>
+            {operation === 'version' && (
+              <div style={{ textAlign: 'start', margin: '10px 0px' }}>
+                {' '}
+                <label
+                  htmlFor="version-info-input"
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  Version Changes&nbsp;
+                  <Tag
+                    color="#d9534f"
+                    style={{
+                      borderRadius: '2.7px',
+                      lineHeight: 1,
+                      paddingInline: 0,
+                      padding: '0.2em 0.4em 0.3em',
+                      fontSize: '75%',
+                    }}
+                  >
+                    Required
+                  </Tag>
+                </label>{' '}
+                <div>
+                  Specify what files you are adding, removing, or replacing, and
+                  why these changes are needed. This will be displayed to those
+                  viewing your publication, so be detailed and formal in your
+                  explanation.
+                </div>
+                <Input.TextArea
+                  autoSize={{ minRows: 3 }}
+                  onChange={(e) => setVersionInfo(e.target.value)}
+                  id="version-info-input"
+                />
+              </div>
+            )}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
             >
-              {publishButtonText[operation]}
-            </Button>
+              <span>
+                <Checkbox
+                  id="publication-agreement-checkbox"
+                  checked={publishingAgreement}
+                  onChange={(e) => setPublishingAgreement(e.target.checked)}
+                />
+                <label htmlFor="publication-agreement-checkbox">
+                  &nbsp;I agree
+                </label>
+              </span>
+              <Button
+                disabled={!canPublish}
+                onClick={doPublish}
+                type="primary"
+                className="success-button"
+              >
+                {publishButtonText[operation]}
+              </Button>
+            </div>
           </div>
         )}
         onCancel={handleCancel}
@@ -356,24 +411,6 @@ export const PipelinePublishModal: React.FC<{
             issues that may arise from the publication.
           </p>
         </div>
-        {operation === 'version' && (
-          <>
-            {' '}
-            <label htmlFor="version-info-input">
-              Version Changes (required)
-            </label>{' '}
-            <div>
-              Specify what files you are adding, removing, or replacing, and why
-              these changes are needed. This will be displayed to those viewing
-              your publication, so be detailed and formal in your explanation.
-            </div>
-            <Input.TextArea
-              autoSize={{ minRows: 3 }}
-              onChange={(e) => setVersionInfo(e.target.value)}
-              id="version-info-input"
-            />
-          </>
-        )}
       </Modal>
     </>
   );

@@ -1,10 +1,11 @@
 {# https://github.com/django-cms/django-cms/blob/release/3.11.x/menus/templates/menu/breadcrumb.html #}
 {% for ance in ancestors %}
 
-  {# To support structured data, item* attributes are used #}
-  {# https://confluence.tacc.utexas.edu/x/5yMFDg #}
   <li itemscope itemprop="itemListElement"
-      itemtype="https://schema.org/ListItem">
+      itemtype="https://schema.org/ListItem"
+      {% if not forloop.last %}
+      class="active"
+      {% endif %}>
   {% if not forloop.last %}
 
     <a href="{{ ance.get_absolute_url }}" itemprop="item">

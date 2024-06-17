@@ -101,6 +101,7 @@ export type TTapisApp = {
   tags: string[];
   notes: {
     label?: string;
+    shortLabel?: string;
     helpUrl?: string;
     category?: string;
     isInteractive?: boolean;

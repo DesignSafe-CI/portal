@@ -164,7 +164,12 @@ export const BaseProjectForm: React.FC<{
         system, and research approach. Define all acronyms.
         <Form.Item
           name="title"
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
@@ -186,7 +191,12 @@ export const BaseProjectForm: React.FC<{
           <Form.Item
             name="frTypes"
             className="inner-form-item"
-            rules={[{ required: true }]}
+            rules={[
+              {
+                required: true,
+                message: 'Please select/enter a field research type', // Custom error message
+              },
+            ]}
           >
             <DropdownSelect options={frTypeOptions} />
           </Form.Item>
@@ -199,7 +209,12 @@ export const BaseProjectForm: React.FC<{
         <Form.Item
           name="nhTypes"
           className="inner-form-item"
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please select/enter a natural hazard type', // Custom error message
+            },
+          ]}
         >
           <DropdownSelect options={nhTypeOptions} />
         </Form.Item>
@@ -213,7 +228,12 @@ export const BaseProjectForm: React.FC<{
             <Form.Item
               className="inner-form-item"
               name="dataTypes"
-              rules={[{ required: true }]}
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select/enter a data type', // Custom error message
+                },
+              ]}
             >
               <DropdownSelect options={dataTypeOptions} />
             </Form.Item>
@@ -245,7 +265,12 @@ export const BaseProjectForm: React.FC<{
           only.
           <Form.Item
             name="pi"
-            rules={[{ required: true }]}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter the Principal Investigator', // Custom error message
+              },
+            ]}
             className="inner-form-item"
           >
             <UserSelect userRole="pi" maxCount={1} />
@@ -346,7 +371,13 @@ export const BaseProjectForm: React.FC<{
         50 and 5000 characters in length.
         <Form.Item
           name="description"
-          rules={[{ required: true }, { min: 50 }]}
+          rules={[
+            {
+              min: 50,
+              required: true,
+              message: 'Please enter a description',
+            },
+          ]}
           className="inner-form-item"
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />

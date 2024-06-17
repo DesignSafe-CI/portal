@@ -40,12 +40,13 @@ export function NotificationBadgeCtrl(
             $scope.data.unread = 0;
           }
 
-          for (var i=0; i < $scope.data.notifications.length; i++){
-            if ($scope.data.notifications[i]['event_type'] == 'job') {
-              $scope.data.notifications[i]['action_link']=$scope.data.notifications[i]['action_link']=`/rw/workspace/notification/process/${$scope.data.notifications[i]['pk']}`;
-            } else if ($scope.data.notifications[i]['event_type'] == 'data_depot') {
-              $scope.data.notifications[i]['action_link']=$scope.data.notifications[i]['action_link']=`/rw/workspace/notification/process/${$scope.data.notifications[i]['pk']}`;
-            }
+          for (var i = 0; i < $scope.data.notifications.length; i++) {
+              const notification = $scope.data.notifications[i];
+              if (notification['event_type'] == 'job') {
+                  notification['action_link'] = `/rw/workspace/history`;
+              } else if (notification['event_type'] == 'data_depot') {
+                  notification['action_link'] = `/data/browser`;
+              }
           }
         });
       };

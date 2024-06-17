@@ -1,7 +1,12 @@
-import { Button, Modal, Form, Input } from 'antd';
-import { useSelectedFiles, useRename } from '@client/hooks';
+import { Button, Modal, Form, Input, Alert } from 'antd';
+import {
+  useSelectedFiles,
+  useRename,
+  useCheckFilesForAssociation,
+} from '@client/hooks';
 import React, { useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
+import { useParams } from 'react-router-dom';
 
 export const RenameModalBody: React.FC<{
   isOpen: boolean;
@@ -16,6 +21,14 @@ export const RenameModalBody: React.FC<{
     : [{ name: '' }];
 
   const { mutate } = useRename();
+
+  let { projectId } = useParams();
+  if (!projectId) projectId = '';
+
+  const hasAssociations = useCheckFilesForAssociation(
+    projectId,
+    selectedFiles.map((f) => f.path)
+  );
 
   const handleRenameFinish = async (values: { newName: string }) => {
     const newName = values.newName;
@@ -68,8 +81,22 @@ export const RenameModalBody: React.FC<{
       footer={null} // Remove the footer from here
       onCancel={handleCancel}
     >
+      {hasAssociations && (
+        <Alert
+          type="warning"
+          style={{ marginBottom: '10px' }}
+          showIcon
+          description={
+            <span>
+              This file or folder cannot be renamed until its tags or associated
+              entities have been removed using the Curation Directory tab.
+            </span>
+          }
+        />
+      )}
       {isOpen && (
         <Form
+          disabled={hasAssociations}
           autoComplete="off"
           layout="vertical"
           initialValues={{ newName: selectedFiles[0]?.name }}

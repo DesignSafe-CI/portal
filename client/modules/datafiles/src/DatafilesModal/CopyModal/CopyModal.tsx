@@ -292,6 +292,7 @@ export const CopyModal: React.FC<{
                         listing.filter((f) => f.type === 'dir')
                       }
                       scroll={undefined}
+                      emptyListingDisplay="No folders to display."
                     />
                   </div>
                 </>

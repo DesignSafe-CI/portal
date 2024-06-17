@@ -44,7 +44,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                   (app.version ? `?appVersion=${app.version}` : '')
                 }
               >
-                {app.label || app.bundle_label}
+                {app.shortLabel || app.label || app.bundle_label}
               </NavLink>,
               `${app.app_id}${app.version}${app.bundle_id}`
             )
@@ -59,7 +59,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                     (app.version ? `?appVersion=${app.version}` : '')
                   }
                 >
-                  {app.label || app.bundle_label}
+                  {app.shortLabel || app.label || app.bundle_label}
                 </NavLink>,
                 `${app.app_id}${app.version}${app.bundle_id}`
               ),
@@ -76,7 +76,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                 (app.version ? `?appVersion=${app.version}` : '')
               }
             >
-              {app.label || app.bundle_label}
+              {app.shortLabel || app.label || app.bundle_label}
             </NavLink>,
             `${app.app_id}${app.version}${app.bundle_id}`
           )
@@ -110,9 +110,9 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     cat.apps.includes(currentApp as TPortalApp)
   );
   const currentSubMenu = currentApp?.is_bundled
-    ? `${currentApp.bundle_id}`
+    ? `${currentApp.bundle_label}${currentApp.bundle_id}`
     : '';
-  const defaultKey = `${appId}${appVersion || ''}${currentApp?.bundle_id}`;
+  const selectedKey = `${appId}${appVersion || ''}${currentApp?.bundle_id}`;
 
   return (
     <>
@@ -122,6 +122,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           justifyContent: 'center',
           padding: 10,
           fontWeight: 700,
+          borderRight: '1px solid var(--global-color-primary--normal)',
         }}
       >
         Applications:
@@ -132,7 +133,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           (currentCategory as TAppCategory)?.title,
           currentSubMenu,
         ]}
-        defaultSelectedKeys={[defaultKey]}
+        selectedKeys={[selectedKey]}
         items={items}
         inlineIndent={10}
       />

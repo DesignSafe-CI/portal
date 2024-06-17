@@ -4,12 +4,14 @@ import apiClient from '../apiClient';
 export type TPortalApp = {
   app_id: string;
   app_type: string;
+  bundle_href: string;
   bundle_id: number;
   bundle_label: string;
   html?: string;
   icon?: string;
   is_bundled: boolean;
   label: string;
+  shortLabel?: string;
   version?: string;
 };
 

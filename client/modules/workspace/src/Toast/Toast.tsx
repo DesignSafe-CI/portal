@@ -22,14 +22,7 @@ const Notifications = () => {
       notification.event_type === 'interactive_session_ready'
     ) {
       queryClient.invalidateQueries({
-        queryKey: [
-          'workspace',
-          'notifications',
-          'badge',
-          {
-            event_types: ['interactive_session_ready', 'job'],
-          },
-        ],
+        queryKey: ['workspace', 'notifications'],
       });
       queryClient.invalidateQueries({
         queryKey: ['workspace', 'jobsListing'],

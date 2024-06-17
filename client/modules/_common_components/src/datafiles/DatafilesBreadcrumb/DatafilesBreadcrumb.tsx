@@ -64,6 +64,7 @@ export const BaseFileListingBreadcrumb: React.FC<
     path: string;
     systemRootAlias?: string;
     initialBreadcrumbs?: { title: string; path: string }[];
+    systemLabel?: string;
   } & BreadcrumbProps
 > = ({
   api,
@@ -71,10 +72,12 @@ export const BaseFileListingBreadcrumb: React.FC<
   path,
   systemRootAlias,
   initialBreadcrumbs = [],
+  systemLabel,
   ...props
 }) => {
   const { user } = useAuthenticatedUser();
-  const rootAlias = systemRootAlias || getSystemRootDisplayName(api, system);
+  const rootAlias =
+    systemRootAlias || getSystemRootDisplayName(api, system, systemLabel);
   const systemRoot = isUserHomeSystem(system) ? '/' + user?.username : '';
   return (
     <DatafilesBreadcrumb

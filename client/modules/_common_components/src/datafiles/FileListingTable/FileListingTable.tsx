@@ -144,7 +144,7 @@ export const FileListingTable: React.FC<
           />
         ),
       }}
-      scroll={{ y: '100%', x: '500px' }} // set to undefined to disable sticky header
+      scroll={{ y: '100%', x: '1000px' }} // set to undefined to disable sticky header
       columns={columns}
       rowKey={(record) => record.path}
       dataSource={combinedListing}
@@ -180,7 +180,9 @@ export const FileListingTable: React.FC<
                 <Alert
                   showIcon
                   type="info"
-                  description={emptyListingDisplay ?? 'No files to display.'}
+                  description={
+                    emptyListingDisplay ?? 'No files or folders to display.'
+                  }
                 />
               )}
             </>

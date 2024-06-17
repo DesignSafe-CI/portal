@@ -69,7 +69,12 @@ export const ProjectCategoryForm: React.FC<{
           </article>
           <Form.Item
             name="name"
-            rules={[{ required: true }]}
+            rules={[
+              {
+                required: true,
+                message: 'Please select a category', // Custom error message
+              },
+            ]}
             className="inner-form-item"
           >
             <Select options={categoryOptions} placeholder="Select a Category" />
@@ -81,7 +86,12 @@ export const ProjectCategoryForm: React.FC<{
         necessary. Do not repeat the category type in the title.
         <Form.Item
           name={['value', 'title']}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
@@ -113,7 +123,12 @@ export const ProjectCategoryForm: React.FC<{
             <Form.Item
               name={['value', 'observationTypes']}
               className="inner-form-item"
-              rules={[{ required: true }]}
+              rules={[
+                {
+                  required: true,
+                  message: 'Please select/enter an observation type', // Custom error message
+                },
+              ]}
             >
               <DropdownSelect options={observationTypeOptions} />
             </Form.Item>
@@ -125,7 +140,12 @@ export const ProjectCategoryForm: React.FC<{
             <div style={{ display: 'inline-flex' }}>
               <Form.Item
                 name={['value', 'dateStart']}
-                rules={[{ required: true }]}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please enter a start date', // Custom error message
+                  },
+                ]}
                 className="inner-form-item"
               >
                 <DateInput />
@@ -187,7 +207,13 @@ export const ProjectCategoryForm: React.FC<{
             <Form.Item
               name={['value', 'equipment']}
               className="inner-form-item"
-              rules={[{ required: true }]}
+              rules={[
+                {
+                  required: true,
+                  message:
+                    'Please select/enter at least one piece of equipment', // Custom error message
+                },
+              ]}
             >
               <DropdownSelect options={equipmentOptions} />
             </Form.Item>
@@ -227,7 +253,12 @@ export const ProjectCategoryForm: React.FC<{
             <div style={{ display: 'inline-flex' }}>
               <Form.Item
                 name={['value', 'dateStart']}
-                rules={[{ required: true }]}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please enter a start date', // Custom error message
+                  },
+                ]}
                 className="inner-form-item"
               >
                 <DateInput />
@@ -292,7 +323,13 @@ export const ProjectCategoryForm: React.FC<{
             <Form.Item
               name={['value', 'equipment']}
               className="inner-form-item"
-              rules={[{ required: true }]}
+              rules={[
+                {
+                  required: true,
+                  message:
+                    'Please select/enter at least one piece of equipment', // Custom error message
+                },
+              ]}
             >
               <DropdownSelect options={equipmentOptions} />
             </Form.Item>
@@ -318,7 +355,12 @@ export const ProjectCategoryForm: React.FC<{
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
-          rules={[{ min: 50 }]}
+          rules={[
+            {
+              min: 50,
+              message: 'Please enter a description', // Custom error message
+            },
+          ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>

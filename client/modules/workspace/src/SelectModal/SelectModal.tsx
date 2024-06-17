@@ -21,6 +21,7 @@ import {
 import {
   BaseFileListingBreadcrumb,
   FileListingTable,
+  SecondaryButton,
   TFileListingColumns,
 } from '@client/common-components';
 import styles from './SelectModal.module.css';
@@ -32,14 +33,15 @@ const HeaderTitle: React.FC<{
   api: string;
   system: string;
   path: string;
-}> = ({ api, system, path }) => {
+  label: string;
+}> = ({ api, system, path, label }) => {
   const getPathName = usePathDisplayName();
   return (
     <span style={{ fontWeight: 'normal' }}>
       <i role="none" className="fa fa-folder-o">
         &nbsp;&nbsp;
       </i>
-      {getPathName(api, system, path)}
+      {getPathName(api, system, path, label)}
     </span>
   );
 };
@@ -120,44 +122,72 @@ function getFilesColumns(
   api: string,
   system: string,
   path: string,
+  systemLabel: string,
   selectionCallback: (path: string) => void,
   navCallback: (path: string) => void
 ): TFileListingColumns {
   return [
     {
-      title: <HeaderTitle api={api} system={system} path={path} />,
+      title: (
+        <HeaderTitle
+          api={api}
+          system={system}
+          path={path}
+          label={systemLabel}
+        />
+      ),
       dataIndex: 'name',
       ellipsis: true,
 
-      render: (data, record) => (
-        <Button
-          style={{ marginLeft: '3rem', textAlign: 'center' }}
-          onClick={() => navCallback(encodeURIComponent(record.path))}
-          type="link"
-        >
-          <i
-            role="none"
-            style={{ color: '#333333' }}
-            className="fa fa-folder-o"
-          />
-          &nbsp;&nbsp;
-          {data}
-        </Button>
-      ),
+      render: (data, record) =>
+        record.format === 'folder' ? (
+          <Button
+            style={{
+              marginLeft: '3rem',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            onClick={() => navCallback(encodeURIComponent(record.path))}
+            type="link"
+          >
+            <i
+              role="none"
+              className="fa fa-folder-o"
+              style={{ color: '#333333', marginRight: '8px' }}
+            ></i>
+            {data}
+          </Button>
+        ) : (
+          <span
+            style={{
+              marginLeft: '3rem',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <i
+              role="none"
+              className="fa fa-file-o"
+              style={{ color: '#333333', marginRight: '8px' }}
+            ></i>
+            {data}
+          </span>
+        ),
     },
     {
       dataIndex: 'path',
       align: 'end',
       title: '',
       render: (_, record) => (
-        <Button
-          type="primary"
+        <SecondaryButton
           onClick={() =>
             selectionCallback(`${api}://${record.system}${record.path}`)
           }
         >
           Select
-        </Button>
+        </SecondaryButton>
       ),
     },
   ];
@@ -165,12 +195,12 @@ function getFilesColumns(
 
 export const SelectModal: React.FC<{
   inputLabel: string;
+  system: string | null;
   isOpen: boolean;
   onClose: () => void;
   onSelect: (value: string) => void;
-}> = ({ inputLabel, isOpen, onClose, onSelect }) => {
+}> = ({ inputLabel, system, isOpen, onClose, onSelect }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchPlaceHolder, setSearchPlaceHolder] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [form] = Form.useForm();
 
@@ -216,7 +246,7 @@ export const SelectModal: React.FC<{
       selectedPath: getPath(defaultStorageSystem, user),
       scheme: getScheme(defaultStorageSystem),
     }),
-    [user]
+    [defaultStorageSystem, user]
   );
 
   const [selection, setSelection] = useState<{
@@ -226,7 +256,9 @@ export const SelectModal: React.FC<{
     scheme?: string;
     projectId?: string;
   }>(defaultParams);
-
+  const [systemLabel, setSystemLabel] = useState<string>(
+    defaultStorageSystem.notes.label ?? defaultStorageSystem.id
+  );
   const [showProjects, setShowProjects] = useState<boolean>(false);
   const { selectedApi, selectedSystem, selectedPath, scheme } = selection;
   useEffect(() => setSelection(defaultParams), [isModalOpen, defaultParams]);
@@ -237,7 +269,7 @@ export const SelectModal: React.FC<{
     setDropdownValue(newValue);
     if (newValue === 'myprojects') {
       setShowProjects(true);
-      setSearchPlaceHolder('My Projects');
+      setSystemLabel('My Projects');
       return;
     }
 
@@ -251,7 +283,7 @@ export const SelectModal: React.FC<{
       selectedPath: getPath(system, user),
       scheme: getScheme(system),
     });
-    setSearchPlaceHolder(system.notes.label ?? system.id);
+    setSystemLabel(system.notes.label ?? system.id);
   };
 
   const onProjectSelect = (uuid: string, projectId: string) => {
@@ -263,8 +295,18 @@ export const SelectModal: React.FC<{
       projectId: projectId,
     });
     // Intended to indicate searching the root path of a project.
-    setSearchPlaceHolder('root');
+    setSystemLabel('root');
   };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      let systemValue = system ?? defaultStorageSystem.id;
+      if (systemValue.startsWith('project-')) {
+        systemValue = 'myprojects';
+      }
+      dropdownCallback(systemValue);
+    }
+  }, [system, isModalOpen]);
 
   const navCallback = useCallback(
     (path: string) => {
@@ -283,7 +325,7 @@ export const SelectModal: React.FC<{
       onSelect(path);
       handleClose();
     },
-    [selectedApi, selectedSystem, handleClose, onSelect]
+    [handleClose, onSelect]
   );
 
   const FileColumns = useMemo(
@@ -292,10 +334,18 @@ export const SelectModal: React.FC<{
         selectedApi,
         selectedSystem,
         selectedPath,
+        systemLabel,
         (selection: string) => selectCallback(selection),
         navCallback
       ),
-    [navCallback, selectedApi, selectedSystem, selectedPath, selectCallback]
+    [
+      navCallback,
+      selectedApi,
+      selectedSystem,
+      selectedPath,
+      systemLabel,
+      selectCallback,
+    ]
   );
 
   return (
@@ -338,6 +388,7 @@ export const SelectModal: React.FC<{
                     ? [{ title: 'My Projects', path: 'PROJECT_LISTING' }]
                     : []
                 }
+                systemLabel={systemLabel}
                 itemRender={(item) => {
                   return (
                     <Button
@@ -368,7 +419,7 @@ export const SelectModal: React.FC<{
             </Button>
             <Form.Item name="query" style={{ marginBottom: 0, width: '100%' }}>
               <Input
-                placeholder={`Search ${searchPlaceHolder}`}
+                placeholder={`Search ${systemLabel}`}
                 style={{ width: '100%' }}
               />
             </Form.Item>
