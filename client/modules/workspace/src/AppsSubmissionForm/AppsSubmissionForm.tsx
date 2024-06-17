@@ -301,17 +301,14 @@ export const AppsSubmissionForm: React.FC = () => {
     setSteps(updatedSteps);
   }, [fields]);
 
-  // Only allow transition to next step, if the current step has
-  // no validation errors.
+  // next step transition does not block on invalid fields
   const handleNextStep = useCallback(async () => {
     const stepFields = Object.keys(fieldValues).filter((key) =>
       key.startsWith(current)
     ) as FieldNameUnion[];
-    const isValid = await methods.trigger(stepFields);
-    if (isValid) {
-      const nextPage = steps[current].nextPage;
-      nextPage && setCurrent(nextPage);
-    }
+    await methods.trigger(stepFields);
+    const nextPage = steps[current].nextPage;
+    nextPage && setCurrent(nextPage);
   }, [current, methods]);
   const handlePreviousStep = useCallback(() => {
     const prevPage = steps[current].prevPage;
