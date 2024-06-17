@@ -16,7 +16,7 @@ export const PublishedEntityListingLayout: React.FC = () => {
         data.baseProject.projectType
       ) && (
         <FileListing
-          scroll={{ y: 500 }}
+          scroll={{ y: 500, x: 500 }}
           api="tapis"
           system="designsafe.storage.published"
           path={encodeURIComponent(

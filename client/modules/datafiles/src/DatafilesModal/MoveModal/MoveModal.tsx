@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
-import { Button, Modal, Table } from 'antd';
+import { Alert, Button, Modal, Table } from 'antd';
 import {
+  useCheckFilesForAssociation,
   useFileMove,
   usePathDisplayName,
   useSelectedFiles,
@@ -17,6 +18,7 @@ import {
   FileListingTable,
   TFileListingColumns,
 } from '@client/common-components';
+import { useParams } from 'react-router-dom';
 
 const SelectedFilesColumns: TFileListingColumns = [
   {
@@ -59,7 +61,8 @@ function getDestFilesColumns(
   path: string,
   mutationCallback: (path: string) => void,
   navCallback: (path: string) => void,
-  projectId?: string
+  projectId?: string,
+  disabled?: boolean
 ): TFileListingColumns {
   return [
     {
@@ -97,12 +100,17 @@ function getDestFilesColumns(
         <Button
           type="primary"
           onClick={() => mutationCallback(decodeURIComponent(path))}
+          disabled={disabled}
         >
           Move
         </Button>
       ),
       render: (_, record) => (
-        <Button type="primary" onClick={() => mutationCallback(record.path)}>
+        <Button
+          type="primary"
+          onClick={() => mutationCallback(record.path)}
+          disabled={disabled}
+        >
           Move
         </Button>
       ),
@@ -123,13 +131,22 @@ export const MoveModal: React.FC<{
 
   const { selectedFiles } = useSelectedFiles(api, system, path);
 
+  let { projectId } = useParams();
+  if (!projectId) projectId = '';
+
+  const hasAssociations = useCheckFilesForAssociation(
+    projectId,
+    selectedFiles.map((f) => f.path)
+  );
+
   const defaultDestParams = useMemo(
     () => ({
       destApi: api,
       destSystem: system,
       destPath: path,
+      destProjectId: projectId,
     }),
-    [api, system, path]
+    [api, system, path, projectId]
   );
 
   const [dest, setDest] = useState<{
@@ -171,7 +188,8 @@ export const MoveModal: React.FC<{
         destPath,
         (dPath: string) => mutateCallback(dPath),
         navCallback,
-        dest.destProjectId
+        dest.destProjectId,
+        hasAssociations
       ),
     [
       navCallback,
@@ -180,6 +198,7 @@ export const MoveModal: React.FC<{
       destPath,
       dest.destProjectId,
       mutateCallback,
+      hasAssociations,
     ]
   );
 
@@ -193,6 +212,19 @@ export const MoveModal: React.FC<{
         title={<h2>Move Files</h2>}
         footer={null}
       >
+        {hasAssociations && (
+          <Alert
+            type="warning"
+            style={{ marginBottom: '10px' }}
+            showIcon
+            description={
+              <span>
+                This file or folder cannot be moved until its tags or associated
+                entities have been removed using the Curation Directory tab.
+              </span>
+            }
+          />
+        )}
         <article className={styles.copyModalContent}>
           <section className={styles.srcFilesSection}>
             <Table
@@ -211,11 +243,7 @@ export const MoveModal: React.FC<{
                 system={destSystem}
                 path={decodeURIComponent(destPath)}
                 systemRootAlias={dest.destProjectId}
-                initialBreadcrumbs={
-                  destSystem.startsWith('project-')
-                    ? [{ title: 'My Projects', path: 'PROJECT_LISTING' }]
-                    : []
-                }
+                initialBreadcrumbs={[]}
                 itemRender={(item) => {
                   return (
                     <Button
@@ -241,6 +269,7 @@ export const MoveModal: React.FC<{
                         !selectedFiles.map((sf) => sf.path).includes(f.path)
                     )
                   }
+                  emptyListingDisplay="No folders to display."
                   scroll={undefined}
                 />
               </div>

@@ -20,4 +20,5 @@ export { useSetFileTags } from './useSetFileTags';
 export { usePatchEntityMetadata } from './usePatchEntityMetadata';
 export { usePatchProjectMetadata } from './usePatchProjectMetadata';
 export { useValidateEntitySelection } from './UseValidateEntitySelection';
+export { useCheckFilesForAssociation } from './useCheckFilesForAssociation';
 export type { TPipelineValidationResult } from './UseValidateEntitySelection';

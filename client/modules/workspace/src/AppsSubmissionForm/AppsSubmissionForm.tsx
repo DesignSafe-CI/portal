@@ -86,9 +86,7 @@ export const AppsSubmissionForm: React.FC = () => {
     execSystems
   ) as TTapisSystem;
   const allocations = getAllocationList(defaultExecSystem, tasAllocations);
-  const portalAlloc = allocations.find(
-    (a) => a.startsWith('DesignSafe-DCV') || a.startsWith('DS-HPC')
-  );
+  const portalAlloc = allocations.find((a) => a.startsWith('DS-HPC'));
 
   const { fileInputs, parameterSet, configuration, outputs } = FormSchema(
     definition,
@@ -143,17 +141,8 @@ export const AppsSubmissionForm: React.FC = () => {
     borderBottom: '1px solid #707070',
     fontSize: 16,
   };
-  const layoutStyle = {
-    overflow: 'hidden',
-  };
 
   const missingLicense = license.type && !license.enabled;
-
-  const readOnly =
-    !!missingLicense ||
-    !hasStorageSystems ||
-    (definition.jobType === 'BATCH' && !!missingAllocation) ||
-    !!defaultSystemNeedsKeys;
 
   const methods = useForm({
     defaultValues: initialValues,
@@ -312,17 +301,14 @@ export const AppsSubmissionForm: React.FC = () => {
     setSteps(updatedSteps);
   }, [fields]);
 
-  // Only allow transition to next step, if the current step has
-  // no validation errors.
+  // next step transition does not block on invalid fields
   const handleNextStep = useCallback(async () => {
     const stepFields = Object.keys(fieldValues).filter((key) =>
       key.startsWith(current)
     ) as FieldNameUnion[];
-    const isValid = await methods.trigger(stepFields);
-    if (isValid) {
-      const nextPage = steps[current].nextPage;
-      nextPage && setCurrent(nextPage);
-    }
+    await methods.trigger(stepFields);
+    const nextPage = steps[current].nextPage;
+    nextPage && setCurrent(nextPage);
   }, [current, methods]);
   const handlePreviousStep = useCallback(() => {
     const prevPage = steps[current].prevPage;
@@ -340,6 +326,13 @@ export const AppsSubmissionForm: React.FC = () => {
   const [pushKeysSystem, setPushKeysSystem] = useState<
     TTapisSystem | undefined
   >();
+
+  const readOnly =
+    !!missingLicense ||
+    !hasStorageSystems ||
+    (definition.jobType === 'BATCH' && !!missingAllocation) ||
+    !!defaultSystemNeedsKeys ||
+    isPending;
 
   useEffect(() => {
     if (submitResult?.execSys) {
@@ -472,7 +465,7 @@ export const AppsSubmissionForm: React.FC = () => {
 
   return (
     <>
-      <Layout style={layoutStyle}>
+      <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
         <Space direction="vertical" style={{ width: '100%' }}>
           <Header style={headerStyle}>
             <Flex justify="space-between">
@@ -481,7 +474,11 @@ export const AppsSubmissionForm: React.FC = () => {
                 {definition.notes.label || definition.id}
               </div>
               {definition.notes.helpUrl && (
-                <a href={definition.notes.helpUrl} target="_blank">
+                <a
+                  href={definition.notes.helpUrl}
+                  target="_blank"
+                  style={{ marginRight: 10 }}
+                >
                   View User Guide
                 </a>
               )}
@@ -578,6 +575,7 @@ export const AppsSubmissionForm: React.FC = () => {
                         schema={schema}
                         fields={fields}
                         isSubmitting={isPending}
+                        current={current}
                         setCurrent={setCurrent}
                       />
                     </Col>
