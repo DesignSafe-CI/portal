@@ -499,6 +499,10 @@ TAS_CLIENT_KEY = os.environ.get('TAS_CLIENT_KEY', None)
 TAS_CLIENT_SECRET = os.environ.get('TAS_CLIENT_SECRET', None)
 TAS_URL = os.environ.get('TAS_URL', None)
 
+# Allocations
+#
+ALLOCATIONS_TO_EXCLUDE = ["DesignSafe-DCV"]
+
 ###
 # Agave Integration
 #
