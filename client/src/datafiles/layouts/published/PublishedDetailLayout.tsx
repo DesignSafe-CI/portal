@@ -4,10 +4,16 @@ import {
   DownloadDatasetModal,
   PublishedCitation,
 } from '@client/datafiles';
-import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
-import React, { useEffect } from 'react';
+import {
+  usePublicationDetail,
+  usePublicationVersions,
+  useCitationMetrics,
+} from '@client/hooks';
+import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
+import { MetricsModal } from '@client/datafiles';
+import styles from './PublishedDetailLayout.module.css';
 
 const FileListingSearchBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,6 +50,23 @@ export const PublishedDetailLayout: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const dois = data?.baseProject.dois[0] ? data?.baseProject.dois[0] : '';
+  const {
+    data: citationMetrics,
+    isLoading,
+    isError,
+    error,
+  } = useCitationMetrics(dois);
+
+  const openModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
 
   const version = (projectId ?? '').split('v')[1];
   useEffect(() => {
@@ -117,6 +140,75 @@ export const PublishedDetailLayout: React.FC = () => {
             projectId={projectId}
             entityUuid={data.tree.children[0].uuid}
           />
+          <br />
+
+          {isLoading && <div>Loading citation metrics...</div>}
+          {isError && <div>Error fetching citation metrics</div>}
+          {citationMetrics && (
+            <div>
+              <strong>Download Citation:</strong>
+              <a
+                href={`https://data.datacite.org/application/vnd.datacite.datacite+xml/${dois}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                DataCite XML
+              </a>{' '}
+              |
+              <a
+                href={`https://data.datacite.org/application/x-research-info-systems/${dois}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {' '}
+                RIS
+              </a>{' '}
+              |
+              <a
+                href={`https://data.datacite.org/application/x-bibtex/${dois}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {' '}
+                BibTeX
+              </a>
+              <div>
+                <span className={styles['yellow-highlight']}>
+                  {citationMetrics?.data2?.data.attributes.downloadCount ??
+                    '--'}{' '}
+                  Downloads
+                </span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span className={styles['yellow-highlight']}>
+                  {citationMetrics?.data2?.data.attributes.viewCount ?? '--'}{' '}
+                  Views
+                </span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span className={styles['yellow-highlight']}>
+                  {citationMetrics?.data2?.data.attributes.citationCount ??
+                    '--'}{' '}
+                  Citations
+                </span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  onClick={openModal}
+                  style={{
+                    cursor: 'pointer',
+                    color: '#337AB7',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Details
+                </span>
+                <MetricsModal
+                  isOpen={isModalVisible}
+                  handleCancel={closeModal}
+                  eventMetricsData={citationMetrics?.data1}
+                  usageMetricsData={citationMetrics?.data2}
+                />
+              </div>
+            </div>
+          )}
         </section>
       )}
       <BaseProjectDetails

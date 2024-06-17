@@ -239,11 +239,37 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
+        <br />
         {isLoading && <div>Loading citation metrics...</div>}
         {isError && <div>Error fetching citation metrics</div>}
         {citationMetrics && (
           <div>
             <strong>Download Citation:</strong>
+            <a
+              href={`https://data.datacite.org/application/vnd.datacite.datacite+xml/${dois}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              DataCite XML
+            </a>{' '}
+            |
+            <a
+              href={`https://data.datacite.org/application/x-research-info-systems/${dois}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {' '}
+              RIS
+            </a>{' '}
+            |
+            <a
+              href={`https://data.datacite.org/application/x-bibtex/${dois}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {' '}
+              BibTeX
+            </a>
             <div>
               <span className={styles['yellow-highlight']}>
                 {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'}{' '}
