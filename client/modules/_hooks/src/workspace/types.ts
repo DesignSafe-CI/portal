@@ -14,7 +14,7 @@ export type TJobArgSpec = {
   arg?: string;
   description?: string;
   inputMode?: string;
-  notes: TParameterSetNotes;
+  notes?: TParameterSetNotes;
 };
 
 export type TJobKeyValuePair = {
@@ -22,7 +22,7 @@ export type TJobKeyValuePair = {
   value: string;
   description?: string;
   inputMode: string;
-  notes: TParameterSetNotes;
+  notes?: TParameterSetNotes;
 };
 
 export type TJobArgSpecs = TJobArgSpec[];
