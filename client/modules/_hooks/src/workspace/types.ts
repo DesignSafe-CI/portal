@@ -6,6 +6,7 @@ type TParameterSetNotes = {
     message: string;
   };
   enum_values?: [{ [dynamic: string]: string }];
+  label?: string;
 };
 
 export type TJobArgSpec = {
@@ -21,7 +22,7 @@ export type TJobKeyValuePair = {
   value: string;
   description?: string;
   inputMode: string;
-  notes: TParameterSetNotes;
+  notes?: TParameterSetNotes;
 };
 
 export type TJobArgSpecs = TJobArgSpec[];
