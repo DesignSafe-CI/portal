@@ -132,7 +132,7 @@
 }
 
 /* DO scroll app category menu */
-.ant-layout-sider-children > header + div + ul {
+.ant-layout-sider-children > a + div + ul {
   overflow: auto;
   height: 100%;
 }
