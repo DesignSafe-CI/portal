@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name="priority",
             field=models.IntegerField(
                 default=0,
-                help_text="Category priority, where lower number tabs appear before higher ones.",
+                help_text="Category priority, where lower number categories appear before higher ones.",
             ),
         ),
     ]
