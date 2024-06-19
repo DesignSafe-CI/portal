@@ -44,7 +44,7 @@ export const PipelineProofreadCategories: React.FC<{
           type="primary"
           onClick={nextStep}
         >
-          `` Continue
+          Continue
         </Button>
       </div>
 

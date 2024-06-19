@@ -131,6 +131,11 @@
   flex-flow: column;
 }
 
+#datafiles-root .ant-layout-sider,
+#datafiles-root .ant-layout-sider-children {
+  overflow: visible !important;
+}
+
 /* DO scroll app category menu */
 .ant-layout-sider-children > header + div + ul {
   overflow: auto;

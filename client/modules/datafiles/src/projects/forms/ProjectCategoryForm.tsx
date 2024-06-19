@@ -1,4 +1,4 @@
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, Alert } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   equipmentOptions,
@@ -39,6 +39,8 @@ export const ProjectCategoryForm: React.FC<{
     [data, entityUuid]
   );
 
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+
   // Set initial form values
   useEffect(() => {
     if (data && category && mode === 'edit') {
@@ -58,8 +60,10 @@ export const ProjectCategoryForm: React.FC<{
         if (mode === 'create') {
           form.resetFields();
           setSelectedName(undefined);
+          setHasValidationErrors(false);
         }
       }}
+      onFinishFailed={() => setHasValidationErrors(true)}
       requiredMark={customRequiredMark}
     >
       {mode === 'create' && (
@@ -119,7 +123,8 @@ export const ProjectCategoryForm: React.FC<{
       {selectedName === constants.FIELD_RECON_GEOSCIENCE && (
         <>
           <Form.Item label="Observation Type" required>
-            The nature or subject of the data collected.
+            The nature or subject of the data collected. Enter a custom value by
+            typing it into the field and pressing "return".
             <Form.Item
               name={['value', 'observationTypes']}
               className="inner-form-item"
@@ -203,7 +208,8 @@ export const ProjectCategoryForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Equipment" required>
-            The equipment used to gather your data.
+            The equipment used to gather your data. Enter a custom value by
+            typing it into the field and pressing "return".
             <Form.Item
               name={['value', 'equipment']}
               className="inner-form-item"
@@ -319,7 +325,8 @@ export const ProjectCategoryForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Equipment" required>
-            The equipment used to gather your data.
+            The equipment used to gather your data. Enter a custom value by
+            typing it into the field and pressing "return".
             <Form.Item
               name={['value', 'equipment']}
               className="inner-form-item"
@@ -365,6 +372,20 @@ export const ProjectCategoryForm: React.FC<{
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
+
+      {hasValidationErrors && (
+        <Alert
+          type="error"
+          style={{ marginBottom: '10px' }}
+          showIcon
+          message={
+            <span>
+              One or more fields could not be validated. Please check the form
+              for errors.
+            </span>
+          }
+        />
+      )}
 
       <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button type="primary" className="success-button" htmlType="submit">
