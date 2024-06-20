@@ -1,0 +1,24 @@
+@import url("https://cdn.jsdelivr.net/gh/TACC/Core-Styles@feat/DES-2806-breadcrumbs-sans-class-s-prefix/dist/components/bootstrap3.breadcrumb.css");
+
+/* To negate `.navbar-ds` padding bottom */
+/* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/designsafe/static/vendor/bootstrap-ds/css/bootstrap.css#L4769 */
+div:has(.navbar-ds) + main .breadcrumb {
+  margin-top: -20px;
+}
+
+/* To "disable" ineffectual links */
+.breadcrumb a:not([href]) {
+  /* https://github.com/TACC/Core-Styles/blob/v2.26.0/dist/elements/links.css */
+  pointer-events: none;
+
+  /* https://github.com/TACC/tup-ui/blob/v1.1.10/apps/tup-cms/src/taccsite_custom/tup_cms/static/tup_cms/css/for-tup-cms/trumps/s-breadcrumbs.css */
+  opacity: 0.75;
+  color: unset;
+}
+
+/* To match workspace breadcrumb font-size */
+/* NOTE: Workspace breadcrumbs use Ant not Bootstrap */
+.breadcrumb {
+  /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/client/modules/workspace/src/AppsBreadcrumb/AppsBreadcrumb.module.css#L3 */
+  font-size: 1.6rem;
+}
