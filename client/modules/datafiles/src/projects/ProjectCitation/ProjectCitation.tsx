@@ -4,7 +4,7 @@ import {
   useProjectDetail,
   usePublicationDetail,
 } from '@client/hooks';
-import { MetricsModal } from '@client/datafiles';
+import { MetricsModal } from '../modals/MetricsModal';
 import styles from './ProjectCitation.module.css';
 
 export const ProjectCitation: React.FC<{
