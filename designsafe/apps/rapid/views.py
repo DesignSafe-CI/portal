@@ -282,8 +282,12 @@ def admin_event_add_dataset(request, event_id):
                 if getattr(err, 'status_code', 500) == 404:
                     raise
                 event.save(refresh=True)
+            
+            context = {
+                "event": event
+            }
 
-            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+            return render(request, 'designsafe/apps/rapid/admin_event_datasets.html', context)
     else:
         context = {}
         context["event"] = event
@@ -319,8 +323,12 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
                 if getattr(err, 'status_code', 500) == 404:
                     raise
                 event.save(refresh=True)
-
-            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+            
+            context = {
+                "event": event
+            }
+            
+            return render(request, 'designsafe/apps/rapid/admin_event_datasets.html', context)
 
     else:
         context = {}
