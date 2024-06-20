@@ -97,6 +97,17 @@ export type TAppFormSchema = {
 
 export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)\/[^/]+$/;
 
+export const fieldDisplayOrder: Record<string, string[]> = {
+  configuration: [
+    'execSystemLogicalQueue',
+    'maxMinutes',
+    'nodeCount',
+    'coresPerNode',
+    'allocation',
+  ],
+  outputs: ['name', 'archiveSystemId', 'archiveSystemDir'],
+};
+
 // See https://github.com/colinhacks/zod/issues/310 for Zod issue
 const emptyStringToUndefined = z.literal('').transform(() => undefined);
 function asOptionalField<T extends z.ZodTypeAny>(schema: T) {
