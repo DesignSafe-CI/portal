@@ -297,7 +297,9 @@ const FormSchema = (
           return;
         }
         const paramId =
-          (<TJobArgSpec>param).name ?? (<TJobKeyValuePair>param).key;
+          param.notes?.label ??
+          (<TJobArgSpec>param).name ??
+          (<TJobKeyValuePair>param).key;
 
         const field: TField = {
           label: paramId,
