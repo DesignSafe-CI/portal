@@ -13,5 +13,6 @@ export {
 export {
   ProjectCitation,
   PublishedCitation,
+  DownloadCitation,
 } from './ProjectCitation/ProjectCitation';
 export * from './modals';
