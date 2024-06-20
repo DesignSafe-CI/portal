@@ -14,6 +14,7 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
+  DownloadCitation
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
@@ -240,71 +241,11 @@ export const PublishedEntityDisplay: React.FC<{
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
         <br />
-        {isLoading && <div>Loading citation metrics...</div>}
-        {isError && <div>Error fetching citation metrics</div>}
         {citationMetrics && (
-          <div>
-            <strong>Download Citation: </strong>
-            <a
-              href={`https://data.datacite.org/application/vnd.datacite.datacite+xml/${dois}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              DataCite XML
-            </a>{' '}
-            |
-            <a
-              href={`https://data.datacite.org/application/x-research-info-systems/${dois}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {' '}
-              RIS
-            </a>{' '}
-            |
-            <a
-              href={`https://data.datacite.org/application/x-bibtex/${dois}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {' '}
-              BibTeX
-            </a>
             <div>
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'}{' '}
-                Downloads
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.viewCount ?? '--'}{' '}
-                Views
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.citationCount ?? '--'}{' '}
-                Citations
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span
-                onClick={openModal}
-                style={{
-                  cursor: 'pointer',
-                  color: '#337AB7',
-                  fontWeight: 'bold',
-                }}
-              >
-                Details
-              </span>
-              <MetricsModal
-                isOpen={isModalVisible}
-                handleCancel={closeModal}
-                eventMetricsData={citationMetrics?.data1}
-                usageMetricsData={citationMetrics?.data2}
-              />
+              <DownloadCitation projectId={projectId} entityUuid={treeData.uuid} />
             </div>
-          </div>
-        )}
+          )}
       </article>
       <Collapse
         expandIcon={() => null}
