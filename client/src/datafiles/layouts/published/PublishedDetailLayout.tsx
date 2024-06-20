@@ -51,9 +51,7 @@ export const PublishedDetailLayout: React.FC = () => {
   const { allVersions } = usePublicationVersions(projectId ?? '');
 
   const dois = data?.baseProject.dois[0] ? data?.baseProject.dois[0] : '';
-  const {
-    data: citationMetrics,
-  } = useCitationMetrics(dois);
+  const { data: citationMetrics } = useCitationMetrics(dois);
 
   const version = (projectId ?? '').split('v')[1];
   useEffect(() => {
