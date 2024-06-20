@@ -1,4 +1,4 @@
-@import url("https://cdn.jsdelivr.net/gh/TACC/Core-Styles@feat/DES-2806-breadcrumbs-sans-class-s-prefix/dist/components/bootstrap3.breadcrumb.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/Core-Styles@09c4b4f/dist/components/bootstrap3.breadcrumb.css");
 
 /* To negate `.navbar-ds` padding bottom */
 /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/designsafe/static/vendor/bootstrap-ds/css/bootstrap.css#L4769 */
@@ -16,9 +16,13 @@ div:has(.navbar-ds) + main .breadcrumb {
   color: unset;
 }
 
-/* To match workspace breadcrumb font-size */
+/* To match workspace breadcrumbs until they are updated to match design */
 /* NOTE: Workspace breadcrumbs use Ant not Bootstrap */
 .breadcrumb {
   /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/client/modules/workspace/src/AppsBreadcrumb/AppsBreadcrumb.module.css#L3 */
   font-size: 1.6rem;
+}
+.breadcrumb:where(ol,ul),
+.breadcrumb:where(.breadcrumb-major) li:last-child {
+  font-weight: 400;
 }
