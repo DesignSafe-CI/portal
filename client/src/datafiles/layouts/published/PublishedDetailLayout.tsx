@@ -3,7 +3,7 @@ import {
   DatafilesToolbar,
   DownloadDatasetModal,
   PublishedCitation,
-  DownloadCitation
+  DownloadCitation,
 } from '@client/datafiles';
 import {
   usePublicationDetail,
@@ -143,7 +143,10 @@ export const PublishedDetailLayout: React.FC = () => {
           <br />
           {citationMetrics && (
             <div>
-              <DownloadCitation projectId={projectId} entityUuid={data.tree.children[0].uuid} />
+              <DownloadCitation
+                projectId={projectId}
+                entityUuid={data.tree.children[0].uuid}
+              />
             </div>
           )}
         </section>

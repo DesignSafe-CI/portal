@@ -14,7 +14,7 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
-  DownloadCitation
+  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
@@ -242,10 +242,13 @@ export const PublishedEntityDisplay: React.FC<{
         )}
         <br />
         {citationMetrics && (
-            <div>
-              <DownloadCitation projectId={projectId} entityUuid={treeData.uuid} />
-            </div>
-          )}
+          <div>
+            <DownloadCitation
+              projectId={projectId}
+              entityUuid={treeData.uuid}
+            />
+          </div>
+        )}
       </article>
       <Collapse
         expandIcon={() => null}

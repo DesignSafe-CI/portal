@@ -166,16 +166,20 @@ export const DownloadCitation: React.FC<{
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span
               onClick={openModal}
-              style={{ cursor: 'pointer', color: '#337AB7', fontWeight: 'bold' }}
+              style={{
+                cursor: 'pointer',
+                color: '#337AB7',
+                fontWeight: 'bold',
+              }}
             >
               Details
             </span>
             <MetricsModal
-                  isOpen={isModalVisible}
-                  handleCancel={closeModal}
-                  eventMetricsData={citationMetrics?.data1}
-                  usageMetricsData={citationMetrics?.data2}
-                />
+              isOpen={isModalVisible}
+              handleCancel={closeModal}
+              eventMetricsData={citationMetrics?.data1}
+              usageMetricsData={citationMetrics?.data2}
+            />
           </div>
         </div>
       )}
