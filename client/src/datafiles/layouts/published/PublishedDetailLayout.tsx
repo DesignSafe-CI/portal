@@ -13,8 +13,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
-import { MetricsModal } from '@client/datafiles';
-import styles from './PublishedDetailLayout.module.css';
 
 const FileListingSearchBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,22 +49,11 @@ export const PublishedDetailLayout: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
-  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const dois = data?.baseProject.dois[0] ? data?.baseProject.dois[0] : '';
   const {
     data: citationMetrics,
-    isLoading,
-    isError,
   } = useCitationMetrics(dois);
-
-  const openModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
 
   const version = (projectId ?? '').split('v')[1];
   useEffect(() => {

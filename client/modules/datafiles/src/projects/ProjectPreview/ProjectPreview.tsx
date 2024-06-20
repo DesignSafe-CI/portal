@@ -23,7 +23,6 @@ import {
 } from '@client/common-components';
 import { Link } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
-import { MetricsModal } from '../modals/MetricsModal';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
 
@@ -173,7 +172,6 @@ export const PublishedEntityDisplay: React.FC<{
   defaultOpenChildren = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
@@ -190,13 +188,6 @@ export const PublishedEntityDisplay: React.FC<{
     error,
   } = useCitationMetrics(dois);
 
-  const openModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
   useEffect(() => {
     if (isError) {
       console.error('Error fetching citation metrics:', error);
