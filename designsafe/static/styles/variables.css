@@ -15,11 +15,6 @@
   --global-space--above-breadcrumbs: 35px;
   --global-space--under-breadcrumbs: 20px;
 
-  /* Font */
-  /* TODO: Add missing variables after determining values */
-  --global-font-size--x-small: 1.4rem;
-  --global-font-weight--medium: 500;
-
   /* Common */
   --global-color-background--app: var(--global-color-primary--xx-light);
 }
