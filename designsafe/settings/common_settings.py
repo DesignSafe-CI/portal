@@ -229,7 +229,7 @@ ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 from designsafe.settings.nees_settings import NEES_USER_DATABASE
-#if NEES_USER_DATABASE['NAME']:
+# if NEES_USER_DATABASE['NAME']:
 #    DATABASES['nees_users'] = NEES_USER_DATABASE
 
 
@@ -346,13 +346,13 @@ CKEDITOR_SETTINGS = {
     'allowedContent': True
 }
 
-#MIGRATION_MODULES = {
+# MIGRATION_MODULES = {
 #    'djangocms_file': 'djangocms_file.migrations_django',
 #    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
 #    'djangocms_picture': 'djangocms_picture.migrations_django',
 #    'djangocms_video': 'djangocms_video.migrations_django',
 #    'djangocms_style': 'djangocms_style.migrations_django',
-#}
+# }
 
 LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
 
@@ -499,6 +499,15 @@ TAS_CLIENT_KEY = os.environ.get('TAS_CLIENT_KEY', None)
 TAS_CLIENT_SECRET = os.environ.get('TAS_CLIENT_SECRET', None)
 TAS_URL = os.environ.get('TAS_URL', None)
 
+# Allocations to exclude
+#
+ALLOCATIONS_TO_EXCLUDE = (
+    os.environ.get("ALLOCATIONS_TO_EXCLUDE", "").split(",")
+    if os.environ.get("ALLOCATIONS_TO_EXCLUDE")
+    else ["DesignSafe-DCV"]
+)
+
+
 ###
 # Agave Integration
 #
@@ -592,7 +601,7 @@ RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
 NOCAPTCHA = True
 
-#FOR RAPID UPLOADS
+# FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 DESIGNSAFE_PROJECTS_PATH = os.environ.get('DESIGNSAFE_PROJECTS_PATH', '/corral-repl/tacc/NHERI/projects/')
 DESIGNSAFE_PUBLISHED_PATH = os.environ.get('DESIGNSAFE_PUBLISHED_PATH', '/corral-repl/tacc/NHERI/published/')
