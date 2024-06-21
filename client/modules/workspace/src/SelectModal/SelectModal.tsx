@@ -181,8 +181,8 @@ function getFilesColumns(
       dataIndex: 'path',
       align: 'end',
       title: '',
-      render: (_: any, record: any) => {
-        const shouldRenderSelectButton = 
+      render: (_, record) => {
+        const shouldRenderSelectButton =
           (record.type === 'dir' && selectionMode === 'directory') ||
           (record.type === 'file' && selectionMode === 'file') ||
           selectionMode === 'both';

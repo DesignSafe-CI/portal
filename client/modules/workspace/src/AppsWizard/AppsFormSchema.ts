@@ -57,7 +57,7 @@ export type TField = {
   description?: string;
   options?: TFieldOptions[];
   tapisFile?: boolean;
-  tapisFileSelectionMode?:string;
+  tapisFileSelectionMode?: string;
   placeholder?: string;
   readOnly?: boolean;
 };
@@ -385,7 +385,7 @@ const FormSchema = (
       type: 'text',
       placeholder: 'Browse Data Files',
       readOnly: input.inputMode === 'FIXED',
-      tapisFileSelectionMode: input.notes?.selectionMode??'both',
+      tapisFileSelectionMode: input.notes?.selectionMode ?? 'both',
     };
 
     appFields.fileInputs.schema[input.name] = z.string();
