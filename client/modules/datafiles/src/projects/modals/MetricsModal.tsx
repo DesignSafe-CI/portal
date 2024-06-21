@@ -196,13 +196,15 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
     return sumsByQuarter;
   }
 
-  const defaultYear = useMemo(
-    () =>
-      usageMetricsData.data.attributes.viewsOverTime
-        .slice(-1)[0]
-        ?.yearMonth.split('-')[0],
-    [usageMetricsData.data.attributes.viewsOverTime]
-  );
+  const orderedYears = useMemo(() => {
+    return usageMetricsData.data.attributes.viewsOverTime
+      .map((entry) => entry.yearMonth.split('-')[0]) // Get only the years
+      .filter((year, index, array) => array.indexOf(year) === index) // Unique years
+      .sort((a, b) => b.localeCompare(a)); // Sort descending
+  }, [usageMetricsData.data.attributes.viewsOverTime]);
+
+  const defaultYear = orderedYears[0];
+
   const [selectedYear, setSelectedYear] = useState(defaultYear);
 
   const [quarterSums, setQuarterSums] = useState<{
