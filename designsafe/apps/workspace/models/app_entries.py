@@ -57,7 +57,7 @@ class AppTrayCategory(models.Model):
         help_text="A category for the app tray.", max_length=64, unique=True
     )
     priority = models.IntegerField(
-        help_text="Category priority, where lower number categories appear before higher ones.",
+        help_text="Category priority, where higher number tabs appear before lower ones.",
         default=0,
     )
 
