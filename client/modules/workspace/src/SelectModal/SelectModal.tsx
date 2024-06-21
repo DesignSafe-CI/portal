@@ -123,6 +123,7 @@ function getFilesColumns(
   system: string,
   path: string,
   systemLabel: string,
+  selectionMode: string,
   selectionCallback: (path: string) => void,
   navCallback: (path: string) => void
 ): TFileListingColumns {
@@ -180,15 +181,22 @@ function getFilesColumns(
       dataIndex: 'path',
       align: 'end',
       title: '',
-      render: (_, record) => (
-        <SecondaryButton
-          onClick={() =>
-            selectionCallback(`${api}://${record.system}${record.path}`)
-          }
-        >
-          Select
-        </SecondaryButton>
-      ),
+      render: (_: any, record: any) => {
+        const shouldRenderSelectButton = 
+          (record.type === 'dir' && selectionMode === 'directory') ||
+          (record.type === 'file' && selectionMode === 'file') ||
+          selectionMode === 'both';
+
+        return shouldRenderSelectButton ? (
+          <SecondaryButton
+            onClick={() =>
+              selectionCallback(`${api}://${record.system}${record.path}`)
+            }
+          >
+            Select
+          </SecondaryButton>
+        ) : null;
+      },
     },
   ];
 }
@@ -196,10 +204,11 @@ function getFilesColumns(
 export const SelectModal: React.FC<{
   inputLabel: string;
   system: string | null;
+  selectionMode: string;
   isOpen: boolean;
   onClose: () => void;
   onSelect: (value: string) => void;
-}> = ({ inputLabel, system, isOpen, onClose, onSelect }) => {
+}> = ({ inputLabel, system, selectionMode, isOpen, onClose, onSelect }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [form] = Form.useForm();
@@ -335,6 +344,7 @@ export const SelectModal: React.FC<{
         selectedSystem,
         selectedPath,
         systemLabel,
+        selectionMode,
         (selection: string) => selectCallback(selection),
         navCallback
       ),
@@ -344,6 +354,7 @@ export const SelectModal: React.FC<{
       selectedSystem,
       selectedPath,
       systemLabel,
+      selectionMode,
       selectCallback,
     ]
   );

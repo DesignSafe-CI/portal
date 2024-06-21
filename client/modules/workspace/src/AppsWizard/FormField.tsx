@@ -14,6 +14,7 @@ export const FormField: React.FC<{
   label: string;
   required?: boolean;
   type: string;
+  tapisFileSelectionMode?: string,
   placeholder?: string;
   options?: TFieldOptions[];
 }> = ({
@@ -24,6 +25,7 @@ export const FormField: React.FC<{
   label,
   required = false,
   type,
+  tapisFileSelectionMode = null,
   ...props
 }) => {
   const { resetField, control, getValues, setValue, trigger } =
@@ -135,6 +137,7 @@ export const FormField: React.FC<{
         <SelectModal
           inputLabel={label}
           system={storageSystem}
+          selectionMode={tapisFileSelectionMode??'both'}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSelect={(value: string) => {
