@@ -6,6 +6,11 @@ import logging
 from logging import getLevelName
 import json
 
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -92,3 +97,14 @@ class LoggerApi(BaseApiView):
         return HttpResponse('OK', status=202)
 
 
+@csrf_exempt
+def proxy_request(request):
+    url = request.GET.get('url')
+    if not url:
+        return JsonResponse({'error': 'URL parameter is required'}, status=400)
+    
+    try:
+        response = requests.get(url)
+        return JsonResponse(response.json(), safe=False, status=response.status_code)
+    except requests.RequestException as e:
+        return JsonResponse({'error': str(e)}, status=500)

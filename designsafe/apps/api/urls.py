@@ -1,6 +1,6 @@
 # pylint: disable=missing-docstring
 from django.urls import re_path as url, include, path
-from designsafe.apps.api.views import LoggerApi
+from designsafe.apps.api.views import LoggerApi, proxy_request
 from django.http import JsonResponse
 
 urlpatterns = [
@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^notifications/', include('designsafe.apps.api.notifications.urls')),
     url(r'^users/', include('designsafe.apps.api.users.urls')),
     url(r'^search/', include(('designsafe.apps.api.search.urls', 'designsafe.apps.api.search'), namespace="ds_search_api")),
-    url(r'^licenses/', include('designsafe.apps.api.licenses.urls'))
+    url(r'^licenses/', include('designsafe.apps.api.licenses.urls')),
+    path('proxy/', proxy_request, name='proxy_request'),
 ]

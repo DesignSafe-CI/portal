@@ -17,9 +17,38 @@ export default class RapidMainCtrl {
         this.RapidDataService.get_event_types().then( (resp)=> {
             this.event_types = resp;
         });
-        this.RapidDataService.get_events().then( (resp)=>{
-            this.events = resp;
-            this.events.forEach((d)=> {
+        // this.RapidDataService.get_events().then( (resp)=>{
+        //     this.events = resp;
+        //     this.events.forEach((d)=> {
+        //         let marker = L.marker([d.location.lat, d.location.lon]);
+        //         marker.bindTooltip(d.title);
+        //         this.map.addLayer(marker);
+        //         marker.rapid_event = d;
+        //         marker.on('click', (ev) => {
+        //             this.select_event(marker.rapid_event);
+        //             this.$scope.$apply();
+        //         });
+        //     });
+        //     this.gotoEvent();
+        // });
+        this.loadEventsAndOpenTopographyData();
+
+        //this.loadOpenTopographyData();
+    }
+
+    loadEventsAndOpenTopographyData() {
+        Promise.all([
+            this.RapidDataService.get_events(),
+            this.RapidDataService.get_open_topography_center_view().then(center_view_data => {
+                return this.RapidDataService.get_open_topography_datasets_view().then(datasets_view_data => {
+                    return this.RapidDataService.combine_open_topography_data(center_view_data, datasets_view_data);
+                });
+            })
+        ]).then(([events, openTopoData]) => {
+            this.events = events.concat(openTopoData);
+            this.filtered_events = this.events;
+
+            this.events.forEach((d) => {
                 let marker = L.marker([d.location.lat, d.location.lon]);
                 marker.bindTooltip(d.title);
                 this.map.addLayer(marker);
@@ -29,7 +58,10 @@ export default class RapidMainCtrl {
                     this.$scope.$apply();
                 });
             });
+
             this.gotoEvent();
+        }).catch((err) => {
+            console.error('Error loading events and OpenTopography data:', err);
         });
     }
 
@@ -56,6 +88,27 @@ export default class RapidMainCtrl {
         this.map.setView([30.2672, -97.7431], 2);
         this.map.zoomControl.setPosition('topright');
     }
+
+    // loadOpenTopographyData() {
+    //     this.RapidDataService.get_open_topography_center_view().then(center_view_data => {
+    //         this.RapidDataService.get_open_topography_datasets_view().then(datasets_view_data => {
+    //             let combined_data = this.RapidDataService.combine_open_topography_data(center_view_data, datasets_view_data);
+    //             this.displayOpenTopographyData(combined_data);
+    //         });
+    //     });
+    // }
+
+    // displayOpenTopographyData(data) {
+    //     data.forEach((d) => {
+    //         let marker = L.marker([d.geometry.coordinates[1], d.geometry.coordinates[0]]);
+    //         marker.bindTooltip(d.properties.projectname);
+    //         this.map.addLayer(marker);
+    //         marker.on('click', (ev) => {
+    //             this.select_event(d);
+    //             this.$scope.$apply();
+    //         });
+    //     });
+    // }
 
     gotoEvent () {
         let q = this.$location.search();

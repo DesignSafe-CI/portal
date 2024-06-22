@@ -23,6 +23,74 @@ export default class RapidDataService {
         });
     }
 
+    get_open_topography_center_view() {
+        const url = "/api/proxy/?url=" + encodeURIComponent("https://portal.opentopography.org/geoserver/OPENTOPO/wfs?SERVICE=WFS&VERSION=1.3.0&REQUEST=GetFeature&TYPENAME=OPENTOPO:datasets_center_view&OUTPUTFORMAT=application/json&CQL_FILTER=host=%27OpenTopography%27%20and%20is_global=false&propertyName=id,geometry");
+        return this.$http.get(url).then((resp) => {
+            return resp.data.features;
+        }).catch((err) => {
+            console.error('Error fetching center view Opentopo data:', err);
+        });
+    }
+
+    get_open_topography_datasets_view() {
+        const url = "/api/proxy/?url=" + encodeURIComponent("https://portal.opentopography.org/geoserver/OPENTOPO/wfs?SERVICE=WFS&VERSION=1.3.0&REQUEST=GetFeature&TYPENAME=OPENTOPO:datasets_view&OUTPUTFORMAT=application/json&CQL_FILTER=host=%27OpenTopography%27%20and%20is_global=false&propertyName=id,projectname,url,product_available,start_date,end_date,collection_platform,released_date,ordering,is_restricted");
+        return this.$http.get(url).then((resp) => {
+            return resp.data.features;
+        }).catch((err) => {
+            console.error('Error fetching datasets of Opentopo data:', err);
+        });
+    }
+
+    // combine_open_topography_data(center_view_data, datasets_view_data) {
+    //     let combinedData = center_view_data.map(center_view_item => {
+    //         let matching_dataset = datasets_view_data.find(dataset_item => dataset_item.properties.id === center_view_item.properties.id);
+    //         if (matching_dataset) {
+    //             return {
+    //                 ...center_view_item,
+    //                 properties: {
+    //                     ...center_view_item.properties,
+    //                     ...matching_dataset.properties
+    //                 }
+    //             };
+    //         }
+    //         return center_view_item;
+    //     });
+    //     console.log(combinedData);
+    //     return combinedData;
+    // }
+
+    combine_open_topography_data(center_view_data, datasets_view_data) {
+        let combinedData = center_view_data.map(center_view_item => {
+            let matching_dataset = datasets_view_data.find(dataset_item => dataset_item.properties.id === center_view_item.properties.id);
+            if (matching_dataset) {
+                return {
+                    // Mapping properties to match the event data structure
+                    datasets: [{
+                        url: matching_dataset.properties.url,
+                        doi: matching_dataset.properties.id,
+                        id: matching_dataset.properties.id,
+                        title: matching_dataset.properties.projectname,
+                    }],
+                    event_type: "opentopography", // Need to change 
+                    title: matching_dataset.properties.projectname,
+                    location_description: "", // No description provided in OpenTopo data, keeping it empty
+                    location: {
+                        lat: center_view_item.geometry.coordinates[1],
+                        lon: center_view_item.geometry.coordinates[0]
+                    },
+                    created_date: matching_dataset.properties.released_date || "", // Assuming released_date as created_date
+                    event_date: matching_dataset.properties.start_date || "", // Assuming start_date as event_date
+                    end_date: matching_dataset.properties.end_date || "" // Adding end_date if required
+                };
+            }
+            return null;
+        }).filter(item => item !== null); // Filtering out any unmatched items
+    
+        console.log(combinedData);
+        return combinedData;
+    }
+    
+
     search (events, filter_options) {
         let tmp = _.filter(events, (item)=>{
             let f1 = true;

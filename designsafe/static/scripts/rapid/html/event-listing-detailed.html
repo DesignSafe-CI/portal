@@ -25,7 +25,9 @@
     <h5> Available datasets: </h5>
     <ul>
       <li class="event-dataset" ng-repeat = "dataset in event.datasets">
-        <a href="{{dataset.url}}"> {{dataset.title}} </a>
+        <a ng-href="{{event.event_type === 'opentopography' ? 'https://portal.opentopography.org' + dataset.url : dataset.url}}" target="_blank">
+          {{dataset.title}}
+        </a>
       </li>
     </ul>
     <div ng-show="!event.datasets">
