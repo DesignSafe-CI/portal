@@ -20,11 +20,12 @@ import {
   FileTypeIcon,
   TFileListingColumns,
 } from '@client/common-components';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
 import { MetricsModal } from '../modals/MetricsModal';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
+import { PipelineEditCategoryModal } from '../modals';
 
 const EntityFileListingTable: React.FC<{
   treeData: TPreviewTreeData;
@@ -115,13 +116,35 @@ function RecursiveTree({
   treeData,
   preview,
   defaultOpen = false,
+  showEditCategories = false,
 }: {
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   preview?: boolean;
+  showEditCategories?: boolean;
 }) {
+  const { projectId } = useParams();
   return (
     <li className={`${styles['tree-li']}`}>
+      {showEditCategories && (
+        <div>
+          <PipelineEditCategoryModal
+            projectId={projectId ?? ''}
+            formType="category"
+            entityUuid={treeData.uuid}
+          >
+            {({ onClick }) => (
+              <Button
+                onClick={onClick}
+                type="link"
+                style={{ marginTop: '10px', fontWeight: 'bold' }}
+              >
+                Edit {treeData.value.title}
+              </Button>
+            )}
+          </PipelineEditCategoryModal>
+        </div>
+      )}
       <ProjectCollapse
         entityName={treeData.name}
         title={treeData.value.title}
@@ -148,6 +171,7 @@ function RecursiveTree({
               treeData={child}
               defaultOpen={defaultOpen}
               preview={preview}
+              showEditCategories={showEditCategories}
             />
           </div>
         ))}
@@ -163,6 +187,7 @@ export const PublishedEntityDisplay: React.FC<{
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   defaultOpenChildren?: boolean;
+  showEditCategories?: boolean;
 }> = ({
   projectId,
   preview,
@@ -170,6 +195,7 @@ export const PublishedEntityDisplay: React.FC<{
   license,
   defaultOpen = false,
   defaultOpenChildren = false,
+  showEditCategories = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -322,6 +348,7 @@ export const PublishedEntityDisplay: React.FC<{
                     treeData={child}
                     key={child.id}
                     defaultOpen={defaultOpenChildren}
+                    showEditCategories={showEditCategories}
                   />
                 ))}
               </>

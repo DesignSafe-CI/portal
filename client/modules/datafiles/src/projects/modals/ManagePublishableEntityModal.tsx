@@ -6,6 +6,7 @@ import {
   TEntityValue,
   useCreateEntity,
   useDeleteEntity,
+  useNotifyContext,
   usePatchEntityMetadata,
   useProjectDetail,
 } from '@client/hooks';
@@ -24,6 +25,18 @@ const CategoryDetail: React.FC<{
   const [showForm, setShowForm] = useState(false);
   const { mutate } = usePatchEntityMetadata();
   const { mutate: deleteEntity } = useDeleteEntity();
+  const { notifyApi } = useNotifyContext();
+
+  const onSuccess = () => {
+    setShowForm(false);
+    notifyApi?.open({
+      type: 'success',
+      message: '',
+      description: 'Metadata has been updated successfully.',
+      placement: 'bottomLeft',
+    });
+  };
+
   return (
     <>
       <section>
@@ -47,7 +60,7 @@ const CategoryDetail: React.FC<{
             onSubmit={(v: { name: string; value: Record<string, unknown> }) => {
               mutate(
                 { entityUuid, patchMetadata: v },
-                { onSuccess: () => setShowForm(false) }
+                { onSuccess: onSuccess }
               );
             }}
           />
@@ -70,10 +83,18 @@ export const ManagePublishableEntityModal: React.FC<{
     setIsModalOpen(false);
   };
   const { mutate } = useCreateEntity(projectId);
-
+  const { notifyApi } = useNotifyContext();
   if (!data) return null;
 
   const projectType = data.baseProject.value.projectType;
+  const onSuccess = () => {
+    notifyApi?.open({
+      type: 'success',
+      message: '',
+      description: 'A new metadata record has been created.',
+      placement: 'bottomLeft',
+    });
+  };
 
   return (
     <>
@@ -93,8 +114,10 @@ export const ManagePublishableEntityModal: React.FC<{
               projectId={projectId}
               projectType={projectType}
               onSubmit={(v: Record<string, unknown>) => {
-                console.log(v);
-                mutate({ formData: { name: entityName, value: v } });
+                mutate(
+                  { formData: { name: entityName, value: v } },
+                  { onSuccess }
+                );
               }}
             />
           </section>
