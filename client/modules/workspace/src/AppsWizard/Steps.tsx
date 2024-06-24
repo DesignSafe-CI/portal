@@ -1,5 +1,5 @@
 import { FormField } from './FormField';
-import { TField } from '../AppsWizard/AppsFormSchema';
+import { TField, fieldDisplayOrder } from '../AppsWizard/AppsFormSchema';
 
 export const stepKeys = ['inputs', 'parameters', 'configuration', 'outputs'];
 
@@ -30,19 +30,11 @@ export const getParametersStep = (fields: {
   ),
 });
 
-const configurationFieldOrder = [
-  'execSystemLogicalQueue',
-  'maxMinutes',
-  'nodeCount',
-  'coresPerNode',
-  'allocation',
-];
-
 export const getConfigurationStep = (fields: { [key: string]: TField }) => ({
   title: 'Configuration',
   content: (
     <>
-      {configurationFieldOrder.map((key) => {
+      {fieldDisplayOrder['configuration'].map((key) => {
         const field = fields[key];
         if (!field) {
           return null;
@@ -53,12 +45,11 @@ export const getConfigurationStep = (fields: { [key: string]: TField }) => ({
   ),
 });
 
-const outputFieldOrder = ['name', 'archiveSystemId', 'archiveSystemDir'];
 export const getOutputsStep = (fields: { [key: string]: TField }) => ({
   title: 'Outputs',
   content: (
     <>
-      {outputFieldOrder.map((key) => {
+      {fieldDisplayOrder['outputs'].map((key) => {
         const field = fields[key];
         if (!field) {
           return null;
