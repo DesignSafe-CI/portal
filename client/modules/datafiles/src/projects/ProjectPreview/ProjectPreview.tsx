@@ -14,6 +14,7 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
+  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
@@ -22,7 +23,6 @@ import {
 } from '@client/common-components';
 import { Link, useParams } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
-import { MetricsModal } from '../modals/MetricsModal';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
 import { PipelineEditCategoryModal } from '../modals';
@@ -198,7 +198,6 @@ export const PublishedEntityDisplay: React.FC<{
   showEditCategories = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
@@ -215,13 +214,6 @@ export const PublishedEntityDisplay: React.FC<{
     error,
   } = useCitationMetrics(dois);
 
-  const openModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
   useEffect(() => {
     if (isError) {
       console.error('Error fetching citation metrics:', error);
@@ -265,44 +257,13 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
-        {isLoading && <div>Loading citation metrics...</div>}
-        {isError && <div>Error fetching citation metrics</div>}
+        <br />
         {citationMetrics && (
           <div>
-            <strong>Download Citation:</strong>
-            <div>
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'}{' '}
-                Downloads
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.viewCount ?? '--'}{' '}
-                Views
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.citationCount ?? '--'}{' '}
-                Citations
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span
-                onClick={openModal}
-                style={{
-                  cursor: 'pointer',
-                  color: '#337AB7',
-                  fontWeight: 'bold',
-                }}
-              >
-                Details
-              </span>
-              <MetricsModal
-                isOpen={isModalVisible}
-                handleCancel={closeModal}
-                eventMetricsData={citationMetrics?.data1}
-                usageMetricsData={citationMetrics?.data2}
-              />
-            </div>
+            <DownloadCitation
+              projectId={projectId}
+              entityUuid={treeData.uuid}
+            />
           </div>
         )}
       </article>

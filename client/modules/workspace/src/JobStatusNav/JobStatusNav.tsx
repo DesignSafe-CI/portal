@@ -23,14 +23,21 @@ export const JobStatusNav: React.FC = () => {
     borderRight: '1px solid var(--global-color-primary--normal)',
   };
   return (
-    <Header style={headerStyle}>
-      <Badge count={unreadNotifs} size="small" className={styles.badge}>
-        <Icon
-          className={`ds-icon-Job-Status ${styles.icon}`}
-          label="Job-Status"
-        />
-      </Badge>
-      <NavLink to={`history`}>Job Status</NavLink>
-    </Header>
+    <NavLink
+      to={`history`}
+      className={({ isActive }) =>
+        isActive ? styles['highlighted-row'] : styles.root
+      }
+    >
+      <Header style={headerStyle}>
+        <Badge count={unreadNotifs} size="small" className={styles.badge}>
+          <Icon
+            className={`ds-icon-Job-Status ${styles.icon}`}
+            label="Job-Status"
+          />
+        </Badge>
+        Job Status
+      </Header>
+    </NavLink>
   );
 };
