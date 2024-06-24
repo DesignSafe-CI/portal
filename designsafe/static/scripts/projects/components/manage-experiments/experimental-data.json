@@ -6,7 +6,7 @@
             { "name": "geer", "label": "GEER - Geotechnical Extreme Event Reconnaissance" },
             { "name": "iseeer", "label": "ISEEER - Interdisciplinary Science and Engineering Extreme Events Research" },
             { "name": "neer", "label": "NEER - Nearshore Extreme Event Reconnaissance" },
-            { "name": "oseer", "label": "OSEER - Operations and Systems Engineering Extreme Events Research" },
+            { "name": "oseer", "label": "OSEEER - Operations and Systems Engineering Extreme Events Research" },
             { "name": "pheer", "label": "PHEER - Public Health Extreme Events Research" },
             { "name": "summeer", "label": "SUMMEER - Sustainable Material Management Extreme Events Reconnaissance" },
             { "name": "sseer", "label": "SSEER - Social Science Extreme Events Research" },
