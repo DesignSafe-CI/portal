@@ -192,7 +192,7 @@ def download(client, system, path=None, paths=None, *args, **kwargs):
     zip_endpoint = "https://designsafe-download01.tacc.utexas.edu/check"
     data = json.dumps({'system': system, 'paths': paths})
     # data = json.dumps({'system': 'designsafe.storage.published', 'paths': ['PRJ-2889']})
-    resp = requests.put(zip_endpoint, headers={"Authorization": f"Bearer {token}"}, data=data)
+    resp = requests.put(zip_endpoint, headers={"x-tapis-token": token}, data=data)
     resp.raise_for_status()
     download_key = resp.json()["key"]
     return {"href": f"https://designsafe-download01.tacc.utexas.edu/download/{download_key}"}
