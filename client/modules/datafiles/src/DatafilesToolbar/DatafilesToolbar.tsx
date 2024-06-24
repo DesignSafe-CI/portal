@@ -81,10 +81,13 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
         canRename: user && selectedFiles.length === 1 && !isReadOnly,
         canCopy: user && selectedFiles.length >= 1,
         canTrash: user && selectedFiles.length >= 1 && !isReadOnly,
-        canDownload: selectedFiles.length >= 1,
+        // Disable downloads from frontera.work until we have a non-flaky mount on ds-download.
+        canDownload:
+          selectedFiles.length >= 1 &&
+          system !== 'designsafe.storage.frontera.work',
       };
     },
-    [selectedFiles, isReadOnly, user]
+    [selectedFiles, isReadOnly, user, system]
   );
 
   return (
