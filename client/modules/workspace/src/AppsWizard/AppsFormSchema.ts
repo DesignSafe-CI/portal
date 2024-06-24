@@ -57,6 +57,7 @@ export type TField = {
   description?: string;
   options?: TFieldOptions[];
   tapisFile?: boolean;
+  tapisFileSelectionMode?: string;
   placeholder?: string;
   readOnly?: boolean;
 };
@@ -95,7 +96,7 @@ export type TAppFormSchema = {
   };
 };
 
-export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)\/[^/]+$/;
+export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
 
 export const fieldDisplayOrder: Record<string, string[]> = {
   configuration: [
@@ -395,6 +396,7 @@ const FormSchema = (
       type: 'text',
       placeholder: 'Browse Data Files',
       readOnly: input.inputMode === 'FIXED',
+      tapisFileSelectionMode: input.notes?.selectionMode ?? 'both',
     };
 
     appFields.fileInputs.schema[input.name] = z.string();
