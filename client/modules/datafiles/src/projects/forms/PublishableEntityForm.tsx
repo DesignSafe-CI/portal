@@ -1,5 +1,5 @@
-import { Form, Input, Button, FormInstance } from 'antd';
-import React, { useCallback, useEffect } from 'react';
+import { Form, Input, Button, FormInstance, Alert } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   facilityOptions,
   experimentTypeOptions,
@@ -76,10 +76,12 @@ const ExperimentFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Experimental Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
-            placeholder="Select an experimental facility, or enter a custom value"
+            placeholder="Select an experimental facility, or enter a custom value."
           />
         </Form.Item>
       </Form.Item>
@@ -188,6 +190,8 @@ const SimulationFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Simulation Type" required>
+        Specify a simulation type. Enter a custom value by typing it into the
+        field and pressing "return".
         <Form.Item
           className="inner-form-item"
           name={['value', 'simulationType']}
@@ -206,6 +210,8 @@ const SimulationFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
@@ -288,6 +294,8 @@ const HybridSimFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Hybrid Simulation Type" required>
+        Specify a type for this hybrid simulation. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item
           className="inner-form-item"
           name={['value', 'simulationType']}
@@ -306,6 +314,8 @@ const HybridSimFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
@@ -417,6 +427,8 @@ const MissionFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
@@ -525,6 +537,8 @@ const DocumentFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
@@ -600,6 +614,8 @@ export const PublishableEntityForm: React.FC<{
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
 
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+
   const entity = data?.entities.find((e) => e.uuid === entityUuid);
   const entityDisplayName = entityName
     ? constants.DISPLAY_NAMES[entityName]
@@ -617,8 +633,10 @@ export const PublishableEntityForm: React.FC<{
     <Form
       form={form}
       layout="vertical"
+      onFinishFailed={() => setHasValidationErrors(true)}
       onFinish={(v) => {
         onSubmit(v.value);
+        setHasValidationErrors(false);
         if (mode === 'create') {
           form.resetFields();
         }
@@ -642,6 +660,20 @@ export const PublishableEntityForm: React.FC<{
       )}
       {entityName === constants.FIELD_RECON_REPORT && (
         <DocumentFormFields projectUsers={data.baseProject.value.users} />
+      )}
+
+      {hasValidationErrors && (
+        <Alert
+          type="error"
+          style={{ marginBottom: '10px' }}
+          showIcon
+          message={
+            <span>
+              One or more fields could not be validated. Please check the form
+              for errors.
+            </span>
+          }
+        />
       )}
 
       <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>

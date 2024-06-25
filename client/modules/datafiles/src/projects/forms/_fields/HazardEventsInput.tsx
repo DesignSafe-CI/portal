@@ -83,17 +83,17 @@ export const HazardEventsInput: React.FC<{ name: string }> = ({ name }) => {
                         }
                         className="flex-1"
                       >
-                        <Input disabled={showPlaceholder} />
+                        <Input type="number" disabled={showPlaceholder} />
                       </Form.Item>
                       <Form.Item
                         rules={[{ required: fields.length > 0 }]}
-                        label="Location"
+                        label="Longitude"
                         name={
                           !showPlaceholder ? [name, 'longitude'] : undefined
                         }
                         className="flex-1"
                       >
-                        <Input disabled={showPlaceholder} />
+                        <Input type="number" disabled={showPlaceholder} />
                       </Form.Item>
                     </div>
                   </div>

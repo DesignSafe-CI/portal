@@ -57,6 +57,7 @@ export type TField = {
   description?: string;
   options?: TFieldOptions[];
   tapisFile?: boolean;
+  tapisFileSelectionMode?: string;
   placeholder?: string;
   readOnly?: boolean;
 };
@@ -95,7 +96,18 @@ export type TAppFormSchema = {
   };
 };
 
-export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)\/[^/]+$/;
+export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
+
+export const fieldDisplayOrder: Record<string, string[]> = {
+  configuration: [
+    'execSystemLogicalQueue',
+    'maxMinutes',
+    'nodeCount',
+    'coresPerNode',
+    'allocation',
+  ],
+  outputs: ['name', 'archiveSystemId', 'archiveSystemDir'],
+};
 
 // See https://github.com/colinhacks/zod/issues/310 for Zod issue
 const emptyStringToUndefined = z.literal('').transform(() => undefined);
@@ -384,6 +396,7 @@ const FormSchema = (
       type: 'text',
       placeholder: 'Browse Data Files',
       readOnly: input.inputMode === 'FIXED',
+      tapisFileSelectionMode: input.notes?.selectionMode ?? 'both',
     };
 
     appFields.fileInputs.schema[input.name] = z.string();

@@ -19,10 +19,10 @@ const getSteps = (
   const proofreadStepMapping: Partial<
     Record<TBaseProjectValue['projectType'], string>
   > = {
-    experimental: 'Experiments',
-    field_recon: 'Missions',
-    hybrid_simulation: 'Hybrid Simulations',
-    simulation: 'Simulations',
+    experimental: 'Experiment',
+    field_recon: 'Mission/Documents',
+    hybrid_simulation: 'Hybrid Simulation',
+    simulation: 'Simulation',
   };
 
   switch (projectType) {
@@ -51,6 +51,7 @@ const getSteps = (
           title: `Proofread ${proofreadStepMapping[projectType]}`,
           content: (
             <PipelineProofreadPublications
+              displayName={proofreadStepMapping[projectType]}
               projectId={projectId}
               nextStep={next}
               prevStep={prev}
@@ -61,6 +62,7 @@ const getSteps = (
           title: 'Proofread Categories',
           content: (
             <PipelineProofreadCategories
+              displayName={proofreadStepMapping[projectType]}
               projectId={projectId}
               nextStep={next}
               prevStep={prev}

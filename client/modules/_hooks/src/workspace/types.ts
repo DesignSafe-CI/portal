@@ -36,6 +36,7 @@ export type TAppFileInput = {
   notes?: {
     showTargetPath?: boolean;
     isHidden?: boolean;
+    selectionMode?: string;
   };
   sourceUrl?: string;
   targetPath?: string;

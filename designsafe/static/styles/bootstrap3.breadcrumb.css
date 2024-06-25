@@ -1,10 +1,13 @@
-@import url("https://cdn.jsdelivr.net/gh/TACC/Core-Styles@09c4b4f/dist/components/bootstrap3.breadcrumb.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/Core-Styles@v2.27.0/dist/components/bootstrap3.breadcrumb.css");
 
 /* To negate `.navbar-ds` padding bottom */
 /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/designsafe/static/vendor/bootstrap-ds/css/bootstrap.css#L4769 */
+/* NOTE: Use only after Workspace breadcrumbs are updated to match design */
+/*
 div:has(.navbar-ds) + main .breadcrumb {
   margin-top: -20px;
 }
+*/
 
 /* To "disable" ineffectual links */
 .breadcrumb a:not([href]) {
@@ -16,13 +19,33 @@ div:has(.navbar-ds) + main .breadcrumb {
   color: unset;
 }
 
+/* To improve focus UI */
+.breadcrumb a:focus {
+  /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/designsafe/static/vendor/bootstrap-ds/css/bootstrap.css#L1134 */
+  outline-offset: 2px;
+}
+
 /* To match workspace breadcrumbs until they are updated to match design */
 /* NOTE: Workspace breadcrumbs use Ant not Bootstrap */
 .breadcrumb {
+  --text-color: rgba(0, 0, 0, 0.45);
+  --text-color-dark: rgba(0, 0, 0, 0.88);
+
+  color: var(--text-color);
+
   /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/client/modules/workspace/src/AppsBreadcrumb/AppsBreadcrumb.module.css#L3 */
   font-size: 1.6rem;
+}
+.breadcrumb:where(.breadcrumb-major) {
+  padding-top: unset;
 }
 .breadcrumb:where(ol,ul),
 .breadcrumb:where(.breadcrumb-major) li:last-child {
   font-weight: 400;
+}
+.breadcrumb li:last-child {
+  color: var(--text-color-dark);
+}
+.breadcrumb li + li:last-child::before {
+  color: var(--text-color);
 }

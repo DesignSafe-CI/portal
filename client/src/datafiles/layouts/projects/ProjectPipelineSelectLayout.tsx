@@ -73,6 +73,10 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
                   keywords, author order, descriptions, natural hazard type, and
                   natural hazard event.
                 </li>
+                <li>
+                  Change the metadata in the curation directory before this
+                  step.
+                </li>
               </ul>
               <NavLink
                 to={`/projects/${projectId}/prepare-to-publish/pipeline?operation=amend`}

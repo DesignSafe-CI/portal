@@ -272,6 +272,16 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [queueValue, setValue]);
 
+  // TODO: DES-2916: Use Zod's superRefine feature instead of manually updating schema and tracking schema changes.
+  React.useEffect(() => {
+    // Note: trigger is a no op if the field does not exist. So, it is fine to define all.
+    methods.trigger([
+      'configuration.nodeCount',
+      'configuration.maxMinutes',
+      'configuration.coresPerNode',
+    ]);
+  }, [schema, methods]);
+
   interface TStep {
     [dynamic: string]: {
       title: string;
