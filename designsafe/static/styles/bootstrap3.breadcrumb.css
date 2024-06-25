@@ -2,9 +2,12 @@
 
 /* To negate `.navbar-ds` padding bottom */
 /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/designsafe/static/vendor/bootstrap-ds/css/bootstrap.css#L4769 */
+/* NOTE: Use only after Workspace breadcrumbs are updated to match design */
+/*
 div:has(.navbar-ds) + main .breadcrumb {
   margin-top: -20px;
 }
+*/
 
 /* To "disable" ineffectual links */
 .breadcrumb a:not([href]) {
@@ -21,6 +24,9 @@ div:has(.navbar-ds) + main .breadcrumb {
 .breadcrumb {
   /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/client/modules/workspace/src/AppsBreadcrumb/AppsBreadcrumb.module.css#L3 */
   font-size: 1.6rem;
+}
+.breadcrumb:where(.breadcrumb-major) {
+  padding-top: unset;
 }
 .breadcrumb:where(ol,ul),
 .breadcrumb:where(.breadcrumb-major) li:last-child {
