@@ -151,6 +151,7 @@ export const PipelineOtherSelectFiles: React.FC<{
             <FileListing
               api="tapis"
               system={`project-${data.baseProject.uuid}`}
+              fileTags={data.baseProject.value.fileTags}
             />
           </>
         )}
