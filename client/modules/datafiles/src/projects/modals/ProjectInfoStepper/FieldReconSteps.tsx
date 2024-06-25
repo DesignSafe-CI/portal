@@ -11,7 +11,7 @@ const FieldReconOverview1 = (
       and publish together or independently.
     </p>
     <p>
-      Curation is important so your data can be 
+      Curation is important so your data can be
       <strong> organized</strong>, <strong>discovered</strong>, and{' '}
       <strong>understood </strong>
       for years to come.

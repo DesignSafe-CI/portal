@@ -171,7 +171,7 @@ export const PipelineSelectForPublish: React.FC<{
             <span>
               Amending or revising a project will impact all previously
               published works. New datasets cannot be published through this
-              process. 
+              process.
               <br />
               If you need to publish subsequent dataset(s), please{' '}
               <a
@@ -182,7 +182,8 @@ export const PipelineSelectForPublish: React.FC<{
               >
                 submit a ticket
               </a>{' '}
-              with your project number, the name of the dataset(s), and the author order of the dataset(s).
+              with your project number, the name of the dataset(s), and the
+              author order of the dataset(s).
             </span>
           }
         />
