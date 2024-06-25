@@ -3,7 +3,9 @@
 
   <li itemscope itemprop="itemListElement"
       itemtype="https://schema.org/ListItem"
-      class="breadcrumb-item{% if forloop.last %} active{% endif %}">
+      {% if not forloop.last %}
+      class="active"
+      {% endif %}>
   {% if not forloop.last %}
 
     <a href="{{ ance.get_absolute_url }}" itemprop="item">
