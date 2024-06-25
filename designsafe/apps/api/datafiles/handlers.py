@@ -69,7 +69,10 @@ def datafiles_put_handler(api, username, client, scheme, system,
 
     try:
         result = op(client, system, path, **body)
-        operation in notify_actions and notify(username, operation, '{} operation was successful.'.format(operation.capitalize()), 'SUCCESS', result)
+        if operation == 'copy' and system != body.get('dest_system', None):
+            notify(username, operation, 'Your file transfer request has been received and will be processed shortly.'.format(operation.capitalize()), 'SUCCESS', result)
+        else:
+            operation in notify_actions and notify(username, operation, '{} operation was successful.'.format(operation.capitalize()), 'SUCCESS', result)
         return result
     except Exception as exc:
         operation in notify_actions and notify(username, operation, 'File operation {} could not be completed.'.format(operation.capitalize()), 'ERROR', {})
