@@ -4,6 +4,7 @@ import logging
 import os
 import urllib
 from pathlib import Path
+import tapipy
 from designsafe.apps.api.datafiles.utils import *
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
@@ -191,7 +192,7 @@ def download(client, system, path=None, paths=None, *args, **kwargs):
     zip_endpoint = "https://designsafe-download01.tacc.utexas.edu/check"
     data = json.dumps({'system': system, 'paths': paths})
     # data = json.dumps({'system': 'designsafe.storage.published', 'paths': ['PRJ-2889']})
-    resp = requests.put(zip_endpoint, headers={"Authorization": f"Bearer {token}"}, data=data)
+    resp = requests.put(zip_endpoint, headers={"x-tapis-token": token}, data=data)
     resp.raise_for_status()
     download_key = resp.json()["key"]
     return {"href": f"https://designsafe-download01.tacc.utexas.edu/download/{download_key}"}
@@ -428,12 +429,9 @@ def trash(client, system, path, trash_path):
 
     # Create a trash path if none exists
     try:
-        client.files.list(systemId=system,
-                          filePath=trash_path)
-    except HTTPError as err:
-        if err.response.status_code != 404:
-            logger.error("Unexpected exception listing .trash path in {}".format(system))
-            raise
+        client.files.listFiles(systemId=system,
+                          path=trash_path)
+    except tapipy.errors.NotFoundError:
         mkdir(client, system, trash_root, trash_foldername)
 
     resp = move(client, system, path, system, trash_path)

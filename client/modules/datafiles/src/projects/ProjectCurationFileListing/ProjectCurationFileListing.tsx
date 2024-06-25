@@ -6,7 +6,7 @@ import {
 } from '@client/common-components';
 import { toBytes } from '../../FileListing/FileListing';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import {
   TEntityMeta,
   TFileListing,
@@ -16,6 +16,7 @@ import {
   useFileTags,
   useProjectDetail,
   useRemoveFileAssociation,
+  useSelectedFiles,
   useSetFileTags,
 } from '@client/hooks';
 import { Button, Select } from 'antd';
@@ -99,6 +100,15 @@ const FileCurationSelector: React.FC<{
   const [selectedEntity, setSelectedEntity] = useState<string | undefined>(
     undefined
   );
+  const { path } = useParams();
+  const { selectedFiles, unsetSelections } = useSelectedFiles(
+    'tapis',
+    fileObj.system,
+    path ?? ''
+  );
+  const showEntitySelector =
+    selectedFiles.length === 0 ||
+    (selectedFiles.length > 0 && fileObj.path === selectedFiles[0].path);
 
   const entitiesForFile = useMemo(() => {
     const associatedEntities = Object.keys(filePathsToEntities)
@@ -138,6 +148,7 @@ const FileCurationSelector: React.FC<{
     <ul style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       {entitiesForFile.map((e) => (
         <li key={e.uuid} style={{ display: 'flex', gap: '4rem' }}>
+          {}
           <section
             style={{
               display: 'flex',
@@ -194,33 +205,45 @@ const FileCurationSelector: React.FC<{
         </li>
       ))}
       <li style={{ display: 'flex', gap: '4rem' }}>
-        <section style={{ display: 'flex', flex: 1 }}>
-          <Select<string>
-            virtual={false}
-            value={selectedEntity}
-            allowClear
-            onChange={(newVal) => setSelectedEntity(newVal)}
-            options={options}
-            placeholder="Select Category"
-            style={{ flex: 1 }}
-          />
-          {selectedEntity && (
-            <Button
-              onClick={() =>
-                addFileAssociation(
-                  {
-                    fileObjs: [fileObj],
-                    entityUuid: selectedEntity,
-                  },
-                  { onSuccess: () => setSelectedEntity(undefined) }
-                )
-              }
-              type="link"
-            >
-              &nbsp; Save
-            </Button>
-          )}
-        </section>
+        {showEntitySelector && (
+          <section style={{ display: 'flex', flex: 1 }}>
+            <Select<string>
+              virtual={false}
+              value={selectedEntity}
+              allowClear
+              onChange={(newVal) => setSelectedEntity(newVal)}
+              options={options}
+              placeholder={`Select Category ${
+                selectedFiles.length > 0
+                  ? `for ${selectedFiles.length} selected file(s)`
+                  : ''
+              }`}
+              style={{ flex: 1 }}
+            />
+            {selectedEntity && (
+              <Button
+                onClick={() =>
+                  addFileAssociation(
+                    {
+                      fileObjs:
+                        selectedFiles.length > 0 ? selectedFiles : [fileObj],
+                      entityUuid: selectedEntity,
+                    },
+                    {
+                      onSuccess: () => {
+                        setSelectedEntity(undefined);
+                        unsetSelections();
+                      },
+                    }
+                  )
+                }
+                type="link"
+              >
+                &nbsp; Save
+              </Button>
+            )}
+          </section>
+        )}
         <div style={{ flex: 1 }} />
       </li>
     </ul>

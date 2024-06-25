@@ -6,6 +6,7 @@ import {
   TEntityValue,
   useCreateEntity,
   useDeleteEntity,
+  useNotifyContext,
   usePatchEntityMetadata,
   useProjectDetail,
 } from '@client/hooks';
@@ -23,6 +24,18 @@ const CategoryDetail: React.FC<{
   const [showForm, setShowForm] = useState(false);
   const { mutate: patchEntityMeta } = usePatchEntityMetadata();
   const { mutate: deleteEntity } = useDeleteEntity();
+
+  const { notifyApi } = useNotifyContext();
+
+  const onSuccess = () => {
+    setShowForm(false);
+    notifyApi?.open({
+      type: 'success',
+      message: '',
+      description: 'Metadata has been updated successfully.',
+      placement: 'bottomLeft',
+    });
+  };
   return (
     <>
       <section>
@@ -46,7 +59,7 @@ const CategoryDetail: React.FC<{
               console.log(v);
               patchEntityMeta(
                 { entityUuid, patchMetadata: v.value },
-                { onSuccess: () => setShowForm(false) }
+                { onSuccess }
               );
             }}
           />
@@ -69,6 +82,17 @@ export const ManageCategoryModal: React.FC<{
   };
 
   const { mutate } = useCreateEntity(projectId);
+
+  const { notifyApi } = useNotifyContext();
+
+  const onSuccess = () => {
+    notifyApi?.open({
+      type: 'success',
+      message: '',
+      description: 'A new metadata record has been created.',
+      placement: 'bottomLeft',
+    });
+  };
 
   if (!data) return null;
 
@@ -93,7 +117,7 @@ export const ManageCategoryModal: React.FC<{
               projectId={projectId}
               projectType={projectType}
               onSubmit={(v: { name: string; value: Record<string, unknown> }) =>
-                mutate({ formData: v })
+                mutate({ formData: v }, { onSuccess })
               }
             />
           </section>

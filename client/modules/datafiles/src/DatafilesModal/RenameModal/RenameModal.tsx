@@ -31,7 +31,16 @@ export const RenameModalBody: React.FC<{
   );
 
   const handleRenameFinish = async (values: { newName: string }) => {
+    const originalName = selectedFiles[0].name;
     const newName = values.newName;
+
+    const extension = originalName.includes('.')
+      ? originalName.substring(originalName.lastIndexOf('.'))
+      : '';
+
+    const fullName = newName.endsWith(extension)
+      ? newName
+      : newName + extension;
 
     try {
       await mutate({
@@ -39,8 +48,8 @@ export const RenameModalBody: React.FC<{
           api,
           system,
           path,
-          name: selectedFiles[0].name,
-          newName: newName,
+          name: originalName,
+          newName: fullName,
         },
       });
 

@@ -55,8 +55,8 @@ export const PipelineSelectLicense: React.FC<{
         }}
       >
         <Button type="link" onClick={prevStep}>
-          <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
-          Proofread Project
+          <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to Order
+          Authors
         </Button>
         <PipelinePublishModal
           disabled={!data.baseProject.value.license}
