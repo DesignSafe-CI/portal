@@ -19,6 +19,12 @@ div:has(.navbar-ds) + main .breadcrumb {
   color: unset;
 }
 
+/* To improve focus UI */
+.breadcrumb a:focus {
+  /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/designsafe/static/vendor/bootstrap-ds/css/bootstrap.css#L1134 */
+  outline-offset: 2px;
+}
+
 /* To match workspace breadcrumbs until they are updated to match design */
 /* NOTE: Workspace breadcrumbs use Ant not Bootstrap */
 .breadcrumb {
