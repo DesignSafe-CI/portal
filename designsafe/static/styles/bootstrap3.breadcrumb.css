@@ -28,6 +28,11 @@ div:has(.navbar-ds) + main .breadcrumb {
 /* To match workspace breadcrumbs until they are updated to match design */
 /* NOTE: Workspace breadcrumbs use Ant not Bootstrap */
 .breadcrumb {
+  --text-color: rgba(0, 0, 0, 0.45);
+  --text-color-dark: rgba(0, 0, 0, 0.88);
+
+  color: var(--text-color);
+
   /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/client/modules/workspace/src/AppsBreadcrumb/AppsBreadcrumb.module.css#L3 */
   font-size: 1.6rem;
 }
@@ -37,4 +42,10 @@ div:has(.navbar-ds) + main .breadcrumb {
 .breadcrumb:where(ol,ul),
 .breadcrumb:where(.breadcrumb-major) li:last-child {
   font-weight: 400;
+}
+.breadcrumb li:last-child {
+  color: var(--text-color-dark);
+}
+.breadcrumb li + li:last-child::before {
+  color: var(--text-color);
 }
