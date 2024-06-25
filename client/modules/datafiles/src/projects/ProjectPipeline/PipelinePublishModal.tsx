@@ -63,7 +63,7 @@ export const PipelinePublishModal: React.FC<{
   };
 
   const publishButtonText: Record<string, string> = {
-    amend: 'Submit Amendments',
+    amend: 'Amend Publication',
     version: 'Create a New Version',
     publish: 'Request DOI & Publish',
   };

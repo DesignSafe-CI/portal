@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useProjectDetail } from './useProjectDetail';
+import { useMatches } from 'react-router-dom';
 
 export function useCheckFilesForAssociation(
   projectId: string,
@@ -9,7 +10,11 @@ export function useCheckFilesForAssociation(
   If so, we need to forbid rename/move operations. to prevent metadata from becoming 
   desynchronized. */
 
-  const { data } = useProjectDetail(projectId);
+  // don't call the Projects api when viewing a publication.
+  const matches = useMatches();
+  const isProjects = matches.find((m) => m.id === 'project');
+
+  const { data } = useProjectDetail(isProjects ? projectId : '');
 
   const hasAssociatedEnities = useMemo(() => {
     if (!data) return false;

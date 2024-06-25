@@ -1,4 +1,4 @@
-import { Button, Form, Input, Popconfirm, Select } from 'antd';
+import { Alert, Button, Form, Input, Popconfirm, Select } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   nhTypeOptions,
@@ -90,6 +90,8 @@ export const BaseProjectForm: React.FC<{
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
 
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+
   if (!projectType) {
     projectType = data?.baseProject.value.projectType;
   }
@@ -140,6 +142,7 @@ export const BaseProjectForm: React.FC<{
   const onFormSubmit = (
     v: Record<string, unknown> & { users: TProjectUser[] }
   ) => {
+    setHasValidationErrors(false);
     const currentUserInProject = v.users.find(
       (u) => u.username === user?.username
     );
@@ -153,10 +156,11 @@ export const BaseProjectForm: React.FC<{
   if (!data) return <div>Loading</div>;
   return (
     <Form
+      scrollToFirstError
       form={form}
       layout="vertical"
       onFinish={(v) => onFormSubmit(processFormData(v))}
-      onFinishFailed={(v) => console.log(processFormData(v.values))}
+      onFinishFailed={() => setHasValidationErrors(true)}
       requiredMark={customRequiredMark}
     >
       <Form.Item label="Project Title" required>
@@ -383,7 +387,19 @@ export const BaseProjectForm: React.FC<{
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
-
+      {hasValidationErrors && (
+        <Alert
+          type="error"
+          style={{ marginBottom: '10px' }}
+          showIcon
+          message={
+            <span>
+              One or more fields could not be validated. Please check the form
+              for errors.
+            </span>
+          }
+        />
+      )}
       <Form.Item>
         <Popconfirm
           title="Confirm Update"

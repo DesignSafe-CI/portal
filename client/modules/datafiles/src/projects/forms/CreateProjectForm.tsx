@@ -61,18 +61,35 @@ export const BaseProjectCreateForm: React.FC<{
       </Form.Item>
 
       <div style={{ display: 'flex', gap: '1rem' }}>
-        <Form.Item label="Principal Investigator" required className="flex-1">
+        <Form.Item
+          label="Principal Investigator"
+          required
+          className="flex-1"
+          style={{ overflow: 'hidden' }}
+        >
           These users can view, edit, curate, and publish. Include Co-PI(s).
+          Users can be looked up using their <strong>exact username</strong>{' '}
+          only.
           <Form.Item
             name="pi"
-            rules={[{ required: true }]}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter the Principal Investigator', // Custom error message
+              },
+            ]}
             className="inner-form-item"
           >
             <UserSelect userRole="pi" maxCount={1} disabled />
           </Form.Item>
         </Form.Item>
-        <Form.Item label="Co-Principal Investigators" className="flex-1">
-          &nbsp;
+        <Form.Item
+          label="Co-Principal Investigators"
+          className="flex-1"
+          style={{ overflow: 'hidden' }}
+        >
+          <br />
+          <br />
           <Form.Item name="coPis" initialValue={[]} className="inner-form-item">
             <UserSelect userRole="co_pi" />
           </Form.Item>
