@@ -1,4 +1,4 @@
-@import url("https://cdn.jsdelivr.net/gh/TACC/Core-Styles@b3d1227/dist/components/bootstrap3.breadcrumb.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/Core-Styles@v2.27.0/dist/components/bootstrap3.breadcrumb.css");
 
 /* To negate `.navbar-ds` padding bottom */
 /* https://github.com/DesignSafe-CI/portal/blob/v7.0.0--tapis-v3-20240607/designsafe/static/vendor/bootstrap-ds/css/bootstrap.css#L4769 */
