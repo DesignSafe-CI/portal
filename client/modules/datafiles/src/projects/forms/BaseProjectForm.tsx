@@ -355,7 +355,6 @@ export const BaseProjectForm: React.FC<{
 
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
-        Keywords should be comma-separated.
         <Form.Item
           name="keywords"
           rules={[{ required: true }]}

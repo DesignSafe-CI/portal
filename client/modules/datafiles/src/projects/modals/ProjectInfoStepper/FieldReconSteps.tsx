@@ -11,9 +11,9 @@ const FieldReconOverview1 = (
       and publish together or independently.
     </p>
     <p>
-      Curation is important so your data can be
-      <strong>organized</strong>, <strong>discovered</strong>, and{' '}
-      <strong>understood</strong>
+      Curation is important so your data can be 
+      <strong> organized</strong>, <strong>discovered</strong>, and{' '}
+      <strong>understood </strong>
       for years to come.
     </p>
     <p>The four components of curating field research projects:</p>
