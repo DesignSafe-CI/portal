@@ -40,12 +40,12 @@ div:has(.navbar-ds) + main .breadcrumb {
   padding-top: unset;
 }
 .breadcrumb:where(ol,ul),
-.breadcrumb:where(.breadcrumb-major) .breadcrumb-item:last-child {
+.breadcrumb:where(.breadcrumb-major) li:last-child {
   font-weight: 400;
 }
-.breadcrumb-item:last-child {
+.breadcrumb li:last-child {
   color: var(--text-color-dark);
 }
-.breadcrumb-item + .breadcrumb-item:last-child::before {
+.breadcrumb li + li:last-child::before {
   color: var(--text-color);
 }
