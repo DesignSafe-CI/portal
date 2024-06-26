@@ -117,12 +117,12 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'designsafe.apps.auth.backends.AgaveOAuthBackend',
+    'designsafe.apps.auth.backends.TapisOAuthBackend',
     'designsafe.apps.auth.backends.TASBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
-LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/account/')
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/dashboard/')
 LOGOUT_REDIRECT_URL = os.environ.get('LOGOUT_REDIRECT_URL', '/auth/logged-out/')
 
 CACHES = {
@@ -140,7 +140,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'designsafe.apps.token_access.middleware.TokenAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'designsafe.apps.auth.middleware.AgaveTokenRefreshMiddleware',
+    'designsafe.apps.auth.middleware.TapisTokenRefreshMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -179,7 +179,6 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
-                'designsafe.apps.auth.context_processors.auth',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -203,7 +202,6 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 if os.environ.get('DATABASE_HOST'):
-    # mysql connection
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -231,7 +229,7 @@ ALDRYN_SEARCH_DEFAULT_LANGUAGE = 'en'
 ALDRYN_SEARCH_REGISTER_APPHOOK = True
 
 from designsafe.settings.nees_settings import NEES_USER_DATABASE
-#if NEES_USER_DATABASE['NAME']:
+# if NEES_USER_DATABASE['NAME']:
 #    DATABASES['nees_users'] = NEES_USER_DATABASE
 
 
@@ -348,13 +346,13 @@ CKEDITOR_SETTINGS = {
     'allowedContent': True
 }
 
-#MIGRATION_MODULES = {
+# MIGRATION_MODULES = {
 #    'djangocms_file': 'djangocms_file.migrations_django',
 #    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
 #    'djangocms_picture': 'djangocms_picture.migrations_django',
 #    'djangocms_video': 'djangocms_video.migrations_django',
 #    'djangocms_style': 'djangocms_style.migrations_django',
-#}
+# }
 
 LOGIN_URL = os.environ.get('LOGIN_URL', '/login/')
 
@@ -497,6 +495,19 @@ TRAM_SERVICES_URL = os.environ.get('TRAM_SERVICES_URL', None)
 TRAM_SERVICES_KEY = os.environ.get('TRAM_SERVICES_KEY', None)
 TRAM_PROJECT_ID = os.environ.get('TRAM_PROJECT_ID', None)
 
+TAS_CLIENT_KEY = os.environ.get('TAS_CLIENT_KEY', None)
+TAS_CLIENT_SECRET = os.environ.get('TAS_CLIENT_SECRET', None)
+TAS_URL = os.environ.get('TAS_URL', None)
+
+# Allocations to exclude
+#
+ALLOCATIONS_TO_EXCLUDE = (
+    os.environ.get("ALLOCATIONS_TO_EXCLUDE", "").split(",")
+    if os.environ.get("ALLOCATIONS_TO_EXCLUDE")
+    else ["DesignSafe-DCV"]
+)
+
+
 ###
 # Agave Integration
 #
@@ -530,6 +541,26 @@ AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
 
+TAPIS_SYSTEMS_TO_CONFIGURE = [
+    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
+    {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
+    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
+]
+
+# Tapis Client Configuration
+PORTAL_ADMIN_USERNAME = os.environ.get('PORTAL_ADMIN_USERNAME')
+TAPIS_TENANT_BASEURL = os.environ.get('TAPIS_TENANT_BASEURL')
+TAPIS_CLIENT_ID = os.environ.get('TAPIS_CLIENT_ID')
+TAPIS_CLIENT_KEY = os.environ.get('TAPIS_CLIENT_KEY')
+TAPIS_ADMIN_JWT = os.environ.get('TAPIS_ADMIN_JWT')
+TAPIS_TG458981_JWT = os.environ.get('TAPIS_TG458981_JWT')
+
+KEY_SERVICE_TOKEN = os.environ.get('KEY_SERVICE_TOKEN')
+
+PORTAL_NAMESPACE = 'DESIGNSAFE'
+
+PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHIVING", "BLOCKED", "PAUSED", "FINISHED", "CANCELLED", "FAILED"]
+
 DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
 
@@ -557,6 +588,8 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 
+PROJECT_STORAGE_SYSTEM_CREDENTIALS = json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
+
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
 COMMUNITY_SYSTEM = 'designsafe.storage.community'
 NEES_PUBLIC_SYSTEM = 'nees.public'
@@ -568,7 +601,7 @@ RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
 NOCAPTCHA = True
 
-#FOR RAPID UPLOADS
+# FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
 DESIGNSAFE_PROJECTS_PATH = os.environ.get('DESIGNSAFE_PROJECTS_PATH', '/corral-repl/tacc/NHERI/projects/')
 DESIGNSAFE_PUBLISHED_PATH = os.environ.get('DESIGNSAFE_PUBLISHED_PATH', '/corral-repl/tacc/NHERI/published/')
@@ -669,3 +702,5 @@ FEDORA_URL = os.environ.get('FEDORA_URL')
 FEDORA_USERNAME = os.environ.get('FEDORA_USERNAME')
 FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
 FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')
+
+CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('SESSION_COOKIE_DOMAIN')}"]

@@ -1,0 +1,12 @@
+.root {
+  > :first-child {
+    border-bottom: 1px solid;
+    padding-bottom: 10px;
+  }
+}
+.root .ant-descriptions-item-container {
+  padding: 0 5px;
+}
+.ant-descriptions-item-container {
+  padding: 0 5px;
+}

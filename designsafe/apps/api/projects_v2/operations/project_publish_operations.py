@@ -9,6 +9,7 @@ from pathlib import Path
 import logging
 from django.conf import settings
 import networkx as nx
+from celery import shared_task
 from designsafe.apps.api.projects_v2 import constants
 
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
@@ -45,7 +46,31 @@ REQUIRED_ENTITIES = {
         constants.HYBRID_SIM_SIM_SUBSTRUCTURE,
         constants.HYBRID_SIM_EXP_SUBSTRUCTURE,
     ],
+    constants.FIELD_RECON_REPORT: [],
 }
+
+ENTITIES_WITH_REQUIRED_FILES = [
+    constants.EXPERIMENT_MODEL_CONFIG,
+    constants.EXPERIMENT_SENSOR,
+    constants.EXPERIMENT_EVENT,
+    constants.SIMULATION_MODEL,
+    constants.SIMULATION_INPUT,
+    constants.SIMULATION_OUTPUT,
+    constants.SIMULATION_REPORT,
+    constants.FIELD_RECON_SOCIAL_SCIENCE,
+    constants.FIELD_RECON_GEOSCIENCE,
+    constants.FIELD_RECON_PLANNING,
+    constants.HYBRID_SIM_GLOBAL_MODEL,
+    constants.HYBRID_SIM_COORDINATOR,
+    constants.HYBRID_SIM_SIM_SUBSTRUCTURE,
+    constants.HYBRID_SIM_EXP_SUBSTRUCTURE,
+    constants.HYBRID_SIM_COORDINATOR_OUTPUT,
+    constants.HYBRID_SIM_EXP_OUTPUT,
+    constants.HYBRID_SIM_SIM_OUTPUT,
+    constants.FIELD_RECON_REPORT,
+    constants.HYBRID_SIM_REPORT,
+    constants.HYBRID_SIM_ANALYSIS,
+]
 
 
 def check_missing_entities(
@@ -57,8 +82,7 @@ def check_missing_entities(
     (e.g. field recon missions require a planning, social science, OR geoscience colleciton but not all 3)
     """
 
-    project_tree = ProjectMetadata.get_project_by_id(project_id)
-    project_graph: nx.DiGraph = nx.node_link_graph(project_tree.project_graph.value)
+    project_graph: nx.DiGraph = add_values_to_tree(project_id)
 
     entity_node = next(
         (
@@ -74,6 +98,7 @@ def check_missing_entities(
         project_graph.nodes[node]
         for node in nx.dfs_preorder_nodes(project_graph, entity_node)
     ]
+    logger.debug(child_nodes)
     missing_entities = []
 
     for required_entity_name in REQUIRED_ENTITIES.get(entity_name, []):
@@ -90,7 +115,17 @@ def check_missing_entities(
         # At least one of the required entity types is associated
         missing_entities = []
 
-    return missing_entities
+    # Check for entities with missing files:
+    missing_file_objs = []
+    for child_node in child_nodes:
+        if child_node["name"] in ENTITIES_WITH_REQUIRED_FILES and not child_node[
+            "value"
+        ].get("fileObjs", []):
+            missing_file_objs.append(
+                {"name": child_node["name"], "title": child_node["value"]["title"]}
+            )
+
+    return missing_entities, missing_file_objs
 
 
 def validate_entity_selection(project_id: str, entity_uuids: list[str]):
@@ -100,7 +135,9 @@ def validate_entity_selection(project_id: str, entity_uuids: list[str]):
         entity_meta = ProjectMetadata.objects.get(uuid=uuid)
         match entity_meta.name:
             case constants.EXPERIMENT | constants.SIMULATION | constants.HYBRID_SIM:
-                missing_entities = check_missing_entities(project_id, uuid)
+                missing_entities, missing_file_objs = check_missing_entities(
+                    project_id, uuid
+                )
                 if len(missing_entities) > 0:
                     validation_errors.append(
                         {
@@ -110,8 +147,17 @@ def validate_entity_selection(project_id: str, entity_uuids: list[str]):
                             "missing": missing_entities,
                         }
                     )
-            case constants.FIELD_RECON_MISSION:
-                missing_entities = check_missing_entities(
+                for missing_file_obj in missing_file_objs:
+                    validation_errors.append(
+                        {
+                            "errorType": "MISSING_FILES",
+                            "name": missing_file_obj["name"],
+                            "title": missing_file_obj["title"],
+                        }
+                    )
+
+            case constants.FIELD_RECON_MISSION | constants.FIELD_RECON_REPORT:
+                missing_entities, missing_file_objs = check_missing_entities(
                     project_id, uuid, default_operator="OR"
                 )
                 if len(missing_entities) > 0:
@@ -121,6 +167,14 @@ def validate_entity_selection(project_id: str, entity_uuids: list[str]):
                             "name": entity_meta.name,
                             "title": entity_meta.value["title"],
                             "missing": missing_entities,
+                        }
+                    )
+                for missing_file_obj in missing_file_objs:
+                    validation_errors.append(
+                        {
+                            "errorType": "MISSING_FILES",
+                            "name": missing_file_obj["name"],
+                            "title": missing_file_obj["title"],
                         }
                     )
     return validation_errors
@@ -315,40 +369,44 @@ def copy_publication_files(
     `path_mapping` is a dict mapping project paths to their corresponding paths in the
     published area.
     """
-    pub_dirname = project_id
-    if version and version > 1:
-        pub_dirname = f"{project_id}v{version}"
+    os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
+    try:
+        pub_dirname = project_id
+        if version and version > 1:
+            pub_dirname = f"{project_id}v{version}"
 
-    pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
-    os.makedirs(pub_root_dir, exist_ok=True)
+        pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
+        os.makedirs(pub_root_dir, exist_ok=True)
 
-    for src_path in path_mapping:
-        src_path_obj = Path(src_path)
-        if not src_path_obj.exists():
-            raise ProjectFileNotFound(f"File not found: {src_path}")
+        for src_path in path_mapping:
+            src_path_obj = Path(src_path)
+            if not src_path_obj.exists():
+                raise ProjectFileNotFound(f"File not found: {src_path}")
 
-        os.makedirs(src_path_obj.parent, exist_ok=True)
+            os.makedirs(src_path_obj.parent, exist_ok=True)
 
-        if src_path_obj.is_dir():
-            shutil.copytree(
-                src_path,
-                path_mapping[src_path],
-                dirs_exist_ok=True,
-                symlinks=True,
-                copy_function=shutil.copy,
-            )
-        else:
-            shutil.copy(src_path, path_mapping[src_path])
+            if src_path_obj.is_dir():
+                shutil.copytree(
+                    src_path,
+                    path_mapping[src_path],
+                    dirs_exist_ok=True,
+                    symlinks=True,
+                    copy_function=shutil.copy,
+                )
+            else:
+                shutil.copy(src_path, path_mapping[src_path])
 
-    # Lock the publication directory so that non-root users can only read files and list directories
-    subprocess.run(["chmod", "-R", "a-x,a=rX", pub_root_dir], check=True)
+        # Lock the publication directory so that non-root users can only read files and list directories
+        subprocess.run(["chmod", "-R", "a-x,a=rX", pub_root_dir], check=True)
+    finally:
+        os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
 
 
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def publish_project(
     project_id: str,
     entity_uuids: list[str],
-    version: Optional[int] = None,
+    version: Optional[int] = 1,
     version_info: Optional[str] = None,
     dry_run: bool = False,
 ):
@@ -376,7 +434,7 @@ def publish_project(
         existing_dois = entity_meta.value.get("dois", [])
         existing_doi = next(iter(existing_dois), None)
 
-        datacite_json = get_datacite_json(pub_tree, entity_uuid)
+        datacite_json = get_datacite_json(pub_tree, entity_uuid, version)
         datacite_resp = upsert_datacite_json(datacite_json, doi=existing_doi)
         doi = datacite_resp["data"]["id"]
         new_dois.append(doi)
@@ -393,7 +451,7 @@ def publish_project(
             pub_tree.nodes[node]["value"]["dois"] = [doi]
 
     if not settings.DEBUG:
-        copy_publication_files(path_mapping, project_id)
+        copy_publication_files(path_mapping, project_id, version=version)
         for doi in new_dois:
             publish_datacite_doi(doi)
 
@@ -414,3 +472,75 @@ def publish_project(
     pub_metadata.save()
 
     return pub_metadata
+
+
+@shared_task
+def publish_project_async(
+    project_id: str,
+    entity_uuids: list[str],
+    version: Optional[int] = 1,
+    version_info: Optional[str] = None,
+    dry_run: bool = False,
+):
+    """Async wrapper arount publication"""
+    publish_project(project_id, entity_uuids, version, version_info, dry_run)
+
+
+def amend_publication(project_id: str):
+    """
+    Update metadata values in a publication to match the latest changes made in the
+    underlying project. Does NOT affect file associations or tags.
+    """
+
+    pub_root = Publication.objects.get(project_id=project_id)
+    pub_tree: nx.DiGraph = nx.node_link_graph(pub_root.tree)
+    latest_version = max(
+        pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
+    )
+    pubs_to_amend = [
+        node
+        for node in pub_tree.successors("NODE_ROOT")
+        if pub_tree.nodes[node]["version"] == latest_version
+    ]
+
+    for pub_node in pubs_to_amend:
+        for node in nx.dfs_preorder_nodes(pub_tree, pub_node):
+            uuid = pub_tree.nodes[node]["uuid"]
+            published_meta_value = pub_tree.nodes[node]["value"]
+            try:
+                prj_meta_value = ProjectMetadata.objects.get(uuid=uuid).value
+                prj_meta_value.pop("fileObjs", None)
+                prj_meta_value.pop("fileTags", None)
+                amended_meta_value = {**published_meta_value, **prj_meta_value}
+                pub_tree.nodes[node]["value"] = amended_meta_value
+            except ProjectMetadata.DoesNotExist:
+                continue
+
+    base_prj_meta_value = ProjectMetadata.get_project_by_id(project_id).value
+    base_prj_meta_value.pop("fileObjs", None)
+    base_prj_meta_value.pop("fileTags", None)
+
+    # If not type Other, we also amend the NODE_ROOT metadata.
+    if pub_tree.nodes["NODE_ROOT"].get("uuid", None):
+        base_published_meta_value = pub_tree.nodes["NODE_ROOT"]["value"]
+        amended_root_meta_value = {**base_published_meta_value, **base_prj_meta_value}
+        pub_tree.nodes["NODE_ROOT"]["value"] = amended_root_meta_value
+
+    pub_root.tree = nx.node_link_data(pub_tree)
+    pub_root.value = {**pub_root.value, **base_prj_meta_value}
+    pub_root.save()
+
+    # Update datacite metadata
+    for node in pubs_to_amend:
+        datacite_json = get_datacite_json(
+            pub_tree, pub_tree.nodes[node]["uuid"], latest_version
+        )
+        upsert_datacite_json(
+            datacite_json, doi=pub_tree.nodes[node]["value"]["dois"][0]
+        )
+
+
+@shared_task
+def amend_publication_async(project_id: str):
+    """async wrapper around amend_publication"""
+    amend_publication(project_id)

@@ -4,12 +4,14 @@ import { Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import { TPreviewTreeData } from '@client/hooks';
 import { PublishedEntityDisplay } from '../ProjectPreview/ProjectPreview';
+import { PipelineEditCategoryModal } from '../modals';
 
 export const PipelineProofreadPublications: React.FC<{
   projectId: string;
+  displayName?: string;
   nextStep: () => void;
   prevStep: () => void;
-}> = ({ projectId, nextStep, prevStep }) => {
+}> = ({ projectId, displayName, nextStep, prevStep }) => {
   const { data } = useProjectPreview(projectId ?? '');
   const { children } = (data?.tree ?? { children: [] }) as TPreviewTreeData;
   const [searchParams] = useSearchParams();
@@ -47,10 +49,56 @@ export const PipelineProofreadPublications: React.FC<{
           Continue
         </Button>
       </div>
+      <h3 style={{ textAlign: 'center' }}>
+        Proofread your {displayName} Metadata
+      </h3>
+      <ul style={{ listStylePosition: 'inside', paddingInlineStart: '0px' }}>
+        <li>If you selected the wrong collection, go back to Selection.</li>
+        <li>
+          If you need to add or modify files, click "Exit Prepare to Publish"
+          and make your changes in the Curation Directory.
+        </li>
+        <li>
+          If you need help, attend{' '}
+          <a
+            href="/facilities/virtual-office-hours/"
+            target="_blank"
+            aria-describedby="msg-open-new-window"
+          >
+            Curation office hours
+          </a>{' '}
+          for help with publishing.
+        </li>
+      </ul>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          marginTop: '12px',
+        }}
+      >
         {sortedChildren.map((child) => (
           <section key={child.id}>
+            <div>
+              <PipelineEditCategoryModal
+                projectId={projectId ?? ''}
+                entityName={child.name}
+                formType="publication"
+                entityUuid={child.uuid}
+              >
+                {({ onClick }) => (
+                  <Button
+                    onClick={onClick}
+                    type="link"
+                    style={{ marginTop: '10px', fontWeight: 'bold' }}
+                  >
+                    Edit {child.value.title}
+                  </Button>
+                )}
+              </PipelineEditCategoryModal>
+            </div>
             <PublishedEntityDisplay
               preview
               projectId={projectId}

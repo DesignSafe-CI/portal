@@ -1,78 +1,157 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   TPreviewTreeData,
+  useCitationMetrics,
   useProjectPreview,
   usePublicationDetail,
   usePublicationVersions,
   useSelectedFiles,
 } from '@client/hooks';
-import { Button, Collapse } from 'antd';
+import { Alert, Button, Collapse, Tag } from 'antd';
 import styles from './ProjectPreview.module.css';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
+  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
+  FileTypeIcon,
   TFileListingColumns,
-} from '../../FileListing/FileListingTable/FileListingTable';
-import { NavLink } from 'react-router-dom';
+} from '@client/common-components';
+import { Link, useParams } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
+import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
+import { SubEntityDetails } from '../SubEntityDetails';
+import { PipelineEditCategoryModal } from '../modals';
 
-const columns: TFileListingColumns = [
-  {
-    title: 'File Name',
-    dataIndex: 'name',
-    ellipsis: true,
-    render: (data, record) =>
-      record.type === 'dir' ? (
-        <NavLink
-          className="listing-nav-link"
-          to={`./${encodeURIComponent(record.path)}`}
-          replace={false}
-        >
-          <i role="none" style={{ color: '#333333' }} className="fa fa-folder">
-            &nbsp;&nbsp;
-          </i>
-          {data}
-        </NavLink>
-      ) : (
-        <Button type="link">
-          <i role="none" style={{ color: '#333333' }} className="fa fa-file-o">
-            &nbsp;&nbsp;
-          </i>
-          {data}
-        </Button>
+const EntityFileListingTable: React.FC<{
+  treeData: TPreviewTreeData;
+  preview?: boolean;
+}> = ({ treeData, preview }) => {
+  const [previewModalState, setPreviewModalState] = useState<{
+    isOpen: boolean;
+    path?: string;
+  }>({ isOpen: false });
+
+  const columns: TFileListingColumns = [
+    {
+      title: 'File Name',
+      dataIndex: 'name',
+      ellipsis: true,
+      render: (data, record) => (
+        <div>
+          {record.type === 'dir' ? (
+            <Link
+              className="listing-nav-link"
+              to={`./${encodeURIComponent(record.path)}`}
+              style={{ pointerEvents: preview ? 'none' : 'all' }}
+              replace={false}
+            >
+              <i
+                role="none"
+                style={{ color: '#333333' }}
+                className="fa fa-folder"
+              >
+                &nbsp;&nbsp;
+              </i>
+              {data}
+            </Link>
+          ) : (
+            <>
+              <FileTypeIcon name={record.name} />
+              &nbsp;&nbsp;
+              <Button
+                type="link"
+                disabled={preview}
+                onClick={() =>
+                  setPreviewModalState({ isOpen: true, path: record.path })
+                }
+              >
+                {data}
+              </Button>
+            </>
+          )}
+          <div>
+            {treeData.value.fileTags
+              .filter((t) => t.path === record.path)
+              .map((t) => (
+                <Tag color="#337ab7" key={t.tagName}>
+                  {t.tagName}
+                </Tag>
+              ))}
+          </div>
+        </div>
       ),
-  },
-];
+    },
+  ];
+  return (
+    <>
+      <FileListingTable
+        api="tapis"
+        system="designsafe.storage.published"
+        path={treeData.uuid}
+        scheme="public"
+        columns={columns}
+        scroll={{ x: 500, y: 500 }}
+        dataSource={treeData.value.fileObjs}
+        disabled
+      />
+      {previewModalState.path && (
+        <PreviewModalBody
+          isOpen={previewModalState.isOpen}
+          api={'tapis'}
+          system={'designsafe.storage.published'}
+          path={previewModalState.path}
+          handleCancel={() => setPreviewModalState({ isOpen: false })}
+        />
+      )}
+    </>
+  );
+};
 
 function RecursiveTree({
   treeData,
+  preview,
   defaultOpen = false,
+  showEditCategories = false,
 }: {
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
+  preview?: boolean;
+  showEditCategories?: boolean;
 }) {
+  const { projectId } = useParams();
   return (
     <li className={`${styles['tree-li']}`}>
+      {showEditCategories && (
+        <div>
+          <PipelineEditCategoryModal
+            projectId={projectId ?? ''}
+            formType="category"
+            entityUuid={treeData.uuid}
+          >
+            {({ onClick }) => (
+              <Button
+                onClick={onClick}
+                type="link"
+                style={{ marginTop: '10px', fontWeight: 'bold' }}
+              >
+                Edit {treeData.value.title}
+              </Button>
+            )}
+          </PipelineEditCategoryModal>
+        </div>
+      )}
       <ProjectCollapse
         entityName={treeData.name}
         title={treeData.value.title}
         defaultOpen={defaultOpen}
       >
-        <span>{treeData.value.description}</span>
-        <FileListingTable
-          api="tapis"
-          system="designsafe.storage.published"
-          path={treeData.uuid}
-          scheme="public"
-          columns={columns}
-          dataSource={treeData.value.fileObjs}
-          disabled
-        />
+        <SubEntityDetails entityValue={treeData.value} />
+        <EntityFileListingTable treeData={treeData} preview={preview} />
       </ProjectCollapse>
       <ul className={styles['tree-ul']}>
         {(treeData.children ?? []).map((child) => (
@@ -88,7 +167,12 @@ function RecursiveTree({
             >
               <i role="none" className="fa fa-level-up fa-rotate-90"></i>
             </span>
-            <RecursiveTree treeData={child} defaultOpen={defaultOpen} />
+            <RecursiveTree
+              treeData={child}
+              defaultOpen={defaultOpen}
+              preview={preview}
+              showEditCategories={showEditCategories}
+            />
           </div>
         ))}
       </ul>
@@ -103,6 +187,7 @@ export const PublishedEntityDisplay: React.FC<{
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   defaultOpenChildren?: boolean;
+  showEditCategories?: boolean;
 }> = ({
   projectId,
   preview,
@@ -110,19 +195,53 @@ export const PublishedEntityDisplay: React.FC<{
   license,
   defaultOpen = false,
   defaultOpenChildren = false,
+  showEditCategories = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
   );
+
+  const dois =
+    treeData.value.dois && treeData.value.dois.length > 0
+      ? treeData.value.dois[0]
+      : '';
+  const {
+    data: citationMetrics,
+    isLoading,
+    isError,
+    error,
+  } = useCitationMetrics(dois);
+
+  useEffect(() => {
+    if (isError) {
+      console.error('Error fetching citation metrics:', error);
+    }
+  }, [isLoading, isError, error]);
+
   return (
     <section>
       <div
         className={styles['pub-show-button']}
-        style={{ padding: '16px 12px', width: '100%' }}
+        style={{
+          padding: '16px 12px',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
-        {DISPLAY_NAMES[treeData.name]} | <strong>{treeData.value.title}</strong>
+        <span>
+          {DISPLAY_NAMES[treeData.name]} |{' '}
+          <strong>{treeData.value.title}</strong>
+        </span>
+        {preview &&
+          ((treeData.value.dois?.length ?? 0) > 0 ? (
+            <Tag color="#1cb500">Published</Tag>
+          ) : (
+            <Tag>Unpublished</Tag>
+          ))}
       </div>
       <article
         style={{
@@ -137,6 +256,16 @@ export const PublishedEntityDisplay: React.FC<{
           <ProjectCitation projectId={projectId} entityUuid={treeData.uuid} />
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
+        )}
+        <br />
+        {citationMetrics && (
+          <div>
+            <DownloadCitation
+              projectId={projectId}
+              entityUuid={treeData.uuid}
+              preview={preview}
+            />
+          </div>
         )}
       </article>
       <Collapse
@@ -171,14 +300,9 @@ export const PublishedEntityDisplay: React.FC<{
                   publicationDate={treeData.publicationDate}
                 />
                 {(treeData.value.fileObjs?.length ?? 0) > 0 && (
-                  <FileListingTable
-                    api="tapis"
-                    system="designsafe.storage.published"
-                    path={treeData.uuid}
-                    scheme="public"
-                    columns={columns}
-                    dataSource={treeData.value.fileObjs}
-                    disabled
+                  <EntityFileListingTable
+                    treeData={treeData}
+                    preview={preview}
                   />
                 )}
                 {(sortedChildren ?? []).map((child) => (
@@ -186,6 +310,7 @@ export const PublishedEntityDisplay: React.FC<{
                     treeData={child}
                     key={child.id}
                     defaultOpen={defaultOpenChildren}
+                    showEditCategories={showEditCategories}
                   />
                 ))}
               </>
@@ -208,6 +333,21 @@ export const ProjectPreview: React.FC<{ projectId: string }> = ({
     [children]
   );
   if (!data) return null;
+
+  if (!sortedChildren.length) {
+    return (
+      <Alert
+        type="warning"
+        showIcon
+        description={
+          <strong>
+            No publishable collections were found for this project. You can add
+            a new collection under the "Curation Directory" tab.
+          </strong>
+        }
+      ></Alert>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -257,7 +397,7 @@ export const PublicationView: React.FC<{
             license={data.baseProject.license}
             projectId={projectId}
             treeData={child}
-            defaultOpen={idx === 0}
+            defaultOpen={idx === 0 && sortedChildren.length === 1}
             key={child.id}
           />
         ))}

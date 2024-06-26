@@ -1,27 +1,52 @@
 import React, { useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Button, Modal } from 'antd';
-import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
+import {
+  TBaseProjectValue,
+  TEntityValue,
+  useCreateEntity,
+  useDeleteEntity,
+  useNotifyContext,
+  usePatchEntityMetadata,
+  useProjectDetail,
+} from '@client/hooks';
 import { CATEGORIES_BY_PROJECT_TYPE } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import { ProjectCategoryForm } from '../forms/ProjectCategoryForm';
+import { SubEntityDetails } from '../SubEntityDetails';
 
 const CategoryDetail: React.FC<{
-  description?: string;
+  value: TEntityValue;
   projectType: TBaseProjectValue['projectType'];
   projectId: string;
   entityUuid: string;
-}> = ({ description, projectId, projectType, entityUuid }) => {
+}> = ({ value, projectId, projectType, entityUuid }) => {
   const [showForm, setShowForm] = useState(false);
+  const { mutate: patchEntityMeta } = usePatchEntityMetadata();
+  const { mutate: deleteEntity } = useDeleteEntity();
+
+  const { notifyApi } = useNotifyContext();
+
+  const onSuccess = () => {
+    setShowForm(false);
+    notifyApi?.open({
+      type: 'success',
+      message: '',
+      description: 'Metadata has been updated successfully.',
+      placement: 'bottomLeft',
+    });
+  };
   return (
     <>
       <section>
-        <article>{description}</article>
+        <SubEntityDetails entityValue={value} />
         <Button type="link" onClick={() => setShowForm(!showForm)}>
           {showForm ? 'Cancel Editing' : 'Edit'}
         </Button>
         &nbsp;|&nbsp;
-        <Button type="link">Delete</Button>
+        <Button type="link" onClick={() => deleteEntity({ entityUuid })}>
+          Delete
+        </Button>
       </section>
       {showForm && (
         <section style={{ marginTop: '20px' }}>
@@ -30,6 +55,13 @@ const CategoryDetail: React.FC<{
             projectId={projectId}
             entityUuid={entityUuid}
             mode="edit"
+            onSubmit={(v: { name: string; value: Record<string, unknown> }) => {
+              console.log(v);
+              patchEntityMeta(
+                { entityUuid, patchMetadata: v.value },
+                { onSuccess }
+              );
+            }}
           />
         </section>
       )}
@@ -39,13 +71,27 @@ const CategoryDetail: React.FC<{
 
 export const ManageCategoryModal: React.FC<{
   projectId: string;
+  editOnly?: boolean;
   children: TModalChildren;
-}> = ({ projectId, children }) => {
+}> = ({ projectId, editOnly = false, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data } = useProjectDetail(projectId);
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => {
     setIsModalOpen(false);
+  };
+
+  const { mutate } = useCreateEntity(projectId);
+
+  const { notifyApi } = useNotifyContext();
+
+  const onSuccess = () => {
+    notifyApi?.open({
+      type: 'success',
+      message: '',
+      description: 'A new metadata record has been created.',
+      placement: 'bottomLeft',
+    });
   };
 
   if (!data) return null;
@@ -64,15 +110,20 @@ export const ManageCategoryModal: React.FC<{
         title={<h2>Manage Categories</h2>}
         footer={null}
       >
-        <section style={{ backgroundColor: '#f5f5f5', padding: '20px' }}>
-          <ProjectCategoryForm
-            mode="create"
-            projectId={projectId}
-            projectType={projectType}
-          />
-        </section>
-        <strong>Category Inventory</strong>
-        <article>
+        {!editOnly && (
+          <section style={{ backgroundColor: '#f5f5f5', padding: '20px' }}>
+            <ProjectCategoryForm
+              mode="create"
+              projectId={projectId}
+              projectType={projectType}
+              onSubmit={(v: { name: string; value: Record<string, unknown> }) =>
+                mutate({ formData: v }, { onSuccess })
+              }
+            />
+          </section>
+        )}
+        <article style={{ marginTop: '5px' }}>
+          <strong>Category Inventory</strong>
           {categories.map((category) =>
             data.entities
               .filter((e) => e.name === category)
@@ -83,7 +134,7 @@ export const ManageCategoryModal: React.FC<{
                   entityName={entity.name}
                 >
                   <CategoryDetail
-                    description={entity.value.description}
+                    value={entity.value}
                     entityUuid={entity.uuid}
                     projectId={projectId}
                     projectType={projectType}

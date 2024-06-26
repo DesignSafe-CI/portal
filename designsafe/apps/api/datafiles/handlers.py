@@ -1,12 +1,13 @@
 import logging
 from designsafe.apps.api.datafiles.notifications import notify
-from designsafe.apps.api.datafiles.operations import agave_operations
+from designsafe.apps.api.datafiles.operations import tapis_operations
 from designsafe.apps.api.datafiles.operations import googledrive_operations
 from designsafe.apps.api.datafiles.operations import dropbox_operations
 from designsafe.apps.api.datafiles.operations import box_operations
 from designsafe.apps.api.datafiles.operations import shared_operations
 from designsafe.apps.api.exceptions import ApiException
 from django.core.exceptions import PermissionDenied
+from tapipy.errors import BaseTapyException
 from django.urls import reverse
 
 logger = logging.getLogger(__name__)
@@ -20,8 +21,8 @@ allowed_actions = {
 notify_actions = ['move', 'copy', 'rename', 'trash', 'mkdir', 'upload']
 
 operations_mapping = {
-    'agave': agave_operations,
-    'tapis': agave_operations,
+    'agave': tapis_operations,
+    'tapis': tapis_operations,
     'googledrive': googledrive_operations,
     'box': box_operations,
     'dropbox': dropbox_operations,
@@ -34,7 +35,10 @@ def datafiles_get_handler(api, client, scheme, system, path, operation, username
         raise PermissionDenied
     op = getattr(operations_mapping[api], operation)
 
-    return op(client, system, path, username=username, **kwargs)
+    try:
+        return op(client, system, path, username=username, **kwargs)
+    except BaseTapyException as exc:
+        raise ApiException(message=exc.message, status=500) from exc
 
 
 def datafiles_post_handler(api, username, client, scheme, system,
@@ -65,7 +69,10 @@ def datafiles_put_handler(api, username, client, scheme, system,
 
     try:
         result = op(client, system, path, **body)
-        operation in notify_actions and notify(username, operation, '{} operation was successful.'.format(operation.capitalize()), 'SUCCESS', result)
+        if operation == 'copy' and system != body.get('dest_system', None):
+            notify(username, operation, 'Your file transfer request has been received and will be processed shortly.'.format(operation.capitalize()), 'SUCCESS', result)
+        else:
+            operation in notify_actions and notify(username, operation, '{} operation was successful.'.format(operation.capitalize()), 'SUCCESS', result)
         return result
     except Exception as exc:
         operation in notify_actions and notify(username, operation, 'File operation {} could not be completed.'.format(operation.capitalize()), 'ERROR', {})

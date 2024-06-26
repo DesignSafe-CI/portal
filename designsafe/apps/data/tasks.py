@@ -1,7 +1,7 @@
 import logging
 from celery import shared_task
 from django.conf import settings
-from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.agave import get_tg458981_client, get_service_account_client
 from designsafe.libs.elasticsearch.utils import index_level, walk_levels, index_listing
 
 logger = logging.getLogger(__name__)
@@ -10,7 +10,12 @@ logger = logging.getLogger(__name__)
 @shared_task(bind=True, max_retries=3, queue='indexing', retry_backoff=True, rate_limit="10/s")
 def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False, ignore_hidden=True, reindex=False, *args, **kwargs):
 
-    client = get_service_account_client()
+    client = get_tg458981_client()
+
+    # Projects are owned by wma_prtl in Tapis, so need to use the standard service client.
+    if systemId.startswith('project-'):
+        client = get_service_account_client()
+
     if not filePath.startswith('/'):
         filePath = '/' + filePath
 
@@ -24,7 +29,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
     if recurse:
         for child in folders:
             self.apply_async(args=[systemId],
-                             kwargs={'filePath': child.path,
+                             kwargs={'filePath': child["path"],
                                      'reindex': reindex,
                                      'update_pems': update_pems},
                              queue='indexing')

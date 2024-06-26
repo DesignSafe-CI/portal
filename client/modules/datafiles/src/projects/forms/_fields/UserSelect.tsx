@@ -16,7 +16,8 @@ export const UserSelect: React.FC<{
   onChange?: (value: TProjectUser[]) => void;
   userRole?: string;
   maxCount?: number;
-}> = ({ value, onChange, userRole, maxCount }) => {
+  disabled?: boolean;
+}> = ({ value, onChange, userRole, maxCount, disabled }) => {
   const initialOptions: SelectProps['options'] = useMemo(
     () =>
       value?.map((u) => ({
@@ -26,6 +27,7 @@ export const UserSelect: React.FC<{
     [value]
   );
   const [data, setData] = useState<SelectProps['options']>(initialOptions);
+  const [open, setOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const debouncedSearchTerm = useDebounceValue(searchTerm, 100);
@@ -56,11 +58,19 @@ export const UserSelect: React.FC<{
   const changeCallback = (newValue: string[]) => {
     onChange && onChange(newValue.map((v) => JSON.parse(v)));
     setSearchTerm('');
+    setOpen(false);
   };
 
   return (
     <Select
-      notFoundContent={null}
+      notFoundContent={
+        <span>
+          No users were found matching your query. An exact TACC username match
+          is required.
+        </span>
+      }
+      open={open}
+      onDropdownVisibleChange={(visible) => setOpen(visible)}
       value={value && value.map((v) => JSON.stringify(v))}
       maxCount={maxCount}
       mode="multiple"
@@ -69,6 +79,7 @@ export const UserSelect: React.FC<{
       options={debouncedSearchTerm ? data : initialOptions}
       onSearch={setSearchTerm}
       onChange={changeCallback}
+      disabled={disabled}
     />
   );
 };

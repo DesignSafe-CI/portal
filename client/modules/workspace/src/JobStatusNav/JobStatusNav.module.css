@@ -1,0 +1,21 @@
+.icon {
+  color: #cc443e;
+  font-size: 16px;
+}
+
+.badge {
+  margin: 0 10px;
+}
+
+.root:hover,
+.root:focus,
+.highlighted-row,
+.highlighted-row:hover,
+.highlighted-row:focus {
+  background-color: #cbdded;
+  text-decoration: none;
+}
+
+.highlighted-row:hover {
+  cursor: unset;
+}

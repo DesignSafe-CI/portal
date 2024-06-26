@@ -1,5 +1,5 @@
-import { Form, Input, Button, FormInstance } from 'antd';
-import React, { useCallback, useEffect } from 'react';
+import { Form, Input, Button, FormInstance, Alert } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   facilityOptions,
   experimentTypeOptions,
@@ -38,7 +38,12 @@ const ExperimentFormFields: React.FC<{
         published.
         <Form.Item
           name={['value', 'title']}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
@@ -50,7 +55,12 @@ const ExperimentFormFields: React.FC<{
         <div style={{ display: 'flex' }}>
           <Form.Item
             name={['value', 'procedureStart']}
-            rules={[{ required: true }]}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a start date', // Custom error message
+              },
+            ]}
             className="inner-form-item"
           >
             <DateInput />
@@ -66,10 +76,12 @@ const ExperimentFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Experimental Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
-            placeholder="Select an experimental facility, or enter a custom value"
+            placeholder="Select an experimental facility, or enter a custom value."
           />
         </Form.Item>
       </Form.Item>
@@ -122,15 +134,30 @@ const ExperimentFormFields: React.FC<{
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
-          rules={[{ min: 50 }, { required: true }]}
+          rules={[
+            {
+              min: 50,
+              required: true,
+              message: 'Please enter a description',
+            },
+          ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please select at least one author',
+            },
+          ]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -150,17 +177,30 @@ const SimulationFormFields: React.FC<{
         published.
         <Form.Item
           name={['value', 'title']}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Simulation Type">
+      <Form.Item label="Simulation Type" required>
+        Specify a simulation type. Enter a custom value by typing it into the
+        field and pressing "return".
         <Form.Item
           className="inner-form-item"
           name={['value', 'simulationType']}
+          rules={[
+            {
+              required: true,
+              message: 'Please select/enter a simulation type', // Custom error message
+            },
+          ]}
         >
           <DropdownSelectSingleValue
             options={simulationTypeOptions}
@@ -170,6 +210,8 @@ const SimulationFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
@@ -196,15 +238,30 @@ const SimulationFormFields: React.FC<{
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
-          rules={[{ min: 50 }, { required: true }]}
+          rules={[
+            {
+              min: 50,
+              required: true,
+              message: 'Please enter a description', // Custom error message
+            },
+          ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please select at least one author', // Custom error message
+            },
+          ]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -224,17 +281,30 @@ const HybridSimFormFields: React.FC<{
         published.
         <Form.Item
           name={['value', 'title']}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Hybrid Simulation Type">
+      <Form.Item label="Hybrid Simulation Type" required>
+        Specify a type for this hybrid simulation. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item
           className="inner-form-item"
           name={['value', 'simulationType']}
+          rules={[
+            {
+              required: true,
+              message: 'Please select/enter a hybrid simulation type', // Custom error message
+            },
+          ]}
         >
           <DropdownSelectSingleValue
             options={HybridSimTypeOptions}
@@ -244,6 +314,8 @@ const HybridSimFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
@@ -270,15 +342,30 @@ const HybridSimFormFields: React.FC<{
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
-          rules={[{ min: 50 }, { required: true }]}
+          rules={[
+            {
+              min: 50,
+              required: true,
+              message: 'Please enter a description', // Custom error message
+            },
+          ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please select at least one author', // Custom error message
+            },
+          ]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -298,7 +385,12 @@ const MissionFormFields: React.FC<{
         published.
         <Form.Item
           name={['value', 'title']}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
@@ -317,7 +409,12 @@ const MissionFormFields: React.FC<{
         <div style={{ display: 'flex' }}>
           <Form.Item
             name={['value', 'dateStart']}
-            rules={[{ required: true }]}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a start date', // Custom error message
+              },
+            ]}
             className="inner-form-item"
           >
             <DateInput />
@@ -330,6 +427,8 @@ const MissionFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
@@ -349,9 +448,18 @@ const MissionFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please select at least one author', // Custom error message
+            },
+          ]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -389,7 +497,13 @@ const MissionFormFields: React.FC<{
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
-          rules={[{ min: 50 }, { required: true }]}
+          rules={[
+            {
+              min: 50,
+              required: true,
+              message: 'Please enter a description', // Custom error message
+            },
+          ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
@@ -410,7 +524,12 @@ const DocumentFormFields: React.FC<{
         published.
         <Form.Item
           name={['value', 'title']}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a title', // Custom error message
+            },
+          ]}
           className="inner-form-item"
         >
           <Input />
@@ -418,6 +537,8 @@ const DocumentFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Facility">
+        Specify the facility involved in this research. Enter a custom value by
+        typing it into the field and pressing "return".
         <Form.Item className="inner-form-item" name={['value', 'facility']}>
           <DropdownSelectSingleValue
             options={facilityOptions}
@@ -437,9 +558,18 @@ const DocumentFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Assign Authorship">
+      <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
-        <Form.Item name={['value', 'authors']} className="inner-form-item">
+        <Form.Item
+          name={['value', 'authors']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please select at least one author', // Custom error message
+            },
+          ]}
+        >
           <AuthorSelect projectUsers={projectUsers} />
         </Form.Item>
       </Form.Item>
@@ -451,7 +581,13 @@ const DocumentFormFields: React.FC<{
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
-          rules={[{ min: 50 }, { required: true }]}
+          rules={[
+            {
+              min: 50,
+              required: true,
+              message: 'Please enter a description', // Custom error message
+            },
+          ]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
@@ -466,11 +602,24 @@ export const PublishableEntityForm: React.FC<{
   projectId: string;
   entityUuid?: string;
   mode: 'create' | 'edit';
-}> = ({ projectType, projectId, entityUuid, entityName, mode = 'edit' }) => {
+  onSubmit: CallableFunction;
+}> = ({
+  projectType,
+  projectId,
+  entityUuid,
+  entityName,
+  onSubmit,
+  mode = 'edit',
+}) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
 
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+
   const entity = data?.entities.find((e) => e.uuid === entityUuid);
+  const entityDisplayName = entityName
+    ? constants.DISPLAY_NAMES[entityName]
+    : 'Category';
 
   const setValues = useCallback(() => {
     if (data && entity && mode === 'edit') {
@@ -484,7 +633,14 @@ export const PublishableEntityForm: React.FC<{
     <Form
       form={form}
       layout="vertical"
-      onFinish={(v) => console.log(JSON.stringify(v))}
+      onFinishFailed={() => setHasValidationErrors(true)}
+      onFinish={(v) => {
+        onSubmit(v.value);
+        setHasValidationErrors(false);
+        if (mode === 'create') {
+          form.resetFields();
+        }
+      }}
       requiredMark={customRequiredMark}
     >
       {projectType === 'experimental' && (
@@ -506,12 +662,25 @@ export const PublishableEntityForm: React.FC<{
         <DocumentFormFields projectUsers={data.baseProject.value.users} />
       )}
 
+      {hasValidationErrors && (
+        <Alert
+          type="error"
+          style={{ marginBottom: '10px' }}
+          showIcon
+          message={
+            <span>
+              One or more fields could not be validated. Please check the form
+              for errors.
+            </span>
+          }
+        />
+      )}
+
       <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Button type="primary" className="success-button" htmlType="submit">
           {mode === 'create' ? (
             <span>
-              <i role="none" className="fa fa-plus"></i>
-              Add Category
+              <i role="none" className="fa fa-plus"></i> Add {entityDisplayName}
             </span>
           ) : (
             <span>Update</span>
