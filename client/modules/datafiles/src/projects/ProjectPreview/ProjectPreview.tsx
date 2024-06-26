@@ -263,6 +263,7 @@ export const PublishedEntityDisplay: React.FC<{
             <DownloadCitation
               projectId={projectId}
               entityUuid={treeData.uuid}
+              preview={preview}
             />
           </div>
         )}
