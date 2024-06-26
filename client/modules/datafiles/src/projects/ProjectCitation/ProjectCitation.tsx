@@ -83,7 +83,8 @@ export const PublishedCitation: React.FC<{
 export const DownloadCitation: React.FC<{
   projectId: string;
   entityUuid: string;
-}> = ({ projectId, entityUuid }) => {
+  preview?: boolean;
+}> = ({ projectId, entityUuid, preview }) => {
   const {
     data,
     isLoading: isProjectLoading,
@@ -119,9 +120,9 @@ export const DownloadCitation: React.FC<{
 
   return (
     <div>
-      {isLoading && <div>Loading citation metrics...</div>}
-      {isError && <div>Error fetching citation metrics</div>}
-      {citationMetrics && (
+      {!preview && isLoading && <div>Loading citation metrics...</div>}
+      {!preview && isError && <div>Error fetching citation metrics</div>}
+      {citationMetrics && !preview && (
         <div>
           <strong>Download Citation: </strong>
           <a
