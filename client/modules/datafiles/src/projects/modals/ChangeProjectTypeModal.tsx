@@ -6,6 +6,7 @@ import { Alert, Button, Modal, Radio, Steps } from 'antd';
 import { TBaseProjectValue, useChangeProjectType } from '@client/hooks';
 import { experimentSteps } from './ProjectInfoStepper/ExperimentalSteps';
 import { SimulationSteps } from './ProjectInfoStepper/SimulationSteps';
+import { hybridSimulationSteps } from './ProjectInfoStepper/HybridSimulationSteps';
 import { sensitiveDataContext } from './ProjectInfoStepper/sensitiveDataContext';
 import { fieldReconSteps } from './ProjectInfoStepper/FieldReconSteps';
 import { ProjectTypeRadioSelect } from './ProjectTypeRadioSelect';
@@ -85,6 +86,8 @@ export const ProjectInfoDisplay: React.FC<{
         return experimentSteps;
       case 'simulation':
         return SimulationSteps;
+      case 'hybrid_simulation':
+        return hybridSimulationSteps;
       case 'field_recon':
         return showOptions ? fieldReconSteps : fieldReconSteps.slice(0, -1);
       default:
