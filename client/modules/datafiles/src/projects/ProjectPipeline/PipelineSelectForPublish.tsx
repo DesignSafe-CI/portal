@@ -180,7 +180,7 @@ export const PipelineSelectForPublish: React.FC<{
               >
                 submit a ticket
               </a>{' '}
-              with your project number, the name of the dataset(s)
+              with your project number and the name of the dataset(s)
             </span>
           }
         />
