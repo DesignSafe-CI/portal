@@ -132,7 +132,9 @@ export const BaseProjectForm: React.FC<{
       ...(watchedPi ?? []),
       ...(watchedCoPis ?? []),
       ...(watchedMembers ?? []),
-      ...(watchedGuestMembers ?? []),
+      ...(watchedGuestMembers?.filter(
+        (f: TProjectUser) => !!f && f.fname && f.lname && f.email && f.inst
+      ) ?? []),
     ],
     [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
@@ -207,22 +209,24 @@ export const BaseProjectForm: React.FC<{
         </Form.Item>
       )}
 
-      <Form.Item label="Natural Hazard Types" required>
-        Specify the natural hazard being researched. Enter a custom value by
-        typing it into the field and pressing "return".
-        <Form.Item
-          name="nhTypes"
-          className="inner-form-item"
-          rules={[
-            {
-              required: true,
-              message: 'Please select/enter a natural hazard type', // Custom error message
-            },
-          ]}
-        >
-          <DropdownSelect options={nhTypeOptions} />
+      {projectType !== 'None' && (
+        <Form.Item label="Natural Hazard Types" required>
+          Specify the natural hazard being researched. Enter a custom value by
+          typing it into the field and pressing "return".
+          <Form.Item
+            name="nhTypes"
+            className="inner-form-item"
+            rules={[
+              {
+                required: true,
+                message: 'Please select/enter a natural hazard type', // Custom error message
+              },
+            ]}
+          >
+            <DropdownSelect options={nhTypeOptions} />
+          </Form.Item>
         </Form.Item>
-      </Form.Item>
+      )}
 
       {projectType === 'other' && (
         <>
@@ -353,21 +357,23 @@ export const BaseProjectForm: React.FC<{
         <HazardEventsInput name="nhEvents" />
       </Form.Item>
 
-      <Form.Item label="Keywords" required>
-        Choose informative words that indicate the content of the project.
-        <Form.Item
-          name="keywords"
-          rules={[{ required: true }]}
-          className="inner-form-item"
-        >
-          <Select
-            mode="tags"
-            notFoundContent={null}
-            tokenSeparators={[',']}
-          ></Select>
+      {projectType !== 'None' && (
+        <Form.Item label="Keywords" required>
+          Choose informative words that indicate the content of the project.
+          Keywords should be comma-separated.
+          <Form.Item
+            name="keywords"
+            rules={[{ required: true }]}
+            className="inner-form-item"
+          >
+            <Select
+              mode="tags"
+              notFoundContent={null}
+              tokenSeparators={[',']}
+            ></Select>
+          </Form.Item>
         </Form.Item>
-      </Form.Item>
-
+      )}
       <Form.Item label="Project Description" required>
         What is this project about? How can data in this project be reused? How
         is this project unique? Who is the audience? Description must be between
