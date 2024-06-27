@@ -298,18 +298,20 @@ const FormSchema = (
           return;
         }
         const paramId =
+          (<TJobArgSpec>param).name ?? (<TJobKeyValuePair>param).key;
+        const label =
           param.notes?.label ??
           (<TJobArgSpec>param).name ??
           (<TJobKeyValuePair>param).key;
 
         const field: TField = {
-          label: paramId,
+          label: label,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
           readOnly: param.inputMode === 'FIXED',
           parameterSet: parameterSet,
-          name: `parameters.${parameterSet}.${paramId}`,
-          key: `parameters.${parameterSet}.${paramId}`,
+          name: `parameters.${parameterSet}.${label}`,
+          key: paramId,
           type: 'text',
         };
 

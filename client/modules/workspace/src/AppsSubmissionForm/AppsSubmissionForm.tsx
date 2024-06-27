@@ -419,14 +419,15 @@ export const AppsSubmissionForm: React.FC = () => {
             [sParameterSet]: Object.entries(sParameterValue)
               .map(([k, v]) => {
                 if (!v) return;
+                const field = parameterSet.fields?.[sParameterSet]?.[k];
                 // filter read only parameters. 'FIXED' parameters are tracked as readOnly
-                if (parameterSet.fields?.[k]?.readOnly) return;
+                if (field?.readOnly) return;
                 // Convert the value to a string, if necessary
                 const transformedValue =
                   typeof v === 'number' ? v.toString() : v;
                 return sParameterSet === 'envVariables'
-                  ? { key: k, value: transformedValue }
-                  : { name: k, arg: transformedValue };
+                  ? { key: field?.key ?? k, value: transformedValue }
+                  : { name: field?.key ?? k, arg: transformedValue };
               })
               .filter((v) => v), // filter out any empty values
           };
