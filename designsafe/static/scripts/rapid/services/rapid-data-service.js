@@ -85,8 +85,6 @@ export default class RapidDataService {
             }
             return null;
         }).filter(item => item !== null); // Filtering out any unmatched items
-    
-        console.log(combinedData);
         return combinedData;
     }
     

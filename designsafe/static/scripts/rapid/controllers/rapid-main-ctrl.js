@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import _ from 'underscore';
+import 'leaflet-draw';
 
 export default class RapidMainCtrl {
     constructor (RapidDataService, $location, $scope) {
@@ -10,58 +11,43 @@ export default class RapidMainCtrl {
         this.active_rapid_event = null;
         this.$location = $location;
         this.$scope = $scope;
+        this.reconLayer = L.layerGroup(); // Layer for Recon Portal Events
+        this.openTopoLayer = L.layerGroup(); // Layer for OpenTopography data
+        this.showOpenTopo = true;
     }
 
     $onInit () {
         this.initMap();
-        this.RapidDataService.get_event_types().then( (resp)=> {
+        this.RapidDataService.get_event_types().then((resp) => {
             this.event_types = resp;
         });
-        // this.RapidDataService.get_events().then( (resp)=>{
-        //     this.events = resp;
-        //     this.events.forEach((d)=> {
-        //         let marker = L.marker([d.location.lat, d.location.lon]);
-        //         marker.bindTooltip(d.title);
-        //         this.map.addLayer(marker);
-        //         marker.rapid_event = d;
-        //         marker.on('click', (ev) => {
-        //             this.select_event(marker.rapid_event);
-        //             this.$scope.$apply();
-        //         });
-        //     });
-        //     this.gotoEvent();
-        // });
-        this.loadEventsAndOpenTopographyData();
-
-        //this.loadOpenTopographyData();
+        this.loadReconEvents();
+        this.loadOpenTopographyData();
     }
 
-    loadEventsAndOpenTopographyData() {
-        Promise.all([
-            this.RapidDataService.get_events(),
-            this.RapidDataService.get_open_topography_center_view().then(center_view_data => {
-                return this.RapidDataService.get_open_topography_datasets_view().then(datasets_view_data => {
-                    return this.RapidDataService.combine_open_topography_data(center_view_data, datasets_view_data);
-                });
-            })
-        ]).then(([events, openTopoData]) => {
-            this.events = events.concat(openTopoData);
-            this.filtered_events = this.events;
-
-            this.events.forEach((d) => {
-                let marker = L.marker([d.location.lat, d.location.lon]);
-                marker.bindTooltip(d.title);
-                this.map.addLayer(marker);
-                marker.rapid_event = d;
-                marker.on('click', (ev) => {
-                    this.select_event(marker.rapid_event);
-                    this.$scope.$apply();
-                });
-            });
-
+    loadReconEvents() {
+        this.RapidDataService.get_events().then((events) => {
+            this.events = events;
+            this.addMarkers(this.events, this.reconLayer);
+            this.map.addLayer(this.reconLayer);
             this.gotoEvent();
         }).catch((err) => {
-            console.error('Error loading events and OpenTopography data:', err);
+            console.error('Error loading Recon Portal events:', err);
+        });
+    }
+
+    loadOpenTopographyData() {
+        this.RapidDataService.get_open_topography_center_view().then(center_view_data => {
+            return this.RapidDataService.get_open_topography_datasets_view().then(datasets_view_data => {
+                const openTopoData = this.RapidDataService.combine_open_topography_data(center_view_data, datasets_view_data);
+                this.openTopoData = openTopoData;
+                this.addMarkers(this.openTopoData, this.openTopoLayer);
+                if (this.showOpenTopo) {
+                    this.map.addLayer(this.openTopoLayer);
+                }
+            });
+        }).catch((err) => {
+            console.error('Error loading OpenTopography data:', err);
         });
     }
 
@@ -87,42 +73,40 @@ export default class RapidMainCtrl {
         });
         this.map.setView([30.2672, -97.7431], 2);
         this.map.zoomControl.setPosition('topright');
+
+        // Adding layer control
+        L.control.layers(null, {
+            'Recon Portal Events': this.reconLayer,
+            'OpenTopography Data': this.openTopoLayer
+        }).addTo(this.map);
     }
 
-    // loadOpenTopographyData() {
-    //     this.RapidDataService.get_open_topography_center_view().then(center_view_data => {
-    //         this.RapidDataService.get_open_topography_datasets_view().then(datasets_view_data => {
-    //             let combined_data = this.RapidDataService.combine_open_topography_data(center_view_data, datasets_view_data);
-    //             this.displayOpenTopographyData(combined_data);
-    //         });
-    //     });
-    // }
+    addMarkers(events, layerGroup) {
+        events.forEach((d) => {
+            let marker = L.marker([d.location.lat, d.location.lon]);
+            marker.bindTooltip(d.title);
+            layerGroup.addLayer(marker);
+            marker.rapid_event = d;
+            marker.on('click', (ev) => {
+                this.select_event(marker.rapid_event);
+                this.$scope.$apply();
+            });
+        });
+    }
 
-    // displayOpenTopographyData(data) {
-    //     data.forEach((d) => {
-    //         let marker = L.marker([d.geometry.coordinates[1], d.geometry.coordinates[0]]);
-    //         marker.bindTooltip(d.properties.projectname);
-    //         this.map.addLayer(marker);
-    //         marker.on('click', (ev) => {
-    //             this.select_event(d);
-    //             this.$scope.$apply();
-    //         });
-    //     });
-    // }
-
-    gotoEvent () {
+    gotoEvent() {
         let q = this.$location.search();
         if (q.event) {
-            let ev = _.find(this.events, { title:q.event });
+            let ev = _.find(this.events.concat(this.openTopoData), { title: q.event });
             this.select_event(ev);
         }
     }
 
-    resetMapView () {
+    resetMapView() {
         this.map.setView([30.2672, -97.7431], 2);
     }
 
-    reset () {
+    reset() {
         this.resetMapView();
         this.active_rapid_event = null;
     }
@@ -138,13 +122,20 @@ export default class RapidMainCtrl {
         }
     }
 
-    search () {
-        this.filtered_events = this.RapidDataService.search(this.events, this.filter_options);
+    search() {
+        this.filtered_events = this.RapidDataService.search(this.events.concat(this.openTopoData), this.filter_options);
     }
 
-    clear_filters () {
+    clear_filters() {
         this.filter_options = {};
         this.search();
     }
 
+    toggleOpenTopoLayer() {
+        if (this.showOpenTopo) {
+            this.map.addLayer(this.openTopoLayer);
+        } else {
+            this.map.removeLayer(this.openTopoLayer);
+        }
+    }
 }
