@@ -9,3 +9,7 @@ coverage
 .github
 .pytest_cache
 data
+
+client/node_modules
+client/.nx
+client/dist

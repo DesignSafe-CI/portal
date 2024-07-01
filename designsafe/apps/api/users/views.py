@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 def check_public_availability(username):
     es_client = new_es_client()
-    query = Q({'multi_match': {'fields': ['project.value.teamMembers', 
-                                          'project.value.coPis', 
-                                          'project.value.pi'], 
+    query = Q({'multi_match': {'fields': ['project.value.teamMembers',
+                                          'project.value.coPis',
+                                          'project.value.pi'],
                                'query': username}})
     res = IndexedPublication.search(using=es_client).filter(query).execute()
     return res.hits.total.value > 0
@@ -50,14 +50,13 @@ class AuthenticatedView(View):
                 "last_name": u.last_name,
                 "email": u.email,
                 "oauth": {
-                    "access_token": u.agave_oauth.access_token,
-                    "expires_in": u.agave_oauth.expires_in,
-                    "scope": u.agave_oauth.scope,
-                }
+                    "expires_in": u.tapis_oauth.expires_in,
+                },
+                "isStaff": u.is_staff,
             }
 
             return JsonResponse(out)
-        return HttpResponse('Unauthorized', status=401)
+        return JsonResponse({'message': 'Unauthorized'}, status=401)
 
 
 class SearchView(View):
@@ -120,7 +119,7 @@ class SearchView(View):
             return JsonResponse(resp, safe=False)
         else:
             return HttpResponseNotFound()
-        
+
 
 class ProjectUserView(BaseApiView):
     """View for handling search for project users"""
@@ -128,17 +127,17 @@ class ProjectUserView(BaseApiView):
         """retrieve a user by their exact TACC username."""
         if not request.user.is_authenticated:
             raise ApiException(message="Authentication required", status=401)
-        
+
         username_query = request.GET.get("q")
         user_match = get_user_model().objects.filter(username__iexact=username_query)
         user_resp = [{"fname": u.first_name,
                      "lname": u.last_name,
                      "inst": u.profile.institution,
-                     "email": u.email, 
+                     "email": u.email,
                      "username": u.username} for u in user_match]
-        
+
         return JsonResponse({"result": user_resp})
-        
+
 
 
 class PublicView(View):

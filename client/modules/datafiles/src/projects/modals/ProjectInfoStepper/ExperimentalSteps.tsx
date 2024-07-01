@@ -70,16 +70,6 @@ const ExperimentOverview1 = (
           Curation office hours
         </a>
       </li>
-      <li>
-        {' '}
-        <a
-          href="/learning-center/training/"
-          target="_blank"
-          aria-describedby="msg-open-new-window"
-        >
-          Webinars
-        </a>
-      </li>
     </ul>
     <p></p>
   </div>

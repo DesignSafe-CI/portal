@@ -7,7 +7,6 @@
 from __future__ import unicode_literals, absolute_import
 import json
 import logging
-# from future.utils import python_2_unicode_compatible
 from django.conf import settings
 import requests
 from requests import HTTPError

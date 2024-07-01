@@ -3,12 +3,14 @@ import { TPreviewTreeData, useProjectPreview } from '@client/hooks';
 import { Button } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import { PublishedEntityDisplay } from '../ProjectPreview/ProjectPreview';
+import { PipelineEditCategoryModal } from '../modals';
 
 export const PipelineProofreadCategories: React.FC<{
   projectId: string;
+  displayName?: string;
   nextStep: () => void;
   prevStep: () => void;
-}> = ({ projectId, nextStep, prevStep }) => {
+}> = ({ projectId, displayName, nextStep, prevStep }) => {
   const { data } = useProjectPreview(projectId ?? '');
   const { children } = (data?.tree ?? { children: [] }) as TPreviewTreeData;
   const [searchParams] = useSearchParams();
@@ -35,7 +37,7 @@ export const PipelineProofreadCategories: React.FC<{
       >
         <Button type="link" onClick={prevStep}>
           <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
-          Proofread Project
+          Proofread {displayName ?? 'Publication'}
         </Button>
         <Button
           className="success-button"
@@ -47,9 +49,54 @@ export const PipelineProofreadCategories: React.FC<{
         </Button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <h3 style={{ textAlign: 'center' }}>Proofread your Category Metadata</h3>
+      <ul style={{ listStylePosition: 'inside', paddingInlineStart: '0px' }}>
+        <li>If you selected the wrong collection, go back to Selection.</li>
+        <li>
+          If you need to add or modify files, click "Exit Prepare to Publish"
+          and make your changes in the Curation Directory.
+        </li>
+        <li>
+          If you need help, attend{' '}
+          <a
+            href="/facilities/virtual-office-hours/"
+            target="_blank"
+            aria-describedby="msg-open-new-window"
+          >
+            Curation office hours
+          </a>{' '}
+          for help with publishing.
+        </li>
+      </ul>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          marginTop: '12px',
+        }}
+      >
         {sortedChildren.map((child) => (
           <section key={child.id}>
+            <div>
+              <PipelineEditCategoryModal
+                projectId={projectId ?? ''}
+                entityName={child.name}
+                formType="publication"
+                entityUuid={child.uuid}
+              >
+                {({ onClick }) => (
+                  <Button
+                    onClick={onClick}
+                    type="link"
+                    style={{ marginTop: '10px', fontWeight: 'bold' }}
+                  >
+                    Edit {child.value.title}
+                  </Button>
+                )}
+              </PipelineEditCategoryModal>
+            </div>
             <PublishedEntityDisplay
               preview
               projectId={projectId}
@@ -57,6 +104,7 @@ export const PipelineProofreadCategories: React.FC<{
               defaultOpen
               defaultOpenChildren
               key={child.id}
+              showEditCategories
             />
           </section>
         ))}

@@ -167,7 +167,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   // Experimental
   [EXPERIMENT]: 'Experiment',
   [EXPERIMENT_MODEL_CONFIG]: 'Model Configuration',
-  [EXPERIMENT_SENSOR]: 'Sensor',
+  [EXPERIMENT_SENSOR]: 'Sensor Information',
   [EXPERIMENT_ANALYSIS]: 'Analysis',
   [EXPERIMENT_EVENT]: 'Event',
   [EXPERIMENT_REPORT]: 'Report',
@@ -183,7 +183,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   [HYBRID_SIM_REPORT]: 'Report',
   [HYBRID_SIM_ANALYSIS]: 'Analysis',
   [HYBRID_SIM_GLOBAL_MODEL]: 'Global Model',
-  [HYBRID_SIM_COORDINATOR]: 'Simulation Coordinator',
+  [HYBRID_SIM_COORDINATOR]: 'Master Simulation Coordinator',
   [HYBRID_SIM_SIM_SUBSTRUCTURE]: 'Simulation Substructure',
   [HYBRID_SIM_EXP_SUBSTRUCTURE]: 'Experimental Substructure',
   [HYBRID_SIM_EXP_OUTPUT]: 'Experimental Output',

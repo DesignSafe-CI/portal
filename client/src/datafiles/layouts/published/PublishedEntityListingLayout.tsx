@@ -10,13 +10,13 @@ export const PublishedEntityListingLayout: React.FC = () => {
   if (!projectId || !data) return null;
 
   return (
-    <div style={{ width: '100%' }}>
+    <div>
       <PublicationView projectId={projectId} />
       {['other', 'field_reconnaissance'].includes(
         data.baseProject.projectType
       ) && (
         <FileListing
-          scroll={{ y: 500 }}
+          scroll={{ y: 500, x: 500 }}
           api="tapis"
           system="designsafe.storage.published"
           path={encodeURIComponent(
@@ -24,6 +24,7 @@ export const PublishedEntityListingLayout: React.FC = () => {
               ?.basePath ?? ''
           )}
           baseRoute="."
+          fileTags={data.fileTags}
         />
       )}
     </div>

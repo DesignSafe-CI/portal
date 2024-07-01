@@ -48,6 +48,7 @@ type TFileListingHookArgs = {
   scheme: string;
   pageSize: number;
   disabled?: boolean;
+  searchTerm?: string | null;
 };
 
 type TFileListingPageParam = {
@@ -62,9 +63,10 @@ function useFileListing({
   scheme = 'private',
   pageSize = 100,
   disabled = false,
+  searchTerm = null,
 }: TFileListingHookArgs) {
   const [searchParams] = useSearchParams();
-  const queryString = searchParams.get('q');
+  const queryString = searchParams.get('q') ?? searchTerm;
   return useInfiniteQuery<
     FileListingResponse,
     AxiosError<{ message?: string }>

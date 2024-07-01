@@ -1,0 +1,34 @@
+{
+  "status": 200,
+  "response": {
+    "hosts": {
+      "ls6.tacc.utexas.edu": [
+        "DesignSafe-Community",
+        "TACC-ACI",
+        "PT2050-DataX",
+        "DesignSafe-DCV",
+        "A2CPS",
+        "IBN22007",
+        "APCD-dev"
+      ],
+      "data.tacc.utexas.edu": [
+        "TACC-ACI",
+        "NeuroNex-3DEM",
+        "DesignSafe-Corral"
+      ],
+      "ranch.tacc.utexas.edu": ["DesignSafe-Community"],
+      "frontera.tacc.utexas.edu": [
+        "DesignSafe-Community",
+        "TACC-ACI",
+        "DesignSafe-DCV",
+        "TACC-ACI-CIC",
+        "A2CPS"
+      ],
+      "stampede3.tacc.utexas.edu": [
+        "DesignSafe-Community",
+        "TACC-ACI",
+        "DesignSafe-DCV"
+      ]
+    }
+  }
+}

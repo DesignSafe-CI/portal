@@ -38,7 +38,7 @@ class AccountsTests(TestCase):
         self.client.login(username='ds_user', password='user/password')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 403)
-        self.client.logout()
+
         user = get_user_model().objects.get(pk=2)
         perm = Permission.objects.get(codename='view_notification_subscribers')
         user.user_permissions.add(perm)

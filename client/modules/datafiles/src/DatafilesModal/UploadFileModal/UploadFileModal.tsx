@@ -82,7 +82,10 @@ export const UploadFileModalBody: React.FC<{
       width="60%"
       open={isOpen}
       footer={null} // Remove the footer from here
-      onCancel={handleCancel}
+      onCancel={() => {
+        handleCancel();
+        handleReset();
+      }}
     >
       <Upload {...props}>
         <div>

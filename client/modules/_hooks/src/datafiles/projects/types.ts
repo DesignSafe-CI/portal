@@ -101,6 +101,7 @@ export type TBaseProjectValue = {
 export type TEntityValue = {
   title: string;
   description?: string;
+  dataCollectors?: TProjectUser[];
   projectId?: string;
   authors?: TProjectUser[];
   fileObjs?: TFileObj[];
@@ -122,6 +123,15 @@ export type TEntityValue = {
   procedureEnd?: string;
 
   simulationType?: TDropdownValue;
+
+  observationTypes?: TDropdownValue[];
+  equipment?: TDropdownValue[];
+
+  unit?: string;
+  modes?: string[];
+  sampleSize?: string;
+  sampleApproach?: string[];
+  restriction?: string;
 };
 
 export type TProjectMeta = {

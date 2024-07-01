@@ -1,4 +1,5 @@
 """Pydantic schema models for Field Recon entities"""
+
 from typing import Annotated, Optional
 import itertools
 from pydantic import BeforeValidator, Field, AliasChoices
@@ -34,8 +35,8 @@ class Mission(MetadataModel):
     related_work: list[AssociatedProject] = []
 
     event: str = ""
-    date_start: str = ""
-    date_end: str = ""
+    date_start: Optional[str] = None
+    date_end: Optional[str] = None
     location: str = ""
     latitude: str = ""
     longitude: str = ""
@@ -62,9 +63,9 @@ class FieldReconReport(MetadataModel):
     related_work: list[AssociatedProject] = []
 
     file_tags: list[FileTag] = []
-    authors: Annotated[
-        list[ProjectUser], BeforeValidator(handle_legacy_authors)
-    ] = Field(default=[], validation_alias=AliasChoices("authors", "dataCollectors"))
+    authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = (
+        Field(default=[], validation_alias=AliasChoices("authors", "dataCollectors"))
+    )
 
     guest_data_collectors: list[str] = []
     project: list[str] = []
@@ -93,9 +94,12 @@ class FieldReconCollection(MetadataModel):
     title: str
     description: str = ""
 
-    observation_types: list[str | None] = []
-    date_start: str = ""
-    date_end: str = ""
+    observation_types: Annotated[
+        list[DropdownValue],
+        BeforeValidator(lambda v: handle_dropdown_values(v, FR_OBSERVATION_TYPES)),
+    ] = []
+    date_start: Optional[str] = None
+    date_end: Optional[str] = None
 
     data_collectors: list[ProjectUser] = []
     guest_data_collectors: list[str] = []
@@ -124,9 +128,9 @@ class SocialScienceCollection(MetadataModel):
     unit: str = ""
     modes: Annotated[list[str], BeforeValidator(handle_array_of_none)] = []
     sample_approach: Annotated[list[str], BeforeValidator(handle_array_of_none)] = []
-    sample_size: str
+    sample_size: str = ""
     date_start: str
-    date_end: str
+    date_end: Optional[str] = None
     data_collectors: list[ProjectUser] = []
     location: str = ""
     latitude: str = ""
@@ -181,7 +185,7 @@ class GeoscienceCollection(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_values(v, FR_OBSERVATION_TYPES)),
     ] = []
     date_start: str
-    date_end: str
+    date_end: Optional[str] = None
     location: str = ""
     latitude: str = ""
     longitude: str = ""

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   TPipelineValidationResult,
   TPreviewTreeData,
@@ -17,22 +17,44 @@ const PipelineValidationAlert: React.FC<{
     <Alert
       type="error"
       style={{ marginBottom: '24px' }}
-      description={
-        <div>
+      message={
+        <span>
+          {' '}
           Your selection has missing data or incomplete requirements. Please
           review the following fields:
-          {(validationErrors ?? []).map((validationError) => (
-            <div key={validationError.title}>
-              In the {DISPLAY_NAMES[validationError.name]}{' '}
-              <strong>{validationError.title}</strong>, the following
-              requirements are missing or incomplete:
-              <ul>
-                {validationError.missing.map((missingReq) => (
-                  <li key={missingReq}>{DISPLAY_NAMES[missingReq]}</li>
-                ))}
-              </ul>
-            </div>
-          ))}{' '}
+        </span>
+      }
+      description={
+        <div>
+          {(validationErrors ?? [])
+            .filter((e) => e.errorType === 'MISSING_ENTITY')
+            .map((validationError) => (
+              <div key={validationError.title}>
+                In the {DISPLAY_NAMES[validationError.name]}{' '}
+                <strong>{validationError.title}</strong>, the following
+                requirements are missing or incomplete:
+                <ul>
+                  {validationError.missing.map((missingReq) => (
+                    <li key={missingReq}>{DISPLAY_NAMES[missingReq]}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          {(validationErrors ?? [])
+            .filter((e) => e.errorType === 'MISSING_FILES')
+            .map((validationError) => (
+              <div key={validationError.title}>
+                The {DISPLAY_NAMES[validationError.name]}{' '}
+                <strong>{validationError.title}</strong> has no associated data.
+              </div>
+            ))}
+          {(validationErrors ?? [])
+            .filter((e) => e.errorType === 'NO_SELECTION')
+            .map((validationError) => (
+              <div key={validationError.title}>
+                <strong>No publishable collections are selected.</strong>
+              </div>
+            ))}
         </div>
       }
     />
@@ -55,24 +77,59 @@ export const PipelineSelectForPublish: React.FC<{
     [children]
   );
   const [searchParams, setSearchParams] = useSearchParams();
+  const operation = searchParams.get('operation');
+  const selectedEntities = searchParams.getAll('selected');
 
-  const toggleEntitySelection = (uuid: string) => {
-    const selectedEntities = searchParams.getAll('selected');
-    const newSearchParams = new URLSearchParams(searchParams);
+  const toggleEntitySelection = useCallback(
+    (uuid: string) => {
+      const selectedEntities = searchParams.getAll('selected');
+      const newSearchParams = new URLSearchParams(searchParams);
 
-    if (selectedEntities.includes(uuid)) {
-      newSearchParams.delete('selected', uuid);
-      setSearchParams(newSearchParams, { replace: true });
-    } else {
-      newSearchParams.append('selected', uuid);
-      setSearchParams(newSearchParams, { replace: true });
+      if (selectedEntities.includes(uuid)) {
+        newSearchParams.delete('selected', uuid);
+        setSearchParams(newSearchParams, { replace: true });
+      } else {
+        newSearchParams.append('selected', uuid);
+        setSearchParams(newSearchParams, { replace: true });
+      }
+    },
+    [setSearchParams, searchParams]
+  );
+
+  useEffect(() => {
+    if (operation !== 'publish') {
+      const publishableChildren = sortedChildren.filter((child) =>
+        data?.entities.some(
+          (ent) => ent.uuid === child.uuid && (ent.value.dois?.length ?? 0) > 0
+        )
+      );
+      publishableChildren.forEach((c) => {
+        if (!selectedEntities.includes(c.uuid)) {
+          toggleEntitySelection(c.uuid);
+        }
+      });
     }
-  };
+  }, [
+    operation,
+    sortedChildren,
+    data,
+    toggleEntitySelection,
+    selectedEntities,
+  ]);
 
   const validateAndContinue = async () => {
     const entityUuids = searchParams.getAll('selected');
     const res = await mutateAsync({ projectId, entityUuids: entityUuids });
-    if (res.result.length > 0) {
+    if (entityUuids.length === 0) {
+      setValidationErrors([
+        {
+          name: 'Project',
+          title: 'Project',
+          errorType: 'NO_SELECTION',
+          missing: [],
+        },
+      ]);
+    } else if (res.result.length > 0) {
       setValidationErrors(res.result);
     } else {
       setValidationErrors(undefined);
@@ -106,6 +163,31 @@ export const PipelineSelectForPublish: React.FC<{
           Continue
         </Button>
       </div>
+      {operation !== 'publish' && (
+        <Alert
+          showIcon
+          style={{ marginBottom: '12px' }}
+          description={
+            <span>
+              Amending or revising a project will impact all previously
+              published works. New datasets cannot be published through this
+              process.
+              <br />
+              If you need to publish subsequent dataset(s), please{' '}
+              <a
+                href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-describedby="msg-open-new-window"
+              >
+                submit a ticket
+              </a>{' '}
+              with your project number, the name of the dataset(s), and the
+              author order of the dataset(s).
+            </span>
+          }
+        />
+      )}
       {(validationErrors?.length ?? 0) > 0 && (
         <PipelineValidationAlert validationErrors={validationErrors} />
       )}
@@ -113,6 +195,7 @@ export const PipelineSelectForPublish: React.FC<{
         {sortedChildren.map((child) => (
           <section key={child.id}>
             <Button
+              disabled={operation !== 'publish'}
               type="link"
               onClick={() => toggleEntitySelection(child.uuid)}
             >

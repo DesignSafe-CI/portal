@@ -1,0 +1,76 @@
+.modalContent {
+  display: flex;
+  max-height: 60vh;
+  min-height: 400px;
+  gap: 50px;
+  padding-bottom: 40px !important;
+  padding-right: 40px !important;
+  padding-left: 40px !important;
+}
+
+.modalContent td {
+  vertical-align: middle;
+}
+
+.modalPanel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.filesSection {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid #707070;
+}
+
+.filesTableContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.modalTitle {
+  color: #222222;
+  font-weight: 400;
+}
+
+.dataFilesModalColHeader {
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.systemSelectRow {
+  flex: 0 1 auto;
+}
+
+.systemSelect {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-style: italic;
+  display: inline-block;
+  vertical-align: text-bottom;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.selectRowContainer {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.selectRowItem {
+  flex: 0 1 auto;
+}
+
+.selectBreadcrumb .datafilesBreadcrumb {
+  padding: 0;
+  background-color: #ffffff;
+}

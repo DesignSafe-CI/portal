@@ -1,0 +1,58 @@
+/* Generic */
+
+.ant-modal-content,
+.ant-modal-header,
+.ant-modal-body,
+.ant-modal-footer {
+  border-radius: 0;
+}
+.ant-modal-footer {
+  border-top: none;
+}
+
+/* Content */
+
+.ant-modal-content {
+  border-color: var(--global-color-primary--dark);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+
+/* Ant */
+
+.ant-modal-header {
+  align-items: center;
+  border: none;
+  background-color: var(--global-color-primary--x-light);
+  padding: 1.35rem 1.75rem; /* (18px 23.5px design * 1.2 design-to-app ratio) */
+  border-bottom: 1px solid #333333 !important;
+}
+.ant-modal-title {
+  color: var(--global-color-primary--xx-dark);
+  font-weight: normal;
+  overflow: visible;
+  white-space: normal;
+}
+
+/* To darken close button */
+.ant-modal-close {
+  color: var(--global-color-primary--x-dark);
+  opacity: 1;
+}
+/* FAQ: The specificity matches Bootstrap */
+.ant-modal-close:not(:disabled):not(.disabled):focus,
+.ant-modal-close:not(:disabled):not(.disabled):hover {
+  color: var(--global-color-primary--xx-dark);
+  opacity: 1;
+}
+
+/* Body */
+
+.ant-modal-body {
+  overflow: auto;
+  max-height: 60vh;
+  padding: 0px 15px !important;
+}

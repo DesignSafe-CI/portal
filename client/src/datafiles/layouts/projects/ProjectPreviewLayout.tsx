@@ -1,13 +1,14 @@
 import {
   BaseProjectDetails,
+  ProjectBestPracticesModal,
   ProjectNavbar,
   ProjectPreview,
   ProjectTitleHeader,
 } from '@client/datafiles';
 import { useProjectDetail } from '@client/hooks';
-import { Button } from 'antd';
+import { Alert } from 'antd';
 import React from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export const ProjectPreviewLayout: React.FC = () => {
   const { projectId } = useParams();
@@ -27,14 +28,20 @@ export const ProjectPreviewLayout: React.FC = () => {
         }}
       >
         <ProjectNavbar projectId={projectId} />
-        <NavLink to={`/projects/${projectId}/prepare-to-publish/start`}>
-          <Button type="primary" className="success-button">
-            Prepare to Publish
-          </Button>
-        </NavLink>
+        <ProjectBestPracticesModal projectId={projectId} />
       </div>
 
       <ProjectPreview projectId={projectId} />
+      {data.baseProject.value.projectType === 'other' && (
+        <Alert
+          showIcon
+          description={
+            <span>
+              You will select the data to be published in the next step.
+            </span>
+          }
+        />
+      )}
     </div>
   );
 };

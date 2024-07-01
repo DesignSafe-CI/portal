@@ -1,7 +1,45 @@
 import { TPublicationListingItem, usePublishedListing } from '@client/hooks';
-import { Table, TableColumnsType } from 'antd';
+import { Button, Modal, Table, TableColumnsType, Tag } from 'antd';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+
+const PublishedDescriptionModal: React.FC<{
+  title: string;
+  description: string;
+}> = ({ title, description }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <Button type="link" onClick={() => setIsOpen(true)}>
+        View Description
+      </Button>
+      <Modal
+        title={<h2>{title}</h2>}
+        open={isOpen}
+        width={900}
+        onCancel={() => setIsOpen(false)}
+        footer={
+          <Button onClick={() => setIsOpen(false)} type="primary">
+            Close
+          </Button>
+        }
+      >
+        <p>{description}</p>
+      </Modal>
+    </>
+  );
+};
+
+const projectTypeMapping: Record<string, string> = {
+  field_recon: 'Field research',
+  other: 'Other',
+  experimental: 'Experimental',
+  simulation: 'Simulation',
+  hybrid_simulation: 'Hybrid Simulation',
+  field_reconnaissance: 'Field Reconaissance',
+  None: 'None',
+};
 
 const columns: TableColumnsType<TPublicationListingItem> = [
   {
@@ -10,16 +48,46 @@ const columns: TableColumnsType<TPublicationListingItem> = [
     width: '100px',
   },
   {
-    render: (_, record) => <Link to={record.projectId}>{record.title}</Link>,
+    render: (_, record) => (
+      <>
+        <Link to={record.projectId}>{record.title}</Link>
+        <br />
+        {record.type !== 'other' && (
+          <Tag color="#337ab7">{projectTypeMapping[record.type]}</Tag>
+        )}
+        {record.dataTypes.map((t) => (
+          <Tag color="#337ab7" key={t}>
+            {t}
+          </Tag>
+        ))}
+      </>
+    ),
     title: 'Title',
-    width: '50%',
+    width: '40%',
   },
   {
     render: (_, record) => {
       return `${record.pi?.fname} ${record.pi?.lname}`;
     },
     title: 'Principal Investigator',
-    ellipsis: true,
+  },
+  {
+    render: (_, record) => {
+      return (
+        <PublishedDescriptionModal
+          title={record.title}
+          description={record.description}
+        />
+      );
+    },
+    title: 'Description',
+  },
+  {
+    render: (_, record) => {
+      return <span>{`${record.keywords.join(', ')}`}</span>;
+    },
+    width: '15%',
+    title: 'Keywords',
   },
   {
     title: 'Publication Date',
@@ -39,7 +107,7 @@ export const PublishedListing: React.FC = () => {
       loading={isLoading}
       columns={columns}
       style={{ height: '100%' }}
-      scroll={{ y: '100%', x: 500 }}
+      scroll={{ y: '100%', x: 1000 }}
       rowKey={(row) => row.projectId}
       pagination={{
         total: data?.total,

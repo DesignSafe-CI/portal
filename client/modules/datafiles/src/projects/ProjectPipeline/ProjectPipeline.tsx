@@ -8,7 +8,7 @@ import { PipelineOrderAuthors } from './PipelineOrderAuthors';
 import { PipelineProofreadPublications } from './PipelineProofreadPublications';
 import { PipelineProofreadCategories } from './PipelineProofreadCategories';
 import { PipelineSelectLicense } from './PipelineSelectLicense';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const getSteps = (
   projectId: string,
@@ -19,10 +19,10 @@ const getSteps = (
   const proofreadStepMapping: Partial<
     Record<TBaseProjectValue['projectType'], string>
   > = {
-    experimental: 'Experiments',
-    field_recon: 'Missions',
-    hybrid_simulation: 'Hybrid Simulations',
-    simulation: 'Simulations',
+    experimental: 'Experiment',
+    field_recon: 'Mission/Documents',
+    hybrid_simulation: 'Hybrid Simulation',
+    simulation: 'Simulation',
   };
 
   switch (projectType) {
@@ -51,6 +51,7 @@ const getSteps = (
           title: `Proofread ${proofreadStepMapping[projectType]}`,
           content: (
             <PipelineProofreadPublications
+              displayName={proofreadStepMapping[projectType]}
               projectId={projectId}
               nextStep={next}
               prevStep={prev}
@@ -61,6 +62,7 @@ const getSteps = (
           title: 'Proofread Categories',
           content: (
             <PipelineProofreadCategories
+              displayName={proofreadStepMapping[projectType]}
               projectId={projectId}
               nextStep={next}
               prevStep={prev}
@@ -141,7 +143,7 @@ export const ProjectPipeline: React.FC<{ projectId: string }> = ({
   projectId,
 }) => {
   const [current, setCurrent] = useState(0);
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { data } = useProjectDetail(projectId);
   const projectType = data?.baseProject.value.projectType;
@@ -172,10 +174,33 @@ export const ProjectPipeline: React.FC<{ projectId: string }> = ({
     return getSteps(projectId, projectType, next, prev);
   }, [projectId, projectType, next, prev]);
 
+  const operationName = {
+    amend: 'Amending',
+    version: 'Versioning',
+    publish: 'Publishing',
+  }[searchParams.get('operation') ?? 'publish'];
+
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
   if (!data) return null;
   return (
     <section style={{ marginTop: '10px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '12px',
+        }}
+      >
+        <h2>
+          {operationName} {projectId}
+        </h2>
+
+        <Link to={`/projects/${projectId}/preview`}>
+          <i role="none" className="fa fa-times"></i>&nbsp; Exit Prepare to
+          Publish
+        </Link>
+      </div>
       <Steps progressDot current={current} items={items} />
 
       <div>{steps[current].content}</div>

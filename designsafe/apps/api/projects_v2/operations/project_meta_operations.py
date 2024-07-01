@@ -7,6 +7,7 @@ from designsafe.apps.api.projects_v2.schema_models.base import (
     FileObj,
     FileTag,
     PartialEntityWithFiles,
+    BaseProject,
 )
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.models import ProjectMetadata
@@ -57,6 +58,7 @@ def delete_entity(uuid: str):
     if entity.name in (constants.PROJECT, constants.PROJECT_GRAPH):
         raise ValueError("Cannot delete a top-level project or graph object.")
     entity.delete()
+
     return "OK"
 
 
@@ -72,9 +74,33 @@ def clear_entities(project_id):
     return "OK"
 
 
+def get_changed_users(old_value: BaseProject, new_value: BaseProject):
+    """
+    Diff users between incoming and existing project metadata to determine which users
+    need permissions to be added/removed via Tapis.
+    """
+    old_users = set(
+        (u.username for u in old_value.users if u.username and u.role != "guest")
+    )
+    new_users = set(
+        (u.username for u in new_value.users if u.username and u.role != "guest")
+    )
+
+    users_to_add = list(new_users - old_users)
+    users_to_remove = list(old_users - new_users)
+
+    return users_to_add, users_to_remove
+
+
 def change_project_type(project_id, new_value):
     """Change the type of a project and update its value."""
     project = ProjectMetadata.get_project_by_id(project_id)
+
+    # persist Hazmapper maps when changing project type
+    hazmapper_maps = project.value.get("hazmapperMaps", None)
+    if hazmapper_maps:
+        new_value["hazmapperMaps"] = hazmapper_maps
+
     schema_model = SCHEMA_MAPPING[constants.PROJECT]
     validated_model = schema_model.model_validate(new_value)
     project.value = validated_model.model_dump()
@@ -138,6 +164,20 @@ def remove_file_associations(uuid: str, file_paths: list[str]):
 
         filtered_file_objs = _filter_file_objs(entity_file_model.file_objs, file_paths)
         entity.value["fileObjs"] = [f.model_dump() for f in filtered_file_objs]
+
+        # Remove tags associated with these entity/file path combinations.
+        tagged_paths = []
+        for path in file_paths:
+            tagged_paths += [
+                t["path"]
+                for t in entity.value.get("fileTags", [])
+                if t["path"].startswith(path)
+            ]
+        entity.value["fileTags"] = [
+            t
+            for t in entity.value.get("fileTags", [])
+            if not (t["path"] in tagged_paths)
+        ]
         entity.save()
     return entity
 
