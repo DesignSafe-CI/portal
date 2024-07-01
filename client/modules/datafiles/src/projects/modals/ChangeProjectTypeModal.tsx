@@ -285,6 +285,7 @@ export const ChangeProjectTypeModal: React.FC<{
               value={{ sensitiveDataOption, setSensitiveDataOption }}
             >
               <ProjectInfoDisplay
+                showOptions
                 projectType={selectedType}
                 onGoBack={() => setCurrentDisplay('PROJECT_TYPE')}
                 onComplete={() => setCurrentDisplay('PROJECT_FORM')}
