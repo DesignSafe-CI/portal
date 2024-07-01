@@ -95,6 +95,12 @@ def get_changed_users(old_value: BaseProject, new_value: BaseProject):
 def change_project_type(project_id, new_value):
     """Change the type of a project and update its value."""
     project = ProjectMetadata.get_project_by_id(project_id)
+
+    # persist Hazmapper maps when changing project type
+    hazmapper_maps = project.value.get("hazmapperMaps", None)
+    if hazmapper_maps:
+        new_value["hazmapperMaps"] = hazmapper_maps
+
     schema_model = SCHEMA_MAPPING[constants.PROJECT]
     validated_model = schema_model.model_validate(new_value)
     project.value = validated_model.model_dump()
