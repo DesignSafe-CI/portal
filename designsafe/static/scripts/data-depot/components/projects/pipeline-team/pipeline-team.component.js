@@ -53,6 +53,7 @@ class PipelineTeamCtrl {
                 this.team.forEach((t, index) => {
                     t.order = index;
                 });
+                this.teamCopy = JSON.parse(JSON.stringify(this.team))
             });
 
             this.projectResource = this.httpi.resource('/api/projects/:uuid/').setKeepTrailingSlash(true);
@@ -81,13 +82,24 @@ class PipelineTeamCtrl {
         return projectData;
     }
 
+    resetTeam() {
+        this.team = this.teamCopy;
+    }
+
     saveTeam() {
+        if (this.team.length === 0 ) return;
         this.saved = false;
         var prj = this.data();
         this.projectResource.post({ data: prj }).then((resp) => {
             this.project = resp.data;
             this.saved = true;
         });
+    }
+
+    deleteSelected() {
+        this.team = this.team.filter(u => u.order !== this.selectedMember.order)
+        .map(u => ({...u, order: u.order > this.selectedMember.order ? u.order - 1 : u.order}));
+        this.selectedMember = '' 
     }
 
     orderMembers(up) {

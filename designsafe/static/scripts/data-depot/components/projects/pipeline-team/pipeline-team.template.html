@@ -88,8 +88,15 @@
                         <td class="tg-0lax">
                             <div ng-repeat="member in $ctrl.team | orderBy: 'order'">
                                 <input type="radio" name="member" format="lname" ng-model="$ctrl.selectedMember" ng-value="member">
-                                {{ member.lname }}, {{ member.fname }}
+                                {{ member.lname }}, {{ member.fname }} 
+                                <button class="btn btn-danger btn-xs"
+                                    ng-if="member.order === $ctrl.selectedMember.order"
+                                    ng-click="$ctrl.deleteSelected()">
+                                    <i role="none" class="fa fa-times"></i>
+                                </button>
                             </div>
+                            <button class="btn btn-small btn-primary" ng-click="$ctrl.resetTeam()" style="margin-top: 10px">Reset Authors</button>
+                            
                         </td>
                         <td class="tg-0lax">
                             <i role="none" class="fa fa-arrow-circle-up fa-2x" ng-click="$ctrl.orderMembers(true)"></i>
