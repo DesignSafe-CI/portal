@@ -1,0 +1,6 @@
+@mixin link {
+  text-underline-offset: 0.2em;
+}
+@mixin link--active {
+  text-decoration-style: dotted;
+}
