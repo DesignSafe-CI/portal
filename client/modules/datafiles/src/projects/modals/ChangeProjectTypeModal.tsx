@@ -75,10 +75,10 @@ const ProjectTypeSelector: React.FC<{
 
 export const ProjectInfoDisplay: React.FC<{
   projectType: TBaseProjectValue['projectType'];
-  showOptions?: boolean;
+  showProtectedDataOptions?: boolean;
   onGoBack: () => void;
   onComplete: () => void;
-}> = ({ projectType, showOptions, onGoBack, onComplete }) => {
+}> = ({ projectType, showProtectedDataOptions, onGoBack, onComplete }) => {
   const steps = useMemo(() => {
     switch (projectType) {
       case 'experimental':
@@ -86,7 +86,7 @@ export const ProjectInfoDisplay: React.FC<{
       case 'simulation':
         return SimulationSteps;
       case 'field_recon':
-        return showOptions ? fieldReconSteps : fieldReconSteps.slice(0, -1);
+        return showProtectedDataOptions ? fieldReconSteps : fieldReconSteps.slice(0, -1);
       default:
         return [
           {
@@ -285,7 +285,7 @@ export const ChangeProjectTypeModal: React.FC<{
               value={{ sensitiveDataOption, setSensitiveDataOption }}
             >
               <ProjectInfoDisplay
-                showOptions
+                showProtectedDataOptions
                 projectType={selectedType}
                 onGoBack={() => setCurrentDisplay('PROJECT_TYPE')}
                 onComplete={() => setCurrentDisplay('PROJECT_FORM')}
