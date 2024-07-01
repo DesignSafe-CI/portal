@@ -1,0 +1,28 @@
+{# @var className #}
+{% load static menu_tags sekizai_tags %}
+
+{% addtoblock "css" %}
+<link href="{% static 'styles/bootstrap3.breadcrumb.css' %}" rel="stylesheet">
+{% endaddtoblock %}
+
+<nav class="{{className}}" id="cms-breadcrumbs">
+  <ol class="breadcrumb breadcrumb-major" itemscope itemtype="https://schema.org/BreadcrumbList">
+
+    {# To include pages marked to not show in menu, attributes are added #}
+    {# SEE: https://docs.django-cms.org/en/release-3.6.x/reference/navigation.html#show-breadcrumb #}
+    {% show_breadcrumb 0 "menu/breadcrumb.html" 0 %}
+
+  </ol>
+</nav>
+
+{# To disable 2nd-level breadcrumb #}
+{# NOTE: Not using `block`, so markup is loaded first #}
+{# NOTE: Not using `block` nor `type="module"`, so effect is quicker #}
+<script>
+  {# FAQ: Attempts to do this server-side failed cuz useful props are blank #}
+  {# https://docs.django-cms.org/en/release-3.11.x/reference/navigation.html#properties-of-navigation-nodes-in-templates #}
+  document
+    .getElementById('cms-breadcrumbs')
+    .querySelector('li:nth-of-type(2) > a')
+    .removeAttribute('href');
+</script>

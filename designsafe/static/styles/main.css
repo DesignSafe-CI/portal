@@ -1,7 +1,4 @@
-:root {
-  --ds-accent-color: #47a59d;
-  --ds-active-color: #337AB7;
-}
+@import url("./variables.css");
 
 body, html {
   background-color: #ffffff;
