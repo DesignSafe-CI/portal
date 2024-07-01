@@ -86,7 +86,9 @@ export const ProjectInfoDisplay: React.FC<{
       case 'simulation':
         return SimulationSteps;
       case 'field_recon':
-        return showProtectedDataOptions ? fieldReconSteps : fieldReconSteps.slice(0, -1);
+        return showProtectedDataOptions
+          ? fieldReconSteps
+          : fieldReconSteps.slice(0, -1);
       default:
         return [
           {
