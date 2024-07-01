@@ -29,7 +29,7 @@ export const ProjectInfoModal: React.FC<{
         <article>
           <ProjectInfoDisplay
             projectType={projectType}
-            showOptions={false}
+            showProtectedDataOptions={false}
             onGoBack={handleClose}
             onComplete={handleClose}
           />

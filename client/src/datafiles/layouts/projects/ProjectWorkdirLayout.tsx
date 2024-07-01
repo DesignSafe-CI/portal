@@ -36,7 +36,7 @@ export const ProjectWorkdirLayout: React.FC = () => {
         <Alert
           type="warning"
           showIcon
-          style={{ marginBottom: '5px' }}
+          style={{ marginBottom: '12px' }}
           message="No Project Type Selected"
           description={
             <span>

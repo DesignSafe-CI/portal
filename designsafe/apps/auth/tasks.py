@@ -64,13 +64,17 @@ def check_or_configure_system_and_user_directory(username, system_id, path, crea
                             path)
 
                 tg458981_client.files.mkdir(systemId=system_id, path=path)
-                tg458981_client.files.setFacl(systemId=system_id,
-                                              path=path,
-                                              operation="ADD",
-                                              recursionMethod="PHYSICAL",
-                                              aclString=f"d:u:{username}:rwX,u:{username}:rwX")
-                agave_indexer.apply_async(kwargs={'systemId': system_id, 'filePath': path, 'recurse': False},
-                                          queue='indexing')
+                tg458981_client.files.setFacl(
+                    systemId=system_id,
+                    path=path,
+                    operation="ADD",
+                    recursionMethod="PHYSICAL",
+                    aclString=f"d:u:{username}:rwX,u:{username}:rwX,d:u:tg458981:rwX,u:tg458981:rwX,d:o::---,o::---,d:m::rwX,m::rwX",
+                )
+                agave_indexer.apply_async(
+                    kwargs={"systemId": system_id, "filePath": path, "recurse": False},
+                    queue="indexing",
+                )
 
         # create keys, push to key service and use as credential for Tapis system
         logger.info("Creating credentials for user=%s on system=%s", username, system_id)
