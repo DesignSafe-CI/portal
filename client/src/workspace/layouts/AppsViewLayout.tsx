@@ -20,16 +20,19 @@ export const AppsViewLayout: React.FC = () => {
         </div>
       ) : (
         <ErrorBoundary
-          fallbackRender={({ error }) => (
-            <div id="appDetail-wrapper">
-              <Alert
-                message={error?.response?.data?.message ?? error.message}
-                type="error"
-                showIcon
-                style={{ marginTop: 10 }}
-              />
-            </div>
-          )}
+          key={key}
+          fallbackRender={({ error }) =>
+            error && (
+              <div id="appDetail-wrapper">
+                <Alert
+                  message={error?.response?.data?.message ?? error.message}
+                  type="error"
+                  showIcon
+                  style={{ marginTop: 10 }}
+                />
+              </div>
+            )
+          }
         >
           <Suspense
             fallback={
