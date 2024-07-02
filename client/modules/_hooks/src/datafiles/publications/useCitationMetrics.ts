@@ -55,10 +55,13 @@ export async function getCitationMetrics({
 
 export function useCitationMetrics(doi: string) {
   return useQuery({
-    queryKey: ['citationMetrics', doi], // This should be an object
+    queryKey: ['citationMetrics', doi],
     queryFn: async ({ signal }) => {
+      if (!doi) {
+        // Return a default value or handle the case when DOI is not provided
+        return null;
+      }
       return getCitationMetrics({ doi, signal });
     },
-    // Add any additional options you need, like refetch, stale time, etc.
   });
 }
