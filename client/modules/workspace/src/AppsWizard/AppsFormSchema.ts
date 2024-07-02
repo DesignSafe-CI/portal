@@ -175,7 +175,7 @@ export const getConfigurationFields = (
     definition.jobAttributes.execSystemId
   ) as TTapisSystem;
 
-  if (definition.jobType === 'BATCH') {
+  if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
     configurationFields['execSystemLogicalQueue'] = {
       description: 'Select the queue this job will execute on.',
       label: 'Queue',
@@ -472,7 +472,7 @@ const FormSchema = (
     queue_name: definition.jobAttributes.execSystemLogicalQueue,
   }) as TTapisSystemQueue;
 
-  if (definition.jobType === 'BATCH') {
+  if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
     appFields.configuration.defaults['execSystemLogicalQueue'] = isAppTypeBATCH(
       definition
     )
