@@ -84,7 +84,7 @@ export const PipelineOrderAuthors: React.FC<{
               target="_blank"
               aria-describedby="msg-open-new-window"
             >
-              Curation office hours
+              curation office hours
             </a>{' '}
             for help with publishing.
           </li>
