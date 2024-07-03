@@ -1,0 +1,205 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.042024.32606.1",
+          "name": "Detecting Changes in Hillslope Geomorphology Due to Thawing Permafrost, AK 2023",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.042024.32606.1",
+          "doiUrl": "https://doi.org/10.5069/G9KK991N",
+          "alternateName": "AK23_Robert",
+          "dateCreated": "2024-04-22",
+          "temporalCoverage": "2023-07-27",
+          "keywords": "lidar, geomorphology, permafrost, slope, Alaska",
+          "productAvailable": "Point Cloud Data, Raster"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-147.81938551, 65.00561592]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.122016.2193.3",
+          "name": "Amberley, Canterbury, New Zealand 2012",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.122016.2193.3",
+          "doiUrl": "https://doi.org/10.5069/G9GX48H4",
+          "alternateName": "Amberley_2012",
+          "dateCreated": "2017-01-11",
+          "temporalCoverage": "2012-01-10 \/ 2012-01-17",
+          "keywords": "Amberley, waipara, south island, new zealand, linz, aerial surveys, Canterbury, lidar",
+          "productAvailable": "Point Cloud Data"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [172.73082315, -43.15651097]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.082022.26910.2",
+          "name": "USFS Bean Hill Lidar, CA 2012",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.082022.26910.2",
+          "doiUrl": "https://doi.org/10.5069/G9P55KPR",
+          "alternateName": "CA12_Bean",
+          "dateCreated": "2022-08-23",
+          "temporalCoverage": "2012-11-26",
+          "keywords": "BurnPro3D,California, geomorphology, ecology, topography, USFS, forest structure",
+          "productAvailable": "Point Cloud Data, Raster"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-121.08444272, 39.97436052]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.022015.26911.2",
+          "name": "Wheeler Ridge, CA",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.022015.26911.2",
+          "doiUrl": "https://doi.org/10.5069/G99K485N",
+          "alternateName": "CA14_Kleber",
+          "dateCreated": "2015-02-25",
+          "temporalCoverage": "2014-10-23",
+          "keywords": "Wheeler Ridge blind thrust, Wheeler Ridge fault, fault propagation fold, Wheeler Ridge, Coal Canyon, lidar",
+          "productAvailable": "Point Cloud Data, Raster"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-118.9996138, 35.00931825]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.092012.32612.1",
+          "name": "Grand Junction, CO: Roan Plateau",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.092012.32612.1",
+          "doiUrl": "https://doi.org/10.5069/G90P0WXP",
+          "alternateName": "CO07_Berlin",
+          "dateCreated": "2012-09-18",
+          "temporalCoverage": "2007-04-20",
+          "keywords": "lidar",
+          "productAvailable": "Point Cloud Data"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-108.29289281, 39.38118877]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.072020.32612.1",
+          "name": "High Resolution Topography along the Lost River Valley, Idaho 2019",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.072020.32612.1",
+          "doiUrl": "https://doi.org/10.5069/G94M92Q1",
+          "alternateName": "ID19_Bello",
+          "dateCreated": "2020-07-17",
+          "temporalCoverage": "2019-04-19 \/ 2019-04-28",
+          "keywords": "Structure from Motion, faults, Lost River Valley, Borah Peak, Idaho, UAV, earthquake, coseismic, lidar",
+          "productAvailable": "Point Cloud Data, Raster"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-113.75681483, 44.10098904]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.062017.26911.1",
+          "name": "Northern Rockies, Montana lidar 2016",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.062017.26911.1",
+          "doiUrl": "https://doi.org/10.5069/G9RR1W9H",
+          "alternateName": "MT16_Benjaram",
+          "dateCreated": "2017-06-30",
+          "temporalCoverage": "2016-09-28",
+          "keywords": "ncalm, seed grant, montana, rockies, rocky mountains, erosion, lidar",
+          "productAvailable": "Point Cloud Data, Raster"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-114.21814225, 46.08078425]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.032013.26918.2",
+          "name": "North Carolina Coast: Quantifying Patterns of Coastal Change (July 2007",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.032013.26918.2",
+          "doiUrl": "https://doi.org/10.5069/G91C1TT3",
+          "alternateName": "NC07_Tebbens",
+          "dateCreated": "2013-03-28",
+          "temporalCoverage": "2007-07-08",
+          "keywords": "lidar",
+          "productAvailable": "Point Cloud Data"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-75.8241928, 35.30077074]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.012013.26912.2",
+          "name": "Henry Mountains, UT: Hillslope-Channel Coupling in a Bedrock Landscape",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.012013.26912.2",
+          "doiUrl": "https://doi.org/10.5069/G9HT2MHS",
+          "alternateName": "UT08_Corbett",
+          "dateCreated": "2013-01-28",
+          "temporalCoverage": "2008-02-07",
+          "keywords": "lidar",
+          "productAvailable": "Point Cloud Data"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-110.54077815, 37.85384556]
+        }
+      },
+      {
+        "type": "Feature",
+         "properties": {
+          "id": "OTLAS.052013.26912.1",
+          "name": "Solfatara Plateau Obsidian Lava Flow, Yellowstone National Park, WY",
+          "desription": "Long Description",
+          "host": "OpenTopo",
+          "url": "/datasetMetadata?otCollectionID=OT.052013.26912.1",
+          "doiUrl": "https://doi.org/10.5069/G99P2ZKK",
+          "alternateName": "WY12_Befus",
+          "dateCreated": "2013-05-28",
+          "temporalCoverage": "2012-08-25 \/ 2012-09-03",
+          "keywords": "lidar",
+          "productAvailable": "Point Cloud Data"
+        },
+        "geometry": {
+         "type": "Point",
+          "coordinates": [-110.58782517, 44.66876433]
+        }
+      }
+    ]
+  }
