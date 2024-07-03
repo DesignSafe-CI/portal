@@ -121,9 +121,20 @@ export const BaseProjectCreateForm: React.FC<{
           name="description"
           rules={[
             {
-              min: 50,
               required: true,
               message: 'Please enter a description',
+            },
+            {
+              validator: (_, value) => {
+                if (value && (value.length < 50 || value.length > 5000)) {
+                  return Promise.reject(
+                    new Error(
+                      'Description must be between 50 and 5000 characters long'
+                    )
+                  );
+                }
+                return Promise.resolve();
+              },
             },
           ]}
           className="inner-form-item"
