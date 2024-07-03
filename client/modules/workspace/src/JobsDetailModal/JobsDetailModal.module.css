@@ -72,6 +72,7 @@ dl.header-details dt {
   width: 100%;
   overflow-y: scroll;
   border-right: var(--border);
+  white-space: normal;
   /* Cross-browser solution to padding ignored by overflow (in spec-compliant Firefox) */
   /* SEE: https://stackoverflow.com/a/38997047/11817077 */
   padding-bottom: 0;

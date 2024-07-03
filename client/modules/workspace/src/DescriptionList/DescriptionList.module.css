@@ -1,0 +1,54 @@
+.container.is-horz {
+  margin-bottom: 0; /* overwrite Bootstrap's `_reboot.scss` */
+  & dd {
+    margin-bottom: 0; /* overwrite Bootstrap's `_reboot.scss` */
+  }
+}
+
+/* Children */
+
+.key::after {
+  content: ':';
+  display: inline;
+  padding-right: 0.25em;
+}
+.is-horz > .value {
+  white-space: nowrap;
+}
+
+/* Types */
+
+.is-horz {
+  display: flex;
+  flex-direction: row;
+}
+.is-horz > .key ~ .key::before {
+  content: '|';
+  display: inline-block;
+}
+
+.is-horz.is-narrow > .key ~ .key::before {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+.is-horz.is-wide > .key ~ .key::before {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+/* Overwrite Bootstrap `_reboot.scss` */
+.is-vert > .value {
+  margin-left: 0;
+}
+.is-vert.is-narrow > .value {
+  padding-left: 0;
+}
+.is-vert.is-wide > .value {
+  padding-left: 2.5rem;
+  white-space: normal;
+  word-wrap: break-word;
+} /* 40px Firefox default margin */
+
+.dd-container container {
+  width: 100%; /* Set the width to 100% of its parent */
+}
