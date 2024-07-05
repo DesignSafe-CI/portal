@@ -3,6 +3,7 @@
 import json
 from typing import TypedDict, Optional
 from uuid import uuid4
+import copy
 from pathlib import Path
 import networkx as nx
 from django.utils.text import slugify
@@ -172,7 +173,8 @@ def construct_graph_recurse(
         association_path.pop(-2)
 
     # Account for legacy pubs that associated experimental analysis at top level
-    _allowed_relations = ALLOWED_RELATIONS
+    _allowed_relations = copy.deepcopy(ALLOWED_RELATIONS)
+
     if allow_published_analysis:
         _allowed_relations[names.PROJECT].append(names.EXPERIMENT_ANALYSIS)
         _allowed_relations[names.PROJECT].append(names.SIMULATION_ANALYSIS)
