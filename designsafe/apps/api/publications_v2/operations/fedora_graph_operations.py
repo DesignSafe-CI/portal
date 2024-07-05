@@ -190,7 +190,6 @@ def get_successor_prov_tags(pub_tree: nx.DiGraph, node_id: str):
     for successor_node_id in successors:
         for prov_relation in prov_map:
             if pub_tree.nodes[successor_node_id]["name"] in prov_map[prov_relation]:
-
                 successor_node_data = pub_tree.nodes[successor_node_id]
                 successor_name = f"{PATH_SLUGS[successor_node_data['name']]}: {successor_node_data['value']['title']}"
                 if successor_node_data["value"].get("dois"):
