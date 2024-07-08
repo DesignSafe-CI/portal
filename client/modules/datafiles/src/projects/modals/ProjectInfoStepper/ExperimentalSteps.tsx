@@ -163,7 +163,7 @@ const ExperimentOverview4 = (
         target="_blank"
         aria-describedby="msg-open-new-window"
       >
-        Curation office hours
+        curation office hours
       </a>{' '}
       at the beginning of the curation process. You can <a>download</a> and
       print this diagram to sketch and organize your work.
