@@ -23,6 +23,18 @@ export default class RapidDataService {
         });
     }
 
+    get_opentopo_data () {
+        return this.$http.get('/recon-portal/opentopodata_center').then( (resp) => {
+            return resp.data.features;
+        });
+    }
+
+    get_opentopo_coordinates(doiUrl) {
+        return this.$http.get(`/recon-portal/opentopo_coordinates/${encodeURIComponent(doiUrl)}`).then((resp) => {
+            return resp.data;
+        });
+    }
+
     search (events, filter_options) {
         let tmp = _.filter(events, (item)=>{
             let f1 = true;
