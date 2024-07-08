@@ -6,6 +6,7 @@ import {
   TAppFileInput,
   TJobArgSpecs,
   TJobKeyValuePair,
+  TParameterSetNotes,
 } from '@client/hooks';
 
 export function getStatusText(status: string) {
@@ -120,6 +121,17 @@ export type TJobDisplayInfo = {
   nodeCount?: number;
 };
 
+function getParameterSetNotesLabel(obj: unknown): string | undefined {
+  if (obj && typeof obj === 'string') {
+    try {
+      return (JSON.parse(obj) as TParameterSetNotes)?.label;
+    } catch (e) {
+      //ignore.
+    }
+  }
+  return undefined;
+}
+
 /**
  * Get display values from job, app, and execution system info.
  */
@@ -168,7 +180,7 @@ export function getJobDisplayInformation(
       value: parameter.arg,
     })),
     envVars: displayEnvVariables.map((d) => ({
-      label: d.notes?.label ?? d.key,
+      label: getParameterSetNotesLabel(d.notes) ?? d.key,
       id: d.key,
       value: d.value,
     })),
@@ -206,6 +218,15 @@ export function getJobDisplayInformation(
         display.coresPerNode = job.coresPerNode;
         display.nodeCount = job.nodeCount;
       }
+
+      // Tapis adds env variables when envKey is used, filter those out
+      display.envVars = display.envVars.filter(
+        (env) =>
+          env.id &&
+          app.definition.jobAttributes.parameterSet.envVariables.find(
+            (e) => e.key === env.id
+          )
+      );
     } catch (ignore) {
       // Ignore if there is a problem using the app definition to improve display
     }
