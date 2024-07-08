@@ -308,7 +308,11 @@ export const ProjectCurationFileListing: React.FC<{
                   <Button
                     type="link"
                     onClick={() =>
-                      setPreviewModalState({ isOpen: true, path: record.path, selectedFile: record })
+                      setPreviewModalState({
+                        isOpen: true,
+                        path: record.path,
+                        selectedFile: record,
+                      })
                     }
                   >
                     {data}
@@ -354,7 +358,7 @@ export const ProjectCurationFileListing: React.FC<{
       />
       {previewModalState.path && previewModalState.selectedFile && (
         <PreviewModalBody
-        scheme="private"
+          scheme="private"
           isOpen={previewModalState.isOpen}
           api="tapis"
           selectedFile={previewModalState.selectedFile}
