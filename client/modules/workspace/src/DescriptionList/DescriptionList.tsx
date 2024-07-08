@@ -1,5 +1,4 @@
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import styles from './DescriptionList.module.css';
 
 export const DIRECTION_CLASS_MAP = {
@@ -56,11 +55,7 @@ export const DescriptionList: React.FC<DescriptionListProps> = ({
               <dt className={styles.key}>{key}</dt>
               {Array.isArray(value) ? (
                 value.map((val) => (
-                  <dd
-                    className={valueClassName}
-                    data-testid="value"
-                    key={uuidv4()}
-                  >
+                  <dd className={valueClassName} data-testid="value">
                     {val}
                   </dd>
                 ))
