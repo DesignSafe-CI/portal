@@ -52,7 +52,10 @@
 /* Body */
 
 .ant-modal-body {
+  padding: 0px 15px !important;
+}
+
+.o-site:has(#apps-root) .ant-modal-body {
   overflow: auto;
   max-height: 60vh;
-  padding: 0px 15px !important;
 }
