@@ -8,6 +8,17 @@ import logging
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+def calculate_bounding_box(point):
+    centerX = point[0]
+    centerY = point[1]
+    width = 1
+    height = 1
+    minX = centerX - (width / 2)
+    maxX = centerX + (width / 2)
+    minY = centerY - (height / 2)
+    maxY = centerY + (height / 2)
+    return minX, maxX, minY, maxY
+
 def get_github_file_info(repo, path):
     api_url = f"https://api.github.com/repos/{repo}/contents/{path}"
     response = requests.get(api_url)
@@ -103,6 +114,35 @@ def save_aggregated_results(output_filepath, all_features):
         geojson.dump(feature_collection, f, indent=2)
     logging.info(f"Aggregated results saved to: {output_filepath}")
 
+def fetch_otcatalog_api_response(file_path):
+    with open(file_path, 'r') as file1:
+        data = json.load(file1)
+    features = data['features']
+    # Specify the API endpoint URL
+    api_url="https://portal.opentopography.org/API/otCatalog"
+    # Specify default API query parameters
+    productFormat="PointCloud"
+    include_federated="false"
+    detail="true"
+    for feature in features:
+        center_point = feature['geometry']['coordinates']
+        minx, maxx, miny, maxy = calculate_bounding_box(center_point)
+        request_url=f'{api_url}?productFormat={productFormat}&minx={minx}&miny={miny}&maxx={maxx}&maxy={maxy}&detail={detail}&outputFormat=json&include_federated={include_federated}'
+        response = requests.get(request_url)
+        if response.status_code == 200:
+            for dataset in response.json()['Datasets']:
+                if dataset['Dataset']['identifier']['value'] == feature['properties']['id']:
+                    feature['properties']['description'] = dataset['Dataset']['description']
+                    feature['properties']['doiUrl'] = dataset['Dataset']['url']
+                    feature['properties']['host']='OpenTopography'
+                    feature['properties']['dateCreated'] = dataset['Dataset']['dateCreated']
+                    feature['properties']['temporalCoverage'] = dataset['Dataset']['temporalCoverage']
+                    feature['properties']['keywords'] = dataset['Dataset']['keywords']
+                    break
+    data['features'] = features
+    with open(file_path, 'w') as file2:
+        json.dump(data, file2, indent=4)
+
 def main():
     repo = "OpenTopography/Data_Catalog_Spatial_Boundaries"
     directories = {
@@ -149,6 +189,8 @@ def main():
 
         all_features = process_and_aggregate_geojson_files(source_dirs)
         save_aggregated_results(output_filepath, all_features)
+        fetch_otcatalog_api_response(output_filepath)
+
 
 if __name__ == "__main__":
     main()
