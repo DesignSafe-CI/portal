@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 def calculate_bounding_box(point):
     centerX = point[0]
     centerY = point[1]
-    width = 1
-    height = 1
+    width = 2
+    height = 2
     minX = centerX - (width / 2)
     maxX = centerX + (width / 2)
     minY = centerY - (height / 2)
@@ -121,13 +121,12 @@ def fetch_otcatalog_api_response(file_path):
     # Specify the API endpoint URL
     api_url="https://portal.opentopography.org/API/otCatalog"
     # Specify default API query parameters
-    productFormat="PointCloud"
     include_federated="false"
     detail="true"
     for feature in features:
         center_point = feature['geometry']['coordinates']
         minx, maxx, miny, maxy = calculate_bounding_box(center_point)
-        request_url=f'{api_url}?productFormat={productFormat}&minx={minx}&miny={miny}&maxx={maxx}&maxy={maxy}&detail={detail}&outputFormat=json&include_federated={include_federated}'
+        request_url=f'{api_url}?minx={minx}&miny={miny}&maxx={maxx}&maxy={maxy}&detail={detail}&include_federated={include_federated}'
         response = requests.get(request_url)
         if response.status_code == 200:
             for dataset in response.json()['Datasets']:
@@ -139,6 +138,8 @@ def fetch_otcatalog_api_response(file_path):
                     feature['properties']['temporalCoverage'] = dataset['Dataset']['temporalCoverage']
                     feature['properties']['keywords'] = dataset['Dataset']['keywords']
                     break
+        else:
+            logging.error(f"Failed to fetch data for {feature['properties']['id']}")
     data['features'] = features
     with open(file_path, 'w') as file2:
         json.dump(data, file2, indent=4)
