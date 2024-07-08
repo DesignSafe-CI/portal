@@ -28,6 +28,9 @@ FEDORA_CONTEXT = {
     "abstract": {
         "@id": "http://purl.org/dc/elements/1.1/abstract"
     },
+    "accessRights": {
+        "@id": "http://purl.org/dc/elements/1.1/accessRights"
+    },
     "available": {
         "@id": "http://purl.org/dc/elements/1.1/available"
     },
