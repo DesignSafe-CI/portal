@@ -124,6 +124,9 @@ export const ManagePublishableEntityModal: React.FC<{
         )}
 
         <article style={{ marginTop: '5px' }}>
+          {data.entities.length >= 1 && (
+            <strong>{DISPLAY_NAMES[entityName]} Inventory</strong>
+          )}
           {data.entities
             .filter((e) => e.name === entityName)
             .map((entity) => (

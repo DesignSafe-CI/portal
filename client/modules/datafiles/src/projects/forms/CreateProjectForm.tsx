@@ -39,7 +39,10 @@ export const BaseProjectCreateForm: React.FC<{
     <Form
       form={form}
       layout="vertical"
-      onFinish={(v) => onSubmit(processFormData(v))}
+      onFinish={(v) => {
+        onSubmit(processFormData(v));
+        form.resetFields();
+      }}
       onFinishFailed={(v) => console.log(processFormData(v.values))}
       requiredMark={customRequiredMark}
     >

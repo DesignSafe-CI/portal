@@ -25,6 +25,7 @@ export const FileListingTable: React.FC<
     disabled?: boolean;
     className?: string;
     emptyListingDisplay?: React.ReactNode;
+    noSelection?: boolean;
     searchTerm?: string | null;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
@@ -38,6 +39,7 @@ export const FileListingTable: React.FC<
   className,
   emptyListingDisplay,
   searchTerm = '',
+  noSelection,
   ...props
 }) => {
   const limit = 100;
@@ -133,17 +135,21 @@ export const FileListingTable: React.FC<
       className={`${styles['listing-table-base']} ${
         (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
       } ${className ?? ''}`}
-      rowSelection={{
-        type: 'checkbox',
-        onChange: onSelectionChange,
-        selectedRowKeys,
-        renderCell: (checked, _rc, _idx, node) => (
-          <FileListingTableCheckbox
-            checked={checked}
-            onChange={(node as React.ReactElement)?.props.onChange}
-          />
-        ),
-      }}
+      rowSelection={
+        noSelection
+          ? undefined
+          : {
+              type: 'checkbox',
+              onChange: onSelectionChange,
+              selectedRowKeys,
+              renderCell: (checked, _rc, _idx, node) => (
+                <FileListingTableCheckbox
+                  checked={checked}
+                  onChange={(node as React.ReactElement)?.props.onChange}
+                />
+              ),
+            }
+      }
       scroll={{ y: '100%', x: '1000px' }} // set to undefined to disable sticky header
       columns={columns}
       rowKey={(record) => record.path}
