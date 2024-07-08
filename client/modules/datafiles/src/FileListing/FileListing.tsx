@@ -8,7 +8,7 @@ import {
 } from '@client/common-components';
 import { NavLink } from 'react-router-dom';
 import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
-import { TFileTag } from '@client/hooks';
+import { TFileListing, TFileTag } from '@client/hooks';
 
 export function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
@@ -42,6 +42,7 @@ export const FileListing: React.FC<
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
     path?: string;
+    selectedFile?: TFileListing;
   }>({ isOpen: false });
 
   const columns: TFileListingColumns = useMemo(
@@ -76,7 +77,11 @@ export const FileListing: React.FC<
                   type="link"
                   style={{ userSelect: 'text' }}
                   onClick={() =>
-                    setPreviewModalState({ isOpen: true, path: record.path })
+                    setPreviewModalState({
+                      isOpen: true,
+                      path: record.path,
+                      selectedFile: record,
+                    })
                   }
                 >
                   {data}
@@ -106,7 +111,7 @@ export const FileListing: React.FC<
         render: (d) => new Date(d).toLocaleString(),
       },
     ],
-    [setPreviewModalState, baseRoute]
+    [setPreviewModalState, baseRoute, fileTags]
   );
 
   return (
@@ -119,12 +124,12 @@ export const FileListing: React.FC<
         columns={columns}
         {...tableProps}
       />
-      {previewModalState.path && (
+      {previewModalState.path && previewModalState.selectedFile && (
         <PreviewModalBody
+          scheme={scheme}
+          selectedFile={previewModalState.selectedFile}
           isOpen={previewModalState.isOpen}
           api={api}
-          system={system}
-          path={previewModalState.path}
           handleCancel={() => setPreviewModalState({ isOpen: false })}
         />
       )}

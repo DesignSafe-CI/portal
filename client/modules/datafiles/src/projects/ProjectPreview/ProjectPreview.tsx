@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  TFileListing,
   TPreviewTreeData,
   useCitationMetrics,
   useProjectPreview,
@@ -34,6 +35,7 @@ const EntityFileListingTable: React.FC<{
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
     path?: string;
+    selectedFile?: TFileListing;
   }>({ isOpen: false });
 
   const columns: TFileListingColumns = [
@@ -67,7 +69,11 @@ const EntityFileListingTable: React.FC<{
                 type="link"
                 disabled={preview}
                 onClick={() =>
-                  setPreviewModalState({ isOpen: true, path: record.path })
+                  setPreviewModalState({
+                    isOpen: true,
+                    path: record.path,
+                    selectedFile: record,
+                  })
                 }
               >
                 {data}
@@ -99,12 +105,12 @@ const EntityFileListingTable: React.FC<{
         dataSource={treeData.value.fileObjs}
         disabled
       />
-      {previewModalState.path && (
+      {previewModalState.path && previewModalState.selectedFile && (
         <PreviewModalBody
+          scheme="private"
+          selectedFile={previewModalState.selectedFile}
           isOpen={previewModalState.isOpen}
           api={'tapis'}
-          system={'designsafe.storage.published'}
-          path={previewModalState.path}
           handleCancel={() => setPreviewModalState({ isOpen: false })}
         />
       )}
