@@ -18,8 +18,12 @@ from designsafe.apps.api.projects_v2.operations.datacite_operations import (
     publish_datacite_doi,
     upsert_datacite_json,
 )
-
+from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
+    archive_publication_async,
+)
 from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.apps.api.publications_v2.elasticsearch import index_publication
+from designsafe.apps.data.tasks import agave_indexer
 
 logger = logging.getLogger(__name__)
 
@@ -383,14 +387,14 @@ def copy_publication_files(
             if not src_path_obj.exists():
                 raise ProjectFileNotFound(f"File not found: {src_path}")
 
-            os.makedirs(src_path_obj.parent, exist_ok=True)
+            dest_path_obj = Path(path_mapping[src_path])
+            os.makedirs(dest_path_obj.parent, exist_ok=True)
 
             if src_path_obj.is_dir():
                 shutil.copytree(
                     src_path,
                     path_mapping[src_path],
                     dirs_exist_ok=True,
-                    symlinks=True,
                     copy_function=shutil.copy,
                 )
             else:
@@ -398,6 +402,14 @@ def copy_publication_files(
 
         # Lock the publication directory so that non-root users can only read files and list directories
         subprocess.run(["chmod", "-R", "a-x,a=rX", pub_root_dir], check=True)
+        agave_indexer.apply_async(
+            kwargs={
+                "systemId": "designsafe.storage.published",
+                "filePath": pub_dirname,
+                "recurse": True,
+            },
+            queue="indexing",
+        )
     finally:
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
 
@@ -427,6 +439,10 @@ def publish_project(
     if dry_run:
         return pub_tree, path_mapping
 
+    if not settings.DEBUG:
+        # Copy files first so if it fails we don't create orphan metadata/datacite entries.
+        copy_publication_files(path_mapping, project_id, version=version)
+
     new_dois = []
 
     for entity_uuid in entity_uuids:
@@ -451,7 +467,6 @@ def publish_project(
             pub_tree.nodes[node]["value"]["dois"] = [doi]
 
     if not settings.DEBUG:
-        copy_publication_files(path_mapping, project_id, version=version)
         for doi in new_dois:
             publish_datacite_doi(doi)
 
@@ -470,6 +485,12 @@ def publish_project(
         defaults={"value": base_meta_value, "tree": nx.node_link_data(pub_tree)},
     )
     pub_metadata.save()
+
+    index_publication(project_id)
+    if not settings.DEBUG:
+        archive_publication_async.apply_async(
+            args=[project_id, version], queue="default"
+        )
 
     return pub_metadata
 
@@ -538,6 +559,9 @@ def amend_publication(project_id: str):
         upsert_datacite_json(
             datacite_json, doi=pub_tree.nodes[node]["value"]["dois"][0]
         )
+
+    # Index publication in Elasticsearch
+    index_publication(project_id)
 
 
 @shared_task

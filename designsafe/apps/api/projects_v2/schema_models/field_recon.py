@@ -50,6 +50,41 @@ class Mission(MetadataModel):
     # Deprecate these later
     facility: Optional[DropdownValue] = None
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        fedora_json = {
+            "title": self.title,
+            "description": self.description,
+            "publisher": "Designsafe",
+        }
+        fedora_json["creator"] = [
+            f"{author.lname}, {author.fname}" for author in self.authors
+        ]
+
+        fedora_json["coverage"] = []
+        if self.date_start:
+            fedora_json["coverage"].append(self.date_start)
+        if self.date_end:
+            fedora_json["coverage"].append(self.date_end)
+        if self.location:
+            fedora_json["coverage"].append(self.location)
+
+        fedora_json["identifier"] = self.dois
+        if self.facility:
+            fedora_json["contributor"] = self.facility.name
+
+        for referenced_data in self.referenced_data:
+            reference_mapping = referenced_data.to_fedora_json()
+            for key in reference_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [reference_mapping[key]]
+
+        for related_work in self.related_work:
+            related_mapping = related_work.to_fedora_json()
+            for key in related_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [related_mapping[key]]
+
+        return fedora_json
+
 
 class FieldReconReport(MetadataModel):
     """Model for field recon reports."""
@@ -79,6 +114,34 @@ class FieldReconReport(MetadataModel):
     referenced_datas: list[ReferencedWork] = Field(default=[], exclude=True)
 
     tombstone: bool = False
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        fedora_json = {
+            "title": self.title,
+            "description": self.description,
+            "publisher": "Designsafe",
+        }
+        # pylint:disable=not-an-iterable
+        fedora_json["creator"] = [
+            f"{author.lname}, {author.fname}" for author in self.authors
+        ]
+
+        fedora_json["identifier"] = self.dois
+        if self.facility:
+            fedora_json["contributor"] = self.facility.name
+
+        for referenced_data in self.referenced_data:
+            reference_mapping = referenced_data.to_fedora_json()
+            for key in reference_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [reference_mapping[key]]
+
+        for related_work in self.related_work:
+            related_mapping = related_work.to_fedora_json()
+            for key in related_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [related_mapping[key]]
+
+        return fedora_json
 
 
 class Instrument(MetadataModel):
@@ -152,6 +215,41 @@ class SocialScienceCollection(MetadataModel):
     # Deprecated test fields
     methods: list[str | None] = Field(default=[], exclude=True)
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        fedora_json = {
+            "type": "Social Science/dataset",
+            "title": self.title,
+            "description": self.description,
+        }
+        fedora_json["subject"] = []
+        if self.unit:
+            fedora_json["subject"] += self.unit
+        if self.modes:
+            fedora_json["subject"].append(self.modes)
+        if self.sample_approach:
+            fedora_json["subject"] += self.sample_approach
+        if self.sample_size:
+            fedora_json["subject"].append(self.sample_size)
+        for equipment in self.equipment:
+            fedora_json["subject"].append(equipment.name)
+
+        fedora_json["coverage"] = []
+        if self.date_start:
+            fedora_json["coverage"].append(self.date_start)
+        if self.date_end:
+            fedora_json["coverage"].append(self.date_end)
+        if self.location:
+            fedora_json["coverage"].append(self.location)
+
+        if self.restriction:
+            fedora_json["accessRights"] = self.restriction
+
+        fedora_json["contributor"] = [
+            f"{author.lname}, {author.fname}" for author in self.data_collectors
+        ]
+        return fedora_json
+
 
 class PlanningCollection(MetadataModel):
     """Model for planning collections."""
@@ -168,6 +266,18 @@ class PlanningCollection(MetadataModel):
     files: list[str] = []
     file_objs: list[FileObj] = []
     file_tags: list[FileTag] = []
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        fedora_json = {
+            "type": "Research Planning Collection",
+            "title": self.title,
+            "description": self.description,
+        }
+        fedora_json["contributor"] = [
+            f"{author.lname}, {author.fname}" for author in self.data_collectors
+        ]
+        return fedora_json
 
 
 class GeoscienceCollection(MetadataModel):
@@ -199,3 +309,26 @@ class GeoscienceCollection(MetadataModel):
     files: list[str] = []
     file_objs: list[FileObj] = []
     file_tags: list[FileTag] = []
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        fedora_json = {
+            "type": "Engineering Geosciences Collection",
+            "title": self.title,
+            "description": self.description,
+        }
+
+        fedora_json["subject"] = []
+        fedora_json["subject"] += [o.name for o in self.observation_types]
+        fedora_json["subject"] += [e.name for e in self.equipment]
+
+        fedora_json["coverage"] = []
+        if self.date_start:
+            fedora_json["coverage"] += self.date_start
+        if self.date_end:
+            fedora_json["coverage"] += self.date_end
+
+        if self.location:
+            fedora_json["coverage"].append(self.location)
+
+        return fedora_json
