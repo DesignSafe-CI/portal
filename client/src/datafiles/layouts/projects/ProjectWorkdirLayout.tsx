@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   ChangeProjectTypeModal,
+  EmptyProjectFileListing,
   FileListing,
   ProjectNavbar,
 } from '@client/datafiles';
@@ -72,6 +73,7 @@ export const ProjectWorkdirLayout: React.FC = () => {
             system={`project-${data.baseProject.uuid}`}
             path={path ?? ''}
             scroll={{ y: 500 }}
+            emptyListingDisplay={<EmptyProjectFileListing />}
           />
         )}
       </div>

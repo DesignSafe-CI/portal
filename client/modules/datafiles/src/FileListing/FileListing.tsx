@@ -28,6 +28,7 @@ export const FileListing: React.FC<
     scheme?: string;
     baseRoute?: string;
     fileTags?: TFileTag[];
+    emptyListingDisplay?: React.ReactNode;
   } & Omit<TableProps, 'columns'>
 > = ({
   api,
@@ -36,6 +37,7 @@ export const FileListing: React.FC<
   scheme = 'private',
   baseRoute,
   fileTags,
+  emptyListingDisplay,
   ...tableProps
 }) => {
   // Base file listing for use with My Data/Community Data
@@ -122,6 +124,7 @@ export const FileListing: React.FC<
         scheme={scheme}
         path={path}
         columns={columns}
+        emptyListingDisplay={emptyListingDisplay}
         {...tableProps}
       />
       {previewModalState.path && previewModalState.selectedFile && (

@@ -67,7 +67,6 @@ const EntityFileListingTable: React.FC<{
               &nbsp;&nbsp;
               <Button
                 type="link"
-                disabled={preview}
                 onClick={() =>
                   setPreviewModalState({
                     isOpen: true,
@@ -103,6 +102,7 @@ const EntityFileListingTable: React.FC<{
         columns={columns}
         scroll={{ x: 500, y: 500 }}
         dataSource={treeData.value.fileObjs}
+        noSelection={preview}
         disabled
       />
       {previewModalState.path && previewModalState.selectedFile && (
@@ -313,6 +313,7 @@ export const PublishedEntityDisplay: React.FC<{
                 )}
                 {(sortedChildren ?? []).map((child) => (
                   <RecursiveTree
+                    preview={preview}
                     treeData={child}
                     key={child.id}
                     defaultOpen={defaultOpenChildren}

@@ -27,6 +27,7 @@ import {
 } from '../constants';
 import { DefaultOptionType } from 'antd/es/select';
 import { FILE_TAG_OPTIONS } from './ProjectFileTagOptions';
+import { EmptyProjectFileListing } from '../EmptyProjectFileListing';
 
 const FileTagInput: React.FC<{
   projectId: string;
@@ -354,6 +355,7 @@ export const ProjectCurationFileListing: React.FC<{
         scheme="private"
         path={path}
         columns={columns}
+        emptyListingDisplay={<EmptyProjectFileListing />}
         scroll={{ y: 500 }}
       />
       {previewModalState.path && previewModalState.selectedFile && (

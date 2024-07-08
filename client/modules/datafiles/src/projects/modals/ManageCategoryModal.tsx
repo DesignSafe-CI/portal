@@ -123,7 +123,7 @@ export const ManageCategoryModal: React.FC<{
           </section>
         )}
         <article style={{ marginTop: '5px' }}>
-          <strong>Category Inventory</strong>
+          {categories.length >= 1 && <strong>Category Inventory</strong>}
           {categories.map((category) =>
             data.entities
               .filter((e) => e.name === category)
