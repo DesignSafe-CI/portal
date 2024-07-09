@@ -133,7 +133,7 @@ def fetch_otcatalog_api_response(file_path):
                 if dataset['Dataset']['identifier']['value'] == feature['properties']['id']:
                     feature['properties']['description'] = dataset['Dataset']['description']
                     feature['properties']['doiUrl'] = dataset['Dataset']['url']
-                    feature['properties']['host']='OpenTopography'
+                    feature['properties']['host']='OpenTopo'
                     feature['properties']['dateCreated'] = dataset['Dataset']['dateCreated']
                     feature['properties']['temporalCoverage'] = dataset['Dataset']['temporalCoverage']
                     feature['properties']['keywords'] = dataset['Dataset']['keywords']
