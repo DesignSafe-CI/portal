@@ -3,6 +3,7 @@ This script downloads GeoJSON files from a specified GitHub repository,
 processes them to calculate the centroid for each geometry,
 and aggregates the results into a single GeoJSON file.
 """
+# pylint: disable=too-many-nested-blocks
 
 import os
 import json
