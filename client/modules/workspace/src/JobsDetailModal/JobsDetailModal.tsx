@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Collapse, Modal, Layout, Button } from 'antd';
+import {
+  Collapse,
+  Descriptions,
+  DescriptionsProps,
+  Modal,
+  Layout,
+  Button,
+} from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useGetApps, useGetJobs, TAppResponse, TTapisJob } from '@client/hooks';
 import styles from './JobsDetailModal.module.css';
@@ -14,7 +21,6 @@ import {
 } from '../utils/jobs';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
 import { JobActionButton } from '../JobsListing/JobsListing';
-import { DescriptionList } from '../DescriptionList/DescriptionList';
 import { Spinner } from '@client/common-components';
 
 type InputParamsObj = {
@@ -58,7 +64,7 @@ export const JobsDetailModalBody: React.FC<{
         expandIconPosition="end"
         size="small"
         bordered={false}
-        style={{ flex: 1 }}
+        style={{ background: '#fff' }}
         items={[
           {
             label: (
@@ -109,14 +115,77 @@ export const JobsDetailModalBody: React.FC<{
     ...reduceInputParameters(jobDisplay.appArgs),
     ...reduceInputParameters(jobDisplay.envVars),
   };
-  const data = {
-    Application: <DescriptionList data={appDataObj} />,
-    Status: <DescriptionList data={statusDataObj} />,
-    Inputs: <DescriptionList data={inputDataObj} />,
-    Parameters: <DescriptionList data={paramsDataObj} />,
-    Configuration: <DescriptionList data={configDataObj} />,
-    Output: <DescriptionList data={outputDataObj} />,
+
+  const valueStyle = {
+    paddingLeft: '40px',
+    paddingBottom: '0px',
+    width: '100%',
   };
+
+  const labelStyle = {
+    color: '#484848',
+    fontWeight: 700,
+    paddingTop: '10px',
+    border: '0',
+  };
+
+  const baseRowStyle = {
+    paddingLeft: '12px',
+    paddingRight: '12px',
+    paddingBottom: '5px',
+  };
+
+  const itemLabelStyle = {
+    color: 'rgba(0, 0, 0, 0.88)',
+    font: 'normal normal 14px Helvetica Neue',
+    paddingBottom: '0px',
+  };
+
+  interface DisplayItemsProps {
+    items: DescriptionsProps['items'];
+  }
+
+  const DisplayItems: React.FC<DisplayItemsProps> = ({ items }) => (
+    <Descriptions
+      size="small"
+      bordered={false}
+      contentStyle={{ paddingBottom: '0px' }}
+      labelStyle={itemLabelStyle}
+      style={{ paddingLeft: '40px', paddingBottom: 0 }}
+      layout="vertical"
+      column={1}
+      items={items}
+    />
+  );
+
+  const getItems = (
+    data: Record<string, string | undefined>
+  ): DescriptionsProps['items'] =>
+    Object.entries(data)
+      .filter(([_, value]) => value)
+      .map(([key, value]) => ({
+        label: key,
+        children: <span style={valueStyle}>{value}</span>,
+      }));
+
+  const dataObjects = [
+    { label: 'Application', data: appDataObj },
+    { label: 'Status', data: statusDataObj },
+    { label: 'Inputs', data: inputDataObj },
+    { label: 'Parameters', data: paramsDataObj },
+    { label: 'Configuration', data: configDataObj },
+    { label: 'Outputs', data: outputDataObj },
+  ];
+
+  const items: DescriptionsProps['items'] = dataObjects.map((obj, index) => ({
+    label: obj.label,
+    children: <DisplayItems items={getItems(obj.data)} />,
+    labelStyle,
+    style: {
+      ...baseRowStyle,
+      backgroundColor: index % 2 === 0 ? '#fff' : '#f4f4f4',
+    },
+  }));
 
   return (
     <div className={styles['modal-body-container']}>
@@ -177,9 +246,14 @@ export const JobsDetailModalBody: React.FC<{
           />
         )}
       </div>
-      <DescriptionList
+      <Descriptions
+        size="small"
+        bordered={false}
+        colon={false}
+        layout="vertical"
+        column={1}
         className={`${styles['right-panel']} ${styles['panel-content']}`}
-        data={data}
+        items={items}
       />
     </div>
   );

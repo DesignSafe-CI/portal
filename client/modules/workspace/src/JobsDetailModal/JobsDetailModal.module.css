@@ -155,3 +155,6 @@ dl.panel-content > dt:first-of-type {
 .ant-modal .ant-modal-content {
   padding: 0;
 }
+.descriptionRow {
+  border-bottom: var(--border);
+}
