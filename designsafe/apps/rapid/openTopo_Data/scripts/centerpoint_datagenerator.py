@@ -12,7 +12,10 @@ import geojson
 from shapely.geometry import shape, MultiPolygon, Polygon
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 def get_github_file_info(repo, path):
     """
@@ -30,6 +33,7 @@ def get_github_file_info(repo, path):
     response.raise_for_status()
     return response.json()
 
+
 def get_latest_commit_sha(repo, path):
     """
     Get the latest commit SHA for a specific path in a GitHub repository.
@@ -45,7 +49,8 @@ def get_latest_commit_sha(repo, path):
     response = requests.get(commits_url, timeout=10)
     response.raise_for_status()
     commits = response.json()
-    return commits[0]['sha'] if commits else None
+    return commits[0]["sha"] if commits else None
+
 
 def download_files(file_info, save_dir):
     """
@@ -57,13 +62,14 @@ def download_files(file_info, save_dir):
     """
     os.makedirs(save_dir, exist_ok=True)
     for item in file_info:
-        if item['type'] == 'file':
-            response = requests.get(item['download_url'], timeout=10)
+        if item["type"] == "file":
+            response = requests.get(item["download_url"], timeout=10)
             response.raise_for_status()
-            filename = os.path.join(save_dir, os.path.basename(item['download_url']))
-            with open(filename, 'wb') as file:
+            filename = os.path.join(save_dir, os.path.basename(item["download_url"]))
+            with open(filename, "wb") as file:
                 file.write(response.content)
             logging.info(f"Downloaded {filename}")
+
 
 def process_geojson_file(input_filepath, product_type):
     """
@@ -76,40 +82,40 @@ def process_geojson_file(input_filepath, product_type):
     Returns:
         dict: A GeoJSON feature with the centroid of the geometry.
     """
-    with open(input_filepath, 'r', encoding='utf-8') as file:
+    with open(input_filepath, "r", encoding="utf-8") as file:
         data = geojson.load(file)
 
     # Extract the geometry
-    geometry = data['geometry']
+    geometry = data["geometry"]
     geom_shape = shape(geometry)
 
     # Check if the geometry is a MultiPolygon or Polygon
     if isinstance(geom_shape, (MultiPolygon, Polygon)):
         centroid = geom_shape.centroid
     else:
-        logging.warning(f"Skipping file with unsupported geometry type: {input_filepath}")
+        logging.warning(
+            f"Skipping file with unsupported geometry type: {input_filepath}"
+        )
         return None
 
-    properties = data['properties']
-    identifier = properties['identifier']['value']
-    id_value = ".".join(identifier.split('.')[1:])
+    properties = data["properties"]
+    identifier = properties["identifier"]["value"]
+    id_value = ".".join(identifier.split(".")[1:])
 
     new_properties = {
-        "id": properties['identifier']['value'],
+        "id": properties["identifier"]["value"],
         "name": properties["name"],
         "alternateName": properties["alternateName"],
         "url": f"/datasetMetadata?otCollectionID=OT.{id_value}",
-        "productAvailable": product_type
+        "productAvailable": product_type,
     }
 
     return {
         "type": "Feature",
         "properties": new_properties,
-        "geometry": {
-            "type": "Point",
-            "coordinates": [centroid.x, centroid.y]
-        }
+        "geometry": {"type": "Point", "coordinates": [centroid.x, centroid.y]},
     }
+
 
 def process_and_aggregate_geojson_files(source_dirs):
     """
@@ -127,13 +133,15 @@ def process_and_aggregate_geojson_files(source_dirs):
     for source_dir, product_type in source_dirs:
         for root, _, files in os.walk(source_dir):
             for file in files:
-                if file.endswith('.geojson'):
+                if file.endswith(".geojson"):
                     src_file_path = os.path.join(root, file)
 
                     if file in seen_files:
                         # File already processed, update the productAvailable field
                         existing_feature = seen_files[file]
-                        existing_feature['properties']['productAvailable'] += f", {product_type}"
+                        existing_feature["properties"][
+                            "productAvailable"
+                        ] += f", {product_type}"
                     else:
                         # New file, process it
                         new_feature = process_geojson_file(src_file_path, product_type)
@@ -144,6 +152,7 @@ def process_and_aggregate_geojson_files(source_dirs):
 
     return all_features
 
+
 def save_aggregated_results(output_filepath, all_features):
     """
     Save aggregated GeoJSON features to a file.
@@ -152,15 +161,13 @@ def save_aggregated_results(output_filepath, all_features):
         output_filepath (str): The path to the output file.
         all_features (list): A list of GeoJSON features.
     """
-    feature_collection = {
-        "type": "FeatureCollection",
-        "features": all_features
-    }
+    feature_collection = {"type": "FeatureCollection", "features": all_features}
 
     os.makedirs(os.path.dirname(output_filepath), exist_ok=True)
-    with open(output_filepath, 'w', encoding='utf-8') as file:
+    with open(output_filepath, "w", encoding="utf-8") as file:
         geojson.dump(feature_collection, file, indent=2)
     logging.info(f"Aggregated results saved to: {output_filepath}")
+
 
 def main():
     """
@@ -169,13 +176,13 @@ def main():
     repo = "OpenTopography/Data_Catalog_Spatial_Boundaries"
     directories = {
         "OpenTopography_Raster": "open_topo_data/raster",
-        "OpenTopography_Point_Cloud_Lidar": "open_topo_data/point_cloud"
+        "OpenTopography_Point_Cloud_Lidar": "open_topo_data/point_cloud",
     }
     timestamp_file = "last_commit.json"
 
     # Load the last known commit SHAs from the file
     if os.path.exists(timestamp_file):
-        with open(timestamp_file, 'r', encoding='utf-8') as file:
+        with open(timestamp_file, "r", encoding="utf-8") as file:
             last_commit = json.load(file)
     else:
         last_commit = {}
@@ -190,7 +197,9 @@ def main():
 
         # Check if there are new commits since the last known commit
         if latest_commit_sha and latest_commit_sha != last_known_commit_sha:
-            logging.info(f"Repository folder '{path}' has been updated. Downloading new files...")
+            logging.info(
+                f"Repository folder '{path}' has been updated. Downloading new files..."
+            )
             file_info = get_github_file_info(repo, path)
             download_files(file_info, save_dir)
             # Update the commit SHA file
@@ -201,16 +210,19 @@ def main():
 
     if updates_found:
         # Save the updated commit SHAs to the timestamp file
-        with open(timestamp_file, 'w', encoding='utf-8') as file:
+        with open(timestamp_file, "w", encoding="utf-8") as file:
             json.dump(last_commit, file)
 
         # Process and aggregate GeoJSON files
-        source_dirs = [("open_topo_data/point_cloud", "Point Cloud Data"),
-                       ("open_topo_data/raster", "Raster")]
-        output_filepath = 'open_topo_data/center_view_data.geojson'
+        source_dirs = [
+            ("open_topo_data/point_cloud", "Point Cloud Data"),
+            ("open_topo_data/raster", "Raster"),
+        ]
+        output_filepath = "open_topo_data/center_view_data.geojson"
 
         all_features = process_and_aggregate_geojson_files(source_dirs)
         save_aggregated_results(output_filepath, all_features)
+
 
 if __name__ == "__main__":
     # pylint: disable=too-many-nested-blocks
