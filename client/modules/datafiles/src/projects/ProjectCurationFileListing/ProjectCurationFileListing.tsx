@@ -27,6 +27,7 @@ import {
 } from '../constants';
 import { DefaultOptionType } from 'antd/es/select';
 import { FILE_TAG_OPTIONS } from './ProjectFileTagOptions';
+import { EmptyProjectFileListing } from '../EmptyProjectFileListing';
 
 const FileTagInput: React.FC<{
   projectId: string;
@@ -273,6 +274,7 @@ export const ProjectCurationFileListing: React.FC<{
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
     path?: string;
+    selectedFile?: TFileListing;
   }>({ isOpen: false });
 
   const columns: TFileListingColumns = useMemo(
@@ -307,7 +309,11 @@ export const ProjectCurationFileListing: React.FC<{
                   <Button
                     type="link"
                     onClick={() =>
-                      setPreviewModalState({ isOpen: true, path: record.path })
+                      setPreviewModalState({
+                        isOpen: true,
+                        path: record.path,
+                        selectedFile: record,
+                      })
                     }
                   >
                     {data}
@@ -349,14 +355,15 @@ export const ProjectCurationFileListing: React.FC<{
         scheme="private"
         path={path}
         columns={columns}
+        emptyListingDisplay={<EmptyProjectFileListing />}
         scroll={{ y: 500 }}
       />
-      {previewModalState.path && (
+      {previewModalState.path && previewModalState.selectedFile && (
         <PreviewModalBody
+          scheme="private"
           isOpen={previewModalState.isOpen}
           api="tapis"
-          system={`project-${data.baseProject.uuid}`}
-          path={previewModalState.path}
+          selectedFile={previewModalState.selectedFile}
           handleCancel={() => setPreviewModalState({ isOpen: false })}
         />
       )}
