@@ -10,16 +10,21 @@ To install and run in a virtual environment:
    ```bash
    python -m venv venv
 2. Activate the virtual environment:
+   ```bash
     source venv/bin/activate
 3. Install the required packages:
+   ```bash
     pip install -r centerpoint_Requirements.txt
 4. Run the script:
+   ```bash
     python centerpoint_datagenerator.py
 
 # Directory Structure
 
-centerpoint_Requirements.txt: Contains the list of dependencies required by the script.
-centerpoint_datagenerator.py: The main script that processes GeoJSON files.
+1. centerpoint_Requirements.txt:
+    Contains the list of dependencies required by the script.
+2. centerpoint_datagenerator.py:
+    The main script that processes GeoJSON files.
 
 # Description
 
@@ -32,5 +37,5 @@ The centerpoint_datagenerator.py script performs the following steps:
 
 # Notes
 
-Make sure you have an active internet connection as the script fetches data from GitHub.
-The script updates the last_commit.json file with the latest commit SHAs to avoid redundant downloads in subsequent runs.
+1. Make sure you have an active internet connection as the script fetches data from GitHub.
+2. The script updates the last_commit.json file with the latest commit SHAs to avoid redundant downloads in subsequent runs.
