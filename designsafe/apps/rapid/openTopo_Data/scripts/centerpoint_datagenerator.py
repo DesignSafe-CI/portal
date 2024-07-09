@@ -4,6 +4,8 @@ processes them to calculate the centroid for each geometry,
 and aggregates the results into a single GeoJSON file.
 """
 # pylint: disable=too-many-nested-blocks
+# pylint: disable=import-error
+# pylint: disable=import-error
 
 import os
 import json
