@@ -159,7 +159,7 @@ export const SubEntityDetails: React.FC<{
       </table>
       <DescriptionExpander>
         <strong>Description: </strong>
-        {entityValue.description}
+        {entityValue.description || '(N/A)'}
       </DescriptionExpander>
     </section>
   );
