@@ -38,6 +38,23 @@ export function useGetJobs(
   return useQuery(getJobsQuery(operation, queryParams));
 }
 
+const getJobQuery = (
+  operation: TJobGetOperations,
+  queryParams: TJobParamsType
+) => ({
+  queryKey: ['workspace', 'getJobs', operation, queryParams],
+  queryFn: () => getJobs(operation, queryParams),
+  retry: false,
+  enabled: !!queryParams.uuid,
+});
+
+export function useGetJob(
+  operation: TJobGetOperations,
+  queryParams: TJobParamsType
+) {
+  return useQuery(getJobQuery(operation, queryParams));
+}
+
 export const useGetJobsSuspense = (
   operation: TJobGetOperations,
   queryParams: TJobParamsType

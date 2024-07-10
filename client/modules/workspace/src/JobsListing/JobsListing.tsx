@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { PrimaryButton, SecondaryButton } from '@client/common-components';
 import { BaseButtonProps } from 'antd/es/button/button';
 import {
@@ -12,6 +12,7 @@ import {
   TJobPostOperations,
   useReadNotifications,
   TGetNotificationsResponse,
+  TTapisJob,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -95,6 +96,15 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     markRead: false,
   });
   const { mutate: readNotifications } = useReadNotifications();
+  const navigate = useNavigate();
+  const handleReuseInputs = (job: TTapisJob) => {
+    const path =
+      '/' +
+      `${job.appId}` +
+      (job.appVersion ? `?appVersion=${job.appVersion}` : '') +
+      `&jobUUID=${job.uuid}`;
+    navigate(path);
+  };
 
   // mark all as read on component mount
   useEffect(() => {
@@ -164,14 +174,22 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                       : 'Output Pending'}
                   </SecondaryButton>
                 )}
-                {isTerminalState(job.status) && (
-                  <JobActionButton
-                    uuid={job.uuid}
-                    operation="resubmitJob"
-                    title={isInteractiveJob(job) ? 'Resubmit' : 'Reuse Inputs'}
-                    size="small"
-                  />
-                )}
+                {isTerminalState(job.status) &&
+                  (isInteractiveJob(job) ? (
+                    <JobActionButton
+                      uuid={job.uuid}
+                      operation="resubmitJob"
+                      title="Resubmit"
+                      size="small"
+                    />
+                  ) : (
+                    <SecondaryButton
+                      size="small"
+                      onClick={() => handleReuseInputs(job)}
+                    >
+                      Reuse Inputs
+                    </SecondaryButton>
+                  ))}
                 <NavLink to={job.uuid} className={styles.link}>
                   View Details
                 </NavLink>

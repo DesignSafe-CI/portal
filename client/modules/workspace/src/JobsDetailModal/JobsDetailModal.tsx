@@ -18,6 +18,7 @@ import {
   getJobDisplayInformation,
   TJobDisplayInputOrParameter,
   TJobDisplayInfo,
+  isInteractiveJob,
 } from '../utils/jobs';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
 import { JobActionButton } from '../JobsListing/JobsListing';
@@ -40,6 +41,7 @@ export const JobsDetailModalBody: React.FC<{
     jobData,
     appData
   ) as TJobDisplayInfo;
+  const navigate = useNavigate();
 
   const outputLocation = getOutputPath(jobData);
   const created = formatDateTimeFromValue(new Date(jobData.created));
@@ -193,6 +195,15 @@ export const JobsDetailModalBody: React.FC<{
       };
     });
 
+  const handleReuseInputs = (job: TTapisJob) => {
+    const path =
+      '/' +
+      `${job.appId}` +
+      (job.appVersion ? `?appVersion=${job.appVersion}` : '') +
+      `&jobUUID=${job.uuid}`;
+    navigate(path);
+  };
+
   return (
     <div className={styles['modal-body-container']}>
       <div className={`${styles['left-panel']}`}>
@@ -234,14 +245,23 @@ export const JobsDetailModalBody: React.FC<{
             </dd>
           </>
         </dl>
-        {isTerminalState(jobData.status) && (
-          <JobActionButton
-            uuid={jobData.uuid}
-            title="Resubmit Job"
-            operation="resubmitJob"
-            type="primary"
-          />
-        )}
+        {isTerminalState(jobData.status) &&
+          (isInteractiveJob(jobData) ? (
+            <JobActionButton
+              uuid={jobData.uuid}
+              title="Resubmit Job"
+              operation="resubmitJob"
+              type="primary"
+            />
+          ) : (
+            <Button
+              size="middle"
+              onClick={() => handleReuseInputs(jobData)}
+              type="primary"
+            >
+              Reuse Inputs
+            </Button>
+          ))}
         {!isTerminalState(jobData.status) && (
           <JobActionButton
             uuid={jobData.uuid}
