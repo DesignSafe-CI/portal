@@ -105,7 +105,7 @@ export const JobsListingTable: React.FC<
       } ${className ?? ''}`}
       scroll={{ y: '100%', x: '500px' }} // set to undefined to disable sticky header
       columns={columns}
-      rowKey={(record) => record.path}
+      rowKey={(record) => record.id}
       dataSource={combinedListing}
       pagination={false}
       loading={isLoading || isFetchingNextPage}
