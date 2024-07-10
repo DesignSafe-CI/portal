@@ -21,7 +21,15 @@ export const ProjectCategoryForm: React.FC<{
   entityUuid?: string;
   mode: 'create' | 'edit';
   onSubmit: CallableFunction;
-}> = ({ projectType, projectId, entityUuid, mode = 'edit', onSubmit }) => {
+  onCancelEdit: CallableFunction;
+}> = ({
+  projectType,
+  projectId,
+  entityUuid,
+  mode = 'edit',
+  onSubmit,
+  onCancelEdit,
+}) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
   const [selectedName, setSelectedName] = useState<string | undefined>(
@@ -47,21 +55,22 @@ export const ProjectCategoryForm: React.FC<{
       form.setFieldsValue({ value: category.value });
       setSelectedName(category.name);
     }
+    setHasValidationErrors(false);
   }, [projectId, category, data, form, mode]);
 
   if (!data) return null;
   return (
     <Form
+      scrollToFirstError={{ behavior: 'smooth' }}
       form={form}
       onValuesChange={(_, v) => mode === 'create' && setSelectedName(v.name)}
       layout="vertical"
       onFinish={(v) => {
         onSubmit(v);
-        if (mode === 'create') {
-          form.resetFields();
-          setSelectedName(undefined);
-          setHasValidationErrors(false);
-        }
+        form.resetFields();
+        setSelectedName(undefined);
+        onCancelEdit();
+        setHasValidationErrors(false);
       }}
       onFinishFailed={() => setHasValidationErrors(true)}
       requiredMark={customRequiredMark}
@@ -388,6 +397,19 @@ export const ProjectCategoryForm: React.FC<{
       )}
 
       <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        {mode === 'edit' && (
+          <Button
+            onClick={() => {
+              onCancelEdit();
+              form.resetFields();
+              setHasValidationErrors(false);
+            }}
+            style={{ marginRight: '10px' }}
+            type="link"
+          >
+            Cancel Editing
+          </Button>
+        )}
         <Button type="primary" className="success-button" htmlType="submit">
           {mode === 'create' ? (
             <span>

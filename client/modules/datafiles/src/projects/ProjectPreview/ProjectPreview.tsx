@@ -28,7 +28,7 @@ import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
 import { PipelineEditCategoryModal } from '../modals';
 
-const EntityFileListingTable: React.FC<{
+export const EntityFileListingTable: React.FC<{
   treeData: TPreviewTreeData;
   preview?: boolean;
 }> = ({ treeData, preview }) => {
