@@ -218,10 +218,10 @@ def main():
 
         # Process and aggregate GeoJSON files
         source_dirs = [
-            ("open_topo_data/point_cloud", "Point Cloud Data"),
-            ("open_topo_data/raster", "Raster"),
+            ("opentopo_data/point_cloud", "Point Cloud Data"),
+            ("opentopo_data/raster", "Raster"),
         ]
-        output_filepath = "open_topo_data/center_view_data.geojson"
+        output_filepath = "opentopo_data/center_view_data.geojson"
 
         all_features = process_and_aggregate_geojson_files(source_dirs)
         save_aggregated_results(output_filepath, all_features)
