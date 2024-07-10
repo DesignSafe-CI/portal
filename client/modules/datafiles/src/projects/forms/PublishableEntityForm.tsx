@@ -603,12 +603,14 @@ export const PublishableEntityForm: React.FC<{
   entityUuid?: string;
   mode: 'create' | 'edit';
   onSubmit: CallableFunction;
+  onCancelEdit: CallableFunction;
 }> = ({
   projectType,
   projectId,
   entityUuid,
   entityName,
   onSubmit,
+  onCancelEdit,
   mode = 'edit',
 }) => {
   const [form] = Form.useForm();
@@ -632,14 +634,14 @@ export const PublishableEntityForm: React.FC<{
   return (
     <Form
       form={form}
+      scrollToFirstError
       layout="vertical"
       onFinishFailed={() => setHasValidationErrors(true)}
       onFinish={(v) => {
         onSubmit(v.value);
         setHasValidationErrors(false);
-        if (mode === 'create') {
-          form.resetFields();
-        }
+        onCancelEdit();
+        form.resetFields();
       }}
       requiredMark={customRequiredMark}
     >
@@ -677,6 +679,18 @@ export const PublishableEntityForm: React.FC<{
       )}
 
       <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        {mode === 'edit' && (
+          <Button
+            onClick={() => {
+              onCancelEdit();
+              form.resetFields();
+            }}
+            style={{ marginRight: '10px' }}
+            type="link"
+          >
+            Cancel Editing
+          </Button>
+        )}
         <Button type="primary" className="success-button" htmlType="submit">
           {mode === 'create' ? (
             <span>
