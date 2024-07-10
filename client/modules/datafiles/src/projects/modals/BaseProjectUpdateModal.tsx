@@ -63,7 +63,6 @@ export const BaseProjectUpdateModal: React.FC<{
       {contextHolder}
       {React.createElement(children, { onClick: showModal })}
       <Modal
-        destroyOnClose
         open={isModalOpen}
         onCancel={handleClose}
         width="1000px"

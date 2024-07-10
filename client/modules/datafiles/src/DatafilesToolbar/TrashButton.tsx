@@ -29,7 +29,7 @@ const TrashButton: React.FC<TrashButtonProps<{ path: string }>> = React.memo(
       // const trashPath = path === 'myData' ? '${user.username}/.Trash' : '.Trash';
       const userUsername: string | undefined = user?.username;
       let trashPath: string;
-      if (typeof userUsername === 'string') {
+      if (typeof userUsername === 'string' && !system.startsWith('project-')) {
         trashPath = userUsername + '/.Trash';
         updateFilesPath(trashPath);
       } else {

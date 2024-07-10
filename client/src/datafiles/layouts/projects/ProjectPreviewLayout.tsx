@@ -17,7 +17,7 @@ export const ProjectPreviewLayout: React.FC = () => {
   if (!projectId) return null;
   if (!data) return null;
   return (
-    <div style={{ flex: 1 }}>
+    <div style={{ flex: 1, paddingBottom: '30px' }}>
       <ProjectTitleHeader projectId={projectId} />
       <BaseProjectDetails projectValue={data.baseProject.value} />
       <div

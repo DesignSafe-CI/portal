@@ -108,7 +108,7 @@ export const AppsSubmissionForm: React.FC = () => {
     [definition]
   );
 
-  let missingAllocation;
+  let missingAllocation: string | undefined;
   if (!hasDefaultAllocation && hasStorageSystems) {
     // User does not have default storage allocation
     missingAllocation = getSystemName(defaultStorageHost);
@@ -272,6 +272,16 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [queueValue, setValue]);
 
+  // TODO: DES-2916: Use Zod's superRefine feature instead of manually updating schema and tracking schema changes.
+  React.useEffect(() => {
+    // Note: trigger is a no op if the field does not exist. So, it is fine to define all.
+    methods.trigger([
+      'configuration.nodeCount',
+      'configuration.maxMinutes',
+      'configuration.coresPerNode',
+    ]);
+  }, [schema, methods]);
+
   interface TStep {
     [dynamic: string]: {
       title: string;
@@ -409,14 +419,15 @@ export const AppsSubmissionForm: React.FC = () => {
             [sParameterSet]: Object.entries(sParameterValue)
               .map(([k, v]) => {
                 if (!v) return;
+                const field = parameterSet.fields?.[sParameterSet]?.[k];
                 // filter read only parameters. 'FIXED' parameters are tracked as readOnly
-                if (parameterSet.fields?.[k]?.readOnly) return;
+                if (field?.readOnly) return;
                 // Convert the value to a string, if necessary
                 const transformedValue =
                   typeof v === 'number' ? v.toString() : v;
                 return sParameterSet === 'envVariables'
-                  ? { key: k, value: transformedValue }
-                  : { name: k, arg: transformedValue };
+                  ? { key: field?.key ?? k, value: transformedValue }
+                  : { name: field?.key ?? k, arg: transformedValue };
               })
               .filter((v) => v), // filter out any empty values
           };

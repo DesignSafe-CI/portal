@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   useCitationMetrics,
   useProjectDetail,
   usePublicationDetail,
 } from '@client/hooks';
-// import { MetricsModal } from '../modals/MetricsModal';
+import { MetricsModal } from '../modals/MetricsModal';
 import styles from './ProjectCitation.module.css';
 
 export const ProjectCitation: React.FC<{
@@ -83,13 +83,16 @@ export const PublishedCitation: React.FC<{
 export const DownloadCitation: React.FC<{
   projectId: string;
   entityUuid: string;
-}> = ({ projectId, entityUuid }) => {
+  preview?: boolean;
+}> = ({ projectId, entityUuid, preview }) => {
   const {
     data,
     isLoading: isProjectLoading,
     isError: isProjectError,
     error: projectError,
   } = usePublicationDetail(projectId);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const entityDetails = (data?.tree.children ?? []).find(
     (child) => child.uuid === entityUuid
@@ -102,6 +105,14 @@ export const DownloadCitation: React.FC<{
 
   const { data: citationMetrics, isLoading, isError } = useCitationMetrics(doi);
 
+  const openModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
   if (isProjectLoading) return <div>Loading project details...</div>;
   if (isProjectError)
     return <div>Error fetching project details: {projectError.message}</div>;
@@ -109,9 +120,9 @@ export const DownloadCitation: React.FC<{
 
   return (
     <div>
-      {isLoading && <div>Loading citation metrics...</div>}
-      {isError && <div>Error fetching citation metrics</div>}
-      {citationMetrics && (
+      {!preview && isLoading && <div>Loading citation metrics...</div>}
+      {!preview && isError && <div>Error fetching citation metrics</div>}
+      {citationMetrics && !preview && (
         <div>
           <strong>Download Citation: </strong>
           <a
@@ -154,13 +165,22 @@ export const DownloadCitation: React.FC<{
               Citations
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            {/* <span
+            <span
               onClick={openModal}
-              style={{ cursor: 'pointer', color: '#337AB7', fontWeight: 'bold' }}
+              style={{
+                cursor: 'pointer',
+                color: '#337AB7',
+                fontWeight: 'bold',
+              }}
             >
               Details
-            </span> */}
-            {/* <MetricsModal isOpen={isModalVisible} handleCancel={closeModal} data1={citationMetrics?.data1} /> */}
+            </span>
+            <MetricsModal
+              isOpen={isModalVisible}
+              handleCancel={closeModal}
+              eventMetricsData={citationMetrics?.data1}
+              usageMetricsData={citationMetrics?.data2}
+            />
           </div>
         </div>
       )}

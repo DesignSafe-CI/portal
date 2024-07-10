@@ -1,4 +1,4 @@
-type TParameterSetNotes = {
+export type TParameterSetNotes = {
   isHidden?: boolean;
   fieldType?: string;
   validator?: {
@@ -36,6 +36,7 @@ export type TAppFileInput = {
   notes?: {
     showTargetPath?: boolean;
     isHidden?: boolean;
+    selectionMode?: string;
   };
   sourceUrl?: string;
   targetPath?: string;

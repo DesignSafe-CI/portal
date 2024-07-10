@@ -1,4 +1,4 @@
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, Alert } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   equipmentOptions,
@@ -21,7 +21,15 @@ export const ProjectCategoryForm: React.FC<{
   entityUuid?: string;
   mode: 'create' | 'edit';
   onSubmit: CallableFunction;
-}> = ({ projectType, projectId, entityUuid, mode = 'edit', onSubmit }) => {
+  onCancelEdit: CallableFunction;
+}> = ({
+  projectType,
+  projectId,
+  entityUuid,
+  mode = 'edit',
+  onSubmit,
+  onCancelEdit,
+}) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
   const [selectedName, setSelectedName] = useState<string | undefined>(
@@ -39,27 +47,32 @@ export const ProjectCategoryForm: React.FC<{
     [data, entityUuid]
   );
 
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+
   // Set initial form values
   useEffect(() => {
     if (data && category && mode === 'edit') {
       form.setFieldsValue({ value: category.value });
       setSelectedName(category.name);
     }
+    setHasValidationErrors(false);
   }, [projectId, category, data, form, mode]);
 
   if (!data) return null;
   return (
     <Form
+      scrollToFirstError={{ behavior: 'smooth' }}
       form={form}
       onValuesChange={(_, v) => mode === 'create' && setSelectedName(v.name)}
       layout="vertical"
       onFinish={(v) => {
         onSubmit(v);
-        if (mode === 'create') {
-          form.resetFields();
-          setSelectedName(undefined);
-        }
+        form.resetFields();
+        setSelectedName(undefined);
+        onCancelEdit();
+        setHasValidationErrors(false);
       }}
+      onFinishFailed={() => setHasValidationErrors(true)}
       requiredMark={customRequiredMark}
     >
       {mode === 'create' && (
@@ -119,7 +132,8 @@ export const ProjectCategoryForm: React.FC<{
       {selectedName === constants.FIELD_RECON_GEOSCIENCE && (
         <>
           <Form.Item label="Observation Type" required>
-            The nature or subject of the data collected.
+            The nature or subject of the data collected. Enter a custom value by
+            typing it into the field and pressing "return".
             <Form.Item
               name={['value', 'observationTypes']}
               className="inner-form-item"
@@ -203,7 +217,8 @@ export const ProjectCategoryForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Equipment" required>
-            The equipment used to gather your data.
+            The equipment used to gather your data. Enter a custom value by
+            typing it into the field and pressing "return".
             <Form.Item
               name={['value', 'equipment']}
               className="inner-form-item"
@@ -319,7 +334,8 @@ export const ProjectCategoryForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Equipment" required>
-            The equipment used to gather your data.
+            The equipment used to gather your data. Enter a custom value by
+            typing it into the field and pressing "return".
             <Form.Item
               name={['value', 'equipment']}
               className="inner-form-item"
@@ -366,7 +382,34 @@ export const ProjectCategoryForm: React.FC<{
         </Form.Item>
       </Form.Item>
 
+      {hasValidationErrors && (
+        <Alert
+          type="error"
+          style={{ marginBottom: '10px' }}
+          showIcon
+          message={
+            <span>
+              One or more fields could not be validated. Please check the form
+              for errors.
+            </span>
+          }
+        />
+      )}
+
       <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        {mode === 'edit' && (
+          <Button
+            onClick={() => {
+              onCancelEdit();
+              form.resetFields();
+              setHasValidationErrors(false);
+            }}
+            style={{ marginRight: '10px' }}
+            type="link"
+          >
+            Cancel Editing
+          </Button>
+        )}
         <Button type="primary" className="success-button" htmlType="submit">
           {mode === 'create' ? (
             <span>

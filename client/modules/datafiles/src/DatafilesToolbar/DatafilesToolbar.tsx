@@ -85,10 +85,13 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
         canRename: user && selectedFiles.length === 1 && !isReadOnly,
         canCopy: user && selectedFiles.length >= 1,
         canTrash: user && selectedFiles.length >= 1 && !isReadOnly,
-        canDownload: selectedFiles.length >= 1,
+        // Disable downloads from frontera.work until we have a non-flaky mount on ds-download.
+        canDownload:
+          selectedFiles.length >= 1 &&
+          system !== 'designsafe.storage.frontera.work',
       };
     },
-    [selectedFiles, isReadOnly, user]
+    [selectedFiles, isReadOnly, user, system]
   );
 
   return (
@@ -109,7 +112,12 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           )}
         </DatafilesModal.Rename>
 
-        <DatafilesModal.Move api={api} system={system} path={path}>
+        <DatafilesModal.Move
+          api={api}
+          system={system}
+          path={path}
+          selectedFiles={selectedFiles}
+        >
           {({ onClick }) => (
             <ToolbarButton
               onClick={onClick}
@@ -123,9 +131,8 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
         </DatafilesModal.Move>
         <DatafilesModal.Preview
           api={api}
-          system={system}
           scheme={scheme}
-          path={selectedFiles[0]?.path ?? ''}
+          selectedFile={selectedFiles[0]}
         >
           {({ onClick }) => (
             <ToolbarButton

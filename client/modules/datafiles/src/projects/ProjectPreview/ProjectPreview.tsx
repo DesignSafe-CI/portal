@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  TFileListing,
   TPreviewTreeData,
   useCitationMetrics,
   useProjectPreview,
@@ -14,25 +15,27 @@ import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import {
   ProjectCitation,
   PublishedCitation,
+  DownloadCitation,
 } from '../ProjectCitation/ProjectCitation';
 import {
   FileListingTable,
   FileTypeIcon,
   TFileListingColumns,
 } from '@client/common-components';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
-import { MetricsModal } from '../modals/MetricsModal';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
+import { PipelineEditCategoryModal } from '../modals';
 
-const EntityFileListingTable: React.FC<{
+export const EntityFileListingTable: React.FC<{
   treeData: TPreviewTreeData;
   preview?: boolean;
 }> = ({ treeData, preview }) => {
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
     path?: string;
+    selectedFile?: TFileListing;
   }>({ isOpen: false });
 
   const columns: TFileListingColumns = [
@@ -64,9 +67,12 @@ const EntityFileListingTable: React.FC<{
               &nbsp;&nbsp;
               <Button
                 type="link"
-                disabled={preview}
                 onClick={() =>
-                  setPreviewModalState({ isOpen: true, path: record.path })
+                  setPreviewModalState({
+                    isOpen: true,
+                    path: record.path,
+                    selectedFile: record,
+                  })
                 }
               >
                 {data}
@@ -96,14 +102,15 @@ const EntityFileListingTable: React.FC<{
         columns={columns}
         scroll={{ x: 500, y: 500 }}
         dataSource={treeData.value.fileObjs}
+        noSelection={preview}
         disabled
       />
-      {previewModalState.path && (
+      {previewModalState.path && previewModalState.selectedFile && (
         <PreviewModalBody
+          scheme="private"
+          selectedFile={previewModalState.selectedFile}
           isOpen={previewModalState.isOpen}
           api={'tapis'}
-          system={'designsafe.storage.published'}
-          path={previewModalState.path}
           handleCancel={() => setPreviewModalState({ isOpen: false })}
         />
       )}
@@ -115,13 +122,35 @@ function RecursiveTree({
   treeData,
   preview,
   defaultOpen = false,
+  showEditCategories = false,
 }: {
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   preview?: boolean;
+  showEditCategories?: boolean;
 }) {
+  const { projectId } = useParams();
   return (
     <li className={`${styles['tree-li']}`}>
+      {showEditCategories && (
+        <div>
+          <PipelineEditCategoryModal
+            projectId={projectId ?? ''}
+            formType="category"
+            entityUuid={treeData.uuid}
+          >
+            {({ onClick }) => (
+              <Button
+                onClick={onClick}
+                type="link"
+                style={{ marginTop: '10px', fontWeight: 'bold' }}
+              >
+                Edit {treeData.value.title}
+              </Button>
+            )}
+          </PipelineEditCategoryModal>
+        </div>
+      )}
       <ProjectCollapse
         entityName={treeData.name}
         title={treeData.value.title}
@@ -148,6 +177,7 @@ function RecursiveTree({
               treeData={child}
               defaultOpen={defaultOpen}
               preview={preview}
+              showEditCategories={showEditCategories}
             />
           </div>
         ))}
@@ -163,6 +193,7 @@ export const PublishedEntityDisplay: React.FC<{
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   defaultOpenChildren?: boolean;
+  showEditCategories?: boolean;
 }> = ({
   projectId,
   preview,
@@ -170,9 +201,9 @@ export const PublishedEntityDisplay: React.FC<{
   license,
   defaultOpen = false,
   defaultOpenChildren = false,
+  showEditCategories = false,
 }) => {
   const [active, setActive] = useState<boolean>(defaultOpen);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
@@ -189,13 +220,6 @@ export const PublishedEntityDisplay: React.FC<{
     error,
   } = useCitationMetrics(dois);
 
-  const openModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
   useEffect(() => {
     if (isError) {
       console.error('Error fetching citation metrics:', error);
@@ -239,44 +263,14 @@ export const PublishedEntityDisplay: React.FC<{
         ) : (
           <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
         )}
-        {isLoading && <div>Loading citation metrics...</div>}
-        {isError && <div>Error fetching citation metrics</div>}
+        <br />
         {citationMetrics && (
           <div>
-            <strong>Download Citation:</strong>
-            <div>
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'}{' '}
-                Downloads
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.viewCount ?? '--'}{' '}
-                Views
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles['yellow-highlight']}>
-                {citationMetrics?.data2?.data.attributes.citationCount ?? '--'}{' '}
-                Citations
-              </span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span
-                onClick={openModal}
-                style={{
-                  cursor: 'pointer',
-                  color: '#337AB7',
-                  fontWeight: 'bold',
-                }}
-              >
-                Details
-              </span>
-              <MetricsModal
-                isOpen={isModalVisible}
-                handleCancel={closeModal}
-                eventMetricsData={citationMetrics?.data1}
-                usageMetricsData={citationMetrics?.data2}
-              />
-            </div>
+            <DownloadCitation
+              projectId={projectId}
+              entityUuid={treeData.uuid}
+              preview={preview}
+            />
           </div>
         )}
       </article>
@@ -319,9 +313,11 @@ export const PublishedEntityDisplay: React.FC<{
                 )}
                 {(sortedChildren ?? []).map((child) => (
                   <RecursiveTree
+                    preview={preview}
                     treeData={child}
                     key={child.id}
                     defaultOpen={defaultOpenChildren}
+                    showEditCategories={showEditCategories}
                   />
                 ))}
               </>

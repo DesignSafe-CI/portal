@@ -71,16 +71,6 @@ const SimulationOverview1 = (
           Curation office hours
         </a>
       </li>
-      <li>
-        {' '}
-        <a
-          href="/learning-center/training/"
-          target="_blank"
-          aria-describedby="msg-open-new-window"
-        >
-          Webinars
-        </a>
-      </li>
     </ul>
   </div>
 );
@@ -172,7 +162,7 @@ const SimulationOverview4 = (
         target="_blank"
         aria-describedby="msg-open-new-window"
       >
-        Curation office hours
+        curation office hours
       </a>{' '}
       at the beginning of the curation process. You can <a>download</a> and
       print this diagram to sketch and organize your work.

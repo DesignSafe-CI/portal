@@ -11,7 +11,7 @@ import {
 } from 'antd';
 import { useFormContext, useWatch, FieldValues } from 'react-hook-form';
 import { z, ZodTypeAny } from 'zod';
-import { TField } from '../AppsWizard/AppsFormSchema';
+import { TField, fieldDisplayOrder } from '../AppsWizard/AppsFormSchema';
 import { PrimaryButton } from '@client/common-components';
 import styles from './AppsSubmissionDetails.module.css';
 
@@ -81,7 +81,15 @@ export const AppsSubmissionDetails: React.FC<{
     if (typeof value === 'object') {
       if (!Object.keys(value).length) return <span>-</span>;
       const items: DescriptionsProps['items'] = [];
-      Object.entries(value).forEach(([k, v], childIndex) => {
+      const entries = Object.entries(value);
+      if (key in fieldDisplayOrder) {
+        const displayOrder =
+          fieldDisplayOrder[key as keyof typeof fieldDisplayOrder];
+        entries.sort(
+          (a, b) => displayOrder.indexOf(a[0]) - displayOrder.indexOf(b[0])
+        );
+      }
+      entries.forEach(([k, v], childIndex) => {
         if (v instanceof Object) {
           Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
             const nestedFieldSchema = parent?.shape?.[k]?.shape?.[kk];

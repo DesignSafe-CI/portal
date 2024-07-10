@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
 import { Alert, Button, Modal, Table } from 'antd';
 import {
+  TFileListing,
   useCheckFilesForAssociation,
   useFileMove,
   usePathDisplayName,
-  useSelectedFiles,
 } from '@client/hooks';
 
 import {
@@ -122,14 +122,14 @@ export const MoveModal: React.FC<{
   api: string;
   system: string;
   path: string;
+  selectedFiles: TFileListing[];
+  successCallback?: CallableFunction;
   children: TModalChildren;
-}> = ({ api, system, path, children }) => {
+}> = ({ api, system, path, selectedFiles, successCallback, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
-
-  const { selectedFiles } = useSelectedFiles(api, system, path);
 
   let { projectId } = useParams();
   if (!projectId) projectId = '';
@@ -170,14 +170,17 @@ export const MoveModal: React.FC<{
   const mutateCallback = useCallback(
     (dPath: string) => {
       selectedFiles.forEach((f) =>
-        mutate({
-          src: { api, system, path: encodeURIComponent(f.path) },
-          dest: { api: destApi, system: destSystem, path: dPath },
-        })
+        mutate(
+          {
+            src: { api, system, path: encodeURIComponent(f.path) },
+            dest: { api: destApi, system: destSystem, path: dPath },
+          },
+          { onSuccess: () => successCallback && successCallback() }
+        )
       );
       handleClose();
     },
-    [selectedFiles, mutate, destApi, destSystem, api, system]
+    [selectedFiles, mutate, destApi, destSystem, successCallback, api, system]
   );
 
   const DestFilesColumns = useMemo(

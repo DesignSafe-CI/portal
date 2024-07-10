@@ -57,6 +57,7 @@ export type TField = {
   description?: string;
   options?: TFieldOptions[];
   tapisFile?: boolean;
+  tapisFileSelectionMode?: string;
   placeholder?: string;
   readOnly?: boolean;
 };
@@ -95,7 +96,18 @@ export type TAppFormSchema = {
   };
 };
 
-export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)\/[^/]+$/;
+export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
+
+export const fieldDisplayOrder: Record<string, string[]> = {
+  configuration: [
+    'execSystemLogicalQueue',
+    'maxMinutes',
+    'nodeCount',
+    'coresPerNode',
+    'allocation',
+  ],
+  outputs: ['name', 'archiveSystemId', 'archiveSystemDir'],
+};
 
 // See https://github.com/colinhacks/zod/issues/310 for Zod issue
 const emptyStringToUndefined = z.literal('').transform(() => undefined);
@@ -286,18 +298,20 @@ const FormSchema = (
           return;
         }
         const paramId =
+          (<TJobArgSpec>param).name ?? (<TJobKeyValuePair>param).key;
+        const label =
           param.notes?.label ??
           (<TJobArgSpec>param).name ??
           (<TJobKeyValuePair>param).key;
 
         const field: TField = {
-          label: paramId,
+          label: label,
           description: param.description,
           required: param.inputMode === 'REQUIRED',
           readOnly: param.inputMode === 'FIXED',
           parameterSet: parameterSet,
-          name: `parameters.${parameterSet}.${paramId}`,
-          key: `parameters.${parameterSet}.${paramId}`,
+          name: `parameters.${parameterSet}.${label}`,
+          key: paramId,
           type: 'text',
         };
 
@@ -384,6 +398,7 @@ const FormSchema = (
       type: 'text',
       placeholder: 'Browse Data Files',
       readOnly: input.inputMode === 'FIXED',
+      tapisFileSelectionMode: input.notes?.selectionMode ?? 'both',
     };
 
     appFields.fileInputs.schema[input.name] = z.string();

@@ -1,4 +1,4 @@
-import { Button, Form, Input, Popconfirm, Select } from 'antd';
+import { Alert, Button, Form, Input, Popconfirm, Select } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   nhTypeOptions,
@@ -90,6 +90,8 @@ export const BaseProjectForm: React.FC<{
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
 
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+
   if (!projectType) {
     projectType = data?.baseProject.value.projectType;
   }
@@ -130,7 +132,9 @@ export const BaseProjectForm: React.FC<{
       ...(watchedPi ?? []),
       ...(watchedCoPis ?? []),
       ...(watchedMembers ?? []),
-      ...(watchedGuestMembers ?? []),
+      ...(watchedGuestMembers?.filter(
+        (f: TProjectUser) => !!f && f.fname && f.lname && f.email && f.inst
+      ) ?? []),
     ],
     [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
@@ -140,6 +144,7 @@ export const BaseProjectForm: React.FC<{
   const onFormSubmit = (
     v: Record<string, unknown> & { users: TProjectUser[] }
   ) => {
+    setHasValidationErrors(false);
     const currentUserInProject = v.users.find(
       (u) => u.username === user?.username
     );
@@ -153,10 +158,11 @@ export const BaseProjectForm: React.FC<{
   if (!data) return <div>Loading</div>;
   return (
     <Form
+      scrollToFirstError
       form={form}
       layout="vertical"
       onFinish={(v) => onFormSubmit(processFormData(v))}
-      onFinishFailed={(v) => console.log(processFormData(v.values))}
+      onFinishFailed={() => setHasValidationErrors(true)}
       requiredMark={customRequiredMark}
     >
       <Form.Item label="Project Title" required>
@@ -203,22 +209,24 @@ export const BaseProjectForm: React.FC<{
         </Form.Item>
       )}
 
-      <Form.Item label="Natural Hazard Types" required>
-        Specify the natural hazard being researched. Enter a custom value by
-        typing it into the field and pressing "return".
-        <Form.Item
-          name="nhTypes"
-          className="inner-form-item"
-          rules={[
-            {
-              required: true,
-              message: 'Please select/enter a natural hazard type', // Custom error message
-            },
-          ]}
-        >
-          <DropdownSelect options={nhTypeOptions} />
+      {projectType !== 'None' && (
+        <Form.Item label="Natural Hazard Types" required>
+          Specify the natural hazard being researched. Enter a custom value by
+          typing it into the field and pressing "return".
+          <Form.Item
+            name="nhTypes"
+            className="inner-form-item"
+            rules={[
+              {
+                required: true,
+                message: 'Please select/enter a natural hazard type', // Custom error message
+              },
+            ]}
+          >
+            <DropdownSelect options={nhTypeOptions} />
+          </Form.Item>
         </Form.Item>
-      </Form.Item>
+      )}
 
       {projectType === 'other' && (
         <>
@@ -349,22 +357,23 @@ export const BaseProjectForm: React.FC<{
         <HazardEventsInput name="nhEvents" />
       </Form.Item>
 
-      <Form.Item label="Keywords" required>
-        Choose informative words that indicate the content of the project.
-        Keywords should be comma-separated.
-        <Form.Item
-          name="keywords"
-          rules={[{ required: true }]}
-          className="inner-form-item"
-        >
-          <Select
-            mode="tags"
-            notFoundContent={null}
-            tokenSeparators={[',']}
-          ></Select>
+      {projectType !== 'None' && (
+        <Form.Item label="Keywords" required>
+          Choose informative words that indicate the content of the project.
+          Keywords should be comma-separated.
+          <Form.Item
+            name="keywords"
+            rules={[{ required: true }]}
+            className="inner-form-item"
+          >
+            <Select
+              mode="tags"
+              notFoundContent={null}
+              tokenSeparators={[',']}
+            ></Select>
+          </Form.Item>
         </Form.Item>
-      </Form.Item>
-
+      )}
       <Form.Item label="Project Description" required>
         What is this project about? How can data in this project be reused? How
         is this project unique? Who is the audience? Description must be between
@@ -383,7 +392,19 @@ export const BaseProjectForm: React.FC<{
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
-
+      {hasValidationErrors && (
+        <Alert
+          type="error"
+          style={{ marginBottom: '10px' }}
+          showIcon
+          message={
+            <span>
+              One or more fields could not be validated. Please check the form
+              for errors.
+            </span>
+          }
+        />
+      )}
       <Form.Item>
         <Popconfirm
           title="Confirm Update"
