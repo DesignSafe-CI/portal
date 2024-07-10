@@ -225,11 +225,14 @@ function getFilesColumns(
       dataIndex: 'path',
       align: 'end',
       title: '',
-      render: (_, record) => {
-        const shouldRenderSelectButton =
+      render: (_, record, index) => {
+        const selectionModeAllowed =
           (record.type === 'dir' && selectionMode === 'directory') ||
           (record.type === 'file' && selectionMode === 'file') ||
           selectionMode === 'both';
+        const isNotRoot =
+          index > 0 || path !== getSystemRootPath(selectedSystem, user);
+        const shouldRenderSelectButton = isNotRoot && selectionModeAllowed;
 
         return shouldRenderSelectButton ? (
           <SecondaryButton
