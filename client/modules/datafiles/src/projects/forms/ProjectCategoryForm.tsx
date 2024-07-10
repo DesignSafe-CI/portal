@@ -55,12 +55,13 @@ export const ProjectCategoryForm: React.FC<{
       form.setFieldsValue({ value: category.value });
       setSelectedName(category.name);
     }
+    setHasValidationErrors(false);
   }, [projectId, category, data, form, mode]);
 
   if (!data) return null;
   return (
     <Form
-      scrollToFirstError
+      scrollToFirstError={{ behavior: 'smooth' }}
       form={form}
       onValuesChange={(_, v) => mode === 'create' && setSelectedName(v.name)}
       layout="vertical"
@@ -401,6 +402,7 @@ export const ProjectCategoryForm: React.FC<{
             onClick={() => {
               onCancelEdit();
               form.resetFields();
+              setHasValidationErrors(false);
             }}
             style={{ marginRight: '10px' }}
             type="link"

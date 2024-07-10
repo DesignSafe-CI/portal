@@ -627,6 +627,7 @@ export const PublishableEntityForm: React.FC<{
     if (data && entity && mode === 'edit') {
       form.setFieldsValue({ value: entity.value });
     }
+    setHasValidationErrors(false);
   }, [data, form, entity, mode]);
   useEffect(() => setValues(), [setValues, projectId]);
 
@@ -634,7 +635,7 @@ export const PublishableEntityForm: React.FC<{
   return (
     <Form
       form={form}
-      scrollToFirstError
+      scrollToFirstError={{ behavior: 'smooth' }}
       layout="vertical"
       onFinishFailed={() => setHasValidationErrors(true)}
       onFinish={(v) => {
@@ -684,6 +685,7 @@ export const PublishableEntityForm: React.FC<{
             onClick={() => {
               onCancelEdit();
               form.resetFields();
+              setHasValidationErrors(false);
             }}
             style={{ marginRight: '10px' }}
             type="link"
