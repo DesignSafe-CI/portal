@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  TFileListing,
   TPreviewTreeData,
   useCitationMetrics,
   useProjectPreview,
@@ -34,6 +35,7 @@ const EntityFileListingTable: React.FC<{
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
     path?: string;
+    selectedFile?: TFileListing;
   }>({ isOpen: false });
 
   const columns: TFileListingColumns = [
@@ -65,9 +67,12 @@ const EntityFileListingTable: React.FC<{
               &nbsp;&nbsp;
               <Button
                 type="link"
-                disabled={preview}
                 onClick={() =>
-                  setPreviewModalState({ isOpen: true, path: record.path })
+                  setPreviewModalState({
+                    isOpen: true,
+                    path: record.path,
+                    selectedFile: record,
+                  })
                 }
               >
                 {data}
@@ -97,14 +102,15 @@ const EntityFileListingTable: React.FC<{
         columns={columns}
         scroll={{ x: 500, y: 500 }}
         dataSource={treeData.value.fileObjs}
+        noSelection={preview}
         disabled
       />
-      {previewModalState.path && (
+      {previewModalState.path && previewModalState.selectedFile && (
         <PreviewModalBody
+          scheme="private"
+          selectedFile={previewModalState.selectedFile}
           isOpen={previewModalState.isOpen}
           api={'tapis'}
-          system={'designsafe.storage.published'}
-          path={previewModalState.path}
           handleCancel={() => setPreviewModalState({ isOpen: false })}
         />
       )}
@@ -307,6 +313,7 @@ export const PublishedEntityDisplay: React.FC<{
                 )}
                 {(sortedChildren ?? []).map((child) => (
                   <RecursiveTree
+                    preview={preview}
                     treeData={child}
                     key={child.id}
                     defaultOpen={defaultOpenChildren}

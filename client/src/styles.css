@@ -118,8 +118,8 @@
 .o-site__body:has(> #apps-root),
 #apps-root,
 #apps-root > div.ant-flex,
-.ant-layout-has-sider,
-.ant-layout-sider {
+#apps-root .ant-layout-has-sider,
+#apps-root .ant-layout-sider {
   height: 100%;
   overflow: hidden;
 }

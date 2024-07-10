@@ -16,7 +16,7 @@ export const UploadFileModalBody: React.FC<{
   path: string;
   handleCancel: () => void;
 }> = ({ isOpen, api, system, scheme, path, handleCancel }) => {
-  const { mutate } = useUploadFile();
+  const { mutateAsync } = useUploadFile();
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -36,7 +36,7 @@ export const UploadFileModalBody: React.FC<{
         formData.append('file_name', fileList[i].name);
         formData.append('webkit_relative_path', '');
 
-        await mutate({
+        await mutateAsync({
           api,
           system,
           scheme: 'private', // Optional
@@ -47,6 +47,7 @@ export const UploadFileModalBody: React.FC<{
 
       // All files uploaded successfully, close the modal
       setUploading(false);
+      setFileList([]);
       handleCancel();
     } catch (error) {
       console.error('Error during form submission:', error);

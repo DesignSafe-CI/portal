@@ -14,10 +14,11 @@ export type TProjectUser = {
 export const UserSelect: React.FC<{
   value?: TProjectUser[];
   onChange?: (value: TProjectUser[]) => void;
+  id?: string;
   userRole?: string;
   maxCount?: number;
   disabled?: boolean;
-}> = ({ value, onChange, userRole, maxCount, disabled }) => {
+}> = ({ value, onChange, id, userRole, maxCount, disabled }) => {
   const initialOptions: SelectProps['options'] = useMemo(
     () =>
       value?.map((u) => ({
@@ -63,6 +64,7 @@ export const UserSelect: React.FC<{
 
   return (
     <Select
+      id={id}
       notFoundContent={
         <span>
           No users were found matching your query. An exact TACC username match
