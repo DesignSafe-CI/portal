@@ -69,7 +69,7 @@ export const PreviewModalBody: React.FC<{
           justifyContent: 'center',
         }}
       >
-        {scheme === 'private' && api === 'tapis' && (
+        {scheme === 'private' && api === 'tapis' && !selectedFile.path.endsWith('.hazmapper') && (
           <MoveModal
             api={api}
             system={selectedFile.system}
