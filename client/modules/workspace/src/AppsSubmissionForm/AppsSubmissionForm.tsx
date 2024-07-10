@@ -108,7 +108,7 @@ export const AppsSubmissionForm: React.FC = () => {
     [definition]
   );
 
-  let missingAllocation;
+  let missingAllocation: string | undefined;
   if (!hasDefaultAllocation && hasStorageSystems) {
     // User does not have default storage allocation
     missingAllocation = getSystemName(defaultStorageHost);

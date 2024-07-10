@@ -123,9 +123,9 @@ export const MoveModal: React.FC<{
   system: string;
   path: string;
   selectedFiles: TFileListing[];
-  succesCallback?: CallableFunction;
+  successCallback?: CallableFunction;
   children: TModalChildren;
-}> = ({ api, system, path, selectedFiles, succesCallback, children }) => {
+}> = ({ api, system, path, selectedFiles, successCallback, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => setIsModalOpen(true);
@@ -175,12 +175,12 @@ export const MoveModal: React.FC<{
             src: { api, system, path: encodeURIComponent(f.path) },
             dest: { api: destApi, system: destSystem, path: dPath },
           },
-          { onSuccess: () => succesCallback && succesCallback() }
+          { onSuccess: () => successCallback && successCallback() }
         )
       );
       handleClose();
     },
-    [selectedFiles, mutate, destApi, destSystem, succesCallback, api, system]
+    [selectedFiles, mutate, destApi, destSystem, successCallback, api, system]
   );
 
   const DestFilesColumns = useMemo(
