@@ -42,6 +42,7 @@ const getAppsQuery = (queryParams: TAppParamsType) => ({
   queryFn: ({ signal }: { signal: AbortSignal }) =>
     getApps({ signal }, queryParams),
   staleTime: 5000,
+  enabled: !!queryParams.appId,
 });
 
 export const useGetAppsSuspense = (queryParams: TAppParamsType) => {
