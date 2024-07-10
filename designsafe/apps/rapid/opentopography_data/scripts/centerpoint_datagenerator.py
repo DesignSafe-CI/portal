@@ -17,16 +17,19 @@ from shapely.geometry import shape, MultiPolygon, Polygon
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def calculate_bounding_box(point):
-    centerX = point[0]
-    centerY = point[1]
-    width = 2
-    height = 2
-    minX = centerX - (width / 2)
-    maxX = centerX + (width / 2)
-    minY = centerY - (height / 2)
-    maxY = centerY + (height / 2)
-    return minX, maxX, minY, maxY
+def fetch_otcatalog_data():
+    api_url="https://portal.opentopography.org/API/otCatalog"
+    include_federated="false"
+    detail="true"
+    minx, maxx, miny, maxy = -180, 180, -90, 90 # Fetching the entire world data from the API
+    request_url=f'{api_url}?minx={minx}&miny={miny}&maxx={maxx}&maxy={maxy}&detail={detail}&include_federated={include_federated}'
+    response = requests.get(request_url)
+    response.raise_for_status()
+    ot_data = {}
+    for dataset in response.json()['Datasets']:
+        id = ".".join(dataset['Dataset']['identifier']['value'].split('.')[1:])
+        ot_data[id] = dataset['Dataset']
+    return ot_data
 
 def get_github_file_info(repo, path):
     """
@@ -180,28 +183,19 @@ def fetch_otcatalog_api_response(file_path):
     with open(file_path, 'r') as file1:
         data = json.load(file1)
     features = data['features']
-    # Specify the API endpoint URL
-    api_url="https://portal.opentopography.org/API/otCatalog"
-    # Specify default API query parameters
-    include_federated="false"
-    detail="true"
+    ot_data = fetch_otcatalog_data()
     for feature in features:
-        center_point = feature['geometry']['coordinates']
-        minx, maxx, miny, maxy = calculate_bounding_box(center_point)
-        request_url=f'{api_url}?minx={minx}&miny={miny}&maxx={maxx}&maxy={maxy}&detail={detail}&include_federated={include_federated}'
-        response = requests.get(request_url)
-        if response.status_code == 200:
-            for dataset in response.json()['Datasets']:
-                if dataset['Dataset']['identifier']['value'] == feature['properties']['id']:
-                    feature['properties']['description'] = dataset['Dataset']['description']
-                    feature['properties']['doiUrl'] = dataset['Dataset']['url']
-                    feature['properties']['host']='OpenTopo'
-                    feature['properties']['dateCreated'] = dataset['Dataset']['dateCreated']
-                    feature['properties']['temporalCoverage'] = dataset['Dataset']['temporalCoverage']
-                    feature['properties']['keywords'] = dataset['Dataset']['keywords']
-                    break
+        id = ".".join(feature['properties']['id'].split('.')[1:])
+        dataset = ot_data.get(id)
+        if dataset is not None:
+            feature['properties']['description'] = dataset['description']
+            feature['properties']['doiUrl'] = dataset['url']
+            feature['properties']['host']='OpenTopo' if dataset['identifier']['propertyID']=='opentopoID' else dataset['identifier']['propertyID']
+            feature['properties']['dateCreated'] = dataset['dateCreated']
+            feature['properties']['temporalCoverage'] = dataset['temporalCoverage']
+            feature['properties']['keywords'] = dataset['keywords']
         else:
-            logging.error(f"Failed to fetch data for {feature['properties']['id']}")
+            logging.warning(f"Dataset with ID {feature['properties']['id']} not found in the OpenTopography API response.")
     data['features'] = features
     with open(file_path, 'w') as file2:
         json.dump(data, file2, indent=4)
