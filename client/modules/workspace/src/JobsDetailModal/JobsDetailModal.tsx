@@ -177,15 +177,21 @@ export const JobsDetailModalBody: React.FC<{
     { label: 'Outputs', data: outputDataObj },
   ];
 
-  const items: DescriptionsProps['items'] = dataObjects.map((obj, index) => ({
-    label: obj.label,
-    children: <DisplayItems items={getItems(obj.data)} />,
-    labelStyle,
-    style: {
-      ...baseRowStyle,
-      backgroundColor: index % 2 === 0 ? '#fff' : '#f4f4f4',
-    },
-  }));
+  const items: DescriptionsProps['items'] = dataObjects
+    .filter(({ data }) => Object.keys(data).length > 0)
+    .map(({ label, data }, index) => {
+      const backgroundColor = index % 2 === 0 ? '#fff' : '#f4f4f4';
+
+      return {
+        label,
+        children: <DisplayItems items={getItems(data)} />,
+        labelStyle,
+        style: {
+          ...baseRowStyle,
+          backgroundColor,
+        },
+      };
+    });
 
   return (
     <div className={styles['modal-body-container']}>
