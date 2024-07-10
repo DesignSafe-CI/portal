@@ -80,7 +80,7 @@ def download_files(file_info, save_dir):
     """
     os.makedirs(save_dir, exist_ok=True)
     for item in file_info:
-      if item["type"] == "file":
+        if item["type"] == "file":
             response = requests.get(item["download_url"], timeout=10)
             response.raise_for_status()
             filename = os.path.join(save_dir, os.path.basename(item["download_url"]))
@@ -111,7 +111,7 @@ def process_geojson_file(input_filepath, product_type):
     if isinstance(geom_shape, (MultiPolygon, Polygon)):
         centroid = geom_shape.centroid
     else:
-      logging.warning(
+        logging.warning(
             f"Skipping file with unsupported geometry type: {input_filepath}"
         )
         return None
@@ -174,6 +174,7 @@ def process_and_aggregate_geojson_files(source_dirs):
 def save_aggregated_results(output_filepath, all_features):
     """
     Save aggregated GeoJSON features to a file.
+
     Args:
         output_filepath (str): The path to the output file.
         all_features (list): A list of GeoJSON features.
