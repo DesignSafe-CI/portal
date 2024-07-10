@@ -216,6 +216,10 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
                     : 'No Materials Listed  '}
                 </td>
               </tr>
+              <tr>
+                <td>Files</td>
+                <td><Link to={'%2F'+exp.path.replace('/','%2F')}>{exp.name}</Link></td>
+              </tr>
             </tbody>
           </table>
         </Flex>

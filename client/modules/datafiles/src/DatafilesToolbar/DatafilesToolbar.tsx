@@ -57,9 +57,13 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
     system = 'designsafe.storage.published';
     api = 'tapis';
   }
+  if (isNees) {
+    system = 'nees.public';
+    api = 'tapis';
+  }
 
-  /* 
-  Project landing pages have multiple selectable listings, so use the 
+  /*
+  Project landing pages have multiple selectable listings, so use the
   useSelectedFilesForSystem hook to capture every selection on the page.
   */
   const { selectedFiles: listingSelectedFiles } = useSelectedFiles(

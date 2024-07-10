@@ -21,13 +21,15 @@ async function getNeesListing({
   page = 1,
   limit = 100,
   signal,
+  query_string,
 }: {
   page: number;
   limit: number;
   signal: AbortSignal;
+  query_string: String;
 }) {
   const resp = await apiClient.get<TNeesListingResponse>(
-    '/api/publications/neeslisting',
+    `/api/publications/neeslisting/${query_string ? '?' + query_string : ''}`,
     {
       signal,
       params: { offset: (page - 1) * limit, limit },
@@ -36,9 +38,9 @@ async function getNeesListing({
   return resp.data;
 }
 
-export function useNeesListing(page: number, limit: number) {
+export function useNeesListing(page: number, limit: number, query_string: String) {
   return useQuery({
-    queryKey: ['datafiles', 'nees', 'listing', page, limit],
-    queryFn: ({ signal }) => getNeesListing({ page, limit, signal }),
+    queryKey: ['datafiles', 'nees', 'listing', page, limit, query_string],
+    queryFn: ({ signal }) => getNeesListing({ page, limit, signal, query_string }),
   });
 }
