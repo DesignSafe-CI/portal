@@ -1,4 +1,5 @@
 """File Meta view"""
+
 import logging
 import json
 from django.http import JsonResponse, HttpRequest
@@ -77,7 +78,9 @@ class CreateFileMetaView(AuthenticatedAllowJwtApiView):
             raise ApiException("System and path are required in payload", status=400)
 
         system_id = value["system"]
-        path = value["path"]
+        raw_path = value["path"]
+        # Normalize raw path to ensure leading slash and remove duplicate slashes.
+        path = f"/{raw_path.lstrip('/')}".replace("//", "/")
 
         check_access(request, system_id, path, check_for_writable_access=True)
 
