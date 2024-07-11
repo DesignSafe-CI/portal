@@ -34,6 +34,7 @@ import { SelectModalProjectListing } from './SelectModalProjectListing';
 
 const api = 'tapis';
 const portalName = 'DesignSafe';
+const projectPrefix = 'project-';
 
 const SystemSuffixIcon = () => {
   return (
@@ -161,6 +162,7 @@ function getFilesColumns(
         <div>
           <Button
             type="link"
+            disabled={path === getSystemRootPath(selectedSystem, user)}
             onClick={() =>
               navCallback(
                 getBackPath(
@@ -231,7 +233,9 @@ function getFilesColumns(
           (record.type === 'file' && selectionMode === 'file') ||
           selectionMode === 'both';
         const isNotRoot =
-          index > 0 || path !== getSystemRootPath(selectedSystem, user);
+          index > 0 ||
+          record.system.startsWith(projectPrefix) ||
+          path !== getSystemRootPath(selectedSystem, user);
         const shouldRenderSelectButton = isNotRoot && selectionModeAllowed;
 
         return shouldRenderSelectButton ? (
@@ -378,7 +382,7 @@ export const SelectModal: React.FC<{
   useEffect(() => {
     if (isModalOpen) {
       let systemValue = system ?? defaultStorageSystem.id;
-      if (systemValue.startsWith('project-')) {
+      if (systemValue.startsWith(projectPrefix)) {
         systemValue = 'myprojects';
       }
       dropdownCallback(systemValue);
@@ -466,7 +470,7 @@ export const SelectModal: React.FC<{
                 path={decodeURIComponent(selectedPath)}
                 systemRootAlias={selection.projectId}
                 initialBreadcrumbs={
-                  selectedSystemId.startsWith('project-')
+                  selectedSystemId.startsWith(projectPrefix)
                     ? [{ title: 'My Projects', path: 'PROJECT_LISTING' }]
                     : []
                 }
