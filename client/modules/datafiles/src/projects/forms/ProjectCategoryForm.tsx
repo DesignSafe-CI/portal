@@ -373,8 +373,16 @@ export const ProjectCategoryForm: React.FC<{
           className="inner-form-item"
           rules={[
             {
+              required: true,
+              message: 'Please enter a description',
+            },
+            {
               min: 50,
-              message: 'Please enter a description', // Custom error message
+              message: 'Description must be at least 50 characters long',
+            },
+            {
+              max: 5000,
+              message: 'Description cannot be longer than 5000 characters',
             },
           ]}
         >
