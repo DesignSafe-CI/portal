@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@client/common-components';
 import { TJobStatusNotification } from '@client/hooks';
 import { getToastMessage } from '../utils';
@@ -15,6 +16,8 @@ const Notifications = () => {
   const [api, contextHolder] = notification.useNotification({ maxCount: 1 });
 
   const queryClient = useQueryClient();
+
+  const navigate = useNavigate();
 
   const handleNotification = (notification: TJobStatusNotification) => {
     if (
@@ -35,6 +38,11 @@ const Notifications = () => {
           notification.extra.status === 'FAILED' && styles['toast-is-error']
         }`,
         closeIcon: false,
+        duration: 5,
+        onClick: () => {
+          navigate('/history');
+        },
+        style: { cursor: 'pointer' },
       });
     }
   };
