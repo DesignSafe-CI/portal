@@ -229,7 +229,7 @@ class Project(MetadataModel):
                 self.project_id = prj.project_id
         super(Project, self).save(ag)
 
-    def related_entities(self, offset=0, limit=100):
+    def related_entities(self, offset=0, limit=300):
         from designsafe.apps.projects.models.utils import lookup_model
         relattrs = self._meta._reverse_fields
         rel_names = [getattr(self, attrname).related_obj_name for attrname in relattrs \
