@@ -21,17 +21,23 @@ logging.basicConfig(
 
 
 def fetch_otcatalog_data():
+    """
+    Fetch data from the OpenTopography OtCatalog API.
+
+    Returns:
+        dict: collection of all datasets from the API response.
+    """
     api_url="https://portal.opentopography.org/API/otCatalog"
     include_federated="false"
     detail="true"
     minx, maxx, miny, maxy = -180, 180, -90, 90 # Fetching the entire world data from the API
     request_url=f'{api_url}?minx={minx}&miny={miny}&maxx={maxx}&maxy={maxy}&detail={detail}&include_federated={include_federated}'
-    response = requests.get(request_url)
+    response = requests.get(request_url, timeout=60)
     response.raise_for_status()
     ot_data = {}
     for dataset in response.json()['Datasets']:
-        id = ".".join(dataset['Dataset']['identifier']['value'].split('.')[1:])
-        ot_data[id] = dataset['Dataset']
+        dataset_id = ".".join(dataset['Dataset']['identifier']['value'].split('.')[1:])
+        ot_data[dataset_id] = dataset['Dataset']
     return ot_data
 
 
@@ -187,26 +193,32 @@ def save_aggregated_results(output_filepath, all_features):
     logging.info(f"Aggregated results saved to: {output_filepath}")
 
 
-def fetch_otcatalog_api_response(file_path):
-    with open(file_path, 'r') as file1:
-        data = json.load(file1)
+def fetch_otcatalog_api_response(output_filepath):
+    """
+    Fetch data from the OpenTopography OtCatalog API and update the GeoJSON file.
+
+    Args:
+        output_filepath (str): The path to the GeoJSON file.
+    """
+    with open(output_filepath, 'r', encoding="utf-8") as file:
+        data = geojson.load(file)
     features = data['features']
     ot_data = fetch_otcatalog_data()
     for feature in features:
-        id = ".".join(feature['properties']['id'].split('.')[1:])
-        dataset = ot_data.get(id)
-        if dataset is not None:
+        dataset_id = ".".join(feature['properties']['id'].split('.')[1:])
+        dataset = ot_data.get(dataset_id)
+        try:
             feature['properties']['description'] = dataset['description']
             feature['properties']['doiUrl'] = dataset['url']
             feature['properties']['host']='OpenTopo' if dataset['identifier']['propertyID']=='opentopoID' else dataset['identifier']['propertyID']
             feature['properties']['dateCreated'] = dataset['dateCreated']
             feature['properties']['temporalCoverage'] = dataset['temporalCoverage']
             feature['properties']['keywords'] = dataset['keywords']
-        else:
-            logging.warning(f"Dataset with ID {feature['properties']['id']} not found in the OpenTopography API response.")
-    data['features'] = features
-    with open(file_path, 'w') as file2:
-        json.dump(data, file2, indent=4)
+        except Exception as exc:
+            logging.exception(f"Dataset with ID {feature['properties']['id']} not found in the OpenTopography API response.")
+            raise exc
+    with open(output_filepath, 'w', encoding="utf-8") as file:
+        geojson.dump(data, file, indent=4)
 
 
 def main():
