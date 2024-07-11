@@ -23,6 +23,16 @@ export default class RapidDataService {
         });
     }
 
+    get_opentopo_catalog(minx, miny, maxx, maxy) {
+        const url = `https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=${minx}&miny=${miny}&maxx=${maxx}&maxy=${maxy}&detail=true&outputFormat=json&include_federated=false`;
+        return this.$http.get(url).then((resp) => {
+            console.log(resp.data);
+            return resp.data;
+        }).catch((err) => {
+            console.error('Error fetching OpenTopography catalog:', err);
+        });
+    }
+
     search (events, filter_options) {
         let tmp = _.filter(events, (item)=>{
             let f1 = true;

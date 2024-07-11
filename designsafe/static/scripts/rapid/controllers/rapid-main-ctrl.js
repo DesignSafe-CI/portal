@@ -31,6 +31,13 @@ export default class RapidMainCtrl {
             });
             this.gotoEvent();
         });
+        const minx = -123.2;
+        const miny = 44.8;
+        const maxx = -121.9;
+        const maxy = 45.7;
+
+        // Call the new method
+        this.RapidDataService.get_opentopo_catalog(minx, miny, maxx, maxy);
     }
 
     initMap () {
