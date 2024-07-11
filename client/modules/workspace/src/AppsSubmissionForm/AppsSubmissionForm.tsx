@@ -6,6 +6,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  useAppsListing,
   useGetAppsSuspense,
   usePostJobs,
   useGetSystems,
@@ -50,6 +51,7 @@ import {
   updateValuesForQueue,
   getDefaultExecSystem,
   getAllocationList,
+  findAppById,
 } from '../utils';
 
 export const AppsSubmissionForm: React.FC = () => {
@@ -65,6 +67,10 @@ export const AppsSubmissionForm: React.FC = () => {
   } = useAuthenticatedUser() as { user: TUser };
 
   const { definition, license, defaultSystemNeedsKeys } = app;
+  const { data: appListingData } = useAppsListing();
+  const icon =
+    findAppById(appListingData, definition.id)?.icon ??
+    (definition.notes.icon || 'Generic-App');
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -481,7 +487,7 @@ export const AppsSubmissionForm: React.FC = () => {
           <Header style={headerStyle}>
             <Flex justify="space-between">
               <div>
-                <AppIcon name={definition.notes.icon || 'Generic-App'} />
+                <AppIcon name={icon} />
                 {definition.notes.label || definition.id}
               </div>
               {definition.notes.helpUrl && (
