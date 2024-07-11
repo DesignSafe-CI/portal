@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   TFileListing,
   TPreviewTreeData,
-  useCitationMetrics,
+  useDataciteMetrics,
   useProjectPreview,
   usePublicationDetail,
   usePublicationVersions,
@@ -218,7 +218,7 @@ export const PublishedEntityDisplay: React.FC<{
     isLoading,
     isError,
     error,
-  } = useCitationMetrics(dois);
+  } = useDataciteMetrics(dois, !preview);
 
   useEffect(() => {
     if (isError) {
