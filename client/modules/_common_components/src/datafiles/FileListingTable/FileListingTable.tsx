@@ -27,6 +27,7 @@ export const FileListingTable: React.FC<
     emptyListingDisplay?: React.ReactNode;
     noSelection?: boolean;
     searchTerm?: string | null;
+    currentDisplayPath?: TFileListing | undefined;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
   api,
@@ -40,6 +41,7 @@ export const FileListingTable: React.FC<
   emptyListingDisplay,
   searchTerm = '',
   noSelection,
+  currentDisplayPath = null,
   ...props
 }) => {
   const limit = 100;
@@ -71,8 +73,12 @@ export const FileListingTable: React.FC<
     if (filterFn) {
       return filterFn(cl);
     }
+    if (currentDisplayPath) {
+      return [currentDisplayPath, ...cl];
+    }
+
     return cl;
-  }, [data, filterFn]);
+  }, [data, filterFn, currentDisplayPath]);
 
   /* HANDLE FILE SELECTION */
   const { selectedFiles, setSelectedFiles } = useSelectedFiles(
