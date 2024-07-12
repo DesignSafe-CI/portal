@@ -2,14 +2,17 @@
 {% load cms_tags %}
 
 {% for ance in ancestors %}
+{% page_attribute "slug" ance.id as current_slug %}
 {% page_attribute "slug" ance.parent_id as parent_slug %}
-{% if not parent_slug == "tools-applications" %}
+{% if not parent_slug == "tools-applications" or current_slug == "tools-applications-new" %}
 
   <li itemscope itemprop="itemListElement"
       itemtype="https://schema.org/ListItem"
       {% if not forloop.last %}
       class="active"
-      {% endif %}>
+      {% endif %}
+      data-current_slug="{{ current_slug }}"
+      data-parent_slug="{{ parent_slug }}">
   {% if not forloop.last %}
 
     <a href="{{ ance.get_absolute_url }}" itemprop="item">
