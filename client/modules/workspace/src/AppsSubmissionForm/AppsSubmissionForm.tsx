@@ -454,6 +454,19 @@ export const AppsSubmissionForm: React.FC = () => {
       delete jobData.job.allocation;
     }
 
+    // Before job submission, ensure the memory limit is not above queue limit.
+    if (definition.jobType === 'BATCH') {
+      const queue = getExecSystemFromId(
+        execSystems,
+        definition.jobAttributes.execSystemId
+      )?.batchLogicalQueues.find(
+        (q) => q.name === jobData.job.execSystemLogicalQueue
+      );
+      if (queue && app.definition.jobAttributes.memoryMB > queue.maxMemoryMB) {
+        jobData.job.memoryMB = queue.maxMemoryMB;
+      }
+    }
+
     submitJob(jobData);
   };
 
