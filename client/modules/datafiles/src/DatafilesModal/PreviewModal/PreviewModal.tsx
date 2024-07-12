@@ -85,6 +85,7 @@ export const PreviewModalBody: React.FC<{
             )}
           </MoveModal>
         )}
+        {!selectedFile.path.endsWith('.hazmapper') && (
         <CopyModal
           api={api}
           system={selectedFile.system}
@@ -98,7 +99,7 @@ export const PreviewModalBody: React.FC<{
             </Button>
           )}
         </CopyModal>
-
+        )}
         <DownloadModal
           api={api}
           system={selectedFile.system}

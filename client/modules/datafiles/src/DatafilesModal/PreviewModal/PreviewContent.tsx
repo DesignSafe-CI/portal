@@ -70,13 +70,16 @@ export const PreviewContent: TPreviewContent = ({ href, fileType }) => {
       );
     case 'hazmapper':
       return (
-        PostitData && (
-          <div className={styles.previewContainer}>
-            
-          </div>
-        )
+        <div className={styles.previewContainer}>
+          {iframeLoading && <PreviewSpinner />}
+          <iframe
+            onLoad={() => setIframeLoading(false)}
+            title="preview"
+            src={href}
+            id="framepreview"
+          ></iframe>
+        </div>
       );
-
     default:
       return (
         <Alert
