@@ -10,8 +10,7 @@
       itemtype="https://schema.org/ListItem"
       {% if not forloop.last %}
       class="active"
-      {% endif %}
-      data-parent_slug-truncate="{{ parent_slug|truncatechars:17 }}">
+      {% endif %}>
   {% if not forloop.last %}
 
     <a href="{{ ance.get_absolute_url }}" itemprop="item">
