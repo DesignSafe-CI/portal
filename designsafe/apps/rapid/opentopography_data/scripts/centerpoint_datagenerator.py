@@ -89,7 +89,9 @@ def download_files(file_info: List[Dict[str, Any]], save_dir: str) -> None:
             try:
                 response = requests.get(item["download_url"], timeout=10)
                 response.raise_for_status()
-                filename = os.path.join(save_dir, os.path.basename(item["download_url"]))
+                filename = os.path.join(
+                    save_dir, os.path.basename(item["download_url"])
+                )
                 with open(filename, "wb") as file:
                     file.write(response.content)
                 logging.info(f"Downloaded {filename}")
@@ -97,7 +99,9 @@ def download_files(file_info: List[Dict[str, Any]], save_dir: str) -> None:
                 logging.error(f"Error downloading file {item['download_url']}: {error}")
 
 
-def process_geojson_file(input_filepath: str, product_type: str) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
+def process_geojson_file(
+    input_filepath: str, product_type: str
+) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
     """
     Process a GeoJSON file to extract the centroid and original geometry.
 
@@ -119,7 +123,9 @@ def process_geojson_file(input_filepath: str, product_type: str) -> Tuple[Option
     geom_shape = shape(geometry)
 
     if not isinstance(geom_shape, (MultiPolygon, Polygon)):
-        logging.warning(f"Skipping file with unsupported geometry type: {input_filepath}")
+        logging.warning(
+            f"Skipping file with unsupported geometry type: {input_filepath}"
+        )
         return None, None
 
     centroid = geom_shape.centroid
@@ -144,13 +150,15 @@ def process_geojson_file(input_filepath: str, product_type: str) -> Tuple[Option
     original_feature = {
         "type": "Feature",
         "properties": new_properties,
-        "geometry": data["geometry"]
+        "geometry": data["geometry"],
     }
 
     return centroid_feature, original_feature
 
 
-def process_and_aggregate_geojson_files(source_dirs: List[Tuple[str, str]]) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+def process_and_aggregate_geojson_files(
+    source_dirs: List[Tuple[str, str]]
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """
     Process and aggregate GeoJSON files from multiple directories.
 
@@ -172,9 +180,13 @@ def process_and_aggregate_geojson_files(source_dirs: List[Tuple[str, str]]) -> T
 
                     if file in seen_files:
                         existing_feature = seen_files[file]
-                        existing_feature["properties"]["productAvailable"] += f", {product_type}"
+                        existing_feature["properties"][
+                            "productAvailable"
+                        ] += f", {product_type}"
                     else:
-                        new_feature, new_feature_polygon = process_geojson_file(src_file_path, product_type)
+                        new_feature, new_feature_polygon = process_geojson_file(
+                            src_file_path, product_type
+                        )
                         if new_feature and new_feature_polygon:
                             seen_files[file] = new_feature
                             all_features.append(new_feature)
@@ -184,7 +196,12 @@ def process_and_aggregate_geojson_files(source_dirs: List[Tuple[str, str]]) -> T
     return all_features, all_features_polygon
 
 
-def save_aggregated_results(output_filepath: str, all_features: List[Dict[str, Any]], output_filepath_polygon: str, all_features_polygon: List[Dict[str, Any]]) -> None:
+def save_aggregated_results(
+    output_filepath: str,
+    all_features: List[Dict[str, Any]],
+    output_filepath_polygon: str,
+    all_features_polygon: List[Dict[str, Any]],
+) -> None:
     """
     Save aggregated GeoJSON features to two files.
 
@@ -195,7 +212,10 @@ def save_aggregated_results(output_filepath: str, all_features: List[Dict[str, A
         all_features_polygon (List[Dict[str, Any]]): A list of GeoJSON features with original geometries.
     """
     feature_collection = {"type": "FeatureCollection", "features": all_features}
-    feature_collection_polygon = {"type": "FeatureCollection", "features": all_features_polygon}
+    feature_collection_polygon = {
+        "type": "FeatureCollection",
+        "features": all_features_polygon,
+    }
 
     os.makedirs(os.path.dirname(output_filepath), exist_ok=True)
     with open(output_filepath, "w", encoding="utf-8") as file:
@@ -205,7 +225,9 @@ def save_aggregated_results(output_filepath: str, all_features: List[Dict[str, A
     os.makedirs(os.path.dirname(output_filepath_polygon), exist_ok=True)
     with open(output_filepath_polygon, "w", encoding="utf-8") as file:
         geojson.dump(feature_collection_polygon, file, indent=2)
-    logging.info(f"Aggregated original geometry results saved to: {output_filepath_polygon}")
+    logging.info(
+        f"Aggregated original geometry results saved to: {output_filepath_polygon}"
+    )
 
 
 def load_last_commit(timestamp_file: str) -> Dict[str, str]:
@@ -223,6 +245,7 @@ def load_last_commit(timestamp_file: str) -> Dict[str, str]:
             return json.load(file)
     return {}
 
+
 def save_last_commit(timestamp_file: str, last_commit: Dict[str, str]) -> None:
     """
     Save the updated commit SHAs to the timestamp file.
@@ -234,7 +257,10 @@ def save_last_commit(timestamp_file: str, last_commit: Dict[str, str]) -> None:
     with open(timestamp_file, "w", encoding="utf-8") as file:
         json.dump(last_commit, file)
 
-def check_for_updates(repo: str, directories: Dict[str, str], last_commit: Dict[str, str]) -> bool:
+
+def check_for_updates(
+    repo: str, directories: Dict[str, str], last_commit: Dict[str, str]
+) -> bool:
     """
     Check for updates in the specified directories and download new files if updates are found.
 
@@ -252,7 +278,9 @@ def check_for_updates(repo: str, directories: Dict[str, str], last_commit: Dict[
         last_known_commit_sha = last_commit.get(path, "")
 
         if latest_commit_sha and latest_commit_sha != last_known_commit_sha:
-            logging.info(f"Repository folder '{path}' has been updated. Downloading new files...")
+            logging.info(
+                f"Repository folder '{path}' has been updated. Downloading new files..."
+            )
             file_info = get_github_file_info(repo, path)
             download_files(file_info, save_dir)
             last_commit[path] = latest_commit_sha
@@ -260,6 +288,7 @@ def check_for_updates(repo: str, directories: Dict[str, str], last_commit: Dict[
         else:
             logging.info(f"No updates found for '{path}'.")
     return updates_found
+
 
 def main() -> None:
     """
@@ -275,8 +304,16 @@ def main() -> None:
             ("opentopo_data/raster", "Raster"),
         ]
 
-        all_features, all_features_polygon = process_and_aggregate_geojson_files(source_dirs)
-        save_aggregated_results(OUTPUT_FILEPATH_CENTROID, all_features, OUTPUT_FILEPATH_POLYGON, all_features_polygon)
+        all_features, all_features_polygon = process_and_aggregate_geojson_files(
+            source_dirs
+        )
+        save_aggregated_results(
+            OUTPUT_FILEPATH_CENTROID,
+            all_features,
+            OUTPUT_FILEPATH_POLYGON,
+            all_features_polygon,
+        )
+
 
 if __name__ == "__main__":
     main()
