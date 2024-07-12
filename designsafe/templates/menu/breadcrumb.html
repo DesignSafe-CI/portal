@@ -1,5 +1,9 @@
 {# https://github.com/django-cms/django-cms/blob/release/3.11.x/menus/templates/menu/breadcrumb.html #}
+{% load cms_tags %}
+
 {% for ance in ancestors %}
+{% page_attribute "slug" ance.parent_id as parent_slug %}
+{% if not parent_slug == "tools-applications" %}
 
   <li itemscope itemprop="itemListElement"
       itemtype="https://schema.org/ListItem"
@@ -21,4 +25,5 @@
     <meta itemprop="position" content="{{ forloop.counter }}" />
   </li>
 
+{% endif %}
 {% endfor %}
