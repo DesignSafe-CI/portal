@@ -4,7 +4,7 @@
 {% for ance in ancestors %}
 {% page_attribute "slug" ance.id as current_slug %}
 {% page_attribute "slug" ance.parent_id as parent_slug %}
-{% if not parent_slug == "tools-applications" or current_slug == "tools-applications-new" %}
+{% if not parent_slug|truncatechars:18 == "tools-application…" or current_slug == "tools-applications-new" %}
 
   <li itemscope itemprop="itemListElement"
       itemtype="https://schema.org/ListItem"
