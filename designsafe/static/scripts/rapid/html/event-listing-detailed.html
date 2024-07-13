@@ -1,12 +1,12 @@
 <div class="event-listing">
-  <img ng-src="/uploads/RAPID/images/{{event.main_image_uuid}}" class="img-responsive" ng-if="event.main_image_uuid"></img>
-  <div class="earthquake event-title"> {{event.title}} </div>
+  <img ng-src="/uploads/RAPID/images/{{event.main_image_uuid}}" class="img-responsive" ng-if="event.main_image_uuid && !event.geometry"></img>
+  <div class="earthquake event-title"> {{event.title || event.properties.name}} </div>
   <div class="event-location">
-    <span> {{event.location_description}} </span>
+    <span> {{event.location_description || event.properties.description}} </span>
   </div>
   <div class="row">
     <span class="event-date pull-left">
-      {{event.event_date | date: 'yyyy-MM-dd'}}
+      {{(event.event_date || event.properties.dateCreated) | date: 'yyyy-MM-dd'}}
     </span>
     <span class="event-type pull-right"
           ng-class="{
@@ -16,19 +16,28 @@
                      'tornado':event.event_type === 'tornado',
                      'landslide':event.event_type === 'landslide',
                      'hurricane':event.event_type === 'hurricane',
+                     'openTopoData': event.properties.host === 'OpenTopo',
                     }"
     >
-      {{event.event_type}}
+      {{event.event_type || event.properties.host}}
+    </span>
+  </div>
+  <div class="row" ng-if="event.properties.keywords">
+    <span> keywords :</span>
+    <span class="event-keywords">
+      {{event.properties.keywords}}
     </span>
   </div>
   <div class="row">
     <h5> Available datasets: </h5>
     <ul>
-      <li class="event-dataset" ng-repeat = "dataset in event.datasets">
-        <a href="{{dataset.url}}"> {{dataset.title}} </a>
+      <li class="event-dataset" ng-repeat="dataset in event.datasets || [event.properties]">
+        <a ng-href="{{dataset.url || dataset.doiurl}}" target="_blank"> 
+          {{dataset.title || dataset.name}} 
+        </a>
       </li>
     </ul>
-    <div ng-show="!event.datasets">
+    <div ng-show="!event.datasets && !event.properties">
       <span> No datasets available yet </span>
     </div>
   </div>

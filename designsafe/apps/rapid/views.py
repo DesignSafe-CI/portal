@@ -15,6 +15,10 @@ from django.db.models import Q
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
 
 logger = logging.getLogger(__name__)
 metrics_logger = logging.getLogger('metrics')
@@ -68,6 +72,19 @@ def get_events(request):
     out = [h.to_dict() for h in s[0:total]]
     return JsonResponse(out, safe=False)
 
+@csrf_exempt
+@require_GET
+def proxy_request(request):
+    url = request.GET.get('url')
+    if not url:
+        return JsonResponse({'error': 'URL parameter is required'}, status=400)
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError for bad responses
+        return JsonResponse(response.json(), safe=False, status=response.status_code)
+    except requests.RequestException as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 @user_passes_test(rapid_admin_check)
 @login_required
