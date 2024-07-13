@@ -1,7 +1,11 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Layout, notification } from 'antd';
-import { AddFileFolder, DatafilesSideNav } from '@client/datafiles';
+import {
+  AddFileFolder,
+  DatafilesHelpDropdown,
+  DatafilesSideNav,
+} from '@client/datafiles';
 import { useAuthenticatedUser, notifyContext } from '@client/hooks';
 
 const { Sider } = Layout;
@@ -35,6 +39,7 @@ const DataFilesRoot: React.FC = () => {
           </h1>
           <AddFileFolder />
           <DatafilesSideNav />
+          <DatafilesHelpDropdown />
         </Sider>
         {pathname === '/' && <Navigate to={defaultPath} replace></Navigate>}
         <Outlet />
