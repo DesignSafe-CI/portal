@@ -18,7 +18,7 @@ export type TPreviewFileType =
   | 'ipynb'
   | 'box'
   | 'other'
-    'hazmapper';
+  | 'hazmapper';
 
 export type TFilePreviewResponse = {
   href: string;

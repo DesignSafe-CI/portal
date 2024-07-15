@@ -1,5 +1,6 @@
 import { useConsumePostit, TPreviewFileType } from '@client/hooks';
 import { Alert, Spin } from 'antd';
+import { HAZMAPPER_BASE_URL_MAP } from '../../projects/utils';
 import React, { useState } from 'react';
 import styles from './PreviewModal.module.css';
 
@@ -10,15 +11,16 @@ export const PreviewSpinner: React.FC = () => (
 export type TPreviewContent = React.FC<{
   href: string;
   fileType: TPreviewFileType;
+  handleCancel: () => void;
 }>;
-export const PreviewContent: TPreviewContent = ({ href, fileType }) => {
+export const PreviewContent: TPreviewContent = ({ href, fileType, handleCancel }) => {
   const [iframeLoading, setIframeLoading] = useState(true);
 
   const { data: PostitData, isLoading: isConsumingPostit } = useConsumePostit({
     href,
     responseType: fileType === 'video' ? 'blob' : 'text',
     queryOptions: {
-      enabled: (!!href && fileType === 'text') || fileType === 'video',
+      enabled: (!!href && fileType === 'text') || fileType === 'video' || fileType === 'hazmapper',
     },
   });
 
@@ -69,17 +71,20 @@ export const PreviewContent: TPreviewContent = ({ href, fileType }) => {
         </div>
       );
     case 'hazmapper':
-      return (
-        <div className={styles.previewContainer}>
-          {iframeLoading && <PreviewSpinner />}
-          <iframe
-            onLoad={() => setIframeLoading(false)}
-            title="preview"
-            src={href}
-            id="framepreview"
-          ></iframe>
-        </div>
-      );
+      if (!PostitData) return
+      const body = JSON.parse(PostitData as string);
+      let baseUrl =
+      HAZMAPPER_BASE_URL_MAP[
+        body.deployment as keyof typeof HAZMAPPER_BASE_URL_MAP
+      ];
+      if (!baseUrl) {
+        console.error(
+          `Invalid deployment type: ${body.deployment}.  Falling back to local`
+        );
+        baseUrl = HAZMAPPER_BASE_URL_MAP['local'];
+      }
+        window.open(`${baseUrl}/project/${body.uuid}`, '_blank');
+        handleCancel();
     default:
       return (
         <Alert
