@@ -13,14 +13,21 @@ export type TPreviewContent = React.FC<{
   fileType: TPreviewFileType;
   handleCancel: () => void;
 }>;
-export const PreviewContent: TPreviewContent = ({ href, fileType, handleCancel }) => {
+export const PreviewContent: TPreviewContent = ({
+  href,
+  fileType,
+  handleCancel,
+}) => {
   const [iframeLoading, setIframeLoading] = useState(true);
 
   const { data: PostitData, isLoading: isConsumingPostit } = useConsumePostit({
     href,
     responseType: fileType === 'video' ? 'blob' : 'text',
     queryOptions: {
-      enabled: (!!href && fileType === 'text') || fileType === 'video' || fileType === 'hazmapper',
+      enabled:
+        (!!href && fileType === 'text') ||
+        fileType === 'video' ||
+        fileType === 'hazmapper',
     },
   });
 
@@ -71,20 +78,20 @@ export const PreviewContent: TPreviewContent = ({ href, fileType, handleCancel }
         </div>
       );
     case 'hazmapper':
-      if (!PostitData) return
+      if (!PostitData) return;
       const body = JSON.parse(PostitData as string);
       let baseUrl =
-      HAZMAPPER_BASE_URL_MAP[
-        body.deployment as keyof typeof HAZMAPPER_BASE_URL_MAP
-      ];
+        HAZMAPPER_BASE_URL_MAP[
+          body.deployment as keyof typeof HAZMAPPER_BASE_URL_MAP
+        ];
       if (!baseUrl) {
         console.error(
           `Invalid deployment type: ${body.deployment}.  Falling back to local`
         );
         baseUrl = HAZMAPPER_BASE_URL_MAP['local'];
       }
-        window.open(`${baseUrl}/project/${body.uuid}`, '_blank');
-        handleCancel();
+      window.open(`${baseUrl}/project/${body.uuid}`, '_blank');
+      handleCancel();
     default:
       return (
         <Alert
