@@ -290,7 +290,8 @@ def check_for_updates(
             logging.info(f"No updates found for '{path}'.")
     return updates_found
 
-def fetch_otcatalog_data()-> Dict[str, Any]:
+
+def fetch_otcatalog_data() -> Dict[str, Any]:
     """
     Fetch data from the OpenTopography OtCatalog API.
 
@@ -314,7 +315,10 @@ def fetch_otcatalog_data()-> Dict[str, Any]:
         ot_data[dataset_id] = dataset["Dataset"]
     return ot_data
 
-def update_otcatalog_api_response(output_filepath: str, ot_data: Dict[str, Any]) -> None:
+
+def update_otcatalog_api_response(
+    output_filepath: str, ot_data: Dict[str, Any]
+) -> None:
     """
     Fetch data from the OpenTopography OtCatalog API and update the GeoJSON file.
 
@@ -345,6 +349,7 @@ def update_otcatalog_api_response(output_filepath: str, ot_data: Dict[str, Any])
             raise exc
     with open(output_filepath, "w", encoding="utf-8") as file:
         geojson.dump(data, file, indent=4)
+
 
 def main() -> None:
     """
