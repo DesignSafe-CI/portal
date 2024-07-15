@@ -14,6 +14,8 @@ import { z, ZodTypeAny } from 'zod';
 import { TField, fieldDisplayOrder } from '../AppsWizard/AppsFormSchema';
 import { PrimaryButton } from '@client/common-components';
 import styles from './AppsSubmissionDetails.module.css';
+import { useGetAppsSuspense } from '@client/hooks';
+import { useGetAppParams } from '../utils';
 
 const tagTheme: ThemeConfig = {
   token: {
@@ -71,7 +73,8 @@ export const AppsSubmissionDetails: React.FC<{
     formState: { defaultValues, isValid },
   } = useFormContext();
   const formState = useWatch({ control, defaultValue: defaultValues });
-
+  const { data: app } = useGetAppsSuspense(useGetAppParams());
+  const { definition } = app;
   const getChildren = (
     key: string,
     value: string | object,
@@ -180,6 +183,11 @@ export const AppsSubmissionDetails: React.FC<{
       .filter(
         ([_, value]) =>
           typeof value !== 'object' || Object.keys(value).length > 0
+      )
+      //filter out outputs fields for interactive apps
+      .filter(
+        ([key]) =>
+          !(key === 'outputs' && definition.notes.isInteractive === true)
       )
       .map(([key, value], index) => ({
         key: key,
