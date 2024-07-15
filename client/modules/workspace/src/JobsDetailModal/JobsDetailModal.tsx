@@ -208,7 +208,7 @@ export const JobsDetailModalBody: React.FC<{
     <div className={styles['modal-body-container']}>
       <div className={`${styles['left-panel']}`}>
         <dl>
-          {isOutputState(jobData.status) && (
+          {!isOutputState(jobData.status) && (
             <>
               <dt>Execution:</dt>
               <dd>
@@ -219,31 +219,26 @@ export const JobsDetailModalBody: React.FC<{
                   }/${encodeURIComponent(jobData.execSystemExecDir)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  disabled={!isOutputState(jobData.status)}
                 >
                   View in Execution Directory
                 </Button>
               </dd>
             </>
           )}
-          <>
-            <dt>Output:</dt>
-            <dd>
-              <Button
-                type="link"
-                href={`data/browser/tapis/${
-                  jobData.archiveSystemId
-                }/${encodeURIComponent(jobData.archiveSystemDir)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                disabled={!isOutputState(jobData.status)}
-              >
-                {isOutputState(jobData.status)
-                  ? 'View Output'
-                  : 'Output Pending'}
-              </Button>
-            </dd>
-          </>
+          <dt>Output:</dt>
+          <dd>
+            <Button
+              type="link"
+              href={`data/browser/tapis/${
+                jobData.archiveSystemId
+              }/${encodeURIComponent(jobData.archiveSystemDir)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              disabled={!isOutputState(jobData.status)}
+            >
+              {isOutputState(jobData.status) ? 'View Output' : 'Output Pending'}
+            </Button>
+          </dd>
         </dl>
         {isTerminalState(jobData.status) &&
           (isInteractiveJob(jobData) ? (
