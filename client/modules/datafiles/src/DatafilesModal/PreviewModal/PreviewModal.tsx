@@ -77,7 +77,7 @@ export const PreviewModalBody: React.FC<{
               system={selectedFile.system}
               path={listingPath}
               selectedFiles={[selectedFile]}
-              succesCallback={handleCancel}
+              successCallback={handleCancel}
             >
               {({ onClick }) => (
                 <Button onClick={onClick}>
@@ -93,7 +93,6 @@ export const PreviewModalBody: React.FC<{
             system={selectedFile.system}
             path={listingPath}
             selectedFiles={[selectedFile]}
-            successCallback={handleCancel}
           >
             {({ onClick }) => (
               <Button onClick={onClick}>
@@ -103,6 +102,7 @@ export const PreviewModalBody: React.FC<{
             )}
           </CopyModal>
         )}
+        {!selectedFile.path.endsWith('.hazmapper') && (
         <DownloadModal
           api={api}
           system={selectedFile.system}
@@ -115,6 +115,7 @@ export const PreviewModalBody: React.FC<{
             </Button>
           )}
         </DownloadModal>
+        )}
       </div>
       <div className={styles.modalContentContainer}>
         {isLoading && <PreviewSpinner />}
