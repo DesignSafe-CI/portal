@@ -52,12 +52,27 @@ export function useGetJobSuspense(
   operation: TJobGetOperations,
   queryParams: TJobParamsType
 ) {
-  // suspense does not handle enabled property like useQueury,
-  // so check for uuid.
-  if (!queryParams.uuid) {
-    return { data: null, error: null, isLoading: false, isFetched: false };
+  const shouldFetch = !!queryParams.uuid;
+
+  // Always call, but use a empty query key and function if uuid is not available
+  // useSuspenseQuery does not read `enabled` property of query.
+  // Without this, react lint check will also fail.
+  const result = useSuspenseQuery(
+    shouldFetch
+      ? getJobQuery(operation, queryParams)
+      : { queryKey: ['null_operation'], queryFn: () => Promise.resolve(null) }
+  );
+
+  if (!shouldFetch) {
+    return {
+      data: null,
+      error: null,
+      isLoading: false,
+      isFetched: false,
+    };
   }
-  return useSuspenseQuery(getJobQuery(operation, queryParams));
+
+  return result;
 }
 
 export const useGetJobsSuspense = (
