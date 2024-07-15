@@ -16,7 +16,7 @@ export const AppsViewLayout: React.FC = () => {
   return (
     <>
       {htmlApp ? (
-        <div className={styles['center-overflow']}>
+        <div className={styles['overflow']}>
           {parse(htmlApp.html as string)}
         </div>
       ) : (
