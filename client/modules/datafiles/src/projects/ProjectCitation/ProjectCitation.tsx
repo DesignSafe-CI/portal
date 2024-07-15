@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  useCitationMetrics,
+  useDataciteMetrics,
   useProjectDetail,
   usePublicationDetail,
 } from '@client/hooks';
@@ -103,7 +103,7 @@ export const DownloadCitation: React.FC<{
       ? entityDetails.value.dois[0]
       : '';
 
-  const { data: citationMetrics, isLoading, isError } = useCitationMetrics(doi);
+  const { data: dataciteMetrics } = useDataciteMetrics(doi, !preview);
 
   const openModal = () => {
     setIsModalVisible(true);
@@ -120,9 +120,7 @@ export const DownloadCitation: React.FC<{
 
   return (
     <div>
-      {!preview && isLoading && <div>Loading citation metrics...</div>}
-      {!preview && isError && <div>Error fetching citation metrics</div>}
-      {citationMetrics && !preview && (
+      {dataciteMetrics && !preview && (
         <div>
           <strong>Download Citation: </strong>
           <a
@@ -152,17 +150,15 @@ export const DownloadCitation: React.FC<{
           </a>
           <div>
             <span className={styles['yellow-highlight']}>
-              {citationMetrics?.data2?.data.attributes.downloadCount ?? '--'}{' '}
-              Downloads
+              {dataciteMetrics?.data.attributes.downloadCount ?? '--'} Downloads
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span className={styles['yellow-highlight']}>
-              {citationMetrics?.data2?.data.attributes.viewCount ?? '--'} Views
+              {dataciteMetrics?.data.attributes.viewCount ?? '--'} Views
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span className={styles['yellow-highlight']}>
-              {citationMetrics?.data2?.data.attributes.citationCount ?? '--'}{' '}
-              Citations
+              {dataciteMetrics?.data.attributes.citationCount ?? '--'} Citations
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span
@@ -178,8 +174,7 @@ export const DownloadCitation: React.FC<{
             <MetricsModal
               isOpen={isModalVisible}
               handleCancel={closeModal}
-              eventMetricsData={citationMetrics?.data1}
-              usageMetricsData={citationMetrics?.data2}
+              doi={doi}
             />
           </div>
         </div>

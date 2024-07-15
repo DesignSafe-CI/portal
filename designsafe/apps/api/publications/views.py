@@ -5,7 +5,6 @@ from django.conf import settings
 from requests.exceptions import HTTPError
 from designsafe.apps.api.publications import operations
 from designsafe.apps.projects.managers import datacite as DataciteManager
-from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 import json
 import logging
@@ -31,7 +30,6 @@ class PublicationListingView(BaseApiView):
 View for getting details (description, full definition) from a specific publication.
 """
 class PublicationDetailView(BaseApiView):
-    @method_decorator(cache_page(60 * 15))
     def get(self, request, operation, project_id, revision=None):
         client = get_service_account_client()
         try:
@@ -45,7 +43,6 @@ class PublicationDetailView(BaseApiView):
 View for getting DataCite DOI details from publications.
 """
 class PublicationDataCiteView(BaseApiView):
-    @method_decorator(cache_page(60 * 15))
     def get(self, request, doi):
         url = f'https://api.datacite.org/dois/{doi}' 
 
