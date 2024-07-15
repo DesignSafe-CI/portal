@@ -316,7 +316,7 @@ export const mergeInputDefaultsWithJobData = (
   const mergedInputs: TFileInputsDefaults = { ...inputs };
   for (const key in inputs) {
     if (key in jobInputs && jobInputs[key]) {
-      mergedInputs[key] = jobInputs[key];
+      mergedInputs[key] = jobInputs[key] as string;
     }
   }
   return mergedInputs;
@@ -372,7 +372,7 @@ export const mergeParameterSetDefaultsWithJobData = (
       for (const jobArg of jobArgs) {
         const argName = jobArg.key;
         if (argName in mergedParameterSet[key] && jobArg.value) {
-          mergedParameterSet[key][argName] = jobArg.value;
+          mergedParameterSet[key][argName] = jobArg.value as string;
         }
       }
     }
