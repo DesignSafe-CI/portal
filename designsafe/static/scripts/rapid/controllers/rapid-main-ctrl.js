@@ -43,7 +43,7 @@ export default class RapidMainCtrl {
         const maxy = 90;
 
         this.RapidDataService.get_opentopo_data(minx, miny, maxx, maxy).then((opentopo_data) => {
-            this.openTopoData = opentopo_data;
+            this.openTopoData = opentopo_data.features;
             this.addMarkers(this.openTopoData, this.openTopoLayer, true);
             if (this.showOpenTopo) {
                 this.map.addLayer(this.openTopoLayer);
@@ -85,15 +85,16 @@ export default class RapidMainCtrl {
 
     addMarkers(data, layerGroup, isOpenTopo = false) {
         if (isOpenTopo) {
-            data.features.forEach((d) => {
+            data.forEach((d) => {
                 let lat = d.geometry.coordinates[1];
                 let lon = d.geometry.coordinates[0];
                 let title = d.properties.name;
                 let marker = L.marker([lat, lon]);
     
-                let popupContent = `<b>${d.properties.name}</b><br>
-                                    <b>Dataset Name:</b> ${d.properties.name}<br>
+                let popupContent = `<b>${title}</b><br>
+                                    <b>ID:</b> ${d.id}<br>
                                     <b>Products available:</b> ${d.properties.productAvailable}<br>
+                                    <b>Date Created:</b> ${d.properties.dateCreated}<br>
                                     <b>Survey date:</b> ${d.properties.temporalCoverage}<br>
                                     <b>DOI:</b> <a href="${d.properties.doiUrl}" target="_blank">${d.properties.doiUrl}</a>`;
     
@@ -169,19 +170,23 @@ export default class RapidMainCtrl {
     gotoEvent() {
         let q = this.$location.search();
         if (q.event) {
-            let ev = null;
-            if (this.openTopoData && this.openTopoData.features) {
-                ev = _.find(this.events.concat(this.openTopoData.features), (event) => {
-                    return event.title === q.event || (event.properties && event.properties.name === q.event);
-                });
-            } else {
-                ev = _.find(this.events, { title: q.event });
-            }
-    
-            if (ev) {
-                this.select_event(ev);
-            }
+            let ev = _.find(this.events.concat(this.openTopoData), { title: q.event });
+            this.select_event(ev);
         }
+        // if (q.event) {
+        //     let ev = null;
+        //     if (this.openTopoData) {
+        //         ev = _.find(this.events.concat(this.openTopoData), (event) => {
+        //             return event.title === q.event || (event.properties && event.properties.name === q.event);
+        //         });
+        //     } else {
+        //         ev = _.find(this.events, { title: q.event });
+        //     }
+    
+        //     if (ev) {
+        //         this.select_event(ev);
+        //     }
+        // }
     }  
 
     resetMapView() {
@@ -251,7 +256,7 @@ export default class RapidMainCtrl {
     }
 
     search() {
-        this.filtered_events = this.RapidDataService.search(this.events.concat(this.openTopoData.features), this.filter_options);
+        this.filtered_events = this.RapidDataService.search(this.events.concat(this.openTopoData), this.filter_options);
     }
 
     clear_filters() {

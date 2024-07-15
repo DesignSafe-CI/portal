@@ -22,8 +22,20 @@
       {{event.event_type || event.properties.host}}
     </span>
   </div>
+  <div class="row" ng-if="event.properties.productAvailable">
+    <b> File Formats Available :</b>
+    <span class="event-productAvailable">
+      {{event.properties.productAvailable}}
+    </span>
+  </div>
+  <div class="row" ng-if="event.properties.temporalCoverage">
+    <b> Survey Date :</b>
+    <span class="event-temporalCoverage">
+      {{event.properties.temporalCoverage}}
+    </span>
+  </div>
   <div class="row" ng-if="event.properties.keywords">
-    <span> keywords :</span>
+    <b> keywords :</b>
     <span class="event-keywords">
       {{event.properties.keywords}}
     </span>
