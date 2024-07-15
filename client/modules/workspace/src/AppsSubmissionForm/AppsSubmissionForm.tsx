@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useAppsListing,
   useGetAppsSuspense,
-  useGetJob,
+  useGetJobSuspense,
   usePostJobs,
   useGetSystems,
   useAuthenticatedUser,
@@ -71,7 +71,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const {
     user: { username },
   } = useAuthenticatedUser() as { user: TUser };
-  const { data: jobData } = useGetJob('select', { uuid: jobUUID }) as {
+  const { data: jobData } = useGetJobSuspense('select', { uuid: jobUUID }) as {
     data: TTapisJob;
   };
 

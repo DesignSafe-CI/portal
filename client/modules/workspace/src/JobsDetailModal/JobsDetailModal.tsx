@@ -23,6 +23,7 @@ import {
 import { formatDateTimeFromValue } from '../utils/timeFormat';
 import { JobActionButton } from '../JobsListing/JobsListing';
 import { Spinner } from '@client/common-components';
+import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
 
 type InputParamsObj = {
   [key: string]: string;
@@ -41,7 +42,6 @@ export const JobsDetailModalBody: React.FC<{
     jobData,
     appData
   ) as TJobDisplayInfo;
-  const navigate = useNavigate();
 
   const outputLocation = getOutputPath(jobData);
   const created = formatDateTimeFromValue(new Date(jobData.created));
@@ -195,15 +195,6 @@ export const JobsDetailModalBody: React.FC<{
       };
     });
 
-  const handleReuseInputs = (job: TTapisJob) => {
-    const path =
-      '/' +
-      `${job.appId}` +
-      (job.appVersion ? `?appVersion=${job.appVersion}` : '') +
-      `&jobUUID=${job.uuid}`;
-    navigate(path);
-  };
-
   return (
     <div className={styles['modal-body-container']}>
       <div className={`${styles['left-panel']}`}>
@@ -249,13 +240,7 @@ export const JobsDetailModalBody: React.FC<{
               type="primary"
             />
           ) : (
-            <Button
-              size="middle"
-              onClick={() => handleReuseInputs(jobData)}
-              type="primary"
-            >
-              Reuse Inputs
-            </Button>
+            <JobsReuseInputsButton job={jobData} />
           ))}
         {!isTerminalState(jobData.status) && (
           <JobActionButton

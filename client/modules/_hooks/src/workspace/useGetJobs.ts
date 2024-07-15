@@ -42,17 +42,22 @@ const getJobQuery = (
   operation: TJobGetOperations,
   queryParams: TJobParamsType
 ) => ({
-  queryKey: ['workspace', 'getJobs', operation, queryParams],
+  queryKey: ['workspace', 'getJob', operation, queryParams],
   queryFn: () => getJobs(operation, queryParams),
   retry: false,
   enabled: !!queryParams.uuid,
 });
 
-export function useGetJob(
+export function useGetJobSuspense(
   operation: TJobGetOperations,
   queryParams: TJobParamsType
 ) {
-  return useQuery(getJobQuery(operation, queryParams));
+  // suspense does not handle enabled property like useQueury,
+  // so check for uuid.
+  if (!queryParams.uuid) {
+    return { data: null, error: null, isLoading: false, isFetched: false };
+  }
+  return useSuspenseQuery(getJobQuery(operation, queryParams));
 }
 
 export const useGetJobsSuspense = (

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { PrimaryButton, SecondaryButton } from '@client/common-components';
 import { BaseButtonProps } from 'antd/es/button/button';
 import {
@@ -12,7 +12,6 @@ import {
   TJobPostOperations,
   useReadNotifications,
   TGetNotificationsResponse,
-  TTapisJob,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -29,6 +28,7 @@ import {
 import { InteractiveSessionModal } from '../InteractiveSessionModal';
 import styles from './JobsListing.module.css';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
+import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
 
 export const JobActionButton: React.FC<{
   uuid: string;
@@ -96,15 +96,6 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     markRead: false,
   });
   const { mutate: readNotifications } = useReadNotifications();
-  const navigate = useNavigate();
-  const handleReuseInputs = (job: TTapisJob) => {
-    const path =
-      '/' +
-      `${job.appId}` +
-      (job.appVersion ? `?appVersion=${job.appVersion}` : '') +
-      `&jobUUID=${job.uuid}`;
-    navigate(path);
-  };
 
   // mark all as read on component mount
   useEffect(() => {
@@ -183,12 +174,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                       size="small"
                     />
                   ) : (
-                    <SecondaryButton
-                      size="small"
-                      onClick={() => handleReuseInputs(job)}
-                    >
-                      Reuse Inputs
-                    </SecondaryButton>
+                    <JobsReuseInputsButton job={job} isSecondaryButton={true} />
                   ))}
                 <NavLink to={job.uuid} className={styles.link}>
                   View Details
