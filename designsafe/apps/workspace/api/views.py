@@ -359,6 +359,7 @@ class AppsTrayView(AuthenticatedApiView):
         all_values = [
             "app_id",
             "app_type",
+            "bundle_category",
             "bundle_description",
             "bundle_href",
             "bundle_id",
@@ -379,6 +380,7 @@ class AppsTrayView(AuthenticatedApiView):
         reduced_values = [
             "app_id",
             "app_type",
+            "bundle_category",
             "bundle_href",
             "bundle_id",
             "bundle_label",
@@ -408,6 +410,7 @@ class AppsTrayView(AuthenticatedApiView):
                 .annotate(
                     icon=F("bundle__icon"),
                     is_bundled=GreaterThan(Count("bundle__appvariant"), 1),
+                    bundle_category=F("bundle__category__category"),
                     bundle_description=F("bundle__description"),
                     bundle_href=F("bundle__href"),
                     bundle_is_popular=F("bundle__is_popular"),
@@ -428,6 +431,7 @@ class AppsTrayView(AuthenticatedApiView):
                 .annotate(
                     icon=F("bundle__icon"),
                     is_bundled=GreaterThan(Count("bundle__appvariant"), 1),
+                    bundle_category=F("bundle__category__category"),
                     bundle_description=F("bundle__description"),
                     bundle_href=F("bundle__href"),
                     bundle_is_popular=F("bundle__is_popular"),
@@ -471,6 +475,7 @@ class AppsTrayView(AuthenticatedApiView):
                         {
                             "app_id": "jupyter-lab-hpc",
                             "app_type": "tapis",
+                            "bundle_category": "Analysis",
                             "bundle_description: "Custom Jupyter notebooks.",
                             "bundle_href": "https://designsafe-ci.org/applications/overview/jupyter,
                             "bundle_id": 1,
