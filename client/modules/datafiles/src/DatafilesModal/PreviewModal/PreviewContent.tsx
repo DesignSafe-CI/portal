@@ -31,9 +31,13 @@ export const PreviewContent: TPreviewContent = ({
     },
   });
 
-  if (isConsumingPostit && fileType === 'hazmapper' ) return (
-  <div> <h3>Opening in Hazmapper ... </h3> <PreviewSpinner /></div>
-);
+  if (isConsumingPostit && fileType === 'hazmapper')
+    return (
+      <div>
+        {' '}
+        <h3>Opening in Hazmapper ... </h3> <PreviewSpinner />
+      </div>
+    );
   if (isConsumingPostit) return <PreviewSpinner />;
 
   switch (fileType) {
@@ -81,22 +85,23 @@ export const PreviewContent: TPreviewContent = ({
         </div>
       );
     case 'hazmapper':
-      {if (!PostitData) return;
-      const body = JSON.parse(PostitData as string);
-      let baseUrl =
-        HAZMAPPER_BASE_URL_MAP[
-          body.deployment as keyof typeof HAZMAPPER_BASE_URL_MAP
-        ];
-      if (!baseUrl) {
-        console.error(
-          `Invalid deployment type: ${body.deployment}.  Falling back to local`
-        );
-        baseUrl = HAZMAPPER_BASE_URL_MAP['local'];
+      {
+        if (!PostitData) return;
+        const body = JSON.parse(PostitData as string);
+        let baseUrl =
+          HAZMAPPER_BASE_URL_MAP[
+            body.deployment as keyof typeof HAZMAPPER_BASE_URL_MAP
+          ];
+        if (!baseUrl) {
+          console.error(
+            `Invalid deployment type: ${body.deployment}.  Falling back to local`
+          );
+          baseUrl = HAZMAPPER_BASE_URL_MAP['local'];
+        }
+        window.open(`${baseUrl}/project/${body.uuid}`, '_blank');
+        handleCancel();
       }
-      window.open(`${baseUrl}/project/${body.uuid}`, '_blank');
-      handleCancel();
-    };
-    break;
+      break;
     default:
       return (
         <Alert
