@@ -103,18 +103,18 @@ export const PreviewModalBody: React.FC<{
           </CopyModal>
         )}
         {!selectedFile.path.endsWith('.hazmapper') && (
-        <DownloadModal
-          api={api}
-          system={selectedFile.system}
-          selectedFiles={[selectedFile]}
-        >
-          {({ onClick }) => (
-            <Button onClick={onClick}>
-              <i role="none" className="fa fa-cloud-download" />
-              <span>&nbsp;Download</span>
-            </Button>
-          )}
-        </DownloadModal>
+          <DownloadModal
+            api={api}
+            system={selectedFile.system}
+            selectedFiles={[selectedFile]}
+          >
+            {({ onClick }) => (
+              <Button onClick={onClick}>
+                <i role="none" className="fa fa-cloud-download" />
+                <span>&nbsp;Download</span>
+              </Button>
+            )}
+          </DownloadModal>
         )}
       </div>
       <div className={styles.modalContentContainer}>
