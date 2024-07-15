@@ -1,10 +1,12 @@
 import React, { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Outlet } from 'react-router-dom';
-import { Layout } from 'antd';
+import { Alert, Layout } from 'antd';
 import { Spinner } from '@client/common-components';
 import { AppsSubmissionForm, useGetAppParams } from '@client/workspace';
 import { useAppsListing } from '@client/hooks';
 import parse from 'html-react-parser';
+import styles from './layout.module.css';
 
 export const AppsViewLayout: React.FC = () => {
   const { appId, appVersion } = useGetAppParams();
@@ -14,21 +16,37 @@ export const AppsViewLayout: React.FC = () => {
   return (
     <>
       {htmlApp ? (
-        <div id="appDetail-wrapper" className="has-external-app">
+        <div className={styles['overflow']}>
           {parse(htmlApp.html as string)}
         </div>
       ) : (
-        <Suspense
-          fallback={
-            <Layout>
-              <Spinner />
-            </Layout>
+        <ErrorBoundary
+          key={key}
+          fallbackRender={({ error }) =>
+            error && (
+              <div id="appDetail-wrapper">
+                <Alert
+                  message={error?.response?.data?.message ?? error.message}
+                  type="error"
+                  showIcon
+                  style={{ marginTop: 10 }}
+                />
+              </div>
+            )
           }
         >
-          {/* <AppFormProvider> */}
-          <AppsSubmissionForm key={key} />
-          {/* </AppFormProvider> */}
-        </Suspense>
+          <Suspense
+            fallback={
+              <Layout>
+                <Spinner />
+              </Layout>
+            }
+          >
+            {/* <AppFormProvider> */}
+            <AppsSubmissionForm key={key} />
+            {/* </AppFormProvider> */}
+          </Suspense>
+        </ErrorBoundary>
       )}
       <Outlet />
     </>

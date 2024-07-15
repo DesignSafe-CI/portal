@@ -5,11 +5,7 @@ import {
   PublishedCitation,
   DownloadCitation,
 } from '@client/datafiles';
-import {
-  usePublicationDetail,
-  usePublicationVersions,
-  useCitationMetrics,
-} from '@client/hooks';
+import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
 import React, { useEffect } from 'react';
 import { Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
@@ -49,9 +45,6 @@ export const PublishedDetailLayout: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
-
-  const dois = data?.baseProject.dois[0] ? data?.baseProject.dois[0] : '';
-  const { data: citationMetrics } = useCitationMetrics(dois);
 
   const version = (projectId ?? '').split('v')[1];
   useEffect(() => {
@@ -126,14 +119,12 @@ export const PublishedDetailLayout: React.FC = () => {
             entityUuid={data.tree.children[0].uuid}
           />
           <br />
-          {citationMetrics && (
-            <div>
-              <DownloadCitation
-                projectId={projectId}
-                entityUuid={data.tree.children[0].uuid}
-              />
-            </div>
-          )}
+          <div>
+            <DownloadCitation
+              projectId={projectId}
+              entityUuid={data.tree.children[0].uuid}
+            />
+          </div>
         </section>
       )}
       <BaseProjectDetails

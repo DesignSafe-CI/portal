@@ -93,6 +93,7 @@ export const PreviewModalBody: React.FC<{
             system={selectedFile.system}
             path={listingPath}
             selectedFiles={[selectedFile]}
+            successCallback={handleCancel}
           >
             {({ onClick }) => (
               <Button onClick={onClick}>

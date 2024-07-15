@@ -24,6 +24,7 @@ export type TConfigurationValues = {
   nodeCount?: number;
   coresPerNode?: number;
   allocation?: string;
+  memoryMB?: number;
 };
 
 export type TOutputValues = {

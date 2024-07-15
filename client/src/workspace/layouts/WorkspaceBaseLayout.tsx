@@ -62,7 +62,7 @@ const WorkspaceRoot: React.FC = () => {
             theme="light"
             breakpoint="md"
             collapsedWidth={0}
-            className={styles['appSider']}
+            className={styles['overflow']}
           >
             <JobStatusNav />
             <AppsSideNav categories={data.categories} />

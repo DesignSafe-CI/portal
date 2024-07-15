@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   TFileListing,
   TPreviewTreeData,
-  useCitationMetrics,
+  useDataciteMetrics,
   useProjectPreview,
   usePublicationDetail,
   usePublicationVersions,
@@ -28,7 +28,7 @@ import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
 import { PipelineEditCategoryModal } from '../modals';
 
-const EntityFileListingTable: React.FC<{
+export const EntityFileListingTable: React.FC<{
   treeData: TPreviewTreeData;
   preview?: boolean;
 }> = ({ treeData, preview }) => {
@@ -218,7 +218,7 @@ export const PublishedEntityDisplay: React.FC<{
     isLoading,
     isError,
     error,
-  } = useCitationMetrics(dois);
+  } = useDataciteMetrics(dois, !preview);
 
   useEffect(() => {
     if (isError) {

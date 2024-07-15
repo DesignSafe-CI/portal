@@ -8,6 +8,8 @@ import tapipy
 from designsafe.apps.api.datafiles.utils import *
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
+from designsafe.apps.api.filemeta.models import FileMetaModel
+from designsafe.apps.api.filemeta.tasks import move_file_meta_async, copy_file_meta_async
 from django.conf import settings
 from elasticsearch_dsl import Q
 import requests
@@ -258,6 +260,8 @@ def move(client, src_system, src_path, dest_system, dest_path):
                           path=src_path,
                           operation="MOVE",
                           newPath=dest_path_full)
+    
+    move_file_meta_async.delay(src_system, src_path, dest_system, dest_path_full)
 
 
     #update_meta.apply_async(kwargs={
@@ -340,6 +344,8 @@ def copy(client, src_system, src_path, dest_system, dest_path):
     #    "dest_path": full_dest_path
     #}, queue='indexing')
 
+    copy_file_meta_async.delay(src_system, src_path, dest_system, full_dest_path)
+
     agave_indexer.apply_async(kwargs={
         'systemId': dest_system,
         'filePath': full_dest_path,
@@ -392,7 +398,9 @@ def rename(client, system, path, new_name):
                           path=path,
                           operation="MOVE",
                           newPath=new_path)
-    
+
+    move_file_meta_async.delay(system, path, system, new_path)
+
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': os.path.dirname(path),
                                       'recurse': False},
@@ -523,6 +531,14 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
     # meta_result = query_file_meta(system, os.path.join('/', path))
     # meta = meta_result[0] if len(meta_result) else {}
     meta = {}
+    try:
+        meta = FileMetaModel.get_by_path_and_system(system, path).value
+        meta.pop("system", None)
+        meta.pop("path", None)
+        meta.pop("basePath", None)
+        meta = {k: json.dumps(meta[k]) for k in meta}
+    except FileMetaModel.DoesNotExist:
+        meta = {}
 
     postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
     url = postit_result.redeemUrl

@@ -75,6 +75,9 @@ export function useReadNotifications() {
 const getNotificationsQuery = (params: TGetNotificationsParams) => ({
   queryKey: ['workspace', 'notifications', params],
   queryFn: () => getNotifications(params),
+  refetchOnReconnect: false,
+  refetchOnWindowFocus: false,
+  refetchonMount: false,
 });
 
 export function useGetNotifications(params: TGetNotificationsParams) {

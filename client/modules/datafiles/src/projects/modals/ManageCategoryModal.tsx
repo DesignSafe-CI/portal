@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Button, Modal } from 'antd';
 import {
@@ -14,58 +14,41 @@ import { CATEGORIES_BY_PROJECT_TYPE } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
 import { ProjectCategoryForm } from '../forms/ProjectCategoryForm';
 import { SubEntityDetails } from '../SubEntityDetails';
+import { EntityFileListingTable } from '../ProjectPreview/ProjectPreview';
 
 const CategoryDetail: React.FC<{
   value: TEntityValue;
   projectType: TBaseProjectValue['projectType'];
   projectId: string;
   entityUuid: string;
-}> = ({ value, projectId, projectType, entityUuid }) => {
-  const [showForm, setShowForm] = useState(false);
-  const { mutate: patchEntityMeta } = usePatchEntityMetadata();
+  setUuid: CallableFunction;
+}> = ({ value, projectId, projectType, entityUuid, setUuid }) => {
   const { mutate: deleteEntity } = useDeleteEntity();
 
-  const { notifyApi } = useNotifyContext();
-
-  const onSuccess = () => {
-    setShowForm(false);
-    notifyApi?.open({
-      type: 'success',
-      message: '',
-      description: 'Metadata has been updated successfully.',
-      placement: 'bottomLeft',
-    });
-  };
   return (
-    <>
-      <section>
-        <SubEntityDetails entityValue={value} />
-        <Button type="link" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancel Editing' : 'Edit'}
-        </Button>
-        &nbsp;|&nbsp;
-        <Button type="link" onClick={() => deleteEntity({ entityUuid })}>
-          Delete
-        </Button>
-      </section>
-      {showForm && (
-        <section style={{ marginTop: '20px' }}>
-          <ProjectCategoryForm
-            projectType={projectType}
-            projectId={projectId}
-            entityUuid={entityUuid}
-            mode="edit"
-            onSubmit={(v: { name: string; value: Record<string, unknown> }) => {
-              console.log(v);
-              patchEntityMeta(
-                { entityUuid, patchMetadata: v.value },
-                { onSuccess }
-              );
-            }}
-          />
-        </section>
-      )}
-    </>
+    <section>
+      <SubEntityDetails entityValue={value} />
+      <Button type="link" onClick={() => setUuid(entityUuid)}>
+        Edit
+      </Button>
+      &nbsp;|&nbsp;
+      <Button type="link" onClick={() => deleteEntity({ entityUuid })}>
+        Delete
+      </Button>
+      <div style={{ margin: '10px -12px' }}>
+        <EntityFileListingTable
+          preview
+          treeData={{
+            value,
+            id: '',
+            uuid: entityUuid,
+            name: '',
+            order: 0,
+            children: [],
+          }}
+        />
+      </div>
+    </section>
   );
 };
 
@@ -81,7 +64,34 @@ export const ManageCategoryModal: React.FC<{
     setIsModalOpen(false);
   };
 
-  const { mutate } = useCreateEntity(projectId);
+  const { mutate: createEntity } = useCreateEntity(projectId);
+  const { mutate: updateEntity } = usePatchEntityMetadata();
+
+  const handleSubmit = (formData: {
+    name: string;
+    value: Record<string, unknown>;
+  }) => {
+    if (!selectedUuid) {
+      createEntity({ formData }, { onSuccess });
+      return;
+    }
+    if (selectedUuid) {
+      updateEntity(
+        { entityUuid: selectedUuid, patchMetadata: formData.value },
+        { onSuccess: onSuccess }
+      );
+    }
+  };
+
+  const [selectedUuid, setSelectedUuid] = useState<string | undefined>(
+    undefined
+  );
+
+  const formRef = useRef<HTMLHeadingElement>(null);
+  const setFormUuid = (uuid?: string) => {
+    setSelectedUuid(uuid);
+    formRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const { notifyApi } = useNotifyContext();
 
@@ -89,7 +99,9 @@ export const ManageCategoryModal: React.FC<{
     notifyApi?.open({
       type: 'success',
       message: '',
-      description: 'A new metadata record has been created.',
+      description: selectedUuid
+        ? 'Metadata has been updated successfully.'
+        : 'A new metadata record has been created.',
       placement: 'bottomLeft',
     });
   };
@@ -107,18 +119,18 @@ export const ManageCategoryModal: React.FC<{
         open={isModalOpen}
         onCancel={handleClose}
         width="900px"
-        title={<h2>Manage Categories</h2>}
+        title={<h2 ref={formRef}>Manage Categories</h2>}
         footer={null}
       >
         {!editOnly && (
           <section style={{ backgroundColor: '#f5f5f5', padding: '20px' }}>
             <ProjectCategoryForm
-              mode="create"
+              mode={selectedUuid ? 'edit' : 'create'}
+              entityUuid={selectedUuid}
               projectId={projectId}
               projectType={projectType}
-              onSubmit={(v: { name: string; value: Record<string, unknown> }) =>
-                mutate({ formData: v }, { onSuccess })
-              }
+              onSubmit={handleSubmit}
+              onCancelEdit={() => setSelectedUuid(undefined)}
             />
           </section>
         )}
@@ -138,6 +150,7 @@ export const ManageCategoryModal: React.FC<{
                     entityUuid={entity.uuid}
                     projectId={projectId}
                     projectType={projectType}
+                    setUuid={setFormUuid}
                   />
                 </ProjectCollapse>
               ))
