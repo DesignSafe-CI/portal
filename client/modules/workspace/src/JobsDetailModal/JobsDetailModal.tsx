@@ -18,10 +18,12 @@ import {
   getJobDisplayInformation,
   TJobDisplayInputOrParameter,
   TJobDisplayInfo,
+  isInteractiveJob,
 } from '../utils/jobs';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
 import { JobActionButton } from '../JobsListing/JobsListing';
 import { Spinner } from '@client/common-components';
+import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
 
 type InputParamsObj = {
   [key: string]: string;
@@ -229,14 +231,17 @@ export const JobsDetailModalBody: React.FC<{
             </Button>
           </dd>
         </dl>
-        {isTerminalState(jobData.status) && (
-          <JobActionButton
-            uuid={jobData.uuid}
-            title="Resubmit Job"
-            operation="resubmitJob"
-            type="primary"
-          />
-        )}
+        {isTerminalState(jobData.status) &&
+          (isInteractiveJob(jobData) ? (
+            <JobActionButton
+              uuid={jobData.uuid}
+              title="Resubmit Job"
+              operation="resubmitJob"
+              type="primary"
+            />
+          ) : (
+            <JobsReuseInputsButton job={jobData} />
+          ))}
         {!isTerminalState(jobData.status) && (
           <JobActionButton
             uuid={jobData.uuid}

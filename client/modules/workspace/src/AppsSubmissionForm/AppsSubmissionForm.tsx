@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useAppsListing,
   useGetAppsSuspense,
+  useGetJobSuspense,
   usePostJobs,
   useGetSystems,
   useAuthenticatedUser,
@@ -18,6 +19,7 @@ import {
   TParameterSetSubmit,
   TJobBody,
   useGetAllocationsSuspense,
+  TTapisJob,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
@@ -52,10 +54,14 @@ import {
   getDefaultExecSystem,
   getAllocationList,
   findAppById,
+  mergeConfigurationDefaultsWithJobData,
+  mergeParameterSetDefaultsWithJobData,
+  mergeInputDefaultsWithJobData,
 } from '../utils';
 
 export const AppsSubmissionForm: React.FC = () => {
-  const { data: app } = useGetAppsSuspense(useGetAppParams());
+  const { appId, appVersion, jobUUID } = useGetAppParams();
+  const { data: app } = useGetAppsSuspense({ appId, appVersion });
   const { data: tasAllocations } = useGetAllocationsSuspense();
 
   const {
@@ -65,6 +71,9 @@ export const AppsSubmissionForm: React.FC = () => {
   const {
     user: { username },
   } = useAuthenticatedUser() as { user: TUser };
+  const { data: jobData } = useGetJobSuspense('select', { uuid: jobUUID }) as {
+    data: TTapisJob;
+  };
 
   const { definition, license, defaultSystemNeedsKeys } = app;
   const { data: appListingData } = useAppsListing();
@@ -106,12 +115,27 @@ export const AppsSubmissionForm: React.FC = () => {
   // TODOv3: dynamic exec system and queues
   const initialValues: TFormValues = useMemo(
     () => ({
-      inputs: fileInputs.defaults,
-      parameters: parameterSet.defaults,
-      configuration: configuration.defaults,
+      inputs: mergeInputDefaultsWithJobData(
+        appId,
+        appVersion,
+        fileInputs.defaults,
+        jobData
+      ),
+      parameters: mergeParameterSetDefaultsWithJobData(
+        appId,
+        appVersion,
+        parameterSet.defaults,
+        jobData
+      ),
+      configuration: mergeConfigurationDefaultsWithJobData(
+        appId,
+        appVersion,
+        configuration.defaults,
+        jobData
+      ),
       outputs: outputs.defaults,
     }),
-    [definition]
+    [definition, jobData]
   );
 
   let missingAllocation: string | undefined;

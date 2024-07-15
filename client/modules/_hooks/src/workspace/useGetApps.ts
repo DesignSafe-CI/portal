@@ -10,6 +10,7 @@ import { TTapisSystem } from '../systems/types';
 export type TAppParamsType = {
   appId: string;
   appVersion?: string;
+  jobUUID?: string;
 };
 
 export type TAppResponse = {
