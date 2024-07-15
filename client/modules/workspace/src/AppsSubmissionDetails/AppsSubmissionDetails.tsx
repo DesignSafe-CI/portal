@@ -14,6 +14,7 @@ import { z, ZodTypeAny } from 'zod';
 import { TField, fieldDisplayOrder } from '../AppsWizard/AppsFormSchema';
 import { PrimaryButton } from '@client/common-components';
 import styles from './AppsSubmissionDetails.module.css';
+import { TTapisApp } from '@client/hooks';
 
 const tagTheme: ThemeConfig = {
   token: {
@@ -65,7 +66,8 @@ export const AppsSubmissionDetails: React.FC<{
   isSubmitting: boolean;
   current: string;
   setCurrent: CallableFunction;
-}> = ({ schema, fields, isSubmitting, current, setCurrent }) => {
+  definition: TTapisApp;
+}> = ({ schema, fields, isSubmitting, current, setCurrent, definition }) => {
   const {
     control,
     formState: { defaultValues, isValid },
@@ -180,6 +182,9 @@ export const AppsSubmissionDetails: React.FC<{
       .filter(
         ([_, value]) =>
           typeof value !== 'object' || Object.keys(value).length > 0
+      )
+      .filter(
+        ([key]) => !(key === 'queue' && definition.notes.hideQueue === true)
       )
       .map(([key, value], index) => ({
         key: key,
