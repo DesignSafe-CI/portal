@@ -92,7 +92,7 @@ export default class RapidMainCtrl {
                 let marker = L.marker([lat, lon]);
     
                 let popupContent = `<b>${title}</b><br>
-                                    <b>ID:</b> ${d.id}<br>
+                                    <b>ID:</b> ${d.properties.id}<br>
                                     <b>Products available:</b> ${d.properties.productAvailable}<br>
                                     <b>Date Created:</b> ${d.properties.dateCreated}<br>
                                     <b>Survey date:</b> ${d.properties.temporalCoverage}<br>
