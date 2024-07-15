@@ -35,10 +35,10 @@
   flex-flow: row wrap;
 }
 .appDetail-wrapper.has-message,
-.appDetail-wrapper.is-loading,
-.appDetail-wrapper.has-external-app {
+.center-overflow {
   justify-content: center;
   align-items: center;
+  overflow: auto;
 }
 
 .appDetail-placeholder-message {
