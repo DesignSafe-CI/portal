@@ -33,10 +33,9 @@ export const PreviewContent: TPreviewContent = ({
 
   if (isConsumingPostit && fileType === 'hazmapper')
     return (
-      <div>
-        {' '}
+      <>
         <h3>Opening in Hazmapper ... </h3> <PreviewSpinner />
-      </div>
+      </>
     );
   if (isConsumingPostit) return <PreviewSpinner />;
 
