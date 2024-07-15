@@ -31,6 +31,9 @@ export const PreviewContent: TPreviewContent = ({
     },
   });
 
+  if (isConsumingPostit && fileType === 'hazmapper' ) return (
+  <div> <h3>Opening in Hazmapper ... </h3> <PreviewSpinner /></div>
+);
   if (isConsumingPostit) return <PreviewSpinner />;
 
   switch (fileType) {
@@ -78,7 +81,7 @@ export const PreviewContent: TPreviewContent = ({
         </div>
       );
     case 'hazmapper':
-      if (!PostitData) return;
+      {if (!PostitData) return;
       const body = JSON.parse(PostitData as string);
       let baseUrl =
         HAZMAPPER_BASE_URL_MAP[
@@ -92,6 +95,8 @@ export const PreviewContent: TPreviewContent = ({
       }
       window.open(`${baseUrl}/project/${body.uuid}`, '_blank');
       handleCancel();
+    };
+    break;
     default:
       return (
         <Alert
