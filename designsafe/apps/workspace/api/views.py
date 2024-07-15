@@ -625,6 +625,12 @@ class JobsView(AuthenticatedApiView):
             _tapis_query_parameters={"tags.contains": f"portalName: {portal_name}"},
             select="allAttributes",
         )
+        if isinstance(data, list):
+            for index, job in enumerate(data):
+                data[index] = check_job_for_timeout(job)
+        else:
+            data = check_job_for_timeout(data)
+
         return {"listing": data, "reachedEnd": len(data) < int(limit)}
 
     def search(self, client, request):
