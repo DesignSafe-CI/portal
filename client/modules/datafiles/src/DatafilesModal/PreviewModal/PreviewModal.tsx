@@ -119,6 +119,7 @@ export const PreviewModalBody: React.FC<{
           <PreviewContent
             href={data.href}
             fileType={data.fileType}
+            handleCancel={handleClose}
           ></PreviewContent>
         )}
       </div>
