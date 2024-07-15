@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  apiClient,
   DoiContextProvider,
   TFileListing,
   TPreviewTreeData,
@@ -218,18 +219,18 @@ export const PublishedEntityDisplay: React.FC<{
     treeData.value.dois && treeData.value.dois.length > 0
       ? treeData.value.dois[0]
       : '';
-  const {
-    data: citationMetrics,
-    isLoading,
-    isError,
-    error,
-  } = useDataciteMetrics(dois, !preview);
+  const { data: citationMetrics } = useDataciteMetrics(dois, !preview);
 
   useEffect(() => {
-    if (isError) {
-      console.error('Error fetching citation metrics:', error);
+    if (active && !preview) {
+      const identifier = dois ?? treeData.uuid;
+      const path = `${projectId}/${treeData.name}/${identifier}`;
+      apiClient.get(
+        `/api/datafiles/agave/public/logentity/designsafe.storage.published/${path}`,
+        { params: { doi: dois } }
+      );
     }
-  }, [isLoading, isError, error]);
+  }, [active, preview, dois, projectId, treeData.name, treeData.uuid]);
 
   return (
     <section>
