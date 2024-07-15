@@ -22,6 +22,7 @@ logging.basicConfig(
 
 # Constants
 GITHUB_API_URL = "https://api.github.com/repos/"
+OTCATALOG_API_URL = "https://portal.opentopography.org/API/otCatalog"
 REPO = "OpenTopography/Data_Catalog_Spatial_Boundaries"
 DIRECTORIES = {
     "OpenTopography_Raster": "opentopo_data/raster",
@@ -289,14 +290,13 @@ def check_for_updates(
             logging.info(f"No updates found for '{path}'.")
     return updates_found
 
-def fetch_otcatalog_data():
+def fetch_otcatalog_data()-> Dict[str, Any]:
     """
     Fetch data from the OpenTopography OtCatalog API.
 
     Returns:
         dict: collection of all datasets from the API response.
     """
-    api_url = "https://portal.opentopography.org/API/otCatalog"
     include_federated = "false"
     detail = "true"
     minx, maxx, miny, maxy = (
@@ -305,7 +305,7 @@ def fetch_otcatalog_data():
         -90,
         90,
     )  # Fetching the entire world data from the API
-    request_url = f"{api_url}?minx={minx}&miny={miny}&maxx={maxx}&maxy={maxy}&detail={detail}&include_federated={include_federated}"
+    request_url = f"{OTCATALOG_API_URL}?minx={minx}&miny={miny}&maxx={maxx}&maxy={maxy}&detail={detail}&include_federated={include_federated}"
     response = requests.get(request_url, timeout=60)
     response.raise_for_status()
     ot_data = {}
@@ -314,7 +314,7 @@ def fetch_otcatalog_data():
         ot_data[dataset_id] = dataset["Dataset"]
     return ot_data
 
-def fetch_otcatalog_api_response(output_filepath):
+def update_otcatalog_api_response(output_filepath: str, ot_data: Dict[str, Any]) -> None:
     """
     Fetch data from the OpenTopography OtCatalog API and update the GeoJSON file.
 
@@ -324,7 +324,6 @@ def fetch_otcatalog_api_response(output_filepath):
     with open(output_filepath, "r", encoding="utf-8") as file:
         data = geojson.load(file)
     features = data["features"]
-    ot_data = fetch_otcatalog_data()
     for feature in features:
         dataset_id = ".".join(feature["properties"]["id"].split(".")[1:])
         dataset = ot_data.get(dataset_id)
@@ -370,7 +369,13 @@ def main() -> None:
             OUTPUT_FILEPATH_POLYGON,
             all_features_polygon,
         )
-        fetch_otcatalog_api_response(output_filepath=OUTPUT_FILEPATH_CENTROID)
+        ot_data = fetch_otcatalog_data()
+        update_otcatalog_api_response(
+            output_filepath=OUTPUT_FILEPATH_CENTROID, ot_data=ot_data
+        )
+        update_otcatalog_api_response(
+            output_filepath=OUTPUT_FILEPATH_POLYGON, ot_data=ot_data
+        )
 
 
 if __name__ == "__main__":
