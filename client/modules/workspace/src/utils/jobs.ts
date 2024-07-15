@@ -2,12 +2,19 @@ import { STATUS_TEXT_MAP, TERMINAL_STATES } from '../constants';
 import {
   TJobStatusNotification,
   TAppResponse,
+  TConfigurationValues,
   TTapisJob,
   TAppFileInput,
   TJobArgSpecs,
+  TJobArgSpec,
   TJobKeyValuePair,
   TParameterSetNotes,
+  TParameterSetSubmit,
 } from '@client/hooks';
+import {
+  TFileInputsDefaults,
+  TParameterSetDefaults,
+} from '../AppsWizard/AppsFormSchema';
 
 export function getStatusText(status: string) {
   if (status in STATUS_TEXT_MAP) {
@@ -85,7 +92,7 @@ export function getJobInteractiveSessionInfo(
 /* Return allocation
    queue directive has form: '-A TACC-ACI'
    */
-export function getAllocatonFromDirective(directive: string | undefined) {
+export function getAllocationFromDirective(directive: string | undefined) {
   if (!directive) return directive;
   const parts = directive.split(' ');
   const allocationArgIndex = parts.findIndex((obj) => obj === '-A') + 1;
@@ -206,7 +213,7 @@ export function getJobDisplayInformation(
           (opt) => opt.name === 'TACC Allocation'
         );
         if (allocationParam) {
-          const allocation = getAllocatonFromDirective(allocationParam.arg);
+          const allocation = getAllocationFromDirective(allocationParam.arg);
           if (allocation) {
             display.allocation = allocation;
           }
@@ -234,3 +241,142 @@ export function getJobDisplayInformation(
 
   return display;
 }
+
+function isJobDataFromSameAppVersion(
+  jobData: TTapisJob,
+  appId: string,
+  appVersion: string | undefined
+): boolean {
+  return (
+    jobData.appId === appId &&
+    (!appVersion || jobData.appVersion === appVersion)
+  );
+}
+
+/**
+ * Merge app configuration values with job data.
+ * Used in reusing submitted job data for a new job.
+ * @param appId
+ * @param appVersion
+ * @param configuration
+ * @param jobData
+ * @returns merged data if job is valid otherwise, original values
+ */
+export const mergeConfigurationDefaultsWithJobData = (
+  appId: string,
+  appVersion: string | undefined,
+  configuration: TConfigurationValues,
+  jobData: TTapisJob | null
+): TConfigurationValues => {
+  if (!jobData || !isJobDataFromSameAppVersion(jobData, appId, appVersion))
+    return configuration;
+  const parameterSet = JSON.parse(jobData.parameterSet);
+  const schedulerOptions = parameterSet.schedulerOptions as TJobArgSpecs;
+  const allocationParam = schedulerOptions.find(
+    (opt) => opt.name === 'TACC Allocation'
+  );
+
+  return {
+    ...configuration,
+    execSystemLogicalQueue:
+      jobData.execSystemLogicalQueue ?? configuration.execSystemLogicalQueue,
+    maxMinutes: jobData.maxMinutes ?? configuration.maxMinutes,
+    nodeCount: jobData.nodeCount ?? configuration.nodeCount,
+    coresPerNode: jobData.coresPerNode ?? configuration.coresPerNode,
+    allocation:
+      getAllocationFromDirective(allocationParam?.arg) ??
+      configuration.allocation,
+  };
+};
+
+/**
+ * Merge app input defaults with same values from job inputs.
+ * Uses app input keys as source and ensures only those values are updated.
+ * @param appId
+ * @param appVersion
+ * @param inputs
+ * @param jobData
+ * @returns merged data if job is valid otherwise, original values
+ */
+export const mergeInputDefaultsWithJobData = (
+  appId: string,
+  appVersion: string | undefined,
+  inputs: TFileInputsDefaults,
+  jobData: TTapisJob | null
+) => {
+  if (!jobData || !isJobDataFromSameAppVersion(jobData, appId, appVersion))
+    return inputs;
+  const jobInputs = Object.fromEntries(
+    (JSON.parse(jobData.fileInputs) as TAppFileInput[]).map((input) => [
+      input.name,
+      input.sourceUrl,
+    ])
+  );
+
+  const mergedInputs: TFileInputsDefaults = { ...inputs };
+  for (const key in inputs) {
+    if (key in jobInputs && jobInputs[key]) {
+      mergedInputs[key] = jobInputs[key] as string;
+    }
+  }
+  return mergedInputs;
+};
+
+/**
+ * Merge app parameterSet defaults with same values from job parameterSet.
+ * Uses app parameter keys as source and ensures only those values are updated.
+ * @param appId
+ * @param appVersion
+ * @param inputs
+ * @param jobData
+ * @returns merged data if job is valid otherwise, original values
+ */
+export const mergeParameterSetDefaultsWithJobData = (
+  appId: string,
+  appVersion: string | undefined,
+  parameterSet: TParameterSetDefaults,
+  jobData: TTapisJob | null
+): TParameterSetDefaults => {
+  if (!jobData || !isJobDataFromSameAppVersion(jobData, appId, appVersion))
+    return parameterSet;
+
+  const jobParameterSet = JSON.parse(
+    jobData.parameterSet
+  ) as TParameterSetSubmit;
+  const mergedParameterSet: TParameterSetDefaults = { ...parameterSet };
+
+  for (const key in parameterSet) {
+    const jobParams = jobParameterSet[key as keyof TParameterSetSubmit];
+    if (
+      jobParams &&
+      typeof jobParams === 'object' &&
+      typeof parameterSet[key] === 'object'
+    ) {
+      mergedParameterSet[key] = { ...parameterSet[key] };
+
+      const jobArgs = jobParams.map((p: TJobArgSpec | TJobKeyValuePair) =>
+        key === 'envVariables'
+          ? {
+              key:
+                getParameterSetNotesLabel(p.notes) ??
+                (p as TJobKeyValuePair).key,
+              value: (p as TJobKeyValuePair).value,
+            }
+          : {
+              key:
+                getParameterSetNotesLabel(p.notes) ?? (p as TJobArgSpec).name,
+              value: (p as TJobArgSpec).arg,
+            }
+      );
+
+      for (const jobArg of jobArgs) {
+        const argName = jobArg.key;
+        if (argName in mergedParameterSet[key] && jobArg.value) {
+          mergedParameterSet[key][argName] = jobArg.value as string;
+        }
+      }
+    }
+  }
+
+  return mergedParameterSet;
+};

@@ -6,6 +6,7 @@ import { Spinner } from '@client/common-components';
 import { AppsSubmissionForm, useGetAppParams } from '@client/workspace';
 import { useAppsListing } from '@client/hooks';
 import parse from 'html-react-parser';
+import styles from './layout.module.css';
 
 export const AppsViewLayout: React.FC = () => {
   const { appId, appVersion } = useGetAppParams();
@@ -15,7 +16,7 @@ export const AppsViewLayout: React.FC = () => {
   return (
     <>
       {htmlApp ? (
-        <div id="appDetail-wrapper" className="has-external-app">
+        <div className={styles['overflow']}>
           {parse(htmlApp.html as string)}
         </div>
       ) : (

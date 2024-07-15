@@ -445,8 +445,11 @@ export const useGetAppParams = () => {
   const appVersion = new URLSearchParams(location.search).get('appVersion') as
     | string
     | undefined;
+  const jobUUID = new URLSearchParams(location.search).get('jobUUID') as
+    | string
+    | undefined;
 
-  return { appId, appVersion };
+  return { appId, appVersion, jobUUID };
 };
 
 /**
