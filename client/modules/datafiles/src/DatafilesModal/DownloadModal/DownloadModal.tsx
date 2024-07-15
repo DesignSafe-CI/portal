@@ -2,7 +2,6 @@ import { Modal } from 'antd';
 import React, { useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
 import { TFileListing, apiClient } from '@client/hooks';
-import { useSearchParams } from 'react-router-dom';
 
 export const DownloadModal: React.FC<{
   api: string;
@@ -13,7 +12,9 @@ export const DownloadModal: React.FC<{
 }> = ({ api, system, scheme, selectedFiles, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [searchParams] = useSearchParams();
+  const doiArray = selectedFiles.filter((f) => f.doi).map((f) => f.doi);
+
+  const doiString = [...new Set(doiArray)].join(',');
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -21,7 +22,7 @@ export const DownloadModal: React.FC<{
 
   const zipUrl = `/api/datafiles/${api}/${
     scheme ?? 'public'
-  }/download/${system}/?doi=${searchParams.get('doi')}`;
+  }/download/${system}/?doi=${doiString}`;
 
   const handleDownload = () => {
     apiClient

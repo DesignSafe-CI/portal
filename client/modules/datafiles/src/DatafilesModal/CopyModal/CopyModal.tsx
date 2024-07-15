@@ -197,6 +197,7 @@ export const CopyModal: React.FC<{
         mutate({
           src: { api, system, path: encodeURIComponent(f.path) },
           dest: { api: destApi, system: destSystem, path: dPath },
+          doi: f.doi,
         })
       );
       handleClose();
