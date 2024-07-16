@@ -11,6 +11,7 @@ describe('RapidMainCtrl', function() {
         },
         addLayer: jasmine.createSpy(),
         on: jasmine.createSpy(), // Mock the on method
+        hasLayer: jasmine.createSpy()
     };
     var events = [
         { title: 'test1', location:{ lat:0, lon:0 } },
