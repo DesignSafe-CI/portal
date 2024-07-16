@@ -375,6 +375,7 @@ class AppsTrayView(AuthenticatedApiView):
             "label",
             "short_label",
             "version",
+            "user_guide_link",
         ]
 
         reduced_values = [
@@ -390,6 +391,7 @@ class AppsTrayView(AuthenticatedApiView):
             "label",
             "short_label",
             "version",
+            "user_guide_link",
         ]
 
         values = reduced_values if not verbose else all_values

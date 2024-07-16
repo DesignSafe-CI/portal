@@ -195,6 +195,11 @@ class AppVariant(models.Model):
         default=0,
     )
 
+    user_guide_link = models.CharField(
+        help_text="Link to the app's user guide.",
+        blank=True,
+    )
+
     # HTML Apps
     html = models.TextField(
         help_text="HTML definition to display when app is loaded.",
