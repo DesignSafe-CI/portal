@@ -28,6 +28,7 @@ import {
 import { InteractiveSessionModal } from '../InteractiveSessionModal';
 import styles from './JobsListing.module.css';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
+import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
 
 export const JobActionButton: React.FC<{
   uuid: string;
@@ -164,14 +165,17 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                       : 'Output Pending'}
                   </SecondaryButton>
                 )}
-                {isTerminalState(job.status) && (
-                  <JobActionButton
-                    uuid={job.uuid}
-                    operation="resubmitJob"
-                    title={isInteractiveJob(job) ? 'Resubmit' : 'Reuse Inputs'}
-                    size="small"
-                  />
-                )}
+                {isTerminalState(job.status) &&
+                  (isInteractiveJob(job) ? (
+                    <JobActionButton
+                      uuid={job.uuid}
+                      operation="resubmitJob"
+                      title="Resubmit"
+                      size="small"
+                    />
+                  ) : (
+                    <JobsReuseInputsButton job={job} isSecondaryButton={true} />
+                  ))}
                 <NavLink to={job.uuid} className={styles.link}>
                   View Details
                 </NavLink>

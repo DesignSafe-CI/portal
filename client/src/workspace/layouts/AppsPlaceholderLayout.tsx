@@ -10,9 +10,7 @@ export const AppsPlaceholderLayout: React.FC = () => {
 
   return (
     <Layout style={{ gap: '5px', minWidth: '500px' }}>
-      <Layout.Content
-        className={`${styles['appDetail-wrapper']} ${styles['has-message']} ${styles['appDetail-placeholder-message']}`}
-      >
+      <Layout.Content className={`${styles['appDetail-placeholder-message']}`}>
         {hasApps
           ? `Select an app from the menu on the left to submit a job.`
           : `No apps to show.`}
