@@ -1,5 +1,6 @@
 export * from './AppsSideNav/AppsSideNav';
 export * from './AppsSubmissionForm/AppsSubmissionForm';
+export { default as AppIcon } from './AppsSubmissionForm/AppIcon';
 export * from './JobsListing/JobsListing';
 export * from './JobsDetailModal/JobsDetailModal';
 export * from './JobStatusNav/JobStatusNav';

@@ -1,4 +1,7 @@
+import { Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { Layout } from 'antd';
+import { Spinner } from '@client/common-components';
 import WorkspaceRoot from './layouts/WorkspaceBaseLayout';
 import { JobsListingLayout } from './layouts/JobsListingLayout';
 import { AppsViewLayout } from './layouts/AppsViewLayout';
@@ -18,7 +21,17 @@ const workspaceRouter = createBrowserRouter(
         {
           id: 'app',
           path: ':appId',
-          element: <AppsViewLayout />,
+          element: (
+            <Suspense
+              fallback={
+                <Layout>
+                  <Spinner />
+                </Layout>
+              }
+            >
+              <AppsViewLayout />
+            </Suspense>
+          ),
         },
         {
           path: 'history/:uuid?',

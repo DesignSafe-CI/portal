@@ -100,6 +100,11 @@ class AppListingEntry(models.Model):
         choices=APP_ICONS,
         blank=True,
     )
+    user_guide_link = models.CharField(
+        help_text="Link to the app's user guide.",
+        max_length=2048,
+        blank=True,
+    )
     enabled = models.BooleanField(
         help_text="App bundle visibility in app tray.", default=True
     )

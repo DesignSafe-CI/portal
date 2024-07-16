@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Layout, Form, Col, Row, Flex, Alert, Space, Button } from 'antd';
+import { Layout, Form, Col, Row, Alert, Button } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  useAppsListing,
   useGetAppsSuspense,
   useGetJobSuspense,
   usePostJobs,
@@ -23,7 +22,6 @@ import {
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
-import { default as AppIcon } from './AppIcon';
 import {
   default as FormSchema,
   TField,
@@ -53,7 +51,6 @@ import {
   updateValuesForQueue,
   getDefaultExecSystem,
   getAllocationList,
-  findAppById,
   mergeConfigurationDefaultsWithJobData,
   mergeParameterSetDefaultsWithJobData,
   mergeInputDefaultsWithJobData,
@@ -76,10 +73,6 @@ export const AppsSubmissionForm: React.FC = () => {
   };
 
   const { definition, license, defaultSystemNeedsKeys } = app;
-  const { data: appListingData } = useAppsListing();
-  const icon =
-    findAppById(appListingData, definition.id)?.icon ??
-    (definition.notes.icon || 'Generic-App');
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -163,14 +156,7 @@ export const AppsSubmissionForm: React.FC = () => {
     outputs: z.object(outputs.schema),
   });
 
-  const { Header, Content } = Layout;
-  const headerStyle = {
-    background: 'transparent',
-    paddingLeft: 0,
-    paddingRight: 0,
-    borderBottom: '1px solid #707070',
-    fontSize: 16,
-  };
+  const { Content } = Layout;
 
   const missingLicense = license.type && !license.enabled;
 
@@ -521,128 +507,103 @@ export const AppsSubmissionForm: React.FC = () => {
 
   return (
     <>
-      <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Header style={headerStyle}>
-            <Flex justify="space-between">
-              <div>
-                <AppIcon name={icon} />
-                {definition.notes.label || definition.id}
-              </div>
-              {definition.notes.helpUrl && (
-                <a
-                  href={definition.notes.helpUrl}
-                  target="_blank"
-                  style={{ marginRight: 10 }}
-                >
-                  View User Guide
-                </a>
-              )}
-            </Flex>
-          </Header>
-          {submitResult && !submitResult.execSys && (
-            <Alert
-              message={
-                <>
-                  Job submitted successfully. Monitor its progress in{' '}
-                  <NavLink to={'/history'}>Job Status</NavLink>.
-                </>
-              }
-              type="success"
-              closable
-              showIcon
-            />
-          )}
-          {missingAllocation && (
-            <Alert
-              message={`You need an allocation on ${missingAllocation} to run this application.`}
-              type="warning"
-              showIcon
-            />
-          )}
-          {submitError && (
-            <Alert
-              message={
-                <>
-                  Job Submit Error:{' '}
-                  {submitError.response?.data.message || submitError.message}
-                </>
-              }
-              type="warning"
-              closable
-              showIcon
-            />
-          )}
-          {defaultSystemNeedsKeys && (
-            <Alert
-              message={
-                <>
-                  There was a problem accessing your default My Data file
-                  system. {defaultSystemNeedsKeysMessage}
-                </>
-              }
-              type="warning"
-              closable
-              showIcon
-            />
-          )}
-          {!!(missingLicense && hasStorageSystems) && (
-            <div className="appDetail-error">
-              <Alert
-                type="warning"
-                showIcon
-                message={
-                  <>
-                    Activate your {app.license.type} license in{' '}
-                    <Button
-                      type="link"
-                      href="/account/licenses/"
-                      target="_blank"
-                    >
-                      Manage Account
-                    </Button>
-                    , then return to this form.
-                  </>
-                }
-              />
-            </div>
-          )}
-          <Content>
-            <FormProvider {...methods}>
-              <Form
-                disabled={readOnly}
-                requiredMark={false}
-                layout="vertical"
-                onFinish={handleSubmit(submitJobCallback, (error) => {
-                  console.log('error submit data', error);
-                })}
-              >
-                <fieldset disabled={readOnly}>
-                  <Row gutter={[64, 16]} align="top">
-                    <Col span={14}>
-                      <AppsWizard
-                        step={steps[current]}
-                        handlePreviousStep={handlePreviousStep}
-                        handleNextStep={handleNextStep}
-                      />
-                    </Col>
-                    <Col span={10}>
-                      <AppsSubmissionDetails
-                        schema={schema}
-                        fields={fields}
-                        isSubmitting={isPending}
-                        current={current}
-                        setCurrent={setCurrent}
-                        definition={definition}
-                      />
-                    </Col>
-                  </Row>
-                </fieldset>
-              </Form>
-            </FormProvider>
-          </Content>
-        </Space>
-      </Layout>
+      {submitResult && !submitResult.execSys && (
+        <Alert
+          message={
+            <>
+              Job submitted successfully. Monitor its progress in{' '}
+              <NavLink to={'/history'}>Job Status</NavLink>.
+            </>
+          }
+          type="success"
+          closable
+          showIcon
+        />
+      )}
+      {missingAllocation && (
+        <Alert
+          message={`You need an allocation on ${missingAllocation} to run this application.`}
+          type="warning"
+          showIcon
+        />
+      )}
+      {submitError && (
+        <Alert
+          message={
+            <>
+              Job Submit Error:{' '}
+              {submitError.response?.data.message || submitError.message}
+            </>
+          }
+          type="warning"
+          closable
+          showIcon
+        />
+      )}
+      {defaultSystemNeedsKeys && (
+        <Alert
+          message={
+            <>
+              There was a problem accessing your default My Data file system.{' '}
+              {defaultSystemNeedsKeysMessage}
+            </>
+          }
+          type="warning"
+          closable
+          showIcon
+        />
+      )}
+      {!!(missingLicense && hasStorageSystems) && (
+        <div className="appDetail-error">
+          <Alert
+            type="warning"
+            showIcon
+            message={
+              <>
+                Activate your {app.license.type} license in{' '}
+                <Button type="link" href="/account/licenses/" target="_blank">
+                  Manage Account
+                </Button>
+                , then return to this form.
+              </>
+            }
+          />
+        </div>
+      )}
+      <Content>
+        <FormProvider {...methods}>
+          <Form
+            disabled={readOnly}
+            requiredMark={false}
+            layout="vertical"
+            onFinish={handleSubmit(submitJobCallback, (error) => {
+              console.log('error submit data', error);
+            })}
+          >
+            <fieldset disabled={readOnly}>
+              <Row gutter={[64, 16]} align="top">
+                <Col span={14}>
+                  <AppsWizard
+                    step={steps[current]}
+                    handlePreviousStep={handlePreviousStep}
+                    handleNextStep={handleNextStep}
+                  />
+                </Col>
+                <Col span={10}>
+                  <AppsSubmissionDetails
+                    schema={schema}
+                    fields={fields}
+                    isSubmitting={isPending}
+                    current={current}
+                    setCurrent={setCurrent}
+                    definition={definition}
+                  />
+                </Col>
+              </Row>
+            </fieldset>
+          </Form>
+        </FormProvider>
+      </Content>
       <SystemsPushKeysModal
         isModalOpen={pushKeysSystem}
         setIsModalOpen={setPushKeysSystem}
