@@ -92,6 +92,20 @@ export const AppsSubmissionDetails: React.FC<{
         );
       }
       entries.forEach(([k, v], childIndex) => {
+        if (
+          definition.notes.hideQueue &&
+          key === 'configuration' &&
+          k === 'execSystemLogicalQueue'
+        ) {
+          return; // Hide the queue, if the app definition requires it
+        }
+        if (
+          definition.notes.hideAllocation &&
+          key === 'configuration' &&
+          k === 'allocation'
+        ) {
+          return; // Hide the allocation, if that field is true
+        }
         if (v instanceof Object) {
           Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
             const nestedFieldSchema = parent?.shape?.[k]?.shape?.[kk];
@@ -182,9 +196,6 @@ export const AppsSubmissionDetails: React.FC<{
       .filter(
         ([_, value]) =>
           typeof value !== 'object' || Object.keys(value).length > 0
-      )
-      .filter(
-        ([key]) => !(key === 'queue' && definition.notes.hideQueue === true)
       )
       .map(([key, value], index) => ({
         key: key,

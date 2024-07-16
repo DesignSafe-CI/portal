@@ -188,6 +188,9 @@ export const getConfigurationFields = (
         execSystems[0].batchLogicalQueues
       ).map((q) => ({ value: q, label: q })),
     };
+  }
+
+  if (definition.jobType === 'BATCH' && !definition.notes.hideAllocation) {
     configurationFields['allocation'] = {
       description:
         'Select the project allocation you would like to use with this job submission.',
@@ -472,7 +475,7 @@ const FormSchema = (
     queue_name: definition.jobAttributes.execSystemLogicalQueue,
   }) as TTapisSystemQueue;
 
-  if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
+  if (definition.jobType === 'BATCH') {
     appFields.configuration.defaults['execSystemLogicalQueue'] = isAppTypeBATCH(
       definition
     )

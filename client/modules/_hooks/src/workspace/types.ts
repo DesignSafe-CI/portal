@@ -112,6 +112,7 @@ export type TTapisApp = {
     dynamicExecSystems?: string[];
     queueFilter?: string[];
     hideQueue?: boolean;
+    hideAllocation?: boolean;
   };
   uuid: string;
   deleted: boolean;
