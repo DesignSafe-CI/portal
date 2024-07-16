@@ -86,13 +86,25 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
       return {
         canPreview:
           selectedFiles.length === 1 && selectedFiles[0].type === 'file',
-        canRename: user && selectedFiles.length === 1 && !isReadOnly,
-        canCopy: user && selectedFiles.length >= 1,
-        canTrash: user && selectedFiles.length >= 1 && !isReadOnly,
+        canRename:
+          user &&
+          selectedFiles.length === 1 &&
+          !isReadOnly &&
+          !selectedFiles[0].path.endsWith('.hazmapper'),
+        canCopy:
+          user &&
+          selectedFiles.length >= 1 &&
+          !selectedFiles[0].path.endsWith('.hazmapper'),
+        canTrash:
+          user &&
+          selectedFiles.length >= 1 &&
+          !isReadOnly &&
+          !selectedFiles[0].path.endsWith('.hazmapper'),
         // Disable downloads from frontera.work until we have a non-flaky mount on ds-download.
         canDownload:
           selectedFiles.length >= 1 &&
-          system !== 'designsafe.storage.frontera.work',
+          system !== 'designsafe.storage.frontera.work' &&
+          !selectedFiles[0].path.endsWith('.hazmapper'),
       };
     },
     [selectedFiles, isReadOnly, user, system]

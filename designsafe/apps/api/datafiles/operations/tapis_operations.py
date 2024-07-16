@@ -544,7 +544,10 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
     url = postit_result.redeemUrl
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
-        file_type = 'text'
+        if file_ext == '.hazmapper':
+            file_type = 'hazmapper'
+        else:
+            file_type = 'text'
     elif file_ext in settings.SUPPORTED_IMAGE_PREVIEW_EXTS:
         file_type = 'image'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:

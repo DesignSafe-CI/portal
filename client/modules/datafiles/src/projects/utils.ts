@@ -1,6 +1,6 @@
 import { THazmapperMap } from '@client/hooks';
 
-const HAZMAPPER_BASE_URL_MAP = {
+export const HAZMAPPER_BASE_URL_MAP = {
   production: 'https://hazmapper.tacc.utexas.edu/hazmapper',
   staging: 'https://hazmapper.tacc.utexas.edu/staging',
   dev: 'https://hazmapper.tacc.utexas.edu/dev',
