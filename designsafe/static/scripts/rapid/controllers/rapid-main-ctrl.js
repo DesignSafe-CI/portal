@@ -173,7 +173,7 @@ export default class RapidMainCtrl {
                     }
                     this.active_polygon = this.addPolygonToMap(data.geometry, ev.properties);
                 }).catch((err) => {
-                    console.error('Error loading OpenTopography coordinates:', err);
+                    console.error('Error loading OpenTopography polygon coordinates:', err);
                 });
             }
         }
