@@ -4,6 +4,7 @@ import apiClient from '../apiClient';
 export type TPortalApp = {
   app_id: string;
   app_type: string;
+  bundle_category: string;
   bundle_href: string;
   bundle_id: number;
   bundle_label: string;

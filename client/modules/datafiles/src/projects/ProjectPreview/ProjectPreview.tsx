@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  apiClient,
+  DoiContextProvider,
+  TFileListing,
   TPreviewTreeData,
-  useCitationMetrics,
+  useDataciteMetrics,
+  useDoiContext,
   useProjectPreview,
   usePublicationDetail,
   usePublicationVersions,
@@ -27,15 +31,17 @@ import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
 import { PipelineEditCategoryModal } from '../modals';
 
-const EntityFileListingTable: React.FC<{
+export const EntityFileListingTable: React.FC<{
   treeData: TPreviewTreeData;
   preview?: boolean;
 }> = ({ treeData, preview }) => {
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
     path?: string;
+    selectedFile?: TFileListing;
   }>({ isOpen: false });
 
+  const doi = useDoiContext();
   const columns: TFileListingColumns = [
     {
       title: 'File Name',
@@ -46,7 +52,9 @@ const EntityFileListingTable: React.FC<{
           {record.type === 'dir' ? (
             <Link
               className="listing-nav-link"
-              to={`./${encodeURIComponent(record.path)}`}
+              to={`./${encodeURIComponent(record.path)}${
+                doi ? `?doi=${doi}` : ''
+              }`}
               style={{ pointerEvents: preview ? 'none' : 'all' }}
               replace={false}
             >
@@ -65,9 +73,12 @@ const EntityFileListingTable: React.FC<{
               &nbsp;&nbsp;
               <Button
                 type="link"
-                disabled={preview}
                 onClick={() =>
-                  setPreviewModalState({ isOpen: true, path: record.path })
+                  setPreviewModalState({
+                    isOpen: true,
+                    path: record.path,
+                    selectedFile: { ...record, doi },
+                  })
                 }
               >
                 {data}
@@ -97,14 +108,15 @@ const EntityFileListingTable: React.FC<{
         columns={columns}
         scroll={{ x: 500, y: 500 }}
         dataSource={treeData.value.fileObjs}
+        noSelection={preview}
         disabled
       />
-      {previewModalState.path && (
+      {previewModalState.path && previewModalState.selectedFile && (
         <PreviewModalBody
+          scheme="private"
+          selectedFile={previewModalState.selectedFile}
           isOpen={previewModalState.isOpen}
           api={'tapis'}
-          system={'designsafe.storage.published'}
-          path={previewModalState.path}
           handleCancel={() => setPreviewModalState({ isOpen: false })}
         />
       )}
@@ -207,18 +219,18 @@ export const PublishedEntityDisplay: React.FC<{
     treeData.value.dois && treeData.value.dois.length > 0
       ? treeData.value.dois[0]
       : '';
-  const {
-    data: citationMetrics,
-    isLoading,
-    isError,
-    error,
-  } = useCitationMetrics(dois);
+  const { data: citationMetrics } = useDataciteMetrics(dois, !preview);
 
   useEffect(() => {
-    if (isError) {
-      console.error('Error fetching citation metrics:', error);
+    if (active && !preview) {
+      const identifier = dois ?? treeData.uuid;
+      const path = `${projectId}/${treeData.name}/${identifier}`;
+      apiClient.get(
+        `/api/datafiles/agave/public/logentity/designsafe.storage.published/${path}`,
+        { params: { doi: dois } }
+      );
     }
-  }, [isLoading, isError, error]);
+  }, [active, preview, dois, projectId, treeData.name, treeData.uuid]);
 
   return (
     <section>
@@ -307,6 +319,7 @@ export const PublishedEntityDisplay: React.FC<{
                 )}
                 {(sortedChildren ?? []).map((child) => (
                   <RecursiveTree
+                    preview={preview}
                     treeData={child}
                     key={child.id}
                     defaultOpen={defaultOpenChildren}
@@ -393,13 +406,15 @@ export const PublicationView: React.FC<{
             child.name !== 'designsafe.project'
         )
         .map((child, idx) => (
-          <PublishedEntityDisplay
-            license={data.baseProject.license}
-            projectId={projectId}
-            treeData={child}
-            defaultOpen={idx === 0 && sortedChildren.length === 1}
-            key={child.id}
-          />
+          <DoiContextProvider key={child.id} value={child.value.dois?.[0]}>
+            <PublishedEntityDisplay
+              license={data.baseProject.license}
+              projectId={projectId}
+              treeData={child}
+              defaultOpen={idx === 0 && sortedChildren.length === 1}
+              key={child.id}
+            />
+          </DoiContextProvider>
         ))}
     </div>
   );

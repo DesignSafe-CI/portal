@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './FileListingTable.module.css';
 import { Alert, Table, TableColumnType, TableProps } from 'antd';
-import { useFileListing, TFileListing, useSelectedFiles } from '@client/hooks';
+import {
+  useFileListing,
+  TFileListing,
+  useSelectedFiles,
+  useDoiContext,
+} from '@client/hooks';
 import { FileListingTableCheckbox } from './FileListingTableCheckbox';
 import parse from 'html-react-parser';
 
@@ -25,7 +30,9 @@ export const FileListingTable: React.FC<
     disabled?: boolean;
     className?: string;
     emptyListingDisplay?: React.ReactNode;
+    noSelection?: boolean;
     searchTerm?: string | null;
+    currentDisplayPath?: TFileListing | undefined;
   } & Omit<TableProps, 'columns' | 'className'>
 > = ({
   api,
@@ -38,6 +45,8 @@ export const FileListingTable: React.FC<
   className,
   emptyListingDisplay,
   searchTerm = '',
+  noSelection,
+  currentDisplayPath = null,
   ...props
 }) => {
   const limit = 100;
@@ -69,18 +78,25 @@ export const FileListingTable: React.FC<
     if (filterFn) {
       return filterFn(cl);
     }
+    if (currentDisplayPath) {
+      return [currentDisplayPath, ...cl];
+    }
+
     return cl;
-  }, [data, filterFn]);
+  }, [data, filterFn, currentDisplayPath]);
 
   /* HANDLE FILE SELECTION */
+  const doi = useDoiContext();
   const { selectedFiles, setSelectedFiles } = useSelectedFiles(
     api,
     system ?? '-',
     path
   );
   const onSelectionChange = useCallback(
-    (_: React.Key[], selection: TFileListing[]) => setSelectedFiles(selection),
-    [setSelectedFiles]
+    (_: React.Key[], selection: TFileListing[]) => {
+      setSelectedFiles(doi ? selection.map((s) => ({ ...s, doi })) : selection);
+    },
+    [setSelectedFiles, doi]
   );
   const selectedRowKeys = useMemo(
     () => selectedFiles.map((s) => s.path),
@@ -133,17 +149,21 @@ export const FileListingTable: React.FC<
       className={`${styles['listing-table-base']} ${
         (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
       } ${className ?? ''}`}
-      rowSelection={{
-        type: 'checkbox',
-        onChange: onSelectionChange,
-        selectedRowKeys,
-        renderCell: (checked, _rc, _idx, node) => (
-          <FileListingTableCheckbox
-            checked={checked}
-            onChange={(node as React.ReactElement)?.props.onChange}
-          />
-        ),
-      }}
+      rowSelection={
+        noSelection
+          ? undefined
+          : {
+              type: 'checkbox',
+              onChange: onSelectionChange,
+              selectedRowKeys,
+              renderCell: (checked, _rc, _idx, node) => (
+                <FileListingTableCheckbox
+                  checked={checked}
+                  onChange={(node as React.ReactElement)?.props.onChange}
+                />
+              ),
+            }
+      }
       scroll={{ y: '100%', x: '1000px' }} // set to undefined to disable sticky header
       columns={columns}
       rowKey={(record) => record.path}

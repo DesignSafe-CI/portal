@@ -50,6 +50,34 @@ class Simulation(MetadataModel):
             self.simulation_type.name = self.simulation_type_other
         return self
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        fedora_json = {
+            "type": self.simulation_type.name,
+            "title": self.title,
+            "description": self.description,
+        }
+
+        fedora_json["creator"] = [
+            f"{author.lname}, {author.fname}" for author in self.authors
+        ]
+
+        fedora_json["identifier"] = self.dois
+        if self.facility:
+            fedora_json["contributor"] = self.facility.name
+
+        for referenced_data in self.referenced_data:
+            reference_mapping = referenced_data.to_fedora_json()
+            for key in reference_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [reference_mapping[key]]
+
+        for related_work in self.related_work:
+            related_mapping = related_work.to_fedora_json()
+            for key in related_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [related_mapping[key]]
+
+        return fedora_json
+
 
 class SimulationModel(MetadataModel):
     """Model for a simulation model."""
@@ -69,6 +97,14 @@ class SimulationModel(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "simulation model",
+            "title": self.title,
+            "description": self.description,
+        }
+
 
 class SimulationInput(MetadataModel):
     """Model for simulation input."""
@@ -84,6 +120,14 @@ class SimulationInput(MetadataModel):
     files: list[str] = []
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "simulation input",
+            "title": self.title,
+            "description": self.description,
+        }
 
 
 class SimulationOutput(MetadataModel):
@@ -101,6 +145,14 @@ class SimulationOutput(MetadataModel):
     files: list[str] = []
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "simulation output",
+            "title": self.title,
+            "description": self.description,
+        }
 
 
 class SimulationAnalysis(MetadataModel):
@@ -121,6 +173,14 @@ class SimulationAnalysis(MetadataModel):
     reference: Optional[str] = None
     referencedoi: Optional[str] = None
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "analysis",
+            "title": self.title,
+            "description": self.description,
+        }
+
 
 class SimulationReport(MetadataModel):
     """Model for simulation reports."""
@@ -135,3 +195,7 @@ class SimulationReport(MetadataModel):
     files: list[str] = []
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {"type": "report", "title": self.title, "description": self.description}

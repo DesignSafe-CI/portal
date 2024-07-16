@@ -382,9 +382,16 @@ export const BaseProjectForm: React.FC<{
           name="description"
           rules={[
             {
-              min: 50,
               required: true,
               message: 'Please enter a description',
+            },
+            {
+              min: 50,
+              message: 'Description must be at least 50 characters long',
+            },
+            {
+              max: 5000,
+              message: 'Description cannot be longer than 5000 characters',
             },
           ]}
           className="inner-form-item"

@@ -10,6 +10,7 @@ import { TTapisSystem } from '../systems/types';
 export type TAppParamsType = {
   appId: string;
   appVersion?: string;
+  jobUUID?: string;
 };
 
 export type TAppResponse = {
@@ -42,6 +43,7 @@ const getAppsQuery = (queryParams: TAppParamsType) => ({
   queryFn: ({ signal }: { signal: AbortSignal }) =>
     getApps({ signal }, queryParams),
   staleTime: 5000,
+  enabled: !!queryParams.appId,
 });
 
 export const useGetAppsSuspense = (queryParams: TAppParamsType) => {

@@ -40,7 +40,14 @@ export const AppsBreadcrumb: React.FC = () => {
       href: '/use-designsafe/tools-applications/',
     },
   ];
-
+  if (currentAppFromCategories?.bundle_category) {
+    breadcrumbItems.push({
+      title: `${currentAppFromCategories.bundle_category}`,
+      href: `/use-designsafe/tools-applications/${currentAppFromCategories.bundle_category
+        .toLowerCase()
+        .replace(/ /g, '-')}`,
+    });
+  }
   if (currentAppFromCategories?.bundle_href) {
     breadcrumbItems.push({
       title: `${currentAppFromCategories.bundle_label} Overview`,

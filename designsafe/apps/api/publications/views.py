@@ -5,6 +5,7 @@ from django.conf import settings
 from requests.exceptions import HTTPError
 from designsafe.apps.api.publications import operations
 from designsafe.apps.projects.managers import datacite as DataciteManager
+from django.utils.decorators import method_decorator
 import json
 import logging
 import requests

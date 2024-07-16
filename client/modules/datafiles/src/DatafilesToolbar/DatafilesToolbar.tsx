@@ -32,8 +32,9 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
   searchInput,
 }) => {
   const routeParams = useFileListingRouteParams();
-  const { scheme, path } = routeParams;
-  let { api, system } = routeParams;
+  const { scheme } = routeParams;
+  let { api, system, path } = routeParams;
+  const { neesid } = useParams();
   let { projectId } = useParams();
 
   const { user } = useAuthenticatedUser();
@@ -56,6 +57,13 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
   if (isPublished) {
     system = 'designsafe.storage.published';
     api = 'tapis';
+  }
+  if (isNees) {
+    system = 'nees.public';
+    api = 'tapis';
+  }
+  if (isNees && !path) {
+    path = `/${neesid}`;
   }
 
   /* 
@@ -108,7 +116,12 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           )}
         </DatafilesModal.Rename>
 
-        <DatafilesModal.Move api={api} system={system} path={path}>
+        <DatafilesModal.Move
+          api={api}
+          system={system}
+          path={path}
+          selectedFiles={selectedFiles}
+        >
           {({ onClick }) => (
             <ToolbarButton
               onClick={onClick}
@@ -122,9 +135,8 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
         </DatafilesModal.Move>
         <DatafilesModal.Preview
           api={api}
-          system={system}
           scheme={scheme}
-          path={selectedFiles[0]?.path ?? ''}
+          selectedFile={selectedFiles[0]}
         >
           {({ onClick }) => (
             <ToolbarButton

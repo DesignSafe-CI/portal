@@ -60,6 +60,9 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
   const routeParams = useParams();
   const path = routeParams.path ?? data?.path;
 
+  const [activeTab, setActiveTab] = useState<string>('files');
+  useEffect(() => setActiveTab('files'), [path]);
+
   const neesCitations = neesExperiments
     ?.filter((exp) => !!exp.doi)
     .map((u) => {
@@ -95,129 +98,148 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
     return (
       <div key={exp.name}>
         <Flex gap="middle">
-          <div>{exp.name}</div>
-          <table>
-            <colgroup>
-              <col style={{ width: '100px' }} />
-              <col />
-            </colgroup>
-            <tbody>
-              <tr>
-                <td>Title</td>
-                <td>{exp.title}</td>
-              </tr>
-              <tr>
-                <td>Creators</td>
-                <td>
-                  {exp.creators
-                    ? exp.creators?.map((c) => (
-                        <div key={c.lastName}>
-                          {c.firstName} {c.lastName}
-                        </div>
-                      ))
-                    : 'No Creators Listed'}
-                </td>
-              </tr>
-              {exp.doi ? (
+          <div style={{ width: '200px' }}>{exp.name}</div>
+          <div style={{ flex: 1 }}>
+            <table>
+              <colgroup>
+                <col style={{ width: '100px' }} />
+                <col />
+              </colgroup>
+              <tbody>
                 <tr>
-                  <td>DOI</td>
-                  <td>{exp.doi}</td>
+                  <td>Title</td>
+                  <td>{exp.title}</td>
                 </tr>
-              ) : (
-                <tr></tr>
-              )}
-              {exp.doi ? (
                 <tr>
-                  <td>Citation</td>
+                  <td>Creators</td>
                   <td>
                     {exp.creators
-                      ?.map(
-                        (author) => author.lastName + ', ' + author.firstName
-                      )
-                      .join('; ')}
-                    , (
-                    {exp.endDate
-                      ? exp.endDate.split('T')[0].split('-')[0]
-                      : exp.startDate.split('T')[0].split('-')[0]}
-                    ), "{exp.title}", DesignSafe-CI [publisher], doi: {exp.doi}
+                      ? exp.creators?.map((c) => (
+                          <div key={c.lastName}>
+                            {c.firstName} {c.lastName}
+                          </div>
+                        ))
+                      : 'No Creators Listed'}
                   </td>
                 </tr>
-              ) : (
-                <tr></tr>
-              )}
-              <tr>
-                <td>Type</td>
-                <td>{exp.type}</td>
-              </tr>
-              <tr>
-                <td>Description</td>
-                <td>
-                  {exp.description ? (
-                    <DescriptionExpander>{exp.description}</DescriptionExpander>
-                  ) : (
-                    'No Description'
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td>Start Date</td>
-                <td>{exp.startDate}</td>
-              </tr>
-              <tr>
-                <td>End Date</td>
-                <td>{exp.endDate ? exp.endDate : 'No End Date'}</td>
-              </tr>
-              <tr>
-                <td>Equipment</td>
-                <td>
-                  <table>
-                    <thead>
-                      {exp.equipment ? (
-                        <tr>
-                          <th>Equipment</th>
-                          <th>Component</th>
-                          <th>Equipment Class</th>
-                          <th>Facility</th>
-                        </tr>
-                      ) : (
-                        <tr>
-                          <td>No Equipment Listed</td>
-                        </tr>
-                      )}
-                    </thead>
-                    <tbody>
-                      {exp.equipment?.map((eq) => (
-                        <tr key={eq.component + eq.equipment}>
-                          <td width={'25%'}>{eq.equipment}</td>
-                          <td width={'25%'}>{eq.component}</td>
-                          <td width={'25%'}>{eq.equipmentClass}</td>
-                          <td width={'25%'}>{eq.facility}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td>Material</td>
-                <td>
-                  {exp.material
-                    ? exp.material?.map((mat) => (
-                        <div key={mat.component}>
-                          <div>{mat.component}:</div>
-                          <div>
-                            {mat.materials?.map((mats) => (
-                              <div key={mats}>{mats}</div>
-                            ))}
+                {exp.doi ? (
+                  <tr>
+                    <td>DOI</td>
+                    <td>{exp.doi}</td>
+                  </tr>
+                ) : (
+                  <tr></tr>
+                )}
+                {exp.doi ? (
+                  <tr>
+                    <td>Citation</td>
+                    <td>
+                      {exp.creators
+                        ?.map(
+                          (author) => author.lastName + ', ' + author.firstName
+                        )
+                        .join('; ')}
+                      , (
+                      {exp.endDate
+                        ? exp.endDate.split('T')[0].split('-')[0]
+                        : exp.startDate.split('T')[0].split('-')[0]}
+                      ), "{exp.title}", DesignSafe-CI [publisher], doi:{' '}
+                      {exp.doi}
+                    </td>
+                  </tr>
+                ) : (
+                  <tr></tr>
+                )}
+                <tr>
+                  <td>Type</td>
+                  <td>{exp.type}</td>
+                </tr>
+                <tr>
+                  <td>Description</td>
+                  <td>
+                    {exp.description ? (
+                      <DescriptionExpander>
+                        {exp.description}
+                      </DescriptionExpander>
+                    ) : (
+                      'No Description'
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Start Date</td>
+                  <td>{exp.startDate}</td>
+                </tr>
+                <tr>
+                  <td>End Date</td>
+                  <td>{exp.endDate ? exp.endDate : 'No End Date'}</td>
+                </tr>
+                <tr>
+                  <td>Equipment</td>
+                  <td>
+                    <table>
+                      <thead>
+                        {exp.equipment ? (
+                          <tr>
+                            <th>Equipment</th>
+                            <th>Component</th>
+                            <th>Equipment Class</th>
+                            <th>Facility</th>
+                          </tr>
+                        ) : (
+                          <tr>
+                            <td>No Equipment Listed</td>
+                          </tr>
+                        )}
+                      </thead>
+                      <tbody>
+                        {exp.equipment?.map((eq) => (
+                          <tr key={eq.component + eq.equipment}>
+                            <td width={'25%'}>{eq.equipment}</td>
+                            <td width={'25%'}>{eq.component}</td>
+                            <td width={'25%'}>{eq.equipmentClass}</td>
+                            <td width={'25%'}>{eq.facility}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Material</td>
+                  <td>
+                    {exp.material
+                      ? exp.material?.map((mat) => (
+                          <div key={mat.component}>
+                            <div>{mat.component}:</div>
+                            <div>
+                              {mat.materials?.map((mats) => (
+                                <div key={mats}>{mats}</div>
+                              ))}
+                            </div>
+                            <br />
                           </div>
-                          <br />
-                        </div>
-                      ))
-                    : 'No Materials Listed  '}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                        ))
+                      : 'No Materials Listed  '}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Files</td>
+                  <td>
+                    <Link
+                      to={encodeURIComponent(
+                        (exp.path.startsWith('/') ? '' : '/') + exp.path
+                      )}
+                      onClick={() => setActiveTab('files')}
+                    >
+                      <i role="none" className="fa fa-folder-open"></i>{' '}
+                      {exp.name}
+                    </Link>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </Flex>
         <Divider />
       </div>
@@ -401,6 +423,8 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
       </div>
       <div>
         <Tabs
+          activeKey={activeTab}
+          onChange={(activeKey) => setActiveTab(activeKey)}
           type="card"
           items={[
             {

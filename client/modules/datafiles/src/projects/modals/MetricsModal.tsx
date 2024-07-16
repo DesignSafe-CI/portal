@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Modal, Popover, Select, Table } from 'antd';
+import { Modal, Popover, Select, Spin, Table } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { useDataciteEvents, useDataciteMetrics } from '@client/hooks';
 const { Option } = Select;
 
 interface EventMetrics {
@@ -36,8 +37,6 @@ interface DataEntryA {
 }
 
 interface MetricsModalProps {
-  isOpen: boolean;
-  handleCancel: () => void;
   eventMetricsData: EventMetrics;
   usageMetricsData: UsageMetrics;
 }
@@ -47,9 +46,7 @@ interface YearMonthEntry {
   total: number;
 }
 
-export const MetricsModal: React.FC<MetricsModalProps> = ({
-  isOpen,
-  handleCancel,
+export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   eventMetricsData,
   usageMetricsData,
 }) => {
@@ -59,23 +56,6 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
       total: number;
     };
   }
-
-  const latestYearMonth = useMemo(() => {
-    const views = usageMetricsData.data.attributes.viewsOverTime;
-    if (views && views.length > 0) {
-      const sortedViews = views.sort((a, b) =>
-        b.yearMonth.localeCompare(a.yearMonth)
-      );
-      const mostRecentDate = sortedViews[0].yearMonth;
-      const [year, month] = mostRecentDate.split('-');
-      return `${month}/${year}`;
-    }
-    return null;
-  }, [usageMetricsData.data.attributes.viewsOverTime]);
-
-  const title = `Dataset Metrics${
-    latestYearMonth ? ` [Updated ${latestYearMonth}]` : ''
-  }`;
 
   // Table 1: Usage Breakdown
   const uniqueInvestigations = eventMetricsData.data.filter(
@@ -405,6 +385,47 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
   ];
 
   return (
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ width: '40%', marginRight: '20px' }}>
+        <Table dataSource={dataSource} columns={columns} pagination={false} />
+      </div>
+      <div>
+        <Table
+          dataSource={quartersData}
+          columns={quartersColumns}
+          pagination={false}
+        />
+      </div>
+    </div>
+  );
+};
+
+export const MetricsModal: React.FC<{
+  doi: string;
+  isOpen: boolean;
+  handleCancel: () => void;
+}> = ({ doi, isOpen, handleCancel }) => {
+  const { data: dataciteMetrics } = useDataciteMetrics(doi, isOpen);
+  const { data: dataciteEvents } = useDataciteEvents(doi, isOpen);
+
+  const latestYearMonth = useMemo(() => {
+    const views = dataciteMetrics?.data.attributes.viewsOverTime;
+    if (views && views.length > 0) {
+      const sortedViews = views.sort((a, b) =>
+        b.yearMonth.localeCompare(a.yearMonth)
+      );
+      const mostRecentDate = sortedViews[0].yearMonth;
+      const [year, month] = mostRecentDate.split('-');
+      return `${month}/${year}`;
+    }
+    return null;
+  }, [dataciteMetrics]);
+
+  const title = `Dataset Metrics${
+    latestYearMonth ? ` [Updated ${latestYearMonth}]` : ''
+  }`;
+
+  return (
     <Modal
       title={title}
       open={isOpen}
@@ -435,19 +456,22 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
       }
       width={800}
     >
-      {/* Content of the modal */}
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ width: '40%', marginRight: '20px' }}>
-          <Table dataSource={dataSource} columns={columns} pagination={false} />
+      {dataciteEvents?.data && dataciteMetrics?.data ? (
+        <MetricsModalBody
+          eventMetricsData={dataciteEvents}
+          usageMetricsData={dataciteMetrics}
+        />
+      ) : (
+        <div
+          style={{
+            display: 'flex',
+            marginTop: '10px',
+            justifyContent: 'center',
+          }}
+        >
+          <Spin />
         </div>
-        <div>
-          <Table
-            dataSource={quartersData}
-            columns={quartersColumns}
-            pagination={false}
-          />
-        </div>
-      </div>
+      )}
     </Modal>
   );
 };

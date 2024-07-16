@@ -50,6 +50,7 @@ export const PipelineEditCategoryModal: React.FC<{
         <article style={{ marginTop: '5px' }}>
           {formType === 'category' && (
             <ProjectCategoryForm
+              onCancelEdit={() => {}}
               projectType={projectType}
               projectId={projectId}
               entityUuid={entityUuid}
@@ -68,6 +69,7 @@ export const PipelineEditCategoryModal: React.FC<{
           )}
           {formType === 'publication' && (
             <PublishableEntityForm
+              onCancelEdit={() => {}}
               entityName={entityName ?? ''}
               mode="edit"
               projectId={projectId}

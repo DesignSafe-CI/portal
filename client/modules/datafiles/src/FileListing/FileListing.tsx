@@ -8,7 +8,7 @@ import {
 } from '@client/common-components';
 import { NavLink } from 'react-router-dom';
 import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
-import { TFileTag } from '@client/hooks';
+import { TFileListing, TFileTag, useDoiContext } from '@client/hooks';
 
 export function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
@@ -28,6 +28,7 @@ export const FileListing: React.FC<
     scheme?: string;
     baseRoute?: string;
     fileTags?: TFileTag[];
+    emptyListingDisplay?: React.ReactNode;
   } & Omit<TableProps, 'columns'>
 > = ({
   api,
@@ -36,14 +37,17 @@ export const FileListing: React.FC<
   scheme = 'private',
   baseRoute,
   fileTags,
+  emptyListingDisplay,
   ...tableProps
 }) => {
   // Base file listing for use with My Data/Community Data
   const [previewModalState, setPreviewModalState] = useState<{
     isOpen: boolean;
     path?: string;
+    selectedFile?: TFileListing;
   }>({ isOpen: false });
 
+  const doi = useDoiContext();
   const columns: TFileListingColumns = useMemo(
     () => [
       {
@@ -56,7 +60,9 @@ export const FileListing: React.FC<
             {record.type === 'dir' ? (
               <NavLink
                 className="listing-nav-link"
-                to={`${baseRoute ?? '..'}/${encodeURIComponent(record.path)}`}
+                to={`${baseRoute ?? '..'}/${encodeURIComponent(record.path)}${
+                  doi ? `?doi=${doi}` : ''
+                }`}
                 replace={false}
               >
                 <i
@@ -76,7 +82,11 @@ export const FileListing: React.FC<
                   type="link"
                   style={{ userSelect: 'text' }}
                   onClick={() =>
-                    setPreviewModalState({ isOpen: true, path: record.path })
+                    setPreviewModalState({
+                      isOpen: true,
+                      path: record.path,
+                      selectedFile: { ...record, doi },
+                    })
                   }
                 >
                   {data}
@@ -106,7 +116,7 @@ export const FileListing: React.FC<
         render: (d) => new Date(d).toLocaleString(),
       },
     ],
-    [setPreviewModalState, baseRoute]
+    [setPreviewModalState, baseRoute, fileTags, doi]
   );
 
   return (
@@ -117,14 +127,15 @@ export const FileListing: React.FC<
         scheme={scheme}
         path={path}
         columns={columns}
+        emptyListingDisplay={emptyListingDisplay}
         {...tableProps}
       />
-      {previewModalState.path && (
+      {previewModalState.path && previewModalState.selectedFile && (
         <PreviewModalBody
+          scheme={scheme}
+          selectedFile={previewModalState.selectedFile}
           isOpen={previewModalState.isOpen}
           api={api}
-          system={system}
-          path={previewModalState.path}
           handleCancel={() => setPreviewModalState({ isOpen: false })}
         />
       )}

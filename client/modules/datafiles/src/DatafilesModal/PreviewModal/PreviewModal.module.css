@@ -27,3 +27,18 @@
 .previewContainer img {
   width: 100%;
 }
+
+.metadataCollapse {
+  background-color: 'black';
+}
+
+.metadataCollapse :global(.ant-collapse-content-box) {
+  padding: 0px !important;
+}
+.metadataCollapse :global(.ant-table-thead) {
+  display: none;
+}
+
+.metadataCollapse :global(.ant-table-tbody) tr:nth-child(odd) td {
+  background-color: white;
+}

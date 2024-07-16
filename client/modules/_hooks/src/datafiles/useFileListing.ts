@@ -13,6 +13,7 @@ export type TFileListing = {
   lastModified: string;
   length: number;
   permissions: string;
+  doi?: string;
 };
 
 export type FileListingResponse = {

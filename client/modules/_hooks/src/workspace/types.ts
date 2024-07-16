@@ -1,4 +1,4 @@
-type TParameterSetNotes = {
+export type TParameterSetNotes = {
   isHidden?: boolean;
   fieldType?: string;
   validator?: {

@@ -1,6 +1,7 @@
 import { useParams, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import {
+  TAppCategories,
   TAppParamsType,
   TTapisSystem,
   TTapisApp,
@@ -444,6 +445,30 @@ export const useGetAppParams = () => {
   const appVersion = new URLSearchParams(location.search).get('appVersion') as
     | string
     | undefined;
+  const jobUUID = new URLSearchParams(location.search).get('jobUUID') as
+    | string
+    | undefined;
 
-  return { appId, appVersion };
+  return { appId, appVersion, jobUUID };
+};
+
+/**
+ * Find app in app tray categories and get the icon info.
+ * @param data TAppCategories or undefined
+ * @param appId string - id of an app.
+ * @returns icon name if available, otherwise null
+ */
+export const findAppById = (
+  data: TAppCategories | undefined,
+  appId: string
+) => {
+  if (!data) return null;
+  for (const category of data.categories) {
+    for (const app of category.apps) {
+      if (app.app_id === appId) {
+        return app;
+      }
+    }
+  }
+  return null;
 };

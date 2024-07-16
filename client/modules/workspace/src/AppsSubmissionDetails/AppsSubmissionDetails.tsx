@@ -73,7 +73,6 @@ export const AppsSubmissionDetails: React.FC<{
     formState: { defaultValues, isValid },
   } = useFormContext();
   const formState = useWatch({ control, defaultValue: defaultValues });
-
   const getChildren = (
     key: string,
     value: string | object,
@@ -196,6 +195,11 @@ export const AppsSubmissionDetails: React.FC<{
       .filter(
         ([_, value]) =>
           typeof value !== 'object' || Object.keys(value).length > 0
+      )
+      //filter out outputs fields for interactive apps
+      .filter(
+        ([key]) =>
+          !(key === 'outputs' && definition.notes.isInteractive === true)
       )
       .map(([key, value], index) => ({
         key: key,

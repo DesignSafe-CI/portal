@@ -229,7 +229,8 @@ export const DownloadDatasetModal: React.FC<{
     'tapis',
     'designsafe.storage.published',
     'public',
-    archivePath
+    archivePath,
+    isModalOpen
   );
   const FILE_SIZE_LIMIT = 2147483648;
   const exceedsLimit = useMemo(
@@ -244,6 +245,7 @@ export const DownloadDatasetModal: React.FC<{
         &nbsp;&nbsp;Download Dataset
       </Button>
       <Modal
+        destroyOnClose
         open={isModalOpen}
         onCancel={handleClose}
         width={600}

@@ -1,0 +1,10 @@
+.datafilesHelp div {
+  text-align: center;
+  line-height: 20px;
+}
+
+.datafilesHelp a {
+  text-decoration: none;
+  color: unset;
+  white-space: nowrap;
+}
