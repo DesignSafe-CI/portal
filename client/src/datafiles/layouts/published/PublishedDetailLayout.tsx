@@ -7,7 +7,7 @@ import {
 } from '@client/datafiles';
 import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
 import React, { useEffect } from 'react';
-import { Button, Form, Input, Layout, Spin } from 'antd';
+import { Alert, Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
 
 const FileListingSearchBar = () => {
@@ -43,9 +43,8 @@ const FileListingSearchBar = () => {
 export const PublishedDetailLayout: React.FC = () => {
   const { projectId, path } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data } = usePublicationDetail(projectId ?? '');
+  const { data, isError } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
-
   const version = (projectId ?? '').split('v')[1];
   useEffect(() => {
     if (version) {
@@ -54,6 +53,19 @@ export const PublishedDetailLayout: React.FC = () => {
       setSearchParams(newSearchParams);
     }
   }, [version, searchParams, setSearchParams]);
+
+  if (isError) {
+    return (
+      <Layout>
+        <Alert
+          showIcon
+          type="error"
+          style={{ marginTop: '16px', color: '#d9534f', textAlign: 'center' }}
+          description={'There was an error fetching this publication'}
+        />
+      </Layout>
+    );
+  }
 
   if (!projectId || !data)
     return (
