@@ -609,6 +609,7 @@ export const AppsSubmissionForm: React.FC = () => {
                         isSubmitting={isPending}
                         current={current}
                         setCurrent={setCurrent}
+                        definition={definition}
                       />
                     </Col>
                   </Row>
