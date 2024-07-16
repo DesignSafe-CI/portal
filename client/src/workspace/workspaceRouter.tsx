@@ -21,16 +21,17 @@ const workspaceRouter = createBrowserRouter(
         {
           id: 'app',
           path: ':appId',
-          element:
-          <Suspense
-            fallback={
-              <Layout>
-                <Spinner />
-              </Layout>
-            }
+          element: (
+            <Suspense
+              fallback={
+                <Layout>
+                  <Spinner />
+                </Layout>
+              }
             >
-            <AppsViewLayout />
-          </Suspense>
+              <AppsViewLayout />
+            </Suspense>
+          ),
         },
         {
           path: 'history/:uuid?',

@@ -510,107 +510,103 @@ export const AppsSubmissionForm: React.FC = () => {
   return (
     <>
       <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
-          {submitResult && !submitResult.execSys && (
+        {submitResult && !submitResult.execSys && (
+          <Alert
+            message={
+              <>
+                Job submitted successfully. Monitor its progress in{' '}
+                <NavLink to={'/history'}>Job Status</NavLink>.
+              </>
+            }
+            type="success"
+            closable
+            showIcon
+          />
+        )}
+        {missingAllocation && (
+          <Alert
+            message={`You need an allocation on ${missingAllocation} to run this application.`}
+            type="warning"
+            showIcon
+          />
+        )}
+        {submitError && (
+          <Alert
+            message={
+              <>
+                Job Submit Error:{' '}
+                {submitError.response?.data.message || submitError.message}
+              </>
+            }
+            type="warning"
+            closable
+            showIcon
+          />
+        )}
+        {defaultSystemNeedsKeys && (
+          <Alert
+            message={
+              <>
+                There was a problem accessing your default My Data file system.{' '}
+                {defaultSystemNeedsKeysMessage}
+              </>
+            }
+            type="warning"
+            closable
+            showIcon
+          />
+        )}
+        {!!(missingLicense && hasStorageSystems) && (
+          <div className="appDetail-error">
             <Alert
-              message={
-                <>
-                  Job submitted successfully. Monitor its progress in{' '}
-                  <NavLink to={'/history'}>Job Status</NavLink>.
-                </>
-              }
-              type="success"
-              closable
-              showIcon
-            />
-          )}
-          {missingAllocation && (
-            <Alert
-              message={`You need an allocation on ${missingAllocation} to run this application.`}
               type="warning"
               showIcon
-            />
-          )}
-          {submitError && (
-            <Alert
               message={
                 <>
-                  Job Submit Error:{' '}
-                  {submitError.response?.data.message || submitError.message}
+                  Activate your {app.license.type} license in{' '}
+                  <Button type="link" href="/account/licenses/" target="_blank">
+                    Manage Account
+                  </Button>
+                  , then return to this form.
                 </>
               }
-              type="warning"
-              closable
-              showIcon
             />
-          )}
-          {defaultSystemNeedsKeys && (
-            <Alert
-              message={
-                <>
-                  There was a problem accessing your default My Data file
-                  system. {defaultSystemNeedsKeysMessage}
-                </>
-              }
-              type="warning"
-              closable
-              showIcon
-            />
-          )}
-          {!!(missingLicense && hasStorageSystems) && (
-            <div className="appDetail-error">
-              <Alert
-                type="warning"
-                showIcon
-                message={
-                  <>
-                    Activate your {app.license.type} license in{' '}
-                    <Button
-                      type="link"
-                      href="/account/licenses/"
-                      target="_blank"
-                    >
-                      Manage Account
-                    </Button>
-                    , then return to this form.
-                  </>
-                }
-              />
-            </div>
-          )}
-          <Content>
-            <FormProvider {...methods}>
-              <Form
-                disabled={readOnly}
-                requiredMark={false}
-                layout="vertical"
-                onFinish={handleSubmit(submitJobCallback, (error) => {
-                  console.log('error submit data', error);
-                })}
-              >
-                <fieldset disabled={readOnly}>
-                  <Row gutter={[64, 16]} align="top">
-                    <Col span={14}>
-                      <AppsWizard
-                        step={steps[current]}
-                        handlePreviousStep={handlePreviousStep}
-                        handleNextStep={handleNextStep}
-                      />
-                    </Col>
-                    <Col span={10}>
-                      <AppsSubmissionDetails
-                        schema={schema}
-                        fields={fields}
-                        isSubmitting={isPending}
-                        current={current}
-                        setCurrent={setCurrent}
-                        definition={definition}
-                      />
-                    </Col>
-                  </Row>
-                </fieldset>
-              </Form>
-            </FormProvider>
-          </Content>
+          </div>
+        )}
+        <Content>
+          <FormProvider {...methods}>
+            <Form
+              disabled={readOnly}
+              requiredMark={false}
+              layout="vertical"
+              onFinish={handleSubmit(submitJobCallback, (error) => {
+                console.log('error submit data', error);
+              })}
+            >
+              <fieldset disabled={readOnly}>
+                <Row gutter={[64, 16]} align="top">
+                  <Col span={14}>
+                    <AppsWizard
+                      step={steps[current]}
+                      handlePreviousStep={handlePreviousStep}
+                      handleNextStep={handleNextStep}
+                    />
+                  </Col>
+                  <Col span={10}>
+                    <AppsSubmissionDetails
+                      schema={schema}
+                      fields={fields}
+                      isSubmitting={isPending}
+                      current={current}
+                      setCurrent={setCurrent}
+                      definition={definition}
+                    />
+                  </Col>
+                </Row>
+              </fieldset>
+            </Form>
+          </FormProvider>
+        </Content>
       </Layout>
       <SystemsPushKeysModal
         isModalOpen={pushKeysSystem}

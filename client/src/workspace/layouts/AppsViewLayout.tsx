@@ -2,7 +2,12 @@ import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Outlet } from 'react-router-dom';
 import { Alert, Layout, Flex, Space } from 'antd';
-import { AppsSubmissionForm, useGetAppParams, findAppById, AppIcon } from '@client/workspace';
+import {
+  AppsSubmissionForm,
+  useGetAppParams,
+  findAppById,
+  AppIcon,
+} from '@client/workspace';
 import { useAppsListing, useGetAppsSuspense } from '@client/hooks';
 import parse from 'html-react-parser';
 import styles from './layout.module.css';
@@ -11,13 +16,13 @@ export const AppsViewLayout: React.FC = () => {
   const { appId, appVersion } = useGetAppParams();
   const { data: app } = useGetAppsSuspense({ appId, appVersion });
   const { data } = useAppsListing();
-  
+
   const icon =
     findAppById(data, app.definition.id)?.icon ??
     (app.definition.notes.icon || 'Generic-App');
   const userGuideLink =
     findAppById(data, app.definition.id)?.userGuideLink ??
-    (app.definition.notes.helpUrl);
+    app.definition.notes.helpUrl;
 
   const htmlApp = data?.htmlDefinitions[appId];
   const key = `${appId}-${appVersion}`;
@@ -31,7 +36,6 @@ export const AppsViewLayout: React.FC = () => {
     fontSize: 16,
   };
 
-
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Header style={headerStyle}>
@@ -41,11 +45,7 @@ export const AppsViewLayout: React.FC = () => {
             {app.definition.notes.label || app.definition.id}
           </div>
           {userGuideLink && (
-            <a
-              href={userGuideLink}
-              target="_blank"
-              style={{ marginRight: 10 }}
-            >
+            <a href={userGuideLink} target="_blank" style={{ marginRight: 10 }}>
               View User Guide
             </a>
           )}
@@ -69,13 +69,13 @@ export const AppsViewLayout: React.FC = () => {
                 />
               </div>
             )
-          }  
+          }
         >
           {/* <AppFormProvider> */}
           <AppsSubmissionForm key={key} />
           {/* </AppFormProvider> */}
-      </ErrorBoundary>
-    )}
+        </ErrorBoundary>
+      )}
       <Outlet />
     </Space>
   );
