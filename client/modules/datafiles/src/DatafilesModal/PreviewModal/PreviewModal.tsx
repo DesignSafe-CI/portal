@@ -33,6 +33,7 @@ export const PreviewModalBody: React.FC<{
     system: selectedFile.system,
     scheme,
     path: selectedFile.path,
+    doi: selectedFile.doi,
     queryOptions: { enabled: isOpen },
   });
 
@@ -69,48 +70,52 @@ export const PreviewModalBody: React.FC<{
           justifyContent: 'center',
         }}
       >
-        {scheme === 'private' && api === 'tapis' && (
-          <MoveModal
-            api={api}
-            system={selectedFile.system}
-            path={listingPath}
-            selectedFiles={[selectedFile]}
-            successCallback={handleCancel}
-          >
-            {({ onClick }) => (
-              <Button onClick={onClick}>
-                <i role="none" className="fa fa-arrows" />
-                <span>&nbsp;Move</span>
-              </Button>
+        {!selectedFile.path.endsWith('.hazmapper') && (
+          <>
+            {scheme === 'private' && api === 'tapis' && (
+              <MoveModal
+                api={api}
+                system={selectedFile.system}
+                path={listingPath}
+                selectedFiles={[selectedFile]}
+                successCallback={handleCancel}
+              >
+                {({ onClick }) => (
+                  <Button onClick={onClick}>
+                    <i role="none" className="fa fa-arrows" />
+                    <span>&nbsp;Move</span>
+                  </Button>
+                )}
+              </MoveModal>
             )}
-          </MoveModal>
-        )}
-        <CopyModal
-          api={api}
-          system={selectedFile.system}
-          path={listingPath}
-          selectedFiles={[selectedFile]}
-        >
-          {({ onClick }) => (
-            <Button onClick={onClick}>
-              <i role="none" className="fa fa-copy" />
-              <span>&nbsp;Copy</span>
-            </Button>
-          )}
-        </CopyModal>
 
-        <DownloadModal
-          api={api}
-          system={selectedFile.system}
-          selectedFiles={[selectedFile]}
-        >
-          {({ onClick }) => (
-            <Button onClick={onClick}>
-              <i role="none" className="fa fa-cloud-download" />
-              <span>&nbsp;Download</span>
-            </Button>
-          )}
-        </DownloadModal>
+            <CopyModal
+              api={api}
+              system={selectedFile.system}
+              path={listingPath}
+              selectedFiles={[selectedFile]}
+            >
+              {({ onClick }) => (
+                <Button onClick={onClick}>
+                  <i role="none" className="fa fa-copy" />
+                  <span>&nbsp;Copy</span>
+                </Button>
+              )}
+            </CopyModal>
+            <DownloadModal
+              api={api}
+              system={selectedFile.system}
+              selectedFiles={[selectedFile]}
+            >
+              {({ onClick }) => (
+                <Button onClick={onClick}>
+                  <i role="none" className="fa fa-cloud-download" />
+                  <span>&nbsp;Download</span>
+                </Button>
+              )}
+            </DownloadModal>
+          </>
+        )}
       </div>
       <div className={styles.modalContentContainer}>
         {isLoading && <PreviewSpinner />}
@@ -118,6 +123,7 @@ export const PreviewModalBody: React.FC<{
           <PreviewContent
             href={data.href}
             fileType={data.fileType}
+            handleCancel={handleClose}
           ></PreviewContent>
         )}
       </div>

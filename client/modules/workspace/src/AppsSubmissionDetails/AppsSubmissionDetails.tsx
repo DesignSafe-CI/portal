@@ -14,6 +14,7 @@ import { z, ZodTypeAny } from 'zod';
 import { TField, fieldDisplayOrder } from '../AppsWizard/AppsFormSchema';
 import { PrimaryButton } from '@client/common-components';
 import styles from './AppsSubmissionDetails.module.css';
+import { TTapisApp } from '@client/hooks';
 
 const tagTheme: ThemeConfig = {
   token: {
@@ -65,13 +66,13 @@ export const AppsSubmissionDetails: React.FC<{
   isSubmitting: boolean;
   current: string;
   setCurrent: CallableFunction;
-}> = ({ schema, fields, isSubmitting, current, setCurrent }) => {
+  definition: TTapisApp;
+}> = ({ schema, fields, isSubmitting, current, setCurrent, definition }) => {
   const {
     control,
     formState: { defaultValues, isValid },
   } = useFormContext();
   const formState = useWatch({ control, defaultValue: defaultValues });
-
   const getChildren = (
     key: string,
     value: string | object,
@@ -90,6 +91,20 @@ export const AppsSubmissionDetails: React.FC<{
         );
       }
       entries.forEach(([k, v], childIndex) => {
+        if (
+          definition.notes.hideQueue &&
+          key === 'configuration' &&
+          k === 'execSystemLogicalQueue'
+        ) {
+          return; // Hide the queue, if the app definition requires it
+        }
+        if (
+          definition.notes.hideAllocation &&
+          key === 'configuration' &&
+          k === 'allocation'
+        ) {
+          return; // Hide the allocation, if that field is true
+        }
         if (v instanceof Object) {
           Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
             const nestedFieldSchema = parent?.shape?.[k]?.shape?.[kk];
@@ -180,6 +195,11 @@ export const AppsSubmissionDetails: React.FC<{
       .filter(
         ([_, value]) =>
           typeof value !== 'object' || Object.keys(value).length > 0
+      )
+      //filter out outputs fields for interactive apps
+      .filter(
+        ([key]) =>
+          !(key === 'outputs' && definition.notes.isInteractive === true)
       )
       .map(([key, value], index) => ({
         key: key,

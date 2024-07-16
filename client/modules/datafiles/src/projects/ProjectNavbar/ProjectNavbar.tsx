@@ -6,7 +6,7 @@ export const ProjectNavbar: React.FC<{ projectId: string }> = ({
   projectId,
 }) => {
   return (
-    <nav style={{ marginBottom: '10px' }}>
+    <nav>
       <NavLink to={`/projects/${projectId}/workdir`} className={styles.navLink}>
         <div className={`${styles.navBtn} ${styles.navBtnLeft}`}>
           Working Directory
