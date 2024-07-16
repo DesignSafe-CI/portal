@@ -8,7 +8,7 @@ import {
 } from '@client/common-components';
 import { NavLink } from 'react-router-dom';
 import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
-import { TFileListing, TFileTag } from '@client/hooks';
+import { TFileListing, TFileTag, useDoiContext } from '@client/hooks';
 
 export function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
@@ -47,6 +47,7 @@ export const FileListing: React.FC<
     selectedFile?: TFileListing;
   }>({ isOpen: false });
 
+  const doi = useDoiContext();
   const columns: TFileListingColumns = useMemo(
     () => [
       {
@@ -59,7 +60,9 @@ export const FileListing: React.FC<
             {record.type === 'dir' ? (
               <NavLink
                 className="listing-nav-link"
-                to={`${baseRoute ?? '..'}/${encodeURIComponent(record.path)}`}
+                to={`${baseRoute ?? '..'}/${encodeURIComponent(record.path)}${
+                  doi ? `?doi=${doi}` : ''
+                }`}
                 replace={false}
               >
                 <i
@@ -82,7 +85,7 @@ export const FileListing: React.FC<
                     setPreviewModalState({
                       isOpen: true,
                       path: record.path,
-                      selectedFile: record,
+                      selectedFile: { ...record, doi },
                     })
                   }
                 >
@@ -113,7 +116,7 @@ export const FileListing: React.FC<
         render: (d) => new Date(d).toLocaleString(),
       },
     ],
-    [setPreviewModalState, baseRoute, fileTags]
+    [setPreviewModalState, baseRoute, fileTags, doi]
   );
 
   return (
