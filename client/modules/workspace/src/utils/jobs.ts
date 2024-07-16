@@ -147,19 +147,24 @@ export function getJobDisplayInformation(
   app: TAppResponse | undefined
 ): TJobDisplayInfo {
   const filterAppArgs = (objects: TJobArgSpecs) =>
-    objects.filter((obj) => !obj.notes || !obj.notes.isHidden);
+    objects.filter((obj) => {
+      const notes = obj.notes ? JSON.parse(obj.notes as string) : null;
+      return !notes || !notes.isHidden;
+    });
 
   const filterInputs = (objects: TAppFileInput[]) =>
-    objects.filter(
-      (obj) =>
-        (!obj.notes || !obj.notes.isHidden) &&
-        !(obj.name || obj.sourceUrl || '').startsWith('_')
-    );
+    objects
+      .filter((obj) => {
+        const notes = obj.notes ? JSON.parse(obj.notes as string) : null;
+        return !notes || !notes.isHidden;
+      })
+      .filter((obj) => !(obj.name || obj.sourceUrl || '').startsWith('_'));
 
   const filterParameters = (objects: TJobKeyValuePair[]) =>
-    objects.filter(
-      (obj) => (!obj.notes || !obj.notes.isHidden) && !obj.key.startsWith('_')
-    );
+    objects.filter((obj) => {
+      const notes = obj.notes ? JSON.parse(obj.notes as string) : null;
+      return (!notes || !notes.isHidden) && !obj.key.startsWith('_');
+    });
 
   const fileInputs = filterInputs(
     JSON.parse(job.fileInputs) as TAppFileInput[]
