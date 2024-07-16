@@ -102,6 +102,7 @@ class AppListingEntry(models.Model):
     )
     user_guide_link = models.CharField(
         help_text="Link to the app's user guide.",
+        max_length=2048,
         blank=True,
     )
     enabled = models.BooleanField(
