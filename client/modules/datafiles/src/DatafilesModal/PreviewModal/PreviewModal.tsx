@@ -69,52 +69,51 @@ export const PreviewModalBody: React.FC<{
           justifyContent: 'center',
         }}
       >
-        {scheme === 'private' &&
-          api === 'tapis' &&
-          !selectedFile.path.endsWith('.hazmapper') && (
-            <MoveModal
+        {!selectedFile.path.endsWith('.hazmapper') && (
+          <>
+            {scheme === 'private' && api === 'tapis' && (
+              <MoveModal
+                api={api}
+                system={selectedFile.system}
+                path={listingPath}
+                selectedFiles={[selectedFile]}
+                successCallback={handleCancel}
+              >
+                {({ onClick }) => (
+                  <Button onClick={onClick}>
+                    <i role="none" className="fa fa-arrows" />
+                    <span>&nbsp;Move</span>
+                  </Button>
+                )}
+              </MoveModal>
+            )}
+
+            <CopyModal
               api={api}
               system={selectedFile.system}
               path={listingPath}
               selectedFiles={[selectedFile]}
-              successCallback={handleCancel}
             >
               {({ onClick }) => (
                 <Button onClick={onClick}>
-                  <i role="none" className="fa fa-arrows" />
-                  <span>&nbsp;Move</span>
+                  <i role="none" className="fa fa-copy" />
+                  <span>&nbsp;Copy</span>
                 </Button>
               )}
-            </MoveModal>
-          )}
-        {!selectedFile.path.endsWith('.hazmapper') && (
-          <CopyModal
-            api={api}
-            system={selectedFile.system}
-            path={listingPath}
-            selectedFiles={[selectedFile]}
-          >
-            {({ onClick }) => (
-              <Button onClick={onClick}>
-                <i role="none" className="fa fa-copy" />
-                <span>&nbsp;Copy</span>
-              </Button>
-            )}
-          </CopyModal>
-        )}
-        {!selectedFile.path.endsWith('.hazmapper') && (
-          <DownloadModal
-            api={api}
-            system={selectedFile.system}
-            selectedFiles={[selectedFile]}
-          >
-            {({ onClick }) => (
-              <Button onClick={onClick}>
-                <i role="none" className="fa fa-cloud-download" />
-                <span>&nbsp;Download</span>
-              </Button>
-            )}
-          </DownloadModal>
+            </CopyModal>
+            <DownloadModal
+              api={api}
+              system={selectedFile.system}
+              selectedFiles={[selectedFile]}
+            >
+              {({ onClick }) => (
+                <Button onClick={onClick}>
+                  <i role="none" className="fa fa-cloud-download" />
+                  <span>&nbsp;Download</span>
+                </Button>
+              )}
+            </DownloadModal>
+          </>
         )}
       </div>
       <div className={styles.modalContentContainer}>
