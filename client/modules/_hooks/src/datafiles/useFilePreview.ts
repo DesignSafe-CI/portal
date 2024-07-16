@@ -6,6 +6,7 @@ export type TPreviewParams = {
   api: string;
   system: string;
   scheme?: string;
+  doi?: string;
   path: string;
 };
 
@@ -32,11 +33,12 @@ async function getFilePreview({
   system,
   scheme,
   path,
+  doi,
   signal,
 }: TPreviewParams & { signal: AbortSignal }) {
   const res = await apiClient.get<TFilePreviewResponse>(
     `/api/datafiles/${api}/${scheme}/preview/${system}/${path}`,
-    { signal }
+    { params: { doi }, signal }
   );
   return res.data;
 }
@@ -46,6 +48,7 @@ export function useFilePreview({
   system,
   scheme = 'private',
   path,
+  doi,
   queryOptions,
 }: TPreviewParams & {
   queryOptions?: TQueryOptionExtras<TFilePreviewResponse>;
@@ -53,7 +56,7 @@ export function useFilePreview({
   return useQuery({
     queryKey: ['datafiles', 'preview', api, system, path],
     queryFn: ({ signal }) =>
-      getFilePreview({ api, system, scheme, path, signal }),
+      getFilePreview({ api, system, scheme, path, doi, signal }),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     ...queryOptions,

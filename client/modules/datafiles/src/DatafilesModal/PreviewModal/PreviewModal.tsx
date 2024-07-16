@@ -33,6 +33,7 @@ export const PreviewModalBody: React.FC<{
     system: selectedFile.system,
     scheme,
     path: selectedFile.path,
+    doi: selectedFile.doi,
     queryOptions: { enabled: isOpen },
   });
 

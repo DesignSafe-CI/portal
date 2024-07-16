@@ -164,7 +164,7 @@ export const JobsDetailModalBody: React.FC<{
     data: Record<string, string | undefined>
   ): DescriptionsProps['items'] =>
     Object.entries(data)
-      .filter(([_, value]) => value)
+      .filter(([_, value]) => value !== undefined) // allow empty strings
       .map(([key, value]) => ({
         label: key,
         children: <span style={valueStyle}>{value}</span>,
