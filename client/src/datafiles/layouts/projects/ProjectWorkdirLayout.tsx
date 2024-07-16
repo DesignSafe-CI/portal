@@ -4,6 +4,7 @@ import {
   ChangeProjectTypeModal,
   EmptyProjectFileListing,
   FileListing,
+  ProjectDataTransferModal,
   ProjectNavbar,
 } from '@client/datafiles';
 import { DatafilesBreadcrumb } from '@client/common-components';
@@ -34,20 +35,30 @@ export const ProjectWorkdirLayout: React.FC = () => {
   return (
     <>
       {data.baseProject.value.projectType === 'None' ? (
-        <Alert
-          type="warning"
-          showIcon
-          style={{ marginBottom: '12px' }}
-          message="No Project Type Selected"
-          description={
-            <span>
-              Please {changeTypeModal} in order to access data curation features
-              and publish your data set.
-            </span>
-          }
-        />
+        <div style={{ marginBottom: '5px' }}>
+          <Alert
+            type="warning"
+            showIcon
+            style={{ marginBottom: '12px' }}
+            message="No Project Type Selected"
+            description={
+              <div>
+                <p>
+                  Please {changeTypeModal} in order to access data curation
+                  features and publish your data set.
+                </p>
+                <p>
+                  <ProjectDataTransferModal projectId={projectId} />
+                </p>
+              </div>
+            }
+          />
+        </div>
       ) : (
-        <ProjectNavbar projectId={projectId} />
+        <div style={{ display: 'flex', marginBottom: '10px', gap: '1rem' }}>
+          <ProjectNavbar projectId={projectId} />
+          <ProjectDataTransferModal projectId={projectId} />
+        </div>
       )}
       <DatafilesBreadcrumb
         initialBreadcrumbs={[
