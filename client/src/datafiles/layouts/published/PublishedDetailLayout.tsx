@@ -45,7 +45,6 @@ export const PublishedDetailLayout: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, isError } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
-  console.log(isError);
   const version = (projectId ?? '').split('v')[1];
   useEffect(() => {
     if (version) {
