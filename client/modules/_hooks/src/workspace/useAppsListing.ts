@@ -14,6 +14,7 @@ export type TPortalApp = {
   label: string;
   shortLabel?: string;
   version?: string;
+  userGuideLink?: string;
 };
 
 export type TAppCategory = {

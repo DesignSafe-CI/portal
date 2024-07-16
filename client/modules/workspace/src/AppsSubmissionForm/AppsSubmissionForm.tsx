@@ -23,7 +23,6 @@ import {
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
-import { default as AppIcon } from './AppIcon';
 import {
   default as FormSchema,
   TField,
@@ -80,6 +79,9 @@ export const AppsSubmissionForm: React.FC = () => {
   const icon =
     findAppById(appListingData, definition.id)?.icon ??
     (definition.notes.icon || 'Generic-App');
+  const userGuideLink =
+    findAppById(appListingData, definition.id)?.userGuideLink ??
+    (definition.notes.helpUrl);
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -164,13 +166,6 @@ export const AppsSubmissionForm: React.FC = () => {
   });
 
   const { Header, Content } = Layout;
-  const headerStyle = {
-    background: 'transparent',
-    paddingLeft: 0,
-    paddingRight: 0,
-    borderBottom: '1px solid #707070',
-    fontSize: 16,
-  };
 
   const missingLicense = license.type && !license.enabled;
 
@@ -521,23 +516,6 @@ export const AppsSubmissionForm: React.FC = () => {
     <>
       <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
         <Space direction="vertical" style={{ width: '100%' }}>
-          <Header style={headerStyle}>
-            <Flex justify="space-between">
-              <div>
-                <AppIcon name={icon} />
-                {definition.notes.label || definition.id}
-              </div>
-              {definition.notes.helpUrl && (
-                <a
-                  href={definition.notes.helpUrl}
-                  target="_blank"
-                  style={{ marginRight: 10 }}
-                >
-                  View User Guide
-                </a>
-              )}
-            </Flex>
-          </Header>
           {submitResult && !submitResult.execSys && (
             <Alert
               message={
