@@ -1,8 +1,7 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Outlet } from 'react-router-dom';
-import { Alert, Layout, Flex } from 'antd';
-import { Spinner } from '@client/common-components';
+import { Alert, Layout, Flex, Space } from 'antd';
 import { AppsSubmissionForm, useGetAppParams, findAppById, AppIcon } from '@client/workspace';
 import { useAppsListing, useGetAppsSuspense } from '@client/hooks';
 import parse from 'html-react-parser';
@@ -23,7 +22,7 @@ export const AppsViewLayout: React.FC = () => {
   const htmlApp = data?.htmlDefinitions[appId];
   const key = `${appId}-${appVersion}`;
 
-  const { Header } = Layout;
+  const { Header, Content } = Layout;
   const headerStyle = {
     background: 'transparent',
     paddingLeft: 0,
@@ -34,58 +33,50 @@ export const AppsViewLayout: React.FC = () => {
 
 
   return (
-    <>
-      <Suspense
-        fallback={
-          <Layout>
-            <Spinner />
-          </Layout>
-        }
-      >
-        <Header style={headerStyle}>
-          <Flex justify="space-between">
-            <div>
-              <AppIcon name={icon} />
-              {app.definition.notes.label || app.definition.id}
-            </div>
-            {userGuideLink && (
-              <a
-                href={userGuideLink}
-                target="_blank"
-                style={{ marginRight: 10 }}
-              >
-                View User Guide
-              </a>
-            )}
-          </Flex>
-        </Header>
-        {htmlApp ? (
-          <div className={styles['overflow']}>
-            {parse(htmlApp.html as string)}
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <Header style={headerStyle}>
+        <Flex justify="space-between">
+          <div>
+            <AppIcon name={icon} />
+            {app.definition.notes.label || app.definition.id}
           </div>
-        ) : (
-          <ErrorBoundary
-            key={key}
-            fallbackRender={({ error }) =>
-              error && (
-                <div id="appDetail-wrapper">
-                  <Alert
-                    message={error?.response?.data?.message ?? error.message}
-                    type="error"
-                    showIcon
-                    style={{ marginTop: 10 }}
-                  />
-                </div>
-              )
-            }  
-          >
-            {/* <AppFormProvider> */}
-            <AppsSubmissionForm key={key} />
-            {/* </AppFormProvider> */}
-        </ErrorBoundary>
-      )}
-      </Suspense>
+          {userGuideLink && (
+            <a
+              href={userGuideLink}
+              target="_blank"
+              style={{ marginRight: 10 }}
+            >
+              View User Guide
+            </a>
+          )}
+        </Flex>
+      </Header>
+      {htmlApp ? (
+        <div className={styles['overflow']}>
+          {parse(htmlApp.html as string)}
+        </div>
+      ) : (
+        <ErrorBoundary
+          key={key}
+          fallbackRender={({ error }) =>
+            error && (
+              <div id="appDetail-wrapper">
+                <Alert
+                  message={error?.response?.data?.message ?? error.message}
+                  type="error"
+                  showIcon
+                  style={{ marginTop: 10 }}
+                />
+              </div>
+            )
+          }  
+        >
+          {/* <AppFormProvider> */}
+          <AppsSubmissionForm key={key} />
+          {/* </AppFormProvider> */}
+      </ErrorBoundary>
+    )}
       <Outlet />
-    </>
+    </Space>
   );
 };

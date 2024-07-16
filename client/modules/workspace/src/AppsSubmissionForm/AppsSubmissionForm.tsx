@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Layout, Form, Col, Row, Flex, Alert, Space, Button } from 'antd';
+import { Layout, Form, Col, Row, Alert, Button } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -75,13 +75,6 @@ export const AppsSubmissionForm: React.FC = () => {
   };
 
   const { definition, license, defaultSystemNeedsKeys } = app;
-  const { data: appListingData } = useAppsListing();
-  const icon =
-    findAppById(appListingData, definition.id)?.icon ??
-    (definition.notes.icon || 'Generic-App');
-  const userGuideLink =
-    findAppById(appListingData, definition.id)?.userGuideLink ??
-    (definition.notes.helpUrl);
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -517,7 +510,6 @@ export const AppsSubmissionForm: React.FC = () => {
   return (
     <>
       <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
-        <Space direction="vertical" style={{ width: '100%' }}>
           {submitResult && !submitResult.execSys && (
             <Alert
               message={
@@ -619,7 +611,6 @@ export const AppsSubmissionForm: React.FC = () => {
               </Form>
             </FormProvider>
           </Content>
-        </Space>
       </Layout>
       <SystemsPushKeysModal
         isModalOpen={pushKeysSystem}
