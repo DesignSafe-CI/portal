@@ -310,6 +310,7 @@ class AppsTrayView(AuthenticatedApiView):
                         "label": portal_app["label"] or matching_app.notes.get("label"),
                         "shortLabel": portal_app["short_label"]
                         or matching_app.notes.get("shortLabel"),
+                        "userGuideLink": portal_app["bundle_user_guide_link"],
                     }
                 )
         return valid_tapis_apps
@@ -367,6 +368,7 @@ class AppsTrayView(AuthenticatedApiView):
             "bundle_is_simcenter",
             "bundle_label",
             "bundle_license_type",
+            "bundle_user_guide_link",
             "bundle__related_apps",
             "bundle__tags",
             "html",
@@ -375,7 +377,6 @@ class AppsTrayView(AuthenticatedApiView):
             "label",
             "short_label",
             "version",
-            "user_guide_link",
         ]
 
         reduced_values = [
@@ -385,13 +386,13 @@ class AppsTrayView(AuthenticatedApiView):
             "bundle_href",
             "bundle_id",
             "bundle_label",
+            "bundle_user_guide_link",
             "html",
             "icon",
             "is_bundled",
             "label",
             "short_label",
             "version",
-            "user_guide_link",
         ]
 
         values = reduced_values if not verbose else all_values
@@ -419,6 +420,7 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
+                    bundle_user_guide_link=F("bundle__user_guide_link"),
                 ).values(*values)
             )
 
@@ -440,6 +442,7 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_is_simcenter=F("bundle__is_simcenter"),
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
+                    bundle_user_guide_link=F("bundle__user_guide_link"),
                 ).values(*values)
             )
 
@@ -487,6 +490,7 @@ class AppsTrayView(AuthenticatedApiView):
                             "bundle_is_simcenter": False,
                             "bundle_related_apps": [],
                             "bundle_tags": [],
+                            "bundle_user_guide_link": "https://www.designsafe-ci.org/user-guide/tools/jupyterhub/#designsafe-hpc-jupyter-guide",
                             "html": "",
                             "icon": "jupyter",
                             "is_bundled": True,
@@ -710,9 +714,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post[
-                "archiveSystemDir"
-            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            job_post["archiveSystemDir"] = (
+                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            )
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")

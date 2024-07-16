@@ -18,10 +18,11 @@ export const AppsViewLayout: React.FC = () => {
   const { data } = useAppsListing();
 
   const icon =
-    findAppById(data, app.definition.id)?.icon ??
-    (app.definition.notes.icon || 'Generic-App');
+    findAppById(data, app.definition.id)?.icon ||
+    app.definition.notes.icon ||
+    'Generic-App';
   const userGuideLink =
-    findAppById(data, app.definition.id)?.userGuideLink ??
+    findAppById(data, app.definition.id)?.userGuideLink ||
     app.definition.notes.helpUrl;
 
   const htmlApp = data?.htmlDefinitions[appId];

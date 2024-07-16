@@ -100,6 +100,10 @@ class AppListingEntry(models.Model):
         choices=APP_ICONS,
         blank=True,
     )
+    user_guide_link = models.CharField(
+        help_text="Link to the app's user guide.",
+        blank=True,
+    )
     enabled = models.BooleanField(
         help_text="App bundle visibility in app tray.", default=True
     )
@@ -193,11 +197,6 @@ class AppVariant(models.Model):
     priority = models.IntegerField(
         help_text="App variant priority, rendered in ascending order.",
         default=0,
-    )
-
-    user_guide_link = models.CharField(
-        help_text="Link to the app's user guide.",
-        blank=True,
     )
 
     # HTML Apps
