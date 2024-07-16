@@ -51,7 +51,6 @@ import {
   updateValuesForQueue,
   getDefaultExecSystem,
   getAllocationList,
-  findAppById,
   mergeConfigurationDefaultsWithJobData,
   mergeParameterSetDefaultsWithJobData,
   mergeInputDefaultsWithJobData,
@@ -157,7 +156,7 @@ export const AppsSubmissionForm: React.FC = () => {
     outputs: z.object(outputs.schema),
   });
 
-  const { Header, Content } = Layout;
+  const { Content } = Layout;
 
   const missingLicense = license.type && !license.enabled;
 

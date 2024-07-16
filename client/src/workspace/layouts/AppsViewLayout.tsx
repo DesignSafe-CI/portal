@@ -27,7 +27,7 @@ export const AppsViewLayout: React.FC = () => {
   const htmlApp = data?.htmlDefinitions[appId];
   const key = `${appId}-${appVersion}`;
 
-  const { Header, Content } = Layout;
+  const { Header } = Layout;
   const headerStyle = {
     background: 'transparent',
     paddingLeft: 0,
