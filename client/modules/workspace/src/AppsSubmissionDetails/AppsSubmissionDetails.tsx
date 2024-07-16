@@ -190,13 +190,13 @@ export const AppsSubmissionDetails: React.FC<{
   };
 
   const getItems = (values: FieldValues) => {
-    // Filter out empty items. Example: app with no inputs
     const items: DescriptionsProps['items'] = Object.entries(values)
+      // Filter out empty items. Example: app with no inputs
       .filter(
         ([_, value]) =>
           typeof value !== 'object' || Object.keys(value).length > 0
       )
-      //filter out outputs fields for interactive apps
+      // Filter out outputs fields for interactive apps
       .filter(
         ([key]) =>
           !(key === 'outputs' && definition.notes.isInteractive === true)

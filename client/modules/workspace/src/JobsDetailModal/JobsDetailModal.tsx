@@ -89,7 +89,7 @@ export const JobsDetailModalBody: React.FC<{
   const configDataObj = {
     'Execution System': jobDisplay.systemName,
     'Max Minutes': String(jobData.maxMinutes),
-    queue: 'queue' in jobDisplay ? jobDisplay.queue : undefined,
+    Queue: 'queue' in jobDisplay ? jobDisplay.queue : undefined,
     'Cores On Each Node':
       'coresPerNode' in jobDisplay
         ? String(jobDisplay.coresPerNode)
