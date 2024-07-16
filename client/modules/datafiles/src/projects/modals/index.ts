@@ -6,3 +6,4 @@ export { ChangeProjectTypeModal } from './ChangeProjectTypeModal';
 export { MetricsModal } from './MetricsModal';
 export { ProjectBestPracticesModal } from './ProjectBestPracticesModal';
 export { PipelineEditCategoryModal } from './PipelineEditCategoryModal';
+export { ProjectDataTransferModal } from './ProjectDataTransferModal';
