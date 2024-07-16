@@ -38,46 +38,54 @@ export const AppsViewLayout: React.FC = () => {
   };
 
   return (
-    <Space direction="vertical" style={{ width: '100%' }}>
-      <Header style={headerStyle}>
-        <Flex justify="space-between">
-          <div>
-            <AppIcon name={icon} />
-            {app.definition.notes.label || app.definition.id}
-          </div>
-          {userGuideLink && (
-            <a href={userGuideLink} target="_blank" style={{ marginRight: 10 }}>
-              View User Guide
-            </a>
-          )}
-        </Flex>
-      </Header>
-      {htmlApp ? (
-        <div className={styles['overflow']}>
-          {parse(htmlApp.html as string)}
-        </div>
-      ) : (
-        <ErrorBoundary
-          key={key}
-          fallbackRender={({ error }) =>
-            error && (
-              <div id="appDetail-wrapper">
-                <Alert
-                  message={error?.response?.data?.message ?? error.message}
-                  type="error"
-                  showIcon
-                  style={{ marginTop: 10 }}
-                />
+    <>
+      <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Header style={headerStyle}>
+            <Flex justify="space-between">
+              <div>
+                <AppIcon name={icon} />
+                {app.definition.notes.label || app.definition.id}
               </div>
-            )
-          }
-        >
-          {/* <AppFormProvider> */}
-          <AppsSubmissionForm key={key} />
-          {/* </AppFormProvider> */}
-        </ErrorBoundary>
-      )}
+              {userGuideLink && (
+                <a
+                  href={userGuideLink}
+                  target="_blank"
+                  style={{ marginRight: 10 }}
+                >
+                  View User Guide
+                </a>
+              )}
+            </Flex>
+          </Header>
+          {htmlApp ? (
+            <div className={styles['overflow']}>
+              {parse(htmlApp.html as string)}
+            </div>
+          ) : (
+            <ErrorBoundary
+              key={key}
+              fallbackRender={({ error }) =>
+                error && (
+                  <div id="appDetail-wrapper">
+                    <Alert
+                      message={error?.response?.data?.message ?? error.message}
+                      type="error"
+                      showIcon
+                      style={{ marginTop: 10 }}
+                    />
+                  </div>
+                )
+              }
+            >
+              {/* <AppFormProvider> */}
+              <AppsSubmissionForm key={key} />
+              {/* </AppFormProvider> */}
+            </ErrorBoundary>
+          )}
+        </Space>
+      </Layout>
       <Outlet />
-    </Space>
+    </>
   );
 };
