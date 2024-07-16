@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  apiClient,
+  DoiContextProvider,
   TFileListing,
   TPreviewTreeData,
   useDataciteMetrics,
+  useDoiContext,
   useProjectPreview,
   usePublicationDetail,
   usePublicationVersions,
@@ -38,6 +41,7 @@ export const EntityFileListingTable: React.FC<{
     selectedFile?: TFileListing;
   }>({ isOpen: false });
 
+  const doi = useDoiContext();
   const columns: TFileListingColumns = [
     {
       title: 'File Name',
@@ -48,7 +52,9 @@ export const EntityFileListingTable: React.FC<{
           {record.type === 'dir' ? (
             <Link
               className="listing-nav-link"
-              to={`./${encodeURIComponent(record.path)}`}
+              to={`./${encodeURIComponent(record.path)}${
+                doi ? `?doi=${doi}` : ''
+              }`}
               style={{ pointerEvents: preview ? 'none' : 'all' }}
               replace={false}
             >
@@ -71,7 +77,7 @@ export const EntityFileListingTable: React.FC<{
                   setPreviewModalState({
                     isOpen: true,
                     path: record.path,
-                    selectedFile: record,
+                    selectedFile: { ...record, doi },
                   })
                 }
               >
@@ -213,18 +219,18 @@ export const PublishedEntityDisplay: React.FC<{
     treeData.value.dois && treeData.value.dois.length > 0
       ? treeData.value.dois[0]
       : '';
-  const {
-    data: citationMetrics,
-    isLoading,
-    isError,
-    error,
-  } = useDataciteMetrics(dois, !preview);
+  const { data: citationMetrics } = useDataciteMetrics(dois, !preview);
 
   useEffect(() => {
-    if (isError) {
-      console.error('Error fetching citation metrics:', error);
+    if (active && !preview) {
+      const identifier = dois ?? treeData.uuid;
+      const path = `${projectId}/${treeData.name}/${identifier}`;
+      apiClient.get(
+        `/api/datafiles/agave/public/logentity/designsafe.storage.published/${path}`,
+        { params: { doi: dois } }
+      );
     }
-  }, [isLoading, isError, error]);
+  }, [active, preview, dois, projectId, treeData.name, treeData.uuid]);
 
   return (
     <section>
@@ -400,13 +406,15 @@ export const PublicationView: React.FC<{
             child.name !== 'designsafe.project'
         )
         .map((child, idx) => (
-          <PublishedEntityDisplay
-            license={data.baseProject.license}
-            projectId={projectId}
-            treeData={child}
-            defaultOpen={idx === 0 && sortedChildren.length === 1}
-            key={child.id}
-          />
+          <DoiContextProvider key={child.id} value={child.value.dois?.[0]}>
+            <PublishedEntityDisplay
+              license={data.baseProject.license}
+              projectId={projectId}
+              treeData={child}
+              defaultOpen={idx === 0 && sortedChildren.length === 1}
+              key={child.id}
+            />
+          </DoiContextProvider>
         ))}
     </div>
   );

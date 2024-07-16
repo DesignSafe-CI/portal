@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './FileListingTable.module.css';
 import { Alert, Table, TableColumnType, TableProps } from 'antd';
-import { useFileListing, TFileListing, useSelectedFiles } from '@client/hooks';
+import {
+  useFileListing,
+  TFileListing,
+  useSelectedFiles,
+  useDoiContext,
+} from '@client/hooks';
 import { FileListingTableCheckbox } from './FileListingTableCheckbox';
 import parse from 'html-react-parser';
 
@@ -81,14 +86,17 @@ export const FileListingTable: React.FC<
   }, [data, filterFn, currentDisplayPath]);
 
   /* HANDLE FILE SELECTION */
+  const doi = useDoiContext();
   const { selectedFiles, setSelectedFiles } = useSelectedFiles(
     api,
     system ?? '-',
     path
   );
   const onSelectionChange = useCallback(
-    (_: React.Key[], selection: TFileListing[]) => setSelectedFiles(selection),
-    [setSelectedFiles]
+    (_: React.Key[], selection: TFileListing[]) => {
+      setSelectedFiles(doi ? selection.map((s) => ({ ...s, doi })) : selection);
+    },
+    [setSelectedFiles, doi]
   );
   const selectedRowKeys = useMemo(
     () => selectedFiles.map((s) => s.path),

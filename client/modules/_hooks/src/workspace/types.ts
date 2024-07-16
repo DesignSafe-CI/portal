@@ -111,6 +111,8 @@ export type TTapisApp = {
     icon?: string;
     dynamicExecSystems?: string[];
     queueFilter?: string[];
+    hideQueue?: boolean;
+    hideAllocation?: boolean;
   };
   uuid: string;
   deleted: boolean;

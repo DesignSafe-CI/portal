@@ -1,5 +1,6 @@
 import { useConsumePostit, TPreviewFileType } from '@client/hooks';
 import { Alert, Spin } from 'antd';
+import { HAZMAPPER_BASE_URL_MAP } from '../../projects/utils';
 import React, { useState } from 'react';
 import styles from './PreviewModal.module.css';
 
@@ -10,18 +11,32 @@ export const PreviewSpinner: React.FC = () => (
 export type TPreviewContent = React.FC<{
   href: string;
   fileType: TPreviewFileType;
+  handleCancel: () => void;
 }>;
-export const PreviewContent: TPreviewContent = ({ href, fileType }) => {
+export const PreviewContent: TPreviewContent = ({
+  href,
+  fileType,
+  handleCancel,
+}) => {
   const [iframeLoading, setIframeLoading] = useState(true);
 
   const { data: PostitData, isLoading: isConsumingPostit } = useConsumePostit({
     href,
     responseType: fileType === 'video' ? 'blob' : 'text',
     queryOptions: {
-      enabled: (!!href && fileType === 'text') || fileType === 'video',
+      enabled:
+        (!!href && fileType === 'text') ||
+        fileType === 'video' ||
+        fileType === 'hazmapper',
     },
   });
 
+  if (isConsumingPostit && fileType === 'hazmapper')
+    return (
+      <>
+        <h3>Opening in Hazmapper ... </h3> <PreviewSpinner />
+      </>
+    );
   if (isConsumingPostit) return <PreviewSpinner />;
 
   switch (fileType) {
@@ -68,6 +83,24 @@ export const PreviewContent: TPreviewContent = ({ href, fileType }) => {
           ></iframe>
         </div>
       );
+    case 'hazmapper':
+      {
+        if (!PostitData) return;
+        const body = JSON.parse(PostitData as string);
+        let baseUrl =
+          HAZMAPPER_BASE_URL_MAP[
+            body.deployment as keyof typeof HAZMAPPER_BASE_URL_MAP
+          ];
+        if (!baseUrl) {
+          console.error(
+            `Invalid deployment type: ${body.deployment}.  Falling back to local`
+          );
+          baseUrl = HAZMAPPER_BASE_URL_MAP['local'];
+        }
+        window.open(`${baseUrl}/project/${body.uuid}`, '_blank');
+        handleCancel();
+      }
+      break;
     default:
       return (
         <Alert
