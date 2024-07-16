@@ -130,7 +130,14 @@ export const ProjectCurationLayout: React.FC = () => {
   if (!data) return <div>loading...</div>;
   return (
     <div style={{ paddingBottom: '50px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '3rem',
+          marginBottom: '10px',
+        }}
+      >
         <ProjectNavbar projectId={projectId} />
         {data.baseProject.value.projectType !== 'other' && (
           <span

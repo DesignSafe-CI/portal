@@ -139,6 +139,24 @@ function getParameterSetNotesLabel(obj: unknown): string | undefined {
   return undefined;
 }
 
+function isNotHidden(
+  obj: TJobArgSpec | TAppFileInput | TJobKeyValuePair
+): boolean {
+  return !obj.notes || !obj.notes.isHidden;
+}
+
+// Notes Reviver for JSON.parse
+function reviver(key: string, value: unknown) {
+  if (key === 'notes' && typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch (e) {
+      return value;
+    }
+  }
+  return value;
+}
+
 /**
  * Get display values from job, app, and execution system info.
  */
@@ -146,25 +164,20 @@ export function getJobDisplayInformation(
   job: TTapisJob,
   app: TAppResponse | undefined
 ): TJobDisplayInfo {
-  const filterAppArgs = (objects: TJobArgSpecs) =>
-    objects.filter((obj) => !obj.notes || !obj.notes.isHidden);
+  const filterAppArgs = (objects: TJobArgSpecs) => objects.filter(isNotHidden);
 
   const filterInputs = (objects: TAppFileInput[]) =>
-    objects.filter(
-      (obj) =>
-        (!obj.notes || !obj.notes.isHidden) &&
-        !(obj.name || obj.sourceUrl || '').startsWith('_')
-    );
+    objects
+      .filter(isNotHidden)
+      .filter((obj) => !(obj.name || obj.sourceUrl || '').startsWith('_'));
 
   const filterParameters = (objects: TJobKeyValuePair[]) =>
-    objects.filter(
-      (obj) => (!obj.notes || !obj.notes.isHidden) && !obj.key.startsWith('_')
-    );
+    objects.filter(isNotHidden).filter((obj) => !obj.key.startsWith('_'));
 
   const fileInputs = filterInputs(
-    JSON.parse(job.fileInputs) as TAppFileInput[]
+    JSON.parse(job.fileInputs, reviver) as TAppFileInput[]
   );
-  const parameterSet = JSON.parse(job.parameterSet);
+  const parameterSet = JSON.parse(job.parameterSet, reviver);
   const parameters = filterAppArgs(parameterSet.appArgs) as TJobArgSpecs;
 
   const displayEnvVariables = filterParameters(parameterSet.envVariables);
@@ -187,7 +200,7 @@ export function getJobDisplayInformation(
       value: parameter.arg,
     })),
     envVars: displayEnvVariables.map((d) => ({
-      label: getParameterSetNotesLabel(d.notes) ?? d.key,
+      label: d.notes?.label ?? d.key,
       id: d.key,
       value: d.value,
     })),

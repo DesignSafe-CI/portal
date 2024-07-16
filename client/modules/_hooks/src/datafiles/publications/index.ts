@@ -9,3 +9,4 @@ export { usePublishProject } from './usePublishProject';
 export { useVersionProject } from './useVersionProject';
 export { useAmendProject } from './useAmendProject';
 export { useCreateFeedbackTicket } from './useCreateFeedbackTicket';
+export { useDoiContext, DoiContextProvider } from './useDoiContext';

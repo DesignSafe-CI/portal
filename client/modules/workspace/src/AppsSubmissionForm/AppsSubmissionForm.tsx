@@ -189,7 +189,9 @@ export const AppsSubmissionForm: React.FC = () => {
   const getSteps = (): TStep => {
     const formSteps: TStep = {
       configuration: getConfigurationStep(configuration.fields),
-      outputs: getOutputsStep(outputs.fields),
+      ...(definition.notes.isInteractive
+        ? {}
+        : { outputs: getOutputsStep(outputs.fields) }),
     };
     if (fileInputs.fields && Object.keys(fileInputs.fields).length) {
       formSteps.inputs = getInputsStep(fileInputs.fields);
@@ -631,6 +633,7 @@ export const AppsSubmissionForm: React.FC = () => {
                         isSubmitting={isPending}
                         current={current}
                         setCurrent={setCurrent}
+                        definition={definition}
                       />
                     </Col>
                   </Row>
