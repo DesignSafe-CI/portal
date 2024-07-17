@@ -103,3 +103,17 @@ if (rapidElement) {
     </StrictMode>
   );
 }
+
+const rapidElement = document.getElementById('rapid-root');
+if (rapidElement) {
+  const rapidRoot = ReactDOM.createRoot(rapidElement as HTMLElement);
+  rapidRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <div>Recon Portal base element rendered by React</div>
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
