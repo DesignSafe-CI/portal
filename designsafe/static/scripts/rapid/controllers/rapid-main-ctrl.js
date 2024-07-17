@@ -97,10 +97,10 @@ export default class RapidMainCtrl {
                     // iconAnchor: [6, 20.5],
                     // popupAnchor: [0.5, -17],
                     // shadowSize: [20.5, 20.5]
-                    iconSize: [16.5, 27.06],
-                    iconAnchor: [7.92, 27.06],
-                    popupAnchor: [0.66, -22.44],
-                    shadowSize: [27.06, 27.06]
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
                 });
 
                 let marker = L.marker([lat, lon], {
