@@ -51,16 +51,12 @@ class MongoTTCHelper(object):
 
         #set sorting option
         final_sort = []
-        if sort == "Start Date Descending":
-            final_sort = [('StartDate', DESCENDING)]
-        elif sort == "Start Date Ascending":
-            final_sort = [('StartDate', ASCENDING)]
-        elif sort == "End Date Descending":
+        if sort == "End Date Descending":
             final_sort = [('EndDate', DESCENDING)]
         elif sort == "End Date Ascending":
             final_sort = [('EndDate', ASCENDING)]
         else:
-            final_sort = [('StartDate', DESCENDING)]
+            final_sort = [('EndDate', DESCENDING)]
 
         mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
         cursor = mongo_db.ttc_grant.find(query).sort(final_sort)
@@ -84,3 +80,19 @@ class MongoTTCHelper(object):
         results = list(cursor)
         for category in results:
             yield category['name']
+
+    def get_ttc_hazard_types(self):
+        """Get unique hazard type from the ttc grants db"""
+        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
+        cursor = mongo_db.ttc_grant.distinct('Hazard')
+        results = list(cursor)
+        for hazard_type in results:
+            yield hazard_type
+
+    def get_ttc_grant_types(self):
+        """Get unique grant type from the ttc grants db"""
+        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
+        cursor = mongo_db.ttc_grant.distinct('Type')
+        results = list(cursor)
+        for grant_type in results:
+            yield grant_type

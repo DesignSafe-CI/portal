@@ -24,12 +24,19 @@
 
 .ttc-search {
     display: block;
-    padding: 10px;
+    padding: 5px;
 }
 
-.ttc-facility-filter, .ttc-sort-filter, .ttc-category-filter {
+/* .ttc-facility-filter, .ttc-sort-filter, .ttc-category-filter,
+.ttc-grant-type-filter, .ttc-hazard-type-filter,
+.tcc-text-search {
     display: inline;
-    padding: 10px;
+    padding: 5px;
+} */
+
+.filter-group {
+    display: inline;
+    padding: 5px;
 }
 
 .ttc-row {
