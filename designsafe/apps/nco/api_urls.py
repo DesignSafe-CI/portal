@@ -4,7 +4,6 @@ from designsafe.apps.nco.views import (
     FiltersListView,
     TtcGrantsView,
     TtcFacilitiesView,
-    TtcCategoriesView,
     TtcGrantTypesView,
     TtcHazardTypesView,
 )
@@ -18,7 +17,6 @@ urlpatterns = [
     url(r'filters', FiltersListView.as_view(), name='filters_list'),
     url(r'ttc_grants', TtcGrantsView.as_view(), name='ttc_grants_list'),
     url(r'ttc_facilities', TtcFacilitiesView.as_view(), name='ttc_facilities_list'),
-    url(r'ttc_categories', TtcCategoriesView.as_view(), name='ttc_categories_list'),
     url(r'ttc_grant_types', TtcGrantTypesView.as_view(), name='ttc_grant_types_list'),
     url(r'ttc_hazard_types', TtcHazardTypesView.as_view(), name='ttc_hazard_types_list'),
 ]

@@ -4,7 +4,6 @@ from designsafe.apps.nco.views.api import (
     FiltersListView,
     TtcGrantsView,
     TtcFacilitiesView,
-    TtcCategoriesView,
     TtcGrantTypesView,
     TtcHazardTypesView,
 )
@@ -16,7 +15,6 @@ __all__ = [
     "NcoTtcGrantsView",
     "TtcGrantsView",
     "TtcFacilitiesView",
-    "TtcCategoriesView",
     "TtcGrantTypesView",
     "TtcHazardTypesView",
     ]

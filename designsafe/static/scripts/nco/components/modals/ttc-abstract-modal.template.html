@@ -23,6 +23,11 @@
     <div class="ttc-data" ng-if="!$ctrl.grant.NheriFacility">NHERI Facility: No Facility Listed</div>
     <div class="ttc-data">Hazard Type: {{$ctrl.grant.Hazard}}</div>
     <div class="ttc-data">Grant Type: {{$ctrl.grant.Type}}</div>
+    <div class="ttc-data">Keywords:
+        <ul>
+            <li ng-repeat="keyword in $ctrl.grant.Subjects">{{keyword}}</li>
+        </ul>
+    </div>
     <hr />
     <div>
         Abstract:

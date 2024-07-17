@@ -39,8 +39,6 @@ class NcoTtcGrantsManager(object):
         #turn facility and category selection into query
         if params['facility']:
             query['NheriFacility'] = params['facility']
-        if params['category']:
-            query['Category'] = params['category']
         if params['hazard_type']:
             query['Hazard'] = params['hazard_type']
         if params['grant_type']:
@@ -59,11 +57,6 @@ class NcoTtcGrantsManager(object):
         """Return list of distinct facilities in ttc_grant collection"""
         facilities = [facility for facility in self._mttc.get_ttc_facilities()]
         return facilities
-
-    def ttc_categories(self):
-        """Return list of categories in ttc_grant_filters collection"""
-        categories = [category for category in self._mttc.get_ttc_categories()]
-        return categories
 
     def ttc_hazard_types(self):
         """Return list of hazard types in ttc_grant collection"""
