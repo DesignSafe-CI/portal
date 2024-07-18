@@ -58,19 +58,16 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   }
 
   // Table 1: Usage Breakdown
-  const uniqueInvestigations = eventMetricsData.data.filter(
-    (entry: DataEntry) =>
-      entry.attributes['relation-type-id'] ===
-      'unique-dataset-investigations-regular'
-  );
-  const uniqueRequests = eventMetricsData.data.filter(
-    (entry: DataEntry) =>
-      entry.attributes['relation-type-id'] === 'unique-dataset-requests-regular'
-  );
-  const totalRequests = eventMetricsData.data.filter(
-    (entry: DataEntry) =>
-      entry.attributes['relation-type-id'] === 'total-dataset-requests-regular'
-  );
+  const sumTotals = (data: DataEntry[], relationTypeId: string) => {
+    return data
+      .filter(entry => entry.attributes['relation-type-id'] === relationTypeId)
+      .reduce((sum, entry) => sum + entry.attributes.total, 0);
+  };
+  
+  const uniqueInvestigations = sumTotals(eventMetricsData.data, 'unique-dataset-investigations-regular');
+  const uniqueRequests = sumTotals(eventMetricsData.data, 'unique-dataset-requests-regular');
+  const totalRequests = sumTotals(eventMetricsData.data, 'total-dataset-requests-regular');
+  
 
   const dataSource = [
     {
@@ -90,8 +87,8 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         </span>
       ),
       data:
-        uniqueInvestigations.length > 0
-          ? uniqueInvestigations[0].attributes.total
+        uniqueInvestigations > 0
+          ? uniqueInvestigations
           : '--',
     },
     {
@@ -112,7 +109,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         </span>
       ),
       data:
-        uniqueRequests.length > 0 ? uniqueRequests[0].attributes.total : '--',
+        uniqueRequests > 0 ? uniqueRequests : '--',
     },
     {
       key: '3',
@@ -128,7 +125,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: totalRequests.length > 0 ? totalRequests[0].attributes.total : '--',
+      data: totalRequests > 0 ? totalRequests : '--',
     },
   ];
 
