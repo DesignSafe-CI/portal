@@ -89,7 +89,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       data:
         uniqueInvestigations > 0
           ? uniqueInvestigations
-          : '--',
+          : '- -',
     },
     {
       key: '2',
