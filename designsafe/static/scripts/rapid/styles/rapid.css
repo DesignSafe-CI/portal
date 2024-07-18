@@ -216,6 +216,9 @@ body {
 .event-listing.tornado {
   border-left: 5px solid #9100ff;
 }
+.event-listing.openTopoData {
+  border-left: 5px solid #a8bb2f;
+}
 
 .event-listing .event-type.earthquake {
   background-color: #e46e28;
@@ -234,6 +237,9 @@ body {
 }
 .event-listing  .event-type.tornado {
   background-color: #9100ff;
+}
+.event-listing  .event-type.openTopoData {
+  background-color: #a8bb2f;
 }
 
 

@@ -67,6 +67,7 @@
         </div>
         <div ng-show="!vm.filtered_events" class="">
           <event-listing ng-repeat="event in vm.events" event=event ng-click="vm.select_event(event)"></event-listing>
+          <event-listing ng-repeat="event in vm.openTopoData" event=event ng-click="vm.select_event(event)"></event-listing>
         </div>
       </div>
     </div>
