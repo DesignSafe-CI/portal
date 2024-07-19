@@ -21,7 +21,7 @@ export async function getDataciteEvents({
 }) {
   const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
     doi
-  )}`;
+  )}&page[size]=1000`;
 
   // Fetch data from both endpoints simultaneously
   const respDataciteEvents = await apiClient.get<DataciteEventsResponse>(
