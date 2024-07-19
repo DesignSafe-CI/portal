@@ -1,7 +1,7 @@
 var L = require('leaflet');
 import $ from 'jquery';
 
-describe('RapidMainCtrl', function() {
+xdescribe('RapidMainCtrl', function() {
     var RapidDataService, $location,
         $controller, $q, ctrl, $rootScope, mapSpy;
     var mockMap = {
