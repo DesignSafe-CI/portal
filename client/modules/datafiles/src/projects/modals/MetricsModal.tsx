@@ -176,16 +176,24 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     return sumsByQuarter;
   }
 
-  const orderedYears = useMemo(() => {
-    return usageMetricsData.data.attributes.viewsOverTime
+  const mostRecentYear = useMemo(() => {
+    const orderedYears = usageMetricsData.data.attributes.viewsOverTime
       .map((entry) => entry.yearMonth.split('-')[0]) // Get only the years
       .filter((year, index, array) => array.indexOf(year) === index) // Unique years
       .sort((a, b) => b.localeCompare(a)); // Sort descending
+  
+    return orderedYears.length > 0 ? orderedYears[0] : null; // Return the most recent year
   }, [usageMetricsData.data.attributes.viewsOverTime]);
 
-  const defaultYear = orderedYears[0];
+  const defaultYear = mostRecentYear || '';
 
   const [selectedYear, setSelectedYear] = useState(defaultYear);
+
+  useEffect(() => {
+    if (defaultYear) {
+      setSelectedYear(defaultYear);
+    }
+  }, [defaultYear]);
 
   const [quarterSums, setQuarterSums] = useState<{
     [key: string]: number | { [key: string]: number };
@@ -251,20 +259,6 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       setQuarterSums({ views, downloads, totals });
     }
   }, [selectedYear, eventMetricsData, usageMetricsData.data.attributes]);
-
-  useEffect(() => {
-    if (
-      usageMetricsData.data.attributes.viewsOverTime &&
-      usageMetricsData.data.attributes.viewsOverTime.length > 0
-    ) {
-      const lastItem =
-        usageMetricsData.data.attributes.viewsOverTime[
-          usageMetricsData.data.attributes.viewsOverTime.length - 1
-        ];
-      const latestYear = lastItem.yearMonth.substring(0, 4);
-      setSelectedYear(latestYear);
-    }
-  }, [usageMetricsData.data.attributes.viewsOverTime]);
 
   const handleYearChange = (value: string) => {
     setSelectedYear(value);
@@ -349,7 +343,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         (quarterSums.totals as { [key: string]: number })?.Q4 || '--',
     },
   ];
-
+  
   const quartersColumns = [
     {
       title: (
