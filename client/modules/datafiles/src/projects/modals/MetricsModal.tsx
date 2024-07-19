@@ -60,13 +60,24 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   // Table 1: Usage Breakdown
   const sumTotals = (data: DataEntry[], relationTypeId: string) => {
     return data
-      .filter(entry => entry.attributes['relation-type-id'] === relationTypeId)
+      .filter(
+        (entry) => entry.attributes['relation-type-id'] === relationTypeId
+      )
       .reduce((sum, entry) => sum + entry.attributes.total, 0);
   };
 
-  const uniqueInvestigations = sumTotals(eventMetricsData.data, 'unique-dataset-investigations-regular');
-  const uniqueRequests = sumTotals(eventMetricsData.data, 'unique-dataset-requests-regular');
-  const totalRequests = sumTotals(eventMetricsData.data, 'total-dataset-requests-regular');
+  const uniqueInvestigations = sumTotals(
+    eventMetricsData.data,
+    'unique-dataset-investigations-regular'
+  );
+  const uniqueRequests = sumTotals(
+    eventMetricsData.data,
+    'unique-dataset-requests-regular'
+  );
+  const totalRequests = sumTotals(
+    eventMetricsData.data,
+    'total-dataset-requests-regular'
+  );
 
   const dataSource = [
     {
@@ -85,10 +96,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data:
-        uniqueInvestigations > 0
-          ? uniqueInvestigations
-          : '--',
+      data: uniqueInvestigations > 0 ? uniqueInvestigations : '--',
     },
     {
       key: '2',
@@ -107,8 +115,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data:
-        uniqueRequests > 0 ? uniqueRequests : '--',
+      data: uniqueRequests > 0 ? uniqueRequests : '--',
     },
     {
       key: '3',
