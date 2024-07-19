@@ -62,9 +62,8 @@ class PublicationDataCiteEventsView(BaseApiView):
     def get(self, request):
         doi = request.GET.get('doi', '')
         source_id = request.GET.get('source-id', 'datacite-usage')
-        page_size = 1000
 
-        url = f'https://api.datacite.org/events?source-id={source_id}&doi={doi}&page[size]={page_size}'
+        url = f'https://api.datacite.org/events?source-id={source_id}&doi={doi}'
 
         try:
             response = requests.get(url)

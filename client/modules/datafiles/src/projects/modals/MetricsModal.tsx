@@ -86,8 +86,8 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         </span>
       ),
       data:
-        uniqueInvestigations > 0
-          ? uniqueInvestigations
+        uniqueInvestigations.length > 0
+          ? uniqueInvestigations[0].attributes.total
           : '--',
     },
     {
@@ -108,7 +108,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         </span>
       ),
       data:
-        uniqueRequests > 0 ? uniqueRequests : '--',
+        uniqueRequests.length > 0 ? uniqueRequests[0].attributes.total : '--',
     },
     {
       key: '3',
@@ -124,7 +124,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: totalRequests > 0 ? totalRequests : '--',
+      data: totalRequests.length > 0 ? totalRequests[0].attributes.total : '--',
     },
   ];
 

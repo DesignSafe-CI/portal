@@ -1,5 +1,6 @@
 :root {
   --ds-accent-color: #47a59d;
+  --ds-accent-color--dark: #37817B;
   --ds-active-color: #337AB7;
 
   /* Primary (Text, Layout) */
