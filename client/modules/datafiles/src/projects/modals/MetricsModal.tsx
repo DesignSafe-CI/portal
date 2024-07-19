@@ -181,7 +181,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       .map((entry) => entry.yearMonth.split('-')[0]) // Get only the years
       .filter((year, index, array) => array.indexOf(year) === index) // Unique years
       .sort((a, b) => b.localeCompare(a)); // Sort descending
-  
+
     return orderedYears.length > 0 ? orderedYears[0] : null; // Return the most recent year
   }, [usageMetricsData.data.attributes.viewsOverTime]);
 
@@ -343,7 +343,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         (quarterSums.totals as { [key: string]: number })?.Q4 || '--',
     },
   ];
-  
+
   const quartersColumns = [
     {
       title: (
