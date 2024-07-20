@@ -13,7 +13,6 @@ export default class RapidMainCtrl {
         this.$scope = $scope;
         this.reconLayer = L.layerGroup(); // Layer for Recon Portal Events
         this.openTopoLayer = L.layerGroup(); // Layer for OpenTopography data
-        this.showOpenTopo = true;
     }
 
     $onInit() {
@@ -45,9 +44,8 @@ export default class RapidMainCtrl {
         this.RapidDataService.get_opentopo_data(minx, miny, maxx, maxy).then((opentopo_data) => {
             this.openTopoData = opentopo_data.features;
             this.addMarkers(this.openTopoData, this.openTopoLayer, true);
-            if (this.showOpenTopo) {
-                this.map.addLayer(this.openTopoLayer);
-            }
+            // uncomment the below line to have opentopo data seen by default
+            this.map.addLayer(this.openTopoLayer);
         }).catch((err) => {
             console.error('Error loading OpenTopography data:', err);
         });
@@ -97,10 +95,10 @@ export default class RapidMainCtrl {
                     // iconAnchor: [6, 20.5],
                     // popupAnchor: [0.5, -17],
                     // shadowSize: [20.5, 20.5]
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
+                    iconSize: [16.75, 27.47],
+                    iconAnchor: [8.04, 27.47],
+                    popupAnchor: [0.67, -22.78],
+                    shadowSize: [27.47, 27.47]
                 });
 
                 let marker = L.marker([lat, lon], {
@@ -388,13 +386,5 @@ export default class RapidMainCtrl {
     clear_filters() {
         this.filter_options = {};
         this.search();
-    }
-
-    toggleOpenTopoLayer() {
-        if (this.showOpenTopo) {
-            this.map.addLayer(this.openTopoLayer);
-        } else {
-            this.map.removeLayer(this.openTopoLayer);
-        }
     }
 }

@@ -27,23 +27,25 @@ export default class RapidDataService {
     });
     }
 
+    // fetch_opentopo_catalog(minx, miny, maxx, maxy) {
+    // const url = `https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=${minx}&miny=${miny}&maxx=${maxx}&maxy=${maxy}&detail=true&outputFormat=json&include_federated=false`;
+    // return this.$http.get(url, { headers: { 'X-Requested-With': undefined } }).then((resp) => {
+    //     const processedData = this.preprocess_data(resp.data);
+    //     return processedData;
+    // }).catch((err) => {
+    //     console.error('Error fetching OpenTopography catalog:', err);
+    //     return this.$q.reject(err);
+    // });
+    // }
     fetch_opentopo_catalog(minx, miny, maxx, maxy) {
-    const cacheKey = `opentopo_catalog_${minx}_${miny}_${maxx}_${maxy}`;
-    if (globalCache.hasOwnProperty(cacheKey)) {
-        console.log("cache hit");
-        return this.$q.resolve(globalCache[cacheKey]);
-    }
-
-    const url = `https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=${minx}&miny=${miny}&maxx=${maxx}&maxy=${maxy}&detail=true&outputFormat=json&include_federated=false`;
-    console.time('fetch_opentopo_catalog');
-    return this.$http.get(url, { headers: { 'X-Requested-With': undefined } }).then((resp) => {
+    const url = `/recon-portal/proxy/?url=https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=${minx}&miny=${miny}&maxx=${maxx}&maxy=${maxy}&detail=true&outputFormat=json&include_federated=false`;
+    return this.$http.get(url).then((resp) => {
+        console.log("data", resp.data);
         const processedData = this.preprocess_data(resp.data);
-        globalCache[cacheKey] = processedData;
-        console.timeEnd('fetch_opentopo_catalog');
+        console.log(processedData);
         return processedData;
     }).catch((err) => {
         console.error('Error fetching OpenTopography catalog:', err);
-        console.timeEnd('fetch_opentopo_catalog');
         return this.$q.reject(err);
     });
     }
@@ -58,8 +60,9 @@ export default class RapidDataService {
         "type": "FeatureCollection",
         "features": []
     };
-
+    console.log(data.Datasets);
     data.Datasets.forEach(dataset => {
+        console.log("each dataset", dataset);
         const datasetInfo = dataset.Dataset;
         const url = datasetInfo.url;
         const fileFormat = datasetInfo.fileFormat;
