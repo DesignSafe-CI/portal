@@ -1,3 +1,5 @@
+# pylint: disable=invalid-name
+
 import uuid
 import os
 import json
@@ -22,6 +24,9 @@ logger = logging.getLogger(__name__)
 metrics_logger = logging.getLogger('metrics')
 
 from designsafe import settings
+
+TAPIS_TENANT_BASEURL = os.environ.get("TAPIS_TENANT_BASEURL")
+TAPIS_ADMIN_JWT = os.environ.get("TAPIS_ADMIN_JWT")
 
 def thumbnail_image(fobj, size=(400, 400)):
     im = Image.open(fobj)
@@ -72,18 +77,16 @@ def get_events(request):
 
 def get_opentopodata_center(request):
     client = Tapis(
-        base_url = 'https://designsafe.tapis.io',
-        username = os.environ['TAPIS_UNAME'],
-        password = os.environ['TAPIS_PWD']
+        base_url=TAPIS_TENANT_BASEURL,
+        access_token=TAPIS_ADMIN_JWT
         )
-    client.get_tokens()
     file_path = '/Recon Portal/opentopgraphy_catalog/opentopography_catalog_of_spatial_boundaries_center_points.geojson'
     try:
         file_contents = client.files.getContents(
             systemId='designsafe.storage.community',
             path=file_path
         )
-        data = json.load(file_contents)
+        data = json.loads(file_contents)
     except FileNotFoundError:
         return JsonResponse({'error': 'File not found'}, status=404)
     except json.JSONDecodeError:
@@ -93,18 +96,16 @@ def get_opentopodata_center(request):
 
 def get_opentopo_polygon_coordinates(request, doiUrl=None):
     client = Tapis(
-        base_url = 'https://designsafe.tapis.io',
-        username = os.environ['TAPIS_UNAME'],
-        password = os.environ['TAPIS_PWD']
+        base_url=TAPIS_TENANT_BASEURL,
+        access_token=TAPIS_ADMIN_JWT
         )
-    client.get_tokens()
     file_path = '/Recon Portal/opentopgraphy_catalog/opentopography_catalog_of_spatial_boundaries_full_geometry.geojson'
     try:
         file_contents = client.files.getContents(
             systemId='designsafe.storage.community',
             path=file_path
         )
-        data = json.load(file_contents)
+        data = json.loads(file_contents)
     except FileNotFoundError:
         return JsonResponse({'error': 'File not found'}, status=404)
     except json.JSONDecodeError:

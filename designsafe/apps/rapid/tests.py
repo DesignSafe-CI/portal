@@ -75,13 +75,13 @@ class RapidTests(TestCase):
         self.assertContains(resp, "FeatureCollection")
 
     def test_get_opentopo_coordinates(self):
-        url = reverse('designsafe_rapid:get_opentopo_coordinates')
+        url = reverse('designsafe_rapid:get_opentopo_polygon_coordinates')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "FeatureCollection")
 
     def test_get_opentopo_coordinates_with_doi(self):
-        url = reverse('designsafe_rapid:get_opentopo_coordinates', kwargs={'doiUrl': 'https://doi.org/10.5069/G9P55KPR'})
+        url = reverse('designsafe_rapid:get_opentopo_polygon_coordinates', kwargs={'doiUrl': 'https://doi.org/10.5069/G9P55KPR'})
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Feature")
