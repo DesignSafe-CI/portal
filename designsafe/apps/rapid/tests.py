@@ -5,9 +5,7 @@ from designsafe.apps.rapid.models import RapidNHEvent
 from unittest import skip
 import mock
 import requests_mock
-from unittest import skip
 
-@skip("Need to mock calls to ES.")
 class RapidTests(TestCase):
     """
     Almost all views by anonymous trigger a redirect. However, anonymous CAN create
@@ -36,10 +34,10 @@ class RapidTests(TestCase):
     def tearDown(self):
         pass
 
-
+    @skip("Need to mock calls to ES.")
     def test_index(self):
         """
-
+        Test the index view for admin user.
         """
         url = reverse('designsafe_rapid:index')
         self.client.login(username='ds_admin', password='admin/password')
@@ -47,6 +45,7 @@ class RapidTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Rapid")
 
+    @skip("Need to mock calls to ES.")
     def test_admin_index_admin(self):
         url = reverse('designsafe_rapid:admin')
         self.client.login(username='ds_admin', password='admin/password')
@@ -54,15 +53,35 @@ class RapidTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Rapid Admin")
 
+    @skip("Need to mock calls to ES.")
     def test_admin_index_no_admin(self):
         url = reverse('designsafe_rapid:admin')
         self.client.login(username='ds_user', password='user/password')
         resp = self.client.get(url, follow=True)
         self.assertNotEqual(resp.status_code, 200)
 
+    @skip("Need to mock calls to ES.")
     def test_admin_create_event(self):
         url = reverse('designsafe_rapid:admin_create_event')
         self.client.login(username='ds_admin', password='admin/password')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Create")
+    
+    def test_get_opentopodata_center(self):
+        url = reverse('designsafe_rapid:get_opentopodata_center')
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "FeatureCollection")
+
+    def test_get_opentopo_coordinates(self):
+        url = reverse('designsafe_rapid:get_opentopo_coordinates')
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "FeatureCollection")
+
+    def test_get_opentopo_coordinates_with_doi(self):
+        url = reverse('designsafe_rapid:get_opentopo_coordinates', kwargs={'doiUrl': 'https://doi.org/10.5069/G9P55KPR'})
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Feature")
