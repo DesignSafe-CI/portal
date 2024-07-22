@@ -518,13 +518,24 @@ export const AppsSubmissionForm: React.FC = () => {
           type="success"
           closable
           showIcon
+          style={{ marginBottom: '1rem' }}
         />
       )}
       {missingAllocation && (
         <Alert
-          message={`You need an allocation on ${missingAllocation} to run this application.`}
+          message={
+            <>
+              Please submit a{' '}
+              <a href="/help/new-ticket/" target="_blank">
+                ticket
+              </a>{' '}
+              to request an allocation of computing time to run this
+              application.
+            </>
+          }
           type="warning"
           showIcon
+          style={{ marginBottom: '1rem' }}
         />
       )}
       {submitError && (
@@ -538,6 +549,7 @@ export const AppsSubmissionForm: React.FC = () => {
           type="warning"
           closable
           showIcon
+          style={{ marginBottom: '1rem' }}
         />
       )}
       {defaultSystemNeedsKeys && (
@@ -551,6 +563,7 @@ export const AppsSubmissionForm: React.FC = () => {
           type="warning"
           closable
           showIcon
+          style={{ marginBottom: '1rem' }}
         />
       )}
       {!!(missingLicense && hasStorageSystems) && (
@@ -558,6 +571,7 @@ export const AppsSubmissionForm: React.FC = () => {
           <Alert
             type="warning"
             showIcon
+            style={{ marginBottom: '1rem' }}
             message={
               <>
                 Activate your {app.license.type} license in{' '}
