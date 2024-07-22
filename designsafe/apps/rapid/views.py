@@ -11,6 +11,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model, models
 from django.db.models import Q
+from tapipy.tapis import Tapis
+
 
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
@@ -69,11 +71,19 @@ def get_events(request):
     return JsonResponse(out, safe=False)
 
 def get_opentopodata_center(request):
-    file_path = os.path.join(settings.BASE_DIR, 'designsafe/apps/rapid/opentopography_catalog_of_spatial_boundaries_center_points.geojson')
-    
+    client = Tapis(
+        base_url = 'https://designsafe.tapis.io',
+        username = os.environ['TAPIS_UNAME'],
+        password = os.environ['TAPIS_PWD']
+        )
+    client.get_tokens()
+    file_path = '/Recon Portal/opentopgraphy_catalog/opentopography_catalog_of_spatial_boundaries_center_points.geojson'
     try:
-        with open(file_path, 'r') as file:
-            data = json.load(file)
+        file_contents = client.files.getContents(
+            systemId='designsafe.storage.community',
+            path=file_path
+        )
+        data = json.load(file_contents)
     except FileNotFoundError:
         return JsonResponse({'error': 'File not found'}, status=404)
     except json.JSONDecodeError:
@@ -81,12 +91,20 @@ def get_opentopodata_center(request):
 
     return JsonResponse(data, safe=False)
 
-def get_opentopo_coordinates(request, doiUrl=None):
-    file_path = os.path.join(settings.BASE_DIR, 'designsafe/apps/rapid/opentopography_catalog_of_spatial_boundaries_full_geometry.geojson')
-    
+def get_opentopo_polygon_coordinates(request, doiUrl=None):
+    client = Tapis(
+        base_url = 'https://designsafe.tapis.io',
+        username = os.environ['TAPIS_UNAME'],
+        password = os.environ['TAPIS_PWD']
+        )
+    client.get_tokens()
+    file_path = '/Recon Portal/opentopgraphy_catalog/opentopography_catalog_of_spatial_boundaries_full_geometry.geojson'
     try:
-        with open(file_path, 'r') as file:
-            data = json.load(file)
+        file_contents = client.files.getContents(
+            systemId='designsafe.storage.community',
+            path=file_path
+        )
+        data = json.load(file_contents)
     except FileNotFoundError:
         return JsonResponse({'error': 'File not found'}, status=404)
     except json.JSONDecodeError:
