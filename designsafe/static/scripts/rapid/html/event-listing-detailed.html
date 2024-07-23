@@ -40,17 +40,21 @@
       {{event.properties.keywords}}
     </span>
   </div>
-  <div class="row">
+  <div class="row" ng-show="!event.properties">
     <h5> Available datasets: </h5>
     <ul>
-      <li class="event-dataset" ng-repeat="dataset in event.datasets || [event.properties]">
-        <a ng-href="{{dataset.url || dataset.doiurl}}" target="_blank"> 
-          {{dataset.title || dataset.name}} 
+      <li class="event-dataset" ng-repeat="dataset in event.datasets">
+        <a ng-href="{{dataset.url}}" target="_blank"> 
+          {{dataset.title}} 
         </a>
       </li>
     </ul>
-    <div ng-show="!event.datasets && !event.properties">
+    <div ng-show="!event.datasets">
       <span> No datasets available yet </span>
     </div>
+  </div>
+  <div class="row" ng-if="event.properties.doiUrl">
+    <b> DOI:</b>
+    <a href="{{event.properties.doiUrl}}" target="_blank">{{event.properties.doiUrl}}</a>
   </div>
 </div>

@@ -33,7 +33,7 @@ export default class RapidDataService {
         // const url = `https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=${minx}&miny=${miny}&maxx=${maxx}&maxy=${maxy}&detail=true&outputFormat=json&include_federated=false`;
         // requested with headers set to undefined to avoid cors error
         // return this.$http.get(url, { headers: { 'X-Requested-With': undefined } }).then((resp) => {
-        return this.$http.get('/recon-portal/proxy/').then((resp) => {
+        return this.$http.get('/recon-portal/opentopo/').then((resp) => {
             this.opentopoData = this.preprocess_data(resp.data);
             return this.opentopoData;
         }).catch((err) => {

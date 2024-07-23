@@ -36,16 +36,11 @@ export default class RapidMainCtrl {
     }
 
     loadOpenTopographyData() {
-        const minx = -180;
-        const miny = -90;
-        const maxx = 180;
-        const maxy = 90;
-
-        this.RapidDataService.get_opentopo_data(minx, miny, maxx, maxy).then((opentopo_data) => {
+        this.RapidDataService.get_opentopo_data().then((opentopo_data) => {
             this.openTopoData = opentopo_data.features;
             this.addMarkers(this.openTopoData, this.openTopoLayer, true);
             // uncomment the below line to have opentopo data seen by default
-            this.map.addLayer(this.openTopoLayer);
+            //this.map.addLayer(this.openTopoLayer);
         }).catch((err) => {
             console.error('Error loading OpenTopography data:', err);
         });
@@ -82,212 +77,92 @@ export default class RapidMainCtrl {
     }
 
     addMarkers(data, layerGroup, isOpenTopo = false) {
-        if (isOpenTopo) {
-            data.forEach((d) => {
-                let lat = d.geometry.coordinates[1];
-                let lon = d.geometry.coordinates[0];
-                let title = d.properties.name;
+        data.forEach((d) => {
+            let lat = isOpenTopo ? d.geometry.coordinates[1] : d.location.lat;
+            let lon = isOpenTopo ? d.geometry.coordinates[0] : d.location.lon;
+            let title = isOpenTopo ? d.properties.name : d.title;
 
-                let customIcon = new L.Icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    // iconSize: [12.5, 20.5],
-                    // iconAnchor: [6, 20.5],
-                    // popupAnchor: [0.5, -17],
-                    // shadowSize: [20.5, 20.5]
-                    iconSize: [16.75, 27.47],
-                    iconAnchor: [8.04, 27.47],
-                    popupAnchor: [0.67, -22.78],
-                    shadowSize: [27.47, 27.47]
-                });
 
-                let marker = L.marker([lat, lon], {
-                    icon: customIcon,
-                    riseOnHover: true,
-                    riseOffset: 500
-                });
-
-                let popupContent = `<b>${title}</b><br>
-                                    <b>ID:</b> ${d.properties.id}<br>
-                                    <b>Products available:</b> ${d.properties.productAvailable}<br>
-                                    <b>Date Created:</b> ${d.properties.dateCreated}<br>
-                                    <b>Survey date:</b> ${d.properties.temporalCoverage}<br>
-                                    <b>DOI:</b> <a href="${d.properties.doiUrl}" target="_blank">${d.properties.doiUrl}</a>`;
-    
-                marker.bindPopup(popupContent);
-                layerGroup.addLayer(marker);
-                marker.data_event = d;
-    
-                marker.on('mouseover', (ev) => {
-                    marker.openPopup();
-                });
-    
-                marker.on('mouseout', (ev) => {
-                    setTimeout(() => {
-                        if (!marker.getPopup()._container.contains(document.querySelector(':hover'))) {
-                            marker.closePopup();
-                        }
-                    }, 600);
-                });
-    
-                marker.on('click', (ev) => {
-                    this.select_event(marker.data_event);
-                    this.$scope.$apply();
-                });
+            let customIcon =  isOpenTopo ? new L.Icon({
+                                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
+                                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                iconSize: [16.75, 27.47],
+                                iconAnchor: [8.04, 27.47],
+                                popupAnchor: [0.67, -22.78],
+                                shadowSize: [27.47, 27.47]
+                            })
+                : new L.Icon({
+                iconUrl: this.getEventTypeIconUrl(d.event_type),
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
             });
-        } else {
-            // Handle Recon Portal events data
-            data.forEach((d) => {
-                let lat = d.location.lat;
-                let lon = d.location.lon;
-                let title = d.title;
-    
-                let eventTypeColors = {
-                    earthquake: '#e46e28',
-                    flood: '#4285F4',
-                    tsunami: '#a765fe',
-                    landslide: '#62a241',
-                    hurricane: '#d34141',
-                    tornado: '#9100ff'
-                };
 
-                let eventTypeColorsGit = {
-                    earthquake: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
-                    flood: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-                    tsunami: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-                    landslide: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-                    hurricane: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-                    tornado: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png'
-                };
-                
-                let eventTypeColorGit = eventTypeColorsGit[d.event_type] || 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png';
-                
-                let customIcon = new L.Icon({
-                    iconUrl: eventTypeColorGit,
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                });
-                
-                let marker = L.marker([lat, lon], { icon: customIcon });
-                
-
-                let eventTypeColor = eventTypeColors[d.event_type] || '#000';
-    
-                let popupContent = `<b>${title}</b><br>
-                                    <b>Event Type:</b> <span style="background-color:${eventTypeColor}; color:#fff; padding:2px 5px; border-radius:3px;">${d.event_type}</span><br>
-                                    <b>Event Date:</b> ${d.event_date}<br>`;
-    
-                marker.bindPopup(popupContent);
-                layerGroup.addLayer(marker);
-                marker.data_event = d;
-    
-                marker.on('mouseover', (ev) => {
-                    marker.openPopup();
-                });
-    
-                marker.on('mouseout', (ev) => {
-                    setTimeout(() => {
-                        if (!marker.getPopup()._container.contains(document.querySelector(':hover'))) {
-                            marker.closePopup();
-                        }
-                    }, 600);
-                });
-    
-                marker.on('click', (ev) => {
-                    this.select_event(marker.data_event);
-                    this.$scope.$apply();
-                });
+            let marker = L.marker([lat, lon], {
+                icon: customIcon,
+                riseOnHover: true,
+                riseOffset: 250
             });
-        }
+
+            let popupContent = isOpenTopo ? 
+                this.createOpenTopoPopupContent(d) : 
+                this.createReconPopupContent(d);
+
+            marker.bindPopup(popupContent);
+            layerGroup.addLayer(marker);
+            marker.data_event = d;
+
+            marker.on('mouseover', () => marker.openPopup());
+            marker.on('mouseout', () => this.closePopupIfNotHovered(marker));
+            marker.on('click', () => {
+                this.select_event(marker.data_event);
+                this.$scope.$apply();
+            });
+        });
     }
-    
-    // addMarkers(data, layerGroup, isOpenTopo = false) {
-    //     const createMarker = (lat, lon, iconUrl, popupContent) => {
-    //         let customIcon = new L.Icon({
-    //             iconUrl: iconUrl,
-    //             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    //             iconSize: [16.5, 27.06],
-    //             iconAnchor: [7.92, 27.06],
-    //             popupAnchor: [0.66, -22.44],
-    //             shadowSize: [27.06, 27.06]
-    //         });
-    
-    //         let marker = L.marker([lat, lon], { icon: customIcon, riseOnHover: true });
-    
-    //         marker.bindPopup(popupContent);
-    //         layerGroup.addLayer(marker);
-    //         return marker;
-    //     };
-    
-    //     data.forEach((d) => {
-    //         let lat, lon, title, iconUrl, popupContent;
-    //         if (isOpenTopo) {
-    //             lat = d.geometry.coordinates[1];
-    //             lon = d.geometry.coordinates[0];
-    //             title = d.properties.name;
-    //             iconUrl = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png';
-    //             popupContent = `<b>${title}</b><br>
-    //                             <b>ID:</b> ${d.properties.id}<br>
-    //                             <b>Products available:</b> ${d.properties.productAvailable}<br>
-    //                             <b>Date Created:</b> ${d.properties.dateCreated}<br>
-    //                             <b>Survey date:</b> ${d.properties.temporalCoverage}<br>
-    //                             <b>DOI:</b> <a href="${d.properties.doiUrl}" target="_blank">${d.properties.doiUrl}</a>`;
-    //         } else {
-    //             lat = d.location.lat;
-    //             lon = d.location.lon;
-    //             title = d.title;
-    
-    //             const eventTypeColorsGit = {
-    //                 earthquake: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
-    //                 flood: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-    //                 tsunami: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-    //                 landslide: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-    //                 hurricane: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-    //                 tornado: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png'
-    //             };
-    
-    //             iconUrl = eventTypeColorsGit[d.event_type] || 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png';
-    
-    //             const eventTypeColor = {
-    //                 earthquake: '#e46e28',
-    //                 flood: '#4285F4',
-    //                 tsunami: '#a765fe',
-    //                 landslide: '#62a241',
-    //                 hurricane: '#d34141',
-    //                 tornado: '#9100ff'
-    //             }[d.event_type] || '#000';
-    
-    //             popupContent = `<b>${title}</b><br>
-    //                             <b>Event Type:</b> <span style="background-color:${eventTypeColor}; color:#fff; padding:2px 5px; border-radius:3px;">${d.event_type}</span><br>
-    //                             <b>Event Date:</b> ${d.event_date}<br>`;
-    //         }
-    
-    //         let marker = createMarker(lat, lon, iconUrl, popupContent);
-    
-    //         marker.data_event = d;
-    
-    //         marker.on('mouseover', (ev) => {
-    //             marker.openPopup();
-    //         });
-    
-    //         marker.on('mouseout', (ev) => {
-    //             setTimeout(() => {
-    //                 if (!marker.getPopup()._container.contains(document.querySelector(':hover'))) {
-    //                     marker.closePopup();
-    //                 }
-    //             }, 600);
-    //         });
-    
-    //         marker.on('click', (ev) => {
-    //             this.select_event(marker.data_event);
-    //             this.$scope.$apply();
-    //         });
-    //     });
-    // }
-    
+
+    createOpenTopoPopupContent(d) {
+        return `<b>${d.properties.name}</b><br>
+                <b>ID:</b> ${d.properties.id}<br>
+                <b>Products available:</b> ${d.properties.productAvailable}<br>
+                <b>Data Source:</b><span class="event-type opentopo"> OpenTopography </span><br>
+                <b>Date Created:</b> ${d.properties.dateCreated}<br>
+                <b>Survey date:</b> ${d.properties.temporalCoverage}<br>
+                <b>DOI:</b> <a href="${d.properties.doiUrl}" target="_blank"> ${d.properties.doiUrl}</a>`;
+    }
+
+    createReconPopupContent(d) {
+        let eventTypeClass = d.event_type ? `event-type ${d.event_type}` : '';
+        let formattedDate = new Date(d.event_date).toLocaleDateString('en-CA');  // Formats date as yyyy-MM-dd
+        return `<b>${d.title}</b><br>
+                <b>Event Type:</b> <span class="event-type ${eventTypeClass}"> ${d.event_type} </span><br>
+                <b>Data Source:</b><span class="event-type designsafe"> DesignSafe </span><br>
+                <b>Event Date:</b> ${formattedDate} <br>
+                <b>Location Description:</b> ${d.location_description}<br>`;
+    }
+
+    getEventTypeIconUrl(eventType) {
+        const eventTypeColorsGit = {
+            earthquake: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+            flood: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+            tsunami: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
+            landslide: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+            hurricane: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            tornado: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png'
+        };
+        return eventTypeColorsGit[eventType] || 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png';
+    }
+
+    closePopupIfNotHovered(marker) {
+        setTimeout(() => {
+            if (!marker.getPopup()._container.contains(document.querySelector(':hover'))) {
+                marker.closePopup();
+            }
+        }, 600);
+    }
+
     
 
     gotoEvent() {
@@ -355,6 +230,7 @@ export default class RapidMainCtrl {
 
         let popupContent = `<b>${properties.name}</b><br>
                             <b>Dataset Name:</b> ${properties.name}<br>
+                            <b>Data Source:</b> Opentopography <br>
                             <b>Products available:</b> ${properties.productAvailable}<br>
                             <b>Survey date:</b> ${properties.temporalCoverage}<br>
                             <b>DOI:</b> <a href="${properties.doiUrl}" target="_blank">${properties.doiUrl}</a>`;
