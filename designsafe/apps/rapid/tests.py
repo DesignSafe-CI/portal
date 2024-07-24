@@ -5,6 +5,7 @@ from designsafe.apps.rapid.models import RapidNHEvent
 from unittest import skip
 import mock
 import requests_mock
+import os, settings
 
 class RapidTests(TestCase):
     """
@@ -68,19 +69,51 @@ class RapidTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Create")
     
+    '''@mock.patch('designsafe.apps.auth.models.AgaveOAuthToken.client')
+    @mock.patch('agavepy.agave.Agave')
+    def test_has_agave_file_listing(self, agave_client, agave):
+        #agaveclient.return_value.files.list.return_value = [] // whatever the listing should look like
+        #request.post.return_value = {} // some object that looks like a requests response
+        
+        self.client.login(username='test_with_agave', password='test')
+
+        agave_client.files.list.return_value = {
+            "name": "test",
+            "system": "designsafe.storage.default",
+            "trail": [{"path": "/", "name": "/", "system": "designsafe.storage.default"}, 
+                    {"path": "/test", "name": "test", "system": "designsafe.storage.default"}],
+            "path": "test",
+            "type": "dir",
+            "children": [],
+            "permissions": "READ"
+        } '''
+    
+    
     def test_get_opentopodata_center(self):
+        tapipy_mock = mock.MagicMock()
+        with open('designsafe/apps/rapid/opentopography_catalog_of_spatial_boundaries_center_points.geojson', 'rb') as file:
+            fileContents = file.read()
+        tapipy_mock.files.getContents.return_value = fileContents  # Assign byte values of the file contents
         url = reverse('designsafe_rapid:get_opentopodata_center')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "FeatureCollection")
 
     def test_get_opentopo_coordinates(self):
+        tapipy_mock = mock.MagicMock()
+        with open('designsafe/apps/rapid/opentopography_catalog_of_spatial_boundaries_full_geometry.geojson', 'rb') as file:
+            fileContents = file.read()
+        tapipy_mock.files.getContents.return_value = fileContents
         url = reverse('designsafe_rapid:get_opentopo_polygon_coordinates')
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "FeatureCollection")
 
     def test_get_opentopo_coordinates_with_doi(self):
+        tapipy_mock = mock.MagicMock()
+        with open('designsafe/apps/rapid/opentopography_catalog_of_spatial_boundaries_full_geometry.geojson', 'rb') as file:
+            fileContents = file.read()
+        tapipy_mock.files.getContents.return_value = fileContents
         url = reverse('designsafe_rapid:get_opentopo_polygon_coordinates', kwargs={'doiUrl': 'https://doi.org/10.5069/G9P55KPR'})
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
