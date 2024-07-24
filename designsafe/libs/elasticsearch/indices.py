@@ -3,7 +3,7 @@
    :synopsis: Wrapper classes for ES different doc types.
 """
 
-from future.utils import python_2_unicode_compatible
+
 import logging
 import json
 import six

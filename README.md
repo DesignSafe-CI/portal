@@ -40,34 +40,37 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    - `AGAVE_*`: should be set to enable Agave API integration (authentication, etc.)
    - `RT_*`: should be set to enable ticketing
 
-   Make copies of [rabbitmq.sample.env](conf/env_files/rabbitmq.sample.env) and [mysql.sample.env](conf/env_files/mysql.sample.env),
-   then rename them to `rabbitmq.env` and `mysql.env`.
-
-   Make copies of [mysql.sample.cnf](conf/mysql.sample.cnf), [redis.sample.conf](conf/redis.sample.conf),
-   and [rabbitmq.sample.conf](conf/rabbitmq.sample.conf), then rename them to `mysql.cnf`, `redis.conf`, and `rabbitmq.conf`.
+   Make a copy of [rabbitmq.sample.env](conf/env_files/rabbitmq.sample.env)
+   then rename it to `rabbitmq.env`.
 
    Make a copy of [external_resource_secrets.sample.py](designsafe/settings/external_resource_secrets.sample.py)
    and rename it to `external_resource_secrets.py`.
 
-3. Build the containers and frontend package
+3. Build the containers and frontend packages
 
-   ```
-   $ make build
-   ```
-   or
-   ```
-   $ docker-compose -f conf/docker/docker-compose.yml build
-   ```
+   1. Containers:
+      ```sh
+      make build-dev
+      ```
+      or
+      ```sh
+      docker-compose -f conf/docker/docker-compose-dev.yml build
+      ```
 
-   These lines install the node packages required for DesignSafe,
-   and build the frontend package.
-   ```
-   $ npm ci
-   $ npm run build
-   ```
+   2. Angular Frontend + static assets:
+      ```sh
+      npm ci
+      docker run -v `pwd`:`pwd` -w `pwd` -it node:16  /bin/bash -c "npm run build"
+      ```
 
-   If you are working with the frontend code and want it to automatically update,
-   use `npm run dev` rather than `npm run build` to have it build upon saving the file.
+      **Note:** If you are working with the frontend code and want it to automatically update, use `npm run dev` rather than `npm run build` to have it build upon saving the file.
+
+   3. React Frontend (in another terminal):
+      ```sh
+      cd client
+      npm ci
+      npm run start
+      ```
 
 4. Start local containers
 
@@ -82,7 +85,7 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    ```
    $ docker exec -it des_django bash
    $ ./manage.py migrate
-   $ ./manage.py collectstatic -i demo
+   $ ./manage.py collectstatic --ignore demo --no-input
    $ ./manage.py createsuperuser
    ```
 
@@ -225,8 +228,8 @@ $ docker-compose -f conf/docker/docker-compose-dev.all.debug.yml up
 $ npm run dev
 ```
 
-When using this compose file, your Agave Client should be configured with a `callback_url`
-of `http://$DOCKER_HOST_IP:8000/auth/agave/callback/`.
+When using this compose file, your Tapis Client should be configured with a `callback_url`
+of `http://$DOCKER_HOST_IP:8000/auth/tapis/callback/`.
 
 For developing some services, e.g. Box.com integration, https support is required. To
 enable an Nginx http proxy run using the [`docker-compose-http.yml`](docker-compose-http.yml)
@@ -237,9 +240,6 @@ up an Nginx proxy secured by a self-signed certificate.
 $ docker-compose -f docker-compose-http.yml build
 $ docker-compose -f docker-compose-http.yml up
 ```
-
-When using this compose file, your Agave Client should be configured with a `callback_url`
-of `https://$DOCKER_HOST_IP/auth/agave/callback/`.
 
 ### Agave filesystem setup
 1. Delete all of the old metadata objects using this command:

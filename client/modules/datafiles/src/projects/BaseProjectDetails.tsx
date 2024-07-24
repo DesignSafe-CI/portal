@@ -4,6 +4,11 @@ import { TBaseProjectValue, TProjectUser } from '@client/hooks';
 import styles from './BaseProjectDetails.module.css';
 import { Button, Col, Popover, Row, Select, Tooltip } from 'antd';
 import { useSearchParams } from 'react-router-dom';
+import { RelateDataModal } from './modals';
+import { ProjectInfoModal } from './modals/ProjectInfoModal';
+import { VersionChangesModal } from './modals/VersionChangesModal';
+import { SubmitFeedbackModal } from '../publications/modals/SubmitFeedbackModal';
+import { filterHazmapperMaps, getHazmapperUrl } from './utils';
 
 export const DescriptionExpander: React.FC<React.PropsWithChildren> = ({
   children,
@@ -65,14 +70,15 @@ export const LicenseDisplay: React.FC<{ licenseType: string }> = ({
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <i className={ENTITY_ICON_MAP[licenseType]} />
       &nbsp;
-      {licenseType}
+      <strong>{licenseType}</strong>
     </div>
   );
 };
 
 export const UsernamePopover: React.FC<{ user: TProjectUser }> = ({ user }) => {
   const content = (
-    <article
+    <section
+      role="table"
       style={{
         width: '500px',
         display: 'flex',
@@ -80,27 +86,33 @@ export const UsernamePopover: React.FC<{ user: TProjectUser }> = ({ user }) => {
         gap: '10px',
       }}
     >
-      <Row>
-        <Col span={8}>Name</Col>
-        <Col offset={4} span={12}>
+      <Row role="row">
+        <Col role="rowheader" span={8}>
+          Name
+        </Col>
+        <Col role="cell" offset={4} span={12}>
           <strong>
             {user.fname} {user.lname}
           </strong>
         </Col>
       </Row>
-      <Row gutter={[0, 40]}>
-        <Col span={8}>Email</Col>
-        <Col offset={4} span={12}>
+      <Row role="row" gutter={[0, 40]}>
+        <Col role="cell" span={8}>
+          Email
+        </Col>
+        <Col role="cell" offset={4} span={12}>
           <strong>{user.email}</strong>
         </Col>
       </Row>
-      <Row gutter={[0, 40]}>
-        <Col span={8}>Institution</Col>
-        <Col offset={4} span={12}>
+      <Row role="row" gutter={[0, 40]}>
+        <Col role="cell" span={8}>
+          Institution
+        </Col>
+        <Col role="cell" offset={4} span={12}>
           <strong>{user.inst}</strong>
         </Col>
       </Row>
-    </article>
+    </section>
   );
   return (
     <Popover
@@ -133,7 +145,8 @@ export const BaseProjectDetails: React.FC<{
   projectValue: TBaseProjectValue;
   publicationDate?: string;
   versions?: number[];
-}> = ({ projectValue, publicationDate, versions }) => {
+  isPublished?: boolean;
+}> = ({ projectValue, publicationDate, versions, isPublished }) => {
   const pi = projectValue.users.find((u) => u.role === 'pi');
   const coPis = projectValue.users.filter((u) => u.role === 'co_pi');
   const projectType = [
@@ -149,6 +162,14 @@ export const BaseProjectDetails: React.FC<{
       return prevParams;
     });
   };
+
+  const currentVersion = versions
+    ? parseInt(searchParams.get('version') ?? Math.max(...versions).toString())
+    : 1;
+
+  const filteredHazmapperMaps = filterHazmapperMaps(
+    projectValue.hazmapperMaps ?? []
+  );
 
   return (
     <section style={{ marginBottom: '20px' }}>
@@ -198,7 +219,15 @@ export const BaseProjectDetails: React.FC<{
           {projectValue.projectType !== 'other' && (
             <tr className={styles['prj-row']}>
               <td>Project Type</td>
-              <td style={{ fontWeight: 'bold' }}>{projectType}</td>
+              <td style={{ fontWeight: 'bold' }}>
+                {projectType}
+                {!isPublished && (
+                  <>
+                    {' '}
+                    <ProjectInfoModal projectType={projectValue.projectType} />
+                  </>
+                )}
+              </td>
             </tr>
           )}
           {(projectValue.dataTypes?.length ?? 0) > 0 && (
@@ -283,6 +312,7 @@ export const BaseProjectDetails: React.FC<{
               <td style={{ fontWeight: 'bold' }}>
                 {projectValue.associatedProjects.map((assoc) => (
                   <div key={JSON.stringify(assoc)}>
+                    {assoc.type} |{' '}
                     <a
                       href={assoc.href}
                       rel="noopener noreferrer"
@@ -295,22 +325,37 @@ export const BaseProjectDetails: React.FC<{
               </td>
             </tr>
           )}
+          {(projectValue.referencedData?.length ?? 0) > 0 && (
+            <tr className={styles['prj-row']}>
+              <td>Referenced Data and Software</td>
+              <td style={{ fontWeight: 'bold' }}>
+                {projectValue.referencedData.map((ref) => (
+                  <div key={JSON.stringify(ref)}>
+                    {ref.hrefType && `${ref.hrefType} | `}
+                    <a href={ref.doi} rel="noopener noreferrer" target="_blank">
+                      {ref.title}
+                    </a>
+                  </div>
+                ))}
+              </td>
+            </tr>
+          )}
           <tr className={styles['prj-row']}>
             <td>Keywords</td>
             <td style={{ fontWeight: 'bold' }}>
               {projectValue.keywords.join(', ')}
             </td>
           </tr>
-          {(projectValue.hazmapperMaps?.length ?? 0) > 0 && (
+          {(filteredHazmapperMaps?.length ?? 0) > 0 && (
             <tr className={styles['prj-row']}>
               <td>Hazmapper Maps</td>
               <td style={{ fontWeight: 'bold' }}>
-                {(projectValue.hazmapperMaps ?? []).map((m) => (
+                {(filteredHazmapperMaps ?? []).map((m) => (
                   <div key={m.uuid}>
                     {m.name}&nbsp;
                     <Tooltip title="Open in HazMapper">
                       <a
-                        href={`https://hazmapper.tacc.utexas.edu/hazmapper/project-public/${m.uuid}`}
+                        href={getHazmapperUrl(m, isPublished)}
                         rel="noopener noreferrer"
                         target="_blank"
                       >
@@ -347,21 +392,53 @@ export const BaseProjectDetails: React.FC<{
                   style={{ width: '200px' }}
                   size="small"
                   options={versions.map((v) => ({ value: v, label: v }))}
-                  value={parseInt(
-                    searchParams.get('version') ??
-                      Math.max(...versions).toString()
-                  )}
+                  value={currentVersion}
                   onChange={(newVal) => setSelectedVersion(newVal)}
-                />
+                />{' '}
+                {currentVersion > 1 && (
+                  <VersionChangesModal
+                    projectId={projectValue.projectId}
+                    version={currentVersion}
+                  />
+                )}
               </td>
             </tr>
           )}
         </tbody>
       </table>
-      <DescriptionExpander>
-        <strong>Description: </strong>
-        {projectValue.description}
-      </DescriptionExpander>
+
+      {isPublished && (
+        <section style={{ paddingBottom: '12px' }}>
+          {!['other', 'field_reconnaissance'].includes(
+            projectValue.projectType
+          ) && (
+            <>
+              <RelateDataModal projectId={projectValue.projectId} readOnly>
+                {({ onClick }) => (
+                  <Button
+                    onClick={onClick}
+                    type="link"
+                    style={{ fontWeight: 'bold' }}
+                  >
+                    View Data Diagram
+                  </Button>
+                )}
+              </RelateDataModal>{' '}
+              |{' '}
+            </>
+          )}
+          <SubmitFeedbackModal
+            projectId={projectValue.projectId}
+            title={projectValue.title}
+          />
+        </section>
+      )}
+      {projectValue.description && (
+        <DescriptionExpander>
+          <strong>Description: </strong>
+          {projectValue.description}
+        </DescriptionExpander>
+      )}
     </section>
   );
 };

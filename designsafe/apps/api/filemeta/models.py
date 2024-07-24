@@ -5,13 +5,14 @@ from django.db.models import Q
 from django.utils import timezone
 
 
-def _get_normalized_path(path) -> str:
+def _get_normalized_path(path: str) -> str:
     """ Return a file path that begins with /"
 
     For example, "file.jpg" becomes "/file.jpg"
     """
     if not path.startswith('/'):
         path = '/' + path
+    path = path.replace('//', '/')
     return path
 
 

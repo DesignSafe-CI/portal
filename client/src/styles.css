@@ -1,4 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+@import './styles/modal.css';
+
 .ant-spin-nested-loading {
   height: 100%;
 }
@@ -71,12 +73,14 @@
   padding-inline: 0px !important;
   height: unset;
   padding: 0px !important;
-  color: #337ab7 !important;
-}
+  &:not(.ant-btn-disabled, [disabled]) {
+    color: #337ab7 !important;
 
-.ant-btn-link:hover span {
-  color: #23527c !important;
-  text-decoration: underline !important;
+    &:hover span {
+      color: #23527c !important;
+      text-decoration: underline !important;
+    }
+  }
 }
 
 .listing-nav-link {
@@ -109,4 +113,31 @@
 
 .ant-collapse-header:focus-visible {
   outline: -webkit-focus-ring-color auto 1px !important;
+}
+
+.o-site__body:has(> #apps-root),
+#apps-root,
+#apps-root > div.ant-flex,
+#apps-root .ant-layout-has-sider,
+#apps-root .ant-layout-sider {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Do NOT scroll "Applications:" and "Job Status" */
+.ant-layout-sider-children {
+  overflow-y: scroll;
+  display: flex;
+  flex-flow: column;
+}
+
+#datafiles-root .ant-layout-sider,
+#datafiles-root .ant-layout-sider-children {
+  overflow: visible !important;
+}
+
+/* DO scroll app category menu */
+.ant-layout-sider-children > a + div + ul {
+  overflow: auto;
+  height: 100%;
 }

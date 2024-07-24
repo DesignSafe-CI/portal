@@ -1,0 +1,160 @@
+/* From Core */
+.root {
+  font-size: 0.75rem;
+  --border: 1px solid var(--global-color-primary--light);
+}
+
+.spinner {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+}
+
+.link:hover {
+  color: var(--global-color-accent--normal);
+}
+
+.header-details {
+  font-weight: 400;
+  font-size: 1.25rem;
+  padding-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+dl.header-details dd + dt {
+  border-left: var(--border);
+  padding-left: 10px;
+  margin-left: 10px;
+}
+
+dl.header-details dt {
+  padding-right: 1px;
+  margin-right: 1px;
+}
+.modal-body-container {
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.panel-content {
+  --padding: 20px;
+
+  padding: var(--padding);
+}
+.panel-content dd dt {
+  font-weight: normal;
+}
+/* Any preformatted values (like system output) should use a `pre` tag */
+.panel-content pre {
+  white-space: pre-wrap;
+  margin-bottom: 0; /* overwrite Bootstrap's `_code.scss` */
+}
+
+.submit-button {
+  display: block;
+  width: 100%;
+}
+
+.left-panel {
+  border-right: var(--border);
+  min-width: 210px;
+  padding: 20px;
+}
+
+.left-panel .submit-button + .submit-button {
+  margin-top: 10px;
+}
+
+.right-panel {
+  width: 100%;
+  overflow-y: scroll;
+  border-right: var(--border);
+  white-space: normal;
+  /* Cross-browser solution to padding ignored by overflow (in spec-compliant Firefox) */
+  /* SEE: https://stackoverflow.com/a/38997047/11817077 */
+  padding-bottom: 0;
+  &::after {
+    content: '';
+    display: block;
+    height: var(--padding);
+  }
+}
+
+/* Messaging */
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* `DefinitionList` Component */
+/* FAQ: Why are we relying on tags defined by other components?! Because the tags are unit tested. Opposition welcome. — Wes B */
+/* FAQ: Why not integrate these styles into `DefinitionList`? Because Design has not decided final UI for component / this modal */
+
+/* Generic */
+dl.panel-content {
+  --buffer-horz: 12px; /* ~10px design * 1.2 design-to-app ratio */
+  --buffer-vert: 10px; /* gut feel based loosely on random space from design */
+  --border: var(--global-border-width--normal) solid
+    var(--global-color-primary--light);
+}
+dl.panel-content,
+dl.panel-content dl,
+dl.panel-content dd {
+  margin-bottom: 0; /* overwrite Bootstrap's `_reboot.scss` */
+}
+
+/* Top-Level */
+dl.panel-content > dt {
+  padding-top: var(--buffer-vert);
+  padding-bottom: calc(var(--buffer-vert) / 2);
+}
+dl.panel-content > dd {
+  padding-top: calc(var(--buffer-vert) / 2);
+  padding-bottom: var(--buffer-vert);
+}
+
+/* Top-Level: Right Panel */
+dl.right-panel > dt,
+dl.right-panel > dd {
+  padding-left: var(--buffer-horz);
+  padding-right: var(--buffer-horz);
+}
+dl.right-panel > dt {
+  font-weight: bold;
+}
+dl.right-panel > dt {
+  border-top: var(--border);
+}
+dl.right-panel > dt:first-of-type {
+  border-top: none;
+}
+dl.right-panel > dd:last-of-type {
+  border-bottom: var(--border);
+}
+dl.right-panel > dt:nth-of-type(even),
+dl.right-panel > dd:nth-of-type(even) {
+  background-color: var(--global-color-primary--x-light);
+}
+
+/* Remove the colon from top-level labels */
+dl.panel-content > dt::after {
+  display: none;
+}
+/* Prevent adding extra space to existing `dl.panel-content` padding */
+dl.panel-content > dt:first-of-type {
+  padding-top: 0;
+}
+.job-history-modal .ant-modal-body {
+  padding: 0;
+}
+.ant-modal .ant-modal-content {
+  padding: 0;
+}
+.descriptionRow {
+  border-bottom: var(--border);
+}

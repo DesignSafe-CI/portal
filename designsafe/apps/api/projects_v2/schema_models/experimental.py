@@ -1,4 +1,5 @@
 """Pydantic models for Experimental entities"""
+
 import itertools
 from typing import Optional, Annotated
 from pydantic import BeforeValidator, Field, ConfigDict, model_validator, AliasChoices
@@ -57,8 +58,8 @@ class Experiment(MetadataModel):
     ] = None
     equipment_type_other: str = Field(default="", exclude=True)
 
-    procedure_start: str = ""
-    procedure_end: str = ""
+    procedure_start: Optional[str] = None
+    procedure_end: Optional[str] = None
 
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
     project: list[str] = []
@@ -89,6 +90,40 @@ class Experiment(MetadataModel):
             self.facility.name = self.experimental_facility_other
         return self
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        fedora_json = {
+            "title": self.title,
+            "description": self.description,
+            "publisher": "Designsafe",
+        }
+        fedora_json["creator"] = [
+            f"{author.lname}, {author.fname}" for author in self.authors
+        ]
+        if self.experiment_type:
+            fedora_json["type"] = self.experiment_type.name
+        fedora_json["identifier"] = self.dois
+        if self.facility:
+            fedora_json["contributor"] = self.facility.name
+
+        if self.equipment_type:
+            fedora_json["subject"] = self.equipment_type.name
+
+        if self.procedure_start:
+            fedora_json["_created"] = self.procedure_start
+
+        for referenced_data in self.referenced_data:
+            reference_mapping = referenced_data.to_fedora_json()
+            for key in reference_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [reference_mapping[key]]
+
+        for related_work in self.related_work:
+            related_mapping = related_work.to_fedora_json()
+            for key in related_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [related_mapping[key]]
+
+        return fedora_json
+
 
 class ExperimentModelConfig(MetadataModel):
     """Model for model configurations."""
@@ -112,6 +147,14 @@ class ExperimentModelConfig(MetadataModel):
     video: Optional[dict] = Field(default=None, exclude=True)
     spatial: Optional[str] = Field(default=None, exclude=True)
     coverage: Optional[str] = Field(default=None, exclude=True)
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "model configuration",
+            "title": self.title,
+            "description": self.description,
+        }
 
 
 class ExperimentSensor(MetadataModel):
@@ -142,6 +185,14 @@ class ExperimentSensor(MetadataModel):
     # This field ONLY Present on sensor 8078182091498319385-242ac11c-0001-012
     load: Optional[list[str]] = Field(default=None, exclude=True)
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "sensor information",
+            "title": self.title,
+            "description": self.description,
+        }
+
 
 class ExperimentEvent(MetadataModel):
     """Model for experimental events."""
@@ -164,6 +215,10 @@ class ExperimentEvent(MetadataModel):
     tags: Optional[dict] = Field(default=None, exclude=True)
     load: Optional[list[str]] = Field(default=None, exclude=True)
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {"type": "event", "title": self.title, "description": self.description}
+
 
 class ExperimentAnalysis(MetadataModel):
     """Model for experimental analysis."""
@@ -182,9 +237,19 @@ class ExperimentAnalysis(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
+    dois: list[str] = []
+
     tags: Optional[dict] = Field(default=None, exclude=True)
     reference: Optional[str] = Field(default=None, exclude=True)
     referencedoi: Optional[str] = Field(default=None, exclude=True)
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "analysis",
+            "title": self.title,
+            "description": self.description,
+        }
 
 
 class ExperimentReport(MetadataModel):
@@ -198,3 +263,7 @@ class ExperimentReport(MetadataModel):
     files: list[str] = []
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {"type": "report", "title": self.title, "description": self.description}

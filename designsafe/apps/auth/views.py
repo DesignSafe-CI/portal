@@ -1,209 +1,148 @@
+"""
+Auth views.
+"""
+
+import logging
+import time
+import secrets
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-import secrets
-
-from .models import AgaveOAuthToken, AgaveServiceStatus
-from agavepy.agave import Agave
-from designsafe.apps.auth.tasks import check_or_create_agave_home_dir, new_user_alert
-import logging
-import os
-import requests
-import time
-from requests import HTTPError
-
-
+from designsafe.apps.auth.tasks import (
+    check_or_configure_system_and_user_directory,
+    get_systems_to_configure,
+)
+from designsafe.apps.workspace.api.tasks import cache_allocations
+from .models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
+METRICS = logging.getLogger(f"metrics.{__name__}")
 
 
 def logged_out(request):
-    return render(request, 'designsafe/apps/auth/logged_out.html')
+    """Render logged out page upon logout"""
+    return render(request, "designsafe/apps/auth/logged_out.html")
 
 
-def login_options(request):
-    if request.user.is_authenticated:
-        messages.info(request, 'You are already logged in!')
-        return HttpResponseRedirect('/')
-
-    message = False
-
-    try:
-        agave_status = AgaveServiceStatus()
-        ds_oauth_svc_id = getattr(settings, 'AGAVE_DESIGNSAFE_OAUTH_STATUS_ID',
-                                  '56bb6d92a216b873280008fd')
-        designsafe_status = next((s for s in agave_status.status
-                             if s['id'] == ds_oauth_svc_id))
-        if designsafe_status and 'status_code' in designsafe_status:
-            if designsafe_status['status_code'] == 400:
-                message = {
-                    'class': 'warning',
-                    'text': 'DesignSafe API Services are experiencing a '
-                            'Partial Service Disruption. Some services '
-                            'may be unavailable.'
-                }
-            elif designsafe_status['status_code'] == 500:
-                message = {
-                    'class': 'danger',
-                    'text': 'DesignSafe API Services are experiencing a '
-                            'Service Disruption. Some services may be '
-                            'unavailable.'
-                }
-    except Exception as e:
-        logger.warn('Unable to check AgaveServiceStatus')
-        logger.warn(e)
-        agave_status = None
-        designsafe_status = None
-
-    if not message:
-        return agave_oauth(request)
-    else:
-        context = {
-            'message': message,
-            'agave_status': agave_status,
-            'designsafe_status': designsafe_status,
-        }
-        return render(request, 'designsafe/apps/auth/login.html', context)
+def _get_auth_state():
+    return secrets.token_hex(24)
 
 
-def agave_oauth(request):
-    tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-    client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
-
+def tapis_oauth(request):
+    """First step for Tapis OAuth workflow."""
     session = request.session
-    session['auth_state'] = secrets.token_hex(24)
-    next_page = request.GET.get('next')
+    session["auth_state"] = _get_auth_state()
+    next_page = request.GET.get("next")
     if next_page:
-        session['next'] = next_page
-    # Check for HTTP_X_DJANGO_PROXY custom header
-    django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
-    if django_proxy or request.is_secure():
-        protocol = 'https'
+        session["next"] = next_page
+
+    if request.is_secure():
+        protocol = "https"
     else:
-        protocol = 'http'
-    redirect_uri = '{}://{}{}'.format(
-        protocol,
-        request.get_host(),
-        reverse('designsafe_auth:agave_oauth_callback')
-    )
+        protocol = "http"
+
+    redirect_uri = f"{protocol}://{request.get_host()}{reverse('designsafe_auth:tapis_oauth_callback')}"
+
+    tenant_base_url = getattr(settings, "TAPIS_TENANT_BASEURL")
+    client_id = getattr(settings, "TAPIS_CLIENT_ID")
+
+    METRICS.debug(f"user:{request.user.username} starting oauth redirect login")
+
+    # Authorization code request
     authorization_url = (
-        '%s/authorize?'
-        'client_id=%s&'
-        'response_type=code&'
-        'redirect_uri=%s&'
-        'state=%s' % (
-            tenant_base_url,
-            client_key,
-            redirect_uri,
-            session['auth_state'],
-        )
+        f"{tenant_base_url}/v3/oauth2/authorize?"
+        f"client_id={client_id}&"
+        f"redirect_uri={redirect_uri}&"
+        "response_type=code&"
+        f"state={session['auth_state']}"
     )
+
     return HttpResponseRedirect(authorization_url)
 
 
-def agave_oauth_callback(request):
-    """
-    http://agaveapi.co/documentation/authorization-guide/#authorization_code_flow
-    """
-    state = request.GET.get('state')
-
-    if request.session['auth_state'] != state:
-        msg = (
-            'OAuth Authorization State mismatch!? auth_state=%s '
-            'does not match returned state=%s' % (
-                request.session['auth_state'], state
-            )
+def launch_setup_checks(user):
+    """Perform any onboarding checks or non-onboarding steps that may spawn celery tasks"""
+    logger.info("Starting tasks to check or configure systems for %s", user.username)
+    for system in get_systems_to_configure(user.username):
+        check_or_configure_system_and_user_directory.apply_async(
+            args=(
+                user.username,
+                system["system_id"],
+                system["path"],
+                system["create_path"],
+            ),
+            queue="files",
         )
+    logger.info("Creating/updating cached allocation information for %s", user.username)
+    cache_allocations.apply_async(args=(user.username,))
+
+
+def tapis_oauth_callback(request):
+    """Tapis OAuth callback handler."""
+    state = request.GET.get("state")
+
+    if request.session["auth_state"] != state:
+        msg = f"OAuth Authorization State mismatch: auth_state={request.session['auth_state']} does not match returned state={state}"
+
         logger.warning(msg)
-        return HttpResponseBadRequest('Authorization State Failed')
+        return HttpResponseBadRequest("Authorization State Failed")
 
-    if 'code' in request.GET:
+    if "code" in request.GET:
         # obtain a token for the user
-        # Check for HTTP_X_DJANGO_PROXY custom header
-        request.META.get('HTTP_X_DJANGO_PROXY', 'false') == 'true'
-        django_proxy = request.META.get('HTTP_X_DJANGO_PROXY', 'false')
-        if django_proxy or request.is_secure():
-            protocol = 'https'
+        if request.is_secure():
+            protocol = "https"
         else:
-            protocol = 'http'
-        redirect_uri = '{}://{}{}'.format(
-            protocol,
-            request.get_host(),
-            reverse('designsafe_auth:agave_oauth_callback')
-        )
-        code = request.GET['code']
-        tenant_base_url = getattr(settings, 'AGAVE_TENANT_BASEURL')
-        client_key = getattr(settings, 'AGAVE_CLIENT_KEY')
-        client_sec = getattr(settings, 'AGAVE_CLIENT_SECRET')
+            protocol = "http"
+        redirect_uri = f"{protocol}://{request.get_host()}{reverse('designsafe_auth:tapis_oauth_callback')}"
+        code = request.GET["code"]
+
         body = {
-            'grant_type': 'authorization_code',
-            'code': code,
-            'redirect_uri': redirect_uri,
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": redirect_uri,
         }
-        # TODO update to token call in agavepy
-        response = requests.post('%s/token' % tenant_base_url,
-                                 data=body,
-                                 auth=(client_key, client_sec))
-        token_data = response.json()
-        token_data['created'] = int(time.time())
+        response = requests.post(
+            f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/tokens",
+            data=body,
+            auth=(settings.TAPIS_CLIENT_ID, settings.TAPIS_CLIENT_KEY),
+            timeout=30,
+        )
+        response_json = response.json()
+        token_data = {
+            "created": int(time.time()),
+            "access_token": response_json["result"]["access_token"]["access_token"],
+            "refresh_token": response_json["result"]["refresh_token"]["refresh_token"],
+            "expires_in": response_json["result"]["access_token"]["expires_in"],
+        }
+
         # log user in
-        user = authenticate(backend='agave', token=token_data['access_token'])
+        user = authenticate(backend="tapis", token=token_data["access_token"])
 
         if user:
-            try:
-                token = user.agave_oauth
-                token.update(**token_data)
-            except ObjectDoesNotExist:
-                token = AgaveOAuthToken(**token_data)
-                token.user = user
-                new_user_alert.apply_async(args=(user.username,))
-            token.save()
+            TapisOAuthToken.objects.update_or_create(user=user, defaults={**token_data})
 
             login(request, user)
-
-            ag = Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                       token=settings.AGAVE_SUPER_TOKEN)
-            try:
-                ag.files.list(systemId=settings.AGAVE_STORAGE_SYSTEM,
-                              filePath=user.username)
-            except HTTPError as e:
-                if e.response.status_code == 404:
-                    check_or_create_agave_home_dir.apply_async(args=(user.username, settings.AGAVE_STORAGE_SYSTEM),queue='files')
-
-            try:
-                ag.files.list(systemId=settings.AGAVE_WORKING_SYSTEM,
-                              filePath=user.username)
-            except HTTPError as e:
-                if e.response.status_code == 404:
-                    check_or_create_agave_home_dir.apply_async(args=(user.username, settings.AGAVE_WORKING_SYSTEM),queue='files')
-
+            launch_setup_checks(user)
         else:
             messages.error(
                 request,
-                'Authentication failed. Please try again. If this problem '
-                'persists please submit a support ticket.'
+                "Authentication failed. Please try again. If this problem "
+                "persists please submit a support ticket.",
             )
-            return HttpResponseRedirect(reverse('designsafe_auth:login'))
+            return HttpResponseRedirect(reverse("logout"))
     else:
-        if 'error' in request.GET:
-            error = request.GET['error']
-            logger.warning('Authorization failed: %s' % error)
-        messages.error(
-            request, 'Authentication failed! Did you forget your password? '
-                     '<a href="%s">Click here</a> to reset your password.' %
-                     reverse('designsafe_accounts:password_reset'))
-        return HttpResponseRedirect(reverse('designsafe_auth:login'))
-    if 'next' in request.session:
-        next_uri = request.session.pop('next')
+        if "error" in request.GET:
+            error = request.GET["error"]
+            logger.warning("Authorization failed: %s", error)
+
+        return HttpResponseRedirect(reverse("logout"))
+
+    if "next" in request.session:
+        next_uri = request.session.pop("next")
         return HttpResponseRedirect(next_uri)
-    else:
-        # return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
-        return HttpResponseRedirect(reverse('designsafe_dashboard:index'))
 
-
-def agave_session_error(request):
-    return render(request, 'designsafe/apps/auth/agave_session_error.html')
+    return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)

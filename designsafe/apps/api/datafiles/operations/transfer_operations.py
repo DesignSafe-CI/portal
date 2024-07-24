@@ -1,4 +1,4 @@
-from designsafe.apps.api.datafiles.operations import agave_operations
+from designsafe.apps.api.datafiles.operations import tapis_operations
 from designsafe.apps.api.datafiles.operations import googledrive_operations
 from designsafe.apps.api.datafiles.operations import dropbox_operations
 from designsafe.apps.api.datafiles.operations import box_operations
@@ -11,10 +11,10 @@ api_mapping = {
         'mkdir': googledrive_operations.mkdir
     },
     'agave': {
-        'upload': agave_operations.upload,
-        'download': agave_operations.download_bytes,
-        'iterate_listing': agave_operations.iterate_listing,
-        'mkdir': agave_operations.mkdir
+        'upload': tapis_operations.upload,
+        'download': tapis_operations.download_bytes,
+        'iterate_listing': tapis_operations.iterate_listing,
+        'mkdir': tapis_operations.mkdir
     },
     'dropbox': {
         'upload': dropbox_operations.upload,

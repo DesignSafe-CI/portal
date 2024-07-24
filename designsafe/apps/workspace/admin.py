@@ -75,6 +75,7 @@ class AppTrayEntryAdmin(admin.ModelAdmin):
                         "category",
                         "label",
                         "icon",
+                        "user_guide_link",
                         "enabled",
                     ],
                 },

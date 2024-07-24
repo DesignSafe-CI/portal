@@ -9,7 +9,7 @@
     <ul uib-dropdown-menu class="dropdown-menu notifications" aria-labelledby="dLabel">
       <div class="notification-heading">
           <h3 class="menu-title">Notifications</h3>
-          <a href="{{data.notificationsurl}}">
+          <a href="/rw/workspace/history">
             <h3 class="menu-title pull-right">
               View all
               <i class="glyphicon glyphicon-circle-arrow-right"></i>
@@ -20,7 +20,7 @@
       <div class="notifications-wrapper">
         <li ng-repeat="x in data.notifications">
           <div class="notification-item">
-            <a class="content" href="{{x.action_link}}" ng-attr-target="{{ x.operation === 'web_link' ? '_blank' : undefined }}">
+            <a class="content" href="{{x.action_link}}" ng-attr-target="{{ x.event_type === 'interactive_session_ready' ? '_blank' : undefined }}">
                 <dl class="dl-horizontal">
                   <dt>{{x.datetime| date:'MMM dd, yyyy'}}<br>
                       {{x.datetime| date:'h:mm a'}}
@@ -54,4 +54,3 @@
       </div>
     </ul>
   </div>
-  
