@@ -13,7 +13,6 @@ from pytas.http import TASClient
 from tapipy.errors import NotFoundError, BaseTapyException
 from designsafe.utils.system_access import register_public_key, create_system_credentials
 from designsafe.utils.encryption import createKeyPair
-from requests import HTTPError
 from django.contrib.auth import get_user_model
 import logging
 
@@ -86,12 +85,12 @@ def check_or_configure_system_and_user_directory(username, system_id, path, crea
                                   public_key,
                                   private_key,
                                   system_id)
-    except BaseTapyException:
+    except BaseTapyException as exc:
         logger.exception('Failed to configure system (i.e. create directory, set acl, create credentials).',
                          extra={'user': username,
                                 'systemId': system_id,
                                 'path': path})
-        raise self.retry(exc=exc)
+        raise check_or_configure_system_and_user_directory.retry(exc=exc)
 
 
 @shared_task(default_retry_delay=30, max_retries=3)
