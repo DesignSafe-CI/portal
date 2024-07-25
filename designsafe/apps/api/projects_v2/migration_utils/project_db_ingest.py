@@ -72,6 +72,10 @@ def ingest_entities_by_name(name):
     entities = iterate_entities(name)
     for entity in entities:
         schema_model = SCHEMA_MAPPING[entity["name"]]
+        if entity["value"].get("fileObjs"):
+            entity["value"]["fileObjs"] = [
+                e for e in entity["value"]["fileObjs"] if e.get("path", None)
+            ]
         try:
             value_model = schema_model.model_validate(entity["value"])
         except ValidationError as err:
@@ -124,7 +128,6 @@ def ingest_graphs():
 def fix_authors(meta: ProjectMetadata):
     """Ensure that authors contain complete name/institution information."""
     base_project = meta.base_project
-    print(meta.project_id)
     def get_complete_author(partial_author):
         if partial_author.get("name") and not partial_author.get("guest"):
             author_info = next(
