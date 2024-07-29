@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import {
   TFileListing,
+  useAuthenticatedUser,
   useFileListingRouteParams,
   useFilePreview,
 } from '@client/hooks';
@@ -44,6 +45,13 @@ export const PreviewModalBody: React.FC<{
     handleCancel();
   }, [handleCancel, queryClient]);
 
+  const { user } = useAuthenticatedUser();
+  const isReadOnly = [
+    'designsafe.storage.published',
+    'designsafe.storage.community',
+    'nees.public',
+  ].includes(selectedFile.system);
+
   if (!isOpen) return null;
 
   return (
@@ -72,7 +80,7 @@ export const PreviewModalBody: React.FC<{
       >
         {!selectedFile.path.endsWith('.hazmapper') && (
           <>
-            {scheme === 'private' && api === 'tapis' && (
+            {!isReadOnly && api === 'tapis' && (
               <MoveModal
                 api={api}
                 system={selectedFile.system}
@@ -89,19 +97,21 @@ export const PreviewModalBody: React.FC<{
               </MoveModal>
             )}
 
-            <CopyModal
-              api={api}
-              system={selectedFile.system}
-              path={listingPath}
-              selectedFiles={[selectedFile]}
-            >
-              {({ onClick }) => (
-                <Button onClick={onClick}>
-                  <i role="none" className="fa fa-copy" />
-                  <span>&nbsp;Copy</span>
-                </Button>
-              )}
-            </CopyModal>
+            {user && (
+              <CopyModal
+                api={api}
+                system={selectedFile.system}
+                path={listingPath}
+                selectedFiles={[selectedFile]}
+              >
+                {({ onClick }) => (
+                  <Button onClick={onClick}>
+                    <i role="none" className="fa fa-copy" />
+                    <span>&nbsp;Copy</span>
+                  </Button>
+                )}
+              </CopyModal>
+            )}
             <DownloadModal
               api={api}
               system={selectedFile.system}
