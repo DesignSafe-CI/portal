@@ -94,8 +94,11 @@ a.c-app-card:active {
 .c-app-card__flags {
     font-size: 1.2rem;
 }
-.c-app-card__flags > *:has(strong) {
+.c-app-card__flags > .is-popular {
     background-color: #ECE4BF;
+}
+.c-app-card__flags > .is-simcenter {
+    background-color: #AFD9EE;
 }
 
 .c-app-card__repo {

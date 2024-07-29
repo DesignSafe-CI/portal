@@ -15,11 +15,11 @@
 
     <ul class="c-app-card__flags">
         {% if app.is_popular %}
-        <li><strong>Popular</strong></li>
+        <li class="is-popular"><strong>Popular</strong></li>
         {% endif %}
 
         {% if not app.is_popular and app.is_simcenter %}
-        <li>SimCenter</li>
+        <li class="is-simcenter"><strong>SimCenter</strong></li>
         {% endif %}
 
 
