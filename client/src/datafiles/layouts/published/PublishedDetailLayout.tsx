@@ -117,27 +117,47 @@ export const PublishedDetailLayout: React.FC = () => {
       </div>
 
       {data.baseProject.projectType === 'other' && (
-        <section
-          style={{
-            backgroundColor: '#eef9fc',
-            padding: '10px 20px',
-            margin: '10px 0px',
-          }}
-        >
-          <strong>Cite This Data:</strong>
+        <>
+          {data.baseProject.tombstone && (
+            <Alert
+              showIcon
+              type="warning"
+              message={
+                <strong>The following Dataset does not exist anymore</strong>
+              }
+              description={
+                <div>
+                  The Dataset with DOI:{' '}
+                  <a href={`https://doi.org/${data.baseProject.dois[0]}`}>
+                    {data.baseProject.dois[0]}
+                  </a>{' '}
+                  was incomplete and removed. The metadata is still available.
+                </div>
+              }
+            />
+          )}
+          <section
+            style={{
+              backgroundColor: '#eef9fc',
+              padding: '10px 20px',
+              margin: '10px 0px',
+            }}
+          >
+            <strong>Cite This Data:</strong>
 
-          <PublishedCitation
-            projectId={projectId}
-            entityUuid={data.tree.children[0].uuid}
-          />
-          <br />
-          <div>
-            <DownloadCitation
+            <PublishedCitation
               projectId={projectId}
               entityUuid={data.tree.children[0].uuid}
             />
-          </div>
-        </section>
+            <br />
+            <div>
+              <DownloadCitation
+                projectId={projectId}
+                entityUuid={data.tree.children[0].uuid}
+              />
+            </div>
+          </section>
+        </>
       )}
       <BaseProjectDetails
         projectValue={data?.baseProject}

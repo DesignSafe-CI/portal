@@ -76,6 +76,9 @@ def convert_v2_user(user):
         role = "team_member"
         username = user["name"]
 
+    if not user.get("fname"):
+        user = {**user, **get_user_info(user["name"], role)}
+
     return {
         "fname": user["fname"],
         "lname": user["lname"],

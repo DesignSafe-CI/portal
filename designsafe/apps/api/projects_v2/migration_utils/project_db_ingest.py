@@ -212,13 +212,33 @@ def ingest_publications():
 def ingest_tombstones():
     """Ingest Elasticsearch tombstones into the db"""
 
+    tombstone_ids = [
+        "PRJ-1945",
+        "PRJ-1895",
+        "PRJ-2329",
+        "PRJ-2016",
+        "PRJ-2227",
+        "PRJ-2420",
+        "PRJ-3815",
+        "PRJ-3908",
+        "PRJ-4151",
+        "PRJ-4014",
+    ]
     all_pubs = (
-        IndexedPublication.search().filter(Q("term", status="tombstone")).execute().hits
+        IndexedPublication.search()
+        .filter(
+            Q("term", status="tombstone")
+            | Q("terms", **{"projectId._exact": tombstone_ids})
+        )
+        .execute()
+        .hits
     )
     print(all_pubs)
     for pub in all_pubs:
         try:
             pub_graph = combine_pub_versions(pub["projectId"])
+            for published_entity_node_id in pub_graph.successors("NODE_ROOT"):
+                pub_graph.nodes[published_entity_node_id]["value"]["tombstone"] = True
             latest_version: int = IndexedPublication.max_revision(pub["projectId"]) or 1
             pub_base = next(
                 (
