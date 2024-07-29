@@ -170,13 +170,17 @@ class PublicationListingView(BaseApiView):
         if has_query:
             hits, total = handle_search(query_opts, offset, limit)
             publications_query = (
-                Publication.objects.filter(project_id__in=hits)
+                Publication.objects.filter(project_id__in=hits, is_published=True)
                 .defer("tree")
                 .order_by("-created")
             )
             publications = publications_query
         else:
-            publications_query = Publication.objects.defer("tree").order_by("-created")
+            publications_query = (
+                Publication.objects.filter(is_published=True)
+                .defer("tree")
+                .order_by("-created")
+            )
             total = publications_query.count()
             publications = publications_query[offset : offset + limit]
         result = [

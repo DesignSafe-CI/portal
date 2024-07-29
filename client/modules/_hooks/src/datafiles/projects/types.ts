@@ -76,6 +76,8 @@ export type TBaseProjectValue = {
 
   title: string;
   description: string;
+  tombstone?: boolean;
+  tombstoneMessage?: string;
   users: TProjectUser[];
   dataTypes?: TDropdownValue[];
   authors: TProjectUser[];
@@ -100,6 +102,8 @@ export type TBaseProjectValue = {
 
 export type TEntityValue = {
   title: string;
+  tombstone?: boolean;
+  tombstoneMessage?: string;
   description?: string;
   dataCollectors?: TProjectUser[];
   projectId?: string;
