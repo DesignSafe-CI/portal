@@ -32,18 +32,26 @@ class NcoTtcGrantsManager(object):
 
         self._mttc = MongoTTCHelper(self._ac)
 
-    def ttc_grants(self, facility=None, category=None, sort=None):
+    def ttc_grants(self, params=None):
         """Return ttc grants list."""
         query = {}
 
         #turn facility and category selection into query
-        if facility:
-            query['NheriFacility'] = facility
-        if category:
-            query['Category'] = category
+        if params['facility']:
+            query['NheriFacility'] = params['facility']
+        if params['hazard_type']:
+            query['Hazard'] = params['hazard_type']
+        if params['grant_type']:
+            query['Type'] = params['grant_type']
+        if params['text_search']:
+            query['$or'] = [
+                {'Title': {'$regex': params['text_search']}},
+                {'Abstract': {'$regex': params['text_search']}},
+                {'PiName': {'$regex': params['text_search']}},
+            ]
 
         #get the grants list
-        grants = [grant for grant in self._mttc.get_ttc_grants(query=query,sort=sort)]
+        grants = [grant for grant in self._mttc.get_ttc_grants(query=query,sort=params['sort'])]
         return grants
 
     def ttc_facilities(self):
@@ -51,7 +59,12 @@ class NcoTtcGrantsManager(object):
         facilities = [facility for facility in self._mttc.get_ttc_facilities()]
         return facilities
 
-    def ttc_categories(self):
-        """Return list of categories in ttc_grant_filters collection"""
-        categories = [category for category in self._mttc.get_ttc_categories()]
-        return categories
+    def ttc_hazard_types(self):
+        """Return list of hazard types in ttc_grant collection"""
+        hazard_types = [hazard_type for hazard_type in self._mttc.get_ttc_hazard_types()]
+        return hazard_types
+
+    def ttc_grant_types(self):
+        """return list of grant types in ttc_grant collection"""
+        grant_types = [grant_type for grant_type in self._mttc.get_ttc_grant_types()]
+        return grant_types
