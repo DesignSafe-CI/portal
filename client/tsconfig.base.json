@@ -18,6 +18,7 @@
       "@client/common-components": ["modules/_common_components/src/index.ts"],
       "@client/datafiles": ["modules/datafiles/src/index.ts"],
       "@client/hooks": ["modules/_hooks/src/index.ts"],
+      "@client/reconportal": ["modules/reconportal/src/index.ts"],
       "@client/test-fixtures": ["modules/_test-fixtures/src/index.ts"],
       "@client/workspace": ["modules/workspace/src/index.ts"]
     }

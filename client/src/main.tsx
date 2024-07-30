@@ -5,6 +5,7 @@ import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
+import reconportalRouter from './reconportal/reconportalRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
 
 const queryClient = new QueryClient();
@@ -81,7 +82,7 @@ if (rapidElement) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
-          <div>Recon Portal base element rendered by React</div>
+          <RouterProvider router={reconportalRouter} />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
