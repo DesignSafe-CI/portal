@@ -620,7 +620,6 @@ try:
     from designsafe.settings.external_resource_settings import *
     from designsafe.settings.elasticsearch_settings import *
     from designsafe.settings.rt_settings import *
-    from designsafe.settings.external_resource_secrets import *
     from designsafe.settings.nco_mongo import *
 except ImportError:
     pass
