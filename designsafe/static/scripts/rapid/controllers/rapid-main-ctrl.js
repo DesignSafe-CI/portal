@@ -171,20 +171,6 @@ export default class RapidMainCtrl {
             let ev = _.find(this.events.concat(this.openTopoData), { title: q.event });
             this.select_event(ev);
         }
-        // if (q.event) {
-        //     let ev = null;
-        //     if (this.openTopoData) {
-        //         ev = _.find(this.events.concat(this.openTopoData), (event) => {
-        //             return event.title === q.event || (event.properties && event.properties.name === q.event);
-        //         });
-        //     } else {
-        //         ev = _.find(this.events, { title: q.event });
-        //     }
-    
-        //     if (ev) {
-        //         this.select_event(ev);
-        //     }
-        // }
     }  
 
     resetMapView() {

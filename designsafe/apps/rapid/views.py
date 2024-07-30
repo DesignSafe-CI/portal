@@ -77,13 +77,10 @@ def get_events(request):
 @csrf_exempt
 @require_GET
 def opentopo_data(request):
-    url = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false' #request.GET.get('url')
-
-    if not url:
-        return JsonResponse({'error': 'URL parameter is required'}, status=400)
+    url = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false'
     
     cache_key = f"proxy_response_{url}"
-    cache_timeout = 23 * 60 * 60
+    cache_timeout = 82800  # 23 hours
 
     # Check for cached response
     cached_response = cache.get(cache_key)
@@ -106,43 +103,6 @@ def opentopo_data(request):
         logger.error(f"Error fetching URL {url}: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
-# def proxy_request(request):
-#     url = request.GET.get('url')
-#     if not url:
-#         return JsonResponse({'error': 'URL parameter is required'}, status=400)
-    
-#     cache_key = f"proxy_response_{url}"
-#     cache_timeout = 4 * 60 * 60  # 4 hours in seconds
-
-#     def update_cache(url, cache_key, cache_timeout):
-#         try:
-#             response = requests.get(url)
-#             response.raise_for_status()
-#             new_response_data = response.json()
-#             cache.set(cache_key, new_response_data, cache_timeout)
-#         except requests.RequestException as e:
-#             logger.error(f"Error fetching URL {url}: {str(e)}")
-
-#     # Check for cached response
-#     cached_response = cache.get(cache_key)
-#     if cached_response is not None:
-
-#         logger.debug(f"Cache hit for {cache_key}")
-#         # Spawn a new thread to update the cache
-#         threading.Thread(target=update_cache, args=(url, cache_key, cache_timeout)).start()
-#         return JsonResponse(cached_response, safe=False)
-
-#     # If no cached response, fetch the data and cache it
-#     try:
-#         logger.debug(f"Cache miss for {cache_key}")
-#         response = requests.get(url)
-#         response.raise_for_status()
-#         response_data = response.json()
-#         cache.set(cache_key, response_data, cache_timeout)
-#         logger.debug(f"Cache set for {cache_key}")
-#         return JsonResponse(response_data, safe=False, status=response.status_code)
-#     except requests.RequestException as e:
-#         return JsonResponse({'error': str(e)}, status=500)
 def get_opentopodata_center(request):
     file_path = os.path.join(settings.BASE_DIR, 'designsafe/apps/rapid/opentopography_catalog_of_spatial_boundaries_center_points.geojson')
     
