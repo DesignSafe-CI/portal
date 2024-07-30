@@ -215,11 +215,12 @@ export default class RapidMainCtrl {
         let polygonLayer;
 
         let popupContent = `<b>${properties.name}</b><br>
-                            <b>Dataset Name:</b> ${properties.name}<br>
-                            <b>Data Source:</b> Opentopography <br>
+                            <b>ID:</b> ${properties.id}<br>
                             <b>Products available:</b> ${properties.productAvailable}<br>
+                            <b>Data Source:</b><span class="event-type opentopo"> OpenTopography </span><br>
+                            <b>Date Created:</b> ${properties.dateCreated}<br>
                             <b>Survey date:</b> ${properties.temporalCoverage}<br>
-                            <b>DOI:</b> <a href="${properties.doiUrl}" target="_blank">${properties.doiUrl}</a>`;
+                            <b>DOI:</b> <a href="${properties.doiUrl}" target="_blank"> ${properties.doiUrl}</a>`;
 
         if (geometry.type === 'MultiPolygon') {
             polygonLayer = L.layerGroup();
