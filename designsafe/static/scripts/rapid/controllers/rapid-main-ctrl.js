@@ -192,10 +192,13 @@ export default class RapidMainCtrl {
         let lon = ev.location ? ev.location.lon : ev.geometry.coordinates[0];
         if (ev === this.active_rapid_event) {
             this.reset();
+            this.$location.search('event', null); 
         } else {
             this.map.setView([lat, lon], 8, { animate: true });
             this.active_rapid_event = ev;
-            this.$location.search('event', ev.title || ev.properties && ev.properties.name);
+            if (!ev.properties || ev.properties.host !== 'OpenTopo') {
+                this.$location.search('event', ev.title);
+            }
 
             if (ev.properties && ev.properties.host === 'OpenTopo') {
                 this.RapidDataService.get_opentopo_coordinates(ev.properties.doiUrl).then((data) => {
