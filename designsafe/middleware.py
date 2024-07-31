@@ -88,7 +88,7 @@ class MaintenanceMiddleware:
             return self.get_response(request)
 
         # Allow access behind the maint page for staff members or behind TACC VPN
-        if getattr(request.user, "is_staff") or client_ip.startswith("129.114"):
+        if getattr(request.user, "is_staff") or client_ip.startswith(settings.STAFF_VPN_IP_PREFIX):
             return self.get_response(request)
 
         # Non-staff users see the maint page instead of the page they requested
