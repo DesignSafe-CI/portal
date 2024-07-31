@@ -13,7 +13,7 @@ from django.core.exceptions import MiddlewareNotUsed
 from termsandconditions.middleware import (TermsAndConditionsRedirectMiddleware,
                                            is_path_protected)
 from termsandconditions.models import TermsAndConditions
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 from designsafe.apps.notifications.models import SiteMessage
@@ -71,6 +71,29 @@ class SiteMessageMiddleware(MiddlewareMixin):
         for message in SiteMessage.objects.filter(display=True):
             if settings.SITE_ID == 1:
                 messages.warning(request, message.message)
+
+
+class MaintenanceMiddleware:
+    """Redirect to a maintenance page if the DJANGO_MAINTENANCE setting is toggled."""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+        show_maintenance = getattr(settings, "DJANGO_MAINTENANCE", False)
+        if not show_maintenance:
+            return self.get_response(request)
+
+        # Allow access behind the maint page for staff members
+        if getattr(request.user, "is_staff"):
+            return self.get_response(request)
+
+        if show_maintenance:
+            if not request.path.startswith('/static'):
+                return render(request, 'maintenance.html')
+
+        return self.get_response(request)
 
 
 class RequestProfilingMiddleware(MiddlewareMixin):
