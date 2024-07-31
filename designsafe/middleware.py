@@ -89,9 +89,9 @@ class MaintenanceMiddleware:
         if getattr(request.user, "is_staff"):
             return self.get_response(request)
 
-        if show_maintenance:
-            if not request.path.startswith('/static'):
-                return render(request, 'maintenance.html')
+        # Non-staff users see the maint page instead of the page they requested
+        if not request.path.startswith('/static'):
+            return render(request, 'maintenance.html')
 
         return self.get_response(request)
 
