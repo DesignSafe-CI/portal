@@ -168,7 +168,7 @@ export default class RapidMainCtrl {
     gotoEvent() {
         let q = this.$location.search();
         if (q.event) {
-            let ev = _.find(this.events.concat(this.openTopoData), { title: q.event });
+            let ev = _.find(this.events, { title: q.event });
             this.select_event(ev);
         }
     }  
