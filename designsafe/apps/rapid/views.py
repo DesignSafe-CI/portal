@@ -85,6 +85,7 @@ def get_events(request):
 @require_GET
 def opentopo_data(request):
     url = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false'
+    
     cache_key = f"proxy_response_{url}"
     cache_timeout = 82800  # 23 hours
 
