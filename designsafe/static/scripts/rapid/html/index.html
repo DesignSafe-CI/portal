@@ -1,4 +1,68 @@
 <div id="rapid_main">
+  <div class="text-center" ng-show="!vm.show_filter_options">
+    <span class="filter-options-button" ng-click="vm.show_filter_options=true"> Show filter options </span>
+  </div>
+  <div class="filter-options slide-in" ng-show="vm.show_filter_options">
+    <div class="filter-options recon-portal">
+      <div class="form-group" style="background-color: moccasin;">
+        <input type="checkbox"
+              class="form-control"
+              ng-model="vm.data_source">
+        <label>Recon portal Data</label>
+      </div>
+      
+      <div class="form-group">
+        <label> Event Type </label>
+        <select class="form-control"
+                ng-options="et.display_name for et in vm.event_types track by et.name"
+                ng-change="vm.search()"
+                ng-model="vm.filter_options.event_type"
+                ng-disabled="!vm.data_source"></select>
+      </div>
+      <div class="form-group">
+        <label> Start date </label>
+        <input type="date"
+              class="form-control"
+              ng-model="vm.filter_options.start_date"
+              ng-change="vm.search()"
+              ng-disabled="!vm.data_source">
+      </div>
+      <div class="form-group">
+        <label> End date </label>
+        <input type="date"
+              class="form-control"
+              ng-model="vm.filter_options.end_date"
+              ng-change="vm.search()"
+              ng-disabled="!vm.data_source">
+      </div>
+    </div>
+    <div class="filter-options opentopography">
+      <div class="form-group" style="background-color: moccasin;">
+        <input type="checkbox"
+              class="form-control"
+              ng-model="vm.ot_data_source">
+        <label>OT Data</label>
+      </div>
+      <div class="form-group">
+        <label> Start date </label>
+        <input type="date"
+              class="form-control"
+              ng-model="vm.opentopo_filter_options.ot_start_date"
+              ng-change="vm.search()"
+              ng-disabled="!vm.ot_data_source">
+      </div>
+      <div class="form-group">
+        <label> End date </label>
+        <input type="date"
+              class="form-control"
+              ng-model="vm.opentopo_filter_options.ot_end_date"
+              ng-change="vm.search()"
+              ng-disabled="!vm.ot_data_source">
+      </div>
+    </div>
+    <button class="btn btn-xs btn-info" ng-click="vm.clear_filters()"> Clear </button>
+    <button class="btn btn-xs btn-default" ng-click="vm.show_filter_options=false"> Hide </button>
+  </div>
   <div id="show_sidebar_handle" ng-show="!vm.show_sidebar" ng-click="vm.show_sidebar = !vm.show_sidebar">
     <div class="sidebar-handle"
          uib-tooltip="Expand sidebar"
@@ -31,43 +95,16 @@
               <button class="btn btn-default"> <i role="none" class="fa fa-trash" ng-click="vm.clear_filters()"></i></button>
             </span>
           </div>
-        </div>
-        <div class="text-center" ng-show="!vm.show_filter_options">
-          <span class="filter-options-button" ng-click="vm.show_filter_options=true"> Show filter options </span>
-        </div>
-        <div class="filter-options slide-in" ng-show="vm.show_filter_options">
-          <div class="form-group">
-            <label> Event Type </label>
-            <select class="form-control"
-                    ng-options="et.display_name for et in vm.event_types track by et.name"
-                    ng-change="vm.search()"
-                    ng-model="vm.filter_options.event_type"></select>
-          </div>
-          <div class="form-group">
-            <label> Start date </label>
-            <input type="date"
-                   class="form-control"
-                   ng-model="vm.filter_options.start_date"
-                   ng-change="vm.search()">
-          </div>
-          <div class="form-group">
-            <label> End date </label>
-            <input type="date"
-                   class="form-control"
-                   ng-model="vm.filter_options.end_date"
-                   ng-change="vm.search()">
-          </div>
-          <button class="btn btn-xs btn-info" ng-click="vm.clear_filters()"> Clear </button>
-          <button class="btn btn-xs btn-default" ng-click="vm.show_filter_options=false"> Hide </button>
-        </div>
+        </div> 
       </div>
       <div ng-show="!vm.active_rapid_event" class="event-results sb-row">
         <div ng-show="vm.filtered_events" class="">
-          <event-listing ng-repeat="event in vm.filtered_events" event=event ng-click="vm.select_event(event)"></event-listing>
+          <event-listing ng-show="vm.data_source" ng-repeat="event in vm.filtered_events" event=event ng-click="vm.select_event(event)"></event-listing>
+          <event-listing ng-show="vm.ot_data_source" ng-repeat="event in vm.opentopo_filtered_events" event=event ng-click="vm.select_event(event)"></event-listing>
         </div>
         <div ng-show="!vm.filtered_events" class="">
-          <event-listing ng-repeat="event in vm.events" event=event ng-click="vm.select_event(event)"></event-listing>
-          <event-listing ng-repeat="event in vm.openTopoData" event=event ng-click="vm.select_event(event)"></event-listing>
+          <event-listing ng-show="vm.data_source" ng-repeat="event in vm.events" event=event ng-click="vm.select_event(event)"></event-listing>
+          <event-listing ng-show="vm.ot_data_source" ng-repeat="event in vm.openTopoData" event=event ng-click="vm.select_event(event)"></event-listing>
         </div>
       </div>
     </div>

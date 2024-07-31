@@ -90,7 +90,7 @@ body {
   width: 25%;
   max-width: 28rem;
   position: absolute;
-  top: 0px;
+  /*top: 0px;*/
   /*height: calc(100vh - 50px);*/
   /*height:100vh;*/
   height: 100%;
@@ -279,6 +279,7 @@ body {
 
 .filter-options {
   padding: 5px;
+  display: flex;
 }
 
 .filter-options-button {
