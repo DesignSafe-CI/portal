@@ -7,6 +7,7 @@ export default class RapidMainCtrl {
         this.RapidDataService = RapidDataService;
         this.show_sidebar = true;
         this.filter_options = {};
+        this.opentopo_filter_options = {};
         this.active_rapid_event = null;
         this.active_polygon = null;
         this.$location = $location;
@@ -252,6 +253,7 @@ export default class RapidMainCtrl {
 
     clear_filters() {
         this.filter_options = {};
+        this.opentopo_filter_options = {};
         this.search();
     }
 }

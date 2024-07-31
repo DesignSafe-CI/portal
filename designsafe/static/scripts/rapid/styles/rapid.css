@@ -280,6 +280,10 @@ body {
 .filter-options {
   padding: 5px;
   display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 .filter-options-button {
@@ -293,6 +297,14 @@ body {
   border-radius: 0px;
 }
 
+.recon-portal,
+.opentopography{
+  flex: 1 1 50%;
+  width: 50%;
+  justify-content: space-around;
+  border: 2px solid #d4991b;
+}
+
 .rapid-popup .leaflet-popup-content-wrapper {
   border-radius: 0px;
 }
@@ -300,6 +312,26 @@ body {
 .form-group.required .control-label:after{
   content:"*";
   color:red;
+}
+
+.form-group{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.data_source{
+  background-color: moccasin;
+  display: flex;
+  white-space: nowrap;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+}
+
+.clear-btn,
+.hide-btn{
+  width: 25%;
+  height :40px;
 }
 
 .recon-event-details {

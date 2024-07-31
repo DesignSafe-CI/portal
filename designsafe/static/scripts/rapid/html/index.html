@@ -4,7 +4,7 @@
   </div>
   <div class="filter-options slide-in" ng-show="vm.show_filter_options">
     <div class="filter-options recon-portal">
-      <div class="form-group" style="background-color: moccasin;">
+      <div class="form-group data_source">
         <input type="checkbox"
               class="form-control"
               ng-model="vm.data_source">
@@ -37,11 +37,18 @@
       </div>
     </div>
     <div class="filter-options opentopography">
-      <div class="form-group" style="background-color: moccasin;">
+      <div class="form-group data_source">
         <input type="checkbox"
               class="form-control"
               ng-model="vm.ot_data_source">
-        <label>OT Data</label>
+        <label>OpenTopography Data</label>
+      </div>
+      <div class="form-group">
+        <label> Key word search </label>
+        <select class="form-control"
+                ng-change="vm.search()"
+                ng-model="vm.opentopo_filter_options.keyword"
+                ng-disabled="!vm.ot_data_source"></select>
       </div>
       <div class="form-group">
         <label> Start date </label>
@@ -60,8 +67,8 @@
               ng-disabled="!vm.ot_data_source">
       </div>
     </div>
-    <button class="btn btn-xs btn-info" ng-click="vm.clear_filters()"> Clear </button>
-    <button class="btn btn-xs btn-default" ng-click="vm.show_filter_options=false"> Hide </button>
+    <button class="btn btn-xs btn-info clear-btn" ng-click="vm.clear_filters()"> Clear </button>
+    <button class="btn btn-xs btn-default hide-btn" ng-click="vm.show_filter_options=false"> Hide </button>
   </div>
   <div id="show_sidebar_handle" ng-show="!vm.show_sidebar" ng-click="vm.show_sidebar = !vm.show_sidebar">
     <div class="sidebar-handle"
