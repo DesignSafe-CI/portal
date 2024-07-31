@@ -168,7 +168,7 @@ export default class RapidMainCtrl {
     gotoEvent() {
         let q = this.$location.search();
         if (q.event) {
-            let ev = _.find(this.events.concat(this.openTopoData), { title: q.event });
+            let ev = _.find(this.events, { title: q.event });
             this.select_event(ev);
         }
     }  
@@ -245,8 +245,8 @@ export default class RapidMainCtrl {
     }
 
     search() {
-        if (!this.events || !this.openTopoData) return;
-        this.filtered_events = this.RapidDataService.search(this.events.concat(this.openTopoData), this.filter_options);
+        if (!this.events) return;
+        this.filtered_events = this.RapidDataService.search(this.events, this.filter_options);
     }
 
     clear_filters() {
