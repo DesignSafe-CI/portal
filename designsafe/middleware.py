@@ -17,6 +17,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 from designsafe.apps.notifications.models import SiteMessage
+from designsafe.apps.api.utils import get_client_ip
 
 logger = logging.getLogger(__name__)
 
@@ -82,11 +83,12 @@ class MaintenanceMiddleware:
         # Code to be executed for each request before
         # the view (and later middleware) are called.
         show_maintenance = getattr(settings, "DJANGO_MAINTENANCE", False)
+        client_ip = get_client_ip(request)
         if not show_maintenance:
             return self.get_response(request)
 
-        # Allow access behind the maint page for staff members
-        if getattr(request.user, "is_staff"):
+        # Allow access behind the maint page for staff members or behind TACC VPN
+        if getattr(request.user, "is_staff") or client_ip.startswith("129.114"):
             return self.get_response(request)
 
         # Non-staff users see the maint page instead of the page they requested
