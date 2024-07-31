@@ -216,6 +216,9 @@ body {
 .event-listing.tornado {
   border-left: 5px solid #9100ff;
 }
+.event-listing.openTopoData {
+  border-left: 5px solid #a8bb2f;
+}
 
 .event-listing .event-type.earthquake {
   background-color: #e46e28;
@@ -234,6 +237,9 @@ body {
 }
 .event-listing  .event-type.tornado {
   background-color: #9100ff;
+}
+.event-listing  .event-type.openTopoData {
+  background-color: #a8bb2f;
 }
 
 
@@ -297,4 +303,47 @@ body {
 
 .recon-event-details {
   overflow-y: scroll;
+}
+
+/* Event type colors */
+.event-type.earthquake {
+  background-color: #e46e28;
+}
+
+.event-type.flood {
+  background-color: #4285F4;
+}
+
+.event-type.tsunami {
+  background-color: #a765fe;
+}
+
+.event-type.landslide {
+  background-color: #62a241;
+}
+
+.event-type.hurricane {
+  background-color: #d34141;
+}
+
+.event-type.tornado {
+  background-color: #9100ff;
+}
+
+.event-type.opentopo {
+  background-color: #a8bb2f;
+}
+
+.event-type.designsafe {
+  background-color: #548cc8;
+}
+/* Popup styles */
+.rapid-popup .leaflet-popup-content-wrapper {
+  border-radius: 0px;
+}
+
+.rapid-popup .event-date {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 3px;
 }

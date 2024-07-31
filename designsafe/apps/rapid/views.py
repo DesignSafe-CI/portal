@@ -19,6 +19,12 @@ from tapipy.tapis import Tapis
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
+from django.core.cache import cache
+import threading
 
 logger = logging.getLogger(__name__)
 metrics_logger = logging.getLogger('metrics')
@@ -74,6 +80,35 @@ def get_events(request):
     total = s.count()
     out = [h.to_dict() for h in s[0:total]]
     return JsonResponse(out, safe=False)
+
+@csrf_exempt
+@require_GET
+def opentopo_data(request):
+    url = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false'
+    
+    cache_key = f"proxy_response_{url}"
+    cache_timeout = 82800  # 23 hours
+
+    # Check for cached response
+    cached_response = cache.get(cache_key)
+    if cached_response is not None:
+        logger.debug(f"Cache hit for {cache_key}")
+        return JsonResponse(cached_response, safe=False)
+
+    try:
+        logger.debug(f"Cache miss for {cache_key}")
+        response = requests.get(url)
+        response.raise_for_status()
+        response_data = response.json()
+
+        # Cache the response
+        cache.set(cache_key, response_data, cache_timeout)
+        logger.debug(f"Cache set for {cache_key}")
+
+        return JsonResponse(response_data, safe=False, status=response.status_code)
+    except requests.RequestException as e:
+        logger.error(f"Error fetching URL {url}: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 def get_opentopodata_center(request):
     client = Tapis(

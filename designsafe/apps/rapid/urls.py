@@ -1,4 +1,4 @@
-from django.urls import include, re_path as url
+from django.urls import include, re_path as url, path
 from django.urls import reverse
 from designsafe.apps.rapid import views
 
@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^admin/events/(?P<event_id>[-\w]+)/add-dataset/$', views.admin_event_add_dataset, name="admin_event_add_dataset"),
     url(r'^admin/events/(?P<event_id>[-\w]+)/(?P<dataset_id>[-\w]+)/$', views.admin_event_edit_dataset, name="admin_event_edit_dataset"),
     url(r'^admin/events/(?P<event_id>[-\w]+)/(?P<dataset_id>[-\w]+)/delete$', views.admin_event_delete_dataset, name="admin_event_delete_dataset"),
+    url(r'^opentopo/', views.opentopo_data, name='proxy_request'),
     url(r'^.*$', views.index, name='index'),
 
 ]
