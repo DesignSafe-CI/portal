@@ -7,6 +7,7 @@ export default class RapidMainCtrl {
         this.RapidDataService = RapidDataService;
         this.show_sidebar = true;
         this.filter_options = {};
+        this.opentopo_filter_options = {};
         this.active_rapid_event = null;
         this.active_polygon = null;
         this.$location = $location;
@@ -188,6 +189,7 @@ export default class RapidMainCtrl {
 
     select_event(ev) {
         this.show_sidebar = true;
+        this.show_filter_options = false;
         let lat = ev.location ? ev.location.lat : ev.geometry.coordinates[1];
         let lon = ev.location ? ev.location.lon : ev.geometry.coordinates[0];
         if (ev === this.active_rapid_event) {
@@ -245,12 +247,14 @@ export default class RapidMainCtrl {
     }
 
     search() {
-        if (!this.events) return;
+        if (!this.events || !this.openTopoData) return;
         this.filtered_events = this.RapidDataService.search(this.events, this.filter_options);
+        this.filtered_openTopoData = this.RapidDataService.searchOT(this.openTopoData, this.opentopo_filter_options, this.filter_options);
     }
 
     clear_filters() {
         this.filter_options = {};
+        this.opentopo_filter_options = {};
         this.search();
     }
 }
