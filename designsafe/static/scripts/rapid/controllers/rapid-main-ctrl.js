@@ -189,6 +189,7 @@ export default class RapidMainCtrl {
 
     select_event(ev) {
         this.show_sidebar = true;
+        this.show_filter_options = false;
         let lat = ev.location ? ev.location.lat : ev.geometry.coordinates[1];
         let lon = ev.location ? ev.location.lon : ev.geometry.coordinates[0];
         if (ev === this.active_rapid_event) {
