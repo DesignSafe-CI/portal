@@ -128,6 +128,7 @@ def ingest_graphs():
 def fix_authors(meta: ProjectMetadata):
     """Ensure that authors contain complete name/institution information."""
     base_project = meta.base_project
+
     def get_complete_author(partial_author):
         if partial_author.get("name") and not partial_author.get("guest"):
             author_info = next(
@@ -163,6 +164,15 @@ def fix_authors(meta: ProjectMetadata):
     meta.save()
 
 
+def fix_modified_dates():
+    """Set last_updated time to match existing metadata"""
+    name = "designsafe.project"
+    for project_meta in iterate_entities(name):
+        ProjectMetadata.objects.filter(uuid=project_meta["uuid"]).update(
+            last_updated=project_meta["lastUpdated"]
+        )
+
+
 def ingest_v2_projects():
     """Perform a complete ingest of Tapis V2 projects into the db."""
     ingest_base_projects()
@@ -170,6 +180,7 @@ def ingest_v2_projects():
     ingest_graphs()
     for meta in ProjectMetadata.objects.exclude(name="designsafe.project.graph"):
         fix_authors(meta)
+    fix_modified_dates()
 
 
 def ingest_publications():

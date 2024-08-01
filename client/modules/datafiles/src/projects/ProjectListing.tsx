@@ -1,5 +1,5 @@
 import { TBaseProject, useProjectListing } from '@client/hooks';
-import { Table, TableColumnsType } from 'antd';
+import { Alert, Table, TableColumnsType } from 'antd';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ const columns: TableColumnsType<TBaseProject> = [
   {
     render: (_, record) => {
       const pi = record.value.users.find((u) => u.role === 'pi');
-      return `${pi?.fname} ${pi?.lname}`;
+      return `${pi?.fname ?? '(N/A)'} ${pi?.lname ?? ''}`;
     },
     title: 'Principal Investigator',
   },
@@ -32,7 +32,7 @@ const columns: TableColumnsType<TBaseProject> = [
 export const ProjectListing: React.FC = () => {
   const limit = 100;
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const { data, isLoading } = useProjectListing(currentPage, limit);
+  const { data, isLoading, error } = useProjectListing(currentPage, limit);
 
   return (
     <Table
@@ -49,6 +49,35 @@ export const ProjectListing: React.FC = () => {
         pageSize: 100,
         hideOnSinglePage: true,
         onChange: (page) => setCurrentPage(page),
+      }}
+      locale={{
+        emptyText: isLoading ? (
+          <div style={{ padding: '50px' }}>&nbsp;</div>
+        ) : (
+          <>
+            {error && (
+              <Alert
+                showIcon
+                type="error"
+                description={
+                  <span>There was an error retrieving your projects."</span>
+                }
+              />
+            )}
+            {!error && (
+              <Alert
+                showIcon
+                type="info"
+                description={
+                  <span>
+                    No projects found. You can create a project by clicking
+                    "Add" in the left-hand sidebar and selecting "New Project".
+                  </span>
+                }
+              />
+            )}
+          </>
+        ),
       }}
     ></Table>
   );
