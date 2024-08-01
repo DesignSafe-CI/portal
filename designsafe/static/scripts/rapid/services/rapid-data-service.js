@@ -169,4 +169,38 @@ export default class RapidDataService {
     });
     return tmp;
   }
+
+  searchOT(events, opentopo_filter_options, filter_options) {
+    let tmp = _.filter(events, (item) => {
+      let f1 = true;
+      if (filter_options.search_text) {
+        f1 =
+          item.properties.name
+            .toLowerCase()
+            .indexOf(filter_options.search_text.toLowerCase()) !== -1;
+      }
+      let f2 = true;
+      if (opentopo_filter_options.keyword) {
+        f2 = 
+            item.properties.keywords.split(',')
+            .some(keyword => keyword.trim()
+            .toLowerCase()
+            .startsWith(opentopo_filter_options.keyword.toLowerCase())
+            );  
+      }
+      const temporalCoverage = item.properties.temporalCoverage.split("/");
+      const startDate = new Date(temporalCoverage[0]);
+      const endDate = new Date(temporalCoverage[1] ? temporalCoverage[1] : startDate);
+      let f3 = true;
+      if (opentopo_filter_options.ot_start_date) {
+        f3 = startDate > opentopo_filter_options.ot_start_date;
+      }
+      let f4 = true;
+      if (opentopo_filter_options.ot_end_date) {
+        f4 = endDate < opentopo_filter_options.ot_end_date;
+      }
+      return f1 && f2 && f3 && f4;
+    });
+    return tmp;
+  }
 }

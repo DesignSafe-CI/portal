@@ -248,7 +248,7 @@ export default class RapidMainCtrl {
     search() {
         if (!this.events || !this.openTopoData) return;
         this.filtered_events = this.RapidDataService.search(this.events, this.filter_options);
-        this.filtered_openTopoData = this.RapidDataService.search(this.openTopoData, this.opentopo_filter_options);
+        this.filtered_openTopoData = this.RapidDataService.searchOT(this.openTopoData, this.opentopo_filter_options, this.filter_options);
     }
 
     clear_filters() {

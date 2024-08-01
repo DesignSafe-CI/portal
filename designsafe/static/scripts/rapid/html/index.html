@@ -45,10 +45,11 @@
       </div>
       <div class="form-group">
         <label> Key word search </label>
-        <select class="form-control"
-                ng-change="vm.search()"
-                ng-model="vm.opentopo_filter_options.keyword"
-                ng-disabled="!vm.ot_data_source"></select>
+        <input type="text" 
+              class="form-control" 
+              ng-model="vm.opentopo_filter_options.keyword" 
+              ng-change="vm.search()"
+              ng-disabled="!vm.ot_data_source"></input>
       </div>
       <div class="form-group">
         <label> Start date </label>
@@ -107,7 +108,7 @@
       <div ng-show="!vm.active_rapid_event" class="event-results sb-row">
         <div ng-show="vm.filtered_events" class="">
           <event-listing ng-show="vm.data_source" ng-repeat="event in vm.filtered_events" event=event ng-click="vm.select_event(event)"></event-listing>
-          <event-listing ng-show="vm.ot_data_source" ng-repeat="event in vm.opentopo_filtered_events" event=event ng-click="vm.select_event(event)"></event-listing>
+          <event-listing ng-show="vm.ot_data_source" ng-repeat="event in vm.filtered_openTopoData" event=event ng-click="vm.select_event(event)"></event-listing>
         </div>
         <div ng-show="!vm.filtered_events" class="">
           <event-listing ng-show="vm.data_source" ng-repeat="event in vm.events" event=event ng-click="vm.select_event(event)"></event-listing>
