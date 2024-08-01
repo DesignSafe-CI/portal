@@ -334,6 +334,30 @@ body {
   height :40px;
 }
 
+.info-icon {
+  cursor: pointer;
+  font-size: 12px;
+  font-style: italic;
+  color: #666;
+  top: -5px;
+  position: relative;
+}
+
+.info-icon::after {
+  content: attr(data-tooltip);
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 5px;
+  width: 200px;
+  top:-80px;
+}
+
+.info-icon:hover::after {
+  display: block;
+}
+
 .recon-event-details {
   overflow-y: scroll;
 }

@@ -17,7 +17,8 @@
                 ng-options="et.display_name for et in vm.event_types track by et.name"
                 ng-change="vm.search()"
                 ng-model="vm.filter_options.event_type"
-                ng-disabled="!vm.data_source"></select>
+                ng-disabled="!vm.data_source"
+                title="Select the data source to enable filters"></select>
       </div>
       <div class="form-group">
         <label> Start date </label>
@@ -25,7 +26,8 @@
               class="form-control"
               ng-model="vm.filter_options.start_date"
               ng-change="vm.search()"
-              ng-disabled="!vm.data_source">
+              ng-disabled="!vm.data_source"
+              title="Select the data source to enable filters">
       </div>
       <div class="form-group">
         <label> End date </label>
@@ -33,7 +35,8 @@
               class="form-control"
               ng-model="vm.filter_options.end_date"
               ng-change="vm.search()"
-              ng-disabled="!vm.data_source">
+              ng-disabled="!vm.data_source"
+              title="Select the data source to enable filters">
       </div>
     </div>
     <div class="filter-options opentopography">
@@ -44,12 +47,13 @@
         <label>OpenTopography Data</label>
       </div>
       <div class="form-group">
-        <label> Key word search </label>
+        <label> Key word search<span class="info-icon" data-tooltip="Keywords typically include: title terms, location details, type of events, index terms associated with the datasets"> (i)</span></label> </label>
         <input type="text" 
               class="form-control" 
               ng-model="vm.opentopo_filter_options.keyword" 
               ng-change="vm.search()"
-              ng-disabled="!vm.ot_data_source"></input>
+              ng-disabled="!vm.ot_data_source"
+              title="Select the data source to enable filters"></input>
       </div>
       <div class="form-group">
         <label> Start date </label>
@@ -57,7 +61,8 @@
               class="form-control"
               ng-model="vm.opentopo_filter_options.ot_start_date"
               ng-change="vm.search()"
-              ng-disabled="!vm.ot_data_source">
+              ng-disabled="!vm.ot_data_source"
+              title="Select the data source to enable filters">
       </div>
       <div class="form-group">
         <label> End date </label>
@@ -65,7 +70,8 @@
               class="form-control"
               ng-model="vm.opentopo_filter_options.ot_end_date"
               ng-change="vm.search()"
-              ng-disabled="!vm.ot_data_source">
+              ng-disabled="!vm.ot_data_source"
+              title="Select the data source to enable filters">
       </div>
     </div>
     <button class="btn btn-xs btn-info clear-btn" ng-click="vm.clear_filters()"> Clear </button>
