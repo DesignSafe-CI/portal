@@ -321,7 +321,7 @@ class AppsTrayView(AuthenticatedApiView):
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(enabled.eq.true)",
+            search="(enabled.eq.true)~(version.like.*)",
             listType="MINE",
             limit=-1,
         )
@@ -352,7 +352,7 @@ class AppsTrayView(AuthenticatedApiView):
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(enabled.eq.true)",
+            search="(enabled.eq.true)~(version.like.*)",
             listType="SHARED_PUBLIC",
             limit=-1,
         )
