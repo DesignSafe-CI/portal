@@ -1,4 +1,49 @@
-.root {
-  color: #cc723e;
-  font-size: 16px;
+.event-listing {
+  border-bottom: 1px solid #d3d3d3;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.event-listing:hover {
+  background-color: #f3f3f3;
+}
+
+.event-title {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: #5e5e5e;
+}
+
+.event-date,
+.event-type {
+  background: #777;
+  color: #fff;
+  border-radius: 1px;
+  padding: 2px 5px;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.event-type.earthquake { background-color: #e46e28; }
+.event-type.flood { background-color: #4285F4; }
+.event-type.tsunami { background-color: #a765fe; }
+.event-type.landslide { background-color: #62a241; }
+.event-type.hurricane { background-color: #d34141; }
+.event-type.tornado { background-color: #9100ff; }
+.event-type.opentopo { background-color: #a8bb2f; }
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left,
+.right {
+  flex: 1;
+}
+
+.event-dataset {
+  list-style: none;
 }
