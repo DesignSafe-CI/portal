@@ -1,12 +1,24 @@
 """Utils for constructing Fedora metadata definitions from publications"""
 
+import os
 import urllib
 import networkx as nx
-
+from fido.fido import Fido
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING, PATH_SLUGS
 from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
 from designsafe.apps.api.projects_v2 import constants
+from designsafe.libs.fedora.fedora_operations import (
+    create_fc_version,
+    upload_manifest,
+    fedora_post,
+    fedora_update,
+    get_sha1_hash,
+    get_fido_output,
+    get_child_paths,
+    generate_manifest,
+    PUBLICATIONS_MOUNT_ROOT,
+)
 
 prov_predecessor_mapping = {
     # Experimental
@@ -257,6 +269,7 @@ def get_fedora_json(project_id: str, version: int = 1):
     base_project_mapping = get_project_root_mapping(
         project_id, version, pub_tree, pub_tree.nodes["NODE_ROOT"]
     )
+    base_project_mapping["fedora_mapping"]["available"] = str(pub.created)
 
     fedora_json_mappings.append(base_project_mapping)
 
@@ -297,3 +310,74 @@ def get_fedora_json(project_id: str, version: int = 1):
                 }
             )
     return fedora_json_mappings
+
+
+def generate_manifest_other(project_id, version=1):
+    """Generate the file manifest for an Other-type project"""
+    fido_client = Fido()
+    pub = Publication.objects.get(project_id=project_id)
+    uuid = pub.tree.nodes[0]["uuid"]
+    file_tags = pub.value.get("fileTags", [])
+
+    if version and version > 1:
+        project_id = f"{project_id}v{str(version)}"
+    manifest = []
+    archive_path = PUBLICATIONS_MOUNT_ROOT
+
+    for path in get_child_paths(archive_path):
+
+        tags = [
+            tag
+            for tag in file_tags
+            if tag["path"].strip("/") == os.path.relpath(path, archive_path).strip("/")
+        ]
+
+        manifest.append(
+            {
+                "parent_entity": uuid,
+                "corral_path": path,
+                "checksum": get_sha1_hash(path),
+                "tags": [t["tagName"] for t in tags],
+                "ffi": get_fido_output(fido_client, path),
+            }
+        )
+
+    return manifest
+
+
+def ingest_pub_fedora(project_id: str, version: int = 1, amend: bool = False):
+    """
+    Ingest a project into Fedora by creating a record in the repo, updating it
+    with the published metadata, and uploading its file manifest.
+    """
+    pub_meta = Publication.objects.get(project_id=project_id)
+    project_type = pub_meta.value.get("projectType", "other")
+
+    if project_type == "other":
+        container_path = project_id
+        if version and version > 1:
+            container_path = f"{container_path}v{version}"
+        fedora_post(container_path)
+        project_meta = get_fedora_json(project_id, version=version)[0]
+        if amend:
+            create_fc_version(project_meta["container_path"])
+        fedora_update(project_meta["container_path"], project_meta["fedora_mapping"])
+        if not amend:
+            manifest = generate_manifest_other(project_id, version)
+            upload_manifest(manifest, project_id, version=version)
+
+    else:
+        container_path = project_id
+        if version and version > 1:
+            container_path = f"{container_path}v{version}"
+
+        walk_result = get_fedora_json(project_id, version=version)
+        for entity in walk_result:
+            if amend:
+                create_fc_version(entity["container_path"])
+            fedora_post(entity["container_path"])
+            fedora_update(entity["container_path"], entity["fedora_mapping"])
+
+        if not amend:
+            manifest = generate_manifest(walk_result, project_id, version)
+            upload_manifest(manifest, project_id, version)

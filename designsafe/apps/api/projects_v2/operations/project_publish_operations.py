@@ -24,6 +24,7 @@ from designsafe.apps.api.projects_v2.operations.project_archive_operations impor
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
+from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
 
 logger = logging.getLogger(__name__)
 
@@ -491,6 +492,9 @@ def publish_project(
         archive_publication_async.apply_async(
             args=[project_id, version], queue="default"
         )
+        ingest_pub_fedora_async.apply_async(
+            args=[project_id, version, True], queue="default"
+        )
 
     return pub_metadata
 
@@ -562,6 +566,11 @@ def amend_publication(project_id: str):
 
     # Index publication in Elasticsearch
     index_publication(project_id)
+
+    if not settings.DEBUG:
+        ingest_pub_fedora_async.apply_async(
+            args=[project_id, latest_version, True], queue="default"
+        )
 
 
 @shared_task
