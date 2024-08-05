@@ -767,3 +767,8 @@ TICKET_CATEGORIES = (
     ('LOGIN', 'Login/Registration'),
     ('OTHER', 'Other'),
 )
+
+FEDORA_URL = ''
+FEDORA_USERNAME = ''
+FEDORA_PASSWORD = ''
+FEDORA_CONTAINER= 'designsafe-publications-dev'
