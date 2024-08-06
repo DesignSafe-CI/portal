@@ -5,6 +5,7 @@ import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
+import reconportalRouter from './reconportal/reconportalRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
 
 const queryClient = new QueryClient();
@@ -68,6 +69,20 @@ if (datafilesElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={datafilesRouter} />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
+const rapidElement = document.getElementById('rapid-root');
+if (rapidElement) {
+  const rapidRoot = ReactDOM.createRoot(rapidElement as HTMLElement);
+  rapidRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <RouterProvider router={reconportalRouter} />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
