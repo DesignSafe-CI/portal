@@ -705,5 +705,6 @@ FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
 FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')
 
 CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('SESSION_COOKIE_DOMAIN')}"]
+WEBHOOK_POST_URL = os.environ.get('WEBHOOK_POST_URL', '')
 
 STAFF_VPN_IP_PREFIX = os.environ.get("STAFF_VPN_IP_PREFIX", "129.114")
