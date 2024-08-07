@@ -325,7 +325,6 @@ def generate_manifest_other(project_id, version=1):
     archive_path = PUBLICATIONS_MOUNT_ROOT
 
     for path in get_child_paths(archive_path):
-
         tags = [
             tag
             for tag in file_tags
