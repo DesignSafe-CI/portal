@@ -25,10 +25,7 @@ class NcoTtcGrantsManager(object):
         :param user: Django user instance.
         """
         self.user = user
-        if user.is_authenticated:
-            self._ac = user.agave_oauth.client
-        else:
-            self._ac = service_account()
+        self._ac = service_account()
 
         self._mttc = MongoTTCHelper(self._ac)
 
