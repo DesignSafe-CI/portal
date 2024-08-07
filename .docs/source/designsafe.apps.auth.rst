@@ -28,14 +28,6 @@ designsafe.apps.auth.backends module
     :undoc-members:
     :show-inheritance:
 
-designsafe.apps.auth.context_processors module
-----------------------------------------------
-
-.. automodule:: designsafe.apps.auth.context_processors
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 designsafe.apps.auth.middleware module
 --------------------------------------
 

@@ -24,7 +24,7 @@ export function useFileListingRouteParams() {
     api,
     scheme,
     system: system ?? '',
-    path: encodeURIComponent(path ?? ''),
+    path: path ?? '',
   };
 }
 

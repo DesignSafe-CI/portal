@@ -1,8 +1,8 @@
 
-from future.utils import python_2_unicode_compatible
+
 import logging
 
-@python_2_unicode_compatible
+
 class BaseESResource(object):
     """Base class used to represent an Elastic Search resource.
 
@@ -14,7 +14,7 @@ class BaseESResource(object):
     """
     def __init__(self, wrapped_doc=None, **kwargs):
         self._wrap(wrapped_doc, **kwargs)
-        
+
     def to_dict(self):
         """Return wrapped doc as dict"""
         return self._wrapped.to_dict()
@@ -32,7 +32,7 @@ class BaseESResource(object):
         """
         _wrapped = object.__getattribute__(self, '_wrapped')
         if _wrapped and hasattr(_wrapped, name):
-            return getattr(_wrapped, name) 
+            return getattr(_wrapped, name)
         else:
             return object.__getattribute__(self, name)
 

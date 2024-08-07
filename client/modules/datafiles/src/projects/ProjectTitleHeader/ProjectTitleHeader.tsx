@@ -17,6 +17,7 @@ export const ProjectTitleHeader: React.FC<{ projectId: string }> = ({
         {baseProject.value.projectId} |{' '}
         <span style={{ fontWeight: 'normal' }}>{baseProject.value.title}</span>
       </h3>
+
       <BaseProjectUpdateModal projectId={projectId}>
         {({ onClick }) => (
           <Button onClick={onClick} type="link">

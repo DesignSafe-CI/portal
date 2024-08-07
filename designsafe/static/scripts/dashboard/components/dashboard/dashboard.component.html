@@ -1,5 +1,5 @@
 <div class="row dashboard-top">
-    <div class="col-sm-3">
+    <!-- <div class="col-sm-3">
         <div class="dashboard-stat blue">
             <div class="visual">
                 <i role="none" class="fa fa-rocket"></i>
@@ -20,8 +20,8 @@
                 <div class="desc">Available Apps</div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-3">
+    </div> -->
+    <div class="col-sm-6">
         <div class="dashboard-stat red">
             <div class="visual">
                 <i role="none" class="fa fa-database"></i>
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="col-sm-3">
+    <div class="col-sm-6">
         <div> <span> Quick Links </span> </div>
         <div><a href="/account"> Manage Account </a> </div>
         <div> <a href="/data/browser"> Data Depot </a> </div>
@@ -47,7 +47,7 @@
 
 <div class="row dashboard-bottom">
 
-    <div class="col-sm-9">
+    <!-- <div class="col-sm-9">
         <div class="panel panel-default">
             <div class="panel-heading dashboard">
                 <h3 class="panel-title">My Jobs</h3>
@@ -78,10 +78,27 @@
                 </li>
             </ul>
         </div>
+    </div> -->
+
+
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix dashboard">
+                <h3 class="panel-title pull-left">My Tickets</h3>
+                <a class="button btn-xs btn-primary pull-right" href="/help/tickets"> Create New </a>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="ticket in $ctrl.my_tickets">
+                    <a ng-href="/help/tickets/{{ ticket.id }}"> {{ticket.id}} </a> {{ticket.Subject}}
+                </li>
+            </ul>
+
+            <div ng-show="$ctrl.loading_tickets" class="text-center">
+                <i role="none" class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
+            </div>
+        </div>
     </div>
-
-
-    <div class="col-sm-3">
+    <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-heading dashboard">
                 <h3 class="panel-title">Notifications <span class="badge badge-danger"> {{$ctrl.notification_count}} </span></h3>
@@ -104,23 +121,8 @@
             </ul>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading clearfix dashboard">
-                <h3 class="panel-title pull-left">My Tickets</h3>
-                <a class="button btn-xs btn-primary pull-right" href="/help/tickets"> Create New </a>
-            </div>
-            <ul class="list-group">
-                <li class="list-group-item" ng-repeat="ticket in $ctrl.my_tickets">
-                    <a ng-href="/help/tickets/{{ ticket.id }}"> {{ticket.id}} </a> {{ticket.Subject}}
-                </li>
-            </ul>
 
-            <div ng-show="$ctrl.loading_tickets" class="text-center">
-                <i role="none" class="fa fa-spinner fa-pulse fa-2x fa-fw"></i>
-            </div>
-        </div>
-
-        <div class="panel panel-default">
+        <!-- <div class="panel panel-default">
             <div class="panel-heading dashboard">
                 <h3 class="panel-title">Recent Apps</h3>
             </div>
@@ -133,7 +135,7 @@
                     <a href="/rw/workspace"> Tools & Applications </a>
                 </li>
             </ul>
-        </div>
+        </div> -->
     </div>
 </div>
 

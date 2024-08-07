@@ -1,6 +1,7 @@
 """Utilities to update the database with existing project file associations"""
 
 import json
+import os
 from typing import Iterator
 import requests
 from urllib3.util import Retry
@@ -8,7 +9,7 @@ from requests import Session
 from requests.exceptions import RetryError
 from requests.adapters import HTTPAdapter
 from django.conf import settings
-from designsafe.apps.api.agave import service_account
+from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
 from designsafe.apps.api.projects_v2.schema_models._field_models import FileObj
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
@@ -98,7 +99,7 @@ def get_files_for_entity(
                 file_meta = resp.json()["result"][0]
                 entity_file_objs.append(
                     FileObj(
-                        name=file_meta["name"],
+                        name=os.path.basename(file_meta["path"]),
                         system=file_meta["system"],
                         path=file_meta["path"],
                         type=file_meta["type"],

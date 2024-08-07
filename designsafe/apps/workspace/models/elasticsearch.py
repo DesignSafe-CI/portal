@@ -1,5 +1,5 @@
 
-from future.utils import python_2_unicode_compatible
+
 import logging
 import json
 from django.conf import settings
@@ -12,13 +12,14 @@ from elasticsearch_dsl import (Search, DocType, Date, Nested,
 from elasticsearch_dsl.query import Q
 from elasticsearch import TransportError
 from designsafe.libs.elasticsearch.analyzers import path_analyzer
+from designsafe.libs.elasticsearch.utils import get_sha256_hash, new_es_client
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
-@python_2_unicode_compatible
-class IndexedApp(DocType):
+
+class IndexedApp(Document):
     uuid = Text(fields={'_exact': Keyword()})
     schemaId = Text(fields={'_exact': Keyword()})
     internalUsername = Text(fields={'_exact': Keyword()})
@@ -42,7 +43,7 @@ class IndexedApp(DocType):
         })
 
     class Index:
-        name = settings.ES_INDICES['project_entities']['alias'] 
-        
+        name = settings.ES_INDICES['project_entities']['alias']
+
     class Meta:
         dynamic = MetaField('strict')

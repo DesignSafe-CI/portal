@@ -76,6 +76,8 @@ export type TBaseProjectValue = {
 
   title: string;
   description: string;
+  tombstone?: boolean;
+  tombstoneMessage?: string;
   users: TProjectUser[];
   dataTypes?: TDropdownValue[];
   authors: TProjectUser[];
@@ -100,7 +102,10 @@ export type TBaseProjectValue = {
 
 export type TEntityValue = {
   title: string;
+  tombstone?: boolean;
+  tombstoneMessage?: string;
   description?: string;
+  dataCollectors?: TProjectUser[];
   projectId?: string;
   authors?: TProjectUser[];
   fileObjs?: TFileObj[];
@@ -122,6 +127,15 @@ export type TEntityValue = {
   procedureEnd?: string;
 
   simulationType?: TDropdownValue;
+
+  observationTypes?: TDropdownValue[];
+  equipment?: TDropdownValue[];
+
+  unit?: string;
+  modes?: string[];
+  sampleSize?: string;
+  sampleApproach?: string[];
+  restriction?: string;
 };
 
 export type TProjectMeta = {

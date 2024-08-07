@@ -26,6 +26,10 @@ class MetadataModel(BaseModel):
             *args, **kwargs
         )
 
+    def to_fedora_json(self) -> dict:
+        """Placeholder method for formatting metadata for Fedora."""
+        return {}
+
 
 class ProjectUser(MetadataModel):
     """Model for project users."""
@@ -56,7 +60,7 @@ class ProjectUser(MetadataModel):
                 email=user_obj.email,
                 inst=user_obj.profile.institution,
                 role=role,
-                **kwargs
+                **kwargs,
             )
         except user_model.DoesNotExist:
             try:
@@ -71,7 +75,7 @@ class ProjectUser(MetadataModel):
                     email=tas_user["email"],
                     inst=tas_user["institution"],
                     role=role,
-                    **kwargs
+                    **kwargs,
                 )
             # pylint:disable=broad-exception-caught
             except Exception as _:
@@ -96,9 +100,9 @@ class ProjectAward(MetadataModel):
     """Model for awards."""
 
     order: int = 0
-    name: Annotated[
-        str, BeforeValidator(lambda n: n if isinstance(n, str) else "")
-    ] = ""
+    name: Annotated[str, BeforeValidator(lambda n: n if isinstance(n, str) else "")] = (
+        ""
+    )
     number: str = ""
     funding_source: Optional[str] = None
 
@@ -117,6 +121,15 @@ class AssociatedProject(MetadataModel):
     # Some legacy projects have a doi attribute.
     doi: str = ""
 
+    def to_fedora_json(self) -> dict:
+        if self.type == "Linked Dataset":
+            return {"isPartOf": f"{self.title} ({self.href})"}
+        if self.type == "Context":
+            return {"references": f"{self.title} ({self.href})"}
+        if self.type == "Cited By":
+            return {"isReferencedBy": f"{self.title} ({self.href})"}
+        return {}
+
 
 class ReferencedWork(MetadataModel):
     """Model for referenced works."""
@@ -124,6 +137,9 @@ class ReferencedWork(MetadataModel):
     title: str
     doi: str = Field(validation_alias=AliasChoices("doi", "url"))
     href_type: str = "URL"
+
+    def to_fedora_json(self):
+        return {"references": f"{self.title} ({self.doi})"}
 
 
 class FileTag(MetadataModel):

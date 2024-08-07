@@ -12,8 +12,8 @@ const FieldReconOverview1 = (
     </p>
     <p>
       Curation is important so your data can be
-      <strong>organized</strong>, <strong>discovered</strong>, and{' '}
-      <strong>understood</strong>
+      <strong> organized</strong>, <strong>discovered</strong>, and{' '}
+      <strong>understood </strong>
       for years to come.
     </p>
     <p>The four components of curating field research projects:</p>

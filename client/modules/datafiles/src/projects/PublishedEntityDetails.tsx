@@ -7,6 +7,7 @@ import {
   LicenseDisplay,
   UsernamePopover,
 } from './BaseProjectDetails';
+import { Alert } from 'antd';
 
 export const PublishedEntityDetails: React.FC<{
   entityValue: TEntityValue;
@@ -15,6 +16,25 @@ export const PublishedEntityDetails: React.FC<{
 }> = ({ entityValue, publicationDate, license }) => {
   return (
     <section style={{ marginBottom: '20px' }}>
+      {entityValue.tombstone && (
+        <Alert
+          showIcon
+          style={{ marginBottom: '12px' }}
+          type="warning"
+          message={
+            <strong>The following Dataset does not exist anymore</strong>
+          }
+          description={
+            <div>
+              The Dataset with DOI:{' '}
+              <a href={`https://doi.org/${entityValue.dois?.[0]}`}>
+                {entityValue.dois?.[0]}
+              </a>{' '}
+              was incomplete and removed. The metadata is still available.
+            </div>
+          }
+        />
+      )}
       <table
         style={{ width: '100%', marginBottom: '20px', borderSpacing: '200px' }}
       >
@@ -56,7 +76,7 @@ export const PublishedEntityDetails: React.FC<{
 
           {(entityValue.authors ?? []).length > 0 && (
             <tr className={styles['prj-row']}>
-              <td>Authors</td>
+              <td>Author(s)</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.authors
                   ?.filter((a) => a.authorship !== false)
@@ -76,7 +96,7 @@ export const PublishedEntityDetails: React.FC<{
 
           {entityValue.facility && (
             <tr className={styles['prj-row']}>
-              <td>Experiment Type</td>
+              <td>Facility</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.facility?.name}
               </td>
@@ -173,14 +193,14 @@ export const PublishedEntityDetails: React.FC<{
             </tr>
           )}
 
-          {publicationDate && (
-            <tr className={styles['prj-row']}>
-              <td>Date Published</td>
-              <td style={{ fontWeight: 'bold' }}>
-                {new Date(publicationDate).toISOString().split('T')[0]}
-              </td>
-            </tr>
-          )}
+          <tr className={styles['prj-row']}>
+            <td>Date Published</td>
+            <td style={{ fontWeight: 'bold' }}>
+              {publicationDate
+                ? new Date(publicationDate).toISOString().split('T')[0]
+                : '(Appears after publication)'}
+            </td>
+          </tr>
 
           {entityValue.dois && entityValue.dois[0] && (
             <tr className={styles['prj-row']}>

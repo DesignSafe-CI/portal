@@ -31,14 +31,12 @@ angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$root
         $scope.data.pagination.total = resp.total;
         $scope.data.notifications = resp.notifs;
 
-        for (var i=0; i < $scope.data.notifications.length; i++){
-            // $scope.data.notifications[i] = angular.fromJson($scope.data.notifications[i]);
-            // $scope.data.notifications[i]['fields']['extra'] = angular.fromJson($scope.data.notifications[i]['fields']['extra']);
-            // $scope.data.notifications[i]['datetime'] = Date($scope.data.notifications[i]['datetime']);
-            if ($scope.data.notifications[i]['event_type'] == 'job') {
-            $scope.data.notifications[i]['action_link']=`/rw/workspace/notification/process/${$scope.data.notifications[i]['pk']}`;
-            } else if ($scope.data.notifications[i]['event_type'] == 'data_depot') {
-            $scope.data.notifications[i]['action_link']=`/rw/workspace/notification/process/${$scope.data.notifications[i]['pk']}`;
+        for (var i = 0; i < $scope.data.notifications.length; i++) {
+            const notification = $scope.data.notifications[i];
+            if (notification['event_type'] == 'job') {
+                notification['action_link'] = `/rw/workspace/history`;
+            } else if (notification['event_type'] == 'data_depot') {
+                notification['action_link'] = '/data/browser';
             }
         }
 
