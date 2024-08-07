@@ -98,6 +98,10 @@ def tapis_oauth_callback(request):
         else:
             protocol = "http"
         redirect_uri = f"{protocol}://{request.get_host()}{reverse('designsafe_auth:tapis_oauth_callback')}"
+        if request.get_host() == "designsafe-ci.org":
+            redirect_uri = redirect_uri.replace(
+                "designsafe-ci.org", "www.designsafe-ci.org"
+            )
         code = request.GET["code"]
 
         body = {
