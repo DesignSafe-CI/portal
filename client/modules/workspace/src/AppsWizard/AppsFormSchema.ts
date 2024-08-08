@@ -358,9 +358,11 @@ const FormSchema = (
         if (param.notes?.validator?.regex && param.notes?.validator?.message) {
           try {
             const regex = RegExp(param.notes.validator.regex);
-            parameterSetSchema[field.label] = (<z.ZodString>(
-              parameterSetSchema[field.label]
-            )).regex(regex, param.notes.validator.message);
+            parameterSetSchema[field.label] = parameterSetSchema[
+              field.label
+            ].refine((value) => regex.test(value), {
+              message: param.notes.validator.message,
+            });
           } catch (SyntaxError) {
             console.warn('Invalid regex pattern for app');
           }
