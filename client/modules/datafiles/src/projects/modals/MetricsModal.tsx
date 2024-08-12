@@ -314,7 +314,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     },
     {
       key: '2',
-      quarters: 'Apr-Jun',
+      quarters: 'Apr-Jul',
       uniqueInvestigations:
         (quarterSums.views as { [key: string]: number }).Q2 || '--',
       uniqueRequests:
@@ -324,7 +324,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     },
     {
       key: '3',
-      quarters: 'Jul-Sep',
+      quarters: 'Aug-Oct',
       uniqueInvestigations:
         (quarterSums.views as { [key: string]: number }).Q3 || '--',
       uniqueRequests:
@@ -334,7 +334,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     },
     {
       key: '4',
-      quarters: 'Oct-Dec',
+      quarters: 'Nov-Dec',
       uniqueInvestigations:
         (quarterSums.views as { [key: string]: number }).Q4 || '--',
       uniqueRequests:
