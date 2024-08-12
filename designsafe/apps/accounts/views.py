@@ -262,6 +262,7 @@ class MissingCaptchaError(Exception):
     pass
 
 def register(request):
+    return HttpResponseRedirect("https://accounts.tacc.utexas.edu/register")
     logger.debug("formatting %s", {"hello": "world"})
     context={"RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY}
     if request.method == 'POST':
