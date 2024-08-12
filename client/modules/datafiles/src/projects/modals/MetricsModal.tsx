@@ -58,25 +58,18 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   }
 
   // Table 1: Usage Breakdown
-  const sumTotals = (data: DataEntry[], relationTypeId: string) => {
-    return data
-      .filter(
-        (entry) => entry.attributes['relation-type-id'] === relationTypeId
-      )
-      .reduce((sum, entry) => sum + entry.attributes.total, 0);
-  };
-
-  const uniqueInvestigations = sumTotals(
-    eventMetricsData.data,
-    'unique-dataset-investigations-regular'
+  const uniqueInvestigations = eventMetricsData.data.filter(
+    (entry: DataEntry) =>
+      entry.attributes['relation-type-id'] ===
+      'unique-dataset-investigations-regular'
   );
-  const uniqueRequests = sumTotals(
-    eventMetricsData.data,
-    'unique-dataset-requests-regular'
+  const uniqueRequests = eventMetricsData.data.filter(
+    (entry: DataEntry) =>
+      entry.attributes['relation-type-id'] === 'unique-dataset-requests-regular'
   );
-  const totalRequests = sumTotals(
-    eventMetricsData.data,
-    'total-dataset-requests-regular'
+  const totalRequests = eventMetricsData.data.filter(
+    (entry: DataEntry) =>
+      entry.attributes['relation-type-id'] === 'total-dataset-requests-regular'
   );
 
   const dataSource = [
@@ -96,7 +89,10 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: uniqueInvestigations > 0 ? uniqueInvestigations : '--',
+      data:
+        uniqueInvestigations.length > 0
+          ? uniqueInvestigations[0].attributes.total
+          : '--',
     },
     {
       key: '2',
@@ -115,7 +111,8 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: uniqueRequests > 0 ? uniqueRequests : '--',
+      data:
+        uniqueRequests.length > 0 ? uniqueRequests[0].attributes.total : '--',
     },
     {
       key: '3',
@@ -131,7 +128,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: totalRequests > 0 ? totalRequests : '--',
+      data: totalRequests.length > 0 ? totalRequests[0].attributes.total : '--',
     },
   ];
 
