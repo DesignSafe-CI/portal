@@ -46,10 +46,6 @@ def tapis_oauth(request):
         protocol = "http"
 
     redirect_uri = f"{protocol}://{request.get_host()}{reverse('designsafe_auth:tapis_oauth_callback')}"
-    if request.get_host() == "designsafe-ci.org":
-        redirect_uri = redirect_uri.replace(
-            "designsafe-ci.org", "www.designsafe-ci.org"
-        )
 
     tenant_base_url = getattr(settings, "TAPIS_TENANT_BASEURL")
     client_id = getattr(settings, "TAPIS_CLIENT_ID")
