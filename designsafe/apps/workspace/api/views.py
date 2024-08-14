@@ -786,7 +786,7 @@ class JobsView(AuthenticatedApiView):
                 projects = request.user.projects.order_by("-last_updated")
                 entry["value"] = " ".join(
                     f"{project.uuid},{project.value['projectId'] if project.value['projectId'] != 'None' else project.uuid}"
-                    for project in projects[:500]
+                    for project in projects[:settings.USER_PROJECTS_LIMIT]
                 )
                 projects_updated = True
                 break
