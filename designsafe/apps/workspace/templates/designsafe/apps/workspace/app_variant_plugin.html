@@ -1,5 +1,5 @@
 {% if listing|length == 1 %}
-<section class="s-app-version-list">
+<section class="s-app-version-list" id="{{listing.0.id}}">
     <h2>Already know everything?</h2>
     {% for variant in listing %}
     <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
@@ -9,7 +9,7 @@
 <section class="s-app-version-list">
     <h2>Select a Version</h2>
     {% for variant in listing %}
-    <article>
+    <article id="{{variant.id}}">
         <h3>{{variant.label}}</h3>
         <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
         <p>{{variant.description}}</p>
