@@ -206,7 +206,7 @@ const FileCurationSelector: React.FC<{
         </li>
       ))}
       <li style={{ display: 'flex', gap: '4rem' }}>
-        {showEntitySelector && (
+        {showEntitySelector ? (
           <section style={{ display: 'flex', flex: 1 }}>
             <Select<string>
               virtual={false}
@@ -244,6 +244,8 @@ const FileCurationSelector: React.FC<{
               </Button>
             )}
           </section>
+        ) : (
+          <div style={{ height: '30px', margin: '1px' }} />
         )}
         <div style={{ flex: 1 }} />
       </li>

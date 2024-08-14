@@ -72,7 +72,7 @@ def submit_workspace_acls_job(
         "name": f"setfacl-project-{project_uuid.split('-')[0]}-{username}-{action}",
         "appId": "setfacl-corral-tg458981",
         "appVersion": "0.0.1",
-        "description": "test app setfacl-corral-tg458981",
+        "description": "Add/Remove ACLs on a directory",
         "fileInputs": [],
         "parameterSet": {
             "appArgs": [],

@@ -166,27 +166,29 @@ function RecursiveTree({
         <EntityFileListingTable treeData={treeData} preview={preview} />
       </ProjectCollapse>
       <ul className={styles['tree-ul']}>
-        {(treeData.children ?? []).map((child) => (
-          <div key={child.id} style={{ display: 'inline-flex', flex: 1 }}>
-            <span
-              style={{
-                fontSize: '20px',
-                marginLeft: '5px',
-                marginRight: '7px',
-                marginTop: '3px',
-                color: PROJECT_COLORS[treeData.name]['outline'],
-              }}
-            >
-              <i role="none" className="fa fa-level-up fa-rotate-90"></i>
-            </span>
-            <RecursiveTree
-              treeData={child}
-              defaultOpen={defaultOpen}
-              preview={preview}
-              showEditCategories={showEditCategories}
-            />
-          </div>
-        ))}
+        {(treeData.children ?? [])
+          .sort((a, b) => a.order - b.order)
+          .map((child) => (
+            <div key={child.id} style={{ display: 'inline-flex', flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '20px',
+                  marginLeft: '5px',
+                  marginRight: '7px',
+                  marginTop: '3px',
+                  color: PROJECT_COLORS[treeData.name]['outline'],
+                }}
+              >
+                <i role="none" className="fa fa-level-up fa-rotate-90"></i>
+              </span>
+              <RecursiveTree
+                treeData={child}
+                defaultOpen={defaultOpen}
+                preview={preview}
+                showEditCategories={showEditCategories}
+              />
+            </div>
+          ))}
       </ul>
     </li>
   );
