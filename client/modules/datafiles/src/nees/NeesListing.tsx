@@ -57,7 +57,7 @@ export const NeesListing: React.FC = () => {
         scroll={{ y: '100%' }}
         rowKey={(row) => row.path}
         pagination={{
-          total: data?.listing.length,
+          total: data?.total,
           showSizeChanger: false,
           current: currentPage,
           pageSize: 100,

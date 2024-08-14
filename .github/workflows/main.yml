@@ -1,10 +1,9 @@
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# Controls when the action will run. Triggers the workflow on pushes to main or on pull request events
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     branches: [ '**' ]
 
@@ -17,7 +16,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Fetch base and install Poetry
-      run: | 
+      run: |
         git fetch origin ${{github.base_ref}}
         pipx install poetry
 
@@ -34,6 +33,30 @@ jobs:
     - run: |
         poetry install
 
+    - name: Run Server-side unit tests and generate coverage report
+      run: |
+        poetry run pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
+
+  Server_Side_Linting:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Fetch base and install Poetry
+      run: |
+        git fetch origin ${{github.base_ref}}
+        pipx install poetry
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'poetry'
+
+    - name: Install Python Packages
+      run:  |
+        poetry install
+
     - name: Run Server-side linting with pytest
       # Only run on new files for now-- for all changes, filter is ACMRTUXB
       # Check manage.py to prevent a crash if no files are selected.
@@ -44,16 +67,12 @@ jobs:
       run: |
         poetry run black $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py --check
 
-    - name: Run Server-side unit tests and generate coverage report
-      run: |
-        poetry run pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
-
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 16.x
         cache: npm
@@ -64,12 +83,12 @@ jobs:
   React_NX_unit_tests:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: npm
@@ -78,14 +97,35 @@ jobs:
       working-directory: client
 
     - uses: nrwl/nx-set-shas@v3
-      # Check linting/formatting of workspace files.
-    - run: npx nx format:check
-      working-directory: client
 
-    # Lint/test/build any apps and libs that have been impacted by the diff.
-    - run: npx nx affected --target=lint --parallel=3
-      working-directory: client
+    # Test/build any apps and libs that have been impacted by the diff.
     - run: npx nx affected --target=test --parallel=3 --ci --code-coverage
       working-directory: client
     - run: npx nx affected --target=build --parallel=3
+      working-directory: client
+
+  React_NX_linting:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: npm
+
+    - run: npm ci
+      working-directory: client
+
+    - uses: nrwl/nx-set-shas@v3
+
+    # Check linting/formatting of workspace files.
+    - run: npx nx format:check
+      working-directory: client
+
+    # Lint any apps and libs that have been impacted by the diff.
+    - run: npx nx affected --target=lint --parallel=3
       working-directory: client

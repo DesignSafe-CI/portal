@@ -1,0 +1,77 @@
+{
+    "Stampede3": {
+        "name": "Stampede3",
+        "host": "stampede3.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Stampede4": {
+        "name": "Stampede2",
+        "host": "stampede2.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Corral2": {
+        "name": "Corral",
+        "host": "data.tacc.utexas.edu",
+        "type": "STORAGE"
+    },
+    "Lonestar5": {
+        "name": "Lonestar5",
+        "host": "ls5.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Lonestar6": {
+        "name": "Lonestar6",
+        "host": "ls6.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Maverick2": {
+        "name": "Maverick",
+        "host": "maverick.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Maverick3": {
+        "name": "Maverick2",
+        "host": "maverick2.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Rodeo2": {
+        "name": "Rodeo",
+        "host": "rodeo.tacc.utexas.edu",
+        "type": "STORAGE"
+    },
+    "Wrangler": {
+        "name": "Wrangler",
+        "host": "wrangler.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Wrangler2": {
+        "name": "Wrangler",
+        "host": "wrangler.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Wrangler3": {
+        "name": "Wrangler",
+        "host": "wrangler.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Frontera": {
+        "name": "Frontera",
+        "host": "frontera.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Ranch": {
+        "name": "Ranch",
+        "host": "ranch.tacc.utexas.edu",
+        "type": "STORAGE"
+    },
+    "Hikari": {
+        "name": "Hikari",
+        "host": "hikari.tacc.utexas.edu",
+        "type": "HPC"
+    },
+    "Longhorn3": {
+        "name": "Longhorn",
+        "host": "longhorn.tacc.utexas.edu",
+        "type": "HPC"
+    }
+}
