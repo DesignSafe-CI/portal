@@ -1,8 +1,13 @@
-{% if listing|length == 1 %}
+{% if listing|length == 0 %}
+<section class="s-app-version-list">
+    <h2>Application Unavailable</h2>
+    <p>Please check back later or <a href="/help/new-ticket/">submit a ticket</a>.</p>
+</section>
+{% elif listing|length == 1 %}
 <section class="s-app-version-list">
     <h2>Already know everything?</h2>
     {% for variant in listing %}
-    <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
+        <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
     {% endfor %}
 </section>
 {% else %}
