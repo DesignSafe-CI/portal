@@ -2,13 +2,7 @@
 <section class="s-app-version-list" id="{{listing.0.version}}">
     <h2>Already know everything?</h2>
     {% for variant in listing %}
-    <a class="btn btn-success" href="{{variant.href}}">
-        {% if ... %}
-            Coming Soon
-        {% else %}
-            Get Started
-        {% endif %}
-    </a>
+    {% include 'designsafe/apps/workspace/app_variant_plugin_button.html' %}
     {% endfor %}
 </section>
 {% else %}
@@ -17,13 +11,7 @@
     {% for variant in listing %}
     <article id="{{variant.version}}">
         <h3>{{variant.label}}</h3>
-        <a class="btn btn-success" href="{{variant.href}}">
-            {% if ... %}
-                Coming Soon
-            {% else %}
-                Get Started
-            {% endif %}
-        </a>
+        {% include 'designsafe/apps/workspace/app_variant_plugin_button.html' %}
         <p>{{variant.description}}</p>
     </article>
     {% endfor %}

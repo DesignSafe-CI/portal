@@ -41,7 +41,6 @@ class AppCategoryListing(CMSPluginBase):
                     "Open Source" if entry.license_type == "OS" else "Licensed"
                 ),
                 "href": entry.href,
-                "version": entry.version,
             }
             for entry in listing_entries
         ]
@@ -100,7 +99,17 @@ class AppVariants(CMSPluginBase):
     def render(self, context, instance: AppListingEntry, placeholder):
         context = super().render(context, instance, placeholder)
         app_variants = instance.app.appvariant_set.filter(enabled=True)
-        context["listing"] = app_variants
+        serialized_variants = [
+            {
+                "label": variant.label,
+                "version": variant.version,
+                "description": variant.description,
+                "is_comingsoon": variant.version.endswith("coming-soon"),
+                "href": variant.href,
+            }
+            for variant in app_variants
+        ]
+        context["listing"] = serialized_variants
 
         return context
 
