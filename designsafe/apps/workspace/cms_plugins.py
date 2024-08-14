@@ -41,7 +41,7 @@ class AppCategoryListing(CMSPluginBase):
                     "Open Source" if entry.license_type == "OS" else "Licensed"
                 ),
                 "href": entry.href,
-                "id": entry.app_id,
+                "version": entry.version,
             }
             for entry in listing_entries
         ]
