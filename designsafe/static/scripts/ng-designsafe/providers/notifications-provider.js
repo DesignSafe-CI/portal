@@ -25,7 +25,6 @@ function NotificationService(
      * @return {string} url
      */
     function renderLink(msg) {
-        console.log('rendering link?')
         const eventType = msg.event_type.toLowerCase();
         let url = '';
         if (typeof processors[eventType] !== 'undefined' &&
@@ -34,10 +33,10 @@ function NotificationService(
             url = processors[eventType].renderLink(msg);
         }
         if (msg.status != 'ERROR') {
-            if (msg.event_type == 'job') {
-                url=`/rw/workspace/notification/process/${msg.pk}`
+            if (msg.event_type === 'job') {
+                url = `/rw/workspace/history`;
             } else if (msg.event_type == 'data_depot') {
-                url=`/rw/workspace/notification/process/${msg.pk}`
+                url = `/data/browser`;
             }
         }
         return url;
@@ -120,6 +119,10 @@ function NotificationService(
      * @param {Object} msg
      */
     function processToastr(e, msg) {
+        if (msg.event_type === 'job' || msg.event_type ==='WEB' || msg.event_type === 'interactive_session_ready') {
+            return;
+        }
+
         try {
             // msg.extra = JSON.parse(msg.extra);
             msg.extra = (typeof msg.extra === 'string') ? JSON.parse(msg.extra) : msg.extra;

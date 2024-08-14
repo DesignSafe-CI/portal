@@ -1,7 +1,12 @@
-import { Button, Modal, Form, Input } from 'antd';
-import { useSelectedFiles, useRename } from '@client/hooks';
+import { Button, Modal, Form, Input, Alert } from 'antd';
+import {
+  useSelectedFiles,
+  useRename,
+  useCheckFilesForAssociation,
+} from '@client/hooks';
 import React, { useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
+import { useParams } from 'react-router-dom';
 
 export const RenameModalBody: React.FC<{
   isOpen: boolean;
@@ -17,8 +22,25 @@ export const RenameModalBody: React.FC<{
 
   const { mutate } = useRename();
 
+  let { projectId } = useParams();
+  if (!projectId) projectId = '';
+
+  const hasAssociations = useCheckFilesForAssociation(
+    projectId,
+    selectedFiles.map((f) => f.path)
+  );
+
   const handleRenameFinish = async (values: { newName: string }) => {
+    const originalName = selectedFiles[0].name;
     const newName = values.newName;
+
+    const extension = originalName.includes('.')
+      ? originalName.substring(originalName.lastIndexOf('.'))
+      : '';
+
+    const fullName = newName.endsWith(extension)
+      ? newName
+      : newName + extension;
 
     try {
       await mutate({
@@ -26,8 +48,8 @@ export const RenameModalBody: React.FC<{
           api,
           system,
           path,
-          name: selectedFiles[0].name,
-          newName: newName,
+          name: originalName,
+          newName: fullName,
         },
       });
 
@@ -61,34 +83,56 @@ export const RenameModalBody: React.FC<{
 
   return (
     <Modal
-      title={<h2>Rename {selectedFilesName[0].name}</h2>}
+      title={<h2>Rename {selectedFilesName[0]?.name}</h2>}
       width="60%"
       open={isOpen}
+      destroyOnClose
       footer={null} // Remove the footer from here
       onCancel={handleCancel}
     >
-      <Form autoComplete="off" layout="vertical" onFinish={handleRenameFinish}>
-        <Form.Item
-          label="New Name"
-          name="newName"
-          rules={[
-            {
-              validator: validateNewName,
-            },
-          ]}
+      {hasAssociations && (
+        <Alert
+          type="warning"
+          style={{ marginBottom: '10px' }}
+          showIcon
+          description={
+            <span>
+              This file or folder cannot be renamed until its tags or associated
+              entities have been removed using the Curation Directory tab.
+            </span>
+          }
+        />
+      )}
+      {isOpen && (
+        <Form
+          disabled={hasAssociations}
+          autoComplete="off"
+          layout="vertical"
+          initialValues={{ newName: selectedFiles[0]?.name }}
+          onFinish={handleRenameFinish}
         >
-          <Input
-            type="textarea"
-            placeholder="Please enter a new name for this file/folder."
-          />
-        </Form.Item>
+          <Form.Item
+            label="New Name"
+            name="newName"
+            rules={[
+              {
+                validator: validateNewName,
+              },
+            ]}
+          >
+            <Input
+              type="textarea"
+              placeholder="Please enter a new name for this file/folder."
+            />
+          </Form.Item>
 
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <Button type="primary" htmlType="submit">
-            Rename
-          </Button>
-        </div>
-      </Form>
+          <div style={{ marginTop: '20px', textAlign: 'right' }}>
+            <Button type="primary" htmlType="submit">
+              Rename
+            </Button>
+          </div>
+        </Form>
+      )}
     </Modal>
   );
 };

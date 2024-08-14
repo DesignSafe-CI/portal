@@ -2853,7 +2853,7 @@ input[type="search"] {
 .pub-info-modal-label {
   vertical-align: top;
   display: inline-block;
-  width:30%;
+  width:40%;
 }
 .pub-info-modal-heading {
   border-bottom: darkgrey;
@@ -2863,7 +2863,7 @@ input[type="search"] {
 }
 .pub-info-modal-data {
   display: inline-block;
-  width: 68%;
+  width: 60%;
   font-weight:bold;
 }
 .pub-info-modal-body {

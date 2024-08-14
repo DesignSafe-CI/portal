@@ -1,4 +1,5 @@
 """Pydantic schema models for base-level project entities."""
+
 from datetime import datetime
 from typing import Literal, Optional, Annotated
 from pydantic import (
@@ -173,3 +174,63 @@ class BaseProject(MetadataModel):
         if (not self.users) and (users := self.construct_users()):
             self.users = users
         return self
+
+    def to_fedora_json(self):
+        """format project metadata for Fedora"""
+        fedora_json = {}
+        fedora_json["title"] = self.title
+        fedora_json["description"] = self.description
+        fedora_json["identifier"] = [
+            self.project_id,
+            f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{self.project_id}",
+        ]
+        if self.dois:
+            fedora_json["identifier"] += self.dois
+
+        fedora_json["coverage"] = []
+        for nh_event in self.nh_events:
+            if nh_event.event_start:
+                fedora_json["coverage"].append(nh_event.event_start.isoformat())
+            if nh_event.event_end:
+                fedora_json["coverage"].append(nh_event.event_end.isoformat())
+            fedora_json["coverage"].append(nh_event.location)
+
+        fedora_json["subject"] = self.keywords
+        if self.nh_event:
+            fedora_json["subject"].append(self.nh_event)
+        if self.fr_types:
+            fedora_json["subject"] += [t.name for t in self.fr_types]
+        if self.nh_types:
+            fedora_json["subject"] += [t.name for t in self.nh_types]
+        fedora_json["subject"] = [s for s in fedora_json["subject"] if s]
+
+        fedora_json["contributors"] = []
+        for award in self.award_numbers:
+            fedora_json["contributors"].append(award.name)
+            fedora_json["contributors"].append(award.number)
+        for facility in self.facilities:
+            fedora_json["contributors"].append(facility.name)
+        fedora_json["contributors"] = [c for c in fedora_json["contributors"] if c]
+
+        fedora_json["type"] = self.project_type
+        if self.project_type == "other":
+            fedora_json["type"] = [t.name for t in self.data_types]
+
+        fedora_json["creator"] = [
+            f"{author.lname}, {author.fname}" for author in self.authors
+        ]
+        if self.license:
+            fedora_json["license"] = self.license
+        fedora_json["publisher"] = "Designsafe"
+
+        for referenced_data in self.referenced_data:
+            reference_mapping = referenced_data.to_fedora_json()
+            for key in reference_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [reference_mapping[key]]
+
+        for related_work in self.associated_projects:
+            related_mapping = related_work.to_fedora_json()
+            for key in related_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [related_mapping[key]]
+
+        return fedora_json

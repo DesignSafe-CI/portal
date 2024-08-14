@@ -3,10 +3,11 @@
 import json
 from typing import TypedDict, Optional
 from uuid import uuid4
+import copy
 from pathlib import Path
 import networkx as nx
 from django.utils.text import slugify
-from designsafe.apps.api.agave import service_account
+from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers.publication import FIELD_MAP
 from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
@@ -158,6 +159,7 @@ def construct_graph_recurse(
     entity_list: list[dict],
     parent: dict,
     parent_node_id: str,
+    allow_published_analysis=False,
 ):
     """Recurse through an entity's children and add nodes/edges. B is a child of A if
     all of A's descendants are referenced in B's association IDs."""
@@ -170,9 +172,17 @@ def construct_graph_recurse(
     ]:
         association_path.pop(-2)
 
+    # Account for legacy pubs that associated experimental analysis at top level
+    _allowed_relations = copy.deepcopy(ALLOWED_RELATIONS)
+
+    if allow_published_analysis:
+        _allowed_relations[names.PROJECT].append(names.EXPERIMENT_ANALYSIS)
+        _allowed_relations[names.PROJECT].append(names.SIMULATION_ANALYSIS)
+        _allowed_relations[names.PROJECT].append(names.SIMULATION_REPORT)
+
     children = filter(
         lambda child: (
-            child["name"] in ALLOWED_RELATIONS.get(parent["name"], [])
+            child["name"] in _allowed_relations.get(parent["name"], [])
             and set(child["associationIds"]) >= set(association_path)
         ),
         entity_list,
@@ -196,7 +206,13 @@ def construct_graph_recurse(
         }
         graph.add_node(child_node_id, **child_data)
         graph.add_edge(parent_node_id, child_node_id)
-        construct_graph_recurse(graph, entity_list, child, child_node_id)
+        construct_graph_recurse(
+            graph,
+            entity_list,
+            child,
+            child_node_id,
+            allow_published_analysis=allow_published_analysis,
+        )
 
 
 def get_entities_from_publication(project_id: str, version=None):
@@ -215,7 +231,9 @@ def get_entities_from_publication(project_id: str, version=None):
     return entity_list
 
 
-def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
+def construct_publication_graph(
+    project_id, version=None, allow_published_analysis=False
+) -> nx.DiGraph:
     """Construct a directed graph from a publications's association IDs."""
     entity_listing = get_entities_from_publication(project_id, version=version)
     root_entity = entity_listing[0]
@@ -225,7 +243,7 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
     project_type = root_entity["value"]["projectType"]
 
     root_node_id = "NODE_ROOT"
-    if project_type == "other":
+    if project_type == "other" or project_type == "field_reconnaissance":
         root_node_data = {"uuid": None, "name": None, "projectType": "other"}
     else:
         root_node_data = {
@@ -234,7 +252,7 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
             "projectType": root_entity["value"]["projectType"],
         }
     pub_graph.add_node(root_node_id, **root_node_data)
-    if project_type == "other":
+    if project_type == "other" or project_type == "field_reconnaissance":
         base_node_data = {
             "uuid": root_entity["uuid"],
             "name": root_entity["name"],
@@ -243,7 +261,13 @@ def construct_publication_graph(project_id, version=None) -> nx.DiGraph:
         base_node_id = f"NODE_{uuid4()}"
         pub_graph.add_node(base_node_id, **base_node_data)
         pub_graph.add_edge(root_node_id, base_node_id)
-    construct_graph_recurse(pub_graph, entity_listing, root_entity, root_node_id)
+    construct_graph_recurse(
+        pub_graph,
+        entity_listing,
+        root_entity,
+        root_node_id,
+        allow_published_analysis=allow_published_analysis,
+    )
 
     pub_graph.nodes["NODE_ROOT"]["basePath"] = f"/{project_id}"
     # pub_graph = construct_entity_filepaths(entity_listing, pub_graph, version)
@@ -325,7 +349,11 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
     """Validate publication entities against their corresponding model."""
     entity_listing = get_entities_from_publication(project_id, version=version)
     base_pub_meta = IndexedPublication.from_id(project_id, revision=version).to_dict()
-    pub_graph = construct_publication_graph(project_id, version)
+    schema_version = base_pub_meta.get("version", 1)
+
+    pub_graph = construct_publication_graph(
+        project_id, version, allow_published_analysis=(schema_version == 1)
+    )
     path_mappings = []
 
     for _, node_data in pub_graph.nodes.items():
@@ -366,7 +394,7 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
             )
         else:
             pub_graph.nodes[pub]["version"] = 1
-        pub_graph.nodes[pub]["publicationDate"] = str(base_pub_meta["created"])
+        pub_graph.nodes[pub]["publicationDate"] = base_pub_meta["created"].isoformat()
         pub_graph.nodes[pub]["status"] = "published"
 
     return pub_graph, path_mappings

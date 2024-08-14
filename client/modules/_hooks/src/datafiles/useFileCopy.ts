@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
 type TCopyParam = { api: string; system: string; path: string };
@@ -13,6 +13,7 @@ function copyFn(src: TCopyParam, dest: TCopyParam, doi?: string) {
 }
 
 export function useFileCopy() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       src,
@@ -23,5 +24,11 @@ export function useFileCopy() {
       dest: TCopyParam;
       doi?: string;
     }) => copyFn(src, dest, doi),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['datafiles', 'fileListing'],
+      });
+      queryClient.resetQueries({ queryKey: ['selected-rows'] });
+    },
   });
 }

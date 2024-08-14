@@ -1,0 +1,7 @@
+.listing-table-base {
+  height: 100%;
+}
+
+.highlighted-row {
+  background-color: #e6f4ff;
+}
