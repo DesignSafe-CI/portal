@@ -780,7 +780,6 @@ class JobsView(AuthenticatedApiView):
         parameter_set = job_post.get("parameterSet", {})
         env_variables = parameter_set.get("envVariables", [])
         # Add user projects based on env var in the parameters.
-        projects_updated = False
         for entry in env_variables:
             if entry.get("key") == "_UserProjects":
                 projects = request.user.projects.order_by("-last_updated")
@@ -788,11 +787,8 @@ class JobsView(AuthenticatedApiView):
                     f"{project.uuid},{project.value['projectId'] if project.value['projectId'] != 'None' else project.uuid}"
                     for project in projects[:settings.USER_PROJECTS_LIMIT]
                 )
-                projects_updated = True
+                job_post["parameterSet"]["envVariables"] = env_variables
                 break
-
-        if projects_updated:
-            job_post["parameterSet"]["envVariables"] = env_variables 
 
         # Add additional data for interactive apps
         if body.get("isInteractive"):
