@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 from designsafe.apps.projects.models.agave.experimental import ExperimentalProject, ModelConfig, FileModel
 
-from agavepy.agave import Agave
+# from agavepy.agave import Agave
 import mock
 import json
 
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # Create your tests here.
 class ProjectDataModelsTestCase(TestCase):
-    fixtures = ['user-data.json', 'agave-oauth-token-data.json']
+    fixtures = ['user-data.json', 'auth.json']
 
     def setUp(self):
         user = get_user_model().objects.get(pk=2)

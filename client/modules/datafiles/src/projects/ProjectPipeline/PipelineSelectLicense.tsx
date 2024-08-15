@@ -2,9 +2,10 @@ import { usePatchProjectMetadata, useProjectPreview } from '@client/hooks';
 import { Button, Col, Radio, Row } from 'antd';
 import { PipelinePublishModal } from './PipelinePublishModal';
 import { useSearchParams } from 'react-router-dom';
+import React from 'react';
 
-const LicenseRadioIcon: React.FC<{
-  label: string;
+export const LicenseRadioIcon: React.FC<{
+  label: React.ReactNode;
   iconName: string;
   recommended?: 'RECOMMEND' | 'CONSIDER';
 }> = ({ label, iconName, recommended }) => {
@@ -54,11 +55,12 @@ export const PipelineSelectLicense: React.FC<{
         }}
       >
         <Button type="link" onClick={prevStep}>
-          <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
-          Proofread Project
+          <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to Order
+          Authors
         </Button>
         <PipelinePublishModal
           disabled={!data.baseProject.value.license}
+          operation={searchParams.get('operation') ?? ''}
           projectType={data.baseProject.value.projectType}
           projectId={projectId}
           entityUuids={searchParams.getAll('selected')}
@@ -195,13 +197,9 @@ export const PipelineSelectLicense: React.FC<{
               </a>
             </Col>
             <Col span={12}>
-              <Radio
-                value="Creative Commons Public Domain Dedication
-"
-              >
+              <Radio value="Creative Commons Public Domain Dedication">
                 <LicenseRadioIcon
-                  label="Creative Commons Public Domain Dedication
-                  "
+                  label="Creative Commons Public Domain Dedication"
                   iconName="curation-cc-zero"
                   recommended="CONSIDER"
                 />

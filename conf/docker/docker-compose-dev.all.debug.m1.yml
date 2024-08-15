@@ -1,30 +1,21 @@
-# This compose file is useful for testing https
----
-version: "3"
 services:
   redis:
     image: redis:7
     platform: "linux/amd64"
     volumes:
-      - redis_data:/data
-      - ../redis.conf:/usr/local/etc/redis/redis.conf
+      - redis_data_v3:/data
     ports:
       - 127.0.0.1:6379:6379
-    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
     container_name: des_redis
     hostname: des_redis
 
   rabbitmq:
     image: arm64v8/rabbitmq:3.6.14-management
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
-      - ../rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - rabbitmq_data_v3:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
     env_file: ../env_files/rabbitmq.env
     ports:
       - 127.0.0.1:5672:5672
-      - 127.0.0.1:5673:5673
-      - 127.0.0.1:15673:15673
-      - 127.0.0.1:15672:15672
     container_name: des_rabbitmq
     hostname: des_rabbitmq
 
@@ -44,7 +35,7 @@ services:
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
-      - es_data:/usr/share/elasticsearch/data
+      - es_data_v3:/usr/share/elasticsearch/data
     ports:
       - 127.0.0.1:9200:9200
     container_name: des_elasticsearch
@@ -58,7 +49,7 @@ services:
       - POSTGRES_DB=ds_database
       - PGDATA=/var/lib/postgresql/data/ds_database
     volumes:
-      - des_postgres_data:/var/lib/postgresql/data
+      - des_postgres_data_v3:/var/lib/postgresql/data
     hostname: des_postgres
     ports:
       -   127.0.0.1:5432:5432
@@ -73,10 +64,9 @@ services:
       - ../nginx/certificates/designsafe.dev.crt:/etc/ssl/designsafe.dev.crt
       - ../nginx/certificates/designsafe.dev.key:/etc/ssl/designsafe.dev.key
       - ../nginx/dhparam.pem:/etc/ssl/dhparam.pem
-      - ../../.:/srv/www/designsafe
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
+      - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
     links:
       - django:django
     ports:
@@ -86,7 +76,7 @@ services:
     hostname: des_nginx
 
   django:
-    image: designsafeci/portal:local
+    image: designsafeci/portal:tapis-v3
     env_file: ../env_files/designsafe.env
     links:
       - memcached:memcached
@@ -95,22 +85,29 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
     ports:
-      - 127.0.0.1:8000:8000
       - 127.0.0.1:5678:5678
-      - 127.0.0.1:9000:9000
     dns:
       - 8.8.8.8
       - 8.8.4.4
-    command: /srv/www/designsafe/bin/run-django.sh
+    command: python manage.py runserver 0.0.0.0:8000
     container_name: des_django
     hostname: des_django
 
+  websockets:
+    image: designsafeci/portal:tapis-v3
+    env_file: ../env_files/designsafe.env
+    volumes:
+      - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
+      - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+    container_name: des_websockets
+    command: python manage.py runserver 0.0.0.0:9000
+
   workers:
-    image: designsafeci/portal:local
+    image: designsafeci/portal:tapis-v3
     env_file: ../env_files/designsafe.env
     links:
       - memcached:memcached
@@ -119,9 +116,8 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
+      - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
-      - ../../data/static:/var/www/designsafe-ci.org/static
-      - ../../data/media:/var/www/designsafe-ci.org/media
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -130,8 +126,7 @@ services:
     hostname: des_workers
 
 volumes:
-  redis_data:
-  des_postgres_data:
-  es_data:
-  rabbitmq_data:
-  sockets:
+  redis_data_v3:
+  des_postgres_data_v3:
+  es_data_v3:
+  rabbitmq_data_v3:

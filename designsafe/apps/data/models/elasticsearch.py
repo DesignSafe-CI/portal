@@ -1,5 +1,4 @@
 
-from future.utils import python_2_unicode_compatible
 import logging
 import json
 import datetime
@@ -152,7 +151,7 @@ class IndexedFileLegacy(Document):
     class Meta:
         dynamic = MetaField('strict')
 
-@python_2_unicode_compatible
+
 class IndexedPublication(Document):
     revision = Long()
     revisionText = Text(analyzer='english')
@@ -374,7 +373,7 @@ class IndexedPublication(Document):
         except Exception as e:
             raise e
         if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id}) 
+            id_filter = Q('term', **{'_id': res[0].meta.id})
             # Delete all files indexed with the same system/path, except the first result
             delete_query = id_filter & ~id_filter
             cls.search(using=using).filter(delete_query).delete()
@@ -399,7 +398,7 @@ class IndexedPublication(Document):
     class Index:
         name = settings.ES_INDICES['publications']['alias']
 
-@python_2_unicode_compatible
+
 class IndexedCMSPage(Document):
     body = Text(analyzer='english')
     description = Text(analyzer='english')
@@ -418,7 +417,7 @@ class IndexedCMSPage(Document):
     class Meta:
         dynamic = MetaField('strict')
 
-@python_2_unicode_compatible
+
 class IndexedPublicationLegacy(Document):
     startDate = Date()
     endDate = Date()
@@ -513,7 +512,7 @@ class IndexedPublicationLegacy(Document):
         except Exception as e:
             raise e
         if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id}) 
+            id_filter = Q('term', **{'_id': res[0].meta.id})
             # Delete all files indexed with the same system/path, except the first result
             delete_query = id_filter & ~id_filter
             cls.search().filter(delete_query).delete()

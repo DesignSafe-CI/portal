@@ -6,9 +6,10 @@ import dayjs from 'dayjs';
 export const DateInput: React.FC<
   {
     value?: string;
+    id?: string;
     onChange?: (value?: string) => void;
   } & DatePickerProps
-> = ({ value, onChange, ...props }) => {
+> = ({ value, onChange, id, ...props }) => {
   return (
     <>
       <DatePicker

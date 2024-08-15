@@ -1,4 +1,5 @@
 """Pydantic schema models for Hybrid Simulation entities"""
+
 from typing import Annotated, Optional
 from pydantic import BeforeValidator, Field, model_validator
 from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
@@ -29,8 +30,8 @@ class HybridSimulation(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_value(v, HYBRID_SIM_TYPES)),
     ]
     simulation_type_other: Optional[str] = Field(exclude=True, default=None)
-    procedure_start: str = ""
-    procedure_end: str = ""
+    procedure_start: Optional[str] = None
+    procedure_end: Optional[str] = None
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
@@ -52,6 +53,34 @@ class HybridSimulation(MetadataModel):
             self.simulation_type.name = self.simulation_type_other
         return self
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        fedora_json = {
+            "type": self.simulation_type.name,
+            "title": self.title,
+            "description": self.description,
+        }
+
+        fedora_json["creator"] = [
+            f"{author.lname}, {author.fname}" for author in self.authors
+        ]
+
+        fedora_json["identifier"] = self.dois
+        if self.facility:
+            fedora_json["contributor"] = self.facility.name
+
+        for referenced_data in self.referenced_data:
+            reference_mapping = referenced_data.to_fedora_json()
+            for key in reference_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [reference_mapping[key]]
+
+        for related_work in self.related_work:
+            related_mapping = related_work.to_fedora_json()
+            for key in related_mapping:
+                fedora_json[key] = fedora_json.get(key, []) + [related_mapping[key]]
+
+        return fedora_json
+
 
 class HybridSimGlobalModel(MetadataModel):
     """Model for hybrid sim global models."""
@@ -66,6 +95,14 @@ class HybridSimGlobalModel(MetadataModel):
     file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "global model",
+            "title": self.title,
+            "description": self.description,
+        }
 
 
 class HybridSimCoordinator(MetadataModel):
@@ -83,6 +120,14 @@ class HybridSimCoordinator(MetadataModel):
     file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "master simulation coordinator",
+            "title": self.title,
+            "description": self.description,
+        }
 
 
 class HybridSimSimSubstructure(MetadataModel):
@@ -102,6 +147,14 @@ class HybridSimSimSubstructure(MetadataModel):
 
     tags: Optional[dict] = Field(default=None, exclude=True)
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "simulation substructure",
+            "title": self.title,
+            "description": self.description,
+        }
+
 
 class HybridSimExpSubstructure(MetadataModel):
     """Model for experimental substructures."""
@@ -119,6 +172,14 @@ class HybridSimExpSubstructure(MetadataModel):
 
     tags: Optional[dict] = Field(default=None, exclude=True)
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "experimental substructure",
+            "title": self.title,
+            "description": self.description,
+        }
+
 
 class HybridSimCoordinatorOutput(MetadataModel):
     """Model for coordinator output."""
@@ -135,6 +196,14 @@ class HybridSimCoordinatorOutput(MetadataModel):
     file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "coordinator output",
+            "title": self.title,
+            "description": self.description,
+        }
 
 
 class HybridSimSimOutput(MetadataModel):
@@ -154,6 +223,14 @@ class HybridSimSimOutput(MetadataModel):
 
     tags: Optional[dict] = Field(default=None, exclude=True)
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "simulation output",
+            "title": self.title,
+            "description": self.description,
+        }
+
 
 class HybridSimExpOutput(MetadataModel):
     """Model for experimental substructure output."""
@@ -171,6 +248,14 @@ class HybridSimExpOutput(MetadataModel):
     file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "experimental output",
+            "title": self.title,
+            "description": self.description,
+        }
 
 
 class HybridSimAnalysis(MetadataModel):
@@ -190,6 +275,14 @@ class HybridSimAnalysis(MetadataModel):
     reference: Optional[str] = None
     referencedoi: Optional[str] = None
 
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {
+            "type": "analysis",
+            "title": self.title,
+            "description": self.description,
+        }
+
 
 class HybridSimReport(MetadataModel):
     """Model for hybrid sim reports."""
@@ -204,3 +297,7 @@ class HybridSimReport(MetadataModel):
     file_objs: list[FileObj] = []
 
     tags: Optional[dict] = Field(default=None, exclude=True)
+
+    def to_fedora_json(self):
+        """Metadata representation for the Fedora repository"""
+        return {"type": "report", "title": self.title, "description": self.description}

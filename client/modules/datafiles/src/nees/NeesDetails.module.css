@@ -1,0 +1,34 @@
+.line-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.line-unclamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+th {
+  vertical-align: top;
+}
+
+.nees-th {
+  width: 25%;
+}
+
+.nees-td {
+  width: 75%;
+}
+
+.nees-mini-table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.nees-divider {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
