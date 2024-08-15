@@ -42,18 +42,7 @@ export const RelatedWorkInput: React.FC<{ name: string | string[] }> = ({
                 </Form.Item>
                 <div style={{ width: '40%' }}>
                   <Form.Item
-                    rules={[
-                      { required: !disabled },
-                      {
-                        pattern: /^https:\/\//,
-                        message: (
-                          <span>
-                            Please enter a formatted URL of the form{' '}
-                            <code>https://...</code>
-                          </span>
-                        ),
-                      },
-                    ]}
+                    rules={[{ required: !disabled }]}
                     label="URL or DOI, in URL format"
                     name={disabled ? undefined : [name, 'href']}
                     style={{ marginBottom: 0 }}

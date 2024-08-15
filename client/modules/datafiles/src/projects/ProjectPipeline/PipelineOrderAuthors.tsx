@@ -56,7 +56,7 @@ export const PipelineOrderAuthors: React.FC<{
       >
         <Button type="link" onClick={() => prevStep()}>
           <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
-          Proofread Categories
+          Selection
         </Button>
         <Button
           className="success-button"
@@ -84,7 +84,7 @@ export const PipelineOrderAuthors: React.FC<{
               target="_blank"
               aria-describedby="msg-open-new-window"
             >
-              curation office hours
+              Curation office hours
             </a>{' '}
             for help with publishing.
           </li>
@@ -113,9 +113,7 @@ export const PipelineOrderAuthors: React.FC<{
                 {(entity.value.authors ?? [])
                   .map((author, idx) =>
                     idx === 0
-                      ? `${author.lname}, ${author.fname[0]}${
-                          (entity.value.authors?.length ?? 1) > 1 ? '.' : ''
-                        }`
+                      ? `${author.lname}, ${author.fname[0]}.`
                       : `${author.fname[0]}. ${author.lname}`
                   )
                   .join(', ')}

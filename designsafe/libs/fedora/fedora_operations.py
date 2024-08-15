@@ -28,9 +28,6 @@ FEDORA_CONTEXT = {
     "abstract": {
         "@id": "http://purl.org/dc/elements/1.1/abstract"
     },
-    "accessRights": {
-        "@id": "http://purl.org/dc/elements/1.1/accessRights"
-    },
     "available": {
         "@id": "http://purl.org/dc/elements/1.1/available"
     },
@@ -693,10 +690,10 @@ def get_child_paths(dir_path):
 
 def generate_manifest(walk_result, project_id, version=None):
     fido_client = Fido()
-    if version and version > 1:
+    if version:
         project_id = '{}v{}'.format(project_id, str(version))
     manifest = []
-    archive_path = PUBLICATIONS_MOUNT_ROOT
+    archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, project_id)
     for entity in walk_result:
         file_objs = entity['fileObjs']
         file_tags = entity.get('fileTags', [])
@@ -759,7 +756,7 @@ def generate_manifest_experimental(project_id, version=None):
 
 
 def upload_manifest(manifest_dict, project_id, version=None):
-    if version and version > 1:
+    if version:
         project_id = '{}v{}'.format(project_id, str(version))
     fedora_root = parse.urljoin(settings.FEDORA_URL, PUBLICATIONS_CONTAINER)
     project_root = os.path.join(fedora_root, project_id)

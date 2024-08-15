@@ -10,15 +10,14 @@ class NcoTtcGrantsCtrl {
 
     $onInit() {
         this.initialParams = {
-            sort: 'End Date Descending',
+            sort: 'Start Date Descending',
         };
         // default intitial sorting
-        this.selectedSort = 'End Date Descending';
+        this.selectedSort = 'Start Date Descending';
         this._ui = {
             grantsLoading: true,
             facilitiesLoading: false,
-            grantTypesLoading: false,
-            hazardTypesLoading: false,
+            categoriesLoading: false,
         };
 
         this.loadGrants(this.initialParams)
@@ -40,25 +39,18 @@ class NcoTtcGrantsCtrl {
                 this._ui.facilitiesLoading = false;
             });
 
-        this.loadGrantTypes({})
-            .then((resp) => {
-                return resp;
-            }, (err) => {
-                this._ui.grantTypesError = err.message;
-            }).finally( () => {
-                this._ui.grantTypesLoading = false;
-            });
-
-        this.loadHazardTypes({})
-            .then((resp) => {
-                return resp;
-            }, (err) => {
-                this._ui.hazardTypesError = err.message;
-            }).finally( () => {
-                this._ui.hazardTypesLoading = false;
-            });
+        this.loadCategories({})
+        .then((resp) => {
+            return resp;
+        }, (err) => {
+            this._ui.categoriesError = err.message;
+        }).finally( () => {
+            this._ui.categoriesLoading = false;
+        });
 
         this.sortOptions = [
+            "Start Date Descending",
+            "Start Date Ascending",
             "End Date Descending",
             "End Date Ascending",
         ];
@@ -94,33 +86,19 @@ class NcoTtcGrantsCtrl {
             });
     }
 
-    loadGrantTypes(){
-        this._ui.grantTypesLoading = true;
-        return this.$http.get('/nco/api/ttc_grant_types')
+    loadCategories(){
+        this._ui.categoriesLoading = true;
+        return this.$http.get('/nco/api/ttc_categories')
         .then((resp) => {
-            this.grantTypes = _.map(
+            this.categoriesList = _.map(
                 resp.data.response,
             );
-            return this.grantTypes;
+            console.log(this.categoriesList);
+            return this.categoriesList;
         }, (err) => {
-            this._ui.grantTypesError = err.message;
+            this._ui.categoriesError = err.message;
         }).finally ( () => {
-            this._ui.grantTypesLoading = false;
-        });
-    }
-
-    loadHazardTypes(){
-        this._ui.hazardTypesLoading = true;
-        return this.$http.get('/nco/api/ttc_hazard_types')
-        .then((resp) => {
-            this.hazardTypes = _.map(
-                resp.data.response,
-            );
-            return this.hazardTypes;
-        }, (err) => {
-            this._ui.hazardTypesError = err.message;
-        }).finally ( () => {
-            this._ui.hazardTypesLoading = false;
+            this._ui.categoriesLoading = false;
         });
     }
 
@@ -138,10 +116,8 @@ class NcoTtcGrantsCtrl {
     filterSearch(){
         var params = {
             facility: this.selectedFacility,
+            category: this.selectedCategory,
             sort: this.selectedSort,
-            hazard_type: this.selectedHazardType,
-            grant_type: this.selectedGrantType,
-            text_search: this.textSearch,
         };
         this.loadGrants(params);
     }

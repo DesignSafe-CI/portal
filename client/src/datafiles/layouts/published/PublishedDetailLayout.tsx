@@ -1,13 +1,7 @@
-import {
-  BaseProjectDetails,
-  DatafilesToolbar,
-  DownloadDatasetModal,
-  PublishedCitation,
-  DownloadCitation,
-} from '@client/datafiles';
+import { BaseProjectDetails, DatafilesToolbar } from '@client/datafiles';
 import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
 import React, { useEffect } from 'react';
-import { Alert, Button, Form, Input, Layout, Spin } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
 
 const FileListingSearchBar = () => {
@@ -28,10 +22,7 @@ const FileListingSearchBar = () => {
       style={{ display: 'inline-flex' }}
     >
       <Form.Item name="query" style={{ marginBottom: 0 }}>
-        <Input
-          placeholder="Search within Publication"
-          style={{ width: '250px' }}
-        />
+        <Input placeholder="Search Data Files" style={{ width: '250px' }} />
       </Form.Item>
       <Button htmlType="submit">
         <i className="fa fa-search"></i>
@@ -43,8 +34,9 @@ const FileListingSearchBar = () => {
 export const PublishedDetailLayout: React.FC = () => {
   const { projectId, path } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data, isError } = usePublicationDetail(projectId ?? '');
+  const { data } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
+
   const version = (projectId ?? '').split('v')[1];
   useEffect(() => {
     if (version) {
@@ -54,33 +46,14 @@ export const PublishedDetailLayout: React.FC = () => {
     }
   }, [version, searchParams, setSearchParams]);
 
-  if (isError) {
-    return (
-      <Layout>
-        <Alert
-          showIcon
-          type="error"
-          style={{ marginTop: '16px', color: '#d9534f', textAlign: 'center' }}
-          description={'There was an error fetching this publication'}
-        />
-      </Layout>
-    );
-  }
-
-  if (!projectId || !data)
-    return (
-      <Layout style={{ position: 'relative' }}>
-        <Spin style={{ position: 'absolute', top: '50%', left: '50%' }} />
-      </Layout>
-    );
+  if (!projectId || !data) return null;
 
   if (searchParams.get('q') && !path) {
     return (
       <Navigate
-        to={`/public/designsafe.storage.published/${projectId}/%2F${projectId}?q=${searchParams.get(
+        to={`/public/designsafe.storage.published/${projectId}/${projectId}?q=${searchParams.get(
           'q'
         )}`}
-        replace
       />
     );
   }
@@ -90,82 +63,21 @@ export const PublishedDetailLayout: React.FC = () => {
   )?.publicationDate;
 
   return (
-    <Layout style={{ paddingBottom: '100px' }}>
-      <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-        <DatafilesToolbar searchInput={<FileListingSearchBar />} />
-      </div>
+    <div style={{ width: '100%', paddingBottom: '100px' }}>
+      <DatafilesToolbar searchInput={<FileListingSearchBar />} />
       <div
-        style={{
-          marginTop: '20px',
-          marginBottom: '20px',
-          fontSize: '20px',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1rem',
-        }}
+        className="prj-head-title"
+        style={{ marginTop: '20px', marginBottom: '20px' }}
       >
-        <span>
-          <strong>{data.baseProject.projectId}</strong> |{' '}
-          {data.baseProject.title}
-        </span>
-        <DownloadDatasetModal
-          projectId={projectId}
-          license={data.baseProject.license}
-        />
+        <strong>{data.baseProject.projectId}</strong>&nbsp;|&nbsp;
+        {data.baseProject.title}
       </div>
-
-      {data.baseProject.projectType === 'other' && (
-        <>
-          {data.baseProject.tombstone && (
-            <Alert
-              showIcon
-              type="warning"
-              message={
-                <strong>The following Dataset does not exist anymore</strong>
-              }
-              description={
-                <div>
-                  The Dataset with DOI:{' '}
-                  <a href={`https://doi.org/${data.baseProject.dois[0]}`}>
-                    {data.baseProject.dois[0]}
-                  </a>{' '}
-                  was incomplete and removed. The metadata is still available.
-                </div>
-              }
-            />
-          )}
-          <section
-            style={{
-              backgroundColor: '#eef9fc',
-              padding: '10px 20px',
-              margin: '10px 0px',
-            }}
-          >
-            <strong>Cite This Data:</strong>
-
-            <PublishedCitation
-              projectId={projectId}
-              entityUuid={data.tree.children[0].uuid}
-            />
-            <br />
-            <div>
-              <DownloadCitation
-                projectId={projectId}
-                entityUuid={data.tree.children[0].uuid}
-              />
-            </div>
-          </section>
-        </>
-      )}
       <BaseProjectDetails
         projectValue={data?.baseProject}
         publicationDate={publicationDate}
         versions={allVersions}
-        isPublished
       />
       <Outlet />
-    </Layout>
+    </div>
   );
 };

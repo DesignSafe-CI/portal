@@ -3,7 +3,7 @@ import { BaseProjectForm } from '../forms/BaseProjectForm';
 import React, { useCallback, useMemo, useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Alert, Button, Modal, Radio, Steps } from 'antd';
-import { TBaseProjectValue, useChangeProjectType } from '@client/hooks';
+import { TBaseProjectValue } from '@client/hooks';
 import { experimentSteps } from './ProjectInfoStepper/ExperimentalSteps';
 import { SimulationSteps } from './ProjectInfoStepper/SimulationSteps';
 import { sensitiveDataContext } from './ProjectInfoStepper/sensitiveDataContext';
@@ -73,12 +73,11 @@ const ProjectTypeSelector: React.FC<{
   );
 };
 
-export const ProjectInfoDisplay: React.FC<{
+const ProjectInfoDisplay: React.FC<{
   projectType: TBaseProjectValue['projectType'];
-  showProtectedDataOptions?: boolean;
   onGoBack: () => void;
   onComplete: () => void;
-}> = ({ projectType, showProtectedDataOptions, onGoBack, onComplete }) => {
+}> = ({ projectType, onGoBack, onComplete }) => {
   const steps = useMemo(() => {
     switch (projectType) {
       case 'experimental':
@@ -86,9 +85,7 @@ export const ProjectInfoDisplay: React.FC<{
       case 'simulation':
         return SimulationSteps;
       case 'field_recon':
-        return showProtectedDataOptions
-          ? fieldReconSteps
-          : fieldReconSteps.slice(0, -1);
+        return fieldReconSteps;
       default:
         return [
           {
@@ -227,13 +224,6 @@ export const ChangeProjectTypeModal: React.FC<{
   >('PROJECT_TYPE');
 
   const [sensitiveDataOption, setSensitiveDataOption] = useState(0);
-  const { mutate } = useChangeProjectType(projectId);
-
-  const onSubmit = (formData: Record<string, unknown>) => {
-    const projectValue = { ...formData, projectId, projectType: selectedType };
-    mutate({ value: projectValue, sensitiveData: sensitiveDataOption > 0 });
-    handleClose();
-  };
 
   return (
     <>
@@ -242,7 +232,7 @@ export const ChangeProjectTypeModal: React.FC<{
         open={isModalOpen}
         onCancel={handleClose}
         width={900}
-        title={<h2>Change Project Type</h2>}
+        title={<h2>Select a Project Type</h2>}
         footer={null}
       >
         <article>
@@ -275,6 +265,9 @@ export const ChangeProjectTypeModal: React.FC<{
             }
           />
 
+          {currentDisplay === 'PROJECT_FORM' && (
+            <BaseProjectForm projectId={projectId} />
+          )}
           {currentDisplay === 'PROJECT_TYPE' && (
             <ProjectTypeSelector
               selectedType={selectedType}
@@ -287,7 +280,6 @@ export const ChangeProjectTypeModal: React.FC<{
               value={{ sensitiveDataOption, setSensitiveDataOption }}
             >
               <ProjectInfoDisplay
-                showProtectedDataOptions
                 projectType={selectedType}
                 onGoBack={() => setCurrentDisplay('PROJECT_TYPE')}
                 onComplete={() => setCurrentDisplay('PROJECT_FORM')}
@@ -295,11 +287,7 @@ export const ChangeProjectTypeModal: React.FC<{
             </sensitiveDataContext.Provider>
           )}
           {currentDisplay === 'PROJECT_FORM' && (
-            <BaseProjectForm
-              projectId={projectId}
-              onSubmit={onSubmit}
-              projectType={selectedType}
-            />
+            <BaseProjectForm projectId={projectId} />
           )}
         </article>
       </Modal>

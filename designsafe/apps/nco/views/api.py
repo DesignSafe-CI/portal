@@ -75,20 +75,9 @@ class TtcGrantsView(BaseApiView):
         """Return a list of all TTC Grants."""
         ttc_mgr = NcoTtcGrantsManager(request.user)
         facility = request.GET.get('facility')
+        category = request.GET.get('category')
         sort = request.GET.get('sort')
-        hazard_type = request.GET.get('hazard_type')
-        grant_type = request.GET.get('grant_type')
-        text_search = request.GET.get('text_search')
-
-        params = {
-            'facility': facility,
-            'sort': sort,
-            'hazard_type': hazard_type,
-            'grant_type': grant_type,
-            'text_search': text_search,
-        }
-
-        grants = ttc_mgr.ttc_grants(params)
+        grants = ttc_mgr.ttc_grants(facility,category,sort)
         return MongoJsonResponse({
             "status": "OK",
             "response": grants,
@@ -105,24 +94,13 @@ class TtcFacilitiesView(BaseApiView):
             "response": facilities,
         })
 
-class TtcGrantTypesView(BaseApiView):
-    """NCO TTC Grant Types View."""
+class TtcCategoriesView(BaseApiView):
+    """NCO TTC Grants Facilities View."""
 
     def get(self,request):
         ttc_mgr = NcoTtcGrantsManager(request.user)
-        grant_types = ttc_mgr.ttc_grant_types()
+        categories = ttc_mgr.ttc_categories()
         return MongoJsonResponse({
             "status": "OK",
-            "response": grant_types,
-        })
-
-class TtcHazardTypesView(BaseApiView):
-    """NCO TTC Hazard Types View."""
-
-    def get(self,request):
-        ttc_mgr = NcoTtcGrantsManager(request.user)
-        hazard_types = ttc_mgr.ttc_hazard_types()
-        return MongoJsonResponse({
-            "status": "OK",
-            "response": hazard_types,
+            "response": categories,
         })

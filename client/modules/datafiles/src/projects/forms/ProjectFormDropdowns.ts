@@ -51,8 +51,7 @@ export const facilityOptions = [
   { value: 'neer', label: 'NEER - Nearshore Extreme Event Reconnaissance' },
   {
     value: 'oseer',
-    label:
-      'OSEEER - Operations and Systems Engineering Extreme Events Research',
+    label: 'OSEER - Operations and Systems Engineering Extreme Events Research',
   },
   { value: 'pheer', label: 'PHEER - Public Health Extreme Events Research' },
   {

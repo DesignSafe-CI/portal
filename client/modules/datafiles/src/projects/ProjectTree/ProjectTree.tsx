@@ -1,13 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import styles from './ProjectTree.module.css';
 import {
-  TEntityValue,
-  TPublicationTree,
   TTreeData,
   useAddEntityToTree,
   useProjectDetail,
   useProjectEntityReorder,
-  usePublicationDetail,
   useRemoveEntityFromTree,
 } from '@client/hooks';
 import { Button, Select } from 'antd';
@@ -86,7 +83,7 @@ const ProjectTreeDisplay: React.FC<{
   if (!entity) return null;
   return (
     <>
-      <span style={{ marginLeft: '5px' }}>{entity.value.title}</span>
+      <span> &nbsp;{entity.value.title}&nbsp;</span>
       <Button
         type="text"
         disabled={order === 0}
@@ -115,11 +112,10 @@ const ProjectTreeDisplay: React.FC<{
 };
 
 const RecursiveTree: React.FC<{
-  treeData: TTreeData | TPublicationTree<TEntityValue>;
+  treeData: TTreeData;
   projectId: string;
   isLast?: boolean;
-  readOnly?: boolean;
-}> = ({ treeData, projectId, readOnly, isLast = false }) => {
+}> = ({ treeData, projectId, isLast = false }) => {
   const sortedChildren = useMemo(
     () => [...(treeData.children ?? [])].sort((a, b) => a.order - b.order),
     [treeData]
@@ -130,49 +126,33 @@ const RecursiveTree: React.FC<{
 
   return (
     <li className={styles['tree-li']}>
-      <div
+      <span
         className={styles['tree-list-item']}
-        style={{ display: 'flex', alignItems: 'center' }}
+        style={{
+          backgroundColor: PROJECT_COLORS[treeData.name].fill,
+          outline: `1px solid ${PROJECT_COLORS[treeData.name].outline}`,
+        }}
       >
-        <div
-          className={styles['tree-list-badge']}
-          style={{
-            backgroundColor: PROJECT_COLORS[treeData.name].fill,
-            outline: `1px solid ${PROJECT_COLORS[treeData.name].outline}`,
-          }}
-        >
-          {DISPLAY_NAMES[treeData.name]}
-        </div>
-        {readOnly ? (
-          <div
-            style={{
-              marginLeft: '1rem',
-            }}
-          >
-            {(treeData as TPublicationTree<TEntityValue>).value.title}
-          </div>
-        ) : (
-          <ProjectTreeDisplay
-            projectId={projectId}
-            uuid={treeData.uuid}
-            nodeId={treeData.id}
-            name={treeData.name}
-            order={treeData.order ?? 0}
-            isLast={isLast}
-          />
-        )}
-      </div>
+        {DISPLAY_NAMES[treeData.name]}
+      </span>
+      <ProjectTreeDisplay
+        projectId={projectId}
+        uuid={treeData.uuid}
+        nodeId={treeData.id}
+        name={treeData.name}
+        order={treeData.order ?? 0}
+        isLast={isLast}
+      />
       <ul className={styles['tree-ul']}>
         {sortedChildren.map((child, idx) => (
           <RecursiveTree
             treeData={child}
             key={child.id}
             projectId={projectId}
-            readOnly={readOnly}
             isLast={idx === sortedChildren.length - 1}
           />
         ))}
-        {showDropdown && !readOnly && (
+        {showDropdown && (
           <li className={styles['tree-li']}>
             <span className={styles['tree-select-item']}>
               <EntitySelector
@@ -196,25 +176,6 @@ export const ProjectTree: React.FC<{ projectId: string }> = ({ projectId }) => {
   return (
     <ul className={styles['tree-base']}>
       <RecursiveTree treeData={treeJSON} projectId={projectId} isLast />
-    </ul>
-  );
-};
-
-export const PublicationTree: React.FC<{ projectId: string }> = ({
-  projectId,
-}) => {
-  const { data } = usePublicationDetail(projectId);
-  const treeJSON = data?.tree;
-
-  if (!treeJSON) return <div>project tree</div>;
-  return (
-    <ul className={styles['tree-base']}>
-      <RecursiveTree
-        treeData={treeJSON}
-        projectId={projectId}
-        isLast
-        readOnly
-      />
     </ul>
   );
 };

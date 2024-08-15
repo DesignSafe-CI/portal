@@ -1,12 +1,9 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { FileListing } from '@client/datafiles';
-import { DatafilesBreadcrumb } from '@client/common-components';
-import { usePublicationDetail } from '@client/hooks';
+import { DatafilesBreadcrumb, FileListing } from '@client/datafiles';
 
 export const PublishedFileListingLayout: React.FC = () => {
   const { projectId, path } = useParams();
-  const { data } = usePublicationDetail(projectId ?? '');
   if (!projectId) return null;
   return (
     <>
@@ -20,7 +17,8 @@ export const PublishedFileListingLayout: React.FC = () => {
         path={path ?? ''}
         baseRoute={`/public/designsafe.storage.published/${projectId}`}
         systemRootAlias={projectId}
-        systemRoot={`/${projectId}`}
+        systemRoot={projectId}
+        skipBreadcrumbs={1}
         itemRender={(obj) => {
           return (
             <Link className="breadcrumb-link" to={obj.path ?? '/'}>
@@ -35,7 +33,6 @@ export const PublishedFileListingLayout: React.FC = () => {
           api="tapis"
           system="designsafe.storage.published"
           path={path ?? ''}
-          fileTags={data?.fileTags}
           scroll={{ y: 500 }}
         />
       </div>

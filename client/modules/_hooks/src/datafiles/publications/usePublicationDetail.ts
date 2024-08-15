@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../apiClient';
-import { TBaseProjectValue, TEntityValue, TFileTag } from '../projects';
+import { TBaseProjectValue, TEntityValue } from '../projects';
 
 export type TPublicationTree<T> = {
   name: string;
@@ -9,8 +9,6 @@ export type TPublicationTree<T> = {
   basePath: string;
   value: T;
   publicationDate: string;
-  versionDate?: string;
-  versionInfo?: string;
   status: string;
   order: number;
   version?: number;
@@ -20,7 +18,6 @@ export type TPublicationTree<T> = {
 export type TPublicationDetailResponse = {
   tree: TPublicationTree<TBaseProjectValue | undefined>;
   baseProject: TBaseProjectValue;
-  fileTags: TFileTag[];
 };
 
 async function getPublicationDetail({

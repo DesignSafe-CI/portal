@@ -27,7 +27,10 @@ class NcoProjectsManager(object):
         :param user: Django user instance.
         """
         self.user = user
-        self._ac = service_account()
+        if user.is_authenticated:
+            self._ac = user.agave_oauth.client
+        else:
+            self._ac = service_account()
 
         self._mp = MongoProjectsHelper(self._ac)
         self._pm = ProjectsManager(self._ac)

@@ -1,47 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-export type TPortalApp = {
-  app_id: string;
-  app_type: string;
-  bundle_category: string;
-  bundle_href: string;
-  bundle_id: number;
-  bundle_label: string;
-  html?: string;
-  icon?: string;
-  is_bundled: boolean;
-  label: string;
-  shortLabel?: string;
-  version?: string;
-  userGuideLink?: string;
+type AppMeta = {
+  uuid: string;
+  value: {
+    definition: {
+      id: string;
+    };
+  };
 };
 
-export type TAppCategory = {
-  apps: TPortalApp[];
-  priority: number;
-  title: string;
-};
-
-export type TAppCategories = {
-  categories: TAppCategory[];
-  htmlDefinitions: { [dynamic: string]: TPortalApp };
-};
-
-async function getAppsListing() {
-  const res = await apiClient.get<TAppCategories>(`/api/workspace/tray/`);
+async function getAppsListing({ signal }: { signal: AbortSignal }) {
+  const res = await apiClient.get<AppMeta[]>(
+    `/applications/api/meta/?q=%7B"$and":%5B%7B"name":"ds_apps"%7D,%7B"value.definition.available":true%7D%5D%7D`,
+    { signal }
+  );
   return res.data;
 }
 
-export const appsListingQuery = {
-  queryKey: ['workspace', 'appsListing'],
-  queryFn: getAppsListing,
-  staleTime: 1000 * 60 * 5, // 5 minute stale time
-  refetchOnMount: false,
-};
-
 function useAppsListing() {
-  return useQuery(appsListingQuery);
+  return useQuery({
+    queryKey: ['workspace', 'appsListing'],
+    queryFn: getAppsListing,
+  });
 }
 
 export default useAppsListing;

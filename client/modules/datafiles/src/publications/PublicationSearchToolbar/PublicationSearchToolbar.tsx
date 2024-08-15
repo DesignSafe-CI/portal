@@ -61,10 +61,7 @@ export const PublicationSearchToolbar: React.FC = () => {
           allowClear
           id="nh-type-select"
           placeholder="All Types"
-          options={[
-            { label: 'All Types', value: null },
-            ...dropdownOptions.nhTypeOptions,
-          ]}
+          options={dropdownOptions.nhTypeOptions}
           popupMatchSelectWidth={false}
           value={searchParams.get('nh-type')}
           onChange={(v) => setSearchParam('nh-type', v)}
@@ -79,7 +76,7 @@ export const PublicationSearchToolbar: React.FC = () => {
         <Select
           style={{ width: '150px' }}
           id="publication-year-select"
-          options={[{ label: 'All Years', value: null }, ...yearOptions]}
+          options={yearOptions}
           allowClear
           placeholder="All Years"
           popupMatchSelectWidth={false}

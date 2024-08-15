@@ -24,12 +24,12 @@
 
 .ttc-search {
     display: block;
-    padding: 5px;
+    padding: 10px;
 }
 
-.filter-group {
+.ttc-facility-filter, .ttc-sort-filter, .ttc-category-filter {
     display: inline;
-    padding: 5px;
+    padding: 10px;
 }
 
 .ttc-row {

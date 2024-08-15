@@ -70,6 +70,16 @@ const ExperimentOverview1 = (
           Curation office hours
         </a>
       </li>
+      <li>
+        {' '}
+        <a
+          href="/learning-center/training/"
+          target="_blank"
+          aria-describedby="msg-open-new-window"
+        >
+          Webinars
+        </a>
+      </li>
     </ul>
     <p></p>
   </div>
@@ -163,7 +173,7 @@ const ExperimentOverview4 = (
         target="_blank"
         aria-describedby="msg-open-new-window"
       >
-        curation office hours
+        Curation office hours
       </a>{' '}
       at the beginning of the curation process. You can <a>download</a> and
       print this diagram to sketch and organize your work.

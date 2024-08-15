@@ -16,19 +16,21 @@ export const NewFolderModalBody: React.FC<{
   const handleNewFolderFinish = async (values: { newFolder: string }) => {
     const newFolder = values.newFolder;
 
-    mutate(
-      {
+    try {
+      await mutate({
         src: {
           api,
           system,
           path,
           dirName: newFolder,
         },
-      },
-      { onSuccess: () => handleCancel() }
-    );
+      });
 
-    // Close the modal after creating new folder
+      handleCancel(); // Close the modal after creating new folder
+    } catch (error) {
+      console.error('Error during form submission:', error);
+      // Handle error if needed
+    }
   };
 
   const validateNewFolder = (_: unknown, value: string) => {

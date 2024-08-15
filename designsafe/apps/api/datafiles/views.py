@@ -23,9 +23,9 @@ metrics = logging.getLogger('metrics')
 
 def get_client(user, api):
     client_mappings = {
-        'agave': 'tapis_oauth',
-        'tapis': 'tapis_oauth',
-        'shared': 'tapis_oauth',
+        'agave': 'agave_oauth',
+        'tapis': 'agave_oauth',
+        'shared': 'agave_oauth',
         'googledrive': 'googledrive_user_token',
         'box': 'box_user_token',
         'dropbox': 'dropbox_user_token'

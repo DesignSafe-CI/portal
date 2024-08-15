@@ -1,35 +1,56 @@
-import { Form, Input, Button, Select, Alert } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import { Form, Input, Button, Select, Checkbox } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   equipmentOptions,
   observationTypeOptions,
 } from './ProjectFormDropdowns';
 
 //import { TProjectUser } from './_fields/UserSelect';
-import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
+import {
+  TBaseProjectValue,
+  TProjectUser,
+  useProjectDetail,
+} from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { CATEGORIES_BY_PROJECT_TYPE, DISPLAY_NAMES } from '../constants';
 import * as constants from '../constants';
 import { DateInput, DropdownSelect, SampleApproachInput } from './_fields';
 import { CollectionModeInput } from './_fields/CollectionModeInput';
-import { AuthorSelect } from './_fields/AuthorSelect';
-import { ProjectCategoryFormHelp } from './ProjectCategoryFormHelp';
+
+const AuthorSelect: React.FC<{
+  projectUsers: TProjectUser[];
+  value?: TProjectUser[];
+  onChange?: (value: TProjectUser[]) => void;
+}> = ({ value, onChange, projectUsers }) => {
+  const options = projectUsers.map((author) => ({
+    value: JSON.stringify(author),
+    label: `${author.fname} ${author.lname} (${author.email})`,
+  }));
+
+  const onChangeCallback = useCallback(
+    (value: string[]) => {
+      if (onChange) onChange(value.map((a) => JSON.parse(a)));
+    },
+    [onChange]
+  );
+
+  return (
+    <Checkbox.Group
+      value={projectUsers
+        .filter((user) => value?.some((v) => user.email === v.email))
+        .map((v) => JSON.stringify(v) ?? [])}
+      options={options}
+      onChange={onChangeCallback}
+    />
+  );
+};
 
 export const ProjectCategoryForm: React.FC<{
   projectType: TBaseProjectValue['projectType'];
   projectId: string;
   entityUuid?: string;
   mode: 'create' | 'edit';
-  onSubmit: CallableFunction;
-  onCancelEdit: CallableFunction;
-}> = ({
-  projectType,
-  projectId,
-  entityUuid,
-  mode = 'edit',
-  onSubmit,
-  onCancelEdit,
-}) => {
+}> = ({ projectType, projectId, entityUuid, mode = 'edit' }) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
   const [selectedName, setSelectedName] = useState<string | undefined>(
@@ -42,52 +63,38 @@ export const ProjectCategoryForm: React.FC<{
     label: DISPLAY_NAMES[name],
   }));
 
-  const category = useMemo(
-    () => data?.entities.find((e) => e.uuid === entityUuid),
-    [data, entityUuid]
-  );
+  const category = data?.entities.find((e) => e.uuid === entityUuid);
 
-  const [hasValidationErrors, setHasValidationErrors] = useState(false);
-
-  // Set initial form values
-  useEffect(() => {
+  const setValues = useCallback(() => {
     if (data && category && mode === 'edit') {
       form.setFieldsValue({ value: category.value });
       setSelectedName(category.name);
     }
-    setHasValidationErrors(false);
-  }, [projectId, category, data, form, mode]);
+  }, [data, form, category, mode]);
+  useEffect(() => setValues(), [setValues, projectId, category?.uuid]);
 
-  if (!data) return null;
+  if (!data) return <div>Loading</div>;
   return (
     <Form
-      scrollToFirstError={{ behavior: 'smooth' }}
       form={form}
-      onValuesChange={(_, v) => mode === 'create' && setSelectedName(v.name)}
+      onValuesChange={(_, v) => setSelectedName(v.name)}
       layout="vertical"
-      onFinish={(v) => {
-        onSubmit(v);
-        form.resetFields();
-        setSelectedName(undefined);
-        onCancelEdit();
-        setHasValidationErrors(false);
-      }}
-      onFinishFailed={() => setHasValidationErrors(true)}
+      onFinish={(v) => console.log(v)}
       requiredMark={customRequiredMark}
     >
       {mode === 'create' && (
         <Form.Item label="Category Type" required>
-          <article style={{ margin: '5px 0px' }}>
-            <ProjectCategoryFormHelp projectType={projectType} />
-          </article>
+          Model Configuration Files describing the design and layout of what is
+          being tested (some call this a specimen). Sensor Information Files
+          about the sensor instrumentation used in a model configuration to
+          conduct one or more event. Event Files from unique occurrences during
+          which data are generated. Analysis Tables, graphs, visualizations,
+          Jupyter Notebooks, or other representations of the results. Report
+          Written accounts made to convey information about an entire project or
+          experiment.
           <Form.Item
             name="name"
-            rules={[
-              {
-                required: true,
-                message: 'Please select a category', // Custom error message
-              },
-            ]}
+            rules={[{ required: true }]}
             className="inner-form-item"
           >
             <Select options={categoryOptions} placeholder="Select a Category" />
@@ -99,12 +106,7 @@ export const ProjectCategoryForm: React.FC<{
         necessary. Do not repeat the category type in the title.
         <Form.Item
           name={['value', 'title']}
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a title', // Custom error message
-            },
-          ]}
+          rules={[{ required: true }]}
           className="inner-form-item"
         >
           <Input />
@@ -112,17 +114,11 @@ export const ProjectCategoryForm: React.FC<{
       </Form.Item>
 
       {selectedName === constants.FIELD_RECON_PLANNING && (
-        <Form.Item label="Data Collectors" required>
+        <Form.Item label="Data Collectors">
           Select data collectors for this collection.
           <Form.Item
             name={['value', 'dataCollectors']}
             className="inner-form-item"
-            rules={[
-              {
-                required: true,
-                message: 'Please select at least one data collector.',
-              },
-            ]}
           >
             <AuthorSelect projectUsers={data.baseProject.value.users} />
           </Form.Item>
@@ -132,17 +128,11 @@ export const ProjectCategoryForm: React.FC<{
       {selectedName === constants.FIELD_RECON_GEOSCIENCE && (
         <>
           <Form.Item label="Observation Type" required>
-            The nature or subject of the data collected. Enter a custom value by
-            typing it into the field and pressing "return".
+            The nature or subject of the data collected.
             <Form.Item
               name={['value', 'observationTypes']}
               className="inner-form-item"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select/enter an observation type', // Custom error message
-                },
-              ]}
+              rules={[{ required: true }]}
             >
               <DropdownSelect options={observationTypeOptions} />
             </Form.Item>
@@ -154,12 +144,7 @@ export const ProjectCategoryForm: React.FC<{
             <div style={{ display: 'inline-flex' }}>
               <Form.Item
                 name={['value', 'dateStart']}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please enter a start date', // Custom error message
-                  },
-                ]}
+                rules={[{ required: true }]}
                 className="inner-form-item"
               >
                 <DateInput />
@@ -174,17 +159,11 @@ export const ProjectCategoryForm: React.FC<{
             </div>
           </Form.Item>
 
-          <Form.Item label="Data Collectors" required>
+          <Form.Item label="Data Collectors">
             Select data collectors for this collection.
             <Form.Item
               name={['value', 'dataCollectors']}
               className="inner-form-item"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select at least one data collector.',
-                },
-              ]}
             >
               <AuthorSelect projectUsers={data.baseProject.value.users} />
             </Form.Item>
@@ -217,18 +196,11 @@ export const ProjectCategoryForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Equipment" required>
-            The equipment used to gather your data. Enter a custom value by
-            typing it into the field and pressing "return".
+            The equipment used to gather your data.
             <Form.Item
               name={['value', 'equipment']}
               className="inner-form-item"
-              rules={[
-                {
-                  required: true,
-                  message:
-                    'Please select/enter at least one piece of equipment', // Custom error message
-                },
-              ]}
+              rules={[{ required: true }]}
             >
               <DropdownSelect options={equipmentOptions} />
             </Form.Item>
@@ -268,12 +240,7 @@ export const ProjectCategoryForm: React.FC<{
             <div style={{ display: 'inline-flex' }}>
               <Form.Item
                 name={['value', 'dateStart']}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please enter a start date', // Custom error message
-                  },
-                ]}
+                rules={[{ required: true }]}
                 className="inner-form-item"
               >
                 <DateInput />
@@ -288,17 +255,11 @@ export const ProjectCategoryForm: React.FC<{
             </div>
           </Form.Item>
 
-          <Form.Item label="Data Collectors" required>
+          <Form.Item label="Data Collectors">
             Select data collectors for this collection.
             <Form.Item
               name={['value', 'dataCollectors']}
               className="inner-form-item"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select at least one data collector.',
-                },
-              ]}
             >
               <AuthorSelect projectUsers={data.baseProject.value.users} />
             </Form.Item>
@@ -334,18 +295,11 @@ export const ProjectCategoryForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Equipment" required>
-            The equipment used to gather your data. Enter a custom value by
-            typing it into the field and pressing "return".
+            The equipment used to gather your data.
             <Form.Item
               name={['value', 'equipment']}
               className="inner-form-item"
-              rules={[
-                {
-                  required: true,
-                  message:
-                    'Please select/enter at least one piece of equipment', // Custom error message
-                },
-              ]}
+              rules={[{ required: true }]}
             >
               <DropdownSelect options={equipmentOptions} />
             </Form.Item>
@@ -364,64 +318,25 @@ export const ProjectCategoryForm: React.FC<{
         </>
       )}
 
-      <Form.Item label="Description" required>
+      <Form.Item label="Description">
         Summarize the purpose of the category and its files. What is it about?
         What are its features? Description must be between 50 and 5000
         characters in length.
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a description',
-            },
-            {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
-            },
-            {
-              max: 5000,
-              message: 'Description cannot be longer than 5000 characters',
-            },
-          ]}
+          rules={[{ min: 50 }]}
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
 
-      {hasValidationErrors && (
-        <Alert
-          type="error"
-          style={{ marginBottom: '10px' }}
-          showIcon
-          message={
-            <span>
-              One or more fields could not be validated. Please check the form
-              for errors.
-            </span>
-          }
-        />
-      )}
-
       <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        {mode === 'edit' && (
-          <Button
-            onClick={() => {
-              onCancelEdit();
-              form.resetFields();
-              setHasValidationErrors(false);
-            }}
-            style={{ marginRight: '10px' }}
-            type="link"
-          >
-            Cancel Editing
-          </Button>
-        )}
         <Button type="primary" className="success-button" htmlType="submit">
           {mode === 'create' ? (
             <span>
-              <i role="none" className="fa fa-plus"></i> Add Category
+              <i role="none" className="fa fa-plus"></i>
+              Add Category
             </span>
           ) : (
             <span>Update</span>

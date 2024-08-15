@@ -72,10 +72,6 @@ def ingest_entities_by_name(name):
     entities = iterate_entities(name)
     for entity in entities:
         schema_model = SCHEMA_MAPPING[entity["name"]]
-        if entity["value"].get("fileObjs"):
-            entity["value"]["fileObjs"] = [
-                e for e in entity["value"]["fileObjs"] if e.get("path", None)
-            ]
         try:
             value_model = schema_model.model_validate(entity["value"])
         except ValidationError as err:
@@ -130,7 +126,7 @@ def fix_authors(meta: ProjectMetadata):
     base_project = meta.base_project
 
     def get_complete_author(partial_author):
-        if partial_author.get("name") and not partial_author.get("guest"):
+        if partial_author["name"] and not partial_author["guest"]:
             author_info = next(
                 (
                     user
@@ -147,7 +143,7 @@ def fix_authors(meta: ProjectMetadata):
         meta.value["authors"] = [
             get_complete_author(author)
             for author in meta.value["authors"]
-            if author.get("authorship", True) is True
+            if author["authorship"] is True
         ]
 
     if meta.value.get("projectType") == "other":
@@ -157,20 +153,11 @@ def fix_authors(meta: ProjectMetadata):
         meta.value["dataCollectors"] = [
             get_complete_author(author)
             for author in meta.value["dataCollectors"]
-            if author.get("authorship", True) is True
+            if author["authorship"] is True
         ]
     schema_model = SCHEMA_MAPPING[meta.name]
     schema_model.model_validate(meta.value)
     meta.save()
-
-
-def fix_modified_dates():
-    """Set last_updated time to match existing metadata"""
-    name = "designsafe.project"
-    for project_meta in iterate_entities(name):
-        ProjectMetadata.objects.filter(uuid=project_meta["uuid"]).update(
-            last_updated=project_meta["lastUpdated"]
-        )
 
 
 def ingest_v2_projects():
@@ -180,7 +167,6 @@ def ingest_v2_projects():
     ingest_graphs()
     for meta in ProjectMetadata.objects.exclude(name="designsafe.project.graph"):
         fix_authors(meta)
-    fix_modified_dates()
 
 
 def ingest_publications():
@@ -223,33 +209,13 @@ def ingest_publications():
 def ingest_tombstones():
     """Ingest Elasticsearch tombstones into the db"""
 
-    tombstone_ids = [
-        "PRJ-1945",
-        "PRJ-1895",
-        "PRJ-2329",
-        "PRJ-2016",
-        "PRJ-2227",
-        "PRJ-2420",
-        "PRJ-3815",
-        "PRJ-3908",
-        "PRJ-4151",
-        "PRJ-4014",
-    ]
     all_pubs = (
-        IndexedPublication.search()
-        .filter(
-            Q("term", status="tombstone")
-            | Q("terms", **{"projectId._exact": tombstone_ids})
-        )
-        .execute()
-        .hits
+        IndexedPublication.search().filter(Q("term", status="tombstone")).execute().hits
     )
     print(all_pubs)
     for pub in all_pubs:
         try:
             pub_graph = combine_pub_versions(pub["projectId"])
-            for published_entity_node_id in pub_graph.successors("NODE_ROOT"):
-                pub_graph.nodes[published_entity_node_id]["value"]["tombstone"] = True
             latest_version: int = IndexedPublication.max_revision(pub["projectId"]) or 1
             pub_base = next(
                 (

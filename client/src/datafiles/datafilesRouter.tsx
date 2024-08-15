@@ -73,7 +73,6 @@ const datafilesRouter = createBrowserRouter(
         },
         {
           path: 'public/nees.public',
-          id: 'nees',
           children: [
             {
               path: '',
@@ -82,7 +81,7 @@ const datafilesRouter = createBrowserRouter(
             {
               path: ':neesid',
               element: <NeesDetailLayout />,
-              children: [{ path: ':path', element: <NeesDetailLayout /> }],
+              children: [{ path: ':path', element: <FileListingLayout /> }],
             },
           ],
         },
@@ -97,7 +96,6 @@ const datafilesRouter = createBrowserRouter(
         },
         {
           path: 'public',
-          id: 'published',
           children: [
             {
               path: '',
@@ -113,7 +111,6 @@ const datafilesRouter = createBrowserRouter(
               children: [
                 {
                   path: '',
-                  id: 'entity-listing',
                   element: <PublishedEntityListingLayout />,
                 },
                 {
@@ -131,7 +128,6 @@ const datafilesRouter = createBrowserRouter(
 
         {
           path: 'projects',
-          id: 'project',
           children: [
             {
               path: ':projectId/prepare-to-publish/start',
@@ -143,7 +139,6 @@ const datafilesRouter = createBrowserRouter(
             },
             {
               path: '',
-              id: 'project-listing',
               element: <ProjectListingLayout />,
             },
             {

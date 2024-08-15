@@ -25,18 +25,17 @@ Examples:
 from django.conf import settings
 from django.urls import include, re_path as url
 from django.conf.urls.static import static
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
 from django.views.generic import RedirectView, TemplateView
 from django.urls import reverse, path
-from django.http import HttpResponseRedirect
-from designsafe.apps.auth.views import tapis_oauth as login
+from django.http import HttpResponse, HttpResponseRedirect
+from designsafe.apps.auth.views import login_options as des_login_options
 from django.contrib.auth.views import LogoutView as des_logout
 from designsafe.views import project_version as des_version, redirect_old_nees
 from impersonate import views as impersonate_views
 
 # sitemap - classes must be imported and added to sitemap dictionary
-from django.contrib.sitemaps.views import sitemap, index
+from django.contrib.sitemaps.views import sitemap
 from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap
 from designsafe import views
 
@@ -75,18 +74,8 @@ urlpatterns = [
         ),
         path("admin/", admin.site.urls),
 
-        path(
-            "sitemap.xml",
-            index,
-            {"sitemaps": sitemaps},
-            name="django.contrib.sitemaps.views.index",
-        ),
-        path(
-            "sitemap-<section>.xml",
-            sitemap,
-            {"sitemaps": sitemaps},
-            name="django.contrib.sitemaps.views.sitemap",
-        ),
+        # sitemap
+        url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 
         # terms-and-conditions
         url(r'^terms/', include('termsandconditions.urls')),
@@ -101,7 +90,6 @@ urlpatterns = [
         url(r'^data/', include(('designsafe.apps.data.urls', 'designsafe.apps.data'), namespace='designsafe_data')),
         url(r'^rw/workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'),
             namespace='designsafe_workspace')),
-        path('api/workspace/', include('designsafe.apps.workspace.api.urls', namespace='workspace_api')),
         url(r'^notifications/', include(('designsafe.apps.notifications.urls', 'designsafe.apps.notifications'),
             namespace='designsafe_notifications')),
         url(r'^search/', include(('designsafe.apps.search.urls', 'designsafe.apps.search'),
@@ -160,14 +148,14 @@ urlpatterns = [
     # auth
     url(r'^auth/', include(('designsafe.apps.auth.urls', 'designsafe.apps.auth'), namespace='designsafe_auth')),
 
-    url(r'^login/$', login, name='login'),
+    url(r'^login/$', des_login_options, name='login'),
     url(r'^logout/$', des_logout.as_view(), name='logout'),
 
     # help
     url(r'^help/', include(('designsafe.apps.djangoRT.urls', 'designsafe.apps.djangoRT'), namespace='djangoRT')),
 
     # webhooks
-    path('webhooks/', include('designsafe.apps.webhooks.urls', namespace='webhooks')),
+    url(r'^webhooks/', include('designsafe.webhooks')),
 
     # version check
     url(r'^version/', des_version),
@@ -182,8 +170,4 @@ urlpatterns = [
     url(r'^', include('cms.urls')),
 ]
 if settings.DEBUG:
-    # https://docs.djangoproject.com/en/4.2/howto/static-files/#serving-files-uploaded-by-a-user-during-development
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-    # https://docs.djangoproject.com/en/4.2/ref/contrib/staticfiles/#static-file-development-view
-    urlpatterns += staticfiles_urlpatterns()
+    urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

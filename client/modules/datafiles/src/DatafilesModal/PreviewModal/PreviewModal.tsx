@@ -1,28 +1,19 @@
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  TFileListing,
-  useAuthenticatedUser,
-  useFileListingRouteParams,
-  useFilePreview,
-} from '@client/hooks';
+import { useFilePreview } from '@client/hooks';
 import { Button, Modal } from 'antd';
 import React, { useCallback, useState } from 'react';
 import styles from './PreviewModal.module.css';
 import { TModalChildren } from '../DatafilesModal';
 import { PreviewSpinner, PreviewContent } from './PreviewContent';
-import { PreviewMetadata } from './PreviewMetadata';
-import { CopyModal } from '../CopyModal';
-import { DownloadModal } from '../DownloadModal';
-import { MoveModal } from '../MoveModal';
 
 export const PreviewModalBody: React.FC<{
   isOpen: boolean;
   api: string;
+  system: string;
   scheme?: string;
-
-  selectedFile: TFileListing;
+  path: string;
   handleCancel: () => void;
-}> = ({ isOpen, api, scheme, selectedFile, handleCancel }) => {
+}> = ({ isOpen, api, system, scheme, path, handleCancel }) => {
   /* 
   Typically modals are rendered in the same component as the button that manages the
   open/closed state. The modal body is exported separately for file previews, since 
@@ -31,32 +22,23 @@ export const PreviewModalBody: React.FC<{
   const queryClient = useQueryClient();
   const { data, isLoading } = useFilePreview({
     api,
-    system: selectedFile.system,
+    system,
     scheme,
-    path: selectedFile.path,
-    doi: selectedFile.doi,
+    path,
     queryOptions: { enabled: isOpen },
   });
 
-  const { path: listingPath } = useFileListingRouteParams();
   const handleClose = useCallback(() => {
     // Flush queries on close to prevent stale postits being read from cache.
     queryClient.removeQueries({ queryKey: ['datafiles', 'preview'] });
     handleCancel();
   }, [handleCancel, queryClient]);
 
-  const { user } = useAuthenticatedUser();
-  const isReadOnly = [
-    'designsafe.storage.published',
-    'designsafe.storage.community',
-    'nees.public',
-  ].includes(selectedFile.system);
-
   if (!isOpen) return null;
 
   return (
     <Modal
-      title={<h2>File Preview: {selectedFile.path.split('/').slice(-1)}</h2>}
+      title={<h2>File Preview: {path}</h2>}
       width="60%"
       open={isOpen}
       footer={() => (
@@ -66,74 +48,12 @@ export const PreviewModalBody: React.FC<{
       )}
       onCancel={handleClose}
     >
-      <PreviewMetadata
-        selectedFile={selectedFile}
-        fileMeta={data?.fileMeta ?? {}}
-      />
-      <div
-        style={{
-          display: 'flex',
-          marginTop: '10px',
-          gap: '10px',
-          justifyContent: 'center',
-        }}
-      >
-        {!selectedFile.path.endsWith('.hazmapper') && (
-          <>
-            {!isReadOnly && api === 'tapis' && (
-              <MoveModal
-                api={api}
-                system={selectedFile.system}
-                path={listingPath}
-                selectedFiles={[selectedFile]}
-                successCallback={handleCancel}
-              >
-                {({ onClick }) => (
-                  <Button onClick={onClick}>
-                    <i role="none" className="fa fa-arrows" />
-                    <span>&nbsp;Move</span>
-                  </Button>
-                )}
-              </MoveModal>
-            )}
-
-            {user && (
-              <CopyModal
-                api={api}
-                system={selectedFile.system}
-                path={listingPath}
-                selectedFiles={[selectedFile]}
-              >
-                {({ onClick }) => (
-                  <Button onClick={onClick}>
-                    <i role="none" className="fa fa-copy" />
-                    <span>&nbsp;Copy</span>
-                  </Button>
-                )}
-              </CopyModal>
-            )}
-            <DownloadModal
-              api={api}
-              system={selectedFile.system}
-              selectedFiles={[selectedFile]}
-            >
-              {({ onClick }) => (
-                <Button onClick={onClick}>
-                  <i role="none" className="fa fa-cloud-download" />
-                  <span>&nbsp;Download</span>
-                </Button>
-              )}
-            </DownloadModal>
-          </>
-        )}
-      </div>
       <div className={styles.modalContentContainer}>
         {isLoading && <PreviewSpinner />}
         {data && isOpen && (
           <PreviewContent
             href={data.href}
             fileType={data.fileType}
-            handleCancel={handleClose}
           ></PreviewContent>
         )}
       </div>
@@ -143,14 +63,16 @@ export const PreviewModalBody: React.FC<{
 
 type TPreviewModal = React.FC<{
   api: string;
+  system: string;
   scheme?: string;
-  selectedFile: TFileListing;
+  path: string;
   children: TModalChildren;
 }>;
 export const PreviewModal: TPreviewModal = ({
   api,
+  system,
   scheme,
-  selectedFile,
+  path,
   children,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -169,8 +91,9 @@ export const PreviewModal: TPreviewModal = ({
       {isModalOpen && (
         <PreviewModalBody
           api={api}
+          system={system}
           scheme={scheme}
-          selectedFile={selectedFile}
+          path={path}
           isOpen={isModalOpen}
           handleCancel={handleCancel}
         />

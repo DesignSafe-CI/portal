@@ -1,0 +1,20 @@
+[
+  {
+    "fields": {
+      "username": "ds_user",
+      "first_name": "DesignSafe",
+      "last_name": "User",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2016-03-01T00:00:00.000Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "",
+      "email": "user@designsafe-ci.org",
+      "date_joined": "2016-03-01T00:00:00.000Z"
+    },
+    "model": "auth.user",
+    "pk": 2
+  }
+]

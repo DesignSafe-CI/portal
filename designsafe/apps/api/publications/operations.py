@@ -167,7 +167,7 @@ def metrics(project_id, *args, **kwargs):
     return metrics_meta
 
 
-def neeslisting(offset=0, limit=100, limit_fields=True, q='', *args):
+def neeslisting(offset=0, limit=100, limit_fields=True, *args):
     client = new_es_client()
     pub_query = IndexedPublicationLegacy.search(using=client)
     pub_query = pub_query.extra(from_=offset, size=limit)
@@ -178,9 +178,8 @@ def neeslisting(offset=0, limit=100, limit_fields=True, q='', *args):
         )
     res = pub_query.execute()
     hits = list(map(lambda h: h.to_dict(), res.hits))
-    if q:
-        return neessearch(offset=offset, limit=limit, query_string=q)
-    return {'listing': hits, 'total': res.hits.total.value}
+
+    return {'listing': hits}
 
 def neessearch(offset=0, limit=100, query_string='', limit_fields=True, *args):
 
@@ -204,7 +203,7 @@ def neessearch(offset=0, limit=100, query_string='', limit_fields=True, *args):
         )
     res = pub_query.execute()
     hits = list(map(lambda h: h.to_dict(), res.hits))
-    return {'listing': hits, 'total': res.hits.total.value}
+    return {'listing': hits}
 
 
 def description(project_id, revision=None, *args):

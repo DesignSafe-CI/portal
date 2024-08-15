@@ -2,17 +2,16 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
 import { Button, Modal, Select, Table } from 'antd';
 import {
-  TFileListing,
   useAuthenticatedUser,
   useFileCopy,
   usePathDisplayName,
+  useSelectedFiles,
 } from '@client/hooks';
 import {
   FileListingTable,
-  FileTypeIcon,
   TFileListingColumns,
-} from '@client/common-components';
-import { BaseFileListingBreadcrumb } from '@client/common-components';
+} from '../../FileListing/FileListingTable/FileListingTable';
+import { BaseFileListingBreadcrumb } from '../../DatafilesBreadcrumb/DatafilesBreadcrumb';
 import styles from './CopyModal.module.css';
 import { toBytes } from '../../FileListing/FileListing';
 import { CopyModalProjectListing } from './CopyModalProjectListing';
@@ -21,12 +20,6 @@ const SelectedFilesColumns: TFileListingColumns = [
   {
     title: 'Files/Folders to Copy',
     dataIndex: 'name',
-    render: (value, record) => (
-      <span>
-        <FileTypeIcon name={value} type={record.type} />
-        &nbsp;&nbsp;{value}
-      </span>
-    ),
   },
   {
     title: <span />,
@@ -113,14 +106,14 @@ export const CopyModal: React.FC<{
   api: string;
   system: string;
   path: string;
-  selectedFiles: TFileListing[];
   children: TModalChildren;
-}> = ({ api, system, path, selectedFiles, children }) => {
+}> = ({ api, system, path, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
 
+  const { selectedFiles } = useSelectedFiles(api, system, path);
   const { user } = useAuthenticatedUser();
 
   const defaultDestParams = useMemo(
@@ -197,7 +190,6 @@ export const CopyModal: React.FC<{
         mutate({
           src: { api, system, path: encodeURIComponent(f.path) },
           dest: { api: destApi, system: destSystem, path: dPath },
-          doi: f.doi,
         })
       );
       handleClose();
@@ -264,7 +256,7 @@ export const CopyModal: React.FC<{
                   <BaseFileListingBreadcrumb
                     api={destApi}
                     system={destSystem}
-                    path={decodeURIComponent(destPath)}
+                    path={destPath}
                     systemRootAlias={dest.destProjectId}
                     initialBreadcrumbs={
                       destSystem.startsWith('project-')
@@ -293,7 +285,6 @@ export const CopyModal: React.FC<{
                         listing.filter((f) => f.type === 'dir')
                       }
                       scroll={undefined}
-                      emptyListingDisplay="No folders to display."
                     />
                   </div>
                 </>

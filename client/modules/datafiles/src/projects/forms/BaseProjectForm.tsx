@@ -1,5 +1,5 @@
-import { Alert, Button, Form, Input, Popconfirm, Select } from 'antd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, Form, Input, Select } from 'antd';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   nhTypeOptions,
   facilityOptions,
@@ -16,13 +16,10 @@ import {
   ReferencedDataInput,
 } from './_fields';
 import { TProjectUser } from './_fields/UserSelect';
-import {
-  TBaseProjectValue,
-  useAuthenticatedUser,
-  useProjectDetail,
-} from '@client/hooks';
+import { TBaseProjectValue, useProjectDetail } from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { AuthorSelect } from './_fields/AuthorSelect';
+import { ChangeProjectTypeModal } from '../modals';
 import { ProjectTypeRadioSelect } from '../modals/ProjectTypeRadioSelect';
 
 export const ProjectTypeInput: React.FC<{
@@ -83,18 +80,11 @@ export const ProjectTypeInput: React.FC<{
 
 export const BaseProjectForm: React.FC<{
   projectId: string;
-  projectType?: string;
-  onSubmit: (patchMetadata: Record<string, unknown>) => void;
-  changeTypeModal?: React.ReactElement;
-}> = ({ projectId, projectType, onSubmit, changeTypeModal }) => {
+  onChangeType?: () => void;
+}> = ({ projectId, onChangeType }) => {
   const [form] = Form.useForm();
   const { data } = useProjectDetail(projectId ?? '');
-
-  const [hasValidationErrors, setHasValidationErrors] = useState(false);
-
-  if (!projectType) {
-    projectType = data?.baseProject.value.projectType;
-  }
+  const projectType = data?.baseProject.value.projectType;
 
   function processFormData(formData: Record<string, TProjectUser[]>) {
     const { pi, coPis, teamMembers, guestMembers, ...rest } = formData;
@@ -123,46 +113,29 @@ export const BaseProjectForm: React.FC<{
     };
   }
 
-  const watchedPi = Form.useWatch(['pi'], form);
-  const watchedCoPis = Form.useWatch(['coPis'], form);
-  const watchedMembers = Form.useWatch(['teamMembers'], form);
-  const watchedGuestMembers = Form.useWatch(['guestMembers'], form);
+  const watchedValues = Form.useWatch([], form);
   const watchedUsers = useMemo(
     () => [
-      ...(watchedPi ?? []),
-      ...(watchedCoPis ?? []),
-      ...(watchedMembers ?? []),
-      ...(watchedGuestMembers?.filter(
-        (f: TProjectUser) => !!f && f.fname && f.lname && f.email && f.inst
-      ) ?? []),
+      ...(watchedValues?.pi ?? []),
+      ...(watchedValues?.coPis ?? []),
+      ...(watchedValues?.teamMembers ?? []),
+      ...(watchedValues?.guestMembers ?? []),
     ],
-    [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
+    [
+      watchedValues?.pi,
+      watchedValues?.coPis,
+      watchedValues?.teamMembers,
+      watchedValues?.guestMembers,
+    ]
   );
-
-  const { user } = useAuthenticatedUser();
-  const [showConfirm, setShowConfirm] = useState(false);
-  const onFormSubmit = (
-    v: Record<string, unknown> & { users: TProjectUser[] }
-  ) => {
-    setHasValidationErrors(false);
-    const currentUserInProject = v.users.find(
-      (u) => u.username === user?.username
-    );
-    if (!currentUserInProject && !showConfirm) {
-      setShowConfirm(true);
-    } else {
-      onSubmit(v);
-    }
-  };
 
   if (!data) return <div>Loading</div>;
   return (
     <Form
-      scrollToFirstError
       form={form}
       layout="vertical"
-      onFinish={(v) => onFormSubmit(processFormData(v))}
-      onFinishFailed={() => setHasValidationErrors(true)}
+      onFinish={(v) => console.log(processFormData(v))}
+      onFinishFailed={(v) => console.log(processFormData(v.values))}
       requiredMark={customRequiredMark}
     >
       <Form.Item label="Project Title" required>
@@ -170,12 +143,7 @@ export const BaseProjectForm: React.FC<{
         system, and research approach. Define all acronyms.
         <Form.Item
           name="title"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a title', // Custom error message
-            },
-          ]}
+          rules={[{ required: true }]}
           className="inner-form-item"
         >
           <Input />
@@ -183,73 +151,62 @@ export const BaseProjectForm: React.FC<{
       </Form.Item>
 
       {/*TODO: disable in situations where project type shouldn't be changed.*/}
-      {changeTypeModal && (
-        <Form.Item label="Project Type">
-          <ProjectTypeInput projectType={data.baseProject.value.projectType} />
-          {changeTypeModal}
-        </Form.Item>
-      )}
+      <Form.Item label="Project Type">
+        <ProjectTypeInput projectType={data.baseProject.value.projectType} />
+        <ChangeProjectTypeModal projectId={projectId}>
+          {({ onClick }) => (
+            <Button
+              onClick={(evt) => {
+                onChangeType && onChangeType();
+                onClick(evt);
+              }}
+              type="link"
+            >
+              <strong>Change Project Type</strong>
+            </Button>
+          )}
+        </ChangeProjectTypeModal>
+      </Form.Item>
 
       {projectType === 'field_recon' && (
         <Form.Item label="Field Research Type" required>
-          Specify the Field Research being performed. Enter a custom value by
-          typing it into the field and pressing "return".
+          Specify the Field Research being performed.
           <Form.Item
             name="frTypes"
             className="inner-form-item"
-            rules={[
-              {
-                required: true,
-                message: 'Please select/enter a field research type', // Custom error message
-              },
-            ]}
+            rules={[{ required: true }]}
           >
             <DropdownSelect options={frTypeOptions} />
           </Form.Item>
         </Form.Item>
       )}
 
-      {projectType !== 'None' && (
-        <Form.Item label="Natural Hazard Types" required>
-          Specify the natural hazard being researched. Enter a custom value by
-          typing it into the field and pressing "return".
-          <Form.Item
-            name="nhTypes"
-            className="inner-form-item"
-            rules={[
-              {
-                required: true,
-                message: 'Please select/enter a natural hazard type', // Custom error message
-              },
-            ]}
-          >
-            <DropdownSelect options={nhTypeOptions} />
-          </Form.Item>
+      <Form.Item label="Natural Hazard Types" required>
+        Specify the natural hazard being researched.
+        <Form.Item
+          name="nhTypes"
+          className="inner-form-item"
+          rules={[{ required: true }]}
+        >
+          <DropdownSelect options={nhTypeOptions} />
         </Form.Item>
-      )}
+      </Form.Item>
 
       {projectType === 'other' && (
         <>
           <Form.Item label="Data Types" required>
-            The nature or genre of the content. Enter a custom value by typing
-            it into the field and pressing "return".
+            The nature or genre of the content.
             <Form.Item
               className="inner-form-item"
               name="dataTypes"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select/enter a data type', // Custom error message
-                },
-              ]}
+              rules={[{ required: true }]}
             >
               <DropdownSelect options={dataTypeOptions} />
             </Form.Item>
           </Form.Item>
 
           <Form.Item label="Facilities">
-            Specify the facilities involved in this research. Enter a custom
-            value by typing it into the field and pressing "return".
+            Specify the facilities involved in this research.
             <Form.Item
               className="inner-form-item"
               name="facilities"
@@ -262,35 +219,18 @@ export const BaseProjectForm: React.FC<{
       )}
 
       <div style={{ display: 'flex', gap: '1rem' }}>
-        <Form.Item
-          label="Principal Investigator"
-          required
-          className="flex-1"
-          style={{ overflow: 'hidden' }}
-        >
+        <Form.Item label="Principal Investigator" required className="flex-1">
           These users can view, edit, curate, and publish. Include Co-PI(s).
-          Users can be looked up using their <strong>exact username</strong>{' '}
-          only.
           <Form.Item
             name="pi"
-            rules={[
-              {
-                required: true,
-                message: 'Please enter the Principal Investigator', // Custom error message
-              },
-            ]}
+            rules={[{ required: true }]}
             className="inner-form-item"
           >
             <UserSelect userRole="pi" maxCount={1} />
           </Form.Item>
         </Form.Item>
-        <Form.Item
-          label="Co-Principal Investigators"
-          className="flex-1"
-          style={{ overflow: 'hidden' }}
-        >
-          <br />
-          <br />
+        <Form.Item label="Co-Principal Investigators" className="flex-1">
+          &nbsp;
           <Form.Item name="coPis" initialValue={[]} className="inner-form-item">
             <UserSelect userRole="co_pi" />
           </Form.Item>
@@ -298,8 +238,7 @@ export const BaseProjectForm: React.FC<{
       </div>
 
       <Form.Item label="Project Members">
-        These users can view, edit, curate, and publish. Users can be looked up
-        using their <strong>exact username</strong> only.
+        These users can view, edit, curate, and publish.
         <Form.Item
           name="teamMembers"
           initialValue={[]}
@@ -317,20 +256,16 @@ export const BaseProjectForm: React.FC<{
 
       {projectType === 'other' && (
         <>
-          <Form.Item label="Assign Authorship" required>
+          <Form.Item label="Assign Authorship">
             You can order the authors during the publication process.
-            <Form.Item
-              name={['authors']}
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select at least one author.',
-                },
-              ]}
-              className="inner-form-item"
-            >
+            <Form.Item name={['authors']} className="inner-form-item">
               <AuthorSelect projectUsers={watchedUsers} />
             </Form.Item>
+          </Form.Item>
+
+          <Form.Item label="Award Info">
+            Recommended for funded projects.
+            <AwardsInput name="awardNumbers" />
           </Form.Item>
 
           <Form.Item label="Referenced Data and Software">
@@ -341,15 +276,10 @@ export const BaseProjectForm: React.FC<{
           <Form.Item label="Related Work">
             Information giving context, a linked dataset on DesignSafe, or works
             citing the DOI for this dataset.
-            <RelatedWorkInput name="associatedProjects" />
+            <RelatedWorkInput name="relatedWork" />
           </Form.Item>
         </>
       )}
-
-      <Form.Item label="Award Info">
-        Recommended for funded projects.
-        <AwardsInput name="awardNumbers" />
-      </Form.Item>
 
       <Form.Item label="Events">
         Details related to specific events such as natural hazards (ex.
@@ -357,91 +287,30 @@ export const BaseProjectForm: React.FC<{
         <HazardEventsInput name="nhEvents" />
       </Form.Item>
 
-      {projectType !== 'None' && (
-        <Form.Item label="Keywords" required>
-          Choose informative words that indicate the content of the project.
-          Keywords should be comma-separated.
-          <Form.Item
-            name="keywords"
-            rules={[{ required: true }]}
-            className="inner-form-item"
-          >
-            <Select
-              mode="tags"
-              notFoundContent={null}
-              tokenSeparators={[',']}
-            ></Select>
-          </Form.Item>
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        <Form.Item name="keywords" className="inner-form-item">
+          <Select mode="tags" notFoundContent={null}></Select>
         </Form.Item>
-      )}
+      </Form.Item>
+
       <Form.Item label="Project Description" required>
         What is this project about? How can data in this project be reused? How
         is this project unique? Who is the audience? Description must be between
         50 and 5000 characters in length.
         <Form.Item
           name="description"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a description',
-            },
-            {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
-            },
-            {
-              max: 5000,
-              message: 'Description cannot be longer than 5000 characters',
-            },
-          ]}
+          rules={[{ required: true }, { min: 50 }]}
           className="inner-form-item"
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
-      {hasValidationErrors && (
-        <Alert
-          type="error"
-          style={{ marginBottom: '10px' }}
-          showIcon
-          message={
-            <span>
-              One or more fields could not be validated. Please check the form
-              for errors.
-            </span>
-          }
-        />
-      )}
+
       <Form.Item>
-        <Popconfirm
-          title="Confirm Update"
-          description={
-            <div id="desc">
-              If you save this project without adding yourself as a principal
-              investigator
-              <br /> or team member, you will lose access to the project and its
-              files.
-            </div>
-          }
-          open={showConfirm}
-          okText="Proceed"
-          placement="topRight"
-          afterOpenChange={(isOpen) => {
-            if (isOpen) {
-              // Focus on opening so that the popover is accessible via keyboard
-              document.getElementById('prj-confirm-cancel')?.focus();
-            }
-          }}
-          cancelButtonProps={{ id: 'prj-confirm-cancel' }}
-          onOpenChange={(newVal) => {
-            if (!newVal) setShowConfirm(newVal);
-          }}
-          onConfirm={() => onSubmit(processFormData(form.getFieldsValue()))}
-        >
-          <Button type="primary" htmlType="submit" style={{ float: 'right' }}>
-            Update Project
-          </Button>
-        </Popconfirm>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
       </Form.Item>
     </Form>
   );

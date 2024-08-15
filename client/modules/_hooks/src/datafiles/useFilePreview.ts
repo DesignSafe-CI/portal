@@ -6,7 +6,6 @@ export type TPreviewParams = {
   api: string;
   system: string;
   scheme?: string;
-  doi?: string;
   path: string;
 };
 
@@ -18,8 +17,7 @@ export type TPreviewFileType =
   | 'video'
   | 'ipynb'
   | 'box'
-  | 'other'
-  | 'hazmapper';
+  | 'other';
 
 export type TFilePreviewResponse = {
   href: string;
@@ -33,12 +31,11 @@ async function getFilePreview({
   system,
   scheme,
   path,
-  doi,
   signal,
 }: TPreviewParams & { signal: AbortSignal }) {
   const res = await apiClient.get<TFilePreviewResponse>(
     `/api/datafiles/${api}/${scheme}/preview/${system}/${path}`,
-    { params: { doi }, signal }
+    { signal }
   );
   return res.data;
 }
@@ -48,7 +45,6 @@ export function useFilePreview({
   system,
   scheme = 'private',
   path,
-  doi,
   queryOptions,
 }: TPreviewParams & {
   queryOptions?: TQueryOptionExtras<TFilePreviewResponse>;
@@ -56,7 +52,7 @@ export function useFilePreview({
   return useQuery({
     queryKey: ['datafiles', 'preview', api, system, path],
     queryFn: ({ signal }) =>
-      getFilePreview({ api, system, scheme, path, doi, signal }),
+      getFilePreview({ api, system, scheme, path, signal }),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     ...queryOptions,

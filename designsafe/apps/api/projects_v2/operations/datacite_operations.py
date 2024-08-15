@@ -97,7 +97,6 @@ def get_datacite_json(
         datacite_json["types"]["resourceType"] += f"/{location}"
 
     datacite_json["types"]["resourceTypeGeneral"] = "Dataset"
-    datacite_json["version"] = version
 
     datacite_json["descriptions"] = [
         {

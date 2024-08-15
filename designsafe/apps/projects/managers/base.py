@@ -6,13 +6,14 @@
 from __future__ import unicode_literals, absolute_import
 import logging
 import json
+from future.utils import python_2_unicode_compatible
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 
 
 LOG = logging.getLogger(__name__)
 
 
-
+@python_2_unicode_compatible
 class ProjectsManager(object):
     """Base projects manager."""
 

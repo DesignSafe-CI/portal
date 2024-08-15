@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
 type TNewFolderParam = {
@@ -10,20 +10,13 @@ type TNewFolderParam = {
 
 function newFolderFn(src: TNewFolderParam) {
   return apiClient.put(
-    `/api/datafiles/${src.api}/private/mkdir/${src.system}/${src.path}${
-      src.path ? '/' : '' // Only append trailing slash if path is not empty
-    }`,
+    `/api/datafiles/${src.api}/private/mkdir/${src.system}/${src.path}/`,
     { dir_name: src.dirName }
   );
 }
 
 export function useNewFolder() {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ src }: { src: TNewFolderParam }) => newFolderFn(src),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: ['datafiles', 'fileListing'],
-      }),
   });
 }

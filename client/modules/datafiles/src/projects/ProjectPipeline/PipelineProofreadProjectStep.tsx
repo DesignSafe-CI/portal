@@ -44,7 +44,7 @@ export const PipelineProofreadProjectStep: React.FC<{
               target="_blank"
               aria-describedby="msg-open-new-window"
             >
-              curation office hours
+              Curation office hours
             </a>{' '}
             for help with publishing.
           </li>
