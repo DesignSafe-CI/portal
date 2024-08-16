@@ -36,6 +36,7 @@ class AppVariantInline(admin.StackedInline):
                 {
                     "fields": (
                         "app_type",
+                        "app_id",
                     )
                 },
             ),
@@ -43,7 +44,6 @@ class AppVariantInline(admin.StackedInline):
                 "Tapis App information",
                 {
                     "fields": (
-                        "app_id",
                         "version",
                         "href",
                     )
