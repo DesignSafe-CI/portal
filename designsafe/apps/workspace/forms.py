@@ -1,3 +1,5 @@
+"""Admin forms for Tools & Applications pages."""
+
 from django.forms import ModelForm
 
 from designsafe.apps.workspace.models.app_entries import (
