@@ -5,6 +5,7 @@ from designsafe.apps.workspace.models.app_entries import (
 )
 
 class AppVariantForm(ModelForm):
+    """Customizes app variant admin form"""
 
     class Meta:
         model = AppVariant
