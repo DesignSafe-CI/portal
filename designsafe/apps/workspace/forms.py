@@ -6,8 +6,8 @@ from designsafe.apps.workspace.models.app_entries import (
 
 class AppVariantForm(ModelForm):
 
-  class Meta:
-    model = AppVariant
-    exclude = []
+    class Meta:
+        model = AppVariant
+        exclude = []
 
-    help_texts = {'href': "The auto-generated path to app in the Apps Tray. Changes are reflected only after save.",}
+        help_texts = {'href': "The auto-generated path to app in the Apps Tray. Changes are reflected only after save.",}
