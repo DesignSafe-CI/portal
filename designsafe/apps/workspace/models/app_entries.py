@@ -206,7 +206,8 @@ class AppVariant(models.Model):
         blank=True,
     )
     download_href = models.CharField(
-        help_text="Link to download location for this variant.", max_length=128, blank=True
+        verbose_name="download HREF",
+        help_text="Path or URL to download location for this variant.", max_length=128, blank=True
     )
 
     description = models.TextField(
