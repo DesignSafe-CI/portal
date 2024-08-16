@@ -54,6 +54,7 @@ import {
   mergeConfigurationDefaultsWithJobData,
   mergeParameterSetDefaultsWithJobData,
   mergeInputDefaultsWithJobData,
+  getOnDemandEnvVariables,
 } from '../utils';
 
 export const AppsSubmissionForm: React.FC = () => {
@@ -452,6 +453,14 @@ export const AppsSubmissionForm: React.FC = () => {
         }
       )
     );
+    if (jobData.job.parameterSet['envVariables']) {
+      jobData.job.parameterSet['envVariables'] = jobData.job.parameterSet[
+        'envVariables'
+      ].concat(getOnDemandEnvVariables(definition));
+    } else {
+      jobData.job.parameterSet['envVariables'] =
+        getOnDemandEnvVariables(definition);
+    }
 
     // Add allocation scheduler option
     if (jobData.job.allocation) {
