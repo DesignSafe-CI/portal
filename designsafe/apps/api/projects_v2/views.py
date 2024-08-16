@@ -179,7 +179,7 @@ class ProjectInstanceView(BaseApiView):
         for user_to_add in users_to_add:
             add_user_to_project_async.apply_async([project.uuid, user_to_add])
         for user_to_remove in users_to_remove:
-            remove_user_from_project_async.apply_async([project_id, user_to_remove])
+            remove_user_from_project_async.apply_async([project.uuid, user_to_remove])
 
         return JsonResponse({"result": "OK"})
 
@@ -210,7 +210,7 @@ class ProjectInstanceView(BaseApiView):
         for user_to_add in users_to_add:
             add_user_to_project_async.apply_async([project.uuid, user_to_add])
         for user_to_remove in users_to_remove:
-            remove_user_from_project_async.apply_async([project_id, user_to_remove])
+            remove_user_from_project_async.apply_async([project.uuid, user_to_remove])
 
         return JsonResponse({"result": "OK"})
 
