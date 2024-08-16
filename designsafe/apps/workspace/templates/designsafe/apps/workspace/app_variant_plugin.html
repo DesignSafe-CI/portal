@@ -1,5 +1,5 @@
 {% if listing|length == 1 %}
-<section class="s-app-version-list" id="{{listing.0.version}}">
+<section class="s-app-version-list" id="app-var-{{listing.0.id}}-v{{listing.0.version}}">
     <h2>Already know everything?</h2>
     {% for variant in listing %}
     {% include 'designsafe/apps/workspace/app_variant_plugin_button.html' %}
@@ -9,7 +9,7 @@
 <section class="s-app-version-list">
     <h2>Select a Version</h2>
     {% for variant in listing %}
-    <article id="{{variant.version}}">
+    <article id="app-var-{{variant.id}}-v{{variant.version}}">
         <h3>{{variant.label}}</h3>
         {% include 'designsafe/apps/workspace/app_variant_plugin_button.html' %}
         <p>{{variant.description}}</p>
