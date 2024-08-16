@@ -9,6 +9,6 @@ class AppVariantForm(ModelForm):
 
     class Meta:
         model = AppVariant
-        exclude = []
+        fields = []
 
         help_texts = {'href': "The auto-generated path to app in the Apps Tray. Changes are reflected only after save.",}
