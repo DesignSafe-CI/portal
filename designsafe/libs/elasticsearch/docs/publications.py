@@ -5,7 +5,7 @@
 """
 
 import logging
-from future.utils import python_2_unicode_compatible
+
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.docs.base import BaseESResource
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # pylint: enable=invalid-name
 
 
-@python_2_unicode_compatible
+
 class BaseESPublication(BaseESResource):
     """Wrapper class for Elastic Search indexed publication.
 
@@ -157,7 +157,7 @@ class BaseESPublication(BaseESResource):
             except:
                 dict_obj['meta']['piLabel'] = '({pi})'.format(pi=pi)
         return dict_obj
-    
+
 
     def entity_keys(self, publishable=False):
         """Type specific keys for publication"""

@@ -4,19 +4,19 @@
     <p>Please check back later or <a href="/help/new-ticket/">submit a ticket</a>.</p>
 </section>
 {% elif listing|length == 1 %}
-<section class="s-app-version-list">
+<section class="s-app-version-list" id="app-var-{{listing.0.id}}-v{{listing.0.version}}">
     <h2>Already know everything?</h2>
     {% for variant in listing %}
-        <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
+    {% include 'designsafe/apps/workspace/app_variant_plugin_button.html' %}
     {% endfor %}
 </section>
 {% else %}
 <section class="s-app-version-list">
     <h2>Select a Version</h2>
     {% for variant in listing %}
-    <article>
+    <article id="app-var-{{variant.id}}-v{{variant.version}}">
         <h3>{{variant.label}}</h3>
-        <a class="btn btn-success" href="{{variant.href}}">Get Started</a>
+        {% include 'designsafe/apps/workspace/app_variant_plugin_button.html' %}
         <p>{{variant.description}}</p>
     </article>
     {% endfor %}

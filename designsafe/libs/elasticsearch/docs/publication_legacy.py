@@ -3,7 +3,7 @@
    :synopsis: Wrapper classes for ES ``files`` doc type.
 """
 
-from future.utils import python_2_unicode_compatible
+
 import logging
 import os
 import zipfile
@@ -17,7 +17,7 @@ from django.contrib.auth import get_user_model
 logger = logging.getLogger(__name__)
 #pylint: enable=invalid-name
 
-@python_2_unicode_compatible
+
 class BaseESPublicationLegacy(BaseESResource):
     """Wrapper class for Elastic Search indexed NEES publication.
 
@@ -67,10 +67,10 @@ class BaseESPublicationLegacy(BaseESResource):
         publication_dict = self.to_dict()
 
         project_dict = {}
-        for key in ['deleted', 'description', 'endDate', 'facility', 'name', 
+        for key in ['deleted', 'description', 'endDate', 'facility', 'name',
             'organization', 'pis', 'project', 'projectPath', 'publications',
             'startDate', 'system', 'title', 'sponsor']:
-            
+
             if key in publication_dict:
                 project_dict[key] = publication_dict[key]
 
@@ -97,5 +97,5 @@ class BaseESPublicationLegacy(BaseESResource):
                          'experiments': experiments,
                          'project': project_dict
                      }}
-                
+
         return dict_obj

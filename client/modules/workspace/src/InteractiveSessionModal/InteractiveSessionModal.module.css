@@ -1,0 +1,19 @@
+.session-modal-header {
+  background-color: #f4f4f4;
+  h5 {
+    font-weight: normal;
+  }
+}
+
+.session-modal-body {
+  display: flex;
+  flex-direction: column;
+  & > * {
+    margin: 0.4rem;
+  }
+}
+
+.url {
+  color: grey;
+  font-style: italic;
+}

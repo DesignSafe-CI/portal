@@ -37,6 +37,7 @@ from django.contrib.sites.models import Site
 from django.urls import reverse
 from designsafe.apps.api.publications.operations import listing as list_publications, neeslisting as list_nees
 from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.publications_v2.models import Publication
 
 # imported urlpatterns from apps
 from designsafe import urls  # from designsafe import urls not working?
@@ -168,23 +169,19 @@ class ProjectSitemap(sitemaps.Sitemap):
         return super(ProjectSitemap, self).get_urls(site=site, **kwargs)
 
     def items(self):
-        client = get_service_account_client()
         projPath = []
 
         # pefm - PublicElasticFileManager to grab public projects
-        count = 0
-        while True:
-            projects = list_publications(offset=count, limit=200, limit_fields=False)
-            for proj in projects['listing']:
-                subpath = {
-                    'root' : reverse('designsafe_data:data_depot'),
-                    'project' : proj['project']['value']['projectId'],
-                    'system' : 'designsafe.storage.published'
-                }
-                projPath.append('{root}public/{system}/{project}'.format(**subpath))
-            if len(projects['listing']) < 200:
-                break
-            count += 200
+
+        projects = Publication.objects.all()
+        for proj in projects:
+            subpath = {
+                'root' : reverse('designsafe_data:data_depot'),
+                'project' : proj.project_id,
+                'system' : 'designsafe.storage.published'
+            }
+            projPath.append('{root}public/{system}/{project}'.format(**subpath))
+
 
         count = 0
         while True:
