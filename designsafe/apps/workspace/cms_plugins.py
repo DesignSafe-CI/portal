@@ -98,7 +98,7 @@ class AppVariants(CMSPluginBase):
 
     def render(self, context, instance: AppListingEntry, placeholder):
         context = super().render(context, instance, placeholder)
-        app_variants = instance.app.appvariant_set.filter(enabled=True)
+        app_variants = instance.app.appvariant_set.filter()
         context["listing"] = app_variants
 
         return context
