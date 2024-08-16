@@ -4,6 +4,8 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import CheckboxSelectMultiple
+
+from designsafe.apps.workspace.forms import AppVariantForm
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from designsafe.apps.workspace.models.app_entries import (
     AppListingEntry,
@@ -23,16 +25,27 @@ class AppVariantInline(admin.StackedInline):
     extra = 0
     model = AppVariant
     fk_name = "bundle"
+    form = AppVariantForm
+
+    readonly_fields = ["href"]
 
     def get_fieldsets(self, request, obj=None):
         return [
             (
-                "Tapis App information",
+                None,
                 {
                     "fields": (
                         "app_type",
+                    )
+                },
+            ),
+            (
+                "Tapis App information",
+                {
+                    "fields": (
                         "app_id",
                         "version",
+                        "href",
                     )
                 },
             ),
@@ -48,10 +61,10 @@ class AppVariantInline(admin.StackedInline):
                 },
             ),
             (
-                "HTML App Body for app_type: HTML",
+                "HTML or External app information",
                 {
                     "classes": ["collapse"],
-                    "fields": ["html"],
+                    "fields": ["html", "download_href"],
                 },
             ),
         ]

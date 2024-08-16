@@ -200,10 +200,13 @@ class AppVariant(models.Model):
         default=0,
     )
 
-    # HTML Apps
+    # HTML/External Apps
     html = models.TextField(
         help_text="HTML definition to display when app is loaded.",
         blank=True,
+    )
+    download_href = models.CharField(
+        help_text="Link to download location for this variant.", max_length=128, blank=True
     )
 
     description = models.TextField(
