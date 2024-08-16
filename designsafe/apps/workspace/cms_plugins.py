@@ -99,17 +99,7 @@ class AppVariants(CMSPluginBase):
     def render(self, context, instance: AppListingEntry, placeholder):
         context = super().render(context, instance, placeholder)
         app_variants = instance.app.appvariant_set.filter()
-        serialized_variants = [
-            {
-                "label": variant.label,
-                "version": variant.version,
-                "description": variant.description,
-                "is_enabled": variant.enabled,
-                "href": variant.href,
-            }
-            for variant in app_variants
-        ]
-        context["listing"] = serialized_variants
+        context["listing"] = app_variants
 
         return context
 
