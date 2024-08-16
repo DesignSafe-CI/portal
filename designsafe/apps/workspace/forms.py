@@ -8,6 +8,7 @@ class AppVariantForm(ModelForm):
     """Customizes app variant admin form"""
 
     class Meta:
+        """To add or change help text"""
         model = AppVariant
         fields = []
 
