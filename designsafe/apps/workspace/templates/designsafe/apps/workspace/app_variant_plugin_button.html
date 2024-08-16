@@ -1,6 +1,10 @@
 {# @var variant #}
 
-        {% if variant.enabled %}
+        {% if variant.download_href %}
+        <a class="btn btn-success" href="{{variant.download_href}}">
+            Download
+        </a>
+        {% elif variant.enabled %}
         <a class="btn btn-success" href="{{variant.href}}">
             Get Started
         </a>
