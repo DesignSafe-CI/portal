@@ -21,7 +21,7 @@ export type TJobKeyValuePair = {
   key: string;
   value: string;
   description?: string;
-  inputMode: string;
+  inputMode?: string;
   notes?: TParameterSetNotes;
 };
 
