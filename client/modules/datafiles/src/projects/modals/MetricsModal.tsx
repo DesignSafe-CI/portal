@@ -57,16 +57,9 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     };
   }
 
-  // Table 1: Usage Breakdown
-  const uniqueInvestigations = eventMetricsData.data.filter(
-    (entry: DataEntry) =>
-      entry.attributes['relation-type-id'] ===
-      'unique-dataset-investigations-regular'
-  );
-  const uniqueRequests = eventMetricsData.data.filter(
-    (entry: DataEntry) =>
-      entry.attributes['relation-type-id'] === 'unique-dataset-requests-regular'
-  );
+  // Table 1: Aggregated Usage
+  const uniqueInvestigations = usageMetricsData.data.attributes.viewCount;
+  const uniqueRequests = usageMetricsData.data.attributes.downloadCount; 
   const totalRequests = eventMetricsData.data.filter(
     (entry: DataEntry) =>
       entry.attributes['relation-type-id'] === 'total-dataset-requests-regular'
@@ -89,10 +82,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data:
-        uniqueInvestigations.length > 0
-          ? uniqueInvestigations[0].attributes.total
-          : '--',
+      data: uniqueInvestigations ?? '--',
     },
     {
       key: '2',
@@ -111,17 +101,16 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data:
-        uniqueRequests.length > 0 ? uniqueRequests[0].attributes.total : '--',
+      data: uniqueRequests ?? '--',
     },
     {
       key: '3',
       usage: (
         <span>
-          Dataset Total Requests{' '}
+          Total Requests{' '}
           <Popover
             overlayStyle={{ maxWidth: '400px' }}
-            title="Dataset Total Requests"
+            title="Total Requests"
             content="All downloads, previews, and copies of files plus Project Downloads."
           >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
@@ -134,7 +123,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
 
   const columns = [
     {
-      title: 'Usage Breakdown',
+      title: 'Aggregated Usage',
       dataIndex: 'usage',
       key: 'usage',
     },
