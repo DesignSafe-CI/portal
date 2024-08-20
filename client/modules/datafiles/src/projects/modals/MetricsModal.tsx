@@ -58,7 +58,8 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   }
 
   // Table 1: Aggregated Usage
-  const uniqueInvestigations = usageMetricsData?.data?.attributes?.viewCount ?? 0;
+  const uniqueInvestigations =
+    usageMetricsData?.data?.attributes?.viewCount ?? 0;
   const uniqueRequests = usageMetricsData?.data?.attributes?.downloadCount ?? 0;
 
   const sumTotals = (data: DataEntry[], relationTypeId: string) => {
