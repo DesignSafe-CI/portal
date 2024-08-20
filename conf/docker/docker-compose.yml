@@ -1,12 +1,9 @@
-# This compose file is useful for testing https
----
-version: "3"
 services:
     django:
       build:
         context: ../../.
         dockerfile: conf/docker/Dockerfile
-      image: designsafeci/portal:local
+      image: designsafeci/portal:tapis-v3
       env_file: ../env_files/designsafe.env
       command: /bin/bash
       container_name: des_django
