@@ -59,10 +59,17 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
 
   // Table 1: Aggregated Usage
   const uniqueInvestigations = usageMetricsData.data.attributes.viewCount;
-  const uniqueRequests = usageMetricsData.data.attributes.downloadCount; 
-  const totalRequests = eventMetricsData.data.filter(
-    (entry: DataEntry) =>
-      entry.attributes['relation-type-id'] === 'total-dataset-requests-regular'
+  const uniqueRequests = usageMetricsData.data.attributes.downloadCount;
+  const sumTotals = (data: DataEntry[], relationTypeId: string) => {
+    return data
+      .filter(
+        (entry) => entry.attributes['relation-type-id'] === relationTypeId
+      )
+      .reduce((sum, entry) => sum + entry.attributes.total, 0);
+  };
+  const totalRequests = sumTotals(
+    eventMetricsData.data,
+    'total-dataset-requests-regular'
   );
 
   const dataSource = [
@@ -82,7 +89,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: uniqueInvestigations ?? '--',
+      data: uniqueInvestigations > 0 ? uniqueInvestigations : '--',
     },
     {
       key: '2',
@@ -101,13 +108,13 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: uniqueRequests ?? '--',
+      data: uniqueRequests > 0 ? uniqueRequests : '--',
     },
     {
       key: '3',
       usage: (
         <span>
-          Total Requests{' '}
+           Total Requests{' '}
           <Popover
             overlayStyle={{ maxWidth: '400px' }}
             title="Total Requests"
@@ -117,7 +124,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: totalRequests.length > 0 ? totalRequests[0].attributes.total : '--',
+      data: totalRequests > 0 ? totalRequests : '--',
     },
   ];
 
