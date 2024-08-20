@@ -114,7 +114,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       key: '3',
       usage: (
         <span>
-           Total Requests{' '}
+          Total Requests{' '}
           <Popover
             overlayStyle={{ maxWidth: '400px' }}
             title="Total Requests"
