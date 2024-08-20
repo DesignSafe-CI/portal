@@ -129,7 +129,7 @@ export const PipelineOrderAuthors: React.FC<{
               <table style={{ marginTop: '10px' }}>
                 <tbody>
                   {(entity.value.authors ?? []).map((author, idx, arr) => (
-                    <tr key={author.email}>
+                    <tr key={`${author.email}-${author.fname}-${author.lname}`}>
                       <td style={{ verticalAlign: 'middle' }}>
                         {author.lname}, {author.fname}
                       </td>
