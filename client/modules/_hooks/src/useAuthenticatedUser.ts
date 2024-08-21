@@ -1,11 +1,14 @@
+export type TUser = {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  institution: string;
+};
+
 declare global {
   interface Window {
-    __authenticatedUser__?: {
-      username: string;
-      firstName: string;
-      lastName: string;
-      email: string;
-    };
+    __authenticatedUser__?: TUser;
   }
 }
 

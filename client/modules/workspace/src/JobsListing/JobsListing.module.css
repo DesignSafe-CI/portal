@@ -1,0 +1,10 @@
+.jobActions {
+  padding-top: 15px;
+  :is(a, button) + :is(a, button) {
+    margin-left: 15px;
+  }
+}
+
+.link:hover {
+  color: var(--global-color-accent--normal);
+}

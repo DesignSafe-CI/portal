@@ -1,0 +1,22 @@
+.listing-main {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+}
+
+.listing-container {
+  max-height: 1000px;
+  overflow: auto;
+  flex: 1 0 0;
+}
+
+.overflow {
+  overflow: auto;
+}
+
+.appDetail-placeholder-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+}

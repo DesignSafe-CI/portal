@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { TModalChildren } from '../../DatafilesModal/DatafilesModal';
 import { Modal } from 'antd';
-import { ProjectTree } from '../ProjectTree/ProjectTree';
+import { ProjectTree, PublicationTree } from '../ProjectTree/ProjectTree';
 
 export const RelateDataModal: React.FC<{
   projectId: string;
+  readOnly?: boolean;
   children: TModalChildren;
-}> = ({ projectId, children }) => {
+}> = ({ projectId, readOnly, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => setIsModalOpen(true);
@@ -20,12 +21,18 @@ export const RelateDataModal: React.FC<{
       <Modal
         open={isModalOpen}
         onCancel={handleClose}
-        width="50%"
-        title={<h2>Relate Data: {projectId}</h2>}
+        width="900px"
+        title={
+          readOnly ? <h2>Data Diagram</h2> : <h2>Relate Data: {projectId}</h2>
+        }
         footer={null}
       >
         <article>
-          <ProjectTree projectId={projectId} />
+          {readOnly ? (
+            <PublicationTree projectId={projectId} />
+          ) : (
+            <ProjectTree projectId={projectId} />
+          )}
         </article>
       </Modal>
     </>

@@ -26,3 +26,5 @@ GOOGLE_OAUTH2_STORAGE_MODEL = {
     'user_property': 'user_id',
     'credentials_property': 'credential'
 }
+GOOGLE_OAUTH2_CLIENT_SECRET = os.environ.get("GOOGLE_OAUTH2_CLIENT_SECRET", "CHANGE_ME")
+GOOGLE_OAUTH2_CLIENT_ID = os.environ.get("GOOGLE_OAUTH2_CLIENT_ID", "CHANGE_ME")

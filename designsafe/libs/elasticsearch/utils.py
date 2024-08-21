@@ -1,4 +1,4 @@
-from future.utils import python_2_unicode_compatible
+
 import urllib.request, urllib.parse, urllib.error
 from elasticsearch import Elasticsearch
 import logging
@@ -154,10 +154,24 @@ def iterate_level(client, system, path, limit=100):
     offset = 0
 
     while True:
-        page = client.files.list(systemId=system,
-                                 filePath=urllib.parse.quote(path),
+        _page = client.files.listFiles(systemId=system,
+                                 path=urllib.parse.quote(path),
                                  offset=offset,
                                  limit=limit)
+
+        page = [{
+            'system': system,
+            'type': 'dir' if f.type == 'dir' else 'file',
+            'format': 'folder' if f.type == 'dir' else 'raw',
+            'mimeType': f.mimeType,
+            'path': f"/{f.path}",
+            'name': f.name,
+            'length': f.size,
+            'lastModified': f.lastModified,
+            '_links': {
+                'self': {'href': f.url}
+            }} for f in _page]
+
         yield from page
         offset += limit
         if len(page) != limit:
@@ -165,7 +179,7 @@ def iterate_level(client, system, path, limit=100):
             break
 
 # pylint: disable=too-many-locals
-@python_2_unicode_compatible
+
 def walk_levels(client, system, path, bottom_up=False, ignore_hidden=False, paths_to_ignore=None):
     """Walk a pth in an Agave storgae system.
 
@@ -298,14 +312,14 @@ def index_level(path, folders, files, systemId, reindex=False):
             logger.debug(children_paths)
             delete_recursive(hit.system, hit.path)
 
-@python_2_unicode_compatible
+
 def repair_path(name, path):
     if not path.endswith(name):
         path = path + '/' + name
     path = path.strip('/')
     return '/{path}'.format(path=path)
 
-@python_2_unicode_compatible
+
 def repair_paths(limit=1000):
     from designsafe.apps.data.models.elasticsearch import IndexedFile
     from elasticsearch import Elasticsearch

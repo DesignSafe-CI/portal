@@ -14,6 +14,7 @@ const themeConfig: ThemeConfig = {
     colorPrimary: '#337ab7',
     colorError: '#d9534f',
     colorPrimaryTextHover: 'black',
+    colorBorderSecondary: '#b7b7b7',
   },
   components: {
     Table: {
@@ -32,11 +33,11 @@ const themeConfig: ThemeConfig = {
       colorPrimary: '#1cb500',
     },
     Menu: {
-      itemHeight: 60,
+      itemHeight: 45,
       itemMarginInline: 0,
       itemSelectedColor: 'black',
-      itemHoverBg: 'rgba(96, 57, 204, 0.25)',
-      itemSelectedBg: 'rgba(96, 57, 204, 0.25)',
+      itemHoverBg: '#cbdded',
+      itemSelectedBg: '#cbdded',
     },
     Form: {
       itemMarginBottom: 16,

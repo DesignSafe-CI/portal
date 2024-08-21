@@ -56,7 +56,7 @@ export const PipelineOrderAuthors: React.FC<{
       >
         <Button type="link" onClick={() => prevStep()}>
           <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
-          Selection
+          Proofread Categories
         </Button>
         <Button
           className="success-button"
@@ -84,7 +84,7 @@ export const PipelineOrderAuthors: React.FC<{
               target="_blank"
               aria-describedby="msg-open-new-window"
             >
-              Curation office hours
+              curation office hours
             </a>{' '}
             for help with publishing.
           </li>
@@ -97,69 +97,77 @@ export const PipelineOrderAuthors: React.FC<{
           }}
         ></div>
 
-        {selectedEntities?.map((entity) => (
-          <section
-            style={{
-              backgroundColor: '#f5f5f5',
-              padding: '20px',
-              marginBottom: '20px',
-            }}
-            key={entity.uuid}
-          >
-            <h3>{entity.value.title} </h3>
-            <section>
-              <strong>Citation Preview</strong>
-              <div className="well" style={{ backgroundColor: 'white' }}>
-                {(entity.value.authors ?? [])
-                  .map((author, idx) =>
-                    idx === 0
-                      ? `${author.lname}, ${author.fname[0]}.`
-                      : `${author.fname[0]}. ${author.lname}`
-                  )
-                  .join(', ')}
-                . "{entity.value.title}", in{' '}
-                <i>{data.baseProject.value.title}</i>. DesignSafe-CI. (DOI will
-                appear after publication)
-              </div>
+        {selectedEntities
+          ?.sort((a, b) => a.value.title.localeCompare(b.value.title))
+          .map((entity) => (
+            <section
+              style={{
+                backgroundColor: '#f5f5f5',
+                padding: '20px',
+                marginBottom: '20px',
+              }}
+              key={entity.uuid}
+            >
+              <h3>{entity.value.title} </h3>
+              <section>
+                <strong>Citation Preview</strong>
+                <div className="well" style={{ backgroundColor: 'white' }}>
+                  {(entity.value.authors ?? [])
+                    .map((author, idx) =>
+                      idx === 0
+                        ? `${author.lname}, ${author.fname[0]}${
+                            (entity.value.authors?.length ?? 1) > 1 ? '.' : ''
+                          }`
+                        : `${author.fname[0]}. ${author.lname}`
+                    )
+                    .join(', ')}
+                  . "{entity.value.title}", in{' '}
+                  <i>{data.baseProject.value.title}</i>. DesignSafe-CI. (DOI
+                  will appear after publication)
+                </div>
+              </section>
+              <table style={{ marginTop: '10px' }}>
+                <tbody>
+                  {(entity.value.authors ?? []).map((author, idx, arr) => (
+                    <tr key={`${author.email}-${author.fname}-${author.lname}`}>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {author.lname}, {author.fname}
+                      </td>
+                      <td>
+                        <span> &nbsp;</span>
+                        <Button
+                          type="text"
+                          disabled={idx === 0}
+                          onClick={() =>
+                            moveUp(entity.uuid, entity.value.authors ?? [], idx)
+                          }
+                        >
+                          <i role="none" className="fa fa-arrow-up">
+                            &nbsp;
+                          </i>
+                        </Button>
+                        <Button
+                          type="text"
+                          disabled={idx === arr.length - 1}
+                          onClick={() =>
+                            moveDown(
+                              entity.uuid,
+                              entity.value.authors ?? [],
+                              idx
+                            )
+                          }
+                        >
+                          <i role="none" className="fa fa-arrow-down">
+                            &nbsp;
+                          </i>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </section>
-            <table style={{ marginTop: '10px' }}>
-              <tbody>
-                {(entity.value.authors ?? []).map((author, idx, arr) => (
-                  <tr key={author.email}>
-                    <td style={{ verticalAlign: 'middle' }}>
-                      {author.lname}, {author.fname}
-                    </td>
-                    <td>
-                      <span> &nbsp;</span>
-                      <Button
-                        type="text"
-                        disabled={idx === 0}
-                        onClick={() =>
-                          moveUp(entity.uuid, entity.value.authors ?? [], idx)
-                        }
-                      >
-                        <i role="none" className="fa fa-arrow-up">
-                          &nbsp;
-                        </i>
-                      </Button>
-                      <Button
-                        type="text"
-                        disabled={idx === arr.length - 1}
-                        onClick={() =>
-                          moveDown(entity.uuid, entity.value.authors ?? [], idx)
-                        }
-                      >
-                        <i role="none" className="fa fa-arrow-down">
-                          &nbsp;
-                        </i>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        ))}
+          ))}
       </section>
     </>
   );

@@ -6,14 +6,18 @@ export const DropdownSelect: React.FC<{
   maxCount?: number;
   options: SelectProps['options'];
   value?: DropdownValue[];
+  placeholder?: string;
+  id?: string;
   onChange?: (value: DropdownValue[]) => void;
-}> = ({ value, onChange, options, maxCount }) => {
+}> = ({ value, onChange, options, maxCount, placeholder, id }) => {
+  const [open, setOpen] = useState(false);
   const handleChange = (newVal: { label?: string; value: string }[]) => {
     const formValue = newVal.map((v) =>
       v.label ? { id: v.value, name: v.label } : { id: 'other', name: v.value }
     );
 
     onChange && onChange(formValue);
+    setOpen(false);
   };
 
   const getValue = (
@@ -28,14 +32,17 @@ export const DropdownSelect: React.FC<{
 
   return (
     <Select
+      id={id}
+      open={open}
+      onDropdownVisibleChange={(visible) => setOpen(visible)}
       virtual={false}
       placement="bottomLeft"
+      placeholder={placeholder}
       maxCount={maxCount}
       value={getValue(value)}
       mode="tags"
       options={options}
       labelInValue
-      popupMatchSelectWidth={false}
       onChange={handleChange}
     />
   );
@@ -43,10 +50,11 @@ export const DropdownSelect: React.FC<{
 
 export const DropdownSelectSingleValue: React.FC<{
   options: SelectProps['options'];
+  id?: string;
   value?: DropdownValue;
   placeholder?: string;
   onChange?: (value?: DropdownValue) => void;
-}> = ({ value, onChange, options, placeholder }) => {
+}> = ({ value, onChange, options, id, placeholder }) => {
   const [open, setOpen] = useState(false);
 
   const handleChange = (newVal: { label?: string; value: string }[]) => {
@@ -74,6 +82,7 @@ export const DropdownSelectSingleValue: React.FC<{
 
   return (
     <Select
+      id={id}
       maxCount={1}
       virtual={false}
       placeholder={placeholder}
