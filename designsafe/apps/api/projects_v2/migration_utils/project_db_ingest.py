@@ -164,6 +164,47 @@ def fix_authors(meta: ProjectMetadata):
     meta.save()
 
 
+def fix_guest_members():
+    """Fix guest members if they have not been added to the overall users field"""
+    base_projects = ProjectMetadata.objects.filter(name="designsafe.project")
+    project_schema = SCHEMA_MAPPING["designsafe.project"]
+    count = 0
+    for prj in base_projects:
+        existing_users = prj.value["users"]
+        legacy_guests = prj.value.get("guestMembers", [])
+
+        if legacy_guests:
+            print(prj.project_id)
+            for guest in legacy_guests:
+                already_added = any(
+                    (
+                        u
+                        for u in existing_users
+                        if (
+                            u["role"] == "guest"
+                            and u["fname"] == guest["fname"]
+                            and u["lname"] == guest["lname"]
+                            and u.get("email", "") == guest.get("email", "")
+                        )
+                    )
+                )
+                if not already_added:
+                    prj.value["users"].append(
+                        {
+                            "role": "guest",
+                            "inst": guest.get("inst", ""),
+                            "fname": guest.get("fname", ""),
+                            "lname": guest.get("lname", ""),
+                            "email": guest.get("email", ""),
+                        }
+                    )
+            project_schema.model_validate(prj.value)
+
+            ProjectMetadata.objects.filter(uuid=prj.uuid).update(value=prj.value)
+            count += 1
+    print(f"{count} projects migrated.")
+
+
 def fix_modified_dates():
     """Set last_updated time to match existing metadata"""
     name = "designsafe.project"
