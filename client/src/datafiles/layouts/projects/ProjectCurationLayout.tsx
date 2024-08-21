@@ -1,11 +1,11 @@
 import {
-  DatafilesBreadcrumb,
   ManageCategoryModal,
   ManagePublishableEntityModal,
   ProjectCurationFileListing,
   ProjectNavbar,
   RelateDataModal,
 } from '@client/datafiles';
+import { DatafilesBreadcrumb } from '@client/common-components';
 import { useProjectDetail } from '@client/hooks';
 import { Button } from 'antd';
 
@@ -130,44 +130,55 @@ export const ProjectCurationLayout: React.FC = () => {
   if (!data) return <div>loading...</div>;
   return (
     <div style={{ paddingBottom: '50px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '3rem',
+          marginBottom: '10px',
+        }}
+      >
         <ProjectNavbar projectId={projectId} />
-        <span
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-            fontWeight: 'bold',
-          }}
-        >
-          1&nbsp;| <PublishableEntityButton projectId={projectId} /> 2&nbsp;|
-          <ManageCategoryModal projectId={projectId}>
-            {({ onClick }) => (
-              <Button
-                onClick={onClick}
-                type="link"
-                style={{ fontWeight: 'bold' }}
-              >
-                Add Categories
-              </Button>
-            )}
-          </ManageCategoryModal>{' '}
-          3&nbsp;|
-          <RelateDataModal projectId={projectId}>
-            {({ onClick }) => (
-              <Button
-                onClick={onClick}
-                type="link"
-                style={{ fontWeight: 'bold' }}
-              >
-                Relate Data
-              </Button>
-            )}
-          </RelateDataModal>
-        </span>
+        {data.baseProject.value.projectType !== 'other' && (
+          <span
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              fontWeight: 'bold',
+            }}
+          >
+            1&nbsp;| <PublishableEntityButton projectId={projectId} /> 2&nbsp;|
+            <ManageCategoryModal projectId={projectId}>
+              {({ onClick }) => (
+                <Button
+                  onClick={onClick}
+                  type="link"
+                  style={{ fontWeight: 'bold' }}
+                >
+                  Add Categories
+                </Button>
+              )}
+            </ManageCategoryModal>{' '}
+            3&nbsp;|
+            <RelateDataModal projectId={projectId}>
+              {({ onClick }) => (
+                <Button
+                  onClick={onClick}
+                  type="link"
+                  style={{ fontWeight: 'bold' }}
+                >
+                  Relate Data
+                </Button>
+              )}
+            </RelateDataModal>
+          </span>
+        )}
       </div>
       <DatafilesBreadcrumb
-        initialBreadcrumbs={[]}
+        initialBreadcrumbs={[
+          { path: `/projects/${projectId}/curation`, title: projectId },
+        ]}
         path={path ?? ''}
         baseRoute={`/projects/${projectId}/curation`}
         systemRootAlias={data.baseProject.value.projectId}

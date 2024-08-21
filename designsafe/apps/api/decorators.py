@@ -5,6 +5,7 @@ import logging
 from functools import wraps
 from base64 import b64decode
 from django.conf import settings
+from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,6 +14,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.serialization import load_der_public_key
 from cryptography.exceptions import UnsupportedAlgorithm
+from tapipy.tapis import Tapis
+from tapipy.errors import BaseTapyException
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -56,6 +59,50 @@ def _get_jwt_payload(request):
         payload = payload.encode('iso-8859-1')
 
     return payload
+
+
+def tapis_jwt_login(func):
+    """Decorator to log in a user with their Tapis OAuth token
+
+    ..note::
+        It will silently fail and continue executing the wrapped function
+        if the JWT payload header IS NOT present in the request. If the JWT payload
+        header IS present then it will continue executing the wrapped function passing
+        the request object with the correct user logged-in.
+    """
+    #pylint: disable=missing-docstring
+    @wraps(func)
+    def decorated_function(request: HttpRequest, *args, **kwargs):
+        if request.user.is_authenticated:
+            return func(request, *args, **kwargs)
+
+        tapis_jwt = request.headers.get('X-Tapis-Token')
+        if not tapis_jwt:
+            logger.debug('No JWT payload found. Falling back')
+            return func(request, *args, **kwargs)
+
+        tapis_client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL)
+        try:
+            validation_response = tapis_client.validate_token(tapis_jwt)
+        except BaseTapyException:
+            return func(request, *args, **kwargs)
+ 
+        tapis_username = validation_response['tapis/username']
+
+        try:
+            user = get_user_model().objects.get(username=tapis_username)
+        except ObjectDoesNotExist:
+            logger.exception('Could not find JWT user: %s', tapis_username)
+            user = None
+
+        if user is not None:
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+
+        return func(request, *args, **kwargs)
+
+    return decorated_function
+    #pylint: enable=missing-docstring
+
 
 def agave_jwt_login(func):
     """Decorator to login user with a jwt

@@ -5,6 +5,8 @@ import { RenameModal } from './RenameModal';
 import { NewFolderModal } from './NewFolderModal';
 import { UploadFileModal } from './UploadFileModal';
 import { UploadFolderModal } from './UploadFolderModal';
+import { MoveModal } from './MoveModal';
+import { DownloadModal } from './DownloadModal';
 
 export type TModalChildren = (props: {
   onClick: React.MouseEventHandler<HTMLElement>;
@@ -18,5 +20,7 @@ DatafilesModal.Rename = RenameModal;
 DatafilesModal.NewFolder = NewFolderModal;
 DatafilesModal.UploadFile = UploadFileModal;
 DatafilesModal.UploadFolder = UploadFolderModal;
+DatafilesModal.Move = MoveModal;
+DatafilesModal.Download = DownloadModal;
 
 export default DatafilesModal;

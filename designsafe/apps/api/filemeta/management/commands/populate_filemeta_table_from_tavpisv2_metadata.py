@@ -5,7 +5,7 @@ This module contains a Django management command which populates filemeta table
 
 # pylint: disable=logging-fstring-interpolation
 # pylint: disable=no-member
-
+import os
 import logging
 import json
 
@@ -83,6 +83,10 @@ def populate_filemeta_table(dry_run, do_not_update_existing):
                 continue
 
         if not dry_run:
+            meta_data["value"]["path"] = (
+                f"/{meta_data['value']['path'].lstrip('/')}".replace("//", "/")
+            )
+            meta_data["value"]["basePath"] = os.path.dirname(meta_data["value"]["path"])
             FileMetaModel.create_or_update_file_meta(meta_data["value"])
             updated += 1
 

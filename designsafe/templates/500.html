@@ -8,7 +8,7 @@
         </p>
         <p>
             If you continue to receive this error, please
-            <a href="{% url 'djangoRT:ticketcreate' %}?error_page={{ request.path }}&http_referer={{ request.META.HTTP_REFERER }}">submit a ticket</a>.
+            <a href="{% url 'djangoRT:ticketcreate' %}?http_referer={{ request.META.HTTP_REFERER }}">submit a ticket</a>.
         </p>
     </div>
 {% endblock content %}
