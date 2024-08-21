@@ -498,7 +498,7 @@ def publish_project(
             args=[project_id, version], queue="default"
         )
         ingest_pub_fedora_async.apply_async(
-            args=[project_id, version, True], queue="default"
+            args=[project_id, version, False], queue="default"
         )
 
     return pub_metadata
