@@ -57,7 +57,11 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     };
   }
 
-  // Table 1: Usage Breakdown
+  // Table 1: Aggregated Usage
+  const uniqueInvestigations =
+    usageMetricsData?.data?.attributes?.viewCount ?? 0;
+  const uniqueRequests = usageMetricsData?.data?.attributes?.downloadCount ?? 0;
+
   const sumTotals = (data: DataEntry[], relationTypeId: string) => {
     return data
       .filter(
@@ -65,15 +69,6 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       )
       .reduce((sum, entry) => sum + entry.attributes.total, 0);
   };
-
-  const uniqueInvestigations = sumTotals(
-    eventMetricsData.data,
-    'unique-dataset-investigations-regular'
-  );
-  const uniqueRequests = sumTotals(
-    eventMetricsData.data,
-    'unique-dataset-requests-regular'
-  );
   const totalRequests = sumTotals(
     eventMetricsData.data,
     'total-dataset-requests-regular'
@@ -121,10 +116,10 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       key: '3',
       usage: (
         <span>
-          Dataset Total Requests{' '}
+          Total Requests{' '}
           <Popover
             overlayStyle={{ maxWidth: '400px' }}
-            title="Dataset Total Requests"
+            title="Total Requests"
             content="All downloads, previews, and copies of files plus Project Downloads."
           >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
@@ -137,7 +132,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
 
   const columns = [
     {
-      title: 'Usage Breakdown',
+      title: 'Aggregated Usage',
       dataIndex: 'usage',
       key: 'usage',
     },
