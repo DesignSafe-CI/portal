@@ -8,6 +8,7 @@ import datetime
 from pathlib import Path
 import logging
 from django.conf import settings
+from django.db import close_old_connections
 import networkx as nx
 from celery import shared_task
 from designsafe.apps.api.projects_v2 import constants
@@ -439,6 +440,10 @@ def publish_project(
     )
     if dry_run:
         return pub_tree, path_mapping
+
+    # If we don't explicitly close the db connection, it will remain open during the
+    # entire data-copying step, which can cause operations to fail.
+    close_old_connections()
 
     if not settings.DEBUG:
         # Copy files first so if it fails we don't create orphan metadata/datacite entries.
