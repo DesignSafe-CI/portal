@@ -154,7 +154,7 @@ def get_datacite_json(
         identifier = {}
         if {"type", "href", "hrefType"} <= a_proj.keys():
             identifier["relationType"] = relation_mapping[a_proj["type"]]
-            identifier["relatedIdentifierType"] = a_proj["hrefType"]
+            identifier["relatedIdentifierType"] = a_proj["hrefType"].upper()
             identifier["relatedIdentifier"] = a_proj["href"]
             datacite_json["relatedIdentifiers"].append(identifier)
 
@@ -163,7 +163,7 @@ def get_datacite_json(
         if {"doi", "hrefType"} <= r_data.keys():
             identifier["relationType"] = "References"
             identifier["relatedIdentifier"] = r_data["doi"]
-            identifier["relatedIdentifierType"] = r_data["hrefType"]
+            identifier["relatedIdentifierType"] = r_data["hrefType"].upper()
             datacite_json["relatedIdentifiers"].append(identifier)
 
     project_id = base_meta["projectId"]

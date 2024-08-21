@@ -18,7 +18,6 @@
   position: relative;
   padding: 5px;
   font-size: 14px;
-  z-index: 100;
 }
 .tree-select-item {
   position: relative;
@@ -37,7 +36,7 @@
 .tree-list-item::after,
 .tree-select-item::after {
   position: absolute;
-  height: calc(var(--tree-spacing-y) + 50%);
+  height: calc(var(--tree-spacing-y) + 50% + 10px);
   left: calc(-1 * var(--tree-spacing-x));
   bottom: 50%;
   content: '';
@@ -61,8 +60,8 @@
   position: absolute;
   content: '';
   left: 0;
-  top: -5px;
-  height: calc(100% + var(--tree-spacing-y));
+  top: -10px;
+  height: calc(100% + var(--tree-spacing-y) + 10px);
   border-left: 1px solid black;
 }
 

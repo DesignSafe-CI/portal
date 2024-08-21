@@ -1,6 +1,12 @@
 import React, { useCallback } from 'react';
-import { useAuthenticatedUser, useTrash } from '@client/hooks';
+import {
+  useAuthenticatedUser,
+  useCheckFilesForAssociation,
+  useNotifyContext,
+  useTrash,
+} from '@client/hooks';
 import { Button, ButtonProps, ConfigProvider } from 'antd';
+import { useParams } from 'react-router-dom';
 
 interface TrashButtonProps<T> extends ButtonProps {
   api: string;
@@ -25,8 +31,35 @@ const TrashButton: React.FC<TrashButtonProps<{ path: string }>> = React.memo(
       [selectedFiles, mutate, api, system]
     );
 
+    let { projectId } = useParams();
+    if (!projectId) projectId = '';
+
+    const hasAssociations = useCheckFilesForAssociation(
+      projectId,
+      selectedFiles.map((f) => f.path)
+    );
+
+    const { notifyApi } = useNotifyContext();
+
     const handleTrashClick = () => {
       // const trashPath = path === 'myData' ? '${user.username}/.Trash' : '.Trash';
+
+      if (hasAssociations) {
+        notifyApi?.open({
+          type: 'error',
+          message: 'Cannot Trash File(s)',
+          duration: 10,
+          description: (
+            <div>
+              The selected file(s) are associated to one or more categories.
+              Please remove category associations before proceeding.
+            </div>
+          ),
+          placement: 'bottomLeft',
+        });
+        return;
+      }
+
       const userUsername: string | undefined = user?.username;
       let trashPath: string;
       if (typeof userUsername === 'string' && !system.startsWith('project-')) {

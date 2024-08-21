@@ -627,14 +627,21 @@ class JobsView(AuthenticatedApiView):
 
         limit = int(request.GET.get("limit", 10))
         skip = int(request.GET.get("skip", 0))
+        filter_by_portal = request.GET.get("filterByPortal", False)
         portal_name = settings.PORTAL_NAMESPACE
+
+        kwargs = {}
+        if filter_by_portal:
+            kwargs["_tapis_query_parameters"] = {
+                "tags.contains": f"portalName: {portal_name}"
+            }
 
         data = client.jobs.getJobSearchList(
             limit=limit,
             skip=skip,
             orderBy="lastUpdated(desc),name(asc)",
-            _tapis_query_parameters={"tags.contains": f"portalName: {portal_name}"},
             select="allAttributes",
+            **kwargs,
         )
         if isinstance(data, list):
             for index, job in enumerate(data):
@@ -656,10 +663,14 @@ class JobsView(AuthenticatedApiView):
 
         limit = int(request.GET.get("limit", 10))
         skip = int(request.GET.get("skip", 0))
+        filter_by_portal = request.GET.get("filterByPortal", False)
         portal_name = settings.PORTAL_NAMESPACE
 
-        sql_queries = [
-            f"(tags IN ('portalName: {portal_name}')) AND",
+        sql_queries = []
+        if filter_by_portal:
+            sql_queries.append(f"(tags IN ('portalName: {portal_name}')) AND")
+
+        sql_queries += [
             f"((name like '%{query_string}%') OR",
             f"(archiveSystemDir like '%{query_string}%') OR",
             f"(appId like '%{query_string}%') OR",
@@ -765,6 +776,19 @@ class JobsView(AuthenticatedApiView):
         job_post["tags"] = job_post.get("tags", []) + [
             f"portalName: {settings.PORTAL_NAMESPACE}"
         ]
+
+        parameter_set = job_post.get("parameterSet", {})
+        env_variables = parameter_set.get("envVariables", [])
+        # Add user projects based on env var in the parameters.
+        for entry in env_variables:
+            if entry.get("key") == "_UserProjects":
+                projects = request.user.projects.order_by("-last_updated")
+                entry["value"] = " ".join(
+                    f"{project.uuid},{project.value['projectId'] if project.value['projectId'] != 'None' else project.uuid}"
+                    for project in projects[:settings.USER_PROJECTS_LIMIT]
+                )
+                job_post["parameterSet"]["envVariables"] = env_variables
+                break
 
         # Add additional data for interactive apps
         if body.get("isInteractive"):

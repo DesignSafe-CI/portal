@@ -86,7 +86,7 @@ const ProjectTreeDisplay: React.FC<{
   if (!entity) return null;
   return (
     <>
-      <span> &nbsp;{entity.value.title}&nbsp;</span>
+      <span style={{ marginLeft: '5px' }}>{entity.value.title}</span>
       <Button
         type="text"
         disabled={order === 0}
