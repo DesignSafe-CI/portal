@@ -65,6 +65,16 @@
     grid-area: desc;
 }
 
+/* SimCenter: Force disabled button to read "Coming Soon" */
+.is-simcenter a.btn.btn-secondary.disabled::after {
+    content: "Coming Soon";
+    display: inline;
+    font-size: 14px; /* to mimic Bootstrap .btn */
+}
+.is-simcenter a.btn.btn-secondary.disabled {
+    font-size: 0;
+}
+
 /* Bootstrap */
 .s-app-version-list .btn {
     min-width: 18ch;

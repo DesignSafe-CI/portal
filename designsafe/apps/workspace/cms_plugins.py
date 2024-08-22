@@ -99,6 +99,7 @@ class AppVariants(CMSPluginBase):
     def render(self, context, instance: AppListingEntry, placeholder):
         context = super().render(context, instance, placeholder)
         app_variants = instance.app.appvariant_set.filter()
+        context["is_simcenter"] = instance.app.is_simcenter
         context["listing"] = app_variants
 
         return context
