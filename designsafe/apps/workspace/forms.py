@@ -16,7 +16,7 @@ class AppVariantForm(ModelForm):
 
         help_texts = {
             "href": (
-                "The auto-generated path to app in the Apps Tray. Changes are reflected"
+                "The auto-generated path to the application. Changes are reflected"
                 " only after save."
             ),
         }

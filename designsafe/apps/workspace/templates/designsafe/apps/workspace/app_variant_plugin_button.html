@@ -1,11 +1,7 @@
 {# @var variant #}
 
-        {% if variant.external_href %}
-        <a class="btn btn-success" href="{{variant.external_href}}" target="_blank">
-            Get Started
-        </a>
-        {% elif variant.enabled %}
-        <a class="btn btn-success" href="{{variant.href}}">
+        {% if variant.enabled %}
+        <a class="btn btn-success" href="{{variant.href}}" {% if variant.external_href %}target="_blank"{% endif %}>
             Get Started
         </a>
         {% else %}
