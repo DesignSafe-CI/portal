@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name="external_href",
             field=models.CharField(
                 blank=True,
-                help_text="Path or URL to external access for this variant.",
+                help_text="Path or URL to external access for this app variant.",
                 max_length=128,
                 verbose_name="external HREF",
             ),
