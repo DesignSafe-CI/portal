@@ -11,12 +11,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="appvariant",
-            name="download_href",
+            name="external_href",
             field=models.CharField(
                 blank=True,
-                help_text="Path or URL to download location for this variant.",
+                help_text="Path or URL to external access for this variant.",
                 max_length=128,
-                verbose_name="download HREF",
+                verbose_name="external HREF",
             ),
         ),
     ]

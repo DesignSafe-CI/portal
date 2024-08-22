@@ -64,7 +64,7 @@ class AppVariantInline(admin.StackedInline):
                 "HTML or External app information",
                 {
                     "classes": ["collapse"],
-                    "fields": ["download_href", "html",],
+                    "fields": ["external_href", "html",],
                 },
             ),
         ]

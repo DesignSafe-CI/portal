@@ -205,9 +205,9 @@ class AppVariant(models.Model):
         help_text="HTML definition to display when app is loaded.",
         blank=True,
     )
-    download_href = models.CharField(
-        verbose_name="download HREF",
-        help_text="Path or URL to download location for this variant.", max_length=128, blank=True
+    external_href = models.CharField(
+        verbose_name="external HREF",
+        help_text="Path or URL to external access for this variant.", max_length=128, blank=True
     )
 
     description = models.TextField(
