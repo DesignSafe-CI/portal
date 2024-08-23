@@ -39,15 +39,15 @@ describe('RapidDataService', function() {
     });
 
     it('should search/filter events', ()=>{
-        let tmp = RapidDataService.search(events, { event_type: { name: 'Earthquake' } });
+        let tmp = RapidDataService.searchEvents(events, { event_type: { name: 'Earthquake' } });
         expect(tmp.length).toEqual(1);
         expect(tmp).toEqual(jasmine.any(Array));
         expect(tmp[0].title).toEqual('test1');
 
-        tmp = RapidDataService.search(events, {  search_text: 'Earthquake' });
-        expect(tmp[0].title).toEqual('test2 earthquake');
+        tmp = RapidDataService.searchEvents(events, {  search_text: 'Earthquake' });
+        expect(tmp[0].title).searchEvents('test2 earthquake');
 
-        tmp = RapidDataService.search(events, {  search_text: 'nonsense' });
+        tmp = RapidDataService.searchEvents(events, {  search_text: 'nonsense' });
         expect(tmp.length).toEqual(0);
     });
 
