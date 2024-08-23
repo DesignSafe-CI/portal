@@ -144,63 +144,45 @@ export default class RapidDataService {
     });
   }
 
-  search(events, filter_options) {
-    let tmp = _.filter(events, (item) => {
-      let f1 = true;
-      if (filter_options.event_type) {
-        f1 = item.event_type == filter_options.event_type.name;
-      }
-      let f2 = true;
-      if (filter_options.search_text) {
-        f2 =
-          item.title
-            .toLowerCase()
-            .indexOf(filter_options.search_text.toLowerCase()) !== -1;
-      }
-      let f3 = true;
-      if (filter_options.start_date) {
-        f3 = item.event_date > filter_options.start_date;
-      }
-      let f4 = true;
-      if (filter_options.end_date) {
-        f4 = item.event_date < filter_options.end_date;
-      }
-      return f1 && f2 && f3 && f4;
+  searchEvents(events, filter_options) {
+    const { event_type, search_text, start_date, end_date } = filter_options;
+
+    return _.filter(events, (item) => {
+      const matchesEventType = !event_type || item.event_type === event_type.name;
+      const matchesSearchText = !search_text || item.title.toLowerCase().includes(search_text.toLowerCase());
+      const matchesStartDate = !start_date || item.event_date > start_date;
+      const matchesEndDate = !end_date || item.event_date < end_date;
+
+      return matchesEventType && matchesSearchText && matchesStartDate && matchesEndDate;
     });
-    return tmp;
   }
 
-  searchOT(events, opentopo_filter_options, filter_options) {
-    let tmp = _.filter(events, (item) => {
-      let f1 = true;
-      if (filter_options.search_text) {
-        f1 =
-          item.properties.name
-            .toLowerCase()
-            .indexOf(filter_options.search_text.toLowerCase()) !== -1;
-      }
-      let f2 = true;
-      if (opentopo_filter_options.keyword) {
-        f2 = 
-            item.properties.keywords.split(',')
-            .some(keyword => keyword.trim()
-            .toLowerCase()
-            .startsWith(opentopo_filter_options.keyword.toLowerCase())
-            );  
-      }
-      const temporalCoverage = item.properties.temporalCoverage.split("/");
-      const startDate = new Date(temporalCoverage[0]);
-      const endDate = new Date(temporalCoverage[1] ? temporalCoverage[1] : startDate);
-      let f3 = true;
-      if (opentopo_filter_options.ot_start_date) {
-        f3 = startDate > opentopo_filter_options.ot_start_date;
-      }
-      let f4 = true;
-      if (opentopo_filter_options.ot_end_date) {
-        f4 = endDate < opentopo_filter_options.ot_end_date;
-      }
-      return f1 && f2 && f3 && f4;
+
+  searchOpenTopo(openTopoData, opentopo_filter_options, filter_options) {
+    const { search_text } = filter_options;
+    const { keyword, ot_start_date, ot_end_date } = opentopo_filter_options;
+
+    return _.filter(openTopoData, (item) => {
+      const { name, keywords, temporalCoverage } = item.properties;
+
+      // Filter by search text
+      const matchesSearchText = !search_text || name.toLowerCase().includes(search_text.toLowerCase());
+
+      // Filter by keyword
+      const matchesKeyword = !keyword || keywords.split(',')
+        .some(kw => kw.trim().toLowerCase().startsWith(keyword.toLowerCase()));
+
+      // Parse temporal coverage
+      const [start, end] = temporalCoverage.split("/").map(date => new Date(date));
+      const startDate = start || new Date();
+      const endDate = end || startDate;
+
+      // Filter by date range
+      const matchesStartDate = !ot_start_date || startDate > ot_start_date;
+      const matchesEndDate = !ot_end_date || endDate < ot_end_date;
+
+      return matchesSearchText && matchesKeyword && matchesStartDate && matchesEndDate;
     });
-    return tmp;
   }
+
 }
