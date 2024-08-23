@@ -102,14 +102,15 @@ def new_user_alert(username):
                                                     'Id: ' + str(user.id) + '\n',
               settings.DEFAULT_FROM_EMAIL, settings.NEW_ACCOUNT_ALERT_EMAILS.split(','),)
 
-    tram_headers = {"tram-services-key": settings.TRAM_SERVICES_KEY}
-    tram_body = {"project_id": settings.TRAM_PROJECT_ID,
-                 "email": user.email}
-    tram_resp = requests.post(f"{settings.TRAM_SERVICES_URL}/project_invitations/create",
-                                 headers=tram_headers,
-                                 json=tram_body,
-                                 timeout=15)
-    tram_resp.raise_for_status()
+    # Auto-add user to TRAM allocation
+    # tram_headers = {"tram-services-key": settings.TRAM_SERVICES_KEY}
+    # tram_body = {"project_id": settings.TRAM_PROJECT_ID,
+    #              "email": user.email}
+    # tram_resp = requests.post(f"{settings.TRAM_SERVICES_URL}/project_invitations/create",
+    #                              headers=tram_headers,
+    #                             json=tram_body,
+    #                              timeout=15)
+    # tram_resp.raise_for_status()
 
 
 @shared_task()
