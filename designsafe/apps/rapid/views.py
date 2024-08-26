@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model, models
 from django.db.models import Q
 from tapipy.tapis import Tapis
+from django.views.decorators.cache import cache_page
 
 
 import logging
@@ -81,34 +82,26 @@ def get_events(request):
     out = [h.to_dict() for h in s[0:total]]
     return JsonResponse(out, safe=False)
 
+
+@cache_page(60 * 60 * 6)  # Caches the view for 6 hours
 @csrf_exempt
 @require_GET
 def opentopo_data(request):
-    url = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false'
-    
-    cache_key = f"proxy_response_{url}"
-    cache_timeout = 82800  # 23 hours
-
-    # Check for cached response
-    cached_response = cache.get(cache_key)
-    if cached_response is not None:
-        logger.debug(f"Cache hit for {cache_key}")
-        return JsonResponse(cached_response, safe=False)
-
+    """
+    Get open topo data for entire world.
+    """
+    # detail=true allows us to get coordinates for each dataset
+    OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false'
     try:
-        logger.debug(f"Cache miss for {cache_key}")
-        response = requests.get(url)
+        logger.debug("Requesting opentopo data")
+        response = requests.get(OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD)
         response.raise_for_status()
         response_data = response.json()
-
-        # Cache the response
-        cache.set(cache_key, response_data, cache_timeout)
-        logger.debug(f"Cache set for {cache_key}")
-
         return JsonResponse(response_data, safe=False, status=response.status_code)
     except requests.RequestException as e:
-        logger.error(f"Error fetching URL {url}: {str(e)}")
+        logger.error(f"Error fetching URL {OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD}: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
+
 
 def get_opentopodata_center(request):
     client = Tapis(
