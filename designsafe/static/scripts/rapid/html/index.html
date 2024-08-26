@@ -7,6 +7,7 @@
       <div class="form-group data_source">
         <input type="checkbox"
               class="form-control"
+              ng-change="vm.search()"
               ng-model="vm.data_source">
         <label>Recon portal Data</label>
       </div>
@@ -43,6 +44,7 @@
       <div class="form-group data_source">
         <input type="checkbox"
               class="form-control"
+              ng-change="vm.search()"
               ng-model="vm.ot_data_source">
         <label>OpenTopography Data</label>
       </div>
@@ -51,7 +53,7 @@
         <input type="text" 
               class="form-control" 
               ng-model="vm.opentopo_filter_options.keyword" 
-              ng-change="vm.search()"
+              ng-change="vm.debouncedSearch()"
               ng-disabled="!vm.ot_data_source"
               title="Select the data source to enable filters"></input>
       </div>
@@ -104,7 +106,7 @@
       <div class="search-container sb-row" ng-show="!vm.active_rapid_event">
         <div class="event-search">
           <div class="input-group">
-            <input type="text" class="form-control" ng-model="vm.filter_options.search_text" ng-change="vm.search()"></input>
+            <input type="text" class="form-control" ng-model="vm.filter_options.search_text" ng-change="vm.debouncedSearch()"></input>
             <span class="input-group-btn">
               <button class="btn btn-default"> <i role="none" class="fa fa-trash" ng-click="vm.clear_filters()"></i></button>
             </span>
