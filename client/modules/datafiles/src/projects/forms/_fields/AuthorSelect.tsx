@@ -1,13 +1,42 @@
 import { Checkbox } from 'antd';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { TProjectUser } from '@client/hooks';
 
 export const AuthorSelect: React.FC<{
   projectUsers: TProjectUser[];
+  currentAuthors?: TProjectUser[];
   value?: TProjectUser[];
   onChange?: (value: TProjectUser[]) => void;
-}> = ({ value, onChange, projectUsers }) => {
-  const options = projectUsers.map((author) => ({
+}> = ({ value, onChange, projectUsers, currentAuthors = [] }) => {
+  const orderedUsers = useMemo(() => {
+    // Ensure author order is not reset when adding/changing authors.
+    const authorUsers: TProjectUser[] = currentAuthors
+      .map((a) =>
+        projectUsers.find(
+          (u) =>
+            (u.email || '') === (a.email || '') &&
+            u.fname === a.fname &&
+            u.lname === a.lname
+        )
+      )
+      .filter((u) => !!u);
+
+    const nonAuthorUsers: TProjectUser[] = projectUsers
+      .filter(
+        (u) =>
+          !currentAuthors.find(
+            (a) =>
+              (u.email || '') === (a.email || '') &&
+              u.fname === a.fname &&
+              u.lname === a.lname
+          )
+      )
+      .filter((u) => !!u);
+
+    return [...authorUsers, ...nonAuthorUsers];
+  }, [projectUsers, currentAuthors]);
+
+  const options = orderedUsers.map((author) => ({
     value: JSON.stringify(author),
     label: `${author.fname} ${author.lname} (${author.email})`,
   }));
@@ -22,7 +51,7 @@ export const AuthorSelect: React.FC<{
   return (
     <Checkbox.Group
       style={{ flexDirection: 'column' }}
-      value={projectUsers
+      value={orderedUsers
         .filter((user) =>
           value?.some(
             (v) =>
