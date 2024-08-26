@@ -5,6 +5,7 @@ from designsafe.apps.rapid.models import RapidNHEvent
 from unittest import skip
 import mock
 import requests_mock
+import pytest
 import os, settings
 
 class RapidTests(TestCase):
@@ -116,3 +117,17 @@ class RapidTests(TestCase):
                 systemId='designsafe.storage.community',
                 path='/Recon Portal/opentopgraphy_catalog/'+file_name
             )
+
+
+@pytest.mark.django_db
+def test_opentopo_data_success(client, requests_mock):
+    mock_data = {"result": "value"}
+    requests_mock.get(
+        'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false',
+        json=mock_data,
+        status_code=200
+    )
+
+    response = client.get("/recon-portal/opentopo/")
+    assert response.status_code == 200
+    assert response.json() == mock_data
