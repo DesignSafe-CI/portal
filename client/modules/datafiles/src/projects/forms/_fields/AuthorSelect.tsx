@@ -23,7 +23,14 @@ export const AuthorSelect: React.FC<{
     <Checkbox.Group
       style={{ flexDirection: 'column' }}
       value={projectUsers
-        .filter((user) => value?.some((v) => user.email === v.email))
+        .filter((user) =>
+          value?.some(
+            (v) =>
+              (user.email || '') === (v.email || '') &&
+              user.fname === v.fname &&
+              user.lname === v.lname
+          )
+        )
         .map((v) => JSON.stringify(v) ?? [])}
       options={options}
       onChange={onChangeCallback}
