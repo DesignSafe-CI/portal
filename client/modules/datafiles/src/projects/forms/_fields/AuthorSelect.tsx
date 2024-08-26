@@ -10,7 +10,7 @@ export const AuthorSelect: React.FC<{
 }> = ({ value, onChange, projectUsers, currentAuthors = [] }) => {
   const orderedUsers = useMemo(() => {
     // Ensure author order is not reset when adding/changing authors.
-    const authorUsers: TProjectUser[] = currentAuthors
+    const authorUsers = currentAuthors
       .map((a) =>
         projectUsers.find(
           (u) =>
@@ -21,7 +21,7 @@ export const AuthorSelect: React.FC<{
       )
       .filter((u) => !!u);
 
-    const nonAuthorUsers: TProjectUser[] = projectUsers
+    const nonAuthorUsers = projectUsers
       .filter(
         (u) =>
           !currentAuthors.find(
@@ -36,10 +36,12 @@ export const AuthorSelect: React.FC<{
     return [...authorUsers, ...nonAuthorUsers];
   }, [projectUsers, currentAuthors]);
 
-  const options = orderedUsers.map((author) => ({
-    value: JSON.stringify(author),
-    label: `${author.fname} ${author.lname} (${author.email})`,
-  }));
+  const options = orderedUsers
+    .filter((u) => !!u)
+    .map((author) => ({
+      value: JSON.stringify(author),
+      label: `${author?.fname} ${author?.lname} (${author?.email})`,
+    }));
 
   const onChangeCallback = useCallback(
     (value: string[]) => {
@@ -52,12 +54,13 @@ export const AuthorSelect: React.FC<{
     <Checkbox.Group
       style={{ flexDirection: 'column' }}
       value={orderedUsers
+        .filter((u) => !!u)
         .filter((user) =>
           value?.some(
             (v) =>
-              (user.email || '') === (v.email || '') &&
-              user.fname === v.fname &&
-              user.lname === v.lname
+              (user?.email || '') === (v.email || '') &&
+              user?.fname === v.fname &&
+              user?.lname === v.lname
           )
         )
         .map((v) => JSON.stringify(v) ?? [])}
