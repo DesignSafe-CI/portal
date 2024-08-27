@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import _ from 'underscore';
+import lodash from 'lodash';
 
 export default class RapidMainCtrl {
     constructor(RapidDataService, $location, $scope) {
@@ -14,6 +15,12 @@ export default class RapidMainCtrl {
         this.$scope = $scope;
         this.reconLayer = L.layerGroup(); // Layer for Recon Portal Events
         this.openTopoLayer = L.layerGroup(); // Layer for OpenTopography data
+        this.data_source = true; // Checkbox for Recon Portal data
+        this.ot_data_source = false; // Checkbox for OpenTopography data
+        this.debouncedSearch = lodash.debounce(() => {
+            this.search();
+            this.$scope.$applyAsync(); // Ensures that the digest cycle runs
+        }, 300);
     }
 
     $onInit() {
@@ -69,12 +76,6 @@ export default class RapidMainCtrl {
         });
         this.map.setView([30.2672, -97.7431], 2);
         this.map.zoomControl.setPosition('topright');
-
-        // Adding layer control
-        L.control.layers(null, {
-            'Recon Portal Events': this.reconLayer,
-            'OpenTopography Data': this.openTopoLayer
-        }).addTo(this.map);
     }
 
     addMarkers(data, layerGroup, isOpenTopo = false) {
@@ -250,11 +251,36 @@ export default class RapidMainCtrl {
         if (!this.events || !this.openTopoData) return;
         this.filtered_events = this.RapidDataService.searchEvents(this.events, this.filter_options);
         this.filtered_openTopoData = this.RapidDataService.searchOpenTopo(this.openTopoData, this.opentopo_filter_options, this.filter_options);
+        
+        // Handle Recon Portal Layer
+        this.updateLayer(this.data_source, this.reconLayer, this.filtered_events);
+
+        // Handle OpenTopography Layer
+        this.updateLayer(this.ot_data_source, this.openTopoLayer, this.filtered_openTopoData, true);
     }
 
     clear_filters() {
         this.filter_options = {};
         this.opentopo_filter_options = {};
         this.search();
+    }
+
+    updateLayer(dataSource, layer, filteredData, isOpenTopo = false) {
+        if (dataSource) {
+            if (!this.map.hasLayer(layer)) {
+                this.map.addLayer(layer);
+            }
+    
+            // Clear existing markers from the layer
+            layer.clearLayers();
+    
+            // Add markers only for the filtered data
+            if (filteredData && filteredData.length > 0) {
+                this.addMarkers(filteredData, layer, isOpenTopo);
+            }
+        } else if (this.map.hasLayer(layer)) {
+            // Remove the layer if the checkbox is unchecked
+            this.map.removeLayer(layer);
+        }
     }
 }
