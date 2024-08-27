@@ -4,6 +4,7 @@ import os
 import urllib
 import networkx as nx
 from fido.fido import Fido
+from designsafe.libs.common.context_managers import AsyncTaskContext
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING, PATH_SLUGS
 from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
@@ -357,7 +358,11 @@ def ingest_pub_fedora(project_id: str, version: int = 1, amend: bool = False):
         if version and version > 1:
             container_path = f"{container_path}v{version}"
         fedora_post(container_path)
-        project_meta = get_fedora_json(project_id, version=version)[0]
+
+        # Close database connection before proceeding
+        with AsyncTaskContext():
+            project_meta = get_fedora_json(project_id, version=version)[0]
+
         if amend:
             create_fc_version(project_meta["container_path"])
         fedora_update(project_meta["container_path"], project_meta["fedora_mapping"])
@@ -370,7 +375,10 @@ def ingest_pub_fedora(project_id: str, version: int = 1, amend: bool = False):
         if version and version > 1:
             container_path = f"{container_path}v{version}"
 
-        walk_result = get_fedora_json(project_id, version=version)
+        # Close database connection before proceeding
+        with AsyncTaskContext():
+            walk_result = get_fedora_json(project_id, version=version)
+
         for entity in walk_result:
             if amend:
                 create_fc_version(entity["container_path"])
