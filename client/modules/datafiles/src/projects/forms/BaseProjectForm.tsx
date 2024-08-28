@@ -329,7 +329,10 @@ export const BaseProjectForm: React.FC<{
               ]}
               className="inner-form-item"
             >
-              <AuthorSelect projectUsers={watchedUsers} />
+              <AuthorSelect
+                projectUsers={watchedUsers}
+                currentAuthors={data?.baseProject.value.authors ?? []}
+              />
             </Form.Item>
           </Form.Item>
 
