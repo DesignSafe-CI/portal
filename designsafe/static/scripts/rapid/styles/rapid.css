@@ -280,6 +280,10 @@ body {
 .filter-container{
   display: flex;
   flex-direction: column;
+  width: 90%;
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom:  1px solid #D4D4D4;
+  padding-bottom: 15px;
 }
 .filter-options {
   padding: 5px;
@@ -313,8 +317,57 @@ body {
 }
 
 .data_source{
-  background-color: moccasin;
+  display:flex;
+  flex-direction: row;
+  width: 100%;
   align-items: center;
+}
+
+.external_datasource_listing {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 12px;
+  padding-bottom: 5px;
+
+}
+
+.external-data-checkbox {
+  position: relative;
+  display: inline-block;
+}
+
+.external-data-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.external-data-checkbox label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.external-data-checkbox .unchecked-icon {
+  display: inline-block;
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.external-data-checkbox .checked-icon {
+  display: none;
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.external-data-checkbox input[type="checkbox"]:checked ~ label .unchecked-icon {
+  display: none;
+}
+
+.external-data-checkbox input[type="checkbox"]:checked ~ label .checked-icon {
+  display: inline-block;
 }
 
 .clear-btn,
