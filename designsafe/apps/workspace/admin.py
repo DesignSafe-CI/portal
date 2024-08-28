@@ -37,7 +37,7 @@ class AppVariantInline(admin.StackedInline):
                     "fields": (
                         "app_type",
                         "app_id",
-                    )
+                    ),
                     "description": 'For the "App type" chosen, edit the corresponding set of fields below',
                 },
             ),
@@ -47,7 +47,7 @@ class AppVariantInline(admin.StackedInline):
                     "fields": (
                         "version",
                         "href",
-                    )
+                    ),
                     "description": "Identifies the app version in the Workspace",
                 },
             ),
@@ -67,7 +67,7 @@ class AppVariantInline(admin.StackedInline):
                         "description",
                         "enabled",
                         "priority",
-                    )
+                    ),
                     "description": "Defines content display on CMS app list and in the Workspace app tray",
                 },
             ),
