@@ -232,11 +232,11 @@ class AppVariant(models.Model):
     def href(self):
         """Retrieve the app's URL in the Tools & Applications space"""
         if self.external_href:
-            app_href = self.external_href
-        else:
-            app_href = f"/rw/workspace/{self.app_id}"
-            if self.version:
-                app_href += f"?appVersion={self.version}"
+            return self.external_href
+        
+        app_href = f"/rw/workspace/{self.app_id}"
+        if self.version:
+            app_href += f"?appVersion={self.version}"
         return app_href
 
     def __str__(self):
