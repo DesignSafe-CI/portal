@@ -38,19 +38,29 @@ class AppVariantInline(admin.StackedInline):
                         "app_type",
                         "app_id",
                     )
+                    "description": 'For the "App type" chosen, edit the corresponding set of fields below',
                 },
             ),
             (
-                "Tapis App information",
+                "Tapis App",
                 {
                     "fields": (
                         "version",
                         "href",
                     )
+                    "description": "Identifies the app version in the Workspace",
                 },
             ),
             (
-                "Display information",
+                "HTML or External app",
+                {
+                    "classes": ["collapse"],
+                    "fields": ["external_href", "html",],
+                    "description": "Defines link on CMS app page and display content in Workspace",
+                },
+            ),
+            (
+                "Display",
                 {
                     "fields": (
                         "label",
@@ -58,13 +68,7 @@ class AppVariantInline(admin.StackedInline):
                         "enabled",
                         "priority",
                     )
-                },
-            ),
-            (
-                "HTML or External app information",
-                {
-                    "classes": ["collapse"],
-                    "fields": ["external_href", "html",],
+                    "description": "Defines content display on CMS app list and in the Workspace app tray",
                 },
             ),
         ]
