@@ -1,18 +1,10 @@
 <div id="rapid_main">
   <div class="text-center" ng-show="!vm.show_filter_options">
-    <span class="filter-options-button" ng-click="vm.show_filter_options=true"> Show filter options </span>
+    <button class="btn-link-alt filter-options-button" ng-click="vm.show_filter_options=true"> Show filter options </button>
   </div>
   <div class="filter-options slide-in" ng-show="vm.show_filter_options">
-    <div class="filter-options recon-portal">
-      <div class="form-group data_source">
-        <input type="checkbox"
-              class="form-control"
-              ng-change="vm.search()"
-              ng-model="vm.data_source">
-        <label>Recon portal Data</label>
-      </div>
-      
-      <div class="form-group">
+    <div class="filter-container">
+        <div class="filter-options">
         <label> Event Type </label>
         <select class="form-control"
                 ng-options="et.display_name for et in vm.event_types track by et.name"
@@ -20,8 +12,6 @@
                 ng-model="vm.filter_options.event_type"
                 ng-disabled="!vm.data_source"
                 title="Select the data source to enable filters"></select>
-      </div>
-      <div class="form-group">
         <label> Start date </label>
         <input type="date"
               class="form-control"
@@ -29,8 +19,6 @@
               ng-change="vm.search()"
               ng-disabled="!vm.data_source"
               title="Select the data source to enable filters">
-      </div>
-      <div class="form-group">
         <label> End date </label>
         <input type="date"
               class="form-control"
@@ -38,26 +26,46 @@
               ng-change="vm.search()"
               ng-disabled="!vm.data_source"
               title="Select the data source to enable filters">
-      </div>
+              </div>
+          <div class="external-data-checkbox"  ng-show="!vm.show_external_filters">
+            <input type="checkbox" id="showExternalCheckbox" ng-click="vm.show_external_filters = true; vm.ot_data_source = false;"
+            ng-model="vm.show_external_filters">
+            <label for="showExternalCheckbox">
+              <i class="ds-icon-Expand unchecked-icon"></i>
+              <h4>
+                <u>
+              View External Dataset Filters
+            </u>
+            </h4>
+            </label>
+          </div>
+        <div ng-show="vm.show_external_filters">
+          <div class="external-data-checkbox"  ng-show="vm.show_external_filters">
+            <input type="checkbox" id="hideExternalCheckbox" ng-click="vm.show_external_filters = false; vm.ot_data_source = false; vm.clear_filters();"
+            ng-model="vm.show_external_filters">
+            <label for="hideExternalCheckbox">
+              <h4>
+                <u>
+              Hide External Dataset Filters
+            </u>
+            </h4>
+            </label>
+          </div>
+        <ul>
+        <div class="data_source">
+      <input type="checkbox"
+            ng-change="vm.search()"
+            ng-model="vm.ot_data_source">
+      <label class="external_datasource_listing"> OpenTopography Data </label>
     </div>
-    <div class="filter-options opentopography">
-      <div class="form-group data_source">
-        <input type="checkbox"
-              class="form-control"
-              ng-change="vm.search()"
-              ng-model="vm.ot_data_source">
-        <label>OpenTopography Data</label>
-      </div>
-      <div class="form-group">
-        <label> Key word search<span class="info-icon" data-tooltip="Keywords typically include: title terms, location details, type of events, index terms associated with the datasets"> (i)</span></label> </label>
+    <div class="filter-options">
+        <label> Keyword search<span class="info-icon" data-tooltip="Keywords typically include: title terms, location details, type of events, index terms associated with the datasets"> (i)</span></label> </label>
         <input type="text" 
               class="form-control" 
               ng-model="vm.opentopo_filter_options.keyword" 
               ng-change="vm.debouncedSearch()"
               ng-disabled="!vm.ot_data_source"
               title="Select the data source to enable filters"></input>
-      </div>
-      <div class="form-group">
         <label> Start date </label>
         <input type="date"
               class="form-control"
@@ -65,8 +73,6 @@
               ng-change="vm.search()"
               ng-disabled="!vm.ot_data_source"
               title="Select the data source to enable filters">
-      </div>
-      <div class="form-group">
         <label> End date </label>
         <input type="date"
               class="form-control"
@@ -75,9 +81,42 @@
               ng-disabled="!vm.ot_data_source"
               title="Select the data source to enable filters">
       </div>
-    </div>
+      <div class="data_source">
+    <input type="checkbox"
+          ng-change="vm.search()"
+          ng-model="vm.ot_data_source">
+    <label class="external_datasource_listing"> External Data Source 2 </label>
+  </div>
+  <div class="filter-options">
+      <label> Keyword search<span class="info-icon" data-tooltip="Keywords typically include: title terms, location details, type of events, index terms associated with the datasets"> (i)</span></label> </label>
+      <input type="text" 
+            class="form-control" 
+            ng-model="vm.opentopo_filter_options.keyword" 
+            ng-change="vm.debouncedSearch()"
+            ng-disabled="!vm.ot_data_source"
+            title="Select the data source to enable filters"></input>
+      <label> Start date </label>
+      <input type="date"
+            class="form-control"
+            ng-model="vm.opentopo_filter_options.ot_start_date"
+            ng-change="vm.search()"
+            ng-disabled="!vm.ot_data_source"
+            title="Select the data source to enable filters">
+      <label> End date </label>
+      <input type="date"
+            class="form-control"
+            ng-model="vm.opentopo_filter_options.ot_end_date"
+            ng-change="vm.search()"
+            ng-disabled="!vm.ot_data_source"
+            title="Select the data source to enable filters">
+  </div>
+  </div>
+      <div class="filter-options">
     <button class="btn btn-xs btn-info clear-btn" ng-click="vm.clear_filters()"> Clear </button>
     <button class="btn btn-xs btn-default hide-btn" ng-click="vm.show_filter_options=false"> Hide </button>
+  </div>
+  </div>
+</ul>
   </div>
   <div id="show_sidebar_handle" ng-show="!vm.show_sidebar" ng-click="vm.show_sidebar = !vm.show_sidebar">
     <div class="sidebar-handle"
@@ -126,4 +165,5 @@
     </div>
   </div> <!-- ends sidebar -->
   <div id="map"></div>
+</div>
 </div>
