@@ -1,7 +1,12 @@
 import { Breadcrumb, BreadcrumbProps } from 'antd';
 import React from 'react';
 import styles from './DatafilesBreadcrumb.module.css';
-import { getSystemRootDisplayName, useAuthenticatedUser } from '@client/hooks';
+import {
+  getSystemRootDisplayName,
+  useAuthenticatedUser,
+  USER_MYDATA_SYSTEM,
+  USER_WORK_SYSTEM,
+} from '@client/hooks';
 
 function getPathRoutes(
   baseRoute: string,
@@ -50,17 +55,6 @@ export const DatafilesBreadcrumb: React.FC<
   );
 };
 
-function isUserHomeSystem(system: string) {
-  return [
-    'designsafe.storage.default',
-    'designsafe.storage.frontera.work',
-  ].includes(system);
-}
-
-function isUserWorkSystem(system: string) {
-  return ['cloud.data'].includes(system);
-}
-
 export const BaseFileListingBreadcrumb: React.FC<
   {
     api: string;
@@ -83,8 +77,8 @@ export const BaseFileListingBreadcrumb: React.FC<
   const rootAlias =
     systemRootAlias || getSystemRootDisplayName(api, system, systemLabel);
   let systemRoot = '';
-  if (isUserHomeSystem(system)) systemRoot = '/' + user?.username;
-  if (isUserWorkSystem(system)) systemRoot = '/work/' + user?.homedir;
+  if (system === USER_MYDATA_SYSTEM) systemRoot = '/' + user?.username;
+  if (system === USER_WORK_SYSTEM) systemRoot = '/work/' + user?.homedir;
 
   return (
     <DatafilesBreadcrumb

@@ -4,6 +4,7 @@ import {
   useAuthenticatedUser,
   useFileListingRouteParams,
   useProjectDetail,
+  USER_WORK_SYSTEM,
   useSelectedFiles,
   useSelectedFilesForSystem,
 } from '@client/hooks';
@@ -103,7 +104,7 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
         // Disable downloads from frontera.work until we have a non-flaky mount on ds-download.
         canDownload:
           selectedFiles.length >= 1 &&
-          system !== 'designsafe.storage.frontera.work' &&
+          system !== USER_WORK_SYSTEM &&
           !selectedFiles[0].path.endsWith('.hazmapper'),
       };
     },

@@ -56,7 +56,7 @@ def site_verification(request):
 
 def tas_homedir(request):
     """Retrieve user's TAS homedir."""
-    if getattr(settings, "TEST") or not request.user.is_authenticated:
+    if getattr(settings, "TEST", None) or not request.user.is_authenticated:
         return {}
 
     return {"tas_homedir": request.user.profile.get_homedir()}
