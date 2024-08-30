@@ -13,6 +13,7 @@ export function getSystemRootDisplayName(
     {
       'designsafe.storage.default': 'My Data',
       'designsafe.storage.frontera.work': 'HPC Work',
+      'cloud.data': 'HPC Work',
       'designsafe.storage.community': 'Community Data',
     }[system] ?? label
   );

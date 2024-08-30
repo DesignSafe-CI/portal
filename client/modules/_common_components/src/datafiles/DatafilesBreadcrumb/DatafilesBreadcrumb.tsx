@@ -57,6 +57,10 @@ function isUserHomeSystem(system: string) {
   ].includes(system);
 }
 
+function isUserWorkSystem(system: string) {
+  return ['cloud.data'].includes(system);
+}
+
 export const BaseFileListingBreadcrumb: React.FC<
   {
     api: string;
@@ -78,7 +82,10 @@ export const BaseFileListingBreadcrumb: React.FC<
   const { user } = useAuthenticatedUser();
   const rootAlias =
     systemRootAlias || getSystemRootDisplayName(api, system, systemLabel);
-  const systemRoot = isUserHomeSystem(system) ? '/' + user?.username : '';
+  let systemRoot = '';
+  if (isUserHomeSystem(system)) systemRoot = '/' + user?.username;
+  if (isUserWorkSystem(system)) systemRoot = '/work/' + user?.homedir;
+
   return (
     <DatafilesBreadcrumb
       initialBreadcrumbs={[
@@ -90,7 +97,7 @@ export const BaseFileListingBreadcrumb: React.FC<
       ]}
       path={path}
       baseRoute={`/${api}/${system}`}
-      systemRoot={isUserHomeSystem(system) ? '/' + user?.username : ''}
+      systemRoot={systemRoot}
       systemRootAlias={systemRootAlias || getSystemRootDisplayName(api, system)}
       {...props}
     />

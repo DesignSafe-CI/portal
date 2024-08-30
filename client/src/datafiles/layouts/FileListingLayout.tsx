@@ -42,8 +42,13 @@ export const FileListingLayout: React.FC = () => {
     'designsafe.storage.frontera.work',
   ].includes(system);
 
+  const isUserWorkSystem = ['cloud.data'].includes(system);
+
   const redirectHome =
     user?.username && !path && api === 'tapis' && isUserHomeSystem;
+
+  const redirectWork =
+    user?.username && !path && api === 'tapis' && isUserWorkSystem;
   return (
     <Layout style={{ gap: '5px', minWidth: '500px' }}>
       <DatafilesToolbar searchInput={<FileListingSearchBar />} />
@@ -66,6 +71,12 @@ export const FileListingLayout: React.FC = () => {
           {redirectHome && (
             <Navigate
               to={`../${encodeURIComponent('/' + user.username)}`}
+              replace
+            />
+          )}
+          {redirectWork && (
+            <Navigate
+              to={`../${encodeURIComponent('/work/' + user.homedir)}`}
               replace
             />
           )}

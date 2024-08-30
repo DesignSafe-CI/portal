@@ -154,8 +154,8 @@ export const CopyModal: React.FC<{
         setShowProjects(false);
         setDest({
           destApi: 'tapis',
-          destSystem: 'designsafe.storage.frontera.work',
-          destPath: encodeURIComponent('/' + user?.username),
+          destSystem: 'cloud.data',
+          destPath: encodeURIComponent('/work/' + user?.homedir),
         });
         break;
       case 'myprojects':

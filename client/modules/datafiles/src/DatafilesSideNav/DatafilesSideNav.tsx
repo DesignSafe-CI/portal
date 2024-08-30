@@ -38,7 +38,7 @@ export const DatafilesSideNav: React.FC = () => {
           </DataFilesNavLink>
 
           <DataFilesNavLink
-            to={`/tapis/designsafe.storage.frontera.work`}
+            to={`/tapis/cloud.data/`}
             tooltip="Work directory on TACC HPC machines for use with Jupyter"
           >
             HPC Work
