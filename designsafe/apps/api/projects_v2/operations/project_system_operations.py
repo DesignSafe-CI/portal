@@ -3,11 +3,12 @@
 # from portal.utils.encryption import createKeyPair
 import logging
 from typing import Literal
+from celery import shared_task
 from tapipy.tapis import Tapis
 from django.conf import settings
-import celery
 from designsafe.apps.api.agave import service_account
-from celery import shared_task
+from designsafe.libs.common.context_managers import AsyncTaskContext
+
 
 # from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
 
@@ -208,10 +209,12 @@ def remove_user_from_project(project_uuid: str, username: str):
 @shared_task(bind=True)
 def add_user_to_project_async(self, project_uuid: str, username: str):
     """Async wrapper around add_user_to_project"""
-    add_user_to_project(project_uuid, username)
+    with AsyncTaskContext():
+        add_user_to_project(project_uuid, username)
 
 
 @shared_task(bind=True)
 def remove_user_from_project_async(self, project_uuid: str, username: str):
     """Async wrapper around remove_user_from_project"""
-    remove_user_from_project(project_uuid, username)
+    with AsyncTaskContext():
+        remove_user_from_project(project_uuid, username)

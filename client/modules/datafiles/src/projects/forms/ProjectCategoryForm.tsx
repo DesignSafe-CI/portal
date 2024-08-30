@@ -124,7 +124,10 @@ export const ProjectCategoryForm: React.FC<{
               },
             ]}
           >
-            <AuthorSelect projectUsers={data.baseProject.value.users} />
+            <AuthorSelect
+              projectUsers={data.baseProject.value.users}
+              currentAuthors={category?.value.dataCollectors ?? []}
+            />
           </Form.Item>
         </Form.Item>
       )}
@@ -186,7 +189,10 @@ export const ProjectCategoryForm: React.FC<{
                 },
               ]}
             >
-              <AuthorSelect projectUsers={data.baseProject.value.users} />
+              <AuthorSelect
+                projectUsers={data.baseProject.value.users}
+                currentAuthors={category?.value.dataCollectors ?? []}
+              />
             </Form.Item>
           </Form.Item>
 
@@ -300,7 +306,10 @@ export const ProjectCategoryForm: React.FC<{
                 },
               ]}
             >
-              <AuthorSelect projectUsers={data.baseProject.value.users} />
+              <AuthorSelect
+                projectUsers={data.baseProject.value.users}
+                currentAuthors={category?.value.dataCollectors ?? []}
+              />
             </Form.Item>
           </Form.Item>
 

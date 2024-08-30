@@ -183,7 +183,7 @@ export const PublishedEntityDetails: React.FC<{
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.referencedData.map((ref) => (
                   <div key={JSON.stringify(ref)}>
-                    {ref.hrefType && `${ref.hrefType} | `}
+                    {ref.hrefType && `${ref.hrefType.toUpperCase()} | `}
                     <a href={ref.doi} rel="noopener noreferrer" target="_blank">
                       {ref.title}
                     </a>
