@@ -2,6 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { AxiosError } from 'axios';
 import { useSearchParams } from 'react-router-dom';
+import { useDoiContext } from './publications';
 
 export type TFileListing = {
   system: string;
@@ -31,13 +32,17 @@ async function getFileListing(
   page: number = 0,
   nextPageToken: string | undefined,
   queryString: string | undefined,
+  doi: string | undefined,
   { signal }: { signal: AbortSignal }
 ) {
   const offset = page * limit;
 
   const res = await apiClient.get<FileListingResponse>(
     `/api/datafiles/${api}/${scheme}/listing/${system}/${path}`,
-    { signal, params: { offset, limit, nextPageToken, q: queryString } }
+    {
+      signal,
+      params: { offset, limit, nextPageToken, q: queryString, doi: doi },
+    }
   );
   return res.data;
 }
@@ -68,6 +73,7 @@ function useFileListing({
 }: TFileListingHookArgs) {
   const [searchParams] = useSearchParams();
   const queryString = searchParams.get('q') ?? searchTerm;
+  const doi = useDoiContext();
   return useInfiniteQuery<
     FileListingResponse,
     AxiosError<{ message?: string }>
@@ -91,6 +97,7 @@ function useFileListing({
         (pageParam as TFileListingPageParam).page,
         (pageParam as TFileListingPageParam).nextPageToken,
         queryString ?? undefined,
+        doi ?? undefined,
         {
           signal,
         }
