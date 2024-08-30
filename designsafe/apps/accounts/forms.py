@@ -333,7 +333,7 @@ class ProfessionalProfileForm(forms.ModelForm):
 
     class Meta:
         model = DesignSafeProfile
-        exclude = ['user', 'ethnicity', 'gender', 'update_required', 'institution']
+        exclude = ['user', 'ethnicity', 'gender', 'update_required', 'institution', 'homedir']
 
 
 class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):

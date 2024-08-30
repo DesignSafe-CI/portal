@@ -149,7 +149,7 @@
             lastName: "{{ request.user.last_name }}",
             email: "{{ request.user.email }}",
             institution: "{{ request.user.profile.institution }}",
-            homedir: "{{request.user.profile.cached_homedir}}"
+            homedir: "{{tas_homedir}}"
         };
     </script>
 

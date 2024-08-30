@@ -53,3 +53,10 @@ def site_verification(request):
     if google_verification_id:
         context['GOOGLE_SITE_VERIFICATION_ID'] = google_verification_id
     return context
+
+def tas_homedir(request):
+    """Retrieve user's TAS homedir."""
+    if getattr(settings, "TEST") or not request.user.is_authenticated:
+        return {}
+
+    return {"tas_homedir": request.user.profile.get_homedir()}

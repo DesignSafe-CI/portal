@@ -181,6 +181,7 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
+                'designsafe.context_processors.tas_homedir',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },

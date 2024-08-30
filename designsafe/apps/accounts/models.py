@@ -86,8 +86,7 @@ class DesignSafeProfile(models.Model):
                   [self.user.email],
                   html_message=body)
 
-    @property
-    def cached_homedir(self):
+    def get_homedir(self):
         """
         Get a user's homedir.
         If it does not exist in the database yet, retrieve and cache it.
