@@ -4,6 +4,7 @@ from typing import Optional, Literal
 import subprocess
 import os
 import shutil
+import copy
 import datetime
 from pathlib import Path
 import logging
@@ -204,7 +205,9 @@ def add_values_to_tree(project_id: str) -> nx.DiGraph:
     for node_id in publication_tree:
         uuid = publication_tree.nodes[node_id]["uuid"]
         if uuid is not None:
-            publication_tree.nodes[node_id]["value"] = entity_map[uuid].value
+            publication_tree.nodes[node_id]["value"] = copy.deepcopy(
+                entity_map[uuid].value
+            )
 
     return publication_tree
 
