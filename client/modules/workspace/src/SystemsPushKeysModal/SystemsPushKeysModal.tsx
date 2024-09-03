@@ -11,9 +11,19 @@ export const SystemsPushKeysModalBody: React.FC<{
   const {
     mutate: pushKeys,
     error: pushKeysError,
-    isPending,
-    isSuccess,
-  } = usePushKeys();
+    isPending: isPushKeysPending,
+    isSuccess: isPushKeysSuccess,
+  } = usePushKeys('push_keys');
+
+  const {
+    mutate: checkAndChallengeSMS,
+    error: smsError,
+    isIdle: isChallengeIdle,
+    isSuccess: isChallengeSuccess,
+  } = usePushKeys('check_and_send_sms_challenge');
+
+  const formError = pushKeysError || smsError;
+
   const [form] = Form.useForm();
 
   const initialValues = {
@@ -24,14 +34,20 @@ export const SystemsPushKeysModalBody: React.FC<{
   };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isPushKeysSuccess) {
       // Keys pushed successfully, close the modal and call onSuccess()
       handleCancel();
       if (onSuccess) {
         onSuccess();
       }
     }
-  }, [isSuccess]);
+  }, [isPushKeysSuccess]);
+
+  useEffect(() => {
+    if (!!!system || !isChallengeIdle) return;
+    // Check if the user has SMS MFA pairing and send an SMS challenge, only if system is defined and challenge has not previously been sent
+    checkAndChallengeSMS(undefined);
+  }, [system]);
 
   const getErrorMessage = (error?: string) => {
     if (!error) return 'There was a problem pushing your keys to the server.';
@@ -99,9 +115,9 @@ export const SystemsPushKeysModalBody: React.FC<{
           <Input.OTP length={6} />
         </Form.Item>
         <div>
-          {pushKeysError && (
+          {formError && (
             <Alert
-              message={getErrorMessage(pushKeysError.response?.data.message)}
+              message={getErrorMessage(formError.response?.data.message)}
               type="error"
               showIcon
               style={{ margin: '15px 10px' }}
@@ -111,8 +127,8 @@ export const SystemsPushKeysModalBody: React.FC<{
             <PrimaryButton
               type="primary"
               htmlType="submit"
-              disabled={isPending}
-              loading={isPending}
+              disabled={isPushKeysPending || !isChallengeSuccess}
+              loading={isPushKeysPending}
             >
               Authenticate
             </PrimaryButton>

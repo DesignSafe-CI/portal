@@ -709,3 +709,7 @@ WEBHOOK_POST_URL = os.environ.get('WEBHOOK_POST_URL', '')
 
 STAFF_VPN_IP_PREFIX = os.environ.get("STAFF_VPN_IP_PREFIX", "129.114")
 USER_PROJECTS_LIMIT = os.environ.get("USER_PROJECTS_LIMIT", 500)
+
+# PRIVACYIDEA SETTINGS
+PIDEA_BASEURL = os.environ.get('PIDEA_BASEURL', "")
+PIDEA_JWT = os.environ.get('PIDEA_JWT', "")

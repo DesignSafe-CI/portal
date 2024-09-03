@@ -8,15 +8,17 @@ export type TPushKeysBody = {
   token: string;
 };
 
-async function pushKeys(body: TPushKeysBody) {
-  const res = await apiClient.post(`/api/systems/keys/`, body);
+type TPushKeysOperation = 'push_keys' | 'check_and_send_sms_challenge';
+
+async function pushKeys(operation: TPushKeysOperation, body?: TPushKeysBody) {
+  const res = await apiClient.post(`/api/systems/keys/${operation}/`, body);
   return res.data.response;
 }
 
-export function usePushKeys() {
+export function usePushKeys(operation: TPushKeysOperation) {
   return useMutation({
-    mutationFn: (body: TPushKeysBody) => {
-      return pushKeys(body);
+    mutationFn: (body?: TPushKeysBody) => {
+      return pushKeys(operation, body);
     },
     onError: (err: TApiError) => err,
   });

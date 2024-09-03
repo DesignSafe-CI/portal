@@ -4,6 +4,8 @@
 """
 
 import logging
+import requests
+from django.conf import settings
 from paramiko.ssh_exception import (
     AuthenticationException,
     ChannelException,
@@ -15,7 +17,6 @@ from .ssh_keys_manager import KeysManager, KeyCannotBeAdded
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=too-many-arguments
 def add_pub_key_to_resource(
     user,
     password,
@@ -80,3 +81,36 @@ def add_pub_key_to_resource(
             status = 500  # Bad gateway
 
     return success, message, status
+
+
+def user_has_sms_pairing(username: str) -> bool:
+    """Check if user has a paired SMS token"""
+
+    logger.info(f"Checking if user {username} has sms pairing")
+    headers = {"Authorization": settings.PIDEA_JWT}
+    res = requests.get(
+        f"{settings.PIDEA_BASEURL}/token?serial={username}", headers=headers, timeout=10
+    )
+
+    try:
+        return res.json()["result"]["value"]["tokens"][0]["tokentype"] == "sms"
+    except IndexError:
+        logger.error(f"User {username} does not have a paired token")
+
+    return False
+
+
+def send_sms_challenge(username: str) -> tuple[str, int]:
+    """Send SMS challenge to user"""
+
+    logger.info(f"Sending SMS challenge to user {username}")
+    headers = {"Authorization": settings.PIDEA_JWT}
+    req_body = {"serial": username}
+    res = requests.post(
+        f"{settings.PIDEA_BASEURL}/validate/triggerchallenge",
+        headers=headers,
+        json=req_body,
+        timeout=10,
+    )
+
+    return "OK" if res.ok else "Failed to send SMS challenge", res.status_code

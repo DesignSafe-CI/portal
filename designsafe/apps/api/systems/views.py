@@ -7,25 +7,38 @@ import logging
 import json
 from django.http import JsonResponse
 from designsafe.apps.api.views import AuthenticatedApiView
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.utils.system_access import create_system_credentials
 from designsafe.utils.encryption import createKeyPair
-from .utils import add_pub_key_to_resource
+from .utils import add_pub_key_to_resource, user_has_sms_pairing, send_sms_challenge
 
 logger = logging.getLogger(__name__)
 
 
 class SystemKeysView(AuthenticatedApiView):
-    """Systems View
+    """View to handle system keys operations"""
 
-    Main view for anything involving a system test
-    """
-
-    def post(self, request):
+    def post(self, request, operation):
         """POST
 
         :param request: Django's request object
-        :param str system_id: System id
         """
+        username = request.user.username
+
+        allowed_actions = ["push_keys", "check_and_send_sms_challenge"]
+        if operation not in allowed_actions:
+            raise ApiException(
+                f"user: {username} is trying to run an unsupported job operation: {operation}",
+                status=400,
+            )
+
+        op = getattr(self, operation)
+        result, status = op(request)
+
+        return JsonResponse(result, status=status)
+
+    def push_keys(self, request):
+        """Push ssh keypair to a system and create tapis system credentials"""
         body = json.loads(request.body)
         system_id = body["systemId"]
 
@@ -51,6 +64,12 @@ class SystemKeysView(AuthenticatedApiView):
             system_id,
         )
 
-        return JsonResponse(
-            {"systemId": system_id, "message": result}, status=http_status
-        )
+        return {"systemId": system_id, "message": result}, http_status
+
+    def check_and_send_sms_challenge(self, request):
+        """Check if user has sms pairing and send sms challenge"""
+        username = request.user.username
+        if user_has_sms_pairing(username):
+            result, status = send_sms_challenge(username)
+
+        return {"message": result or "OK"}, status or 200
