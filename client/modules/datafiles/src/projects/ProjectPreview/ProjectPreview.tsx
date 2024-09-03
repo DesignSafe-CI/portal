@@ -49,7 +49,7 @@ export const EntityFileListingTable: React.FC<{
       ellipsis: true,
       render: (data, record) => {
         const fileNavPath = preview
-          ? `../${projectId}/curation/${encodeURIComponent(record.path)}`
+          ? `/projects/${projectId}/curation/${encodeURIComponent(record.path)}`
           : `./${encodeURIComponent(record.path)}${doi ? `?doi=${doi}` : ''}`;
         return (
           <div>
