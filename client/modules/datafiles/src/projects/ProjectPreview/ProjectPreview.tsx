@@ -55,7 +55,6 @@ export const EntityFileListingTable: React.FC<{
           <div>
             {record.type === 'dir' ? (
               <Link
-                target={preview ? '_blank' : ''}
                 className="listing-nav-link"
                 to={fileNavPath}
                 replace={false}
