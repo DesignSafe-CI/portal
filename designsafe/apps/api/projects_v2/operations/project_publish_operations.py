@@ -4,10 +4,12 @@ from typing import Optional, Literal
 import subprocess
 import os
 import shutil
+import copy
 import datetime
 from pathlib import Path
 import logging
 from django.conf import settings
+from django.db import close_old_connections
 import networkx as nx
 from celery import shared_task
 from designsafe.apps.api.projects_v2 import constants
@@ -25,6 +27,7 @@ from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
+from designsafe.libs.common.context_managers import AsyncTaskContext
 
 logger = logging.getLogger(__name__)
 
@@ -202,7 +205,9 @@ def add_values_to_tree(project_id: str) -> nx.DiGraph:
     for node_id in publication_tree:
         uuid = publication_tree.nodes[node_id]["uuid"]
         if uuid is not None:
-            publication_tree.nodes[node_id]["value"] = entity_map[uuid].value
+            publication_tree.nodes[node_id]["value"] = copy.deepcopy(
+                entity_map[uuid].value
+            )
 
     return publication_tree
 
@@ -440,6 +445,10 @@ def publish_project(
     if dry_run:
         return pub_tree, path_mapping
 
+    # If we don't explicitly close the db connection, it will remain open during the
+    # entire data-copying step, which can cause operations to fail.
+    close_old_connections()
+
     if not settings.DEBUG:
         # Copy files first so if it fails we don't create orphan metadata/datacite entries.
         copy_publication_files(path_mapping, project_id, version=version)
@@ -493,7 +502,7 @@ def publish_project(
             args=[project_id, version], queue="default"
         )
         ingest_pub_fedora_async.apply_async(
-            args=[project_id, version, True], queue="default"
+            args=[project_id, version, False], queue="default"
         )
 
     return pub_metadata
@@ -508,7 +517,8 @@ def publish_project_async(
     dry_run: bool = False,
 ):
     """Async wrapper arount publication"""
-    publish_project(project_id, entity_uuids, version, version_info, dry_run)
+    with AsyncTaskContext():
+        publish_project(project_id, entity_uuids, version, version_info, dry_run)
 
 
 def amend_publication(project_id: str):
@@ -576,4 +586,5 @@ def amend_publication(project_id: str):
 @shared_task
 def amend_publication_async(project_id: str):
     """async wrapper around amend_publication"""
-    amend_publication(project_id)
+    with AsyncTaskContext():
+        amend_publication(project_id)

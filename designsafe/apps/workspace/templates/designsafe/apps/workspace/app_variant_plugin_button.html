@@ -1,11 +1,11 @@
 {# @var variant #}
 
         {% if variant.enabled %}
-        <a class="btn btn-success" href="{{variant.href}}">
+        <a class="btn btn-success" href="{{variant.href}}" {% if variant.external_href %}target="_blank"{% endif %}>
             Get Started
         </a>
         {% else %}
         <a class="btn btn-secondary disabled" href="{{variant.href}}">
-            Unavailable
+            Coming Soon
         </a>
         {% endif %}
