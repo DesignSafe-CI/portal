@@ -84,7 +84,13 @@ const columns: TableColumnsType<TPublicationListingItem> = [
   },
   {
     render: (_, record) => {
-      return <span>{`${record.keywords.join(', ')}`}</span>;
+      return (
+        <span>{`${record.keywords
+          .map((k) => k.split(';')) // Some old projects are semicolon-delimited
+          .flat()
+          .slice(0, 3)
+          .join(', ')}`}</span>
+      );
     },
     width: '15%',
     title: 'Keywords',
