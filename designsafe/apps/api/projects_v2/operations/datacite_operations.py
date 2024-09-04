@@ -1,4 +1,5 @@
 """Operations to format and manage Datacite DOIs"""
+
 import datetime
 from typing import Optional
 import json
@@ -72,7 +73,7 @@ def get_datacite_json(
     ]
     if not is_other:
         datacite_json["titles"].append(
-            {"title": base_meta["title"], "titleType": "Subtitle"}
+            {"title": f"in {base_meta['title']}", "titleType": "Subtitle"}
         )
     datacite_json["publisher"] = "Designsafe-CI"
 
