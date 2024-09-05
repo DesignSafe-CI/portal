@@ -101,7 +101,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           <Popover
             overlayStyle={{ maxWidth: '400px' }}
             title="Unique Requests (Downloads)"
-            content="Refers to the number of one-hour sessions during which a user   previewed/downloaded/copied files associated with this DOI."
+            content="Refers to the number of one-hour sessions during which a user previewed/downloaded/copied files associated with this DOI."
           >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
           </Popover>
@@ -198,29 +198,13 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   }, [defaultYear]);
 
   const [quarterSums, setQuarterSums] = useState<{
-    [key: string]: number | { [key: string]: number };
-  }>(() => {
-    const defaultSums: { [key: string]: number | { [key: string]: number } } = {
-      Q1: 0,
-      Q2: 0,
-      Q3: 0,
-      Q4: 0,
-    };
-
-    if (defaultYear) {
-      const viewsByQuarter = calculateQuarterSums(
-        usageMetricsData.data.attributes.viewsOverTime,
-        defaultYear
-      );
-      const downloadsByQuarter = calculateQuarterSums(
-        usageMetricsData.data.attributes.downloadsOverTime,
-        defaultYear
-      );
-      defaultSums['views'] = viewsByQuarter;
-      defaultSums['downloads'] = downloadsByQuarter;
-    }
-
-    return defaultSums;
+    views: { [key: string]: number };
+    downloads: { [key: string]: number };
+    totals: { [key: string]: number };
+  }>({
+    views: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 },
+    downloads: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 },
+    totals: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 },
   });
 
   const processTotalRequests = (
@@ -260,7 +244,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       const totals = processTotalRequests(eventMetricsData, selectedYear);
       setQuarterSums({ views, downloads, totals });
     }
-  }, [selectedYear, eventMetricsData, usageMetricsData.data.attributes]);
+  }, [selectedYear, eventMetricsData, usageMetricsData?.data?.attributes]);
 
   const handleYearChange = (value: string) => {
     setSelectedYear(value);
@@ -281,9 +265,10 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     setQuarterSums({
       views: viewsByQuarter,
       downloads: downloadsByQuarter,
-      totalRequests: totalRequestsQuarterlySums.totalRequestsQuarterlySums,
+      totals: totalRequestsQuarterlySums,
     });
   };
+
   const years = useMemo(() => {
     const viewsOverTime = usageMetricsData?.data?.attributes?.viewsOverTime ?? [];
     if (viewsOverTime.length > 0) {
@@ -305,41 +290,41 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       key: '1',
       quarters: 'Jan-Mar',
       uniqueInvestigations:
-        (quarterSums?.views as { [key: string]: number })?.Q1 || '--',
+        quarterSums?.views?.Q1 > 0 ? quarterSums.views.Q1 : '--',
       uniqueRequests:
-        (quarterSums?.downloads as { [key: string]: number })?.Q1 || '--',
+        quarterSums?.downloads?.Q1 > 0 ? quarterSums.downloads.Q1 : '--',
       totalRequests:
-        (quarterSums?.totals as { [key: string]: number })?.Q1 || '--',
+        quarterSums?.totals?.Q1 > 0 ? quarterSums.totals.Q1 : '--',
     },
     {
       key: '2',
       quarters: 'Apr-Jun',
       uniqueInvestigations:
-        (quarterSums?.views as { [key: string]: number })?.Q2 || '--',
+        quarterSums?.views?.Q2 > 0 ? quarterSums.views.Q2 : '--',
       uniqueRequests:
-        (quarterSums?.downloads as { [key: string]: number })?.Q2 || '--',
+        quarterSums?.downloads?.Q2 > 0 ? quarterSums.downloads.Q2 : '--',
       totalRequests:
-        (quarterSums.totals as { [key: string]: number })?.Q2 || '--',
+        quarterSums?.totals?.Q2 > 0 ? quarterSums.totals.Q2 : '--',
     },
     {
       key: '3',
       quarters: 'Jul-Sep',
       uniqueInvestigations:
-        (quarterSums?.views as { [key: string]: number })?.Q3 || '--',
+        quarterSums?.views?.Q3 > 0 ? quarterSums.views.Q3 : '--',
       uniqueRequests:
-        (quarterSums?.downloads as { [key: string]: number })?.Q3 || '--',
+        quarterSums?.downloads?.Q3 > 0 ? quarterSums.downloads.Q3 : '--',
       totalRequests:
-        (quarterSums?.totals as { [key: string]: number })?.Q3 || '--',
+        quarterSums?.totals?.Q3 > 0 ? quarterSums.totals.Q3 : '--',
     },
     {
       key: '4',
       quarters: 'Oct-Dec',
       uniqueInvestigations:
-        (quarterSums?.views as { [key: string]: number })?.Q4 || '--',
+        quarterSums?.views?.Q4 > 0 ? quarterSums.views.Q4 : '--',
       uniqueRequests:
-        (quarterSums?.downloads as { [key: string]: number })?.Q4 || '--',
+        quarterSums?.downloads?.Q4 > 0 ? quarterSums.downloads.Q4 : '--',
       totalRequests:
-        (quarterSums?.totals as { [key: string]: number })?.Q4 || '--',
+        quarterSums?.totals?.Q4 > 0 ? quarterSums.totals.Q4 : '--',
     },
   ];
 
