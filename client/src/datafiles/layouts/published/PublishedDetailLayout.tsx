@@ -75,7 +75,7 @@ export const PublishedDetailLayout: React.FC = () => {
             : ''
         }`
       );
-  }, [data, searchParams, apiClient, version, projectId]);
+  }, [data, allVersions, searchParams, version, projectId]);
 
   if (isError) {
     return (
