@@ -69,7 +69,9 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       )
       .reduce((sum, entry) => sum + (entry?.attributes?.total ?? 0), 0);
   };
-  const totalRequests = sumTotals(eventMetricsData?.data ?? [], 'total-dataset-requests-regular') || 0;
+  const totalRequests =
+    sumTotals(eventMetricsData?.data ?? [], 'total-dataset-requests-regular') ||
+    0;
 
   const dataSource = [
     {
@@ -173,19 +175,18 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
 
   const mostRecentYear = useMemo(() => {
     const viewsOverTime = usageMetricsData?.data?.attributes?.viewsOverTime;
-  
+
     if (!viewsOverTime || viewsOverTime.length === 0) {
       return null; // Handle cases where viewsOverTime is undefined or empty
     }
-  
+
     const orderedYears = viewsOverTime
       .map((entry) => entry.yearMonth.split('-')[0]) // Get only the years
       .filter((year, index, array) => array.indexOf(year) === index) // Unique years
       .sort((a, b) => b.localeCompare(a)); // Sort descending
-  
+
     return orderedYears.length > 0 ? orderedYears[0] : null; // Return the most recent year
   }, [usageMetricsData?.data?.attributes?.viewsOverTime]);
-  
 
   const defaultYear = mostRecentYear || '';
 
@@ -215,7 +216,8 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       (acc: { [key: string]: number }, curr: DataEntryA) => {
         const occurredAt = curr?.attributes?.['occurred-at'];
         if (
-          curr?.attributes?.['relation-type-id'] === 'total-dataset-requests-regular' &&
+          curr?.attributes?.['relation-type-id'] ===
+            'total-dataset-requests-regular' &&
           occurredAt
         ) {
           const [occurredYear, occurredMonth] = occurredAt.split('-');
@@ -229,7 +231,6 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       { Q1: 0, Q2: 0, Q3: 0, Q4: 0 }
     );
   };
-  
 
   useEffect(() => {
     if (selectedYear) {
@@ -270,7 +271,8 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   };
 
   const years = useMemo(() => {
-    const viewsOverTime = usageMetricsData?.data?.attributes?.viewsOverTime ?? [];
+    const viewsOverTime =
+      usageMetricsData?.data?.attributes?.viewsOverTime ?? [];
     if (viewsOverTime.length > 0) {
       const uniqueYears = new Set(
         viewsOverTime.map((item) => item?.yearMonth?.substring(0, 4))
@@ -283,7 +285,6 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     }
     return [];
   }, [usageMetricsData?.data?.attributes?.viewsOverTime]);
-  
 
   const quartersData = [
     {
@@ -293,8 +294,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         quarterSums?.views?.Q1 > 0 ? quarterSums.views.Q1 : '--',
       uniqueRequests:
         quarterSums?.downloads?.Q1 > 0 ? quarterSums.downloads.Q1 : '--',
-      totalRequests:
-        quarterSums?.totals?.Q1 > 0 ? quarterSums.totals.Q1 : '--',
+      totalRequests: quarterSums?.totals?.Q1 > 0 ? quarterSums.totals.Q1 : '--',
     },
     {
       key: '2',
@@ -303,8 +303,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         quarterSums?.views?.Q2 > 0 ? quarterSums.views.Q2 : '--',
       uniqueRequests:
         quarterSums?.downloads?.Q2 > 0 ? quarterSums.downloads.Q2 : '--',
-      totalRequests:
-        quarterSums?.totals?.Q2 > 0 ? quarterSums.totals.Q2 : '--',
+      totalRequests: quarterSums?.totals?.Q2 > 0 ? quarterSums.totals.Q2 : '--',
     },
     {
       key: '3',
@@ -313,8 +312,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         quarterSums?.views?.Q3 > 0 ? quarterSums.views.Q3 : '--',
       uniqueRequests:
         quarterSums?.downloads?.Q3 > 0 ? quarterSums.downloads.Q3 : '--',
-      totalRequests:
-        quarterSums?.totals?.Q3 > 0 ? quarterSums.totals.Q3 : '--',
+      totalRequests: quarterSums?.totals?.Q3 > 0 ? quarterSums.totals.Q3 : '--',
     },
     {
       key: '4',
@@ -323,8 +321,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
         quarterSums?.views?.Q4 > 0 ? quarterSums.views.Q4 : '--',
       uniqueRequests:
         quarterSums?.downloads?.Q4 > 0 ? quarterSums.downloads.Q4 : '--',
-      totalRequests:
-        quarterSums?.totals?.Q4 > 0 ? quarterSums.totals.Q4 : '--',
+      totalRequests: quarterSums?.totals?.Q4 > 0 ? quarterSums.totals.Q4 : '--',
     },
   ];
 
