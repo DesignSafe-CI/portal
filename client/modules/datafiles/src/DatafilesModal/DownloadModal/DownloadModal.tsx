@@ -14,7 +14,7 @@ export const DownloadModal: React.FC<{
 
   const doiArray = selectedFiles.filter((f) => f.doi).map((f) => f.doi);
 
-  const doiString = [...new Set(doiArray)].join(',');
+  const doiString = doiArray.join(',');
 
   const showModal = () => {
     setIsModalOpen(true);
