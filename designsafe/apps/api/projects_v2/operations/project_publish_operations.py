@@ -4,6 +4,7 @@ from typing import Optional, Literal
 import subprocess
 import os
 import shutil
+import copy
 import datetime
 from pathlib import Path
 import logging
@@ -26,6 +27,7 @@ from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
+from designsafe.libs.common.context_managers import AsyncTaskContext
 
 logger = logging.getLogger(__name__)
 
@@ -203,7 +205,9 @@ def add_values_to_tree(project_id: str) -> nx.DiGraph:
     for node_id in publication_tree:
         uuid = publication_tree.nodes[node_id]["uuid"]
         if uuid is not None:
-            publication_tree.nodes[node_id]["value"] = entity_map[uuid].value
+            publication_tree.nodes[node_id]["value"] = copy.deepcopy(
+                entity_map[uuid].value
+            )
 
     return publication_tree
 
@@ -513,7 +517,8 @@ def publish_project_async(
     dry_run: bool = False,
 ):
     """Async wrapper arount publication"""
-    publish_project(project_id, entity_uuids, version, version_info, dry_run)
+    with AsyncTaskContext():
+        publish_project(project_id, entity_uuids, version, version_info, dry_run)
 
 
 def amend_publication(project_id: str):
@@ -581,4 +586,5 @@ def amend_publication(project_id: str):
 @shared_task
 def amend_publication_async(project_id: str):
     """async wrapper around amend_publication"""
-    amend_publication(project_id)
+    with AsyncTaskContext():
+        amend_publication(project_id)

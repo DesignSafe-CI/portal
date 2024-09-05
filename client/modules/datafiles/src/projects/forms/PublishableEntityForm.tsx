@@ -27,7 +27,8 @@ import { AuthorSelect } from './_fields/AuthorSelect';
 const ExperimentFormFields: React.FC<{
   form: FormInstance;
   projectUsers: TProjectUser[];
-}> = ({ form, projectUsers }) => {
+  currentAuthors?: TProjectUser[];
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   const facilityValue = Form.useWatch(['value', 'facility'], form);
   return (
     <>
@@ -165,7 +166,10 @@ const ExperimentFormFields: React.FC<{
             },
           ]}
         >
-          <AuthorSelect projectUsers={projectUsers} />
+          <AuthorSelect
+            projectUsers={projectUsers}
+            currentAuthors={currentAuthors}
+          />
         </Form.Item>
       </Form.Item>
     </>
@@ -174,7 +178,8 @@ const ExperimentFormFields: React.FC<{
 
 const SimulationFormFields: React.FC<{
   projectUsers: TProjectUser[];
-}> = ({ projectUsers }) => {
+  currentAuthors?: TProjectUser[];
+}> = ({ projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Simulation Title" required>
@@ -276,7 +281,10 @@ const SimulationFormFields: React.FC<{
             },
           ]}
         >
-          <AuthorSelect projectUsers={projectUsers} />
+          <AuthorSelect
+            projectUsers={projectUsers}
+            currentAuthors={currentAuthors}
+          />
         </Form.Item>
       </Form.Item>
     </>
@@ -285,7 +293,8 @@ const SimulationFormFields: React.FC<{
 
 const HybridSimFormFields: React.FC<{
   projectUsers: TProjectUser[];
-}> = ({ projectUsers }) => {
+  currentAuthors?: TProjectUser[];
+}> = ({ projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Hybrid Simulation Title" required>
@@ -387,7 +396,10 @@ const HybridSimFormFields: React.FC<{
             },
           ]}
         >
-          <AuthorSelect projectUsers={projectUsers} />
+          <AuthorSelect
+            projectUsers={projectUsers}
+            currentAuthors={currentAuthors}
+          />
         </Form.Item>
       </Form.Item>
     </>
@@ -396,7 +408,8 @@ const HybridSimFormFields: React.FC<{
 
 const MissionFormFields: React.FC<{
   projectUsers: TProjectUser[];
-}> = ({ projectUsers }) => {
+  currentAuthors?: TProjectUser[];
+}> = ({ projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Mission Title" required>
@@ -481,7 +494,10 @@ const MissionFormFields: React.FC<{
             },
           ]}
         >
-          <AuthorSelect projectUsers={projectUsers} />
+          <AuthorSelect
+            projectUsers={projectUsers}
+            currentAuthors={currentAuthors}
+          />
         </Form.Item>
       </Form.Item>
 
@@ -542,7 +558,8 @@ const MissionFormFields: React.FC<{
 
 const DocumentFormFields: React.FC<{
   projectUsers: TProjectUser[];
-}> = ({ projectUsers }) => {
+  currentAuthors?: TProjectUser[];
+}> = ({ projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Document Title" required>
@@ -598,7 +615,10 @@ const DocumentFormFields: React.FC<{
             },
           ]}
         >
-          <AuthorSelect projectUsers={projectUsers} />
+          <AuthorSelect
+            projectUsers={projectUsers}
+            currentAuthors={currentAuthors}
+          />
         </Form.Item>
       </Form.Item>
 
@@ -685,19 +705,32 @@ export const PublishableEntityForm: React.FC<{
         <ExperimentFormFields
           form={form}
           projectUsers={data.baseProject.value.users}
+          currentAuthors={entity?.value.authors ?? []}
         />
       )}
       {projectType === 'simulation' && (
-        <SimulationFormFields projectUsers={data.baseProject.value.users} />
+        <SimulationFormFields
+          projectUsers={data.baseProject.value.users}
+          currentAuthors={entity?.value.authors ?? []}
+        />
       )}
       {projectType === 'hybrid_simulation' && (
-        <HybridSimFormFields projectUsers={data.baseProject.value.users} />
+        <HybridSimFormFields
+          projectUsers={data.baseProject.value.users}
+          currentAuthors={entity?.value.authors ?? []}
+        />
       )}
       {entityName === constants.FIELD_RECON_MISSION && (
-        <MissionFormFields projectUsers={data.baseProject.value.users} />
+        <MissionFormFields
+          projectUsers={data.baseProject.value.users}
+          currentAuthors={entity?.value.authors ?? []}
+        />
       )}
       {entityName === constants.FIELD_RECON_REPORT && (
-        <DocumentFormFields projectUsers={data.baseProject.value.users} />
+        <DocumentFormFields
+          projectUsers={data.baseProject.value.users}
+          currentAuthors={entity?.value.authors ?? []}
+        />
       )}
 
       {hasValidationErrors && (

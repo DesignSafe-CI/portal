@@ -200,10 +200,14 @@ class AppVariant(models.Model):
         default=0,
     )
 
-    # HTML Apps
+    # HTML/External Apps
     html = models.TextField(
         help_text="HTML definition to display when app is loaded.",
         blank=True,
+    )
+    external_href = models.CharField(
+        verbose_name="external HREF",
+        help_text="Path or URL to external access for this app variant.", max_length=128, blank=True
     )
 
     description = models.TextField(
@@ -227,6 +231,9 @@ class AppVariant(models.Model):
     @property
     def href(self):
         """Retrieve the app's URL in the Tools & Applications space"""
+        if self.external_href:
+            return self.external_href
+        
         app_href = f"/rw/workspace/{self.app_id}"
         if self.version:
             app_href += f"?appVersion={self.version}"
