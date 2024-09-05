@@ -5,7 +5,11 @@ import {
   PublishedCitation,
   DownloadCitation,
 } from '@client/datafiles';
-import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
+import {
+  apiClient,
+  usePublicationDetail,
+  usePublicationVersions,
+} from '@client/hooks';
 import React, { useEffect } from 'react';
 import { Alert, Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
@@ -53,6 +57,25 @@ export const PublishedDetailLayout: React.FC = () => {
       setSearchParams(newSearchParams);
     }
   }, [version, searchParams, setSearchParams]);
+
+  // List files in the project root for metrics/reporting purposes.
+  useEffect(() => {
+    if (!data) return;
+
+    const selectedVersion =
+      version ||
+      searchParams.get('version') ||
+      Math.max(...allVersions).toString();
+
+    data?.baseProject.projectType !== 'other' &&
+      apiClient.get(
+        `/api/datafiles/tapis/public/listing/designsafe.storage.published/${projectId}${
+          selectedVersion && parseInt(selectedVersion) > 1
+            ? `v${selectedVersion}`
+            : ''
+        }`
+      );
+  }, [data, allVersions, searchParams, version, projectId]);
 
   if (isError) {
     return (
