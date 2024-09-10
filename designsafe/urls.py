@@ -38,7 +38,7 @@ from impersonate import views as impersonate_views
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap, index
 from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap
-from designsafe import views
+
 
 sitemaps = {
         'home': HomeSitemap,
@@ -99,8 +99,9 @@ urlpatterns = [
             namespace='designsafe_applications')),
         # NOTE: /data is redirected to /data/browser via the CMS.
         url(r'^data/', include(('designsafe.apps.data.urls', 'designsafe.apps.data'), namespace='designsafe_data')),
-        url(r'^rw/workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'),
+        url(r'^workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'),
             namespace='designsafe_workspace')),
+        url(r'^rw/workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'))),
         path('api/workspace/', include('designsafe.apps.workspace.api.urls', namespace='workspace_api')),
         url(r'^notifications/', include(('designsafe.apps.notifications.urls', 'designsafe.apps.notifications'),
             namespace='designsafe_notifications')),
