@@ -111,10 +111,12 @@ def handle_search(query_opts: dict, offset=0, limit=100):
     if search_string := query_opts["q"]:
         qs_query = Q(
             "query_string",
-            query=search_string,
+            # Elasticsearch can't parse query strings with unescaped slashes
+            query=search_string.replace("/", "\\/"),
             default_operator="AND",
             type="cross_fields",
             fields=[
+                "nodes.value.dois",
                 "nodes.value.description",
                 "nodes.value.keywords",
                 "nodes.value.title",
@@ -128,7 +130,13 @@ def handle_search(query_opts: dict, offset=0, limit=100):
                 "nodes.value.authors.inst",
             ],
         )
-        term_query = Q({"term": {"nodes.value.projectId.keyword": search_string}})
+        term_query = Q(
+            {
+                "term": {
+                    "nodes.value.projectId.keyword": search_string.replace("/", "\\/")
+                }
+            }
+        )
         query = query.filter(qs_query | term_query)
 
     hits = (
