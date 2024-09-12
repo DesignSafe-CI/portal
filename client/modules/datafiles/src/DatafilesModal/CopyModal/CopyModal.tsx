@@ -250,7 +250,7 @@ export const CopyModal: React.FC<{
             <Select
               options={[
                 { label: 'My Data', value: 'mydata' },
-                { label: 'HPC Work', value: 'hpcwork' },
+                { label: 'Work', value: 'hpcwork' },
                 { label: 'My Projects', value: 'myprojects' },
               ]}
               style={{ marginBottom: '12px' }}
