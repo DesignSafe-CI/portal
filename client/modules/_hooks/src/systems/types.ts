@@ -61,6 +61,7 @@ export type TTapisSystem = {
     label?: string;
     keyservice?: boolean;
     isMyData?: boolean;
+    hasWork?: boolean;
     portalNames: string[];
   };
   importRefId?: string;
