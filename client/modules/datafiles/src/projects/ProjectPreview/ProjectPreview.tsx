@@ -292,6 +292,7 @@ export const PublishedEntityDisplay: React.FC<{
         }}
         items={[
           {
+            forceRender: true,
             label: (
               <div style={{ textAlign: 'center' }}>
                 {' '}
