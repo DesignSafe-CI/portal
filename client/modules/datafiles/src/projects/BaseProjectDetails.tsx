@@ -446,7 +446,7 @@ export const BaseProjectDetails: React.FC<{
       {projectValue.description && (
         <DescriptionExpander>
           <strong>Description: </strong>
-          {projectValue.description}
+          <p className="render-linebreaks">{projectValue.description}</p>
         </DescriptionExpander>
       )}
     </section>
