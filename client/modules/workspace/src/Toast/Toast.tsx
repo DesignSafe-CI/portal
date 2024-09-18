@@ -4,7 +4,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { notification } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@client/common-components';
-import { TJobStatusNotification } from '@client/hooks';
+import {
+  TJobStatusNotification,
+  TGetNotificationsResponse,
+} from '@client/hooks';
 import { getToastMessage } from '../utils';
 import styles from './Notifications.module.css';
 
@@ -44,6 +47,26 @@ const Notifications = () => {
         },
         style: { cursor: 'pointer' },
       });
+    } else if (notification.event_type === 'markAllNotificationsAsRead') {
+      // update unread count state
+      queryClient.setQueryData(
+        [
+          'workspace',
+          'notifications',
+          {
+            eventTypes: ['interactive_session_ready', 'job'],
+            read: false,
+            markRead: false,
+          },
+        ],
+        (oldData: TGetNotificationsResponse) => {
+          return {
+            ...oldData,
+            notifs: [],
+            unread: 0,
+          };
+        }
+      );
     }
   };
 
