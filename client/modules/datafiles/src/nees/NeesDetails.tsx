@@ -271,7 +271,7 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
         scheme="public"
         system="nees.public"
         baseRoute="."
-        path={`${path}` ?? ''}
+        path={path ?? ''}
         scroll={{ y: 500 }}
       />
     </>
