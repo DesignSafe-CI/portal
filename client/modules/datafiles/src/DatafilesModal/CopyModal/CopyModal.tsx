@@ -154,8 +154,8 @@ export const CopyModal: React.FC<{
         setShowProjects(false);
         setDest({
           destApi: 'tapis',
-          destSystem: 'designsafe.storage.frontera.work',
-          destPath: encodeURIComponent('/' + user?.username),
+          destSystem: 'cloud.data',
+          destPath: encodeURIComponent('/work/' + user?.homedir),
         });
         break;
       case 'myprojects':
@@ -250,7 +250,7 @@ export const CopyModal: React.FC<{
             <Select
               options={[
                 { label: 'My Data', value: 'mydata' },
-                { label: 'HPC Work', value: 'hpcwork' },
+                { label: 'Work', value: 'hpcwork' },
                 { label: 'My Projects', value: 'myprojects' },
               ]}
               style={{ marginBottom: '12px' }}
