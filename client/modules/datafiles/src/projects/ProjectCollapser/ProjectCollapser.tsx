@@ -33,6 +33,7 @@ export const ProjectCollapse: React.FC<
       style={{ flex: 1 }}
       items={[
         {
+          forceRender: true,
           label: (
             <span>
               {DISPLAY_NAMES[entityName]} | <strong>{title}</strong>
