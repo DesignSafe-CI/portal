@@ -221,7 +221,7 @@ export const PublishedEntityDetails: React.FC<{
       </table>
       <DescriptionExpander>
         <strong>Description: </strong>
-        {entityValue.description}
+        <p className="render-linebreaks">{entityValue.description}</p>
       </DescriptionExpander>
     </section>
   );
