@@ -58,7 +58,9 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
   const neesExperiments = data?.metadata.experiments;
   const numDOIs = neesExperiments?.filter((exp) => !!exp.doi).length || 0;
   const routeParams = useParams();
-  const path = routeParams.path ?? data?.path;
+  let path = routeParams.path ?? data?.path;
+  // Fix for legacy URLs. /Experiment-1 -> /NEES-001.groups/Experiment-1
+  if (path) path = path.includes(neesId) ? path : `/${neesId}.groups/${path}`;
 
   const [activeTab, setActiveTab] = useState<string>('files');
   useEffect(() => setActiveTab('files'), [path]);
@@ -269,7 +271,7 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
         scheme="public"
         system="nees.public"
         baseRoute="."
-        path={path ?? ''}
+        path={`${path}` ?? ''}
         scroll={{ y: 500 }}
       />
     </>
