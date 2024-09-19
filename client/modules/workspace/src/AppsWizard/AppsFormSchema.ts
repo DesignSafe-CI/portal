@@ -56,8 +56,7 @@ export type TField = {
   parameterSet?: string;
   description?: string;
   options?: TFieldOptions[];
-  tapisFile?: boolean;
-  tapisFileSelectionMode?: string;
+  fileSettings?: TAppFileSettings;
   placeholder?: string;
   readOnly?: boolean;
 };
@@ -96,7 +95,7 @@ export type TAppFormSchema = {
   };
 };
 
-export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
+export const tapisInputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
 
 export const fieldDisplayOrder: Record<string, string[]> = {
   configuration: [
@@ -107,6 +106,14 @@ export const fieldDisplayOrder: Record<string, string[]> = {
     'allocation',
   ],
   outputs: ['name', 'archiveSystemId', 'archiveSystemDir'],
+};
+
+export type TAppFilePathRepresentation = 'FullTapisPath' | 'NameOnly';
+export type TAppFileSelectionMode = 'both' | 'file' | 'directory';
+
+export type TAppFileSettings = {
+  fileNameRepresentation: TAppFilePathRepresentation;
+  fileSelectionMode: TAppFileSelectionMode;
 };
 
 // See https://github.com/colinhacks/zod/issues/310 for Zod issue
@@ -316,7 +323,9 @@ const FormSchema = (
           name: `parameters.${parameterSet}.${label}`,
           key: paramId,
           type: 'text',
-        };
+          ...(param.notes?.inputType === 'fileInput' && {
+            fileSettings: { fileNameRepresentation: 'NameOnly', fileSelectionMode: 'file' }
+          }),        };
 
         if (param.notes?.enum_values) {
           field.type = 'select';
@@ -399,11 +408,10 @@ const FormSchema = (
       required: input.inputMode === 'REQUIRED',
       name: `inputs.${input.name}`,
       key: `inputs.${input.name}`,
-      tapisFile: true,
       type: 'text',
       placeholder: 'Browse Data Files',
       readOnly: input.inputMode === 'FIXED',
-      tapisFileSelectionMode: input.notes?.selectionMode ?? 'both',
+      fileSettings: {fileNameRepresentation: 'FullTapisPath', fileSelectionMode: input.notes?.selectionMode as TAppFileSelectionMode?? 'both'}
     };
 
     appFields.fileInputs.schema[input.name] = z.string();
