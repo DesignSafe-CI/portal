@@ -10,7 +10,7 @@ from designsafe.apps.api.notifications.models import Notification
 from celery import shared_task
 from django.contrib.auth import get_user_model
 from pytas.http import TASClient
-from tapipy.errors import NotFoundError, BaseTapyException
+from tapipy.errors import NotFoundError, BaseTapyException, ForbiddenError
 from designsafe.utils.system_access import register_public_key, create_system_credentials
 from designsafe.utils.encryption import createKeyPair
 from django.contrib.auth import get_user_model
@@ -53,16 +53,18 @@ def check_or_configure_system_and_user_directory(self, username, system_id, path
         if create_path:
             tg458981_client = get_tg458981_client()
             try:
-                # User tg account to check if path exists
-                tg458981_client.files.listFiles(systemId=system_id, path=path)
+                # Use user account to check if path exists and is accessible
+                user_client.files.listFiles(systemId=system_id, path=path)
                 logger.info(f"Directory for user={username} on system={system_id}/{path} exists and works. ")
-            except NotFoundError:
-                logger.info("Creating the directory for user=%s then going to run setfacl on system=%s path=%s",
+            except (NotFoundError, ForbiddenError) as e:
+                logger.info("Ensuring directory exists for user=%s then going to run setfacl on system=%s path=%s",
                             username,
                             system_id,
                             path)
 
-                tg458981_client.files.mkdir(systemId=system_id, path=path)
+                if isinstance(e, NotFoundError):
+                    tg458981_client.files.mkdir(systemId=system_id, path=path)
+
                 tg458981_client.files.setFacl(
                     systemId=system_id,
                     path=path,
