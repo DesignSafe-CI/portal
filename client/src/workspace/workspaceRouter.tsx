@@ -12,7 +12,7 @@ const getBaseName = () => {
     return '/rw/workspace';
   }
   return '/workspace';
-}
+};
 
 const workspaceRouter = createBrowserRouter(
   [
