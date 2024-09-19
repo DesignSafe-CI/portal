@@ -103,9 +103,13 @@ const getSystemRootPath = (
   storageSystem: TTapisSystem | undefined,
   user: TUser | undefined
 ): string => {
-  return storageSystem?.notes?.isMyData
-    ? encodeURIComponent('/' + user?.username)
-    : '';
+  if (storageSystem?.notes?.isMyData) {
+    return encodeURIComponent('/' + user?.username);
+  }
+  if (storageSystem?.notes?.hasWork) {
+    return encodeURIComponent('/work/' + user?.homedir);
+  }
+  return '';
 };
 
 const getBackPath = (
@@ -298,7 +302,7 @@ export const SelectModal: React.FC<{
       return (a.notes?.isMyData ? 0 : 1) - (b.notes?.isMyData ? 0 : 1);
     })
     .map((system) => ({
-      label: system.notes.label,
+      label: system.notes?.hasWork ? 'Work' : system.notes.label ?? system.id,
       value: system.id,
     }));
   systemOptions.push({ label: 'My Projects', value: 'myprojects' });
@@ -363,7 +367,9 @@ export const SelectModal: React.FC<{
       selectedPath: getSystemRootPath(system, user),
       scheme: getScheme(system),
     });
-    setSystemLabel(system.notes.label ?? system.id);
+    setSystemLabel(
+      system.notes?.hasWork ? 'Work' : system.notes.label ?? system.id
+    );
   };
 
   const onProjectSelect = (uuid: string, projectId: string) => {
