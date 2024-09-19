@@ -1,6 +1,7 @@
 export type TParameterSetNotes = {
   isHidden?: boolean;
   fieldType?: string;
+  inputType?: string;
   validator?: {
     regex: string;
     message: string;

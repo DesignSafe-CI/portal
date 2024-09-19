@@ -316,6 +316,8 @@ const FormSchema = (
           name: `parameters.${parameterSet}.${label}`,
           key: paramId,
           type: 'text',
+          tapisFile: param.notes?.inputType === 'fileInput'?true:false,
+          tapisFileSelectionMode: 'both',
         };
 
         if (param.notes?.enum_values) {
