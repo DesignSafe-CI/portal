@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { useQueryClient } from '@tanstack/react-query';
-import { notification } from 'antd';
+import { notification, Flex } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@client/common-components';
 import {
@@ -34,18 +35,22 @@ const Notifications = () => {
         queryKey: ['workspace', 'jobsListing'],
       });
       api.open({
-        message: getToastMessage(notification),
+        message: (
+          <Flex justify="space-between">
+            {getToastMessage(notification)}
+            <RightOutlined style={{ marginRight: -5 }} />
+          </Flex>
+        ),
         placement: 'bottomLeft',
         icon: <Icon className={`ds-icon-Job-Status`} label="Job-Status" />,
         className: `${
           notification.extra.status === 'FAILED' && styles['toast-is-error']
-        }`,
+        } ${styles.root}`,
         closeIcon: false,
         duration: 5,
         onClick: () => {
           navigate('/history');
         },
-        style: { cursor: 'pointer' },
       });
     } else if (notification.event_type === 'markAllNotificationsAsRead') {
       // update unread count state
