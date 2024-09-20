@@ -8,16 +8,16 @@ build-dev:
 
 .PHONY: start
 start:
-	docker compose --env-file ./conf/env_files/ngrok.env -f ./conf/docker/docker-compose-dev.all.debug.yml up
+	docker compose -f ./conf/docker/docker-compose-dev.all.debug.yml up
 
 .PHONY: stop
 stop:
-	docker compose --env-file ./conf/env_files/ngrok.env -f ./conf/docker/docker-compose-dev.all.debug.yml down
+	docker compose -f ./conf/docker/docker-compose-dev.all.debug.yml down
 
 .PHONY: start-m1
 start-m1:
-	docker compose --env-file ./conf/env_files/ngrok.env  -f ./conf/docker/docker-compose-dev.all.debug.m1.yml up
+	docker compose -f ./conf/docker/docker-compose-dev.all.debug.m1.yml up
 
 .PHONY: stop-m1
 stop-m1:
-	docker compose --env-file ./conf/env_files/ngrok.env  -f ./conf/docker/docker-compose-dev.all.debug.m1.yml down
+	docker compose -f ./conf/docker/docker-compose-dev.all.debug.m1.yml down

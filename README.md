@@ -47,9 +47,9 @@ If you are on a Mac or a Windows machine, the recommended method is to install
 
    a. Install [ngrok](https://ngrok.com/docs/getting-started/), and create an ngrok account.
 
-   b. Copy [conf/env_files/ngrok.sample.env](conf/env_files/ngrok.sample.env) to `conf/env_files/ngrok.env`.
+   b. Copy [conf/ngrok/ngrok.sample.yml](conf/ngrok/ngrok.sample.yml) to `conf/ngrok/ngrok.yml`.
 
-   c. In `conf/env_files/ngrok.env`, set the `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` variables using your authtoken and static ngrok domain found in your [ngrok dashboard](https://dashboard.ngrok.com/).
+   c. In `conf/ngrok/ngrok.yml`, set the `authtoken` variable and the first `url` variable using your authtoken and static ngrok url found in your [ngrok dashboard](https://dashboard.ngrok.com/).
 
 4. Build the containers and frontend packages
 

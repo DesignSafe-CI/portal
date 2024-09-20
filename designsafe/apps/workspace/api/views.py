@@ -725,9 +725,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post["archiveSystemDir"] = (
-                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
-            )
+            job_post[
+                "archiveSystemDir"
+            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")
@@ -758,10 +758,10 @@ class JobsView(AuthenticatedApiView):
                 return {"execSys": system_needs_keys}
 
         if settings.DEBUG:
-            wh_base_url = f"https://{settings.NGROK_DOMAIN}" + reverse(
+            wh_base_url = settings.WEBHOOK_POST_URL + reverse(
                 "webhooks:interactive_wh_handler"
             )
-            jobs_wh_url = f"https://{settings.NGROK_DOMAIN}" + reverse(
+            jobs_wh_url = settings.WEBHOOK_POST_URL + reverse(
                 "webhooks:jobs_wh_handler"
             )
         else:
@@ -785,7 +785,7 @@ class JobsView(AuthenticatedApiView):
                 projects = request.user.projects.order_by("-last_updated")
                 entry["value"] = " ".join(
                     f"{project.uuid},{project.value['projectId'] if project.value['projectId'] != 'None' else project.uuid}"
-                    for project in projects[: settings.USER_PROJECTS_LIMIT]
+                    for project in projects[:settings.USER_PROJECTS_LIMIT]
                 )
                 job_post["parameterSet"]["envVariables"] = env_variables
                 break
