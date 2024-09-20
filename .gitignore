@@ -22,7 +22,6 @@ mysql.env
 rabbitmq.env
 rabbitmq.conf
 mysql.cnf
-ngrok.yml
 
 # ignore templated html files
 designsafe/templates/base.html
