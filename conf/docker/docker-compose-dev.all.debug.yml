@@ -73,7 +73,10 @@ services:
 
   django:
     image: designsafeci/portal:tapis-v3
-    env_file: ../env_files/designsafe.env
+    env_file:
+      - path: ../env_files/designsafe.env
+      - path: ../env_files/ngrok.env
+        required: false
     links:
       - memcached:memcached
       - rabbitmq:rabbitmq
@@ -94,7 +97,10 @@ services:
 
   websockets:
     image: designsafeci/portal:tapis-v3
-    env_file: ../env_files/designsafe.env
+    env_file:
+      - path: ../env_files/designsafe.env
+      - path: ../env_files/ngrok.env
+        required: false
     volumes:
       - ../../.:/srv/www/designsafe
       - ../../data/media:/srv/www/designsafe/media
@@ -104,7 +110,10 @@ services:
 
   workers:
     image: designsafeci/portal:tapis-v3
-    env_file: ../env_files/designsafe.env
+    env_file:
+      - path: ../env_files/designsafe.env
+      - path: ../env_files/ngrok.env
+        required: false
     links:
       - memcached:memcached
       - rabbitmq:rabbitmq
@@ -123,13 +132,12 @@ services:
 
   ngrok:
     image: ngrok/ngrok:latest
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
     command:
-      - "start"
-      - "--all"
-      - "--config"
-      - "/etc/ngrok.yml"
-    volumes:
-      - ../ngrok/ngrok.yml:/etc/ngrok.yml
+      - "http"
+      - --domain=${NGROK_DOMAIN}
+      - "https://host.docker.internal:443"
     ports:
       - 4040:4040
     container_name: des_ngrok
