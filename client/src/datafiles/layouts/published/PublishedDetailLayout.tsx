@@ -10,7 +10,7 @@ import {
   usePublicationDetail,
   usePublicationVersions,
 } from '@client/hooks';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
 
@@ -50,6 +50,11 @@ export const PublishedDetailLayout: React.FC = () => {
   const { data, isError } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
   const version = (projectId ?? '').split('v')[1];
+  const selectedVersion =
+    version ||
+    searchParams.get('version') ||
+    Math.max(...allVersions).toString();
+
   useEffect(() => {
     if (version) {
       const newSearchParams = new URLSearchParams(searchParams);
@@ -62,11 +67,6 @@ export const PublishedDetailLayout: React.FC = () => {
   useEffect(() => {
     if (!data) return;
 
-    const selectedVersion =
-      version ||
-      searchParams.get('version') ||
-      Math.max(...allVersions).toString();
-
     data?.baseProject.projectType !== 'other' &&
       apiClient.get(
         `/api/datafiles/tapis/public/listing/designsafe.storage.published/${projectId}${
@@ -75,7 +75,7 @@ export const PublishedDetailLayout: React.FC = () => {
             : ''
         }`
       );
-  }, [data, allVersions, searchParams, version, projectId]);
+  }, [data, selectedVersion, searchParams, projectId]);
 
   if (isError) {
     return (
@@ -171,6 +171,7 @@ export const PublishedDetailLayout: React.FC = () => {
             <PublishedCitation
               projectId={projectId}
               entityUuid={data.tree.children[0].uuid}
+              version={selectedVersion}
             />
             <br />
             <div>
