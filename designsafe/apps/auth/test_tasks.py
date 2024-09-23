@@ -5,13 +5,6 @@ from tapipy.errors import NotFoundError, BaseTapyException, ForbiddenError
 from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory
 
 
-# @pytest.fixture
-# def mock_user():
-#     user = mock.Mock()
-#     user.tapis_oauth.client.files.listFiles = mock.Mock()
-#     return user
-
-
 @pytest.fixture
 def mock_get_user_model(authenticated_user):
     with mock.patch("designsafe.apps.auth.tasks.get_user_model") as mock_get_user_model:
