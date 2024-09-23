@@ -10,7 +10,7 @@ import {
   usePublicationDetail,
   usePublicationVersions,
 } from '@client/hooks';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Alert, Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
 
