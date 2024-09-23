@@ -171,7 +171,7 @@ export const PublishedDetailLayout: React.FC = () => {
             <PublishedCitation
               projectId={projectId}
               entityUuid={data.tree.children[0].uuid}
-              version={selectedVersion}
+              version={parseInt(selectedVersion)}
             />
             <br />
             <div>
