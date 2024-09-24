@@ -324,8 +324,12 @@ const FormSchema = (
           key: paramId,
           type: 'text',
           ...(param.notes?.inputType === 'fileInput' && {
-            fileSettings: { fileNameRepresentation: 'NameOnly', fileSelectionMode: 'file' }
-          }),        };
+            fileSettings: {
+              fileNameRepresentation: 'NameOnly',
+              fileSelectionMode: 'file',
+            },
+          }),
+        };
 
         if (param.notes?.enum_values) {
           field.type = 'select';
@@ -411,7 +415,11 @@ const FormSchema = (
       type: 'text',
       placeholder: 'Browse Data Files',
       readOnly: input.inputMode === 'FIXED',
-      fileSettings: {fileNameRepresentation: 'FullTapisPath', fileSelectionMode: input.notes?.selectionMode as TAppFileSelectionMode?? 'both'}
+      fileSettings: {
+        fileNameRepresentation: 'FullTapisPath',
+        fileSelectionMode:
+          (input.notes?.selectionMode as TAppFileSelectionMode) ?? 'both',
+      },
     };
 
     appFields.fileInputs.schema[input.name] = z.string();
