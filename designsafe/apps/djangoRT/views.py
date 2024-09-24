@@ -165,8 +165,8 @@ def ticketreply(request, ticketId):
                     (
                        request.FILES['attachment'].name,
                        request.FILES['attachment'],
-                       mimetypes.guess_type(request.FILES['attachment'].name),
-                    ))
+                       request.FILES['attachment'].content_type),
+                    )
             if rt.replyToTicket(ticketId, text=reply_text, files=attachments):
                 return HttpResponseRedirect(reverse('djangoRT:ticketdetail',
                                                     args=[ticketId]))
