@@ -9,7 +9,7 @@
             <input type="checkbox"
               ng-change="vm.search()"
               ng-model="vm.data_source"/>
-            <label> Recon Portal Data </label>
+            <label> DesignSafe Data </label>
           </div>
         <div class="filter-options">
           <label> Event Type </label>
@@ -30,7 +30,6 @@
               ng-model="vm.filter_options.end_date"
               ng-disabled="!vm.data_source"
               title="Select the data source to enable filters"/>
-              <button class="btn btn-xs btn-default hide-btn" ng-click="vm.debouncedSearch()" ng-disabled="!vm.data_source"> Search </button>
         </div>
         </ul>
       <ul>
@@ -59,12 +58,12 @@
             ng-model="vm.opentopo_filter_options.ot_end_date"
             ng-disabled="!vm.ot_data_source"
             title="Select the data source to enable filters">
-          <button class="btn btn-xs btn-default hide-btn" ng-click="vm.debouncedSearch()" ng-disabled="!vm.ot_data_source"> Search </button>
         </div>
         </ul>
-      <div class="filter-options">
-        <button class="btn btn-xs btn-default hide-btn" ng-click="vm.show_filter_options=false"> Hide Filters </button>
-        <button class="btn btn-xs btn-info clear-btn" ng-click="vm.clear_filters()"> Clear Filters </button>
+      <div class="filter-button-row">
+        <button class="btn btn-xs btn-default filter-btn" ng-click="vm.show_filter_options=false"> Hide Filters </button>
+        <button class="btn btn-xs btn-default filter-btn" ng-click="vm.clear_filters()"> Clear Filters </button>
+        <button class="btn btn-xs btn-info filter-btn" ng-click="vm.debouncedSearch()" ng-disabled="(!vm.data_source && !vm.ot_data_source)"> Search </button>
       </div>
     </div>
   </div>
@@ -103,9 +102,25 @@
         </div> 
       </div>
       <div ng-show="!vm.active_rapid_event" class="event-results sb-row">
-        <div ng-show="vm.filtered_events" class="">
-          <event-listing ng-show="vm.data_source" ng-repeat="event in vm.filtered_events" event=event ng-click="vm.select_event(event)"></event-listing>
-          <event-listing ng-show="vm.ot_data_source" ng-repeat="event in vm.filtered_openTopoData" event=event ng-click="vm.select_event(event)"></event-listing>
+        <div class="event-listing designSafeData error" ng-if="vm.data_source && vm.filtered_events.length === 0">
+          <p>No DesignSafe datasets match your selected filters.</p>
+        </div>
+        <div class="event-listing openTopoData error" ng-if="vm.ot_data_source && vm.filtered_openTopoData.length === 0">
+          <p>No OpenTopography datasets match your selected filters.</p>
+        </div>
+        <div ng-if="vm.filtered_events">
+            <event-listing 
+                ng-repeat="event in vm.filtered_events" 
+                event="event" 
+                ng-click="vm.select_event(event)">
+            </event-listing>
+        </div>
+        <div ng-if="vm.filtered_openTopoData">
+          <event-listing 
+              ng-repeat="event in vm.filtered_openTopoData" 
+              event="event" 
+              ng-click="vm.select_event(event)">
+          </event-listing>
         </div>
         <div ng-show="!vm.filtered_events" class="">
           <event-listing ng-show="vm.data_source" ng-repeat="event in vm.events" event=event ng-click="vm.select_event(event)"></event-listing>

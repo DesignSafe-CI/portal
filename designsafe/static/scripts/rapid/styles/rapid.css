@@ -219,6 +219,9 @@ body {
 .event-listing.openTopoData {
   border-left: 5px solid #a8bb2f;
 }
+.event-listing.designSafeData {
+  border-left: 5px solid #548cc8;
+}
 
 .event-listing .event-type.earthquake {
   background-color: #e46e28;
@@ -241,7 +244,11 @@ body {
 .event-listing  .event-type.openTopoData {
   background-color: #a8bb2f;
 }
-
+.error {
+  background: #efd5d8;
+  color: #bb2f3f;
+  font-weight: bold;
+}
 
 .event-listing .event-date, .event-listing .event-type {
   background: #777777;
@@ -294,6 +301,13 @@ body {
   gap: 10px;
 }
 
+.filter-button-row {
+  display: flex;
+  justify-content:center;
+  white-space: nowrap;
+  align-items: center;
+}
+
 .filter-options-button {
   margin: 10px;
 }
@@ -323,8 +337,7 @@ body {
   align-items: center;
 }
 
-.clear-btn,
-.hide-btn{
+.filter-btn{
   width: 25%;
   height :40px;
 }

@@ -96,7 +96,9 @@ def opentopo_data(request):
         logger.debug("Requesting opentopo data")
         response = requests.get(OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD)
         response.raise_for_status()
-        response_data = response.json()
+        # response has some tabs char in the strings values that need to be replaced with string '\t'
+        response_content = response.text.replace('\t', '\\t')
+        response_data = json.loads(response_content)
         return JsonResponse(response_data, safe=False, status=response.status_code)
     except requests.RequestException as e:
         logger.error(f"Error fetching URL {OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD}: {str(e)}")
