@@ -261,7 +261,7 @@ export const AppsSubmissionDetails: React.FC<{
             loading={isSubmitting}
             style={{ width: 120 }}
           >
-            Submit Job
+            {definition.notes.isInteractive ? 'Start Session' : 'Submit Job'}
           </PrimaryButton>
         }
       />

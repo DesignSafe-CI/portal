@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Flex, Layout } from 'antd';
 import {
@@ -14,6 +14,7 @@ import {
   useAppsListing,
   usePrefetchGetSystems,
   usePrefetchGetAllocations,
+  InteractiveModalContext,
 } from '@client/hooks';
 import styles from './layout.module.css';
 
@@ -25,6 +26,7 @@ const WorkspaceRoot: React.FC = () => {
   usePrefetchGetAllocations();
 
   const { data, isLoading } = useAppsListing();
+  const [showInteractiveModal, setShowInteractiveModal] = useState(false);
 
   if (!data || isLoading)
     return (
@@ -41,7 +43,9 @@ const WorkspaceRoot: React.FC = () => {
   };
 
   return (
-    <>
+    <InteractiveModalContext.Provider
+      value={[showInteractiveModal, setShowInteractiveModal]}
+    >
       <Flex
         vertical
         style={{
@@ -71,7 +75,7 @@ const WorkspaceRoot: React.FC = () => {
         </Layout>
       </Flex>
       <Toast />
-    </>
+    </InteractiveModalContext.Provider>
   );
 };
 

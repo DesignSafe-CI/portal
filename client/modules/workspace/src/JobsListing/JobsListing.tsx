@@ -58,7 +58,7 @@ export const JobActionButton: React.FC<{
 
 const InteractiveSessionButtons: React.FC<{
   uuid: string;
-  interactiveSessionLink: string;
+  interactiveSessionLink?: string;
   message?: string;
 }> = ({ uuid, interactiveSessionLink, message }) => {
   const [interactiveModalState, setInteractiveModalState] = useState(false);
@@ -142,13 +142,13 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
             <Flex vertical>
               {truncateMiddle(job.name, 35)}
               <Row className={styles.jobActions}>
-                {!!interactiveSessionLink && (
+                {
                   <InteractiveSessionButtons
                     uuid={job.uuid}
                     interactiveSessionLink={interactiveSessionLink}
                     message={message}
                   />
-                )}
+                }
                 {!isInteractiveJob(job) && (
                   <SecondaryButton
                     size="small"
