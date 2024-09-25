@@ -4,9 +4,11 @@ import logging
 import json
 import networkx as nx
 from django.http import HttpRequest, JsonResponse
+from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.db import models
+from designsafe.libs.common.utils import check_group_membership
 from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
@@ -51,6 +53,31 @@ from designsafe.apps.api.decorators import tapis_jwt_login
 logger = logging.getLogger(__name__)
 
 
+def check_project_admin_group(user) -> bool:
+    """Check whether a user belongs to the Project Admin group"""
+    return check_group_membership(user, settings.PROJECT_ADMIN_GROUP)
+
+
+def get_project_for_user(project_id, user) -> ProjectMetadata:
+    """
+    Return a project with the specified project_id if the user is authorized to retrieve
+    it; otherwise throw a 403 error.
+    """
+    if check_project_admin_group(user):
+        return ProjectMetadata.objects.get(
+            models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+        )
+
+    try:
+        return user.projects.get(
+            models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
+        )
+    except ProjectMetadata.DoesNotExist as exc:
+        raise ApiException(
+            "User does not have access to the requested project", status=403
+        ) from exc
+
+
 def get_search_filter(query_string):
     """
     Construct a search filter for projects.
@@ -78,9 +105,15 @@ class ProjectsView(BaseApiView):
             raise ApiException("Unauthenticated user", status=401)
 
         projects = user.projects.order_by("-last_updated")
+
+        if check_project_admin_group(user):
+            projects = ProjectMetadata.objects.filter(
+                name="designsafe.project"
+            ).order_by("-last_updated")
+
         if query_string:
             projects = projects.filter(get_search_filter(query_string))
-        total = user.projects.count()
+        total = projects.count()
 
         project_json = {
             "result": [
@@ -126,14 +159,7 @@ class ProjectInstanceView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         entities = ProjectMetadata.objects.filter(base_project=project)
         return JsonResponse(
@@ -152,14 +178,7 @@ class ProjectInstanceView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project: ProjectMetadata = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         # Get the new value from the request data
         req_body = json.loads(request.body)
@@ -190,14 +209,7 @@ class ProjectInstanceView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project: ProjectMetadata = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         request_body = json.loads(request.body).get("patchMetadata", {})
         prev_metadata = BaseProject.model_validate(project.value)
@@ -225,10 +237,7 @@ class ProjectEntityView(BaseApiView):
             raise ApiException("Unauthenticated user", status=401)
 
         entity_meta = ProjectMetadata.objects.get(uuid=entity_uuid)
-        if user not in entity_meta.base_project.users.all():
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            )
+        get_project_for_user(entity_meta.base_project.project_id, user)
 
         request_body = json.loads(request.body).get("patchMetadata", {})
         logger.debug(request_body)
@@ -242,10 +251,7 @@ class ProjectEntityView(BaseApiView):
             raise ApiException("Unauthenticated user", status=401)
 
         entity_meta = ProjectMetadata.objects.get(uuid=entity_uuid)
-        if user not in entity_meta.base_project.users.all():
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            )
+        get_project_for_user(entity_meta.base_project.project_id, user)
 
         remove_nodes_for_entity(entity_meta.project_id, entity_uuid)
         delete_entity(entity_uuid)
@@ -286,14 +292,7 @@ class ProjectPreviewView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
         entities = ProjectMetadata.objects.filter(base_project=project)
         preview_tree = add_values_to_tree(project.project_id)
         return JsonResponse(
@@ -321,14 +320,7 @@ class ProjectEntityOrderView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         project_id = project.project_id
         reorder_project_nodes(project_id, node_id, order)
@@ -351,14 +343,7 @@ class ProjectEntityAssociationsView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         entity_meta = ProjectMetadata.objects.get(
             uuid=entity_uuid, base_project=project
@@ -375,14 +360,7 @@ class ProjectEntityAssociationsView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         remove_nodes_from_project(project.project_id, node_ids=[node_id])
 
@@ -415,14 +393,7 @@ class ProjectFileAssociationsView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         try:
             ProjectMetadata.objects.get(uuid=entity_uuid, base_project=project)
@@ -457,14 +428,7 @@ class ProjectFileAssociationsView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         try:
             ProjectMetadata.objects.get(uuid=entity_uuid, base_project=project)
@@ -486,14 +450,7 @@ class ProjectFileAssociationsView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         try:
             ProjectMetadata.objects.get(uuid=entity_uuid, base_project=project)
@@ -521,14 +478,7 @@ class ProjectFileTagsView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         try:
             ProjectMetadata.objects.get(uuid=entity_uuid, base_project=project)
@@ -550,14 +500,7 @@ class ProjectEntityValidateView(BaseApiView):
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
 
-        try:
-            project: ProjectMetadata = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         entities: list[str] = json.loads(request.body).get("entityUuids", None)
 
