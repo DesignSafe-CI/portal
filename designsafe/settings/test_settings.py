@@ -482,6 +482,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 PROJECT_ADMIN_USERS = ["test_prjadmin"]
+PROJECT_ADMIN_GROUP = "Project Admin"
 
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
 
