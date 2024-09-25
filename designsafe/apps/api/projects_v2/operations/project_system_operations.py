@@ -60,7 +60,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role="write
 
 
 def submit_workspace_acls_job(
-    username: str, project_uuid: str, action=Literal["add", "remove"]
+    username: str, project_uuid: str, action: Literal["add", "remove", "dryrun"] = "add"
 ):
     """
     Submit a job to set ACLs on a project for a specific user. This should be used if
@@ -68,11 +68,12 @@ def submit_workspace_acls_job(
     the synchronous Tapis endpoint to be performant.
     """
     client = service_account()
+    username_string = username.split(",")[0]
 
     job_body = {
-        "name": f"setfacl-project-{project_uuid.split('-')[0]}-{username}-{action}",
+        "name": f"setfacl-project-{project_uuid.split('-')[0]}-{username_string}-{action}",
         "appId": "setfacl-corral-tg458981",
-        "appVersion": "0.0.1",
+        "appVersion": "0.0.2",
         "description": "Add/Remove ACLs on a directory",
         "fileInputs": [],
         "parameterSet": {

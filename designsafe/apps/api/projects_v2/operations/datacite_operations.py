@@ -247,3 +247,10 @@ def hide_datacite_doi(doi: str):
         timeout=30,
     )
     return res.json()
+
+
+def get_doi_publication_date(doi: str) -> str:
+    """Look up the publication date for a DOI"""
+    res = requests.get(f"{settings.DATACITE_URL.strip('/')}/dois/{doi}", timeout=30)
+    res.raise_for_status()
+    return res.json()["data"]["attributes"]["created"]

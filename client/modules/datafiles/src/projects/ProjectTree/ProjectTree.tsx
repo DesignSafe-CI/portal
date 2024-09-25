@@ -137,8 +137,8 @@ const RecursiveTree: React.FC<{
         <div
           className={styles['tree-list-badge']}
           style={{
-            backgroundColor: PROJECT_COLORS[treeData.name].fill,
-            outline: `1px solid ${PROJECT_COLORS[treeData.name].outline}`,
+            backgroundColor: PROJECT_COLORS[treeData.name]?.fill,
+            outline: `1px solid ${PROJECT_COLORS[treeData.name]?.outline}`,
           }}
         >
           {DISPLAY_NAMES[treeData.name]}

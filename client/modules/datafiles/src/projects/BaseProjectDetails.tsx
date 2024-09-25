@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { TBaseProjectValue, TProjectUser } from '@client/hooks';
+import {
+  TBaseProjectValue,
+  TProjectUser,
+  useSelectedFiles,
+} from '@client/hooks';
 
 import styles from './BaseProjectDetails.module.css';
 import { Button, Col, Popover, Row, Select, Tooltip } from 'antd';
@@ -155,8 +159,14 @@ export const BaseProjectDetails: React.FC<{
   ].join(' | ');
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const { unsetSelections } = useSelectedFiles(
+    'tapis',
+    'designsafe.storage.published',
+    ''
+  );
 
   const setSelectedVersion = (newVersion: number) => {
+    unsetSelections();
     setSearchParams((prevParams) => {
       prevParams.set('version', newVersion.toString());
       return prevParams;
@@ -436,7 +446,7 @@ export const BaseProjectDetails: React.FC<{
       {projectValue.description && (
         <DescriptionExpander>
           <strong>Description: </strong>
-          {projectValue.description}
+          <p className="render-linebreaks">{projectValue.description}</p>
         </DescriptionExpander>
       )}
     </section>
