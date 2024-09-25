@@ -219,6 +219,9 @@ body {
 .event-listing.openTopoData {
   border-left: 5px solid #a8bb2f;
 }
+.event-listing.designSafeData {
+  border-left: 5px solid #548cc8;
+}
 
 .event-listing .event-type.earthquake {
   background-color: #e46e28;
@@ -241,7 +244,11 @@ body {
 .event-listing  .event-type.openTopoData {
   background-color: #a8bb2f;
 }
-
+.error {
+  background: #efd5d8;
+  color: #bb2f3f;
+  font-weight: bold;
+}
 
 .event-listing .event-date, .event-listing .event-type {
   background: #777777;
@@ -294,6 +301,13 @@ body {
   gap: 10px;
 }
 
+.filter-button-row {
+  display: flex;
+  justify-content:center;
+  white-space: nowrap;
+  align-items: center;
+}
+
 .filter-options-button {
   margin: 10px;
 }
@@ -316,62 +330,14 @@ body {
   margin-bottom: 10px;
 }
 
-.data_source{
+.data-source{
   display:flex;
   flex-direction: row;
   width: 100%;
   align-items: center;
 }
 
-.external_datasource_listing {
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 12px;
-  padding-bottom: 5px;
-
-}
-
-.external-data-checkbox {
-  position: relative;
-  display: inline-block;
-}
-
-.external-data-checkbox input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.external-data-checkbox label {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.external-data-checkbox .unchecked-icon {
-  display: inline-block;
-  font-size: 20px;
-  margin-right: 8px;
-}
-
-.external-data-checkbox .checked-icon {
-  display: none;
-  font-size: 20px;
-  margin-right: 8px;
-}
-
-.external-data-checkbox input[type="checkbox"]:checked ~ label .unchecked-icon {
-  display: none;
-}
-
-.external-data-checkbox input[type="checkbox"]:checked ~ label .checked-icon {
-  display: inline-block;
-}
-
-.clear-btn,
-.hide-btn{
+.filter-btn{
   width: 25%;
   height :40px;
 }
