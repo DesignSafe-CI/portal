@@ -1,5 +1,5 @@
 import { Button, Form, Input } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { UserSelect, GuestMembersInput } from './_fields';
 import { TProjectUser } from './_fields/UserSelect';
@@ -33,6 +33,22 @@ export const BaseProjectCreateForm: React.FC<{
       },
     ]);
   }, [form, user]);
+
+  const watchedPi = Form.useWatch(['pi'], form);
+  const watchedCoPis = Form.useWatch(['coPis'], form);
+  const watchedMembers = Form.useWatch(['teamMembers'], form);
+  const watchedGuestMembers = Form.useWatch(['guestMembers'], form);
+  const watchedUsers = useMemo(
+    () => [
+      ...(watchedPi ?? []),
+      ...(watchedCoPis ?? []),
+      ...(watchedMembers ?? []),
+      ...(watchedGuestMembers?.filter(
+        (f: TProjectUser) => !!f && f.fname && f.lname && f.email && f.inst
+      ) ?? []),
+    ],
+    [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
+  );
 
   if (!user) return null;
   return (
@@ -94,7 +110,7 @@ export const BaseProjectCreateForm: React.FC<{
           <br />
           <br />
           <Form.Item name="coPis" initialValue={[]} className="inner-form-item">
-            <UserSelect userRole="co_pi" />
+            <UserSelect userRole="co_pi" existingUsers={watchedUsers} />
           </Form.Item>
         </Form.Item>
       </div>
@@ -106,7 +122,7 @@ export const BaseProjectCreateForm: React.FC<{
           initialValue={[]}
           className="inner-form-item"
         >
-          <UserSelect userRole="team_member" />
+          <UserSelect userRole="team_member" existingUsers={watchedUsers}  />
         </Form.Item>
       </Form.Item>
 

@@ -18,7 +18,12 @@ export const UserSelect: React.FC<{
   userRole?: string;
   maxCount?: number;
   disabled?: boolean;
-}> = ({ value, onChange, id, userRole, maxCount, disabled }) => {
+  existingUsers?: TProjectUser[];
+}> = ({ value, onChange, id, userRole, maxCount, disabled, existingUsers }) => {
+  const existingUsernames = useMemo(
+    () => (existingUsers ?? []).map((u) => u.username),
+    [existingUsers]
+  );
   const initialOptions: SelectProps['options'] = useMemo(
     () =>
       value?.map((u) => ({
@@ -46,15 +51,17 @@ export const UserSelect: React.FC<{
         signal: controller.signal,
       })
       .then((resp) =>
-        resp.data.result.map((u) => ({
-          label: `${u.fname} ${u.lname} (${u.email})`,
-          value: JSON.stringify({ ...u, role: userRole }),
-        }))
+        resp.data.result
+          .filter((u) => !existingUsernames.includes(u.username))
+          .map((u) => ({
+            label: `${u.fname} ${u.lname} (${u.email})`,
+            value: JSON.stringify({ ...u, role: userRole }),
+          }))
       )
       .then((opts) => setData(opts))
       .catch((_) => setData([]));
     return () => controller.abort();
-  }, [debouncedSearchTerm, setData, userRole]);
+  }, [debouncedSearchTerm, setData, userRole, existingUsernames]);
 
   const changeCallback = (newValue: string[]) => {
     onChange && onChange(newValue.map((v) => JSON.parse(v)));
