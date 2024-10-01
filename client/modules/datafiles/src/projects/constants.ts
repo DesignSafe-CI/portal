@@ -17,6 +17,8 @@ export const SIMULATION_MODEL = 'designsafe.project.simulation.model';
 export const SIMULATION_INPUT = 'designsafe.project.simulation.input';
 export const SIMULATION_OUTPUT = 'designsafe.project.simulation.output';
 // Field Research
+export const FIELD_RECON_COLLECTION =
+  'designsafe.project.field_recon.collection';
 export const FIELD_RECON_MISSION = 'designsafe.project.field_recon.mission';
 export const FIELD_RECON_REPORT = 'designsafe.project.field_recon.report';
 export const FIELD_RECON_SOCIAL_SCIENCE =
@@ -72,6 +74,7 @@ export const PROJECT_COLORS: Record<string, { outline: string; fill: string }> =
     [HYBRID_SIM_SIM_SUBSTRUCTURE]: { outline: '#BD5717', fill: '#EBCCB9' },
     [HYBRID_SIM_SIM_OUTPUT]: { outline: '#B59300', fill: '#ECE4BF' },
 
+    [FIELD_RECON_COLLECTION]: { outline: '#43A59D', fill: '#CAE9E6' },
     [FIELD_RECON_REPORT]: { outline: '#cccccc', fill: '#f5f5f5' },
     [FIELD_RECON_MISSION]: { outline: '#000000', fill: '#ffffff' },
     [FIELD_RECON_GEOSCIENCE]: { outline: '#43A59D', fill: '#CAE9E6' },
@@ -191,6 +194,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   [HYBRID_SIM_SIM_OUTPUT]: 'Simulation Output',
   // Field Recon
   [FIELD_RECON_MISSION]: 'Mission',
+  [FIELD_RECON_COLLECTION]: 'Collection',
   [FIELD_RECON_GEOSCIENCE]: 'Geoscience Collection',
   [FIELD_RECON_SOCIAL_SCIENCE]: 'Social Science Collection',
   [FIELD_RECON_REPORT]: 'Document Collection',

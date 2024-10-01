@@ -1,3 +1,9 @@
+NGROK_ENV_FILE = ./conf/env_files/ngrok.env
+ifeq ("$(wildcard $(NGROK_ENV_FILE))","")
+    NGROK_ENV_FILE = ./conf/env_files/ngrok.sample.env
+endif
+
+
 .PHONY: build
 build:
 	docker compose -f ./conf/docker/docker-compose.yml build
@@ -8,16 +14,16 @@ build-dev:
 
 .PHONY: start
 start:
-	docker compose -f ./conf/docker/docker-compose-dev.all.debug.yml up
+	docker compose --env-file $(NGROK_ENV_FILE) -f ./conf/docker/docker-compose-dev.all.debug.yml up
 
 .PHONY: stop
 stop:
-	docker compose -f ./conf/docker/docker-compose-dev.all.debug.yml down
+	docker compose --env-file $(NGROK_ENV_FILE) -f ./conf/docker/docker-compose-dev.all.debug.yml down
 
 .PHONY: start-m1
 start-m1:
-	docker compose -f ./conf/docker/docker-compose-dev.all.debug.m1.yml up
+	docker compose --env-file $(NGROK_ENV_FILE) -f ./conf/docker/docker-compose-dev.all.debug.m1.yml up
 
 .PHONY: stop-m1
 stop-m1:
-	docker compose -f ./conf/docker/docker-compose-dev.all.debug.m1.yml down
+	docker compose --env-file $(NGROK_ENV_FILE) -f ./conf/docker/docker-compose-dev.all.debug.m1.yml down
