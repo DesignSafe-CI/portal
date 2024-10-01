@@ -510,7 +510,7 @@ else:
 GOOGLE_OAUTH2_CLIENT_SECRET = "CHANGE_ME"
 GOOGLE_OAUTH2_CLIENT_ID = "CHANGE_ME"
 
-NGROK_DOMAIN = "http://8cb9afb3.ngrok.io"
+NGROK_DOMAIN = "https://8cb9afb3.ngrok.io"
 
 # Box sync
 BOX_APP_CLIENT_ID = 'boxappclientid'

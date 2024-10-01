@@ -141,8 +141,8 @@ services:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
     command:
       - "http"
-      - --domain=${NGROK_DOMAIN}
-      - "http://host.docker.internal:443"
+      - --url=${NGROK_DOMAIN}
+      - "https://host.docker.internal:443"
     ports:
       - 4040:4040
     container_name: des_ngrok
