@@ -122,7 +122,7 @@ export const BaseProjectCreateForm: React.FC<{
           initialValue={[]}
           className="inner-form-item"
         >
-          <UserSelect userRole="team_member" existingUsers={watchedUsers}  />
+          <UserSelect userRole="team_member" existingUsers={watchedUsers} />
         </Form.Item>
       </Form.Item>
 
