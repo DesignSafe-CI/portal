@@ -533,7 +533,6 @@ AGAVE_SANDBOX_SUPER_TOKEN = os.environ.get('AGAVE_SANDBOX_SUPER_TOKEN', '')
 
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
-AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM', 'designsafe.storage.frontera.work')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
@@ -546,7 +545,6 @@ AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'tru
 
 TAPIS_SYSTEMS_TO_CONFIGURE = [
     {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
     {"system_id": "cloud.data", "path": "/ ", "create_path": False},
 ]
 
@@ -706,7 +704,7 @@ FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
 FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')
 
 CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('SESSION_COOKIE_DOMAIN')}"]
-WEBHOOK_POST_URL = os.environ.get('WEBHOOK_POST_URL', '')
+NGROK_DOMAIN = os.environ.get('NGROK_DOMAIN', os.environ.get('WEBHOOK_POST_URL', ''))
 
 STAFF_VPN_IP_PREFIX = os.environ.get("STAFF_VPN_IP_PREFIX", "129.114")
 USER_PROJECTS_LIMIT = os.environ.get("USER_PROJECTS_LIMIT", 500)
