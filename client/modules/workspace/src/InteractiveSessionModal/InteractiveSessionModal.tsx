@@ -53,7 +53,7 @@ export const InteractiveSessionModal: React.FC<{
           </>
         )}
         {message && <b>{message}</b>}
-        {!!!interactiveSessionLink && (
+        {interactiveSessionLink && (
           <>
             <span>
               To end the job, quit the application within the session.

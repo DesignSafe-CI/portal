@@ -12,6 +12,7 @@ import {
   TJobPostOperations,
   useReadNotifications,
   TGetNotificationsResponse,
+  useInteractiveModalContext,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -61,13 +62,17 @@ const InteractiveSessionButtons: React.FC<{
   interactiveSessionLink?: string;
   message?: string;
 }> = ({ uuid, interactiveSessionLink, message }) => {
-  const [interactiveModalState, setInteractiveModalState] = useState(false);
+  const [showInteractiveModal, setShowInteractiveModal] =
+    useInteractiveModalContext() as [
+      boolean,
+      React.Dispatch<React.SetStateAction<boolean>>
+    ];
 
   return (
     <>
       <SecondaryButton
         size="small"
-        onClick={() => setInteractiveModalState(true)}
+        onClick={() => setShowInteractiveModal(true)}
       >
         Open
       </SecondaryButton>
@@ -78,10 +83,10 @@ const InteractiveSessionButtons: React.FC<{
         size="small"
       />
       <InteractiveSessionModal
-        isOpen={interactiveModalState}
+        isOpen={showInteractiveModal}
         interactiveSessionLink={interactiveSessionLink}
         message={message}
-        onCancel={() => setInteractiveModalState(false)}
+        onCancel={() => setShowInteractiveModal(false)}
       />
     </>
   );
@@ -142,13 +147,13 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
             <Flex vertical>
               {truncateMiddle(job.name, 35)}
               <Row className={styles.jobActions}>
-                {
+                {!!interactiveSessionLink && (
                   <InteractiveSessionButtons
                     uuid={job.uuid}
                     interactiveSessionLink={interactiveSessionLink}
                     message={message}
                   />
-                }
+                )}
                 {!isInteractiveJob(job) && (
                   <SecondaryButton
                     size="small"
