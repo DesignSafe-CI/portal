@@ -6,7 +6,11 @@ import {
 } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-type TPortalEventType = 'data_depot' | 'job' | 'interactive_session_ready';
+type TPortalEventType =
+  | 'data_depot'
+  | 'job'
+  | 'interactive_session_ready'
+  | 'markAllNotificationsAsRead';
 
 export type TJobStatusNotification = {
   action_link: string;

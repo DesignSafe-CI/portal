@@ -233,8 +233,8 @@ class AppVariant(models.Model):
         """Retrieve the app's URL in the Tools & Applications space"""
         if self.external_href:
             return self.external_href
-        
-        app_href = f"/rw/workspace/{self.app_id}"
+
+        app_href = f"/workspace/{self.app_id}"
         if self.version:
             app_href += f"?appVersion={self.version}"
         return app_href
