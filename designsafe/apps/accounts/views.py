@@ -49,7 +49,7 @@ def manage_profile(request):
         logger.info('exception e:{} {}'.format(type(e), e))
 
     context = {
-        'title': 'Account Profile',
+        'title': 'Manage Account',
         'profile': user_profile,
         'ds_profile': ds_profile,
         'demographics': demographics,
@@ -353,7 +353,7 @@ def profile_edit(request):
         form = forms.UserProfileForm(initial=tas_user)
 
     context = {
-        'title': 'Account Profile',
+        'title': 'Manage Account',
         'form': form,
         'pro_form': pro_form
     }
