@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import useWebSocket from 'react-use-websocket';
 import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
@@ -101,12 +102,16 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     markRead: false,
   });
   const { mutate: readNotifications } = useReadNotifications();
+  const { sendMessage } = useWebSocket(
+    `wss://${window.location.host}/ws/websockets/`
+  );
 
   // mark all as read on component mount
   useEffect(() => {
     readNotifications({
       eventTypes: ['interactive_session_ready', 'job'],
     });
+    sendMessage('markAllNotificationsAsRead');
 
     // update unread count state
     queryClient.setQueryData(
