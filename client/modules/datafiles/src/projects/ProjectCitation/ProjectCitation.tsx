@@ -67,8 +67,8 @@ export const PublishedCitation: React.FC<{
         )
         .join(', ')}{' '}
       ({new Date(entityDetails.publicationDate).getFullYear()}). "
-      {entityDetails.value.title}", in <i>{data.baseProject.title}</i>.
-      DesignSafe-CI.{' '}
+      {entityDetails.value.title}", in <i>{data.baseProject.title}</i>
+      {(version ?? 1) > 1 && <span> [Version {version}]</span>}. DesignSafe-CI.{' '}
       {doi && (
         <a
           href={`https://doi.org/${doi}`}
