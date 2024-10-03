@@ -1,6 +1,6 @@
-import { Modal } from 'antd';
 import React from 'react';
-import { PrimaryButton } from '@client/common-components';
+import { Modal } from 'antd';
+import { PrimaryButton, Icon } from '@client/common-components';
 import {
   useInteractiveModalContext,
   TInteractiveModalContext,
@@ -16,18 +16,14 @@ export const InteractiveSessionModal: React.FC<{}> = () => {
 
   return (
     <Modal
-      title={<h2>Open Session</h2>}
-      width="500px"
-      open={show}
-      footer={
-        <PrimaryButton
-          href={interactiveSessionLink}
-          target="_blank"
-          disabled={!!!interactiveSessionLink}
-        >
-          Connect
-        </PrimaryButton>
+      title={
+        <h3>
+          Interactive Session is {interactiveSessionLink ? 'Ready' : 'Queueing'}
+        </h3>
       }
+      width="650px"
+      open={show}
+      footer={null}
       onCancel={() =>
         setInteractiveModalDetails({
           show: false,
@@ -35,24 +31,32 @@ export const InteractiveSessionModal: React.FC<{}> = () => {
       }
     >
       <div className={styles['session-modal-body']}>
-        {interactiveSessionLink ? (
+        <div style={{ alignSelf: 'center' }}>
+          <PrimaryButton
+            href={interactiveSessionLink}
+            target="_blank"
+            loading={!!!interactiveSessionLink}
+            style={{ width: 150, margin: '25px 0' }}
+            size="large"
+          >
+            Connect
+            <Icon
+              className={`ds-icon-New-Tab ${styles.icon}`}
+              label="Connect"
+            />
+          </PrimaryButton>
+        </div>
+        {openedBySubmit && !!!interactiveSessionLink && (
           <span>
-            Click the button below to connect to the interactive session.
+            While you wait, you can either:
+            <ul>
+              <li>Keep this modal open and wait to connect.</li>
+              <li>
+                Close this window and wait for a notification via{' '}
+                <strong>Job Status</strong>.
+              </li>
+            </ul>
           </span>
-        ) : (
-          <>
-            <span>
-              Your session is loading. You can keep this modal open, and wait
-              here for an access button.
-            </span>
-            {openedBySubmit && (
-              <span>
-                {
-                  '(Or you can close this modal, and wait for a notification to access your job via Job Status.)'
-                }
-              </span>
-            )}
-          </>
         )}
         {message && <b>{message}</b>}
         {interactiveSessionLink && (
