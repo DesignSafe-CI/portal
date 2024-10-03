@@ -7,6 +7,7 @@ import {
   useGetAppParams,
   AppsBreadcrumb,
   Toast,
+  InteractiveSessionModal,
 } from '@client/workspace';
 import { Spinner } from '@client/common-components';
 import {
@@ -26,7 +27,9 @@ const WorkspaceRoot: React.FC = () => {
   usePrefetchGetAllocations();
 
   const { data, isLoading } = useAppsListing();
-  const [showInteractiveModal, setShowInteractiveModal] = useState(false);
+  const [interactiveModalDetails, setInteractiveModalDetails] = useState({
+    show: false,
+  });
 
   if (!data || isLoading)
     return (
@@ -44,7 +47,7 @@ const WorkspaceRoot: React.FC = () => {
 
   return (
     <InteractiveModalContext.Provider
-      value={[showInteractiveModal, setShowInteractiveModal]}
+      value={[interactiveModalDetails, setInteractiveModalDetails]}
     >
       <Flex
         vertical
@@ -75,6 +78,7 @@ const WorkspaceRoot: React.FC = () => {
         </Layout>
       </Flex>
       <Toast />
+      <InteractiveSessionModal />
     </InteractiveModalContext.Provider>
   );
 };

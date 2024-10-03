@@ -1,26 +1,24 @@
 import { Modal } from 'antd';
 import React from 'react';
 import { PrimaryButton } from '@client/common-components';
+import {
+  useInteractiveModalContext,
+  TInteractiveModalContext,
+} from '@client/hooks';
 import styles from './InteractiveSessionModal.module.css';
 
-export const InteractiveSessionModal: React.FC<{
-  isOpen: boolean;
-  interactiveSessionLink?: string;
-  message?: string;
-  onCancel: VoidFunction;
-  openedBySubmit?: boolean;
-}> = ({
-  isOpen,
-  interactiveSessionLink,
-  message,
-  onCancel,
-  openedBySubmit,
-}) => {
+export const InteractiveSessionModal: React.FC<{}> = () => {
+  const [interactiveModalDetails, setInteractiveModalDetails] =
+    useInteractiveModalContext() as TInteractiveModalContext;
+
+  const { interactiveSessionLink, message, openedBySubmit, show } =
+    interactiveModalDetails;
+
   return (
     <Modal
       title={<h2>Open Session</h2>}
       width="500px"
-      open={isOpen}
+      open={show}
       footer={
         <PrimaryButton
           href={interactiveSessionLink}
@@ -30,7 +28,11 @@ export const InteractiveSessionModal: React.FC<{
           Connect
         </PrimaryButton>
       }
-      onCancel={onCancel}
+      onCancel={() =>
+        setInteractiveModalDetails({
+          show: false,
+        })
+      }
     >
       <div className={styles['session-modal-body']}>
         {interactiveSessionLink ? (

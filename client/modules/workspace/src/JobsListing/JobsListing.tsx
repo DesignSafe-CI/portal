@@ -14,6 +14,7 @@ import {
   useReadNotifications,
   TGetNotificationsResponse,
   useInteractiveModalContext,
+  TInteractiveModalContext,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -27,7 +28,6 @@ import {
   isInteractiveJob,
   isTerminalState,
 } from '../utils';
-import { InteractiveSessionModal } from '../InteractiveSessionModal';
 import styles from './JobsListing.module.css';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
 import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
@@ -63,17 +63,20 @@ const InteractiveSessionButtons: React.FC<{
   interactiveSessionLink?: string;
   message?: string;
 }> = ({ uuid, interactiveSessionLink, message }) => {
-  const [showInteractiveModal, setShowInteractiveModal] =
-    useInteractiveModalContext() as [
-      boolean,
-      React.Dispatch<React.SetStateAction<boolean>>
-    ];
+  const [_, setInteractiveModalDetails] =
+    useInteractiveModalContext() as TInteractiveModalContext;
 
   return (
     <>
       <SecondaryButton
         size="small"
-        onClick={() => setShowInteractiveModal(true)}
+        onClick={() =>
+          setInteractiveModalDetails({
+            show: true,
+            interactiveSessionLink,
+            message,
+          })
+        }
       >
         Open
       </SecondaryButton>
@@ -82,12 +85,6 @@ const InteractiveSessionButtons: React.FC<{
         operation="cancelJob"
         title="End"
         size="small"
-      />
-      <InteractiveSessionModal
-        isOpen={showInteractiveModal}
-        interactiveSessionLink={interactiveSessionLink}
-        message={message}
-        onCancel={() => setShowInteractiveModal(false)}
       />
     </>
   );

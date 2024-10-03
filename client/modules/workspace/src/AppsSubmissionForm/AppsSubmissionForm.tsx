@@ -20,9 +20,9 @@ import {
   useGetAllocationsSuspense,
   TTapisJob,
   useInteractiveModalContext,
+  TInteractiveModalContext,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
-import { InteractiveSessionModal } from '../InteractiveSessionModal/InteractiveSessionModal';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
 import {
   default as FormSchema,
@@ -75,11 +75,8 @@ export const AppsSubmissionForm: React.FC = () => {
     data: TTapisJob;
   };
 
-  const [showInteractiveModal, setShowInteractiveModal] =
-    useInteractiveModalContext() as [
-      boolean,
-      React.Dispatch<React.SetStateAction<boolean>>
-    ];
+  const [_, setInteractiveModalDetails] =
+    useInteractiveModalContext() as TInteractiveModalContext;
 
   const { definition, license, defaultSystemNeedsKeys } = app;
 
@@ -377,7 +374,7 @@ export const AppsSubmissionForm: React.FC = () => {
     } else if (isSuccess) {
       reset(initialValues);
       if (definition.notes.isInteractive) {
-        setShowInteractiveModal(true);
+        setInteractiveModalDetails({ show: true, openedBySubmit: true });
       }
     }
   }, [submitResult]);
@@ -644,11 +641,6 @@ export const AppsSubmissionForm: React.FC = () => {
         isModalOpen={pushKeysSystem}
         setIsModalOpen={setPushKeysSystem}
         onSuccess={() => submitVariables && submitJob(submitVariables)}
-      />
-      <InteractiveSessionModal
-        isOpen={showInteractiveModal}
-        onCancel={() => setShowInteractiveModal(false)}
-        openedBySubmit
       />
     </>
   );

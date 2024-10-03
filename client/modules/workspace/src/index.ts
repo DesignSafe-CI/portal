@@ -9,3 +9,4 @@ export * from './SystemsPushKeysModal/SystemsPushKeysModal';
 export * from './Toast';
 export * from './utils';
 export * from './constants';
+export * from './InteractiveSessionModal';
