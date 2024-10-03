@@ -14,7 +14,9 @@ export const ProjectCitation: React.FC<{
   const { data } = useProjectDetail(projectId);
   const entityDetails = data?.entities.find((e) => e.uuid === entityUuid);
   const authors =
-    entityDetails?.value.authors?.filter((a) => a.fname && a.lname) ?? [];
+    entityDetails?.value.authors?.filter(
+      (a) => a.fname && a.lname && a.authorship !== false
+    ) ?? [];
   if (!data || !entityDetails) return null;
   return (
     <div>
@@ -44,7 +46,8 @@ export const PublishedCitation: React.FC<{
     (child) => child.uuid === entityUuid && child.version === version
   );
 
-  const authors = entityDetails?.value.authors ?? [];
+  const authors =
+    entityDetails?.value.authors?.filter((a) => a.authorship !== false) ?? [];
   if (!data || !entityDetails) return null;
 
   const doi =

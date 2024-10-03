@@ -38,12 +38,13 @@ export function NotificationBadgeCtrl(
           $scope.data.notifications = resp.notifs;
           if (angular.element('#notification-container').hasClass('open')) {
             $scope.data.unread = 0;
+            $scope.$emit('notifications:markAllNotificationsAsRead');
           }
 
           for (var i = 0; i < $scope.data.notifications.length; i++) {
               const notification = $scope.data.notifications[i];
               if (notification['event_type'] == 'job') {
-                  notification['action_link'] = `/rw/workspace/history`;
+                  notification['action_link'] = `/workspace/history`;
               } else if (notification['event_type'] == 'data_depot') {
                   notification['action_link'] = `/data/browser`;
               }
@@ -68,11 +69,17 @@ export function NotificationBadgeCtrl(
           });
       };
 
+      $scope.markAllNotificationsAsRead = function () {
+        $scope.data.unread = 0;
+        $scope.$apply();
+    }
+
       $scope.count();
 
       $scope.init = function() {
           $rootScope.$on('notifications:read', $scope.count());
           $rootScope.$on('notifications:delete', function() { $scope.list(); });
+          $rootScope.$on('ds.wsBus:markAllNotificationsAsRead', $scope.markAllNotificationsAsRead);
       };
       $scope.init();
     }
