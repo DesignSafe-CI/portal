@@ -34,7 +34,7 @@ angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$root
         for (var i = 0; i < $scope.data.notifications.length; i++) {
             const notification = $scope.data.notifications[i];
             if (notification['event_type'] == 'job') {
-                notification['action_link'] = `/rw/workspace/history`;
+                notification['action_link'] = `/workspace/history`;
             } else if (notification['event_type'] == 'data_depot') {
                 notification['action_link'] = '/data/browser';
             }

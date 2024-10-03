@@ -34,7 +34,7 @@ function NotificationService(
         }
         if (msg.status != 'ERROR') {
             if (msg.event_type === 'job') {
-                url = `/rw/workspace/history`;
+                url = `/workspace/history`;
             } else if (msg.event_type == 'data_depot') {
                 url = `/data/browser`;
             }
