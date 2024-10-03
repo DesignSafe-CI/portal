@@ -271,7 +271,11 @@ export const PublishedEntityDisplay: React.FC<{
         {preview ? (
           <ProjectCitation projectId={projectId} entityUuid={treeData.uuid} />
         ) : (
-          <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
+          <PublishedCitation
+            projectId={projectId}
+            entityUuid={treeData.uuid}
+            version={treeData.version ?? 1}
+          />
         )}
         <br />
         {citationMetrics && (

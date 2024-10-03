@@ -192,7 +192,7 @@ export type TTapisJob = {
   stageAppTransactionId?: string;
   status: string;
   subscriptions: string;
-  tags: string[];
+  tags: string[] | null;
   tapisQueue: string;
   tenant: string;
   uuid: string;
