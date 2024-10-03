@@ -16,7 +16,8 @@ export const AuthorSelect: React.FC<{
           (u) =>
             (u.email || '') === (a.email || '') &&
             u.fname === a.fname &&
-            u.lname === a.lname
+            u.lname === a.lname &&
+            (u.role || '') === (a.role || '')
         )
       )
       .filter((u) => !!u);
@@ -28,7 +29,8 @@ export const AuthorSelect: React.FC<{
             (a) =>
               (u.email || '') === (a.email || '') &&
               u.fname === a.fname &&
-              u.lname === a.lname
+              u.lname === a.lname &&
+              (u.role || '') === (a.role || '')
           )
       )
       .filter((u) => !!u);
@@ -60,7 +62,8 @@ export const AuthorSelect: React.FC<{
             (v) =>
               (user?.email || '') === (v.email || '') &&
               user?.fname === v.fname &&
-              user?.lname === v.lname
+              user?.lname === v.lname &&
+              (user?.role || '') === (v?.role || '')
           )
         )
         .map((v) => JSON.stringify(v) ?? [])}
