@@ -96,6 +96,11 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           user &&
           selectedFiles.length >= 1 &&
           !selectedFiles[0].path.endsWith('.hazmapper'),
+        canMove:
+          user &&
+          selectedFiles.length>= 1 &&
+          !isReadOnly &&
+          !selectedFiles[0].path.endsWith('.hazmapper'),
         canTrash:
           user &&
           selectedFiles.length >= 1 &&
@@ -138,7 +143,7 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           {({ onClick }) => (
             <ToolbarButton
               onClick={onClick}
-              disabled={!rules.canRename}
+              disabled={!rules.canMove}
               className={styles.toolbarButton}
             >
               <i role="none" className="fa fa-arrows" />
