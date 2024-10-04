@@ -259,9 +259,9 @@ export const AppsSubmissionDetails: React.FC<{
             htmlType="submit"
             disabled={!isValid}
             loading={isSubmitting}
-            style={{ width: 120 }}
+            style={{ width: 130 }}
           >
-            {definition.notes.isInteractive ? 'Start Session' : 'Submit Job'}
+            {definition.notes.isInteractive ? 'Launch Session' : 'Submit Job'}
           </PrimaryButton>
         }
       />

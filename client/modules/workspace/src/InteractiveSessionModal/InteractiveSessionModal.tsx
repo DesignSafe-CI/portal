@@ -40,10 +40,12 @@ export const InteractiveSessionModal: React.FC<{}> = () => {
             size="large"
           >
             Connect
-            <Icon
-              className={`ds-icon-New-Tab ${styles.icon}`}
-              label="Connect"
-            />
+            {interactiveSessionLink && (
+              <Icon
+                className={`ds-icon-New-Tab ${styles.icon}`}
+                label="Connect"
+              />
+            )}
           </PrimaryButton>
         </div>
         {openedBySubmit && !!!interactiveSessionLink && (
