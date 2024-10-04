@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
@@ -63,7 +63,7 @@ const InteractiveSessionButtons: React.FC<{
   interactiveSessionLink?: string;
   message?: string;
 }> = ({ uuid, interactiveSessionLink, message }) => {
-  const [_, setInteractiveModalDetails] =
+  const [, setInteractiveModalDetails] =
     useInteractiveModalContext() as TInteractiveModalContext;
 
   return (
@@ -249,9 +249,5 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     [interactiveSessionNotifs]
   );
 
-  return (
-    <>
-      <JobsListingTable columns={columns} {...tableProps} />
-    </>
-  );
+  return <JobsListingTable columns={columns} {...tableProps} />;
 };

@@ -75,7 +75,7 @@ export const AppsSubmissionForm: React.FC = () => {
     data: TTapisJob;
   };
 
-  const [_, setInteractiveModalDetails] =
+  const [, setInteractiveModalDetails] =
     useInteractiveModalContext() as TInteractiveModalContext;
 
   const { definition, license, defaultSystemNeedsKeys } = app;

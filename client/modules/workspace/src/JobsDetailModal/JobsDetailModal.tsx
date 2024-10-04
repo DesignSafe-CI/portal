@@ -296,8 +296,7 @@ export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
     <Modal
       className={`${styles.root} job-history-modal`}
       title={
-        <>
-          <header>
+        <header>
             Job Detail: {uuid}
             {jobData && (
               <dl className={styles['header-details']}>
@@ -310,7 +309,6 @@ export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
               </dl>
             )}
           </header>
-        </>
       }
       width="60%"
       open={isModalOpen}

@@ -35,6 +35,7 @@ const Notifications = () => {
           interactiveSessionLink: notification.action_link,
           message: notification.message,
         });
+      /* falls through */
       case 'job':
         queryClient.invalidateQueries({
           queryKey: ['workspace', 'notifications'],
@@ -89,9 +90,9 @@ const Notifications = () => {
     if (lastMessage !== null) {
       handleNotification(JSON.parse(lastMessage.data));
     }
-  }, [lastMessage]);
+  }, [lastMessage, handleNotification]);
 
-  return <>{contextHolder}</>;
+  return contextHolder;
 };
 
 export default Notifications;

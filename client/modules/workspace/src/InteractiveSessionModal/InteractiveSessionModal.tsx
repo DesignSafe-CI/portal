@@ -7,7 +7,7 @@ import {
 } from '@client/hooks';
 import styles from './InteractiveSessionModal.module.css';
 
-export const InteractiveSessionModal: React.FC<{}> = () => {
+export const InteractiveSessionModal = () => {
   const [interactiveModalDetails, setInteractiveModalDetails] =
     useInteractiveModalContext() as TInteractiveModalContext;
 
@@ -35,7 +35,7 @@ export const InteractiveSessionModal: React.FC<{}> = () => {
           <PrimaryButton
             href={interactiveSessionLink}
             target="_blank"
-            loading={!!!interactiveSessionLink}
+            loading={!interactiveSessionLink}
             style={{ width: 150, margin: '25px 0' }}
             size="large"
           >
@@ -48,7 +48,7 @@ export const InteractiveSessionModal: React.FC<{}> = () => {
             )}
           </PrimaryButton>
         </div>
-        {openedBySubmit && !!!interactiveSessionLink && (
+        {openedBySubmit && !interactiveSessionLink && (
           <span>
             While you wait, you can either:
             <ul>
