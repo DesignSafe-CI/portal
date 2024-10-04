@@ -19,6 +19,8 @@ import {
   TJobBody,
   useGetAllocationsSuspense,
   TTapisJob,
+  useInteractiveModalContext,
+  TInteractiveModalContext,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
@@ -72,6 +74,9 @@ export const AppsSubmissionForm: React.FC = () => {
   const { data: jobData } = useGetJobSuspense('select', { uuid: jobUUID }) as {
     data: TTapisJob;
   };
+
+  const [, setInteractiveModalDetails] =
+    useInteractiveModalContext() as TInteractiveModalContext;
 
   const { definition, license, defaultSystemNeedsKeys } = app;
 
@@ -368,6 +373,9 @@ export const AppsSubmissionForm: React.FC = () => {
       setPushKeysSystem(submitResult.execSys);
     } else if (isSuccess) {
       reset(initialValues);
+      if (definition.notes.isInteractive) {
+        setInteractiveModalDetails({ show: true, openedBySubmit: true });
+      }
     }
   }, [submitResult]);
 
@@ -516,20 +524,22 @@ export const AppsSubmissionForm: React.FC = () => {
 
   return (
     <>
-      {submitResult && !submitResult.execSys && (
-        <Alert
-          message={
-            <>
-              Job submitted successfully. Monitor its progress in{' '}
-              <NavLink to={'/history'}>Job Status</NavLink>.
-            </>
-          }
-          type="success"
-          closable
-          showIcon
-          style={{ marginBottom: '1rem' }}
-        />
-      )}
+      {submitResult &&
+        !submitResult.execSys &&
+        !definition.notes.isInteractive && (
+          <Alert
+            message={
+              <>
+                Job submitted successfully. Monitor its progress in{' '}
+                <NavLink to={'/history'}>Job Status</NavLink>.
+              </>
+            }
+            type="success"
+            closable
+            showIcon
+            style={{ marginBottom: '1rem' }}
+          />
+        )}
       {missingAllocation && (
         <Alert
           message={
