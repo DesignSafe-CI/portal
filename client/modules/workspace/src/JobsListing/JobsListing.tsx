@@ -177,7 +177,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                     <JobActionButton
                       uuid={job.uuid}
                       operation="resubmitJob"
-                      title="Resubmit"
+                      title="Relaunch"
                       size="small"
                     />
                   ) : (

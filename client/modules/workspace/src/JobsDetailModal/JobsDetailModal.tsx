@@ -235,7 +235,7 @@ export const JobsDetailModalBody: React.FC<{
           (isInteractiveJob(jobData) ? (
             <JobActionButton
               uuid={jobData.uuid}
-              title="Resubmit Job"
+              title="Relaunch Job"
               operation="resubmitJob"
               type="primary"
             />
