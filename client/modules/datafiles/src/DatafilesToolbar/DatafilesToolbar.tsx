@@ -98,7 +98,7 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           !selectedFiles[0].path.endsWith('.hazmapper'),
         canMove:
           user &&
-          selectedFiles.length>= 1 &&
+          selectedFiles.length >= 1 &&
           !isReadOnly &&
           !selectedFiles[0].path.endsWith('.hazmapper'),
         canTrash:
