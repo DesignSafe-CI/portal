@@ -10,7 +10,7 @@ export const fileFixtures = {
     type: 'file',
     mimeType: 'text/plain',
     lastModified: '2024-10-03T19:44:11Z',
-    length: 52428800,
+    length: 10000,
     permissions: 'READ',
   } as TFileListing,
 
@@ -22,7 +22,7 @@ export const fileFixtures = {
     type: 'file',
     mimeType: 'text/plain',
     lastModified: '2024-10-03T19:44:11Z',
-    length: 52428800,
+    length: 10000,
     permissions: 'READ',
   } as TFileListing,
 
@@ -34,7 +34,7 @@ export const fileFixtures = {
     type: 'file',
     mimeType: '',
     lastModified: '2024-10-04T00:50:22Z',
-    length: 0,
+    length: 100,
     permissions: 'READ',
   } as TFileListing,
 
