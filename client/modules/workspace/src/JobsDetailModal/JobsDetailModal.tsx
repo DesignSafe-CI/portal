@@ -297,18 +297,18 @@ export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
       className={`${styles.root} job-history-modal`}
       title={
         <header>
-            Job Detail: {uuid}
-            {jobData && (
-              <dl className={styles['header-details']}>
-                <dt>Job UUID: </dt>
-                <dd>{jobData.uuid}</dd>
-                <dt>Application: </dt>
-                <dd>{JSON.parse(jobData.notes).label || jobData.appId}</dd>
-                <dt>System: </dt>
-                <dd>{jobData.execSystemId}</dd>
-              </dl>
-            )}
-          </header>
+          Job Detail: {uuid}
+          {jobData && (
+            <dl className={styles['header-details']}>
+              <dt>Job UUID: </dt>
+              <dd>{jobData.uuid}</dd>
+              <dt>Application: </dt>
+              <dd>{JSON.parse(jobData.notes).label || jobData.appId}</dd>
+              <dt>System: </dt>
+              <dd>{jobData.execSystemId}</dd>
+            </dl>
+          )}
+        </header>
       }
       width="60%"
       open={isModalOpen}
