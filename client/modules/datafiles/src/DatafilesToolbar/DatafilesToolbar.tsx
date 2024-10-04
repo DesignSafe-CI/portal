@@ -83,6 +83,11 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
 
   const rules = useMemo(
     function () {
+      // Check if none of the selected files end with `.hazmapper`.
+      const notContainingHazmapperFile = selectedFiles.every(
+        (file) => !file.path.endsWith('.hazmapper')
+      );
+
       // Rules for which toolbar buttons are active for a given selection.
       return {
         canPreview:
@@ -91,26 +96,24 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           user &&
           selectedFiles.length === 1 &&
           !isReadOnly &&
-          !selectedFiles[0].path.endsWith('.hazmapper'),
+          notContainingHazmapperFile,
         canCopy:
-          user &&
-          selectedFiles.length >= 1 &&
-          !selectedFiles[0].path.endsWith('.hazmapper'),
+          user && selectedFiles.length >= 1 && notContainingHazmapperFile,
         canMove:
           user &&
           selectedFiles.length >= 1 &&
           !isReadOnly &&
-          !selectedFiles[0].path.endsWith('.hazmapper'),
+          notContainingHazmapperFile,
         canTrash:
           user &&
           selectedFiles.length >= 1 &&
           !isReadOnly &&
-          !selectedFiles[0].path.endsWith('.hazmapper'),
+          notContainingHazmapperFile,
         // Disable downloads from frontera.work until we have a non-flaky mount on ds-download.
         canDownload:
           selectedFiles.length >= 1 &&
           system !== USER_WORK_SYSTEM &&
-          !selectedFiles[0].path.endsWith('.hazmapper'),
+          notContainingHazmapperFile,
       };
     },
     [selectedFiles, isReadOnly, user, system]
