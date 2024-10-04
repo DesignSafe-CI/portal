@@ -52,9 +52,9 @@ export const InteractiveSessionModal = () => {
           <span>
             While you wait, you can either:
             <ul>
-              <li>Keep this modal open and wait to connect.</li>
+              <li>Keep this pop-up open and wait to connect.</li>
               <li>
-                Close this window and wait for a notification via{' '}
+                Close this pop-up and wait for a notification via{' '}
                 <strong>Job Status</strong>.
               </li>
             </ul>
