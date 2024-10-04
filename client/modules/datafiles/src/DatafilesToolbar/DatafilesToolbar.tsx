@@ -30,7 +30,7 @@ type ToolbarRules = {
 export function getToolbarRules(
   selectedFiles: TFileListing[],
   isReadOnly: boolean,
-  user: any,
+  isAuthenticated: boolean,
   system: string,
   USER_WORK_SYSTEM: string
 ): ToolbarRules {
@@ -41,18 +41,21 @@ export function getToolbarRules(
   return {
     canPreview: selectedFiles.length === 1 && selectedFiles[0].type === 'file',
     canRename:
-      user &&
+      isAuthenticated &&
       selectedFiles.length === 1 &&
       !isReadOnly &&
       notContainingHazmapperFile,
-    canCopy: user && selectedFiles.length >= 1 && notContainingHazmapperFile,
+    canCopy:
+      isAuthenticated &&
+      selectedFiles.length >= 1 &&
+      notContainingHazmapperFile,
     canMove:
-      user &&
+      isAuthenticated &&
       selectedFiles.length >= 1 &&
       !isReadOnly &&
       notContainingHazmapperFile,
     canTrash:
-      user &&
+      isAuthenticated &&
       selectedFiles.length >= 1 &&
       !isReadOnly &&
       notContainingHazmapperFile,
@@ -136,7 +139,7 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
       getToolbarRules(
         selectedFiles,
         isReadOnly,
-        user,
+        !!user,
         system,
         USER_WORK_SYSTEM
       ),

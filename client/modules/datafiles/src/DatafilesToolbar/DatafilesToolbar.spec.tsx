@@ -56,14 +56,14 @@ describe('getToolbarRules', () => {
 
   test('should disable all buttons when no files are selected', () => {
     const selectedFiles: TFileListing[] = [];
-    const user = { name: 'Test User' };
+    const isAuthenticated = true;
     const isReadOnly = false;
     const system = 'other_system';
 
     const rules = getToolbarRules(
       selectedFiles,
       isReadOnly,
-      user,
+      isAuthenticated,
       system,
       USER_WORK_SYSTEM
     );
@@ -79,14 +79,14 @@ describe('getToolbarRules', () => {
   test('should enable all buttons when single "normal" file selected', () => {
     const selectedFiles: TFileListing[] = [fileFixtures.txtFile];
 
-    const user = { name: 'Test User' };
+    const isAuthenticated = true;
     const isReadOnly = false;
     const system = 'other_system';
 
     const rules = getToolbarRules(
       selectedFiles,
       isReadOnly,
-      user,
+      isAuthenticated,
       system,
       USER_WORK_SYSTEM
     );
@@ -102,14 +102,14 @@ describe('getToolbarRules', () => {
   test('should disable all buttons except preview when single hazmapper file selected', () => {
     const selectedFiles: TFileListing[] = [fileFixtures.hazmapperFile];
 
-    const user = { name: 'Test User' };
+    const isAuthenticated = true;
     const isReadOnly = false;
     const system = 'other_system';
 
     const rules = getToolbarRules(
       selectedFiles,
       isReadOnly,
-      user,
+      isAuthenticated,
       system,
       USER_WORK_SYSTEM
     );
@@ -128,14 +128,14 @@ describe('getToolbarRules', () => {
       fileFixtures.anotherTxtFile,
     ];
 
-    const user = { name: 'Test User' };
+    const isAuthenticated = true;
     const isReadOnly = false;
     const system = 'other_system';
 
     const rules = getToolbarRules(
       selectedFiles,
       isReadOnly,
-      user,
+      isAuthenticated,
       system,
       USER_WORK_SYSTEM
     );
@@ -154,14 +154,14 @@ describe('getToolbarRules', () => {
       fileFixtures.hazmapperFile,
     ];
 
-    const user = { name: 'Test User' };
+    const isAuthenticated = true;
     const isReadOnly = false;
     const system = 'other_system';
 
     const rules = getToolbarRules(
       selectedFiles,
       isReadOnly,
-      user,
+      isAuthenticated,
       system,
       USER_WORK_SYSTEM
     );
@@ -172,5 +172,54 @@ describe('getToolbarRules', () => {
     expect(rules.canMove).toBe(false);
     expect(rules.canTrash).toBe(false);
     expect(rules.canDownload).toBe(false);
+  });
+
+  test('should disable all buttons except preview/download when single selection but not authenticated', () => {
+    const selectedFiles: TFileListing[] = [fileFixtures.txtFile];
+
+    const isAuthenticated = false;
+    const isReadOnly = false;
+    const system = 'other_system';
+
+    const rules = getToolbarRules(
+      selectedFiles,
+      isReadOnly,
+      isAuthenticated,
+      system,
+      USER_WORK_SYSTEM
+    );
+
+    expect(rules.canPreview).toBe(true);
+    expect(rules.canRename).toBe(false);
+    expect(rules.canCopy).toBe(false);
+    expect(rules.canMove).toBe(false);
+    expect(rules.canTrash).toBe(false);
+    expect(rules.canDownload).toBe(true);
+  });
+
+  test('should disable all buttons except download when multiple selection but not authenticated', () => {
+    const selectedFiles: TFileListing[] = [
+      fileFixtures.txtFile,
+      fileFixtures.anotherTxtFile,
+    ];
+
+    const isAuthenticated = false;
+    const isReadOnly = false;
+    const system = 'other_system';
+
+    const rules = getToolbarRules(
+      selectedFiles,
+      isReadOnly,
+      isAuthenticated,
+      system,
+      USER_WORK_SYSTEM
+    );
+
+    expect(rules.canPreview).toBe(false);
+    expect(rules.canRename).toBe(false);
+    expect(rules.canCopy).toBe(false);
+    expect(rules.canMove).toBe(false);
+    expect(rules.canTrash).toBe(false);
+    expect(rules.canDownload).toBe(true);
   });
 });
