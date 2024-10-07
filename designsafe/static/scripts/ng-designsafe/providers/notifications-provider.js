@@ -66,7 +66,7 @@ function NotificationService(
     function processMessage(e, msg) {
         $rootScope.$broadcast('notification', msg);
         const eventType = msg.event_type.toLowerCase();
-        if (eventType === 'job' || eventType === 'interactive_session_ready' || eventType === 'WEB') {
+        if (eventType === 'job' || eventType === 'interactive_session_ready') {
             processors.notifs.process(msg);
         }
 
@@ -121,7 +121,7 @@ function NotificationService(
      * @param {Object} msg
      */
     function processToastr(e, msg) {
-        if (msg.event_type === 'job' || msg.event_type ==='WEB' || msg.event_type === 'interactive_session_ready') {
+        if (msg.event_type === 'job' || msg.event_type === 'interactive_session_ready') {
             return;
         }
 
