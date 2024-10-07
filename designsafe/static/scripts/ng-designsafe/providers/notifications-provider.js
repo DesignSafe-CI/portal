@@ -64,9 +64,11 @@ function NotificationService(
      * @param {Object} msg
      */
     function processMessage(e, msg) {
-        processors.notifs.process(msg);
         $rootScope.$broadcast('notification', msg);
         const eventType = msg.event_type.toLowerCase();
+        if (eventType === 'job' || eventType === 'interactive_session_ready' || eventType === 'WEB') {
+            processors.notifs.process(msg);
+        }
 
         if (typeof processors[eventType] !== 'undefined' &&
             typeof processors[eventType].process !== 'undefined' &&
