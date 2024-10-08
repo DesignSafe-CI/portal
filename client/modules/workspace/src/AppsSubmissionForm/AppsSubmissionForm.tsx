@@ -621,7 +621,7 @@ export const AppsSubmissionForm: React.FC = () => {
             <fieldset disabled={readOnly}>
               <Row gutter={[64, 16]} align="top">
                 {Object.keys(steps || {}).length === 0 ? (
-                  <Col style={{ marginTop: '32px', marginLeft: '32px' }} >
+                  <Col style={{ marginTop: '32px', marginLeft: '32px' }}>
                     <Space direction="vertical" size="large">
                       <div>
                         {definition.notes.jobLaunchDescription ??
