@@ -40,9 +40,6 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    Make a copy of [rabbitmq.sample.env](conf/env_files/rabbitmq.sample.env)
    then rename it to `rabbitmq.env`.
 
-   Make a copy of [external_resource_secrets.sample.py](designsafe/settings/external_resource_secrets.sample.py)
-   and rename it to `external_resource_secrets.py`.
-
 3. Configure ngrok
 
    a. Install [ngrok](https://ngrok.com/docs/getting-started/), and create an ngrok account.
