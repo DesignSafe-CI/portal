@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     'designsafe.apps.search',
     'designsafe.apps.geo',
     'designsafe.apps.rapid',
+    'designsafe.apps.onboarding',
 
     #haystack integration
     'haystack'
@@ -708,3 +709,24 @@ NGROK_DOMAIN = os.environ.get('NGROK_DOMAIN', os.environ.get('WEBHOOK_POST_URL',
 
 STAFF_VPN_IP_PREFIX = os.environ.get("STAFF_VPN_IP_PREFIX", "129.114")
 USER_PROJECTS_LIMIT = os.environ.get("USER_PROJECTS_LIMIT", 500)
+
+# Onboarding
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'designsafe.apps.onboarding.steps.allocation.AllocationStep',
+        'settings': {}
+    },
+    {
+        'step': 'designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
+        'settings': {
+            'access_systems': ['cloud.data', 'stampede3', 'frontera'],
+            'credentials_systems': ['cloud.data']
+        }
+    },
+    {
+        'step': 'designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep',
+        'settings': {
+            'project_sql_id': 34076  # project id for DesignSafe-Corral
+        }
+    },
+]
