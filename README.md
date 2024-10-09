@@ -32,16 +32,13 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    Required variables:
 
    - `DJANGO_DEBUG`: should be set to `True` for development
-   - `DJANGO_SECRET`: should be changed for production
+   - `DJANGO_SECRET_KEY`: should be changed for production
    - `TAS_*`: should be set to enable direct access to `django.contrib.admin`
    - `TAPIS_*`: should be set to enable Tapis API integration (authentication, etc.)
    - `RT_*`: should be set to enable ticketing
 
    Make a copy of [rabbitmq.sample.env](conf/env_files/rabbitmq.sample.env)
    then rename it to `rabbitmq.env`.
-
-   Make a copy of [external_resource_secrets.sample.py](designsafe/settings/external_resource_secrets.sample.py)
-   and rename it to `external_resource_secrets.py`.
 
 3. Configure ngrok
 
