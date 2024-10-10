@@ -1,7 +1,7 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/components/c-app-card.css");
+@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@enhance/DSAPP-57-limit-height-of-app-card-desc/dist/components/c-app-card.css");
 
 
 
@@ -23,6 +23,11 @@
 .c-app-card__desc {
     padding-inline: 1.5rem;
     margin-block: 1.5rem;
+}
+/* To set height to twice line-height */
+/* SEE: ./app-page.css#L34-L36 (circa v7.1.4) */
+.s-app-page p.c-app-card__desc {
+    height: 3.6em;
 }
 
 /* Types */
