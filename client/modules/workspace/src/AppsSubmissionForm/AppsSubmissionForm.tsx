@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PrimaryButton } from '@client/common-components';
+import { JobSubmitButton } from '../JobSubmitButton/JobSubmitButton';
 import {
   useGetAppsSuspense,
   useGetJobSuspense,
@@ -628,15 +628,10 @@ export const AppsSubmissionForm: React.FC = () => {
                           'This job is pre-configured. No input is necessary to submit the job.'}
                       </div>
                       <div>
-                        <PrimaryButton
-                          htmlType="submit"
+                        <JobSubmitButton
                           loading={isPending}
-                          style={{ width: 130 }}
-                        >
-                          {definition.notes.isInteractive
-                            ? 'Launch Session'
-                            : 'Submit Job'}
-                        </PrimaryButton>
+                          interactive={definition.notes.isInteractive}
+                        />
                       </div>
                     </Space>
                   </Col>
