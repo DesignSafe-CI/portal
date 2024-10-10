@@ -8,7 +8,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from celery import shared_task
 from pytas.http import TASClient
-from tapipy.errors import NotFoundError, BaseTapyException, ForbiddenError
+from tapipy.errors import (
+    NotFoundError,
+    BaseTapyException,
+    ForbiddenError,
+    UnauthorizedError,
+)
 from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
 from designsafe.apps.api.tasks import agave_indexer
 from designsafe.apps.api.notifications.models import Notification
@@ -60,14 +65,13 @@ def check_or_configure_system_and_user_directory(
 
     try:
         if create_path:
-            tg458981_client = get_tg458981_client()
             try:
                 # Use user account to check if path exists and is accessible
                 user_client.files.listFiles(systemId=system_id, path=path)
                 logger.info(
                     f"Directory for user={username} on system={system_id}/{path} exists and works. "
                 )
-            except (NotFoundError, ForbiddenError) as e:
+            except (NotFoundError, ForbiddenError, UnauthorizedError) as e:
                 logger.info(
                     "Ensuring directory exists for user=%s then going to run setfacl on system=%s path=%s",
                     username,
@@ -75,6 +79,7 @@ def check_or_configure_system_and_user_directory(
                     path,
                 )
 
+                tg458981_client = get_tg458981_client()
                 if isinstance(e, NotFoundError):
                     tg458981_client.files.mkdir(systemId=system_id, path=path)
 

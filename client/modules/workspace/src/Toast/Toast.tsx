@@ -30,11 +30,13 @@ const Notifications = () => {
   const handleNotification = (notification: TJobStatusNotification) => {
     switch (notification.event_type) {
       case 'interactive_session_ready':
-        setInteractiveModalDetails({
-          ...interactiveModalDetails,
-          interactiveSessionLink: notification.action_link,
-          message: notification.message,
-        });
+        if (interactiveModalDetails.show) {
+          setInteractiveModalDetails({
+            ...interactiveModalDetails,
+            interactiveSessionLink: notification.action_link,
+            message: notification.message,
+          });
+        }
       /* falls through */
       case 'job':
         queryClient.invalidateQueries({
@@ -47,7 +49,7 @@ const Notifications = () => {
           message: (
             <Flex justify="space-between">
               {getToastMessage(notification)}
-              <RightOutlined style={{ marginRight: -5 }} />
+              <RightOutlined style={{ marginRight: -5, marginLeft: 10 }} />
             </Flex>
           ),
           placement: 'bottomLeft',
@@ -90,7 +92,7 @@ const Notifications = () => {
     if (lastMessage !== null) {
       handleNotification(JSON.parse(lastMessage.data));
     }
-  }, [lastMessage, handleNotification]);
+  }, [lastMessage]);
 
   return contextHolder;
 };
