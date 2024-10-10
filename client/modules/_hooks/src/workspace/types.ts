@@ -114,6 +114,8 @@ export type TTapisApp = {
     queueFilter?: string[];
     hideQueue?: boolean;
     hideAllocation?: boolean;
+    hideMaxMinutes?: boolean;
+    jobLaunchDescription?: string;
   };
   uuid: string;
   deleted: boolean;
