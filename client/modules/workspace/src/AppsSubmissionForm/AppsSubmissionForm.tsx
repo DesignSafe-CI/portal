@@ -631,6 +631,7 @@ export const AppsSubmissionForm: React.FC = () => {
                         <JobSubmitButton
                           loading={isPending}
                           interactive={definition.notes.isInteractive}
+                          disabled={isPending || isSuccess}
                         />
                       </div>
                     </Space>
