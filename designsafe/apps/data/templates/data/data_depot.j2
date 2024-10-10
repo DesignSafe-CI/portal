@@ -57,16 +57,7 @@ Data Depot
     <base href="{% url 'designsafe_data:data_depot' %}">
 {% endblock %}
 {% block content %}
-    {%if react_flag%}
     <div id="datafiles-root" style="display: flex; flex-direction: column; flex: 1;"></div>
-    {% endif %}
-
-    {%if not react_flag%}
-    <div class="container dd-container">
-        <ddmain style="position: relative;">
-        </ddmain>
-    </div>
-    {%endif%}
 
     {% addtoblock "react_assets" %}
         {% if debug %}
