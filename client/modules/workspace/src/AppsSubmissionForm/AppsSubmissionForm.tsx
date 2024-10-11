@@ -624,14 +624,22 @@ export const AppsSubmissionForm: React.FC = () => {
                   <Col style={{ marginTop: '32px', marginLeft: '32px' }}>
                     <Space direction="vertical" size="large">
                       <div>
-                        {definition.notes.jobLaunchDescription ??
-                          'This job is pre-configured. No input is necessary to submit the job.'}
+                        {isSuccess ? (
+                          <span>
+                            Session has been launched. You can view status in{' '}
+                            <strong>Job Status</strong>.
+                          </span>
+                        ) : (
+                          definition.notes.jobLaunchDescription ??
+                          'This job is pre-configured. No input is necessary to submit the job.'
+                        )}
                       </div>
                       <div>
                         <JobSubmitButton
                           loading={isPending}
                           interactive={definition.notes.isInteractive}
                           disabled={isPending || isSuccess}
+                          success={isSuccess}
                         />
                       </div>
                     </Space>

@@ -5,7 +5,8 @@ export const JobSubmitButton: React.FC<{
   loading: boolean;
   interactive: boolean | undefined;
   disabled?: boolean;
-}> = ({ loading, interactive, disabled = false }) => {
+  success?: boolean;
+}> = ({ loading, interactive, disabled = false, success = false }) => {
   return (
     <PrimaryButton
       disabled={disabled}
@@ -14,6 +15,7 @@ export const JobSubmitButton: React.FC<{
       style={{ width: 150 }}
     >
       {interactive ? 'Launch Session' : 'Submit Job'}
+      {success && <i className="fa fa-check" style={{ marginLeft: 5 }} />}
     </PrimaryButton>
   );
 };
