@@ -1,5 +1,7 @@
-from portal.apps.onboarding.state import SetupState
-from portal.apps.onboarding.steps.abstract import AbstractStep
+"""Request Access Step for Onboarding."""
+
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
 
 
 class RequestAccessStep(AbstractStep):
@@ -49,12 +51,6 @@ class RequestAccessStep(AbstractStep):
                 )
             )
         elif action == "staff_deny":
-            self.fail(
-                "Portal access request has not been approved."
-            )
+            self.fail("Portal access request has not been approved.")
         else:
-            self.fail(
-                "Invalid client action {action}".format(
-                    action=action
-                )
-            )
+            self.fail("Invalid client action {action}".format(action=action))

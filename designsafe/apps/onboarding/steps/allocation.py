@@ -1,6 +1,8 @@
-from portal.apps.onboarding.steps.abstract import AbstractStep
-from portal.apps.onboarding.state import SetupState
-from portal.apps.users.utils import get_allocations
+"""Allocation step for Onboarding."""
+
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.api.users.utils import get_allocations
 
 
 class AllocationStep(AbstractStep):
@@ -29,7 +31,7 @@ class AllocationStep(AbstractStep):
         self.log("Retrieving your allocations")
         # Force allocation retrieval from TAS and refresh elasticsearch
         allocations = get_allocations(self.user.username, force=True)
-        if not allocations.get('active'):
+        if not allocations.get("active"):
             self.state = SetupState.USERWAIT
             self.log(
                 """User {0} does not have any allocations""".format(self.user.username),

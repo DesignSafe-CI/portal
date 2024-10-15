@@ -1,7 +1,4 @@
-"""
-.. :module:: apps.onboarding.models
-   :synopsis: Onboarding models
-"""
+"""Onboarding models."""
 
 from django.db import models
 from django.conf import settings
@@ -13,10 +10,9 @@ class SetupEvent(models.Model):
 
     A log of events for setup steps
     """
+
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="+",
-        on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, related_name="+", on_delete=models.CASCADE
     )
 
     # Auto increment auto add timestamp for event
@@ -36,13 +32,13 @@ class SetupEvent(models.Model):
     data = models.JSONField(null=True)
 
     def __str__(self):
-        return '{username} {time} {step} ({state}) - {message} ({data})'.format(
+        return "{username} {time} {step} ({state}) - {message} ({data})".format(
             username=self.user.username,
             time=self.time,
             step=self.step,
             state=self.state,
             message=self.message,
-            data=self.data
+            data=self.data,
         )
 
     def to_dict(self):
@@ -58,7 +54,7 @@ class SetupEvent(models.Model):
 
 class SetupEventEncoder(DjangoJSONEncoder):
     def default(self, obj):  # pylint: disable=method-hidden, arguments-differ
-        if (isinstance(obj, SetupEvent)):
+        if isinstance(obj, SetupEvent):
             event = obj
             return event.to_dict()
         else:

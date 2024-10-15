@@ -1,11 +1,13 @@
+"""Methods for executing setup steps for a user."""
+
 from inspect import isclass
 from importlib import import_module
 from django.conf import settings
-from portal.apps.onboarding.state import SetupState
-from portal.apps.onboarding.models import SetupEvent
-from portal.apps.onboarding.steps.abstract import AbstractStep
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.models import SetupEvent
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
 from celery import shared_task
-from portal.apps.accounts.models import PortalProfile
+from designsafe.apps.accounts.models import DesignSafeProfile
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,14 +24,20 @@ class StepExecuteException(Exception):
 
 
 def new_user_setup_check(user):
-    extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
+    extra_steps = getattr(settings, "PORTAL_USER_ACCOUNT_SETUP_STEPS", [])
     if len(extra_steps) == 0:
-        logger.info("No extra setup steps for user {username}".format(username=user.username))
-        profile = PortalProfile.objects.get(user=user)
+        logger.info(
+            "No extra setup steps for user {username}".format(username=user.username)
+        )
+        profile = DesignSafeProfile.objects.get(user=user)
         profile.setup_complete = True
         profile.save()
     else:
-        logger.info("Preparing onboarding steps for user {username}".format(username=user.username))
+        logger.info(
+            "Preparing onboarding steps for user {username}".format(
+                username=user.username
+            )
+        )
         prepare_setup_steps(user)
 
 
@@ -39,28 +47,24 @@ def log_setup_state(user, message):
     SetupEvent.objects.create(
         user=user,
         step="portal.apps.onboarding.execute.execute_setup_steps",
-        state=SetupState.COMPLETED if user.profile.setup_complete else SetupState.FAILED,
+        state=(
+            SetupState.COMPLETED if user.profile.setup_complete else SetupState.FAILED
+        ),
         message=message,
-        data={"setupComplete": user.profile.setup_complete}
+        data={"setupComplete": user.profile.setup_complete},
     )
 
 
 def load_setup_step(user, step):
-    module_str, callable_str = step.rsplit('.', 1)
+    module_str, callable_str = step.rsplit(".", 1)
     module = import_module(module_str)
     call = getattr(module, callable_str)
     if not isclass(call):
-        raise ValueError(
-            "Setup step {step} is not a class".format(
-                step=step
-            )
-        )
+        raise ValueError("Setup step {step} is not a class".format(step=step))
     setup_step = call(user)
     if not isinstance(setup_step, AbstractStep):
         raise ValueError(
-            "Setup step {step} is not a subclass of AbstractStep".format(
-                step=step
-            )
+            "Setup step {step} is not a subclass of AbstractStep".format(step=step)
         )
     return setup_step
 
@@ -69,9 +73,9 @@ def prepare_setup_steps(user):
     """
     Set the initial state of all setup steps for a given user
     """
-    extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
+    extra_steps = getattr(settings, "PORTAL_USER_ACCOUNT_SETUP_STEPS", [])
     for step in extra_steps:
-        setup_step = load_setup_step(user, step['step'])
+        setup_step = load_setup_step(user, step["step"])
         if setup_step.last_event is None:
             setup_step.prepare()
 
@@ -90,12 +94,13 @@ def process_setup_step(setup_step):
 @shared_task()
 def execute_setup_steps(username):
     from django.contrib.auth import get_user_model
+
     user = get_user_model().objects.get(username=username)
 
-    extra_steps = getattr(settings, 'PORTAL_USER_ACCOUNT_SETUP_STEPS', [])
+    extra_steps = getattr(settings, "PORTAL_USER_ACCOUNT_SETUP_STEPS", [])
     for step in extra_steps:
         # Restore state of this setup step for this user
-        setup_step = load_setup_step(user, step['step'])
+        setup_step = load_setup_step(user, step["step"])
         # Run step, if waiting for automatic execution
         # should have this state
         if setup_step.state == SetupState.PENDING:
@@ -110,17 +115,13 @@ def execute_setup_steps(username):
     # a step failing to reach the COMPLETED state, mark the user as setup_complete
     user.profile.setup_complete = True
     user.profile.save()
-    log_setup_state(
-        user,
-        "{user} setup is now complete".format(
-            user=user.username
-        )
-    )
+    log_setup_state(user, "{user} setup is now complete".format(user=user.username))
 
 
 @shared_task()
 def execute_single_step(username, step_name):
     from django.contrib.auth import get_user_model
+
     user = get_user_model().objects.get(username=username)
     # Process specified setup step
     setup_step = load_setup_step(user, step_name)

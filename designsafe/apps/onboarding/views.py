@@ -16,3 +16,8 @@ class OnboardingView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         """Overwrite dispatch to ensure csrf cookie"""
         return super(OnboardingView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(OnboardingView, self).get_context_data(**kwargs)
+        context["setup_complete"] = self.request.user.profile.setup_complete
+        return context

@@ -1,33 +1,32 @@
+"""System Access Step for Onboarding."""
+
 import logging
 import requests
 from requests.exceptions import HTTPError
-from portal.apps.onboarding.steps.abstract import AbstractStep
-from portal.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
+from designsafe.apps.onboarding.state import SetupState
 from django.conf import settings
-from portal.utils.encryption import createKeyPair
-from portal.libs.agave.utils import service_account
+from designsafe.utils.encryption import createKeyPair
+from designsafe.apps.api.agave import get_service_account_client
 from tapipy.errors import BaseTapyException
 
 
 logger = logging.getLogger(__name__)
 
 
-def create_system_credentials(client,
-                              username,
-                              public_key,
-                              private_key,
-                              system_id,
-                              skipCredentialCheck=False) -> int:
+def create_system_credentials(
+    client, username, public_key, private_key, system_id, skipCredentialCheck=False
+) -> int:
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
     logger.info(f"Creating user credential for {username} on Tapis system {system_id}")
-    data = {'privateKey': private_key, 'publicKey': public_key}
+    data = {"privateKey": private_key, "publicKey": public_key}
     client.systems.createUserCredential(
         systemId=system_id,
         userName=username,
         skipCredentialCheck=skipCredentialCheck,
-        **data
+        **data,
     )
 
 
@@ -46,16 +45,12 @@ def register_public_key(username, publicKey, system_id) -> int:
 def set_user_permissions(user, system_id):
     """Apply read/write/execute permissions to files and read permissions on the system."""
     logger.info(f"Adding {user.username} permissions to Tapis system {system_id}")
-    client = service_account()
+    client = get_service_account_client()
     client.systems.grantUserPerms(
-        systemId=system_id,
-        userName=user.username,
-        permissions=['READ'])
+        systemId=system_id, userName=user.username, permissions=["READ"]
+    )
     client.files.grantPermissions(
-        systemId=system_id,
-        path="/",
-        username=user.username,
-        permission='MODIFY'
+        systemId=system_id, path="/", username=user.username, permission="MODIFY"
     )
 
 
@@ -85,7 +80,7 @@ class SystemAccessStepV3(AbstractStep):
 
     def process(self):
         self.log(f"Processing system access for user {self.user.username}")
-        for system in self.settings.get('access_systems') or []:
+        for system in self.settings.get("access_systems") or []:
             try:
                 set_user_permissions(self.user, system)
                 self.log(f"Successfully granted permissions for system: {system}")
@@ -93,7 +88,7 @@ class SystemAccessStepV3(AbstractStep):
                 logger.error(e)
                 self.fail(f"Failed to grant permissions for system: {system}")
 
-        for system in self.settings.get('credentials_systems') or []:
+        for system in self.settings.get("credentials_systems") or []:
             try:
                 self.check_system(system)
                 self.log(f"Credentials already created for system: {system}")
@@ -108,14 +103,14 @@ class SystemAccessStepV3(AbstractStep):
                 self.log(f"Successfully registered public key for system: {system}")
             except HTTPError as e:
                 logger.error(e)
-                self.fail(f"Failed to register public key with key service for system: {system}")
+                self.fail(
+                    f"Failed to register public key with key service for system: {system}"
+                )
 
             try:
-                create_system_credentials(self.user.tapis_oauth.client,
-                                          self.user.username,
-                                          pub,
-                                          priv,
-                                          system)
+                create_system_credentials(
+                    self.user.tapis_oauth.client, self.user.username, pub, priv, system
+                )
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as e:
                 logger.error(e)

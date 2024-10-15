@@ -1,20 +1,18 @@
 import pytest
-from portal.apps.onboarding.models import SetupEvent
-from portal.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.models import SetupEvent
+from designsafe.apps.onboarding.state import SetupState
 
 
 @pytest.fixture
 def mock_steps(regular_user, settings):
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-        {
-            'step': 'portal.apps.onboarding.steps.test_steps.MockStep'
-        }
+        {"step": "portal.apps.onboarding.steps.test_steps.MockStep"}
     ]
     pending_step = SetupEvent.objects.create(
         user=regular_user,
         step="portal.apps.onboarding.steps.test_steps.MockStep",
         state=SetupState.PENDING,
-        message="message"
+        message="message",
     )
 
     completed_step = SetupEvent.objects.create(
@@ -30,15 +28,15 @@ def mock_steps(regular_user, settings):
 def mock_retry_step(regular_user, settings):
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         {
-            'step': 'portal.apps.onboarding.steps.test_steps.MockStep',
-            'retry': True,
-            'settings': {}
+            "step": "portal.apps.onboarding.steps.test_steps.MockStep",
+            "retry": True,
+            "settings": {},
         }
     ]
     retry_step = SetupEvent.objects.create(
         user=regular_user,
         step="portal.apps.onboarding.steps.test_steps.MockStep",
         state=SetupState.USERWAIT,
-        message="message"
+        message="message",
     )
     yield retry_step

@@ -14,6 +14,7 @@
     window.$RefreshSig$ = () => (type) => type;
     window.__vite_plugin_react_preamble_installed__ = true;
 </script>
+<script> window.__INITIAL_SETUP_COMPLETE__ = {{ setup_complete | yesno: "true,false" }}; </script>
 <script type="module" src="http://localhost:4200/static/react-assets/@vite/client"></script>
 <script type="module" src="http://localhost:4200/static/react-assets/src/main.tsx"></script>
 {% else %}
