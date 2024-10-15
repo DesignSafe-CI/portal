@@ -5,6 +5,7 @@
 
 import logging
 import json
+from urllib.parse import urlparse
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -758,14 +759,18 @@ class JobsView(AuthenticatedApiView):
                 return {"execSys": system_needs_keys}
 
         if settings.DEBUG:
-            wh_base_url = settings.WEBHOOK_POST_URL + reverse(
+            parsed_url = urlparse(settings.NGROK_DOMAIN)
+            if not parsed_url.scheme:
+                webhook_base_url = f"https://{settings.NGROK_DOMAIN}"
+            else:
+                webhook_base_url = settings.NGROK_DOMAIN
+
+            interactive_wh_url = webhook_base_url + reverse(
                 "webhooks:interactive_wh_handler"
             )
-            jobs_wh_url = settings.WEBHOOK_POST_URL + reverse(
-                "webhooks:jobs_wh_handler"
-            )
+            jobs_wh_url = webhook_base_url + reverse("webhooks:jobs_wh_handler")
         else:
-            wh_base_url = request.build_absolute_uri(
+            interactive_wh_url = request.build_absolute_uri(
                 reverse("webhooks:interactive_wh_handler")
             )
             jobs_wh_url = request.build_absolute_uri(
@@ -785,7 +790,7 @@ class JobsView(AuthenticatedApiView):
                 projects = request.user.projects.order_by("-last_updated")
                 entry["value"] = " ".join(
                     f"{project.uuid},{project.value['projectId'] if project.value['projectId'] != 'None' else project.uuid}"
-                    for project in projects[:settings.USER_PROJECTS_LIMIT]
+                    for project in projects[: settings.USER_PROJECTS_LIMIT]
                 )
                 job_post["parameterSet"]["envVariables"] = env_variables
                 break
@@ -795,7 +800,7 @@ class JobsView(AuthenticatedApiView):
             # Add webhook URL environment variable for interactive apps
             job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get(
                 "envVariables", []
-            ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": wh_base_url}]
+            ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": interactive_wh_url}]
             job_post["tags"].append("isInteractive")
 
             # Make sure $HOME/.tap directory exists for user when running interactive apps on TACC HPC Systems

@@ -41,8 +41,8 @@ from designsafe.apps.api.projects_v2.operations.project_publish_operations impor
 from designsafe.apps.api.projects_v2.operations.project_system_operations import (
     increment_workspace_count,
     setup_project_file_system,
-    add_user_to_project_async,
-    remove_user_from_project_async,
+    add_users_to_project_async,
+    remove_users_from_project_async,
 )
 from designsafe.apps.api.projects_v2.schema_models.base import FileObj
 from designsafe.apps.api.decorators import tapis_jwt_login
@@ -176,10 +176,10 @@ class ProjectInstanceView(BaseApiView):
             BaseProject.model_validate(project.value),
             BaseProject.model_validate(updated_project.value),
         )
-        for user_to_add in users_to_add:
-            add_user_to_project_async.apply_async([project.uuid, user_to_add])
-        for user_to_remove in users_to_remove:
-            remove_user_from_project_async.apply_async([project.uuid, user_to_remove])
+        if users_to_add:
+            add_users_to_project_async.apply_async([project.uuid, users_to_add])
+        if users_to_remove:
+            remove_users_from_project_async.apply_async([project.uuid, users_to_remove])
 
         return JsonResponse({"result": "OK"})
 
@@ -207,10 +207,10 @@ class ProjectInstanceView(BaseApiView):
         users_to_add, users_to_remove = get_changed_users(
             prev_metadata, updated_metadata
         )
-        for user_to_add in users_to_add:
-            add_user_to_project_async.apply_async([project.uuid, user_to_add])
-        for user_to_remove in users_to_remove:
-            remove_user_from_project_async.apply_async([project.uuid, user_to_remove])
+        if users_to_add:
+            add_users_to_project_async.apply_async([project.uuid, users_to_add])
+        if users_to_remove:
+            remove_users_from_project_async.apply_async([project.uuid, users_to_remove])
 
         return JsonResponse({"result": "OK"})
 
