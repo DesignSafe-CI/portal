@@ -60,7 +60,7 @@ export const AppsViewLayout: React.FC = () => {
             </Flex>
           </Header>
           {htmlApp ? (
-            <div className={styles['overflow']}>
+            <div className={`${styles['overflow']} ${styles['html-app-container']}`}>
               {parse(htmlApp.html as string)}
             </div>
           ) : (
