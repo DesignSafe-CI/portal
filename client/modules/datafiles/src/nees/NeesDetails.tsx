@@ -347,11 +347,13 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
                   <td className={styles['nees-td']}>
                     {neesProjectData?.sponsor
                       ? neesProjectData?.sponsor?.map((u) => (
-                          <div key={u.name}>
-                            <Link to={u.url} key={u.name}>
-                              {u.name}
-                            </Link>
-                          </div>
+                          u.url != 'None'
+                          ? <div key={u.name}>
+                              <Link to={u.url} key={u.name}>
+                                {u.name}
+                              </Link>
+                            </div>
+                          : <div key={u.name}>{u.name}</div>
                         ))
                       : 'No Sponsors Listed'}
                   </td>
