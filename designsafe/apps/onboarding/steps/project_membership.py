@@ -149,10 +149,10 @@ class ProjectMembershipStep(AbstractStep):
             tracker.reply(ticket_id, text=request_text)
             tracker.comment(
                 ticket_id,
-                text="User was not added to the {project} TAS Project (GID {gid}) at {base_url}".format(
+                text="User was not added to the {project} TAS Project (GID {gid}) at https://{base_url}".format(
                     project=self.project["title"],
                     gid=self.project["gid"],
-                    base_url=settings.WH_BASE_URL,
+                    base_url=settings.SESSION_COOKIE_DOMAIN,
                 ),
             )
             tracker.edit_ticket(ticket_id, Status="resolved")
@@ -170,18 +170,18 @@ class ProjectMembershipStep(AbstractStep):
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
         request_text = """Your request for membership on the {project} project has been
-        granted. Please login at {base_url}/workbench/onboarding/setup to continue setting up your account.
+        granted. Please login at https://{base_url}/workbench/onboarding/setup to continue setting up your account.
         """.format(
-            project=self.project["title"], base_url=settings.WH_BASE_URL
+            project=self.project["title"], base_url=settings.SESSION_COOKIE_DOMAIN
         )
         if tracker.login():
             tracker.reply(ticket_id, text=request_text)
             tracker.comment(
                 ticket_id,
-                text="User has been added to the {project} TAS Project (GID {gid}) via {base_url}".format(
+                text="User has been added to the {project} TAS Project (GID {gid}) via https://{base_url}".format(
                     project=self.project["title"],
                     gid=self.project["gid"],
-                    base_url=settings.WH_BASE_URL,
+                    base_url=settings.SESSION_COOKIE_DOMAIN,
                 ),
             )
             tracker.edit_ticket(ticket_id, Status="resolved")
