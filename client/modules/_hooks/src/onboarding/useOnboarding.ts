@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import apiClient, { type TApiError } from '../apiClient';
 
 type TOnboardingAdminParams = {
@@ -13,6 +13,42 @@ type TOnboardingActionBody = {
   action: string;
 };
 
+type TSetupStepEvent = {
+  step: string;
+  username: string;
+  state: string;
+  time: string;
+  message: string;
+  data?: Object;
+};
+
+type TOnboardingStep = {
+  step: string;
+  displayName: string;
+  description: string;
+  userConfirm: string;
+  staffApprove: string;
+  staffDeny: string;
+  state?: string;
+  events: TSetupStepEvent[];
+  data?: string;
+};
+
+type TOnboardingUser = {
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  isStaff: string;
+  setupComplete: boolean;
+  steps: TOnboardingStep[];
+};
+
+type TGetOnboardingUserResponse = {
+  response: TOnboardingUser;
+  status: number;
+};
+
 async function getOnboardingAdminList(params: TOnboardingAdminParams) {
   const res = await apiClient.get(`api/onboarding/admin/`, {
     params,
@@ -20,8 +56,10 @@ async function getOnboardingAdminList(params: TOnboardingAdminParams) {
   return res.data.response;
 }
 
-async function getOnboardingAdminUser(username: string) {
-  const res = await apiClient.get(`api/onboarding/admin/${username}`);
+async function getOnboardingUser(username: string) {
+  const res = await apiClient.get<TGetOnboardingUserResponse>(
+    `api/onboarding/user/${username}`
+  );
   return res.data.response;
 }
 
@@ -41,13 +79,16 @@ export function useGetOnboardingAdminList(queryParams: TOnboardingAdminParams) {
   return useQuery(getOnboardingAdminListQuery(queryParams));
 }
 
-const getOnboardingAdminUserQuery = (username: string) => ({
-  queryKey: ['onboarding', 'adminUser', username],
-  queryFn: () => getOnboardingAdminUser(username),
+const getOnboardingUserQuery = (username: string) => ({
+  queryKey: ['onboarding', 'user', username],
+  queryFn: () => getOnboardingUser(username),
 });
-export function useGetOnboardingAdminUser(username: string) {
-  return useQuery(getOnboardingAdminUserQuery(username));
+export function useGetOnboardingUser(username: string) {
+  return useQuery(getOnboardingUserQuery(username));
 }
+export const useGetOnboardingUserSuspense = (username: string) => {
+  return useSuspenseQuery(getOnboardingUserQuery(username));
+};
 
 export function useSendOnboardingAction() {
   return useMutation({
