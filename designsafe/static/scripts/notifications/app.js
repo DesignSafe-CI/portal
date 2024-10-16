@@ -23,7 +23,7 @@ angular.module('designsafe').controller('NotificationListCtrl', ['$scope','$root
 
     $scope.list = function(page=0){
     $scope.data.pagination = {'limit': 10}
-    var params = {'limit': $scope.data.pagination.limit, page: page}
+    var params = {'limit': $scope.data.pagination.limit, page: page, 'eventTypes[]': ['interactive_session_ready', 'job']}
 
     NotificationService.list(params).then(function(resp) {
         $scope.data.pagination.show = false;

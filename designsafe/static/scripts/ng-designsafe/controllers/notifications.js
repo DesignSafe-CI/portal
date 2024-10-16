@@ -34,7 +34,7 @@ export function NotificationBadgeCtrl(
       };
 
       $scope.list = function() {
-        NotificationService.list().then(function(resp) {
+        NotificationService.list({'eventTypes[]': ['interactive_session_ready', 'job']}).then(function(resp) {
           $scope.data.notifications = resp.notifs;
           if (angular.element('#notification-container').hasClass('open')) {
             $scope.data.unread = 0;
@@ -62,10 +62,13 @@ export function NotificationBadgeCtrl(
         'notificationsurl': '/notifications'
       };
 
-      $scope.count = function() {
-        $http.get('/api/notifications/badge/').then(
-          function(resp) {
-            $scope.data.unread = resp.data.unread;
+      $scope.count = function () {
+          $http({
+              url: '/api/notifications/badge/',
+              method: 'GET',
+              params: { 'eventTypes[]': ['interactive_session_ready', 'job'] },
+          }).then(function (resp) {
+              $scope.data.unread = resp.data.unread;
           });
       };
 
