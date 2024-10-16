@@ -71,7 +71,7 @@ def check_or_configure_system_and_user_directory(
                 logger.info(
                     f"Directory for user={username} on system={system_id}/{path} exists and works. "
                 )
-            except (NotFoundError, ForbiddenError, UnauthorizedError) as e:
+            except (NotFoundError, ForbiddenError, UnauthorizedError):
                 logger.info(
                     "Ensuring directory exists for user=%s then going to run setfacl on system=%s path=%s",
                     username,
@@ -80,9 +80,11 @@ def check_or_configure_system_and_user_directory(
                 )
 
                 tg458981_client = get_tg458981_client()
-                if isinstance(e, NotFoundError):
-                    tg458981_client.files.mkdir(systemId=system_id, path=path)
 
+                # Create directory, resolves NotFoundError
+                tg458981_client.files.mkdir(systemId=system_id, path=path)
+
+                # Set ACLs, resolves UnauthorizedError and ForbiddenError
                 tg458981_client.files.setFacl(
                     systemId=system_id,
                     path=path,
