@@ -149,7 +149,9 @@
             lastName: "{{ request.user.last_name }}",
             email: "{{ request.user.email }}",
             institution: "{{ request.user.profile.institution }}",
-            homedir: "{{tas_homedir}}"
+            homedir: "{{tas_homedir}}",
+            isStaff: "{{ request.user.is_staff }}",
+            setupComplete: "{{ request.user.profile.setup_complete }}",
         };
     </script>
 

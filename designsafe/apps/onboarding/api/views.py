@@ -92,7 +92,7 @@ def get_user_onboarding(user):
 
 
 class SetupStepView(AuthenticatedApiView):
-    def get_user_parameter(self, request, username):
+    def _get_user_parameter(self, request, username):
         """
         Validate request for action on a username
 
@@ -141,12 +141,17 @@ class SetupStepView(AuthenticatedApiView):
         if username is None:
             username = request.user.username
 
-        user = self.get_user_parameter(request, username)
+        user = self._get_user_parameter(request, username)
 
         result = get_user_onboarding(user)
 
-        # Encode with SetupEventEncoder
-        return JsonResponse(result, encoder=SetupEventEncoder)
+        return JsonResponse(
+            {
+                "status": 200,
+                "response": result,
+            },
+            encoder=SetupEventEncoder,
+        )
 
     def complete(self, request, setup_step):
         """
@@ -216,7 +221,7 @@ class SetupStepView(AuthenticatedApiView):
             username = request.user.username
 
         # Get the user object requested in the route parameter
-        user = self.get_user_parameter(request, username)
+        user = self._get_user_parameter(request, username)
 
         # Get POST action data
         step_name = None
@@ -248,9 +253,12 @@ class SetupStepView(AuthenticatedApiView):
         execute_setup_steps.apply_async(args=[user.username])
 
         # Serialize and send back the last event on this step
-        # Requires safe=False since SetupEvent is not a dict
         return JsonResponse(
-            setup_step.last_event, encoder=SetupEventEncoder, safe=False
+            {
+                "status": 200,
+                "response": setup_step.last_event,
+            },
+            encoder=SetupEventEncoder,
         )
 
 
@@ -289,4 +297,10 @@ class SetupAdminView(AuthenticatedApiView):
 
         response = {"users": users, "offset": offset, "limit": limit, "total": total}
 
-        return JsonResponse(response, encoder=SetupEventEncoder, safe=False)
+        return JsonResponse(
+            {
+                "status": 200,
+                "response": response,
+            },
+            encoder=SetupEventEncoder,
+        )
