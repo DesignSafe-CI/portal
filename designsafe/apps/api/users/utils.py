@@ -115,8 +115,9 @@ def get_allocations(user, force=False):
     allocations from TAS and stores them.
     Parameters
         ----------
-        username: str
+        user: User object
             TACC username to fetch allocations for.
+        force: bool
         Returns
         -------
         dict

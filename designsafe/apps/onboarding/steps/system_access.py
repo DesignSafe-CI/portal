@@ -36,7 +36,7 @@ class SystemAccessStep(ProjectMembershipStep):
 
         resources = []
         try:
-            resources = get_allocations(self.user.username)["hosts"].keys()
+            resources = get_allocations(self.user)["hosts"].keys()
             # If the intersection of the set of systems and resources has
             # items, the user has the necessary allocation
             return len(set(systems).intersection(resources)) > 0

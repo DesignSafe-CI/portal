@@ -9,10 +9,7 @@ def get_allocations_mock(mocker):
         "portal.apps.onboarding.steps.allocation.get_allocations"
     )
     get_allocations.return_value = {
-        "hosts": {},
-        "portal_alloc": None,
-        "active": [{"allocation"}],
-        "inactive": [{"allocation"}],
+        "hosts": {"allocation": []},
     }
     yield get_allocations
 
@@ -24,9 +21,6 @@ def get_allocations_failure_mock(mocker):
     )
     get_allocations.return_value = {
         "hosts": {},
-        "portal_alloc": None,
-        "active": [],
-        "inactive": [],
     }
     yield get_allocations
 
@@ -46,14 +40,11 @@ def test_get_allocations(
 ):
     step = AllocationStep(regular_user)
     step.process()
-    get_allocations_mock.assert_called_with("username", force=True)
+    get_allocations_mock.assert_called_with(regular_user, force=True)
     allocation_step_complete_mock.assert_called_with(
         "Allocations retrieved",
         data={
-            "hosts": {},
-            "portal_alloc": None,
-            "active": [{"allocation"}],
-            "inactive": [{"allocation"}],
+            "hosts": {"allocation": []},
         },
     )
 
@@ -63,5 +54,5 @@ def test_get_allocations_failure(
 ):
     step = AllocationStep(regular_user)
     step.process()
-    get_allocations_failure_mock.assert_called_with("username", force=True)
+    get_allocations_failure_mock.assert_called_with(regular_user, force=True)
     allocation_step_log_mock.assert_called_with(ANY)

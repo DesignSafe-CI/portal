@@ -1,13 +1,13 @@
 import React from 'react';
 import { Outlet, useParams, Link } from 'react-router-dom';
 import { Layout, Space } from 'antd';
-import { SecondaryButton } from '@client/common-components';
-// import {} from '@client/onboarding';
+import { PrimaryButton } from '@client/common-components';
+import { OnboardingStep } from '@client/onboarding';
 import {
   useAuthenticatedUser,
   useGetOnboardingUserSuspense,
 } from '@client/hooks';
-import styles from './layout.module.css';
+import styles from './OnboardingUserLayout.module.css';
 
 export const OnboardingUserLayout: React.FC = () => {
   const { user: authenticatedUser } = useAuthenticatedUser();
@@ -36,20 +36,19 @@ export const OnboardingUserLayout: React.FC = () => {
           </Header>
           <>
             {onboardingUser.steps.map((step) => (
-              // <OnboardingStep step={step} key={uuidv4()} />
-              <div key={step.step}>{step.displayName}</div>
+              <OnboardingStep step={step} key={step.step} />
             ))}
             <div className={styles.access}>
               <Link className="wb-link" to={`tickets/create`}>
                 Get Help
               </Link>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <SecondaryButton
+              <PrimaryButton
                 href="/dashboard/"
                 disabled={!onboardingUser.setupComplete}
               >
                 Continue
-              </SecondaryButton>
+              </PrimaryButton>
             </div>
           </>
         </Space>

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import { TOnboardingUser, TOnboardingAdminList } from './types';
 import apiClient, { type TApiError } from '../apiClient';
 
 type TOnboardingAdminParams = {
@@ -13,35 +14,9 @@ type TOnboardingActionBody = {
   action: string;
 };
 
-type TSetupStepEvent = {
-  step: string;
-  username: string;
-  state: string;
-  time: string;
-  message: string;
-  data?: Object;
-};
-
-type TOnboardingStep = {
-  step: string;
-  displayName: string;
-  description: string;
-  userConfirm: string;
-  staffApprove: string;
-  staffDeny: string;
-  state?: string;
-  events: TSetupStepEvent[];
-  data?: string;
-};
-
-type TOnboardingUser = {
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  isStaff: string;
-  setupComplete: boolean;
-  steps: TOnboardingStep[];
+type TGetOnboardingAdminListResponse = {
+  response: TOnboardingAdminList;
+  status: number;
 };
 
 type TGetOnboardingUserResponse = {
@@ -50,9 +25,12 @@ type TGetOnboardingUserResponse = {
 };
 
 async function getOnboardingAdminList(params: TOnboardingAdminParams) {
-  const res = await apiClient.get(`api/onboarding/admin/`, {
-    params,
-  });
+  const res = await apiClient.get<TGetOnboardingAdminListResponse>(
+    `api/onboarding/admin/`,
+    {
+      params,
+    }
+  );
   return res.data.response;
 }
 
@@ -67,7 +45,7 @@ async function sendOnboardingAction(
   body: TOnboardingActionBody,
   username?: string
 ) {
-  const res = await apiClient.post(`api/onboarding/user/${username}`, body);
+  const res = await apiClient.post(`api/onboarding/user/${username}/`, body);
   return res.data.response;
 }
 

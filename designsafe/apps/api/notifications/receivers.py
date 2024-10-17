@@ -55,7 +55,7 @@ def send_setup_event(instance, **kwargs):
 
     # All staff will receive websocket notifications so they can see
     # setup event updates for users they are administering
-    receiving_users = get_user_model().objects.all().filter(is_staff=True).values()
+    receiving_users = list(get_user_model().objects.all().filter(is_staff=True))
 
     channel_layer = get_channel_layer()
 

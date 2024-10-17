@@ -1,0 +1,239 @@
+@import '../../styles/tools/mixins.scss';
+
+/* Required to constrain table within flex box */
+.root {
+  position: relative;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 40px 20px 20px;
+  position: absolute;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.container-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid #707070;
+  padding-bottom: 8px;
+  margin-bottom: 1.5em;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.search-checkbox-container {
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 990px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.checkbox-label-container {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin: 0 0 0 20px;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 991px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+}
+
+.label {
+  font-weight: bold;
+  margin: 0 0 0 10px;
+}
+.paginator-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1em;
+}
+
+.user-container {
+  flex-grow: 0;
+  overflow-y: scroll;
+  position: relative;
+}
+
+.users {
+  --cell-horizontal-padding: 0.35em; /* horizontal cell padding for inter-column buffer */
+  --cell-vertical-padding: 0.35em;
+  /* TODO: After, FP-103, use `composes:` not `@extend` */
+  height: 100%;
+  align-items: stretch;
+  width: 100%;
+  overflow-y: scroll;
+  font-size: 12px;
+
+  thead {
+    user-select: none;
+    color: var(--global-color-primary--x-dark);
+    border-bottom: 1px solid #707070;
+
+    .-sort-asc,
+    .sort-desc {
+      color: var(--global-color-primary--xx-dark);
+    }
+
+    /* Match horizontal padding of `td` elements in table to align properly */
+    th {
+      padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
+
+      @include truncate-with-ellipsis;
+    }
+  }
+  td {
+    padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
+  }
+}
+
+.user > td {
+  /* Difference between tall unwrapped cell height and basic text cell height */
+  --greatest-height-diff: 4.78px; /* value obtained form live render */
+  /* FAQ: We want only the top space, not the top & bottom space combined */
+  --vertical-offset: calc(var(--greatest-height-diff) / 2);
+}
+.user > td:not(.has-wrappable-content) {
+  /* Tweak `vertical-align`'s `top` to look like `middle` when nothing wraps */
+  padding-top: calc(var(--cell-horizontal-padding) + var(--vertical-offset));
+  vertical-align: top;
+}
+.user > td:not(.has-wrappable-content):not(.status) {
+  @include truncate-with-ellipsis;
+}
+.user:nth-child(4n),
+.user:nth-child(4n-1) > td:not(.staffwait) {
+  background-color: #f4f4f4;
+}
+
+.username {
+  display: inline-block; /* needed to make margin-top work with span */
+  margin-top: 5px; /* adjust value as needed to create more space between fullname and username */
+  font-weight: bold;
+}
+
+/* HACK: This selector has knowledge of sibling component's internal markup */
+/* FAQ: Because we cannot pass `className`to <Pill> via <OnboardingStatus> */
+/* FAQ: Because <OnboardingStatus> has a superfluous root element */
+.status > span > span /* i.e. <OnboardingStatus>'s <Pill> */ {
+  white-space: nowrap;
+}
+
+.reset {
+  /* … */
+}
+
+.approve-container {
+  i {
+    font-size: 10px;
+  }
+
+  --vertical-buffer: 0.125em; /* vertical space between wrapped buttons */
+
+  /* Add space above all buttons to match space below each */
+  padding-top: var(--vertical-buffer);
+  /* Remove space above and bellow buttons */
+  margin-top: calc(-1 * var(--vertical-buffer));
+  margin-bottom: calc(-1 * var(--vertical-buffer));
+}
+
+.approve {
+  display: inline; /* Do not use `inline-block` because value was `flex` */
+  /* Add space below each button */
+  margin-bottom: var(--vertical-buffer);
+
+  font-size: 12px;
+  border-radius: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.approve:not(:last-child) {
+  margin-right: 1em;
+}
+
+.approve > *:nth-child(1) {
+  margin-right: 0.5em;
+}
+
+.action-link {
+  padding: 0;
+
+  font-size: 12px;
+}
+.action-link:not(:first-child) {
+  margin-left: 0.25em;
+}
+.action-link:not(:last-child) {
+  margin-right: 0.25em;
+}
+
+.staffwait {
+  background-color: var(--global-color-accent--weak);
+}
+
+.users {
+  table-layout: fixed;
+
+  col:nth-child(1) {
+    width: 12%;
+  }
+  col:nth-child(2) {
+    width: 14%;
+  }
+  col:nth-child(3) {
+    width: 27%;
+  }
+  th:nth-child(4) {
+    width: 33%;
+  }
+  col:nth-child(4) {
+    width: 18%;
+  }
+  col:nth-child(5) {
+    width: 15%;
+  }
+  col:nth-child(6) {
+    width: 14%;
+  }
+}
+
+.no-users-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90%;
+}
+
+/* NOTE: Mimicked on: DataFiles, DataFilesProjectsList, DataFilesProjectFileListing */
+.root-placeholder {
+  flex-grow: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onboarding-admin__action-spinner .inline {
+  width: 10px;
+  height: 10px;
+  font-size: 10px;
+}

@@ -86,19 +86,19 @@ def launch_setup_checks(user):
         )
         cache_allocations.apply_async(args=(user.username,))
 
-    logger.info("Starting tasks to check or configure systems for %s", user.username)
-    for system in get_systems_to_configure(user.username):
-        check_or_configure_system_and_user_directory.apply_async(
-            args=(
-                user.username,
-                system["system_id"],
-                system["path"],
-                system["create_path"],
-            ),
-            queue="files",
-        )
-    logger.info("Creating/updating cached allocation information for %s", user.username)
-    cache_allocations.apply_async(args=(user.username,))
+    # logger.info("Starting tasks to check or configure systems for %s", user.username)
+    # for system in get_systems_to_configure(user.username):
+    #     check_or_configure_system_and_user_directory.apply_async(
+    #         args=(
+    #             user.username,
+    #             system["system_id"],
+    #             system["path"],
+    #             system["create_path"],
+    #         ),
+    #         queue="files",
+    #     )
+    # logger.info("Creating/updating cached allocation information for %s", user.username)
+    # cache_allocations.apply_async(args=(user.username,))
 
 
 def tapis_oauth_callback(request):

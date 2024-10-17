@@ -1,0 +1,13 @@
+.root {
+  overflow: hidden; /* FAQ: Triggers truncation of <Pill> */
+  margin-right: 0.5em;
+}
+
+.processing {
+  display: flex;
+  align-items: center;
+}
+
+.processing > * {
+  margin-right: 0.5em;
+}
