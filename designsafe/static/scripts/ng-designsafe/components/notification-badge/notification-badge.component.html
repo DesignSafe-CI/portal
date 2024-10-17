@@ -27,7 +27,7 @@
                       {{x.datetime| date:'h:mm a'}}
                   </dt>
                   <dd class="item-info">
-                    <span>{{x.message}}</span>
+                    <span>{{x.message || "Interactive session ready to view."}}</span>
                     <div ng-if="x.extra.path" uib-tooltip="{{x.extra.path}}" tooltip-trigger="{{{true: 'mouseenter', false: 'never'}[x.extra.path.length > 44]}}">
                       <div id="notif-path">
                         <bdi>{{x.extra.path}}</bdi>

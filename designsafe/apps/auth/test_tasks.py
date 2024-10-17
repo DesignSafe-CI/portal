@@ -1,7 +1,12 @@
 import pytest
 from unittest import mock
 from django.core.exceptions import ObjectDoesNotExist
-from tapipy.errors import NotFoundError, BaseTapyException, ForbiddenError
+from tapipy.errors import (
+    NotFoundError,
+    BaseTapyException,
+    ForbiddenError,
+    UnauthorizedError,
+)
 from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory
 
 
@@ -139,6 +144,32 @@ def test_check_or_configure_system_and_user_directory_forbidden_error(
     mock_agave_indexer,
 ):
     authenticated_user.tapis_oauth.client.files.listFiles.side_effect = ForbiddenError
+    tg458981_client = mock_get_tg458981_client()
+    check_or_configure_system_and_user_directory(
+        "testuser", "testsystem", "/testpath", True
+    )
+    tg458981_client.files.setFacl.assert_called_once()
+    mock_createKeyPair.assert_called_once()
+    mock_register_public_key.assert_called_once_with(
+        "testuser", "public_key", "testsystem"
+    )
+    mock_create_system_credentials.assert_called_once()
+    mock_agave_indexer.apply_async.assert_called_once()
+
+
+def test_check_or_configure_system_and_user_directory_unauthorized_error(
+    mock_get_user_model,
+    authenticated_user,
+    mock_get_tg458981_client,
+    mock_createKeyPair,
+    mock_register_public_key,
+    mock_get_service_account_client,
+    mock_create_system_credentials,
+    mock_agave_indexer,
+):
+    authenticated_user.tapis_oauth.client.files.listFiles.side_effect = (
+        UnauthorizedError
+    )
     tg458981_client = mock_get_tg458981_client()
     check_or_configure_system_and_user_directory(
         "testuser", "testsystem", "/testpath", True
