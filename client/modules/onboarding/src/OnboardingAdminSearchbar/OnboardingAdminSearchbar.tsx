@@ -1,62 +1,51 @@
-import React, { FormEvent, FormEventHandler, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { SearchOutlined } from '@ant-design/icons';
+import { Form, Input } from 'antd';
+import { useSearchParams } from 'react-router-dom';
 import { SecondaryButton } from '@client/common-components';
-import { useGetOnboardingAdminList } from '@client/hooks';
-import styles from './OnboardingAdminSearchbar.module.css';
+// import styles from './OnboardingAdminSearchbar.module.css';
 
-export const OnboardingAdminSearchbar = () => {
-  const [search, setSearch] = useState('');
-
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    useGetOnboardingAdminList({
-      limit: 25,
-      offset: 0,
-      query_string: search,
-    });
-  };
-  const onClear = (e: FormEvent) => {
-    e.preventDefault();
-    setSearch('');
-    useGetOnboardingAdminList({
-      limit: 25,
-      offset: 0,
-    });
-  };
-  const onChange = (e: FormEvent) => {
-    setSearch(e.target.value);
-    if (!e.target.value) {
-      onClear(e);
+export const OnboardingAdminSearchbar: React.FC<{}> = () => {
+  const [form] = Form.useForm();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState<string | null>(searchParams.get('q'));
+  const onSubmit = (queryString: string) => {
+    const newSearchParams = searchParams;
+    if (queryString) {
+      newSearchParams.set('q', queryString);
+    } else {
+      newSearchParams.delete('q');
     }
+
+    setSearchParams(newSearchParams);
   };
+
+  useEffect(() => {}, [searchParams, query]);
 
   return (
-    <form
-      aria-label="Search"
-      className={`${styles.container}`}
-      onSubmit={onSubmit}
+    <Form
+      onFinish={(data) => onSubmit(data.query)}
+      form={form}
+      name="onboarding_search"
+      style={{ display: 'inline-flex' }}
     >
-      <div className={`input-group ${styles['query-fieldset']}`}>
-        <div className="input-group-prepend">
-          <SecondaryButton
-            // disabled={disabled}
-            icon="search"
-          >
-            Search
-          </SecondaryButton>
-        </div>
-        <input
-          type="search"
-          onChange={onChange}
-          value={search || ''}
-          name="query"
-          aria-label="Search for users"
-          className={`form-control ${styles.input}`}
-          placeholder="Search for users"
-          data-testid="input"
-          autoComplete="off"
-          // disabled={disabled}
-        />
-      </div>
-    </form>
+      <Form.Item name="query" style={{ marginBottom: 0 }} initialValue={query}>
+        <Input placeholder="Search for a user" style={{ width: '250px' }} />
+      </Form.Item>
+      <SecondaryButton
+        htmlType="submit"
+        icon={<SearchOutlined />}
+      ></SecondaryButton>
+      <SecondaryButton
+        type="link"
+        onClick={() => {
+          form.resetFields();
+          setQuery(null);
+          setSearchParams();
+        }}
+      >
+        Clear Search
+      </SecondaryButton>
+    </Form>
   );
 };

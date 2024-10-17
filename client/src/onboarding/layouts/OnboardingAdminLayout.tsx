@@ -1,7 +1,7 @@
-import React, { useEffect, useCallback, useState } from 'react';
-
-import { useQueryClient } from '@tanstack/react-query';
-import { Alert, Layout, Checkbox } from 'antd';
+import React, { useState } from 'react';
+import { Alert, Layout, Checkbox, Table, TableColumnType } from 'antd';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { useSearchParams } from 'react-router-dom';
 import { SecondaryButton, Spinner } from '@client/common-components';
 import {
   OnboardingStatus,
@@ -32,7 +32,7 @@ const OnboardingApproveActions: React.FC<{
         onClick={() => callback('staff_approve')}
         disabled={disabled}
         loading={action === 'staff_approve'}
-        icon="approve"
+        icon={<CheckOutlined />}
       >
         Approve
       </SecondaryButton>
@@ -42,7 +42,7 @@ const OnboardingApproveActions: React.FC<{
         onClick={() => callback('staff_deny')}
         disabled={disabled}
         loading={action === 'staff_approve'}
-        icon="deny"
+        icon={<CloseOutlined />}
       >
         Deny
       </SecondaryButton>
@@ -80,133 +80,142 @@ const OnboardingResetLinks: React.FC<{
   );
 };
 
-const OnboardingAdminListUser: React.FC<{
-  user: TOnboardingUser;
+const OnboardingAdminList: React.FC<{
+  users: TOnboardingUser[];
   viewLogCallback: (user: TOnboardingUser, step: TOnboardingStep) => void;
-}> = ({ user, viewLogCallback }) => {
+}> = ({ users, viewLogCallback }) => {
   const {
     mutate: sendOnboardingAction,
     isPending,
     variables,
   } = useSendOnboardingAction();
-  const actionCallback = useCallback(
-    (step: string, username: string, action: TOnboardingAdminActions) => {
-      sendOnboardingAction({
-        body: { action, step: step },
-        username,
-      });
+  const actionCallback = (
+    step: string,
+    username: string,
+    action: TOnboardingAdminActions
+  ) => {
+    sendOnboardingAction({
+      body: { action, step: step },
+      username,
+    });
+  };
+
+  type TOnboardingAdminTableRowData = {
+    user: TOnboardingUser;
+    step: TOnboardingStep;
+    index: number;
+  };
+
+  const columns: TableColumnType<TOnboardingAdminTableRowData>[] = [
+    {
+      title: 'User',
+      dataIndex: 'user',
+      render: (user: TOnboardingUser) => (
+        <>
+          {`${user.firstName} ${user.lastName}`}
+          <br />
+          <span className={styles.username}>{user.username}</span>
+        </>
+      ),
+      onCell: (record) => ({
+        rowSpan: record.index === 0 ? record.user.steps.length : 0,
+      }),
     },
-    [sendOnboardingAction]
-  );
-
-  const stepCount = user.steps.length;
-
-  return (
-    <>
-      {user.steps.map((step, index) => (
-        <tr className={styles.user} key={step.step}>
-          {index === 0 && (
-            <td rowSpan={stepCount} className={styles.name}>
-              {`${user.firstName} ${user.lastName}`}
-              <br />
-              <span className={styles.username}>{user.username}</span>
-            </td>
-          )}
-          <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
-            {step.displayName}
-          </td>
-          <td
-            className={`${styles.status} ${
-              step.state === 'staffwait' ? styles.staffwait : ''
-            }`}
-          >
-            <OnboardingStatus step={step} />
-          </td>
-          <td
-            className={`${styles['has-wrappable-content']} ${
-              step.state === 'staffwait' ? styles.staffwait : ''
-            }`}
-          >
-            {step.state === 'staffwait' && (
-              <OnboardingApproveActions
-                callback={(action) =>
-                  actionCallback(step.step, user.username, action)
-                }
-                disabled={
-                  // Disable all admin actions while any action is being performed
-                  isPending
-                }
-                action={
-                  // If this user and step currently is running an admin action, pass down the action
-                  variables?.username === user.username &&
-                  variables.body.step === step.step
-                    ? variables.body.action
-                    : undefined
-                }
-              />
-            )}
-          </td>
-          <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
-            <OnboardingResetLinks
+    {
+      title: 'Step',
+      dataIndex: 'step',
+      render: (step: TOnboardingStep) => (
+        <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
+          {step.displayName}
+        </span>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'step',
+      key: 'status',
+      render: (step: TOnboardingStep) => (
+        <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
+          <OnboardingStatus step={step} />
+        </span>
+      ),
+    },
+    {
+      title: 'Administrative Actions',
+      dataIndex: 'step',
+      key: 'actions',
+      render: (step: TOnboardingStep, record) => (
+        <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
+          {step.state === 'staffwait' && (
+            <OnboardingApproveActions
               callback={(action) =>
-                actionCallback(step.step, user.username, action)
+                actionCallback(step.step, record.user.username, action)
               }
-              disabled={isPending || step.state === 'completed'}
+              disabled={
+                // Disable all admin actions while any action is being performed
+                isPending
+              }
               action={
-                variables?.username === user.username &&
+                // If this user and step currently is running an admin action, pass down the action
+                variables?.username === record.user.username &&
                 variables.body.step === step.step
                   ? variables.body.action
                   : undefined
               }
             />
-          </td>
-          <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
-            <SecondaryButton
-              type="link"
-              className={styles['action-link']}
-              onClick={() => viewLogCallback(user, step)}
-            >
-              View Log
-            </SecondaryButton>
-          </td>
-        </tr>
-      ))}
-    </>
-  );
-};
+          )}
 
-const OnboardingAdminList: React.FC<{
-  users: TOnboardingUser[];
-  viewLogCallback: (user: TOnboardingUser, step: TOnboardingStep) => void;
-}> = ({ users, viewLogCallback }) => {
-  const columnCount = 6;
-  const colElements = [];
-  for (let i = 0; i < columnCount; i += 1) {
-    colElements.push(<col key={i} />);
-  }
+          <OnboardingResetLinks
+            callback={(action) =>
+              actionCallback(step.step, record.user.username, action)
+            }
+            disabled={isPending || step.state === 'completed'}
+            action={
+              variables?.username === record.user.username &&
+              variables.body.step === step.step
+                ? variables.body.action
+                : undefined
+            }
+          />
+        </span>
+      ),
+    },
+    {
+      title: 'Log',
+      dataIndex: 'step',
+      key: 'log',
+      render: (step: TOnboardingStep, record) => (
+        <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
+          <SecondaryButton
+            type="link"
+            className={styles['action-link']}
+            onClick={() => viewLogCallback(record.user, step)}
+          >
+            View Log
+          </SecondaryButton>
+        </span>
+      ),
+    },
+  ];
+
+  let dataSource: TOnboardingAdminTableRowData[] = [];
+  users.forEach((user) => {
+    user.steps.forEach((step, index) => {
+      return dataSource.push({ user, step, index });
+    });
+  });
 
   return (
-    <table className={styles.users}>
-      <colgroup>{colElements}</colgroup>
-      <thead>
-        <tr>
-          <th>User</th>
-          <th>Step</th>
-          <th>Status</th>
-          <th colSpan={2}>Administrative Actions</th>
-          <th>Log</th>
-        </tr>
-      </thead>
-      <tbody>
-        {users.map((user) => (
-          <OnboardingAdminListUser
-            user={user}
-            key={user.username}
-            viewLogCallback={viewLogCallback}
-          />
-        ))}
-      </tbody>
-    </table>
+    <Table
+      dataSource={dataSource}
+      columns={columns}
+      bordered
+      pagination={{
+        defaultPageSize: 20,
+        hideOnSinglePage: true,
+        pageSizeOptions: ['10', '20', '50', '100'],
+      }}
+    />
   );
 };
 
@@ -215,19 +224,13 @@ const OnboardingAdmin = () => {
     user: TOnboardingUser;
     step: TOnboardingStep;
   } | null>(null);
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const [onboardingAdminListParams, setOnboardingAdminListParams] =
     useState<TOnboardingAdminParams>({
       offset: 0,
-      limit: 25,
-      query_string: undefined,
-      showIncompleteOnly: false,
+      limit: 10,
     });
-  const queryClient = useQueryClient();
-  useEffect(() => {
-    queryClient.invalidateQueries({
-      queryKey: ['onboarding', 'adminList'],
-    });
-  }, [onboardingAdminListParams]);
 
   const { data, isError, isLoading } = useGetOnboardingAdminList(
     onboardingAdminListParams
@@ -249,10 +252,15 @@ const OnboardingAdmin = () => {
   const { users, offset, limit, total } = data as TOnboardingAdminList;
 
   const toggleShowIncomplete = () => {
-    setOnboardingAdminListParams({
-      ...onboardingAdminListParams,
-      showIncompleteOnly: !onboardingAdminListParams.showIncompleteOnly,
-    });
+    const showIncompleteOnly = searchParams.get('showIncompleteOnly');
+    const newSearchParams = searchParams;
+    if (!showIncompleteOnly) {
+      newSearchParams.set('showIncompleteOnly', 'true');
+    } else {
+      newSearchParams.delete('showIncompleteOnly');
+    }
+
+    setSearchParams(newSearchParams);
   };
 
   // const paginationCallback = useCallback(
@@ -271,16 +279,8 @@ const OnboardingAdmin = () => {
   //   [offset, limit, query, showIncompleteOnly]
   // );
 
-  const viewLogCallback = useCallback(
-    (user: TOnboardingUser, step: TOnboardingStep) => {
-      setEventLogModalParams({ user, step });
-    },
-    [setEventLogModalParams]
-  );
-
-  const closeViewLogModal = useCallback(() => {
-    setEventLogModalParams(null);
-  }, [setEventLogModalParams]);
+  const viewLogCallback = (user: TOnboardingUser, step: TOnboardingStep) =>
+    setEventLogModalParams({ user, step });
 
   const current = Math.floor(offset / limit) + 1;
   const pages = Math.ceil(total / limit);
@@ -297,7 +297,7 @@ const OnboardingAdmin = () => {
               htmlFor="incompleteuser"
             >
               <Checkbox
-                checked={onboardingAdminListParams.showIncompleteOnly}
+                checked={searchParams.get('showIncompleteOnly') === 'true'}
                 id="incompleteuser"
                 aria-label="Show Incomplete Only"
                 tabIndex={0}
@@ -333,7 +333,7 @@ const OnboardingAdmin = () => {
         {eventLogModalParams && (
           <OnboardingEventLogModal
             params={eventLogModalParams}
-            handleCancel={closeViewLogModal}
+            handleCancel={() => setEventLogModalParams(null)}
           />
         )}
       </div>

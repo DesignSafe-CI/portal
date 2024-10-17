@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import {
   TOnboardingUser,
   TOnboardingAdminList,
@@ -8,8 +9,8 @@ import {
 import apiClient, { type TApiError } from '../apiClient';
 
 export type TOnboardingAdminParams = {
-  showIncompleteOnly?: boolean;
-  query_string?: string;
+  showIncompleteOnly?: string;
+  q?: string;
   limit?: number;
   offset?: number;
 };
@@ -67,7 +68,12 @@ const getOnboardingAdminListQuery = (queryParams: TOnboardingAdminParams) => ({
   queryFn: () => getOnboardingAdminList(queryParams),
 });
 export function useGetOnboardingAdminList(queryParams: TOnboardingAdminParams) {
-  return useQuery(getOnboardingAdminListQuery(queryParams));
+  const [searchParams] = useSearchParams();
+  const q = searchParams.get('q') || undefined;
+  const showIncompleteOnly = searchParams.get('showIncompleteOnly') || 'false';
+  return useQuery(
+    getOnboardingAdminListQuery({ ...queryParams, q, showIncompleteOnly })
+  );
 }
 
 const getOnboardingUserQuery = (username: string) => ({
