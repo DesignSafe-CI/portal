@@ -59,12 +59,10 @@ const getContents = (step: TOnboardingStep) => {
   }
 };
 
-const OnboardingStatus = ({ step }: { step: TOnboardingStep }) => {
+export const OnboardingStatus = ({ step }: { step: TOnboardingStep }) => {
   const contents = getContents(step);
   if (!contents) {
     return null;
   }
   return <span className={styles.root}>{getContents(step)}</span>;
 };
-
-export default OnboardingStatus;

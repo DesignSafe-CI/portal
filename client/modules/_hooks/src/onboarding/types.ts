@@ -43,3 +43,10 @@ export type TOnboardingAdminList = {
   limit: number;
   total: number;
 };
+
+export type TOnboardingAdminActions =
+  | 'staff_approve'
+  | 'staff_deny'
+  | 'user_confirm'
+  | 'complete'
+  | 'reset';

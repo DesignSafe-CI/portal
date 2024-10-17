@@ -36,7 +36,7 @@
   margin-left: auto; /* this is how to "justify-self" on flex children */
 }
 .clear-button {
-  composes: c-button--as-link from '../../styles/components/c-button.css';
+  /* composes: c-button--as-link from '../../styles/components/c-button.css'; */
 
   /* RFC: This style might be best provided from an external yet-to-be-created class for table-top nav links */
   font-weight: bold;
@@ -45,7 +45,7 @@
 /* Children (of `-fieldset`) */
 
 .input {
-  composes: form-control from '../../styles/components/bootstrap.form.css';
+  /* composes: form-control from '../../styles/components/bootstrap.form.css'; */
 }
 .output {
   /* … */

@@ -1,4 +1,8 @@
-@import '../../styles/tools/mixins.scss';
+.truncate-with-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* Required to constrain table within flex box */
 .root {
@@ -97,7 +101,9 @@
     th {
       padding: var(--cell-vertical-padding) var(--cell-horizontal-padding);
 
-      @include truncate-with-ellipsis;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   td {
@@ -117,7 +123,9 @@
   vertical-align: top;
 }
 .user > td:not(.has-wrappable-content):not(.status) {
-  @include truncate-with-ellipsis;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .user:nth-child(4n),
 .user:nth-child(4n-1) > td:not(.staffwait) {

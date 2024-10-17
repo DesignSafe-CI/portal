@@ -1,123 +1,110 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  Button,
-  LoadingSpinner,
-  SectionMessage,
-  Message,
-  Paginator,
-  Checkbox,
-} from '_common';
-import { v4 as uuidv4 } from 'uuid';
-import PropTypes from 'prop-types';
-import { onboardingUserPropType } from './OnboardingPropTypes';
-import OnboardingEventLogModal from './OnboardingEventLogModal';
-import OnboardingStatus from './OnboardingStatus';
-import OnboardingAdminSearchbar from './OnboardingAdminSearchbar';
-import styles from './OnboardingAdmin.module.scss';
-import './OnboardingAdmin.scss';
 
-const OnboardingApproveActions = ({ callback, disabled, action }) => {
+import { useQueryClient } from '@tanstack/react-query';
+import { Alert, Layout, Checkbox } from 'antd';
+import { SecondaryButton, Spinner } from '@client/common-components';
+import {
+  OnboardingStatus,
+  OnboardingEventLogModal,
+  OnboardingAdminSearchbar,
+} from '@client/onboarding';
+import styles from './OnboardingAdminLayout.module.css';
+import {
+  TOnboardingStep,
+  TOnboardingUser,
+  TOnboardingAdminActions,
+  useSendOnboardingAction,
+  useGetOnboardingAdminList,
+  TOnboardingAdminList,
+  TOnboardingAdminParams,
+} from '@client/hooks';
+
+const OnboardingApproveActions: React.FC<{
+  callback: (action: TOnboardingAdminActions) => void;
+  disabled: boolean;
+  action?: TOnboardingAdminActions;
+}> = ({ callback, disabled, action }) => {
   return (
     <div className={styles['approve-container']}>
-      <Button
-        type="secondary"
+      <SecondaryButton
         size="small"
         className={styles.approve}
-        iconNameBefore="approved-reverse"
         onClick={() => callback('staff_approve')}
         disabled={disabled}
-        isLoading={action === 'staff_approve'}
+        loading={action === 'staff_approve'}
+        icon="approve"
       >
         Approve
-      </Button>
-      <Button
-        type="secondary"
+      </SecondaryButton>
+      <SecondaryButton
         size="small"
         className={styles.approve}
-        iconNameBefore="denied-reverse"
         onClick={() => callback('staff_deny')}
         disabled={disabled}
-        isLoading={action === 'staff_approve'}
+        loading={action === 'staff_approve'}
+        icon="deny"
       >
         Deny
-      </Button>
+      </SecondaryButton>
     </div>
   );
 };
 
-OnboardingApproveActions.propTypes = {
-  callback: PropTypes.func.isRequired,
-  disabled: PropTypes.bool,
-  action: PropTypes.string,
-};
-
-OnboardingApproveActions.defaultProps = {
-  disabled: false,
-  action: null,
-};
-
-const OnboardingResetLinks = ({ callback, disabled, disableSkip, action }) => {
+const OnboardingResetLinks: React.FC<{
+  callback: (action: TOnboardingAdminActions) => void;
+  disabled: boolean;
+  action?: TOnboardingAdminActions;
+}> = ({ callback, disabled, action }) => {
   return (
     <div className={styles.reset}>
-      <Button
+      <SecondaryButton
         type="link"
         className={styles['action-link']}
         onClick={() => callback('reset')}
-        isLoading={action === 'reset'}
+        loading={action === 'reset'}
         disabled={disabled}
       >
         Reset
-      </Button>
+      </SecondaryButton>
       <>|</>
-      <Button
+      <SecondaryButton
         type="link"
         className={styles['action-link']}
-        disabled={disabled || disableSkip}
+        disabled={disabled}
         onClick={() => callback('complete')}
-        isLoading={action === 'complete'}
+        loading={action === 'complete'}
       >
         Skip
-      </Button>
+      </SecondaryButton>
     </div>
   );
 };
 
-OnboardingResetLinks.propTypes = {
-  callback: PropTypes.func.isRequired,
-  disabled: PropTypes.bool,
-  disableSkip: PropTypes.bool,
-  action: PropTypes.string,
-};
-
-OnboardingResetLinks.defaultProps = {
-  disabled: false,
-  disableSkip: false,
-  action: null,
-};
-
-const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
-  const dispatch = useDispatch();
+const OnboardingAdminListUser: React.FC<{
+  user: TOnboardingUser;
+  viewLogCallback: (user: TOnboardingUser, step: TOnboardingStep) => void;
+}> = ({ user, viewLogCallback }) => {
+  const {
+    mutate: sendOnboardingAction,
+    isPending,
+    variables,
+  } = useSendOnboardingAction();
   const actionCallback = useCallback(
-    (step, username, action) => {
-      dispatch({
-        type: 'POST_ONBOARDING_ACTION',
-        payload: {
-          step,
-          action,
-          username,
-        },
+    (step: string, username: string, action: TOnboardingAdminActions) => {
+      sendOnboardingAction({
+        body: { action, step: step },
+        username,
       });
     },
-    [dispatch]
+    [sendOnboardingAction]
   );
-  const adminAction = useSelector((state) => state.onboarding.action);
+
   const stepCount = user.steps.length;
 
   return (
     <>
       {user.steps.map((step, index) => (
-        <tr className={styles.user} key={uuidv4()}>
+        <tr className={styles.user} key={step.step}>
           {index === 0 && (
             <td rowSpan={stepCount} className={styles.name}>
               {`${user.firstName} ${user.lastName}`}
@@ -147,14 +134,14 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
                 }
                 disabled={
                   // Disable all admin actions while any action is being performed
-                  adminAction.loading
+                  isPending
                 }
                 action={
                   // If this user and step currently is running an admin action, pass down the action
-                  adminAction.username === user.username &&
-                  adminAction.step === step.step
-                    ? adminAction.action
-                    : null
+                  variables?.username === user.username &&
+                  variables.body.step === step.step
+                    ? variables.body.action
+                    : undefined
                 }
               />
             )}
@@ -164,24 +151,23 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
               callback={(action) =>
                 actionCallback(step.step, user.username, action)
               }
-              disabled={adminAction.loading}
-              disableSkip={step.state === 'completed'}
-              sentAction={
-                adminAction.username === user.username &&
-                adminAction.step === step.step
-                  ? adminAction.action
-                  : null
+              disabled={isPending || step.state === 'completed'}
+              action={
+                variables?.username === user.username &&
+                variables.body.step === step.step
+                  ? variables.body.action
+                  : undefined
               }
             />
           </td>
           <td className={step.state === 'staffwait' ? styles.staffwait : ''}>
-            <Button
+            <SecondaryButton
               type="link"
               className={styles['action-link']}
               onClick={() => viewLogCallback(user, step)}
             >
               View Log
-            </Button>
+            </SecondaryButton>
           </td>
         </tr>
       ))}
@@ -189,12 +175,10 @@ const OnboardingAdminListUser = ({ user, viewLogCallback }) => {
   );
 };
 
-OnboardingAdminListUser.propTypes = {
-  user: onboardingUserPropType.isRequired,
-  viewLogCallback: PropTypes.func.isRequired,
-};
-
-const OnboardingAdminList = ({ users, viewLogCallback }) => {
+const OnboardingAdminList: React.FC<{
+  users: TOnboardingUser[];
+  viewLogCallback: (user: TOnboardingUser, step: TOnboardingStep) => void;
+}> = ({ users, viewLogCallback }) => {
   const columnCount = 6;
   const colElements = [];
   for (let i = 0; i < columnCount; i += 1) {
@@ -209,7 +193,7 @@ const OnboardingAdminList = ({ users, viewLogCallback }) => {
           <th>User</th>
           <th>Step</th>
           <th>Status</th>
-          <th colSpan="2">Administrative Actions</th>
+          <th colSpan={2}>Administrative Actions</th>
           <th>Log</th>
         </tr>
       </thead>
@@ -226,79 +210,80 @@ const OnboardingAdminList = ({ users, viewLogCallback }) => {
   );
 };
 
-OnboardingAdminList.propTypes = {
-  users: PropTypes.arrayOf(onboardingUserPropType).isRequired,
-  viewLogCallback: PropTypes.func.isRequired,
-};
-
 const OnboardingAdmin = () => {
-  const dispatch = useDispatch();
-  const [eventLogModalParams, setEventLogModalParams] = useState(null);
-  const [showIncompleteOnly, setShowIncompleteOnly] = useState(false);
+  const [eventLogModalParams, setEventLogModalParams] = useState<{
+    user: TOnboardingUser;
+    step: TOnboardingStep;
+  } | null>(null);
+  const [onboardingAdminListParams, setOnboardingAdminListParams] =
+    useState<TOnboardingAdminParams>({
+      offset: 0,
+      limit: 25,
+      query_string: undefined,
+      showIncompleteOnly: false,
+    });
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ['onboarding', 'adminList'],
+    });
+  }, [onboardingAdminListParams]);
+
+  const { data, isError, isLoading } = useGetOnboardingAdminList(
+    onboardingAdminListParams
+  );
+  if (isLoading) {
+    return <Spinner />;
+  }
+  if (isError) {
+    return (
+      <div className={styles['root-placeholder']}>
+        <Alert
+          type="warning"
+          message="Unable to access Onboarding administration"
+        />
+      </div>
+    );
+  }
+
+  const { users, offset, limit, total } = data as TOnboardingAdminList;
 
   const toggleShowIncomplete = () => {
-    dispatch({
-      type: 'FETCH_ONBOARDING_ADMIN_LIST',
-      payload: {
-        offset: 0,
-        limit,
-        query,
-        showIncompleteOnly: !showIncompleteOnly, // Toggle the parameter
-      },
+    setOnboardingAdminListParams({
+      ...onboardingAdminListParams,
+      showIncompleteOnly: !onboardingAdminListParams.showIncompleteOnly,
     });
-    setShowIncompleteOnly((prev) => !prev);
   };
 
-  const { users, offset, limit, total, query, loading, error } = useSelector(
-    (state) => state.onboarding.admin
-  );
-  const paginationCallback = useCallback(
-    (page) => {
-      dispatch({
-        type: 'FETCH_ONBOARDING_ADMIN_LIST',
-        payload: {
-          offset: (page - 1) * limit,
-          limit,
-          query,
-          showIncompleteOnly,
-        },
-      });
-    },
-    [offset, limit, query, showIncompleteOnly]
-  );
+  // const paginationCallback = useCallback(
+  //   (page: number) => {
+
+  //     dispatch({
+  //       type: 'FETCH_ONBOARDING_ADMIN_LIST',
+  //       payload: {
+  //         offset: (page - 1) * limit,
+  //         limit,
+  //         query,
+  //         showIncompleteOnly,
+  //       },
+  //     });
+  //   },
+  //   [offset, limit, query, showIncompleteOnly]
+  // );
 
   const viewLogCallback = useCallback(
-    (user, step) => {
+    (user: TOnboardingUser, step: TOnboardingStep) => {
       setEventLogModalParams({ user, step });
     },
     [setEventLogModalParams]
   );
 
-  const toggleViewLogModal = useCallback(() => {
-    setEventLogModalParams();
+  const closeViewLogModal = useCallback(() => {
+    setEventLogModalParams(null);
   }, [setEventLogModalParams]);
-
-  useEffect(() => {
-    dispatch({
-      type: 'FETCH_ONBOARDING_ADMIN_LIST',
-      payload: { offset, limit, query: null, showIncompleteOnly },
-    });
-  }, [dispatch]);
 
   const current = Math.floor(offset / limit) + 1;
   const pages = Math.ceil(total / limit);
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-  if (error) {
-    return (
-      <div className={styles['root-placeholder']}>
-        <SectionMessage type="warn">
-          Unable to access Onboarding administration
-        </SectionMessage>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.root}>
@@ -312,9 +297,8 @@ const OnboardingAdmin = () => {
               htmlFor="incompleteuser"
             >
               <Checkbox
-                isChecked={showIncompleteOnly}
+                checked={onboardingAdminListParams.showIncompleteOnly}
                 id="incompleteuser"
-                role="checkbox"
                 aria-label="Show Incomplete Only"
                 tabIndex={0}
                 onClick={toggleShowIncomplete}
@@ -325,7 +309,7 @@ const OnboardingAdmin = () => {
         </div>
         {users.length === 0 && (
           <div className={styles['no-users-placeholder']}>
-            <Message type="warn">No users to show.</Message>
+            <Alert type="warning" message="No users to show." />
           </div>
         )}
         <div className={styles['user-container']}>
@@ -338,18 +322,18 @@ const OnboardingAdmin = () => {
         </div>
         {users.length > 0 && (
           <div className={styles['paginator-container']}>
-            <Paginator
+            {/* <Paginator
               current={current}
               pages={pages}
               callback={paginationCallback}
               spread={5}
-            />
+            /> */}
           </div>
         )}
         {eventLogModalParams && (
           <OnboardingEventLogModal
             params={eventLogModalParams}
-            toggle={toggleViewLogModal}
+            handleCancel={closeViewLogModal}
           />
         )}
       </div>

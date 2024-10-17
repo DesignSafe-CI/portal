@@ -1,8 +1,13 @@
 import { useQuery, useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { TOnboardingUser, TOnboardingAdminList } from './types';
+import {
+  TOnboardingUser,
+  TOnboardingAdminList,
+  TSetupStepEvent,
+  TOnboardingAdminActions,
+} from './types';
 import apiClient, { type TApiError } from '../apiClient';
 
-type TOnboardingAdminParams = {
+export type TOnboardingAdminParams = {
   showIncompleteOnly?: boolean;
   query_string?: string;
   limit?: number;
@@ -11,7 +16,7 @@ type TOnboardingAdminParams = {
 
 type TOnboardingActionBody = {
   step: string;
-  action: string;
+  action: TOnboardingAdminActions;
 };
 
 type TGetOnboardingAdminListResponse = {
@@ -21,6 +26,11 @@ type TGetOnboardingAdminListResponse = {
 
 type TGetOnboardingUserResponse = {
   response: TOnboardingUser;
+  status: number;
+};
+
+type TSendOnboardingActionResponse = {
+  response: TSetupStepEvent;
   status: number;
 };
 
@@ -45,7 +55,10 @@ async function sendOnboardingAction(
   body: TOnboardingActionBody,
   username?: string
 ) {
-  const res = await apiClient.post(`api/onboarding/user/${username}/`, body);
+  const res = await apiClient.post<TSendOnboardingActionResponse>(
+    `api/onboarding/user/${username}/`,
+    body
+  );
   return res.data.response;
 }
 

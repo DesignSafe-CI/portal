@@ -1,39 +1,28 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Button } from '_common';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { FormEvent, FormEventHandler, useState } from 'react';
+import { SecondaryButton } from '@client/common-components';
+import { useGetOnboardingAdminList } from '@client/hooks';
+import styles from './OnboardingAdminSearchbar.module.css';
 
-import styles from './OnboardingAdminSearchbar.module.scss';
+export const OnboardingAdminSearchbar = () => {
+  const [search, setSearch] = useState('');
 
-const OnboardingAdminSearchbar = ({ className, disabled }) => {
-  const { query } = useSelector((state) => state.onboarding.admin);
-  const [search, setSearch] = useState(query);
-  const dispatch = useDispatch();
-
-  const onSubmit = (e) => {
+  const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    dispatch({
-      type: 'FETCH_ONBOARDING_ADMIN_LIST',
-      payload: {
-        limit: 25,
-        offset: 0,
-        query: search,
-      },
+    useGetOnboardingAdminList({
+      limit: 25,
+      offset: 0,
+      query_string: search,
     });
   };
-  const onClear = (e) => {
+  const onClear = (e: FormEvent) => {
     e.preventDefault();
     setSearch('');
-    dispatch({
-      type: 'FETCH_ONBOARDING_ADMIN_LIST',
-      payload: {
-        limit: 25,
-        offset: 0,
-        query: null,
-      },
+    useGetOnboardingAdminList({
+      limit: 25,
+      offset: 0,
     });
   };
-  const onChange = (e) => {
+  const onChange = (e: FormEvent) => {
     setSearch(e.target.value);
     if (!e.target.value) {
       onClear(e);
@@ -43,20 +32,17 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
   return (
     <form
       aria-label="Search"
-      className={`${className} ${styles.container}`}
+      className={`${styles.container}`}
       onSubmit={onSubmit}
     >
       <div className={`input-group ${styles['query-fieldset']}`}>
         <div className="input-group-prepend">
-          <Button
-            attr="submit"
-            type="secondary"
-            size="medium"
-            disabled={disabled}
-            iconNameBefore="search"
+          <SecondaryButton
+            // disabled={disabled}
+            icon="search"
           >
             Search
-          </Button>
+          </SecondaryButton>
         </div>
         <input
           type="search"
@@ -68,21 +54,9 @@ const OnboardingAdminSearchbar = ({ className, disabled }) => {
           placeholder="Search for users"
           data-testid="input"
           autoComplete="off"
-          disabled={disabled}
+          // disabled={disabled}
         />
       </div>
     </form>
   );
 };
-
-OnboardingAdminSearchbar.propTypes = {
-  /** Additional `className` for the root element */
-  className: PropTypes.string,
-  disabled: PropTypes.bool,
-};
-OnboardingAdminSearchbar.defaultProps = {
-  className: '',
-  disabled: false,
-};
-
-export default OnboardingAdminSearchbar;
