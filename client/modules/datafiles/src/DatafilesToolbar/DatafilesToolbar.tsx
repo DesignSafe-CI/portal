@@ -7,11 +7,64 @@ import {
   USER_WORK_SYSTEM,
   useSelectedFiles,
   useSelectedFilesForSystem,
+  TFileListing,
 } from '@client/hooks';
 import DatafilesModal from '../DatafilesModal/DatafilesModal';
 import TrashButton from './TrashButton';
 import { Button, ButtonProps, ConfigProvider, ThemeConfig } from 'antd';
 import { useMatches, useParams } from 'react-router-dom';
+
+type ToolbarRules = {
+  canPreview: boolean;
+  canRename: boolean;
+  canCopy: boolean;
+  canMove: boolean;
+  canTrash: boolean;
+  canDownload: boolean;
+};
+
+/**
+ * Get the rules for enabling or disabling toolbar buttons based on the selected files, user permissions,
+ * system, and read-only mode.
+ */
+export function getToolbarRules(
+  selectedFiles: TFileListing[],
+  isReadOnly: boolean,
+  isAuthenticated: boolean,
+  system: string,
+  USER_WORK_SYSTEM: string
+): ToolbarRules {
+  const notContainingHazmapperFile = selectedFiles.every(
+    (file) => !file.path.endsWith('.hazmapper')
+  );
+
+  return {
+    canPreview: selectedFiles.length === 1 && selectedFiles[0].type === 'file',
+    canRename:
+      isAuthenticated &&
+      selectedFiles.length === 1 &&
+      !isReadOnly &&
+      notContainingHazmapperFile,
+    canCopy:
+      isAuthenticated &&
+      selectedFiles.length >= 1 &&
+      notContainingHazmapperFile,
+    canMove:
+      isAuthenticated &&
+      selectedFiles.length >= 1 &&
+      !isReadOnly &&
+      notContainingHazmapperFile,
+    canTrash:
+      isAuthenticated &&
+      selectedFiles.length >= 1 &&
+      !isReadOnly &&
+      notContainingHazmapperFile,
+    canDownload:
+      selectedFiles.length >= 1 &&
+      system !== USER_WORK_SYSTEM &&
+      notContainingHazmapperFile,
+  };
+}
 
 const toolbarTheme: ThemeConfig = {
   components: {
@@ -41,10 +94,10 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
   const { user } = useAuthenticatedUser();
 
   const matches = useMatches();
-  const isProjects = matches.find((m) => m.id === 'project');
-  const isPublished = matches.find((m) => m.id === 'published');
-  const isEntityListing = matches.find((m) => m.id === 'entity-listing');
-  const isNees = matches.find((m) => m.id === 'nees');
+  const isProjects = !!matches.find((m) => m.id === 'project');
+  const isPublished = !!matches.find((m) => m.id === 'published');
+  const isEntityListing = !!matches.find((m) => m.id === 'entity-listing');
+  const isNees = !!matches.find((m) => m.id === 'nees');
 
   const isReadOnly =
     isPublished || isNees || system === 'designsafe.storage.community';
@@ -82,40 +135,14 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
     : listingSelectedFiles;
 
   const rules = useMemo(
-    function () {
-      // Check if none of the selected files end with `.hazmapper`.
-      const notContainingHazmapperFile = selectedFiles.every(
-        (file) => !file.path.endsWith('.hazmapper')
-      );
-
-      // Rules for which toolbar buttons are active for a given selection.
-      return {
-        canPreview:
-          selectedFiles.length === 1 && selectedFiles[0].type === 'file',
-        canRename:
-          user &&
-          selectedFiles.length === 1 &&
-          !isReadOnly &&
-          notContainingHazmapperFile,
-        canCopy:
-          user && selectedFiles.length >= 1 && notContainingHazmapperFile,
-        canMove:
-          user &&
-          selectedFiles.length >= 1 &&
-          !isReadOnly &&
-          notContainingHazmapperFile,
-        canTrash:
-          user &&
-          selectedFiles.length >= 1 &&
-          !isReadOnly &&
-          notContainingHazmapperFile,
-        // Disable downloads from frontera.work until we have a non-flaky mount on ds-download.
-        canDownload:
-          selectedFiles.length >= 1 &&
-          system !== USER_WORK_SYSTEM &&
-          notContainingHazmapperFile,
-      };
-    },
+    () =>
+      getToolbarRules(
+        selectedFiles,
+        isReadOnly,
+        !!user,
+        system,
+        USER_WORK_SYSTEM
+      ),
     [selectedFiles, isReadOnly, user, system]
   );
 
