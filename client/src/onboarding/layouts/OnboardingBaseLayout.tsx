@@ -19,7 +19,6 @@ const OnboardingRoot: React.FC = () => {
       }}
     >
       <Layout
-        hasSider
         style={{
           gap: '20px',
         }}
