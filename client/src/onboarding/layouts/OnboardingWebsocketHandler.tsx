@@ -21,20 +21,23 @@ function updateAdminUsersFromEvent(
   return result;
 }
 
-function updateUserFromEvent(user: TOnboardingUser, event: TSetupStepEvent) {
-  const result = { ...user };
-
-  if (result.username === event.username) {
-    if (event.step === 'portal.apps.onboarding.execute.execute_setup_steps') {
-      result.setupComplete = !!event.data?.setupComplete;
-    }
-    const foundStep = result.steps.find((step) => step.step === event.step);
-    if (foundStep) {
-      foundStep.events.unshift(event);
-      foundStep.state = event.state;
-    }
-  }
-  return result;
+function updateUserFromEvent(oldData: TOnboardingUser, event: TSetupStepEvent) {
+  return {
+    ...oldData,
+    setupComplete: !!event.data?.setupComplete,
+    steps: [
+      ...oldData.steps.map((step) => {
+        if (step.step === event.step) {
+          return {
+            ...step,
+            state: event.state,
+            events: [event, ...step.events],
+          };
+        }
+        return step;
+      }),
+    ],
+  };
 }
 
 const OnboardingWebsocketHandler = () => {
