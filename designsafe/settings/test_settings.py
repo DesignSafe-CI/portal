@@ -110,6 +110,7 @@ INSTALLED_APPS = (
     'designsafe.apps.search',
     'designsafe.apps.geo',
     'designsafe.apps.rapid',
+    'designsafe.apps.onboarding',
 
     #haystack integration
     # 'haystack'

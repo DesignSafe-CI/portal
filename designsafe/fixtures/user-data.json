@@ -99,5 +99,13 @@
     },
     "model": "designsafe_accounts.notificationpreferences",
     "pk": 1
+  },
+  {
+    "model": "designsafe_accounts.designsafeprofile",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "setup_complete": true
+    }
   }
 ]

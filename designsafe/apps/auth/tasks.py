@@ -17,7 +17,7 @@ from tapipy.errors import (
 from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
 from designsafe.apps.api.tasks import agave_indexer
 from designsafe.apps.api.notifications.models import Notification
-from designsafe.utils.system_access import (
+from designsafe.apps.onboarding.steps.system_access_v3 import (
     register_public_key,
     create_system_credentials,
 )

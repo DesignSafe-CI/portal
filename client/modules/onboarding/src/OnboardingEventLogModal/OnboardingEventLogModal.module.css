@@ -1,0 +1,22 @@
+.event-list > div {
+  padding: 1em;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.log-detail {
+  margin-left: 1em;
+}
+
+.event-container {
+  max-height: 30em;
+  overflow-y: scroll;
+}
+
+.event-list > div:nth-child(even) {
+  background-color: var(--global-color-primary--x-light);
+}
+
+.event-list > div:not(:last-child) {
+  border-bottom: 1px solid var(--global-color-primary--dark);
+}

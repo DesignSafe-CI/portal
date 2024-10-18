@@ -73,5 +73,10 @@
         "name": "Longhorn",
         "host": "longhorn.tacc.utexas.edu",
         "type": "HPC"
+    },
+    "Vista": {
+        "name": "Vista",
+        "host": "vista.tacc.utexas.edu",
+        "type": "HPC"
     }
 }
