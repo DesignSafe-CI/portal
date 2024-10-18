@@ -5,7 +5,9 @@ import { useSearchParams } from 'react-router-dom';
 import { SecondaryButton } from '@client/common-components';
 // import styles from './OnboardingAdminSearchbar.module.css';
 
-export const OnboardingAdminSearchbar: React.FC<{}> = () => {
+export const OnboardingAdminSearchbar: React.FC<{ disabled: boolean }> = ({
+  disabled,
+}) => {
   const [form] = Form.useForm();
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState<string | null>(searchParams.get('q'));
@@ -28,6 +30,7 @@ export const OnboardingAdminSearchbar: React.FC<{}> = () => {
       form={form}
       name="onboarding_search"
       style={{ display: 'inline-flex' }}
+      disabled={disabled}
     >
       <Form.Item name="query" style={{ marginBottom: 0 }} initialValue={query}>
         <Input placeholder="Search for a user" style={{ width: '250px' }} />

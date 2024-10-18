@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Layout, Checkbox, Table, TableColumnType } from 'antd';
+import { Alert, Layout, Checkbox, Table, TableColumnType, Space } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import { SecondaryButton, Spinner } from '@client/common-components';
@@ -15,8 +15,8 @@ import {
   TOnboardingAdminActions,
   useSendOnboardingAction,
   useGetOnboardingAdminList,
-  TOnboardingAdminList,
   TOnboardingAdminParams,
+  TOnboardingAdminList,
 } from '@client/hooks';
 
 const OnboardingApproveActions: React.FC<{
@@ -208,6 +208,7 @@ const OnboardingAdminList: React.FC<{
   return (
     <Table
       dataSource={dataSource}
+      size="small"
       columns={columns}
       bordered
       pagination={{
@@ -219,26 +220,20 @@ const OnboardingAdminList: React.FC<{
   );
 };
 
-const OnboardingAdmin = () => {
+const OnboardingAdminTable: React.FC<{
+  data?: TOnboardingAdminList;
+  isLoading: boolean;
+  isError: boolean;
+}> = ({ data, isLoading, isError }) => {
   const [eventLogModalParams, setEventLogModalParams] = useState<{
     user: TOnboardingUser;
     step: TOnboardingStep;
   } | null>(null);
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [onboardingAdminListParams, setOnboardingAdminListParams] =
-    useState<TOnboardingAdminParams>({
-      offset: 0,
-      limit: 10,
-    });
-
-  const { data, isError, isLoading } = useGetOnboardingAdminList(
-    onboardingAdminListParams
-  );
   if (isLoading) {
     return <Spinner />;
   }
-  if (isError) {
+  if (isError || !data) {
     return (
       <div className={styles['root-placeholder']}>
         <Alert
@@ -249,19 +244,10 @@ const OnboardingAdmin = () => {
     );
   }
 
-  const { users, offset, limit, total } = data as TOnboardingAdminList;
+  const viewLogCallback = (user: TOnboardingUser, step: TOnboardingStep) =>
+    setEventLogModalParams({ user, step });
 
-  const toggleShowIncomplete = () => {
-    const showIncompleteOnly = searchParams.get('showIncompleteOnly');
-    const newSearchParams = searchParams;
-    if (!showIncompleteOnly) {
-      newSearchParams.set('showIncompleteOnly', 'true');
-    } else {
-      newSearchParams.delete('showIncompleteOnly');
-    }
-
-    setSearchParams(newSearchParams);
-  };
+  const { users, offset, limit, total } = data;
 
   // const paginationCallback = useCallback(
   //   (page: number) => {
@@ -279,66 +265,105 @@ const OnboardingAdmin = () => {
   //   [offset, limit, query, showIncompleteOnly]
   // );
 
-  const viewLogCallback = (user: TOnboardingUser, step: TOnboardingStep) =>
-    setEventLogModalParams({ user, step });
-
   const current = Math.floor(offset / limit) + 1;
   const pages = Math.ceil(total / limit);
 
   return (
-    <div className={styles.root}>
-      <div className={styles['container']}>
-        <div className={styles['container-header']}>
-          <h5>Administrator Controls</h5>
-          <div className={styles['search-checkbox-container']}>
-            <OnboardingAdminSearchbar />
-            <label
-              className={styles['checkbox-label-container']}
-              htmlFor="incompleteuser"
-            >
-              <Checkbox
-                checked={searchParams.get('showIncompleteOnly') === 'true'}
-                id="incompleteuser"
-                aria-label="Show Incomplete Only"
-                tabIndex={0}
-                onClick={toggleShowIncomplete}
-              />
-              <span className={styles['label']}>Show Only Incomplete</span>
-            </label>
-          </div>
+    <>
+      {users.length === 0 && (
+        <div className={styles['no-users-placeholder']}>
+          <Alert type="warning" message="No users to show." />
         </div>
-        {users.length === 0 && (
-          <div className={styles['no-users-placeholder']}>
-            <Alert type="warning" message="No users to show." />
-          </div>
-        )}
-        <div className={styles['user-container']}>
-          {users.length > 0 && (
-            <OnboardingAdminList
-              users={users}
-              viewLogCallback={viewLogCallback}
-            />
-          )}
-        </div>
+      )}
+      <div className={styles['user-container']}>
         {users.length > 0 && (
-          <div className={styles['paginator-container']}>
-            {/* <Paginator
-              current={current}
-              pages={pages}
-              callback={paginationCallback}
-              spread={5}
-            /> */}
-          </div>
-        )}
-        {eventLogModalParams && (
-          <OnboardingEventLogModal
-            params={eventLogModalParams}
-            handleCancel={() => setEventLogModalParams(null)}
+          <OnboardingAdminList
+            users={users}
+            viewLogCallback={viewLogCallback}
           />
         )}
       </div>
-    </div>
+      {users.length > 0 && (
+        <div className={styles['paginator-container']}>
+          {/* <Paginator
+          current={current}
+          pages={pages}
+          callback={paginationCallback}
+          spread={5}
+        /> */}
+        </div>
+      )}
+      {eventLogModalParams && (
+        <OnboardingEventLogModal
+          params={eventLogModalParams}
+          handleCancel={() => setEventLogModalParams(null)}
+        />
+      )}
+    </>
   );
 };
 
-export default OnboardingAdmin;
+const OnboardingAdminLayout = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [onboardingAdminListParams, setOnboardingAdminListParams] =
+    useState<TOnboardingAdminParams>({
+      offset: 0,
+      limit: 10,
+    });
+
+  const { data, isError, isLoading } = useGetOnboardingAdminList(
+    onboardingAdminListParams
+  );
+
+  const toggleShowIncomplete = () => {
+    const showIncompleteOnly = searchParams.get('showIncompleteOnly');
+    const newSearchParams = searchParams;
+    if (!showIncompleteOnly) {
+      newSearchParams.set('showIncompleteOnly', 'true');
+    } else {
+      newSearchParams.delete('showIncompleteOnly');
+    }
+
+    setSearchParams(newSearchParams);
+  };
+
+  const { Header } = Layout;
+  const headerStyle = {
+    background: 'transparent',
+    paddingLeft: 0,
+    paddingRight: 0,
+    borderBottom: '1px solid #707070',
+    fontSize: 16,
+  };
+  return (
+    <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Header style={headerStyle}>Administrator Controls</Header>
+        <div className={styles['search-checkbox-container']}>
+          <OnboardingAdminSearchbar disabled={isLoading} />
+          <label
+            className={styles['checkbox-label-container']}
+            htmlFor="incompleteuser"
+          >
+            <Checkbox
+              checked={searchParams.get('showIncompleteOnly') === 'true'}
+              id="incompleteuser"
+              aria-label="Show Incomplete Only"
+              tabIndex={0}
+              onClick={toggleShowIncomplete}
+              disabled={isLoading}
+            />
+            <span className={styles['label']}>Show Only Incomplete</span>
+          </label>
+        </div>
+        <OnboardingAdminTable
+          data={data}
+          isLoading={isLoading}
+          isError={isError}
+        />
+      </Space>
+    </Layout>
+  );
+};
+
+export default OnboardingAdminLayout;

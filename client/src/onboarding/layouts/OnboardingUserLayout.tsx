@@ -53,7 +53,6 @@ export const OnboardingUserLayout: React.FC = () => {
           </>
         </Space>
       </Layout>
-      <Outlet />
     </>
   );
 };
