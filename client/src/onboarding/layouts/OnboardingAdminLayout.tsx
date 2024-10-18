@@ -19,18 +19,23 @@ import {
 } from '@client/hooks';
 
 const OnboardingApproveActions: React.FC<{
-  callback: (action: TOnboardingAdminActions) => void;
-  disabled: boolean;
-  action?: TOnboardingAdminActions;
-}> = ({ callback, disabled, action }) => {
+  step: TOnboardingStep;
+  username: string;
+}> = ({ step, username }) => {
+  const { mutate: sendOnboardingAction, isPending } = useSendOnboardingAction();
+
   return (
     <div className={styles['approve-container']}>
       <SecondaryButton
         size="small"
         className={styles.approve}
-        onClick={() => callback('staff_approve')}
-        disabled={disabled}
-        loading={action === 'staff_approve'}
+        onClick={() =>
+          sendOnboardingAction({
+            body: { action: 'staff_approve', step: step.step },
+            username,
+          })
+        }
+        loading={isPending}
         icon={<CheckOutlined />}
       >
         Approve
@@ -38,9 +43,13 @@ const OnboardingApproveActions: React.FC<{
       <SecondaryButton
         size="small"
         className={styles.approve}
-        onClick={() => callback('staff_deny')}
-        disabled={disabled}
-        loading={action === 'staff_approve'}
+        onClick={() =>
+          sendOnboardingAction({
+            body: { action: 'staff_deny', step: step.step },
+            username,
+          })
+        }
+        loading={isPending}
         icon={<CloseOutlined />}
       >
         Deny
@@ -50,17 +59,27 @@ const OnboardingApproveActions: React.FC<{
 };
 
 const OnboardingResetLinks: React.FC<{
-  callback: (action: TOnboardingAdminActions) => void;
-  disabled: boolean;
-  action?: TOnboardingAdminActions;
-}> = ({ callback, disabled, action }) => {
+  step: TOnboardingStep;
+  username: string;
+}> = ({ step, username }) => {
+  const {
+    mutate: sendOnboardingAction,
+    isPending,
+    variables,
+  } = useSendOnboardingAction();
+
   return (
     <div className={styles.reset}>
       <SecondaryButton
         type="link"
         className={styles['action-link']}
-        onClick={() => callback('reset')}
-        loading={action === 'reset'}
+        onClick={() =>
+          sendOnboardingAction({
+            body: { action: 'reset', step: step.step },
+            username,
+          })
+        }
+        loading={isPending && variables?.body.action === 'reset'}
       >
         Reset
       </SecondaryButton>
@@ -68,9 +87,14 @@ const OnboardingResetLinks: React.FC<{
       <SecondaryButton
         type="link"
         className={styles['action-link']}
-        disabled={disabled}
-        onClick={() => callback('complete')}
-        loading={action === 'complete'}
+        disabled={step.state === 'completed'}
+        onClick={() =>
+          sendOnboardingAction({
+            body: { action: 'complete', step: step.step },
+            username,
+          })
+        }
+        loading={isPending && variables?.body.action === 'complete'}
       >
         Skip
       </SecondaryButton>
@@ -83,22 +107,6 @@ const OnboardingAdminList: React.FC<{
   viewLogCallback: (user: TOnboardingUser, step: TOnboardingStep) => void;
 }> = ({ data, viewLogCallback }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const {
-    mutate: sendOnboardingAction,
-    isPending,
-    variables,
-  } = useSendOnboardingAction();
-  const actionCallback = (
-    step: string,
-    username: string,
-    action: TOnboardingAdminActions
-  ) => {
-    sendOnboardingAction({
-      body: { action, step: step },
-      username,
-    });
-  };
 
   type TOnboardingAdminTableRowData = {
     user: TOnboardingUser;
@@ -148,35 +156,12 @@ const OnboardingAdminList: React.FC<{
         <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
           {step.state === 'staffwait' && (
             <OnboardingApproveActions
-              callback={(action) =>
-                actionCallback(step.step, record.user.username, action)
-              }
-              disabled={
-                // Disable all admin actions while any action is being performed
-                isPending
-              }
-              action={
-                // If this user and step currently is running an admin action, pass down the action
-                variables?.username === record.user.username &&
-                variables.body.step === step.step
-                  ? variables.body.action
-                  : undefined
-              }
+              username={record.user.username}
+              step={step}
             />
           )}
 
-          <OnboardingResetLinks
-            callback={(action) =>
-              actionCallback(step.step, record.user.username, action)
-            }
-            disabled={isPending || step.state === 'completed'}
-            action={
-              variables?.username === record.user.username &&
-              variables.body.step === step.step
-                ? variables.body.action
-                : undefined
-            }
-          />
+          <OnboardingResetLinks username={record.user.username} step={step} />
         </span>
       ),
     },
@@ -285,6 +270,7 @@ const OnboardingAdminTable: React.FC<{
 const OnboardingAdminLayout = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, isError, isLoading } = useGetOnboardingAdminList();
+
   useEffect(() => {}, [searchParams]);
 
   const toggleShowIncomplete = () => {

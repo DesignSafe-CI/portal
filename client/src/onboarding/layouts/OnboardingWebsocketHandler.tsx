@@ -8,17 +8,17 @@ import {
 } from '@client/hooks';
 
 function updateAdminUsersFromEvent(
-  adminUsers: TOnboardingUser[],
+  oldData: TOnboardingAdminList,
   event: TSetupStepEvent
 ) {
-  const result = [...adminUsers];
-  const matchingIndex = adminUsers.findIndex(
-    (user) => user.username === event.username
-  );
-  if (matchingIndex > -1) {
-    result[matchingIndex] = updateUserFromEvent(result[matchingIndex], event);
-  }
-  return result;
+  return {
+    ...oldData,
+    users: oldData.users.map((user) =>
+      user.username === event.username
+        ? { ...updateUserFromEvent(user, event) }
+        : user
+    ),
+  };
 }
 
 function updateUserFromEvent(oldData: TOnboardingUser, event: TSetupStepEvent) {
@@ -46,20 +46,17 @@ const OnboardingWebsocketHandler = () => {
   );
   const queryClient = useQueryClient();
   const processSetupEvent = (event: TSetupStepEvent) => {
-    queryClient.setQueryData(
-      ['onboarding', 'adminList'],
-      (oldData: TOnboardingAdminList) => {
-        return oldData?.users
-          ? {
-              ...oldData,
-              users: updateAdminUsersFromEvent(oldData.users, event),
-            }
-          : oldData;
-      }
+    queryClient.setQueriesData(
+      { queryKey: ['onboarding', 'adminList'], exact: false },
+      (oldData) =>
+        (oldData as TOnboardingAdminList)?.users
+          ? updateAdminUsersFromEvent(oldData as TOnboardingAdminList, event)
+          : oldData
     );
     queryClient.setQueryData(
       ['onboarding', 'user', event.username],
-      (oldData: TOnboardingUser) => updateUserFromEvent(oldData, event)
+      (oldData: TOnboardingUser) =>
+        oldData ? updateUserFromEvent(oldData, event) : oldData
     );
   };
 
