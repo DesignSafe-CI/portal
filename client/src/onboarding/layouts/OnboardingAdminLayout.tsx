@@ -12,7 +12,6 @@ import styles from './OnboardingAdminLayout.module.css';
 import {
   TOnboardingStep,
   TOnboardingUser,
-  TOnboardingAdminActions,
   useSendOnboardingAction,
   useGetOnboardingAdminList,
   TOnboardingAdminList,
