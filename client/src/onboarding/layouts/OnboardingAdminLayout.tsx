@@ -61,7 +61,6 @@ const OnboardingResetLinks: React.FC<{
         className={styles['action-link']}
         onClick={() => callback('reset')}
         loading={action === 'reset'}
-        disabled={disabled}
       >
         Reset
       </SecondaryButton>

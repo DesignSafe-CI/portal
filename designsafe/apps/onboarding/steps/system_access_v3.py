@@ -62,7 +62,6 @@ def set_user_permissions(user, system_id):
 
 
 class SystemAccessStepV3(AbstractStep):
-
     def __init__(self, user):
         """
         Call super class constructor
