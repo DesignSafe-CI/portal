@@ -39,9 +39,8 @@ export type TOnboardingUser = {
 
 export type TOnboardingAdminList = {
   users: TOnboardingUser[];
-  offset: number;
-  limit: number;
   total: number;
+  totalSteps: number;
 };
 
 export type TOnboardingAdminActions =

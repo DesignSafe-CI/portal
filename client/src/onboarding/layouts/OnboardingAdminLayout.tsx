@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Layout, Checkbox, Table, TableColumnType, Space } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
@@ -15,7 +15,6 @@ import {
   TOnboardingAdminActions,
   useSendOnboardingAction,
   useGetOnboardingAdminList,
-  TOnboardingAdminParams,
   TOnboardingAdminList,
 } from '@client/hooks';
 
@@ -81,9 +80,10 @@ const OnboardingResetLinks: React.FC<{
 };
 
 const OnboardingAdminList: React.FC<{
-  users: TOnboardingUser[];
+  data: TOnboardingAdminList;
   viewLogCallback: (user: TOnboardingUser, step: TOnboardingStep) => void;
-}> = ({ users, viewLogCallback }) => {
+}> = ({ data, viewLogCallback }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     mutate: sendOnboardingAction,
     isPending,
@@ -198,6 +198,8 @@ const OnboardingAdminList: React.FC<{
     },
   ];
 
+  const { users, total, totalSteps } = data;
+
   let dataSource: TOnboardingAdminTableRowData[] = [];
   users.forEach((user) => {
     user.steps.forEach((step, index) => {
@@ -211,11 +213,19 @@ const OnboardingAdminList: React.FC<{
       size="small"
       columns={columns}
       bordered
+      scroll={{ y: 800 }}
       pagination={{
-        defaultPageSize: 20,
+        defaultPageSize: 20 * totalSteps, // 20 users with $totalSteps steps each
+        current: +(searchParams.get('page') as string) || undefined,
         hideOnSinglePage: true,
-        pageSizeOptions: ['10', '20', '50', '100'],
+        showSizeChanger: false,
+        total,
+        onChange: (page, _) => {
+          searchParams.set('page', page.toString());
+          setSearchParams(searchParams);
+        },
       }}
+      sticky
     />
   );
 };
@@ -247,26 +257,7 @@ const OnboardingAdminTable: React.FC<{
   const viewLogCallback = (user: TOnboardingUser, step: TOnboardingStep) =>
     setEventLogModalParams({ user, step });
 
-  const { users, offset, limit, total } = data;
-
-  // const paginationCallback = useCallback(
-  //   (page: number) => {
-
-  //     dispatch({
-  //       type: 'FETCH_ONBOARDING_ADMIN_LIST',
-  //       payload: {
-  //         offset: (page - 1) * limit,
-  //         limit,
-  //         query,
-  //         showIncompleteOnly,
-  //       },
-  //     });
-  //   },
-  //   [offset, limit, query, showIncompleteOnly]
-  // );
-
-  const current = Math.floor(offset / limit) + 1;
-  const pages = Math.ceil(total / limit);
+  const { users } = data;
 
   return (
     <>
@@ -277,22 +268,9 @@ const OnboardingAdminTable: React.FC<{
       )}
       <div className={styles['user-container']}>
         {users.length > 0 && (
-          <OnboardingAdminList
-            users={users}
-            viewLogCallback={viewLogCallback}
-          />
+          <OnboardingAdminList data={data} viewLogCallback={viewLogCallback} />
         )}
       </div>
-      {users.length > 0 && (
-        <div className={styles['paginator-container']}>
-          {/* <Paginator
-          current={current}
-          pages={pages}
-          callback={paginationCallback}
-          spread={5}
-        /> */}
-        </div>
-      )}
       {eventLogModalParams && (
         <OnboardingEventLogModal
           params={eventLogModalParams}
@@ -305,15 +283,8 @@ const OnboardingAdminTable: React.FC<{
 
 const OnboardingAdminLayout = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [onboardingAdminListParams, setOnboardingAdminListParams] =
-    useState<TOnboardingAdminParams>({
-      offset: 0,
-      limit: 10,
-    });
-
-  const { data, isError, isLoading } = useGetOnboardingAdminList(
-    onboardingAdminListParams
-  );
+  const { data, isError, isLoading } = useGetOnboardingAdminList();
+  useEffect(() => {}, [searchParams]);
 
   const toggleShowIncomplete = () => {
     const showIncompleteOnly = searchParams.get('showIncompleteOnly');

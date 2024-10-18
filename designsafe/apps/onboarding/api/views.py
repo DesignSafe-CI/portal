@@ -2,6 +2,7 @@
 
 import logging
 import json
+import math
 from designsafe.apps.api.views import AuthenticatedApiView
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_user_onboarding(user):
+    """Get a user's onboarding status"""
     # Result dictionary for user
     result = {
         "username": user.username,
@@ -264,28 +266,48 @@ class SetupStepView(AuthenticatedApiView):
 
 @method_decorator(staff_member_required, name="dispatch")
 class SetupAdminView(AuthenticatedApiView):
+    """Admin view for managing user setup steps"""
+
     def get(self, request):
-        offset = int(request.GET.get("offset", 0))
-        limit = int(request.GET.get("limit", 10))
-        users = []
-        results = get_user_model().objects.all()
-        q = request.GET.get("q", None)
-        if q:
-            query = q_to_model_queries(q)
-            results = results.filter(query)
+        """Get all users for page and their setup steps"""
+
+        page = int(request.GET.get("page", 1))
+        limit = int(request.GET.get("limit", 20))
         show_incomplete_only = request.GET.get("showIncompleteOnly", "False").lower()
+        q = request.GET.get("q", None)
+        users = []
+        filter_args = {}
+
         # Filter users based on the showIncompleteOnly parameter
         if show_incomplete_only == "true":
-            results = results.filter(profile__setup_complete=False)
+            filter_args["profile__setup_complete"] = False
+
         # Get users, with most recently joined users that do not have setup_complete, first
-        results = results.order_by(
-            "-date_joined", "profile__setup_complete", "last_name", "first_name"
-        )
+        if q:
+            query = q_to_model_queries(q)
+            results = (
+                get_user_model()
+                .objects.filter(query, **filter_args)
+                .order_by(
+                    "-date_joined", "profile__setup_complete", "last_name", "first_name"
+                )
+            )
+        else:
+            results = (
+                get_user_model()
+                .objects.filter(**filter_args)
+                .order_by(
+                    "-date_joined", "profile__setup_complete", "last_name", "first_name"
+                )
+            )
 
         # Uncomment this line to simulate many user results
         # results = list(results) * 105
-        total = len(results)
-        page = results[offset : offset + limit]
+
+        total = math.ceil(len(results) / limit)
+        offset = (page - 1) * limit
+        page = results[offset : limit * page]
+        account_setup_steps = getattr(settings, "PORTAL_USER_ACCOUNT_SETUP_STEPS", [])
 
         # Assemble an array with the User data we care about
         for user in page:
@@ -295,7 +317,13 @@ class SetupAdminView(AuthenticatedApiView):
                 # If a user does not have a DesignSafeProfile, skip it
                 logger.info(err)
 
-        response = {"users": users, "offset": offset, "limit": limit, "total": total}
+        response = {
+            "users": users,
+            "offset": offset,
+            "limit": limit,
+            "total": total,
+            "totalSteps": len(account_setup_steps),
+        }
 
         return JsonResponse(
             {

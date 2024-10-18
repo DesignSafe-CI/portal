@@ -9,10 +9,10 @@ import {
 import apiClient, { type TApiError } from '../apiClient';
 
 export type TOnboardingAdminParams = {
-  showIncompleteOnly?: string;
+  showIncompleteOnly?: boolean;
   q?: string;
   limit?: number;
-  offset?: number;
+  page?: number;
 };
 
 type TOnboardingActionBody = {
@@ -67,12 +67,19 @@ const getOnboardingAdminListQuery = (queryParams: TOnboardingAdminParams) => ({
   queryKey: ['onboarding', 'adminList', queryParams],
   queryFn: () => getOnboardingAdminList(queryParams),
 });
-export function useGetOnboardingAdminList(queryParams: TOnboardingAdminParams) {
+export function useGetOnboardingAdminList() {
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q') || undefined;
   const showIncompleteOnly = searchParams.get('showIncompleteOnly') || 'false';
+  const limit = searchParams.get('limit') || '20';
+  const page = searchParams.get('page') || '1';
   return useQuery(
-    getOnboardingAdminListQuery({ ...queryParams, q, showIncompleteOnly })
+    getOnboardingAdminListQuery({
+      q,
+      showIncompleteOnly: showIncompleteOnly === 'true',
+      limit: +limit,
+      page: +page,
+    })
   );
 }
 
