@@ -84,6 +84,7 @@ const OnboardingAdminList: React.FC<{
   viewLogCallback: (user: TOnboardingUser, step: TOnboardingStep) => void;
 }> = ({ data, viewLogCallback }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+
   const {
     mutate: sendOnboardingAction,
     isPending,
@@ -216,6 +217,7 @@ const OnboardingAdminList: React.FC<{
       scroll={{ y: 800 }}
       pagination={{
         defaultPageSize: 20 * totalSteps, // 20 users with $totalSteps steps each
+        defaultCurrent: 1,
         current: +(searchParams.get('page') as string) || undefined,
         hideOnSinglePage: true,
         showSizeChanger: false,
@@ -293,6 +295,7 @@ const OnboardingAdminLayout = () => {
       newSearchParams.set('showIncompleteOnly', 'true');
     } else {
       newSearchParams.delete('showIncompleteOnly');
+      newSearchParams.delete('page');
     }
 
     setSearchParams(newSearchParams);

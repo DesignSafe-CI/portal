@@ -18,6 +18,7 @@ export const OnboardingAdminSearchbar: React.FC<{ disabled: boolean }> = ({
     } else {
       newSearchParams.delete('q');
     }
+    newSearchParams.delete('page');
 
     setSearchParams(newSearchParams);
   };
@@ -44,7 +45,9 @@ export const OnboardingAdminSearchbar: React.FC<{ disabled: boolean }> = ({
         onClick={() => {
           form.resetFields();
           setQuery(null);
-          setSearchParams();
+          searchParams.set('page', '1');
+          searchParams.delete('q');
+          setSearchParams(searchParams);
         }}
       >
         Clear Search
