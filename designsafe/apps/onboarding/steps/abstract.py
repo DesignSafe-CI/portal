@@ -2,11 +2,12 @@
 
 from abc import ABCMeta, abstractmethod
 from six import add_metaclass
+from django.conf import settings
 from designsafe.apps.onboarding.models import SetupEvent
 from designsafe.apps.onboarding.state import SetupState
-from django.conf import settings
 
 
+# pylint: disable=too-many-instance-attributes
 @add_metaclass(ABCMeta)
 class AbstractStep:
     """
@@ -25,22 +26,24 @@ class AbstractStep:
 
         try:
             steps = settings.PORTAL_USER_ACCOUNT_SETUP_STEPS
-            step_dict = next(step for step in steps if step["step"] == self.step_name())
+            step_dict = next(
+                (step for step in steps if step["step"] == self.step_name()), {}
+            )
             self.settings = step_dict["settings"]
-        except Exception:
+        except KeyError:
             self.settings = None
 
         try:
             # Restore event history
-            self.events = [
-                event
-                for event in SetupEvent.objects.filter(
-                    user=user, step=self.step_name()
-                ).order_by("time")
-            ]
+            self.events = list(
+                SetupEvent.objects.filter(user=user, step=self.step_name()).order_by(
+                    "time"
+                )
+            )
+
             self.last_event = self.events[-1] if len(self.events) > 0 else None
             self.state = self.last_event.state
-        except Exception:
+        except (IndexError, AttributeError):
             pass
 
     def log(self, message, data=None):
@@ -72,14 +75,11 @@ class AbstractStep:
         self.log(message, data)
 
     def __str__(self):
-        return "<{step} for {username} is {state}>".format(
-            step=self.step_name(), state=self.state, username=self.user.username
-        )
+        return f"<{self.step_name()} for {self.user.username} is {self.state}>"
 
     def step_name(self):
-        return "{module}.{classname}".format(
-            module=self.__module__, classname=self.__class__.__name__
-        )
+        """Return the full name of the step class"""
+        return f"{self.__module__}.{self.__class__.__name__}"
 
     @abstractmethod
     def display_name(self):
@@ -127,7 +127,6 @@ class AbstractStep:
 
         ..param: action can be "user_confirm" | "staff_approve" | "staff_deny"
         """
-        pass
 
     def process(self):
         """
@@ -138,4 +137,3 @@ class AbstractStep:
         Child implementations should override this to handle long processing
         calls.
         """
-        pass

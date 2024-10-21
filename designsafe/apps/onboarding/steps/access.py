@@ -5,11 +5,13 @@ from designsafe.apps.onboarding.steps.abstract import AbstractStep
 
 
 class RequestAccessStep(AbstractStep):
+    """Request Access Step for Onboarding."""
+
     def __init__(self, user):
         """
         Call super class constructor
         """
-        super(RequestAccessStep, self).__init__(user)
+        super().__init__(user)
         self.user_confirm = "Request Portal Access"
         self.staff_approve = "Grant Portal Access"
         self.staff_deny = "Deny Access Request"
@@ -22,7 +24,7 @@ class RequestAccessStep(AbstractStep):
                   After sending the request, wait for their approval."""
 
     def prepare(self):
-        super(RequestAccessStep, self).prepare()
+        super().prepare()
         self.state = SetupState.PENDING
         self.log("Waiting for access check")
 
@@ -45,12 +47,8 @@ class RequestAccessStep(AbstractStep):
             return
 
         if action == "staff_approve":
-            self.complete(
-                "Portal access request approved by {user}".format(
-                    user=request.user.username
-                )
-            )
+            self.complete(f"Portal access request approved by {request.user.username}")
         elif action == "staff_deny":
             self.fail("Portal access request has not been approved.")
         else:
-            self.fail("Invalid client action {action}".format(action=action))
+            self.fail(f"Invalid client action {action}")

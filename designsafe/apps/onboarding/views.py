@@ -15,4 +15,4 @@ class OnboardingView(TemplateView):
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
         """Overwrite dispatch to ensure csrf cookie"""
-        return super(OnboardingView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)

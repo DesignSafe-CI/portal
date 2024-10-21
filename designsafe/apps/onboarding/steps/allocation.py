@@ -6,11 +6,7 @@ from designsafe.apps.api.users.utils import get_allocations
 
 
 class AllocationStep(AbstractStep):
-    def __init__(self, user):
-        """
-        Call super class constructor
-        """
-        super(AllocationStep, self).__init__(user)
+    """Allocation Access Step for Onboarding."""
 
     def display_name(self):
         return "Allocations"
@@ -29,12 +25,11 @@ class AllocationStep(AbstractStep):
     def process(self):
         self.state = SetupState.PROCESSING
         self.log("Retrieving your allocations")
+
         # Force allocation retrieval from TAS and refresh elasticsearch
         allocations = get_allocations(self.user, force=True)
         if not allocations.get("hosts"):
             self.state = SetupState.USERWAIT
-            self.log(
-                """User {0} does not have any allocations""".format(self.user.username),
-            )
+            self.log(f"User {self.user.username} does not have any allocations")
         else:
             self.complete("Allocations retrieved", data=allocations)

@@ -3,17 +3,18 @@
 import logging
 import json
 import math
-from designsafe.apps.api.views import AuthenticatedApiView
-from django.contrib.auth import get_user_model
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.conf import settings
 from django.http import (
     Http404,
     JsonResponse,
     HttpResponseBadRequest,
 )
+from django.contrib.auth import get_user_model
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.utils.decorators import method_decorator
-from django.conf import settings
+from designsafe.apps.api.views import AuthenticatedApiView
+from designsafe.apps.api.users.utils import q_to_model_queries
 from designsafe.apps.onboarding.models import SetupEvent, SetupEventEncoder
 from designsafe.apps.onboarding.execute import (
     log_setup_state,
@@ -22,7 +23,6 @@ from designsafe.apps.onboarding.execute import (
     execute_setup_steps,
 )
 from designsafe.apps.onboarding.state import SetupState
-from designsafe.apps.api.users.utils import q_to_model_queries
 
 logger = logging.getLogger(__name__)
 
@@ -64,9 +64,7 @@ def get_user_onboarding(user):
         ):
             step_instance.state = SetupState.PROCESSING
             execute_single_step.apply_async(args=[user.username, step["step"]])
-            logger.info(
-                "Retrying setup step {} for {}".format(step["step"], user.username)
-            )
+            logger.info("Retrying setup step %s for %s", step["step"], user.username)
 
         step_data = {
             "step": step["step"],
@@ -76,7 +74,7 @@ def get_user_onboarding(user):
             "staffApprove": step_instance.staff_approve,
             "staffDeny": step_instance.staff_deny,
             "state": step_instance.state,
-            "events": [event for event in step_events],
+            "events": list(step_events),
             "data": None,
         }
         custom_status = step_instance.custom_status()
@@ -94,6 +92,8 @@ def get_user_onboarding(user):
 
 
 class SetupStepView(AuthenticatedApiView):
+    """View for managing user setup steps"""
+
     def _get_user_parameter(self, request, username):
         """
         Validate request for action on a username
@@ -106,12 +106,11 @@ class SetupStepView(AuthenticatedApiView):
         if username != request.user.username and not request.user.is_staff:
             raise PermissionDenied
 
-        User = get_user_model()
         user = None
         try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            raise Http404
+            user = get_user_model().objects.get(username=username)
+        except get_user_model().DoesNotExist as exc:
+            raise Http404 from exc
 
         return user
 
@@ -163,9 +162,7 @@ class SetupStepView(AuthenticatedApiView):
             raise PermissionDenied
         setup_step.state = SetupState.COMPLETED
         setup_step.log(
-            "{step} marked complete by {staff}".format(
-                step=setup_step.display_name(), staff=request.user.username
-            )
+            f"{setup_step.display_name()} marked complete by {request.user.username}"
         )
 
     def reset(self, request, setup_step):
@@ -174,20 +171,14 @@ class SetupStepView(AuthenticatedApiView):
         """
         if not request.user.is_staff:
             raise PermissionDenied
-        setup_step.log(
-            "{step} reset by {staff}".format(
-                step=setup_step.display_name(), staff=request.user.username
-            )
-        )
+        setup_step.log(f"{setup_step.display_name()} reset by {request.user.username}")
 
         # Mark the user's setup_complete as False
         setup_step.user.profile.setup_complete = False
         setup_step.user.profile.save()
         log_setup_state(
             setup_step.user,
-            "{user} setup marked incomplete, due to reset of {step}".format(
-                user=setup_step.user.username, step=setup_step.step_name()
-            ),
+            f"{setup_step.user.username} setup marked incomplete, due to reset of {setup_step.step_name()}",
         )
         setup_step.prepare()
 
@@ -196,11 +187,7 @@ class SetupStepView(AuthenticatedApiView):
         Call client_action on a setup step
         """
         setup_step.log(
-            "{action} action on {step} by {username}".format(
-                action=action,
-                step=setup_step.step_name(),
-                username=request.user.username,
-            )
+            f"{action} action on {setup_step.step_name()} by {request.user.username}"
         )
         setup_step.client_action(action, data, request)
 
@@ -236,7 +223,8 @@ class SetupStepView(AuthenticatedApiView):
             action = request_data["action"]
             if "data" in request_data:
                 data = request_data["data"]
-        except Exception:
+        except (json.JSONDecodeError, KeyError):
+            logger.exception("Error parsing POST data")
             return HttpResponseBadRequest()
 
         # Instantiate the step instance requested by the POST, from the SetupEvent model.
@@ -268,13 +256,14 @@ class SetupStepView(AuthenticatedApiView):
 class SetupAdminView(AuthenticatedApiView):
     """Admin view for managing user setup steps"""
 
+    # pylint: disable=too-many-locals
     def get(self, request):
         """Get all users for page and their setup steps"""
 
         page = int(request.GET.get("page", 1))
         limit = int(request.GET.get("limit", 20))
         show_incomplete_only = request.GET.get("showIncompleteOnly", "False").lower()
-        q = request.GET.get("q", None)
+        query = request.GET.get("q", None)
         users = []
         filter_args = {}
 
@@ -283,8 +272,8 @@ class SetupAdminView(AuthenticatedApiView):
             filter_args["profile__setup_complete"] = False
 
         # Get users, with most recently joined users that do not have setup_complete, first
-        if q:
-            query = q_to_model_queries(q)
+        if query:
+            query = q_to_model_queries(query)
             results = (
                 get_user_model()
                 .objects.filter(query, **filter_args)
@@ -319,8 +308,6 @@ class SetupAdminView(AuthenticatedApiView):
 
         response = {
             "users": users,
-            "offset": offset,
-            "limit": limit,
             "total": total,
             "totalSteps": len(account_setup_steps),
         }

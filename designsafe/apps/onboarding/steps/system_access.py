@@ -1,19 +1,21 @@
 """System Allocation Access Step for Onboarding."""
 
-from .project_membership import ProjectMembershipStep
+import logging
 from designsafe.apps.onboarding.state import SetupState
 from designsafe.apps.api.users.utils import get_allocations
-import logging
+from .project_membership import ProjectMembershipStep
 
 logger = logging.getLogger(__name__)
 
 
 class SystemAccessStep(ProjectMembershipStep):
+    """System Access Step for Onboarding."""
+
     def __init__(self, user):
         """
         Call super class constructor
         """
-        super(SystemAccessStep, self).__init__(user)
+        super().__init__(user)
         self.user_confirm = "Request System Access"
         self.staff_deny = "Deny System Access Request"
 
@@ -30,6 +32,8 @@ class SystemAccessStep(ProjectMembershipStep):
         self.log("Awaiting system access check")
 
     def has_required_systems(self):
+        """Check if the user has the required systems for accessing the portal."""
+
         systems = self.settings["required_systems"]
         if len(systems) == 0:
             return True
@@ -40,8 +44,8 @@ class SystemAccessStep(ProjectMembershipStep):
             # If the intersection of the set of systems and resources has
             # items, the user has the necessary allocation
             return len(set(systems).intersection(resources)) > 0
-        except Exception as e:
-            logger.error(e)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.error(exc)
             self.fail("We were unable to retrieve your allocations.")
             return False
 

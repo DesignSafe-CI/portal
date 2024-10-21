@@ -1,4 +1,10 @@
+""" State definitions for onboarding steps """
+
+
+# pylint: disable=too-few-public-methods
 class SetupState:
+    """State definitions for onboarding steps"""
+
     # Steps in PENDING will be have their process methods called
     # by portal.apps.onboarding.execute.execute_setup_steps
     PENDING = "pending"
