@@ -82,7 +82,7 @@ const OnboardingResetLinks: React.FC<{
       >
         Reset
       </SecondaryButton>
-      <>|</>
+      |
       <SecondaryButton
         type="link"
         className={styles['action-link']}
@@ -184,7 +184,7 @@ const OnboardingAdminList: React.FC<{
 
   const { users, total, totalSteps } = data;
 
-  let dataSource: TOnboardingAdminTableRowData[] = [];
+  const dataSource: TOnboardingAdminTableRowData[] = [];
   users.forEach((user) => {
     user.steps.forEach((step, index) => {
       return dataSource.push({ user, step, index });

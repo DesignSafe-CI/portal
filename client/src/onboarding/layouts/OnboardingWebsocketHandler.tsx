@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -63,7 +63,7 @@ const OnboardingWebsocketHandler = () => {
   useEffect(() => {
     if (lastMessage !== null) {
       const event = JSON.parse(lastMessage.data);
-      if ((event.event_type = 'setup_event')) {
+      if (event.event_type === 'setup_event') {
         processSetupEvent(event.setup_event);
       }
     }

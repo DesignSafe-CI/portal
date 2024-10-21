@@ -4,13 +4,6 @@ import { Flex, Layout } from 'antd';
 import OnboardingWebsocketHandler from './OnboardingWebsocketHandler';
 
 const OnboardingRoot: React.FC = () => {
-  const headerStyle = {
-    background: 'transparent',
-    padding: 0,
-    borderBottom: '1px solid #707070',
-    alignContent: 'center',
-  };
-
   return (
     <Flex
       vertical

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Layout, Space } from 'antd';
 import { PrimaryButton } from '@client/common-components';
 import { OnboardingStep } from '@client/onboarding';
@@ -26,33 +26,31 @@ export const OnboardingUserLayout: React.FC = () => {
   };
 
   return (
-    <>
-      <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Header style={headerStyle}>
-            {authenticatedUser?.isStaff
-              ? `Onboarding Administration for ${onboardingUser.username} - ${onboardingUser.lastName}, ${onboardingUser.firstName}`
-              : 'The following steps must be completed before accessing the portal'}
-          </Header>
-          <>
-            {onboardingUser.steps.map((step) => (
-              <OnboardingStep step={step} key={step.step} />
-            ))}
-            <div className={styles.access}>
-              <Link className="wb-link" to={`tickets/create`}>
-                Get Help
-              </Link>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <PrimaryButton
-                href="/dashboard/"
-                disabled={!onboardingUser.setupComplete}
-              >
-                Continue
-              </PrimaryButton>
-            </div>
-          </>
-        </Space>
-      </Layout>
-    </>
+    <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Header style={headerStyle}>
+          {authenticatedUser?.isStaff
+            ? `Onboarding Administration for ${onboardingUser.username} - ${onboardingUser.lastName}, ${onboardingUser.firstName}`
+            : 'The following steps must be completed before accessing the portal'}
+        </Header>
+        <>
+          {onboardingUser.steps.map((step) => (
+            <OnboardingStep step={step} key={step.step} />
+          ))}
+          <div className={styles.access}>
+            <Link className="wb-link" to={`tickets/create`}>
+              Get Help
+            </Link>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <PrimaryButton
+              href="/dashboard/"
+              disabled={!onboardingUser.setupComplete}
+            >
+              Continue
+            </PrimaryButton>
+          </div>
+        </>
+      </Space>
+    </Layout>
   );
 };

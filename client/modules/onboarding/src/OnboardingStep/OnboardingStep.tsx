@@ -1,6 +1,6 @@
 import React from 'react';
 import parse from 'html-react-parser';
-import { OnboardingStatus } from '@client/onboarding';
+import { OnboardingStatus } from '../OnboardingStatus/OnboardingStatus';
 import OnboardingActions from '../OnboardingActions/OnboardingActions';
 import { TOnboardingStep } from '@client/hooks';
 import styles from './OnboardingStep.module.css';
