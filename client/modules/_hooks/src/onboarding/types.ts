@@ -6,7 +6,7 @@ export type TSetupStepEvent = {
   message: string;
   data?: {
     setupComplete: boolean;
-  };
+  } | null;
 };
 
 export type TOnboardingStep = {
@@ -16,15 +16,15 @@ export type TOnboardingStep = {
   userConfirm: string;
   staffApprove: string;
   staffDeny: string;
-  state?: string;
+  state?: string | null;
   events: TSetupStepEvent[];
   data?: {
     userlink?: {
       url: string;
       text: string;
     };
-  };
-  customStatus?: string;
+  } | null;
+  customStatus?: string | null;
 };
 
 export type TOnboardingUser = {
