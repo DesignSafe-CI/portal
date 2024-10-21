@@ -295,7 +295,7 @@ class SetupAdminView(AuthenticatedApiView):
 
         total = math.ceil(len(results) / limit)
         offset = (page - 1) * limit
-        page = results[offset : limit * page]
+        page = results[offset : limit * page]  # noqa: E203
         account_setup_steps = getattr(settings, "PORTAL_USER_ACCOUNT_SETUP_STEPS", [])
 
         # Assemble an array with the User data we care about

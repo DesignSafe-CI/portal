@@ -544,11 +544,6 @@ AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
 
-TAPIS_SYSTEMS_TO_CONFIGURE = [
-    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
-]
-
 # Tapis Client Configuration
 PORTAL_ADMIN_USERNAME = os.environ.get('PORTAL_ADMIN_USERNAME')
 TAPIS_TENANT_BASEURL = os.environ.get('TAPIS_TENANT_BASEURL')
@@ -713,20 +708,20 @@ USER_PROJECTS_LIMIT = os.environ.get("USER_PROJECTS_LIMIT", 500)
 # Onboarding
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
-        'step': 'designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep',
-        'settings': {
-            'project_sql_id': 34076  # project id for DesignSafe-Corral
-        }
+        "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+        "settings": {"project_sql_id": 34076},  # project id for DesignSafe-Corral
     },
     {
-        'step': 'designsafe.apps.onboarding.steps.allocation.AllocationStep',
-        'settings': {}
+        "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
+        "settings": {},
     },
     {
-        'step': 'designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3',
-        'settings': {
-            'access_systems': ['cloud.data', 'stampede3', 'frontera'],
-            'credentials_systems': ['cloud.data']
-        }
+        "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+        "settings": {
+            "credentials_systems": ["cloud.data", "designsafe.storage.default"],
+            "create_path_systems": [
+                {"system_id": "designsafe.storage.default", "path": "{username}"}
+            ],
+        },
     },
 ]

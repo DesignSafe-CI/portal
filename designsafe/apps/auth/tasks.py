@@ -4,115 +4,11 @@ import logging
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from celery import shared_task
 from pytas.http import TASClient
-from tapipy.errors import (
-    NotFoundError,
-    BaseTapyException,
-    ForbiddenError,
-    UnauthorizedError,
-)
-from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
-from designsafe.apps.api.tasks import agave_indexer
 from designsafe.apps.api.notifications.models import Notification
-from designsafe.apps.onboarding.steps.system_access_v3 import (
-    register_public_key,
-    create_system_credentials,
-)
-from designsafe.utils.encryption import createKeyPair
-
-
 logger = logging.getLogger(__name__)
-
-
-def get_systems_to_configure(username):
-    """Get systems to configure either during startup or for new user"""
-
-    systems = []
-    for system in settings.TAPIS_SYSTEMS_TO_CONFIGURE:
-        system_copy = system.copy()
-        system_copy["path"] = system_copy["path"].format(username=username)
-        systems.append(system_copy)
-    return systems
-
-
-@shared_task(default_retry_delay=30, max_retries=3, queue="onboarding", bind=True)
-def check_or_configure_system_and_user_directory(
-    self, username, system_id, path, create_path
-):
-    """Check if user has access to system and path, if not, configure it."""
-    try:
-        user_client = get_user_model().objects.get(username=username).tapis_oauth.client
-        user_client.files.listFiles(systemId=system_id, path=path)
-        logger.info(
-            f"System Works: "
-            f"Checked and there is no need to configure system:{system_id} path:{path} for {username}"
-        )
-        return
-    except ObjectDoesNotExist:
-        # User is missing; handling email confirmation process where user has not logged in
-        logger.info(
-            f"New User: "
-            f"Checked and there is a need to configure system:{system_id} path:{path} for {username} "
-        )
-    except BaseTapyException as e:
-        logger.info(
-            f"Unable to list system/files: "
-            f"Checked and there is a need to configure system:{system_id} path:{path} for {username}: {e}"
-        )
-
-    try:
-        if create_path:
-            try:
-                # Use user account to check if path exists and is accessible
-                user_client.files.listFiles(systemId=system_id, path=path)
-                logger.info(
-                    f"Directory for user={username} on system={system_id}/{path} exists and works. "
-                )
-            except (NotFoundError, ForbiddenError, UnauthorizedError):
-                logger.info(
-                    "Ensuring directory exists for user=%s then going to run setfacl on system=%s path=%s",
-                    username,
-                    system_id,
-                    path,
-                )
-
-                tg458981_client = get_tg458981_client()
-
-                # Create directory, resolves NotFoundError
-                tg458981_client.files.mkdir(systemId=system_id, path=path)
-
-                # Set ACLs, resolves UnauthorizedError and ForbiddenError
-                tg458981_client.files.setFacl(
-                    systemId=system_id,
-                    path=path,
-                    operation="ADD",
-                    recursionMethod="PHYSICAL",
-                    aclString=f"d:u:{username}:rwX,u:{username}:rwX,d:u:tg458981:rwX,u:tg458981:rwX,d:o::---,o::---,d:m::rwX,m::rwX",
-                )
-                agave_indexer.apply_async(
-                    kwargs={"systemId": system_id, "filePath": path, "recurse": False},
-                    queue="indexing",
-                )
-
-        # create keys, push to key service and use as credential for Tapis system
-        logger.info(
-            "Creating credentials for user=%s on system=%s", username, system_id
-        )
-        (private_key, public_key) = createKeyPair()
-        register_public_key(username, public_key, system_id)
-        service_account = get_service_account_client()
-        create_system_credentials(
-            service_account, username, public_key, private_key, system_id
-        )
-    except BaseTapyException as exc:
-        logger.exception(
-            "Failed to configure system (i.e. create directory, set acl, create credentials).",
-            extra={"user": username, "systemId": system_id, "path": path},
-        )
-        raise self.retry(exc=exc)
 
 
 @shared_task(default_retry_delay=30, max_retries=3)

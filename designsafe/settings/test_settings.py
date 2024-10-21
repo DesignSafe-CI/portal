@@ -549,11 +549,6 @@ AGAVE_CLIENT_SECRET = 'example_com_client_secret'
 AGAVE_SUPER_TOKEN = 'example_com_client_token'
 AGAVE_STORAGE_SYSTEM = 'storage.example.com'
 
-TAPIS_SYSTEMS_TO_CONFIGURE = [
-    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
-]
-
 # Tapis Client Configuration
 PORTAL_ADMIN_USERNAME = ''
 TAPIS_TENANT_BASEURL = 'https://designsafe.tapis.io'
@@ -771,3 +766,24 @@ FEDORA_URL = ''
 FEDORA_USERNAME = ''
 FEDORA_PASSWORD = ''
 FEDORA_CONTAINER= 'designsafe-publications-dev'
+
+# Onboarding
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+        "settings": {"project_sql_id": 34076},  # project id for DesignSafe-Corral
+    },
+    {
+        "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
+        "settings": {},
+    },
+    {
+        "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+        "settings": {
+            "credentials_systems": ["cloud.data", "designsafe.storage.default"],
+            "create_path_systems": [
+                {"system_id": "designsafe.storage.default", "path": "{username}"}
+            ],
+        },
+    },
+]

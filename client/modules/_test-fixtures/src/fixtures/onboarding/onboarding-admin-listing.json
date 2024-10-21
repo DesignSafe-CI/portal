@@ -1,222 +1,220 @@
 {
-    "status": 200,
-    "response": {
-        "users": [
-            {
+  "status": 200,
+  "response": {
+    "users": [
+      {
+        "username": "testuser2",
+        "lastName": "last2",
+        "firstName": "first2",
+        "email": "first2last2@university.edu",
+        "isStaff": false,
+        "steps": [
+          {
+            "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+            "displayName": "Checking Project Membership",
+            "description": "This confirms if you have access to the project. If not, request access and\n                  wait for the system administrator’s approval.",
+            "userConfirm": "Request Project Access",
+            "staffApprove": "Add to DesignSafe project",
+            "staffDeny": "Deny Project Access Request",
+            "state": "completed",
+            "events": [
+              {
+                "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
                 "username": "testuser2",
-                "lastName": "last2",
-                "firstName": "first2",
-                "email": "first2last2@university.edu",
-                "isStaff": false,
-                "steps": [
-                    {
-                        "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
-                        "displayName": "Checking Project Membership",
-                        "description": "This confirms if you have access to the project. If not, request access and\n                  wait for the system administrator’s approval.",
-                        "userConfirm": "Request Project Access",
-                        "staffApprove": "Add to DesignSafe project",
-                        "staffDeny": "Deny Project Access Request",
-                        "state": "completed",
-                        "events": [
-                            {
-                                "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
-                                "username": "testuser2",
-                                "state": "completed",
-                                "time": "2024-10-16 22:36:52.769105+00:00",
-                                "message": "You have the required project membership to access this portal.",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:51.250723+00:00",
-                                "message": "Beginning automated processing",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
-                                "username": "testuser2",
-                                "state": "pending",
-                                "time": "2024-10-16 22:10:27.244633+00:00",
-                                "message": "Awaiting project membership check",
-                                "data": null
-                            }
-                        ],
-                        "data": null
-                    },
-                    {
-                        "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
-                        "displayName": "Allocations",
-                        "description": "Accessing your allocations. If unsuccessful, verify the PI has added you to the allocations for this project.",
-                        "userConfirm": "Confirm",
-                        "staffApprove": "Approve",
-                        "staffDeny": "Deny",
-                        "state": "completed",
-                        "events": [
-                            {
-                                "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
-                                "username": "testuser2",
-                                "state": "completed",
-                                "time": "2024-10-16 22:36:45.804477+00:00",
-                                "message": "Allocations retrieved",
-                                "data": {
-                                    "hosts": {
-                                        "ls6.tacc.utexas.edu": [
-                                            "TACC-ACI",
-                                            "APCD-dev",
-                                            "PT2050-DataX",
-                                            "DesignSafe-Community",
-                                            "IBN22007",
-                                            "DesignSafe-DCV",
-                                            "DesignSafe-Corral",
-                                            "TACC-ACI-CIC",
-                                            "DS-HPC1",
-                                            "A2CPS"
-                                        ],
-                                        "data.tacc.utexas.edu": [
-                                            "NeuroNex-3DEM",
-                                            "TACC-ACI",
-                                            "DesignSafe-Corral"
-                                        ],
-                                        "ranch.tacc.utexas.edu": [
-                                            "DesignSafe-Community"
-                                        ],
-                                        "vista.tacc.utexas.edu": [
-                                            "TACC-ACI",
-                                            "DesignSafe-Corral",
-                                            "TACC-ACI-CIC"
-                                        ],
-                                        "frontera.tacc.utexas.edu": [
-                                            "TACC-ACI",
-                                            "DesignSafe-Community",
-                                            "DesignSafe-DCV",
-                                            "DesignSafe-Corral",
-                                            "TACC-ACI-CIC",
-                                            "A2CPS",
-                                            "DS-HPC1"
-                                        ],
-                                        "stampede3.tacc.utexas.edu": [
-                                            "TACC-ACI",
-                                            "DesignSafe-Community",
-                                            "DesignSafe-DCV",
-                                            "DesignSafe-Corral",
-                                            "TACC-ACI-CIC",
-                                            "DS-HPC1"
-                                        ]
-                                    }
-                                }
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:43.466479+00:00",
-                                "message": "Retrieving your allocations",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:43.355484+00:00",
-                                "message": "Beginning automated processing",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
-                                "username": "testuser2",
-                                "state": "pending",
-                                "time": "2024-10-16 22:36:43.156603+00:00",
-                                "message": "Awaiting allocation retrieval",
-                                "data": null
-                            }
-                        ],
-                        "data": null
-                    },
-                    {
-                        "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                        "displayName": "System Access",
-                        "description": "Setting up access to TACC storage and execution systems. No action required.",
-                        "userConfirm": "Confirm",
-                        "staffApprove": "Approve",
-                        "staffDeny": "Deny",
-                        "state": "completed",
-                        "events": [
-                            {
-                                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                                "username": "testuser2",
-                                "state": "completed",
-                                "time": "2024-10-16 22:36:50.968677+00:00",
-                                "message": "User is processed.",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:50.851077+00:00",
-                                "message": "Credentials already created for system: cloud.data",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:47.644630+00:00",
-                                "message": "Successfully granted permissions for system: frontera",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:47.065659+00:00",
-                                "message": "Successfully granted permissions for system: stampede3",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:46.605071+00:00",
-                                "message": "Successfully granted permissions for system: cloud.data",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:45.956481+00:00",
-                                "message": "Processing system access for user sal",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                                "username": "testuser2",
-                                "state": "processing",
-                                "time": "2024-10-16 22:36:45.883764+00:00",
-                                "message": "Beginning automated processing",
-                                "data": null
-                            },
-                            {
-                                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-                                "username": "testuser2",
-                                "state": "pending",
-                                "time": "2024-10-16 22:10:26.862693+00:00",
-                                "message": "Awaiting TACC systems access.",
-                                "data": null
-                            }
-                        ],
-                        "data": null
-                    }
-                ],
-                "setupComplete": true
-            }
+                "state": "completed",
+                "time": "2024-10-16 22:36:52.769105+00:00",
+                "message": "You have the required project membership to access this portal.",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:51.250723+00:00",
+                "message": "Beginning automated processing",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+                "username": "testuser2",
+                "state": "pending",
+                "time": "2024-10-16 22:10:27.244633+00:00",
+                "message": "Awaiting project membership check",
+                "data": null
+              }
+            ],
+            "data": null
+          },
+          {
+            "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
+            "displayName": "Allocations",
+            "description": "Accessing your allocations. If unsuccessful, verify the PI has added you to the allocations for this project.",
+            "userConfirm": "Confirm",
+            "staffApprove": "Approve",
+            "staffDeny": "Deny",
+            "state": "completed",
+            "events": [
+              {
+                "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
+                "username": "testuser2",
+                "state": "completed",
+                "time": "2024-10-16 22:36:45.804477+00:00",
+                "message": "Allocations retrieved",
+                "data": {
+                  "hosts": {
+                    "ls6.tacc.utexas.edu": [
+                      "TACC-ACI",
+                      "APCD-dev",
+                      "PT2050-DataX",
+                      "DesignSafe-Community",
+                      "IBN22007",
+                      "DesignSafe-DCV",
+                      "DesignSafe-Corral",
+                      "TACC-ACI-CIC",
+                      "DS-HPC1",
+                      "A2CPS"
+                    ],
+                    "data.tacc.utexas.edu": [
+                      "NeuroNex-3DEM",
+                      "TACC-ACI",
+                      "DesignSafe-Corral"
+                    ],
+                    "ranch.tacc.utexas.edu": ["DesignSafe-Community"],
+                    "vista.tacc.utexas.edu": [
+                      "TACC-ACI",
+                      "DesignSafe-Corral",
+                      "TACC-ACI-CIC"
+                    ],
+                    "frontera.tacc.utexas.edu": [
+                      "TACC-ACI",
+                      "DesignSafe-Community",
+                      "DesignSafe-DCV",
+                      "DesignSafe-Corral",
+                      "TACC-ACI-CIC",
+                      "A2CPS",
+                      "DS-HPC1"
+                    ],
+                    "stampede3.tacc.utexas.edu": [
+                      "TACC-ACI",
+                      "DesignSafe-Community",
+                      "DesignSafe-DCV",
+                      "DesignSafe-Corral",
+                      "TACC-ACI-CIC",
+                      "DS-HPC1"
+                    ]
+                  }
+                }
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:43.466479+00:00",
+                "message": "Retrieving your allocations",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:43.355484+00:00",
+                "message": "Beginning automated processing",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
+                "username": "testuser2",
+                "state": "pending",
+                "time": "2024-10-16 22:36:43.156603+00:00",
+                "message": "Awaiting allocation retrieval",
+                "data": null
+              }
+            ],
+            "data": null
+          },
+          {
+            "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+            "displayName": "System Access",
+            "description": "Setting up access to TACC storage and execution systems. No action required.",
+            "userConfirm": "Confirm",
+            "staffApprove": "Approve",
+            "staffDeny": "Deny",
+            "state": "completed",
+            "events": [
+              {
+                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+                "username": "testuser2",
+                "state": "completed",
+                "time": "2024-10-16 22:36:50.968677+00:00",
+                "message": "User is processed.",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:50.851077+00:00",
+                "message": "Credentials already created for system: cloud.data",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:47.644630+00:00",
+                "message": "Successfully granted permissions for system: frontera",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:47.065659+00:00",
+                "message": "Successfully granted permissions for system: stampede3",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:46.605071+00:00",
+                "message": "Successfully granted permissions for system: cloud.data",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:45.956481+00:00",
+                "message": "Processing system access for user sal",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+                "username": "testuser2",
+                "state": "processing",
+                "time": "2024-10-16 22:36:45.883764+00:00",
+                "message": "Beginning automated processing",
+                "data": null
+              },
+              {
+                "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+                "username": "testuser2",
+                "state": "pending",
+                "time": "2024-10-16 22:10:26.862693+00:00",
+                "message": "Awaiting TACC systems access.",
+                "data": null
+              }
+            ],
+            "data": null
+          }
         ],
-        "offset": 0,
-        "limit": 4,
-        "total": 400,
-        "totalSteps": 3
-    }
+        "setupComplete": true
+      }
+    ],
+    "offset": 0,
+    "limit": 4,
+    "total": 400,
+    "totalSteps": 3
+  }
 }
