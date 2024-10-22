@@ -31,7 +31,7 @@ app.conf.update(
             'schedule': crontab(minute=0, hour=0),
         },
         'reindex_projects': {
-            'task': 'designsafe.apps.api.tasks.reindex_projects',
+            'task': 'designsafe.apps.api.projects_v2.tasks.reindex_projects_async',
             'schedule': crontab(hour=0, minute=0)
         },
         'clear_old_notifications': {
