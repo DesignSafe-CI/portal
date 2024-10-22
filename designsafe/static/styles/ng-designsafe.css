@@ -1074,8 +1074,3 @@ i[class^="icon-ls-pre/post"]:before,
 :root {
     color-scheme: only light !important;
 }
-
-.html-app-container {
-    padding: 30px !important;
-    margin-top: 20px !important;
-}
