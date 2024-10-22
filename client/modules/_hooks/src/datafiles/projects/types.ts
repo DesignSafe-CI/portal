@@ -160,6 +160,7 @@ export type TPreviewTreeData = {
   uuid: string;
   value: TEntityValue;
   order: number;
+  version?: number;
   publicationDate?: string;
   children: TPreviewTreeData[];
 };

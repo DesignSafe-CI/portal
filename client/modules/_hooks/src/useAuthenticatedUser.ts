@@ -4,6 +4,7 @@ export type TUser = {
   lastName: string;
   email: string;
   institution: string;
+  homedir: string;
 };
 
 declare global {

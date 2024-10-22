@@ -134,7 +134,7 @@ export const PublishedListing: React.FC = () => {
                 type="error"
                 description={
                   <span>
-                    An unexpected error occurred while retrieving publications."
+                    An unexpected error occurred while retrieving publications.
                   </span>
                 }
               />

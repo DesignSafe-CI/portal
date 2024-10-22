@@ -1,6 +1,3 @@
-[![Build Status](https://travis-ci.org/DesignSafe-CI/portal.svg?branch=master)](https://travis-ci.org/DesignSafe-CI/portal)
-[![codecov](https://codecov.io/gh/DesignSafe-CI/portal/branch/master/graph/badge.svg)](https://codecov.io/gh/DesignSafe-CI/portal)
-
 # DesignSafe-CI Portal
 
 ## Prequisites for running the portal application
@@ -11,8 +8,8 @@ on.
 
 - [Install Docker][3]
 - [Install Docker Compose][4]
-- [Install Make][12]
-- [Node.js][13] 16.x
+- [Install Make][11]
+- [Node.js][12] 20.x
 
 If you are on a Mac or a Windows machine, the recommended method is to install
 [Docker Desktop][5], which will install both Docker and Docker Compose, which is required to run Docker on Mac/Windows hosts.
@@ -35,18 +32,23 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    Required variables:
 
    - `DJANGO_DEBUG`: should be set to `True` for development
-   - `DJANGO_SECRET`: should be changed for production
+   - `DJANGO_SECRET_KEY`: should be changed for production
    - `TAS_*`: should be set to enable direct access to `django.contrib.admin`
-   - `AGAVE_*`: should be set to enable Agave API integration (authentication, etc.)
+   - `TAPIS_*`: should be set to enable Tapis API integration (authentication, etc.)
    - `RT_*`: should be set to enable ticketing
 
    Make a copy of [rabbitmq.sample.env](conf/env_files/rabbitmq.sample.env)
    then rename it to `rabbitmq.env`.
 
-   Make a copy of [external_resource_secrets.sample.py](designsafe/settings/external_resource_secrets.sample.py)
-   and rename it to `external_resource_secrets.py`.
+3. Configure ngrok
 
-3. Build the containers and frontend packages
+   a. Install [ngrok](https://ngrok.com/docs/getting-started/), and create an ngrok account.
+
+   b. Copy [conf/env_files/ngrok.sample.env](conf/env_files/ngrok.sample.env) to `conf/env_files/ngrok.env`.
+
+   c. In `conf/env_files/ngrok.env`, set the `NGROK_AUTHTOKEN` and `NGROK_DOMAIN` variables using your authtoken and static ngrok domain found in your [ngrok dashboard](https://dashboard.ngrok.com/).
+
+4. Build the containers and frontend packages
 
    1. Containers:
       ```sh
@@ -72,7 +74,7 @@ If you are on a Mac or a Windows machine, the recommended method is to install
       npm run start
       ```
 
-4. Start local containers
+5. Start local containers
 
    ```
    $ make start
@@ -89,11 +91,11 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    $ ./manage.py createsuperuser
    ```
 
-5. Setup local access to the portal:
+6. Setup local access to the portal:
 
    Add a record to your local hosts file for `127.0.0.1 designsafe.dev`
    ```
-   sudo vim /etc/hosts
+   $ sudo vim /etc/hosts
    ```
 
    Now you can navigate to [designsafe.dev](designsafe.dev) in your browser.
@@ -178,11 +180,10 @@ See the [DesignSafe Styles Reference][7] for style reference and custom CSS docu
 
 ### Updating Python dependencies
 
-For simplicity the Dockerfile uses a `requirements.txt` exported from Poetry. To add a new dependency:
+This project uses [Python Poetry](https://python-poetry.org/docs/) to manage dependencies. To add a new dependency:
 
 1. Run `poetry add $NEW_DEPENDENCY`.
-2. Run `poetry export > requirements.txt --dev --without-hashes` in the repository root.
-3. Rebuild the dev image with `docker-compose -f conf/docker/docker-compose.yml build`
+2. Rebuild the dev image with `make build-dev`
 
 ## Testing
 
@@ -200,16 +201,14 @@ Django tests should be written according to standard [Django testing procedures]
 You can run Django tests with the following command:
 
 ```shell
-$ docker exec -it des_django pytest designsafe
+$ docker exec -it des_django pytest -ra designsafe
 ```
 
 ### Frontend tests
 
-Frontend tests are [Jasmine][9] tests executed using the [Karma engine][10]. Testing
-guidelines can be found in the [AngularJS Developer Guide on Unit Testing][11].
+Frontend tests are [Vitest][9] tests executed using [Nx][10].
 
-To run frontend tests, ensure that all scripts and test scripts are configured in
-[`karma-conf.js`](karma-conf.js) and then run the command:
+To run frontend tests, run the command:
 
 ```shell
 $ npm run test
@@ -217,47 +216,31 @@ $ npm run test
 
 ## Development setup
 
-Use `docker-compose` to run the portal in development. The default compose file,
-[`docker-compose.yml`](docker-compose.yml) runs the main django server in development
+Use `docker compose` to run the portal in development. The default compose file,
+[`docker-compose.yml`](conf/docker/docker-compose.yml) runs the main django server in development
 mode with a redis service for websockets support. You can optionally enable the EF sites
 for testing.
 
 ```shell
-$ docker-compose -f conf/docker/docker-compose.yml build
-$ docker-compose -f conf/docker/docker-compose-dev.all.debug.yml up
-$ npm run dev
+$ make build-dev
+$ make start
+$ npm run start
+$ docker run -v `pwd`:`pwd` -w `pwd` -it node:16  /bin/bash -c "npm run dev"
 ```
 
 When using this compose file, your Tapis Client should be configured with a `callback_url`
 of `http://$DOCKER_HOST_IP:8000/auth/tapis/callback/`.
 
-For developing some services, e.g. Box.com integration, https support is required. To
-enable an Nginx http proxy run using the [`docker-compose-http.yml`](docker-compose-http.yml)
-file. This file configures the same services as the default compose file, but it also sets
-up an Nginx proxy secured by a self-signed certificate.
 
 ```shell
 $ docker-compose -f docker-compose-http.yml build
 $ docker-compose -f docker-compose-http.yml up
 ```
 
-### Agave filesystem setup
-1. Delete all of the old metadata objects using this command:
-
-  `metadata-list Q '{"name": "designsafe metadata"}' | while read x; do metadata-delete $x; done;`
-2. Run `dsapi/agave/tools/bin/walker.py` to create the metadata objects for the existing files in your FS.
-
-  `python portal/dsapi/agave/tools/bin/walker.py <command> <api_server> <token> <systemId> <base_folder>`
-  - `base_folder` is your username, if you want to fix everything under your home dir.
-  - `command`:
-    - `files`: Walk through the files and print their path.
-    - `meta`: Walk through the metadata objs in a filesystem-like manner and print their path.
-    - `files-fix`: Check if there's a meta obj for every file, if not create the meta obj.
-    - `meta-fix`: Check if there's a file for every meta obj, if not delete the meta obj.
 
 ## Production setup
 
-Production deployment is managed by ansible. See https://github.com/designsafe-ci/ansible.
+Production deployment is managed by Camino. See https://github.com/TACC/Camino.
 
 
 [1]: https://docs.docker.com/
@@ -267,8 +250,7 @@ Production deployment is managed by ansible. See https://github.com/designsafe-c
 [5]: https://docs.docker.com/desktop/
 [7]: https://github.com/DesignSafe-CI/portal/wiki/CSS-Styles-Reference
 [8]: https://docs.djangoproject.com/en/dev/topics/testing/
-[9]: http://jasmine.github.io/1.3/introduction.html
-[10]: http://karma-runner.github.io/0.12/intro/installation.html
-[11]: https://docs.angularjs.org/guide/unit-testing
-[12]: https://www.gnu.org/software/make/
-[13]: https://nodejs.org/
+[9]: https://vitest.dev/
+[10]: https://nx.dev/getting-started/intro
+[11]: https://www.gnu.org/software/make/
+[12]: https://nodejs.org/

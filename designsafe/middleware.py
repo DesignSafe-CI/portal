@@ -30,7 +30,7 @@ class DesignsafeProfileUpdateMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         blocked_path = request.path.startswith(
-            ("/data", "/applications", "/rw/workspace", "/recon-portal", "/dashboard")
+            ("/data", "/applications", "/rw/workspace", "/workspace", "/recon-portal", "/dashboard")
         )
         if request.user.is_authenticated and request.user.profile.update_required and blocked_path:
             messages.warning(
@@ -65,7 +65,7 @@ class DesignSafeTermsMiddleware(TermsAndConditionsRedirectMiddleware):
                              'Use is required for continued use of DesignSafe '
                              'resources.' % accept_url)
         return None
-    
+
 
 class SiteMessageMiddleware(MiddlewareMixin):
     def process_request(self, request):

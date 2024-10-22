@@ -20,6 +20,7 @@ designsafe/templates/react-assets.html
 designsafe.env
 mysql.env
 rabbitmq.env
+ngrok.env
 rabbitmq.conf
 mysql.cnf
 
