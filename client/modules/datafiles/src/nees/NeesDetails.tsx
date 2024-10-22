@@ -117,10 +117,10 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
                   <td>
                     {exp.creators
                       ? exp.creators?.map((c) => (
-                        <div key={c.lastName}>
-                          {c.firstName} {c.lastName}
-                        </div>
-                      ))
+                          <div key={c.lastName}>
+                            {c.firstName} {c.lastName}
+                          </div>
+                        ))
                       : 'No Creators Listed'}
                   </td>
                 </tr>
@@ -212,16 +212,16 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
                   <td>
                     {exp.material
                       ? exp.material?.map((mat) => (
-                        <div key={mat.component}>
-                          <div>{mat.component}:</div>
-                          <div>
-                            {mat.materials?.map((mats) => (
-                              <div key={mats}>{mats}</div>
-                            ))}
+                          <div key={mat.component}>
+                            <div>{mat.component}:</div>
+                            <div>
+                              {mat.materials?.map((mats) => (
+                                <div key={mats}>{mats}</div>
+                              ))}
+                            </div>
+                            <br />
                           </div>
-                          <br />
-                        </div>
-                      ))
+                        ))
                       : 'No Materials Listed  '}
                   </td>
                 </tr>
@@ -297,10 +297,10 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
                   <td className={styles['nees-td']}>
                     {neesProjectData?.pis
                       ? neesProjectData?.pis.map((u) => (
-                        <div key={u.lastName}>
-                          {u.firstName} {u.lastName}
-                        </div>
-                      ))
+                          <div key={u.lastName}>
+                            {u.firstName} {u.lastName}
+                          </div>
+                        ))
                       : 'No PIs Listed'}
                   </td>
                 </tr>
@@ -313,10 +313,10 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
                   <td className={styles['nees-td']}>
                     {neesProjectData?.organization
                       ? neesProjectData?.organization.map((u) => (
-                        <div key={u.name}>
-                          {u.name} {u.state}, {u.country}
-                        </div>
-                      ))
+                          <div key={u.name}>
+                            {u.name} {u.state}, {u.country}
+                          </div>
+                        ))
                       : 'No Organizations Listed'}
                   </td>
                 </tr>
@@ -347,12 +347,12 @@ export const NeesDetails: React.FC<{ neesId: string }> = ({ neesId }) => {
                   <td className={styles['nees-td']}>
                     {neesProjectData?.sponsor
                       ? neesProjectData?.sponsor?.map((u) => (
-                        <div key={u.name}>
-                          <Link to={u.url} key={u.name}>
-                            {u.name}
-                          </Link>
-                        </div>
-                      ))
+                          <div key={u.name}>
+                            <Link to={u.url} key={u.name}>
+                              {u.name}
+                            </Link>
+                          </div>
+                        ))
                       : 'No Sponsors Listed'}
                   </td>
                 </tr>
