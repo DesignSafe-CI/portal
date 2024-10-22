@@ -146,11 +146,13 @@ class SystemAccessStepV3(AbstractStep):
                 logger.error(exc)
                 self.fail(f"Failed to create credentials for system: {system}")
 
-        for system_id, path in self.settings.get("create_path_systems") or []:
+        for system in self.settings.get("create_path_systems") or []:
+            system_id = system["system_id"]
+            path = system["path"].format(username=self.user.username)
             try:
                 self.check_system(system_id, path)
                 self.log(
-                    f"Path and permissions already created for system:{system_id} path:{path} for {self.user.username}"
+                    f"Path and permissions already created for system: {system_id} and path: {path} for user: {self.user.username}"
                 )
                 continue
             except (NotFoundError, ForbiddenError, UnauthorizedError):
