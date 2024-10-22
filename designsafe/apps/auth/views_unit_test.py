@@ -76,9 +76,13 @@ def test_tapis_callback_mismatched_state(client):
 
 def test_launch_setup_checks(regular_user, mocker):
     mock_execute_setup_steps = mocker.patch(
-        "portal.apps.auth.views.execute_setup_steps"
+        "designsafe.apps.auth.views.execute_setup_steps"
+    )
+    mock_new_user_setup_check = mocker.patch(
+        "designsafe.apps.auth.views.new_user_setup_check"
     )
     launch_setup_checks(regular_user)
+    mock_new_user_setup_check.assert_called_with(regular_user)
     mock_execute_setup_steps.apply_async.assert_called_with(
         args=[regular_user.username]
     )
@@ -86,6 +90,13 @@ def test_launch_setup_checks(regular_user, mocker):
 
 def test_launch_setup_checks_already_onboarded(regular_user, mocker):
     regular_user.profile.setup_complete = True
-    mock_index_allocations = mocker.patch("portal.apps.auth.views.index_allocations")
+    mocker.patch("designsafe.apps.auth.views.new_user_setup_check")
+    mock_execute_setup_steps = mocker.patch(
+        "designsafe.apps.auth.views.execute_setup_steps"
+    )
+    mock_cache_allocations = mocker.patch(
+        "designsafe.apps.auth.views.cache_allocations"
+    )
     launch_setup_checks(regular_user)
-    mock_index_allocations.apply_async.assert_called_with(args=[regular_user.username])
+    mock_cache_allocations.apply_async.assert_called_with(args=(regular_user.username,))
+    mock_execute_setup_steps.apply_async.assert_not_called()

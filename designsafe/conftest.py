@@ -6,6 +6,7 @@ import json
 from unittest.mock import patch
 from django.conf import settings
 from designsafe.apps.auth.models import TapisOAuthToken
+from designsafe.apps.accounts.models import DesignSafeProfile
 
 
 @pytest.fixture
@@ -34,6 +35,7 @@ def regular_user(django_user_model, mock_tapis_client):
         expires_in=14400,
         created=1523633447,
     )
+    DesignSafeProfile.objects.create(user=user)
 
     yield user
 
@@ -41,12 +43,12 @@ def regular_user(django_user_model, mock_tapis_client):
 @pytest.fixture
 def regular_user_using_jwt(regular_user, client):
     """Fixture for regular user who is using jwt for authenticated requests"""
-    with patch('designsafe.apps.api.decorators.Tapis') as mock_tapis:
+    with patch("designsafe.apps.api.decorators.Tapis") as mock_tapis:
         # Mock the Tapis's validate_token method within the tapis_jwt_login decorator
         mock_validate_token = mock_tapis.return_value.validate_token
         mock_validate_token.return_value = {"tapis/username": regular_user.username}
 
-        client.defaults['HTTP_X_TAPIS_TOKEN'] = 'fake_token_string'
+        client.defaults["HTTP_X_TAPIS_TOKEN"] = "fake_token_string"
 
         yield client
 
@@ -80,3 +82,26 @@ def tapis_tokens_create_mock():
             "r",
         )
     )
+
+
+@pytest.fixture
+def staff_user(django_user_model, mock_tapis_client):
+    django_user_model.objects.create_user(username="staff", password="password")
+    user = django_user_model.objects.get(username="staff")
+    user.is_staff = True
+    user.save()
+    TapisOAuthToken.objects.create(
+        user=user,
+        access_token="1234fsf",
+        refresh_token="123123123",
+        expires_in=14400,
+        created=1523633447,
+    )
+    DesignSafeProfile.objects.create(user=user)
+    yield user
+
+
+@pytest.fixture
+def authenticated_staff(client, staff_user):
+    client.force_login(staff_user)
+    return staff_user

@@ -43,7 +43,7 @@ def log_setup_state(user, message):
     # This will also signal the front end
     SetupEvent.objects.create(
         user=user,
-        step="portal.apps.onboarding.execute.execute_setup_steps",
+        step="designsafe.apps.onboarding.execute.execute_setup_steps",
         state=(
             SetupState.COMPLETED if user.profile.setup_complete else SetupState.FAILED
         ),

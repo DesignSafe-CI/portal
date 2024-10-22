@@ -11,7 +11,7 @@ def disconnect_signal():
 
 
 @pytest.fixture
-def mock_step(settings, regular_user, django_db_reset_sequences):
+def mock_step(settings, regular_user):
     yield MockStep(regular_user)
 
 
@@ -21,7 +21,9 @@ def test_init_not_event(mock_step):
 
 
 def test_step_name(mock_step):
-    assert mock_step.step_name() == "portal.apps.onboarding.steps.test_steps.MockStep"
+    assert (
+        mock_step.step_name() == "designsafe.apps.onboarding.steps.test_steps.MockStep"
+    )
 
 
 def test_log(mock_step, regular_user):
@@ -62,7 +64,7 @@ def test_str(mock_step):
     mock_step.state = SetupState.PENDING
     assert (
         str(mock_step)
-        == "<portal.apps.onboarding.steps.test_steps.MockStep for username is pending>"
+        == "<designsafe.apps.onboarding.steps.test_steps.MockStep for username is pending>"
     )
 
 
@@ -79,7 +81,7 @@ def test_step_missing(regular_user, settings):
 def test_step_setting_missing(regular_user, settings):
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         {
-            "step": "portal.apps.onboarding.steps.test_steps.MockStep",
+            "step": "designsafe.apps.onboarding.steps.test_steps.MockStep",
         }
     ]
     mock_step = MockStep(regular_user)

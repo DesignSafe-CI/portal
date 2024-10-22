@@ -44,7 +44,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
 
-
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -625,6 +625,20 @@ LOGGING = {
     },
 }
 
+# Channels
+WSGI_APPLICATION = 'designsafe.wsgi.application'
+ASGI_APPLICATION = 'designsafe.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.get('WS_BACKEND_HOST'),
+                       os.environ.get('WS_BACKEND_PORT'))],
+        },
+    },
+}
+
+
 PORTAL_DATA_DEPOT_MANAGERS = {
     'agave': 'designsafe.apps.api.agave.filemanager.private_data.PrivateDataFileManager',
     'shared': 'designsafe.apps.api.agave.filemanager.shared_data.SharedDataFileManager',
@@ -770,20 +784,22 @@ FEDORA_CONTAINER= 'designsafe-publications-dev'
 # Onboarding
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
-        "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
-        "settings": {"project_sql_id": 34076},  # project id for DesignSafe-Corral
-    },
-    {
-        "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
-        "settings": {},
-    },
-    {
-        "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-        "settings": {
-            "credentials_systems": ["cloud.data", "designsafe.storage.default"],
-            "create_path_systems": [
-                {"system_id": "designsafe.storage.default", "path": "{username}"}
-            ],
-        },
-    },
+        'step': 'designsafe.apps.onboarding.steps.test_steps.MockStep',
+        'settings': {
+            'key': 'value'
+        }
+    }
 ]
+
+# TAS Authentication.
+TAS_URL = 'https://test.com'
+TAS_CLIENT_KEY = 'test'
+TAS_CLIENT_SECRET = 'test'
+
+# Redmine Tracker Authentication.
+RT_URL = 'test'
+RT_HOST = 'https://test.com'
+RT_UN = 'test'
+RT_PW = 'test'
+RT_QUEUE = 'test'
+RT_TAG = 'test_tag'

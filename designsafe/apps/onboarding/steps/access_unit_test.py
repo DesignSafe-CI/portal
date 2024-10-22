@@ -21,7 +21,7 @@ class TestRequestAccessStep(TestCase):
     def tearDown(self):
         super(TestRequestAccessStep, self).tearDown()
 
-    @patch("portal.apps.onboarding.steps.access.RequestAccessStep.log")
+    @patch("designsafe.apps.onboarding.steps.access.RequestAccessStep.log")
     def test_prepare(self, mock_log):
         # prepare should log a STAFFWAIT state
         step = RequestAccessStep(self.user)
@@ -29,8 +29,8 @@ class TestRequestAccessStep(TestCase):
         self.assertEqual(step.state, SetupState.PENDING)
         mock_log.assert_called_with(ANY)
 
-    @patch("portal.apps.onboarding.steps.access.RequestAccessStep.fail")
-    @patch("portal.apps.onboarding.steps.access.RequestAccessStep.complete")
+    @patch("designsafe.apps.onboarding.steps.access.RequestAccessStep.fail")
+    @patch("designsafe.apps.onboarding.steps.access.RequestAccessStep.complete")
     def test_not_staff(self, mock_complete, mock_fail):
         step = RequestAccessStep(self.user)
         request = RequestFactory().post("/api/setup/test")
@@ -39,7 +39,7 @@ class TestRequestAccessStep(TestCase):
         mock_complete.assert_not_called()
         mock_fail.assert_not_called()
 
-    @patch("portal.apps.onboarding.steps.access.RequestAccessStep.complete")
+    @patch("designsafe.apps.onboarding.steps.access.RequestAccessStep.complete")
     def test_staff_approve(self, mock_complete):
         # staff_approve should log a COMPLETED state
         step = RequestAccessStep(self.user)
@@ -48,7 +48,7 @@ class TestRequestAccessStep(TestCase):
         step.client_action("staff_approve", None, request)
         mock_complete.assert_called_with(ANY)
 
-    @patch("portal.apps.onboarding.steps.access.RequestAccessStep.fail")
+    @patch("designsafe.apps.onboarding.steps.access.RequestAccessStep.fail")
     def test_fail_actions(self, mock_fail):
         # staff_approve should log a FAILED state
         step = RequestAccessStep(self.user)

@@ -14,12 +14,19 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture(autouse=True)
 def mocked_executor(mocker):
-    yield mocker.patch("portal.apps.onboarding.api.views.execute_setup_steps")
+    yield mocker.patch("designsafe.apps.onboarding.api.views.execute_setup_steps")
 
 
 @pytest.fixture(autouse=True)
 def mocked_log_setup_state(mocker):
-    yield mocker.patch("portal.apps.onboarding.api.views.log_setup_state")
+    yield mocker.patch("designsafe.apps.onboarding.api.views.log_setup_state")
+
+
+@pytest.fixture(autouse=True)
+def mocked_get_tas_client(mocker):
+    yield mocker.patch(
+        "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep.get_tas_client"
+    )
 
 
 """
@@ -27,29 +34,20 @@ SetupStepView tests
 """
 
 
-def test_get_user(client, authenticated_user):
-    response = client.get(
-        "/api/onboarding/user/{}/".format(authenticated_user.username)
-    )
-    assert response.status_code == 200
-    result = json.loads(response.content)
-    assert result["username"] == "username"
-
-
 def test_get_user_unauthenticated_forbidden(client, regular_user):
     response = client.get("/api/onboarding/user/{}/".format(regular_user.username))
-    assert response.status_code == 302
+    assert response.status_code == 401
 
 
-def test_get_other_user_forbidden(client, authenticated_user, regular_user2):
-    response = client.get("/api/onboarding/user/{}/".format(regular_user2.username))
+def test_get_other_user_forbidden(client, authenticated_user, staff_user):
+    response = client.get("/api/onboarding/user/{}/".format(staff_user.username))
     assert response.status_code == 403
 
 
 def test_get_user_as_staff(client, authenticated_staff, regular_user):
     response = client.get("/api/onboarding/user/{}/".format(regular_user.username))
     assert response.status_code == 200
-    result = json.loads(response.content)
+    result = json.loads(response.content)["response"]
     assert result["username"] == regular_user.username
     assert len(result["steps"][0]["events"]) == 0
 
@@ -58,7 +56,7 @@ def test_get_user_as_staff_with_steps(
     settings, authenticated_staff, client, mock_steps
 ):
     response = client.get("/api/onboarding/user/username", follow=True)
-    result = response.json()
+    result = response.json()["response"]
 
     # Make sure result json is correct.
     assert result["username"] == "username"
@@ -75,13 +73,14 @@ def test_get_user_as_user(client, settings, authenticated_user, mock_steps):
     response = client.get(
         "/api/onboarding/user/{}".format(authenticated_user.username), follow=True
     )
-    result = response.json()
+    result = response.json()["response"]
 
-    result = json.loads(response.content)
+    result = json.loads(response.content)["response"]
     assert result["username"] == authenticated_user.username
     assert "steps" in result
     assert (
-        result["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
+        result["steps"][0]["step"]
+        == "designsafe.apps.onboarding.steps.test_steps.MockStep"
     )
     assert result["steps"][0]["displayName"] == "Mock Step"
     assert result["steps"][0]["state"] == SetupState.COMPLETED
@@ -90,7 +89,7 @@ def test_get_user_as_user(client, settings, authenticated_user, mock_steps):
 
 def test_retry_step(client, settings, authenticated_user, mock_retry_step, mocker):
     mock_execute_single_step = mocker.patch(
-        "portal.apps.onboarding.api.views.execute_single_step"
+        "designsafe.apps.onboarding.api.views.execute_single_step"
     )
     response = client.get(
         "/api/onboarding/user/{}".format(authenticated_user.username), follow=True
@@ -98,14 +97,15 @@ def test_retry_step(client, settings, authenticated_user, mock_retry_step, mocke
     mock_execute_single_step.apply_async.assert_called_with(
         args=[
             authenticated_user.username,
-            "portal.apps.onboarding.steps.test_steps.MockStep",
+            "designsafe.apps.onboarding.steps.test_steps.MockStep",
         ]
     )
-    result = json.loads(response.content)
+    result = json.loads(response.content)["response"]
     assert result["username"] == authenticated_user.username
     assert "steps" in result
     assert (
-        result["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
+        result["steps"][0]["step"]
+        == "designsafe.apps.onboarding.steps.test_steps.MockStep"
     )
     assert result["steps"][0]["state"] == SetupState.PROCESSING
 
@@ -145,7 +145,7 @@ def test_reset_not_staff(client, authenticated_user):
         data=json.dumps(
             {
                 "action": "reset",
-                "step": "portal.apps.onboarding.steps.test_steps.MockStep",
+                "step": "designsafe.apps.onboarding.steps.test_steps.MockStep",
             }
         ),
     )
@@ -170,8 +170,17 @@ def test_reset(rf, staff_user, regular_user, mocked_log_setup_state):
     assert not mock_step.user.profile.setup_complete
 
 
-def test_complete_not_staff(client, authenticated_user, regular_user2):
-    response = client.post("/api/onboarding/user/{}/".format(regular_user2))
+def test_complete_not_staff(client, authenticated_user):
+    response = client.post(
+        "/api/onboarding/user/{}/".format(authenticated_user.username),
+        content_type="application/json",
+        data=json.dumps(
+            {
+                "action": "complete",
+                "step": "designsafe.apps.onboarding.steps.test_steps.MockStep",
+            }
+        ),
+    )
     assert response.status_code == 403
 
 
@@ -184,19 +193,19 @@ def test_complete(
         data=json.dumps(
             {
                 "action": "complete",
-                "step": "portal.apps.onboarding.steps.test_steps.MockStep",
+                "step": "designsafe.apps.onboarding.steps.test_steps.MockStep",
             }
         ),
     )
 
     # set_state should have put MockStep in COMPLETED, as per request
     events = [event for event in SetupEvent.objects.all()]
-    assert events[-1].step == "portal.apps.onboarding.steps.test_steps.MockStep"
+    assert events[-1].step == "designsafe.apps.onboarding.steps.test_steps.MockStep"
     assert events[-1].state == SetupState.COMPLETED
 
     # execute_setup_steps should have been run
     mocked_executor.apply_async.assert_called_with(args=[regular_user.username])
-    last_event = json.loads(response.content)
+    last_event = json.loads(response.content)["response"]
     assert last_event["state"] == SetupState.COMPLETED
 
 
@@ -223,7 +232,8 @@ def test_get_user_onboarding(mock_steps, regular_user):
     # Test retrieving a user's events
     result = get_user_onboarding(regular_user)
     assert (
-        result["steps"][0]["step"] == "portal.apps.onboarding.steps.test_steps.MockStep"
+        result["steps"][0]["step"]
+        == "designsafe.apps.onboarding.steps.test_steps.MockStep"
     )
 
 
@@ -231,7 +241,7 @@ def test_get_no_profile(client, authenticated_staff, regular_user):
     # Test that no object is returned for a user with no profile
     regular_user.profile.delete()
     response = client.get("/api/onboarding/admin/")
-    response_data = json.loads(response.content)
+    response_data = json.loads(response.content)["response"]
 
     # regular_user should not appear in results
     assert not any(
@@ -252,7 +262,7 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
 
     # Make a request without 'showIncompleteOnly' parameter
     response = client.get("/api/onboarding/admin/")
-    result = json.loads(response.content)
+    result = json.loads(response.content)["response"]
 
     users = result["users"]
 
@@ -260,7 +270,7 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
     response_incomplete_users = client.get(
         "/api/onboarding/admin/?showIncompleteOnly=true"
     )
-    result_incomplete_users = json.loads(response_incomplete_users.content)
+    result_incomplete_users = json.loads(response_incomplete_users.content)["response"]
 
     users_incomplete = result_incomplete_users["users"]
 
@@ -271,7 +281,7 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
     # User regular_user's last event should be MockStep
     assert (
         users[0]["steps"][0]["step"]
-        == "portal.apps.onboarding.steps.test_steps.MockStep"
+        == "designsafe.apps.onboarding.steps.test_steps.MockStep"
     )
 
     # There should be two users returned
@@ -281,7 +291,7 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
     assert users_incomplete[0]["username"] == regular_user.username
     assert (
         users_incomplete[0]["steps"][0]["step"]
-        == "portal.apps.onboarding.steps.test_steps.MockStep"
+        == "designsafe.apps.onboarding.steps.test_steps.MockStep"
     )
 
     # There should be one user since only one user has setup_complete = True
@@ -290,7 +300,7 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
 
 def test_get_search(client, authenticated_staff, regular_user, mock_steps):
     response = client.get("/api/onboarding/admin/?q=Firstname")
-    result = json.loads(response.content)
+    result = json.loads(response.content)["response"]
 
     users = result["users"]
 
@@ -300,7 +310,7 @@ def test_get_search(client, authenticated_staff, regular_user, mock_steps):
     # User regular_user's last event should be MockStep
     assert (
         users[0]["steps"][0]["step"]
-        == "portal.apps.onboarding.steps.test_steps.MockStep"
+        == "designsafe.apps.onboarding.steps.test_steps.MockStep"
     )
 
     # There should be two users returned

@@ -9,14 +9,18 @@ import os
 
 @pytest.fixture
 def tas_client(mocker):
-    with open(os.path.join(settings.BASE_DIR, "fixtures/tas/tas_project.json")) as f:
+    with open(
+        os.path.join(settings.BASE_DIR, "designsafe/fixtures/tas/tas_project.json")
+    ) as f:
         tas_project = json.load(f)
     with open(
-        os.path.join(settings.BASE_DIR, "fixtures/tas/tas_project_users.json")
+        os.path.join(
+            settings.BASE_DIR, "designsafe/fixtures/tas/tas_project_users.json"
+        )
     ) as f:
         tas_project_users = json.load(f)
     tas_client_mock = mocker.patch(
-        "portal.apps.onboarding.steps.project_membership.TASClient", autospec=True
+        "designsafe.apps.onboarding.steps.project_membership.TASClient", autospec=True
     )
     tas_client_mock.return_value.project.return_value = tas_project
     tas_client_mock.return_value.get_project_users.return_value = tas_project_users
@@ -26,7 +30,7 @@ def tas_client(mocker):
 @pytest.fixture
 def mock_rt(mocker):
     mock_tracker = mocker.patch(
-        "portal.apps.onboarding.steps.project_membership.ProjectMembershipStep.get_tracker"
+        "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep.get_tracker"
     )
     mock_tracker.return_value.login.return_value = True
     yield mock_tracker
@@ -36,7 +40,7 @@ def mock_rt(mocker):
 def project_membership_step(settings, regular_user, tas_client, mock_rt):
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         {
-            "step": "portal.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+            "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
             "settings": {"project_sql_id": 12345},
         }
     ]
@@ -48,7 +52,7 @@ def project_membership_step(settings, regular_user, tas_client, mock_rt):
 def project_membership_step_with_userlink(settings, regular_user, tas_client):
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         {
-            "step": "portal.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+            "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
             "settings": {
                 "project_sql_id": 12345,
                 "userlink": {"url": "/", "text": "Request Access"},

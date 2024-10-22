@@ -18,7 +18,7 @@ class SetupEvent(models.Model):
     # Auto increment auto add timestamp for event
     time = models.DateTimeField(auto_now_add=True)
 
-    # Name of SetupStep class, i.e. portal.apps.onboarding.steps.access.RequestAccessStep
+    # Name of SetupStep class, i.e. designsafe.apps.onboarding.steps.access.RequestAccessStep
     step = models.CharField(max_length=300)
 
     # Short name for setup state, defined per SetupState class.

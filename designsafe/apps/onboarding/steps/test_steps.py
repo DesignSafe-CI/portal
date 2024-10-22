@@ -11,7 +11,7 @@ class MockStep(AbstractStep):
 
     def __init__(self, user):
         self.prepare_spy = MagicMock()
-        super(MockStep, self).__init__(user)
+        super().__init__(user)
 
     def display_name(self):
         return "Mock Step"
@@ -29,7 +29,7 @@ class MockProcessingCompleteStep(AbstractStep):
     """
 
     def __init__(self, user):
-        super(MockProcessingCompleteStep, self).__init__(user)
+        super().__init__(user)
         self.process_spy = MagicMock()
 
     def prepare(self):
@@ -53,7 +53,7 @@ class MockProcessingFailStep(AbstractStep):
     """
 
     def __init__(self, user):
-        super(MockProcessingFailStep, self).__init__(user)
+        super().__init__(user)
         self.process_spy = MagicMock()
 
     def prepare(self):
@@ -78,7 +78,7 @@ class MockUserStep(AbstractStep):
     """
 
     def __init__(self, user):
-        super(MockUserStep, self).__init__(user)
+        super().__init__(user)
         self.client_action_spy = MagicMock()
 
     def prepare(self):
@@ -103,7 +103,7 @@ class MockStaffStep(AbstractStep):
     """
 
     def __init__(self, user):
-        super(MockStaffStep, self).__init__(user)
+        super().__init__(user)
         self.staff_approve_spy = MagicMock()
         self.staff_deny_spy = MagicMock()
 
@@ -135,7 +135,7 @@ class MockErrorStep(AbstractStep):
     """
 
     def __init__(self, user):
-        super(MockErrorStep, self).__init__(user)
+        super().__init__(user)
 
     def prepare(self):
         self.state = SetupState.PENDING

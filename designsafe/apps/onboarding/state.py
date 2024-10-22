@@ -6,11 +6,11 @@ class SetupState:
     """State definitions for onboarding steps"""
 
     # Steps in PENDING will be have their process methods called
-    # by portal.apps.onboarding.execute.execute_setup_steps
+    # by designsafe.apps.onboarding.execute.execute_setup_steps
     PENDING = "pending"
 
     # Steps in PROCESSING have had their process methods invoked
-    # by portal.apps.onboarding.execute.execute_setup_steps
+    # by designsafe.apps.onboarding.execute.execute_setup_steps
     PROCESSING = "processing"
 
     # Steps in FAILED state will display as a failure in the client
@@ -19,7 +19,7 @@ class SetupState:
 
     # Steps in COMPLETED state will cause the next step to be
     # checked for automated processing
-    # by portal.apps.onboarding.execute.execute_setup_steps
+    # by designsafe.apps.onboarding.execute.execute_setup_steps
     COMPLETED = "completed"
 
     # Steps in USERWAIT state will show a Confirm button in the

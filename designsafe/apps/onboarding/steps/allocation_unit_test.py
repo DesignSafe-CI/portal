@@ -6,7 +6,7 @@ import pytest
 @pytest.fixture
 def get_allocations_mock(mocker):
     get_allocations = mocker.patch(
-        "portal.apps.onboarding.steps.allocation.get_allocations"
+        "designsafe.apps.onboarding.steps.allocation.get_allocations"
     )
     get_allocations.return_value = {
         "hosts": {"allocation": []},
@@ -17,7 +17,7 @@ def get_allocations_mock(mocker):
 @pytest.fixture
 def get_allocations_failure_mock(mocker):
     get_allocations = mocker.patch(
-        "portal.apps.onboarding.steps.allocation.get_allocations"
+        "designsafe.apps.onboarding.steps.allocation.get_allocations"
     )
     get_allocations.return_value = {
         "hosts": {},

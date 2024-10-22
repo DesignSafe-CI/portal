@@ -9,18 +9,18 @@ from designsafe.apps.onboarding.state import SetupState
 def mock_steps(regular_user, settings):
     """Mock steps for testing."""
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
-        {"step": "portal.apps.onboarding.steps.test_steps.MockStep"}
+        {"step": "designsafe.apps.onboarding.steps.test_steps.MockStep"}
     ]
     pending_step = SetupEvent.objects.create(
         user=regular_user,
-        step="portal.apps.onboarding.steps.test_steps.MockStep",
+        step="designsafe.apps.onboarding.steps.test_steps.MockStep",
         state=SetupState.PENDING,
         message="message",
     )
 
     completed_step = SetupEvent.objects.create(
         user=regular_user,
-        step="portal.apps.onboarding.steps.test_steps.MockStep",
+        step="designsafe.apps.onboarding.steps.test_steps.MockStep",
         state=SetupState.COMPLETED,
         message="message",
     )
@@ -32,14 +32,14 @@ def mock_retry_step(regular_user, settings):
     """Mock a step that needs to be retried."""
     settings.PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         {
-            "step": "portal.apps.onboarding.steps.test_steps.MockStep",
+            "step": "designsafe.apps.onboarding.steps.test_steps.MockStep",
             "retry": True,
             "settings": {},
         }
     ]
     retry_step = SetupEvent.objects.create(
         user=regular_user,
-        step="portal.apps.onboarding.steps.test_steps.MockStep",
+        step="designsafe.apps.onboarding.steps.test_steps.MockStep",
         state=SetupState.USERWAIT,
         message="message",
     )

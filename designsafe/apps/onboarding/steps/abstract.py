@@ -107,7 +107,7 @@ class AbstractStep:
     @abstractmethod
     def prepare(self):
         """
-        Called during profile setup in portal.apps.accounts.managers.accounts.setup
+        Called during profile setup in designsafe.apps.accounts.managers.accounts.setup
         if no log data exists for this step. Child implementations should perform
         any pre-processing, then set state to PENDING, USERWAIT or STAFFWAIT and
         call self.log with a message to save this state.
@@ -118,7 +118,7 @@ class AbstractStep:
 
     def client_action(self, action, data, request):
         """
-        Called by portal.apps.onboarding.api.views.SetupStepView.post
+        Called by designsafe.apps.onboarding.api.views.SetupStepView.post
 
         Child implementations should override this to handle interactions with
         the front-end client, and should call complete, fail, or log.
@@ -130,7 +130,7 @@ class AbstractStep:
 
     def process(self):
         """
-        Called by portal.apps.onboarding.execute.execute_setup_steps if
+        Called by designsafe.apps.onboarding.execute.execute_setup_steps if
         state is SetupState.PENDING. execute_setup_steps will put the step
         in the PROCESSING state before this method is called.
 
