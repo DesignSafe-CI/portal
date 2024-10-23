@@ -25,7 +25,7 @@ def regular_user(django_user_model, mock_tapis_client):
         password="password",
         first_name="Firstname",
         last_name="Lastname",
-        email="user@user.com",
+        email="user@designsafe-ci.org",
     )
     user = django_user_model.objects.get(username="username")
     TapisOAuthToken.objects.create(
