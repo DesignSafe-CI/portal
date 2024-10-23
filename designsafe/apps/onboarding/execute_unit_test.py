@@ -1,4 +1,6 @@
+import pytest
 from mock import MagicMock
+from django.db.models import signals
 from designsafe.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
 from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.onboarding.models import SetupEvent
@@ -12,10 +14,14 @@ from designsafe.apps.onboarding.execute import (
     new_user_setup_check,
     StepExecuteException,
 )
-import pytest
 
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture(autouse=True)
+def disconnect_signal():
+    yield signals.post_save.disconnect(sender=SetupEvent, dispatch_uid="setup_event")
 
 
 @pytest.fixture

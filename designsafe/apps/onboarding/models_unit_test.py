@@ -1,9 +1,15 @@
 from designsafe.apps.onboarding.state import SetupState
 from designsafe.apps.onboarding.models import SetupEvent
+from django.db.models import signals
 import pytest
 
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture(autouse=True)
+def disconnect_signal():
+    yield signals.post_save.disconnect(sender=SetupEvent, dispatch_uid="setup_event")
 
 
 @pytest.fixture

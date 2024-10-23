@@ -1,15 +1,21 @@
+import pytest
+import logging
+import json
 from mock import MagicMock
 from django.http import JsonResponse
-import json
+from django.db.models import signals
 from designsafe.apps.onboarding.models import SetupEvent
 from designsafe.apps.onboarding.state import SetupState
 from designsafe.apps.onboarding.api.views import SetupStepView, get_user_onboarding
-import pytest
-import logging
 
 logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture(autouse=True)
+def disconnect_signal():
+    yield signals.post_save.disconnect(sender=SetupEvent, dispatch_uid="setup_event")
 
 
 @pytest.fixture(autouse=True)
