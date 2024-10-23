@@ -13,16 +13,12 @@ export const OnboardingEventLogModal: React.FC<{
 }> = ({ params: { user, step }, handleCancel }) => {
   return (
     <Modal
-      className={`${styles.root} ${styles['event-container']}`}
-      title={<header>View Log</header>}
+      title={`${step.displayName} event log for ${user.firstName} ${user.lastName} (${user.username})`}
       width="60%"
       open={!!step}
       onCancel={handleCancel}
       footer={null}
     >
-      <h6 className={styles['log-detail']}>
-        {`${user.firstName} ${user.lastName} - ${step.displayName}`}
-      </h6>
       <div className={styles['event-list']}>
         {step.events.map((event) => (
           <div key={event.time}>
