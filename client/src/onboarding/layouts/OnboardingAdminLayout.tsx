@@ -197,7 +197,7 @@ const OnboardingAdminList: React.FC<{
       size="small"
       columns={columns}
       bordered
-      scroll={{ y: 800 }}
+      scroll={{ y: '60vh' }}
       pagination={{
         defaultPageSize: 20 * totalSteps, // 20 users with $totalSteps steps each
         defaultCurrent: 1,
