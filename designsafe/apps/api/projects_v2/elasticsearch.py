@@ -22,14 +22,17 @@ class IndexedProject(Document):
 
 def index_project(project_id):
     """Util to index a project by its project ID"""
+    project_meta = ProjectMetadata.get_project_by_id(project_id)
     project_tree = add_values_to_tree(project_id)
     project_json = nx.node_link_data(project_tree)
     try:
         pub_es = IndexedProject.get(project_id)
-        pub_es.update(**project_json)
+        pub_es.update(**project_json, uuid=project_meta.uuid, value=project_meta.value)
 
     except NotFoundError:
-        pub_es = IndexedProject(**project_json)
+        pub_es = IndexedProject(
+            **project_json, uuid=project_meta.uuid, value=project_meta.value
+        )
         pub_es.meta["id"] = project_id
         pub_es.save()
 

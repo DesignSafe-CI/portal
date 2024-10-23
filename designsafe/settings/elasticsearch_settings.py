@@ -51,7 +51,7 @@ ES_INDICES = {
     'projects_v2': {
         'alias': ES_INDEX_PREFIX.format('projects_v2'),
         'document': 'designsafe.apps.api.projects_v2.elasticsearch.IndexedProject',
-        'kwargs': {}
+        'kwargs': {"index.mapping.ignore_malformed": True} # Squash malformed date fields
     },
     'web_content': {
         'alias': ES_INDEX_PREFIX.format('web-content'),
