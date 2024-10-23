@@ -121,7 +121,7 @@ function NotificationService(
      * @param {Object} msg
      */
     function processToastr(e, msg) {
-        if (msg.event_type === 'job' || msg.event_type === 'interactive_session_ready') {
+        if (msg.event_type !== 'data_depot') {
             return;
         }
 

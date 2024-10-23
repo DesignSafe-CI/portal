@@ -34,7 +34,7 @@ def add_pub_key_to_resource(
     :param str hostname: Resource's hostname
     :param int port: Port to use for ssh connection
 
-    :raises: :class:`~portal.apps.accounts.managers.`
+    :raises: :class:`~designsafe.apps.accounts.managers.`
 
     """
     success = True

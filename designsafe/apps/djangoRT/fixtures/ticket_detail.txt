@@ -22,5 +22,4 @@ LastUpdated: Sun Feb 28 01:01:24 2016
 TimeEstimated: 0
 TimeWorked: 0
 TimeLeft: 0
-CF.{Resource}: 
-
+CF.{Resource}:

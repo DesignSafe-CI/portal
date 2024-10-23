@@ -192,6 +192,15 @@ module.exports = (env) => {
                     minify: false,
                 }
             ),
+            new HtmlWebpackPlugin(
+                {
+                    chunks: ['onboarding'],
+                    inject : false,
+                    template : './designsafe/apps/onboarding/templates/designsafe/apps/onboarding/index.j2',
+                    filename: '../../apps/onboarding/templates/designsafe/apps/onboarding/index.html',
+                    minify: false,
+                }
+            ),
             new webpack.ProvidePlugin({
                 jQuery: 'jquery',
                 $: 'jquery',

@@ -1,0 +1,23 @@
+{
+    "id": 123456,
+    "username": "user_name",
+    "email": "user_name@username.com",
+    "firstName": "Firstname2",
+    "lastName": "Lastname2",
+    "institution": "University of Texas at Austin",
+    "institutionId": 1,
+    "department": "Texas Advanced Computing Center",
+    "departmentId": 127,
+    "country": "United States",
+    "countryId": 230,
+    "citizenship": "United States",
+    "citizenshipId": 230,
+    "piEligibility": "Eligible",
+    "source": "Standard",
+    "phone": "5125125125",
+    "title": "Center Non-Researcher Staff",
+    "uid": 123456,
+    "homeDirectory": "01234/user_name",
+    "gid": 456789,
+    "emailConfirmations": []
+}

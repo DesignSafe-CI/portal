@@ -127,6 +127,12 @@ urlpatterns = [
         url(r'^register/$', RedirectView.as_view(
             pattern_name='designsafe_accounts:register', permanent=True), name='register'),
 
+        # onboarding
+        url(r'^onboarding/', include(('designsafe.apps.onboarding.urls', 'designsafe.apps.onboarding'),
+            namespace='designsafe_onboarding')),
+        path('api/onboarding/', include('designsafe.apps.onboarding.api.urls', namespace='designsafe_onboarding_api')),
+
+
         # dashboard
     url(r'^dashboard/', include(('designsafe.apps.dashboard.urls', 'designsafe.apps.dashboard'),
         namespace='designsafe_dashboard')),
