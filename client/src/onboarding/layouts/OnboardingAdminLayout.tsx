@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Layout, Checkbox, Table, TableColumnType, Space } from 'antd';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  Alert,
+  Layout,
+  Checkbox,
+  Table,
+  TableColumnType,
+  Dropdown,
+  Space,
+  Typography,
+  Flex,
+} from 'antd';
+import type { MenuProps } from 'antd';
+import { CheckOutlined, CloseOutlined, DownOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import { SecondaryButton, Spinner } from '@client/common-components';
 import {
@@ -192,26 +203,29 @@ const OnboardingAdminList: React.FC<{
   });
 
   return (
-    <Table
-      dataSource={dataSource}
-      size="small"
-      columns={columns}
-      bordered
-      scroll={{ y: '60vh' }}
-      pagination={{
-        defaultPageSize: 20 * totalSteps, // 20 users with $totalSteps steps each
-        defaultCurrent: 1,
-        current: +(searchParams.get('page') as string) || undefined,
-        hideOnSinglePage: true,
-        showSizeChanger: false,
-        total,
-        onChange: (page, _) => {
-          searchParams.set('page', page.toString());
-          setSearchParams(searchParams);
-        },
-      }}
-      sticky
-    />
+    <>
+      <Space style={{ marginBottom: 16 }}></Space>
+      <Table
+        dataSource={dataSource}
+        size="small"
+        columns={columns}
+        bordered
+        scroll={{ y: '60vh' }}
+        pagination={{
+          defaultPageSize: 20 * totalSteps, // 20 users with $totalSteps steps each
+          defaultCurrent: 1,
+          current: +(searchParams.get('page') as string) || undefined,
+          hideOnSinglePage: true,
+          showSizeChanger: false,
+          total,
+          onChange: (page, _) => {
+            searchParams.set('page', page.toString());
+            setSearchParams(searchParams);
+          },
+        }}
+        sticky
+      />
+    </>
   );
 };
 
@@ -293,26 +307,72 @@ const OnboardingAdminLayout = () => {
     borderBottom: '1px solid #707070',
     fontSize: 16,
   };
+
+  const setOrderBy = (orderBy: string) => {
+    searchParams.set('orderBy', orderBy);
+    setSearchParams(searchParams);
+  };
+
+  const orderByItems: MenuProps['items'] = [
+    {
+      key: 'default',
+      label: 'Default (Date Joined, Incomplete, Last Name, First Name)',
+    },
+    {
+      key: 'last_name',
+      label: 'Last Name (A-Z)',
+    },
+    {
+      key: 'first_name',
+      label: 'First Name (A-Z)',
+    },
+    {
+      key: '-date_joined',
+      label: 'Date Joined (Newest First)',
+    },
+    {
+      key: 'profile__setup_complete',
+      label: 'Setup Complete (Incomplete First)',
+    },
+  ];
+
   return (
     <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
       <Space direction="vertical" style={{ width: '100%' }}>
         <Header style={headerStyle}>Administrator Controls</Header>
         <div className={styles['search-checkbox-container']}>
           <OnboardingAdminSearchbar disabled={isLoading} />
-          <label
-            className={styles['checkbox-label-container']}
-            htmlFor="incompleteuser"
-          >
-            <Checkbox
-              checked={searchParams.get('showIncompleteOnly') === 'true'}
-              id="incompleteuser"
-              aria-label="Show Incomplete Only"
-              tabIndex={0}
-              onClick={toggleShowIncomplete}
-              disabled={isLoading}
-            />
-            <span className={styles['label']}>Show Only Incomplete</span>
-          </label>
+          <Flex>
+            <Dropdown
+              menu={{
+                items: orderByItems,
+                selectable: true,
+                defaultSelectedKeys: [searchParams.get('orderBy') || 'default'],
+                onSelect: ({ key }) => setOrderBy(key),
+              }}
+            >
+              <Typography.Link>
+                <Space>
+                  Order By
+                  <DownOutlined />
+                </Space>
+              </Typography.Link>
+            </Dropdown>
+            <label
+              className={styles['checkbox-label-container']}
+              htmlFor="incompleteuser"
+            >
+              <Checkbox
+                checked={searchParams.get('showIncompleteOnly') === 'true'}
+                id="incompleteuser"
+                aria-label="Show Incomplete Only"
+                tabIndex={0}
+                onClick={toggleShowIncomplete}
+                disabled={isLoading}
+              />
+              <span className={styles['label']}>Show Only Incomplete</span>
+            </label>
+          </Flex>
         </div>
         <OnboardingAdminTable
           data={data}

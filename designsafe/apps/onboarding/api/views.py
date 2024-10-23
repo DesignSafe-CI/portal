@@ -264,6 +264,8 @@ class SetupAdminView(AuthenticatedApiView):
         limit = int(request.GET.get("limit", 20))
         show_incomplete_only = request.GET.get("showIncompleteOnly", "False").lower()
         query = request.GET.get("q", None)
+        order_by = request.GET.get("orderBy", None)
+
         users = []
         filter_args = {}
 
@@ -274,20 +276,20 @@ class SetupAdminView(AuthenticatedApiView):
         # Get users, with most recently joined users that do not have setup_complete, first
         if query:
             query = q_to_model_queries(query)
-            results = (
-                get_user_model()
-                .objects.filter(query, **filter_args)
-                .order_by(
-                    "-date_joined", "profile__setup_complete", "last_name", "first_name"
-                )
-            )
+            results = get_user_model().objects.filter(query, **filter_args)
         else:
-            results = (
-                get_user_model()
-                .objects.filter(**filter_args)
-                .order_by(
-                    "-date_joined", "profile__setup_complete", "last_name", "first_name"
-                )
+            results = get_user_model().objects.filter(**filter_args)
+
+        if order_by and order_by in [
+            "-date_joined",
+            "profile__setup_complete",
+            "last_name",
+            "first_name",
+        ]:
+            results = results.order_by(order_by)
+        else:
+            results = results.order_by(
+                "-date_joined", "profile__setup_complete", "last_name", "first_name"
             )
 
         # Uncomment this line to simulate many user results

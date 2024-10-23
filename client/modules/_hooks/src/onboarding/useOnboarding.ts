@@ -13,6 +13,7 @@ export type TOnboardingAdminParams = {
   q?: string;
   limit?: number;
   page?: number;
+  orderBy?: string;
 };
 
 type TOnboardingActionBody = {
@@ -73,12 +74,14 @@ export function useGetOnboardingAdminList() {
   const showIncompleteOnly = searchParams.get('showIncompleteOnly') || 'false';
   const limit = searchParams.get('limit') || '20';
   const page = searchParams.get('page') || '1';
+  const orderBy = searchParams.get('orderBy') || undefined;
   return useQuery(
     getOnboardingAdminListQuery({
       q,
       showIncompleteOnly: showIncompleteOnly === 'true',
       limit: +limit,
       page: +page,
+      orderBy,
     })
   );
 }
