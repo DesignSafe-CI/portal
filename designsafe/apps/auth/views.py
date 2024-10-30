@@ -74,6 +74,7 @@ def launch_setup_checks(user):
     if not user.profile.setup_complete:
         logger.info("Executing onboarding setup steps for %s", user.username)
         execute_setup_steps.apply_async(args=[user.username])
+        return HttpResponseRedirect(reverse("designsafe_onboarding:user"))
     else:
         logger.info(
             "Already onboarded, running non-onboarding steps (e.g. update cached "
@@ -150,9 +151,6 @@ def tapis_oauth_callback(request):
             logger.warning("Authorization failed: %s", error)
 
         return HttpResponseRedirect(reverse("logout"))
-
-    if not request.user.setup_complete:
-        return HttpResponseRedirect(reverse("designsafe_onboarding:user"))
 
     if "next" in request.session:
         next_uri = request.session.pop("next")
