@@ -151,6 +151,9 @@ def tapis_oauth_callback(request):
 
         return HttpResponseRedirect(reverse("logout"))
 
+    if not request.user.setup_complete:
+        return HttpResponseRedirect(reverse("designsafe_onboarding:user"))
+
     if "next" in request.session:
         next_uri = request.session.pop("next")
         return HttpResponseRedirect(next_uri)

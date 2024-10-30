@@ -16,6 +16,7 @@ import {
   usePrefetchGetSystems,
   usePrefetchGetAllocations,
   InteractiveModalContext,
+  useAuthenticatedUser,
 } from '@client/hooks';
 import styles from './layout.module.css';
 
@@ -25,6 +26,11 @@ const WorkspaceRoot: React.FC = () => {
   usePrefetchGetApps(useGetAppParams());
   usePrefetchGetSystems();
   usePrefetchGetAllocations();
+  const { user } = useAuthenticatedUser();
+
+  if (user && !user.setupComplete) {
+    window.location.replace(`${window.location.origin}/onboarding/setup`);
+  }
 
   const { data, isLoading } = useAppsListing();
   const [interactiveModalDetails, setInteractiveModalDetails] = useState({

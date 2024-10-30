@@ -150,8 +150,8 @@
             email: "{{ request.user.email }}",
             institution: "{{ request.user.profile.institution }}",
             homedir: "{{tas_homedir}}",
-            isStaff: "{{ request.user.is_staff }}",
-            setupComplete: "{{ request.user.profile.setup_complete }}",
+            isStaff: {{ request.user.is_staff|yesno:"true,false" }},
+            setupComplete: {{ request.user.profile.setup_complete|yesno:"true,false" }},
         };
     </script>
 

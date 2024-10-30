@@ -32,7 +32,7 @@ export type TOnboardingUser = {
   email: string;
   firstName: string;
   lastName: string;
-  isStaff: string;
+  isStaff: boolean;
   setupComplete: boolean;
   steps: TOnboardingStep[];
 };

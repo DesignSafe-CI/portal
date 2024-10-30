@@ -14,6 +14,10 @@ const onboardingRouter = createBrowserRouter(
       element: <OnboardingBaseLayout />,
       children: [
         {
+          path: '',
+          element: <Navigate to={'/setup'} replace={true} />,
+        },
+        {
           id: 'admin',
           path: 'admin',
           element: <OnboardingAdminLayout />,

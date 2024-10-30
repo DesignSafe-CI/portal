@@ -5,6 +5,6 @@ from designsafe.apps.onboarding.views import OnboardingView
 
 app_name = "workbench"
 urlpatterns = [
-    re_path("^", OnboardingView.as_view(), name="onboarding"),
+    re_path("^", OnboardingView.as_view(), name="user"),
     path("admin", OnboardingView.as_view(), name="admin"),
 ]

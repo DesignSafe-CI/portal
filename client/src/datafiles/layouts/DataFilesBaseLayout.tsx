@@ -12,6 +12,11 @@ const { Sider } = Layout;
 
 const DataFilesRoot: React.FC = () => {
   const { user } = useAuthenticatedUser();
+
+  if (user && !user.setupComplete) {
+    window.location.replace(`${window.location.origin}/onboarding/setup`);
+  }
+
   const defaultPath = user?.username
     ? '/tapis/designsafe.storage.default'
     : '/public/designsafe.storage.published';
