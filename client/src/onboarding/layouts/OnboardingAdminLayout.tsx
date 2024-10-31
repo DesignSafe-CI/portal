@@ -215,9 +215,9 @@ const OnboardingAdminList: React.FC<{
           defaultPageSize: 20 * totalSteps, // 20 users with $totalSteps steps each
           defaultCurrent: 1,
           current: +(searchParams.get('page') as string) || undefined,
-          hideOnSinglePage: true,
+          hideOnSinglePage: false,
           showSizeChanger: false,
-          total,
+          total: total * 20 * totalSteps, // total elements = total users * 20 users per page * total steps
           onChange: (page, _) => {
             searchParams.set('page', page.toString());
             setSearchParams(searchParams);

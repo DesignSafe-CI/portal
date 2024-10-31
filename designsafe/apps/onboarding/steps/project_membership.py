@@ -88,7 +88,7 @@ class ProjectMembershipStep(AbstractStep):
                     Subject=f"{self.project['title']} Project Membership Request for {self.user.username}",
                     Text=ticket_text,
                     Requestors=self.user.email,
-                    CF_resource=settings.RT_TAG,
+                    CF_resource=self.settings.get("rt_tag") or "",
                 )
                 tracker.logout()
 
