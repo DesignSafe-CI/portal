@@ -57,10 +57,12 @@ class ProjectMembershipStep(AbstractStep):
     def get_tracker(self):
         """Get a RT client"""
         return Rt(
-            settings.RT_HOST,
-            settings.RT_UN,
-            settings.RT_PW,
-            http_auth=HTTPBasicAuth(settings.RT_UN, settings.RT_PW),
+            settings.DJANGO_RT["RT_HOST"],
+            settings.DJANGO_RT["RT_UN"],
+            settings.DJANGO_RT["RT_PW"],
+            http_auth=HTTPBasicAuth(
+                settings.DJANGO_RT["RT_UN"], settings.DJANGO_RT["RT_PW"]
+            ),
         )
 
     def is_project_member(self):
