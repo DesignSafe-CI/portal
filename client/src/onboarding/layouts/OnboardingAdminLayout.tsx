@@ -32,7 +32,11 @@ const OnboardingApproveActions: React.FC<{
   step: TOnboardingStep;
   username: string;
 }> = ({ step, username }) => {
-  const { mutate: sendOnboardingAction, isPending } = useSendOnboardingAction();
+  const {
+    mutate: sendOnboardingAction,
+    isPending,
+    variables,
+  } = useSendOnboardingAction();
 
   return (
     <div className={styles['approve-container']}>
@@ -45,7 +49,8 @@ const OnboardingApproveActions: React.FC<{
             username,
           })
         }
-        loading={isPending}
+        loading={isPending && variables?.body.action === 'staff_approve'}
+        disabled={isPending && variables?.body.action === 'staff_deny'}
         icon={<CheckOutlined />}
       >
         Approve
@@ -59,7 +64,8 @@ const OnboardingApproveActions: React.FC<{
             username,
           })
         }
-        loading={isPending}
+        loading={isPending && variables?.body.action === 'staff_deny'}
+        disabled={isPending && variables?.body.action === 'staff_approve'}
         icon={<CloseOutlined />}
       >
         Deny
@@ -128,12 +134,15 @@ const OnboardingAdminList: React.FC<{
     {
       title: 'User',
       dataIndex: 'user',
-      render: (user: TOnboardingUser) => (
-        <>
+      className: styles.highlightCell,
+      render: (user: TOnboardingUser, record) => (
+        <span
+          className={record.step.state === 'staffwait' ? styles.staffwait : ''}
+        >
           {`${user.firstName} ${user.lastName}`}
           <br />
           <span className={styles.username}>{user.username}</span>
-        </>
+        </span>
       ),
       onCell: (record) => ({
         rowSpan: record.index === 0 ? record.user.steps.length : 0,
@@ -142,6 +151,7 @@ const OnboardingAdminList: React.FC<{
     {
       title: 'Step',
       dataIndex: 'step',
+      className: styles.highlightCell,
       render: (step: TOnboardingStep) => (
         <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
           {step.displayName}
@@ -152,6 +162,7 @@ const OnboardingAdminList: React.FC<{
       title: 'Status',
       dataIndex: 'step',
       key: 'status',
+      className: styles.highlightCell,
       render: (step: TOnboardingStep) => (
         <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
           <OnboardingStatus step={step} />
@@ -162,23 +173,28 @@ const OnboardingAdminList: React.FC<{
       title: 'Administrative Actions',
       dataIndex: 'step',
       key: 'actions',
+      className: styles.highlightCell,
       render: (step: TOnboardingStep, record) => (
-        <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
+        <Flex
+          justify="space-between"
+          className={step.state === 'staffwait' ? styles.staffwait : ''}
+          align="center"
+        >
+          <OnboardingResetLinks username={record.user.username} step={step} />
           {step.state === 'staffwait' && (
             <OnboardingApproveActions
               username={record.user.username}
               step={step}
             />
           )}
-
-          <OnboardingResetLinks username={record.user.username} step={step} />
-        </span>
+        </Flex>
       ),
     },
     {
       title: 'Log',
       dataIndex: 'step',
       key: 'log',
+      className: styles.highlightCell,
       render: (step: TOnboardingStep, record) => (
         <span className={step.state === 'staffwait' ? styles.staffwait : ''}>
           <SecondaryButton

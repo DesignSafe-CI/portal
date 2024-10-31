@@ -195,8 +195,8 @@
   margin-right: 0.25em;
 }
 
-.staffwait {
-  background-color: var(--global-color-accent--weak);
+.highlightCell:has(> *.staffwait) {
+  background-color: #e6f4ff;
 }
 
 .users {
