@@ -84,13 +84,18 @@ class ProjectMembershipStep(AbstractStep):
         try:
             if tracker.login():
                 result = tracker.create_ticket(
-                    Queue=self.settings.get("rt_queue") or "Accounting",
+                    Queue=self.settings.get("rt_queue") or "Accounts",
                     Subject=f"{self.project['title']} Project Membership Request for {self.user.username}",
                     Text=ticket_text,
                     Requestors=self.user.email,
                     CF_resource=self.settings.get("rt_tag") or "",
                 )
                 tracker.logout()
+
+                if not result:
+                    raise Exception(  # pylint: disable=broad-exception-raised
+                        "Could not create ticket"
+                    )
 
                 self.state = SetupState.STAFFWAIT
                 self.log(

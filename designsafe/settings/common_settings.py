@@ -709,7 +709,10 @@ USER_PROJECTS_LIMIT = os.environ.get("USER_PROJECTS_LIMIT", 500)
 PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
-        "settings": {"project_sql_id": 34076},  # project id for DesignSafe-Corral
+        "settings": {
+            "project_sql_id": 34076,  # project id for DesignSafe-Corral
+            "rt_queue": "DesignSafe-ci",
+        },
     },
     {
         "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
