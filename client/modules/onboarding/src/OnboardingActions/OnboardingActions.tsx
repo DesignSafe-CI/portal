@@ -34,96 +34,98 @@ const OnboardingActions = ({ step }: { step: TOnboardingStep }) => {
   }
 
   return (
-    <span className={styles.root}>
-      {authenticatedUser?.isStaff && step.state === 'staffwait' ? (
-        <>
-          <SecondaryButton
-            type="link"
-            className={styles.action}
-            disabled={isPending}
-            onClick={() =>
-              sendOnboardingAction({
-                body: { action: 'staff_approve', step: step.step },
-                username,
-              })
-            }
-          >
-            {step.staffApprove}
-          </SecondaryButton>
-          &nbsp;&nbsp;&nbsp;
-          <SecondaryButton
-            type="link"
-            className={styles.action}
-            disabled={isPending}
-            onClick={() =>
-              sendOnboardingAction({
-                body: { action: 'staff_deny', step: step.step },
-                username,
-              })
-            }
-          >
-            {step.staffDeny}
-          </SecondaryButton>
-        </>
-      ) : null}
-      {step.state === 'userwait' ? (
-        step.data?.userlink ? (
-          <SecondaryButton
-            type="link"
-            className={styles.action}
-            href={step.data?.userlink?.url}
-          >
-            {step.data?.userlink?.text}
-          </SecondaryButton>
-        ) : (
-          <SecondaryButton
-            type="link"
-            className={styles.action}
-            disabled={isPending}
-            onClick={() =>
-              sendOnboardingAction({
-                body: { action: 'user_confirm', step: step.step },
-                username,
-              })
-            }
-          >
-            {step.userConfirm}
-          </SecondaryButton>
-        )
-      ) : null}
-      {authenticatedUser?.isStaff ? (
-        <>
-          <SecondaryButton
-            type="link"
-            className={styles.action}
-            disabled={isPending}
-            onClick={() =>
-              sendOnboardingAction({
-                body: { action: 'reset', step: step.step },
-                username,
-              })
-            }
-          >
-            Admin Reset
-          </SecondaryButton>
-          &nbsp;&nbsp;&nbsp;
-          <SecondaryButton
-            type="link"
-            className={styles.action}
-            disabled={isPending}
-            onClick={() =>
-              sendOnboardingAction({
-                body: { action: 'complete', step: step.step },
-                username,
-              })
-            }
-          >
-            Admin Skip
-          </SecondaryButton>
-        </>
-      ) : null}
-      {isPending ? <Spin /> : null}
-    </span>
+    <>
+      {isPending ? <Spin style={{ paddingLeft: 5 }} /> : null}
+      <span className={styles.root} style={{ marginLeft: isPending ? 10 : 30 }}>
+        {authenticatedUser?.isStaff && step.state === 'staffwait' ? (
+          <span>
+            <SecondaryButton
+              type="link"
+              className={styles.action}
+              disabled={isPending}
+              onClick={() =>
+                sendOnboardingAction({
+                  body: { action: 'staff_approve', step: step.step },
+                  username,
+                })
+              }
+            >
+              {step.staffApprove}
+            </SecondaryButton>
+            &nbsp;&nbsp;&nbsp;
+            <SecondaryButton
+              type="link"
+              className={styles.action}
+              disabled={isPending}
+              onClick={() =>
+                sendOnboardingAction({
+                  body: { action: 'staff_deny', step: step.step },
+                  username,
+                })
+              }
+            >
+              {step.staffDeny}
+            </SecondaryButton>
+          </span>
+        ) : null}
+        {step.state === 'userwait' ? (
+          step.data?.userlink ? (
+            <SecondaryButton
+              type="link"
+              className={styles.action}
+              href={step.data?.userlink?.url}
+            >
+              {step.data?.userlink?.text}
+            </SecondaryButton>
+          ) : (
+            <SecondaryButton
+              type="link"
+              className={styles.action}
+              disabled={isPending}
+              onClick={() =>
+                sendOnboardingAction({
+                  body: { action: 'user_confirm', step: step.step },
+                  username,
+                })
+              }
+            >
+              {step.userConfirm}
+            </SecondaryButton>
+          )
+        ) : null}
+        {authenticatedUser?.isStaff ? (
+          <span>
+            <SecondaryButton
+              type="link"
+              className={styles.action}
+              disabled={isPending}
+              onClick={() =>
+                sendOnboardingAction({
+                  body: { action: 'reset', step: step.step },
+                  username,
+                })
+              }
+            >
+              Admin Reset
+            </SecondaryButton>
+            &nbsp;&nbsp;&nbsp;
+            <SecondaryButton
+              type="link"
+              className={styles.action}
+              disabled={isPending}
+              onClick={() =>
+                sendOnboardingAction({
+                  body: { action: 'complete', step: step.step },
+                  username,
+                })
+              }
+            >
+              Admin Skip
+            </SecondaryButton>
+          </span>
+        ) : null}
+      </span>
+    </>
   );
 };
 

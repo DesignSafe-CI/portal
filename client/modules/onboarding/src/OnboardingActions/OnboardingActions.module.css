@@ -1,7 +1,8 @@
 .root {
   display: flex;
   align-items: center;
-  margin-left: 0.5em;
+  justify-content: space-between;
+  flex-grow: 1;
 }
 
 .action {
