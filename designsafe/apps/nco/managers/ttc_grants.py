@@ -45,6 +45,7 @@ class NcoTtcGrantsManager(object):
                 {'Title': {'$regex': params['text_search'], '$options': 'i'}},
                 {'Abstract': {'$regex': params['text_search'], '$options': 'i'}},
                 {'PiName': {'$regex': params['text_search'], '$options': 'i'}},
+                {'CoPiNames': {'$regex': params['text_search'], '$options': 'i'}},
             ]
 
         #get the grants list
