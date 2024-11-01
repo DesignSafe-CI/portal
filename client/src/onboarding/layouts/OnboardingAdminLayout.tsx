@@ -255,6 +255,21 @@ const OnboardingAdminTable: React.FC<{
     step: TOnboardingStep;
   } | null>(null);
 
+  // Update modal step data if the user is updated
+  useEffect(() => {
+    if (eventLogModalParams?.user && data) {
+      setEventLogModalParams({
+        user: eventLogModalParams.user,
+        step:
+          data.users
+            .find((user) => user.username === eventLogModalParams.user.username)
+            ?.steps.find(
+              (step) => step.step === eventLogModalParams.step.step
+            ) || eventLogModalParams.step,
+      });
+    }
+  }, [data]);
+
   if (isLoading) {
     return <Spinner />;
   }
