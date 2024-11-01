@@ -77,7 +77,7 @@ class ProjectMembershipStep(AbstractStep):
         tracker = self.get_tracker()
         ticket_text = f"""
             User {self.user.username} is requesting membership on the {self.project["title"]} project.
-            Please visit {request.build_absolute_uri(f'/workbench/onboarding/setup/{self.user.username}')}
+            Please visit {request.build_absolute_uri(f'/onboarding/setup/{self.user.username}')}
             to complete this request.
         """
 
@@ -166,7 +166,7 @@ class ProjectMembershipStep(AbstractStep):
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
         request_text = f"""Your request for membership on the {self.project["title"]} project has been
-        granted. Please login at https://{settings.SESSION_COOKIE_DOMAIN}/workbench/onboarding/setup to continue setting up your account.
+        granted. Please login at https://{settings.SESSION_COOKIE_DOMAIN}/onboarding/setup to continue setting up your account.
         """
         if tracker.login():
             tracker.reply(ticket_id, text=request_text)
