@@ -10,9 +10,6 @@ from designsafe.apps.api.agave import service_account
 from designsafe.libs.common.context_managers import AsyncTaskContext
 
 
-# from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
-
-
 logger = logging.getLogger(__name__)
 
 
