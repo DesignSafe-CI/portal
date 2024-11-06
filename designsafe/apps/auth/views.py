@@ -12,12 +12,9 @@ from django.contrib.auth import authenticate, login
 from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
-from designsafe.apps.auth.tasks import (
-    check_or_configure_system_and_user_directory,
-    get_systems_to_configure,
-)
-from designsafe.apps.workspace.api.tasks import cache_allocations
+from designsafe.apps.api.users.tasks import cache_allocations
 from designsafe.apps.auth.tasks import new_user_alert
+from designsafe.apps.onboarding.execute import execute_setup_steps, new_user_setup_check
 from .models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
@@ -71,19 +68,20 @@ def tapis_oauth(request):
 
 def launch_setup_checks(user):
     """Perform any onboarding checks or non-onboarding steps that may spawn celery tasks"""
-    logger.info("Starting tasks to check or configure systems for %s", user.username)
-    for system in get_systems_to_configure(user.username):
-        check_or_configure_system_and_user_directory.apply_async(
-            args=(
-                user.username,
-                system["system_id"],
-                system["path"],
-                system["create_path"],
-            ),
-            queue="files",
+
+    # Check onboarding settings
+    new_user_setup_check(user)
+    if not user.profile.setup_complete:
+        logger.info("Executing onboarding setup steps for %s", user.username)
+        execute_setup_steps.apply_async(args=[user.username])
+        return HttpResponseRedirect(reverse("designsafe_onboarding:user"))
+    else:
+        logger.info(
+            "Already onboarded, running non-onboarding steps (e.g. update cached "
+            "allocation information) for %s",
+            user.username,
         )
-    logger.info("Creating/updating cached allocation information for %s", user.username)
-    cache_allocations.apply_async(args=(user.username,))
+        cache_allocations.apply_async(args=(user.username,))
 
 
 def tapis_oauth_callback(request):
@@ -132,7 +130,9 @@ def tapis_oauth_callback(request):
         user = authenticate(backend="tapis", token=token_data["access_token"])
 
         if user:
-            _, created = TapisOAuthToken.objects.update_or_create(user=user, defaults={**token_data})
+            _, created = TapisOAuthToken.objects.update_or_create(
+                user=user, defaults={**token_data}
+            )
             if created:
                 new_user_alert.apply_async(args=(user.username,))
 
