@@ -175,7 +175,7 @@ class AppsView(AuthenticatedApiView):
             extra={
                 "user": request.user.username,
                 "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "getAppsView",
+                "operation": "getApp",
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
                 "info": {"query": request.GET.dict()},
@@ -455,7 +455,7 @@ class AppsTrayView(AuthenticatedApiView):
             extra={
                 "user": request.user.username,
                 "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "getAppsTrayView",
+                "operation": "getApps",
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
                 "info": {"query": request.GET.dict()},
@@ -533,7 +533,6 @@ class JobsView(AuthenticatedApiView):
             extra={
                 "user": request.user.username,
                 "sessionId": getattr(request.session, "session_key", ""),
-                "view": "JobsView",
                 "operation": operation,
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
@@ -638,7 +637,6 @@ class JobsView(AuthenticatedApiView):
             extra={
                 "user": request.user.username,
                 "sessionId": getattr(request.session, "session_key", ""),
-                "view": "JobsView",
                 "operation": "delete",
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
@@ -791,19 +789,6 @@ class JobsView(AuthenticatedApiView):
                 status=400,
             )
 
-        METRICS.info(
-            "Jobs",
-            extra={
-                "user": username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "view": "JobsView",
-                "operation": operation,
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {"body": body},
-            },
-        )
-
         if operation != "submitJob":
             job_uuid = body.get("uuid")
             if job_uuid is None:
@@ -812,18 +797,26 @@ class JobsView(AuthenticatedApiView):
                     status=400,
                 )
             tapis_operation = getattr(tapis.jobs, operation)
-            data = tapis_operation(jobUuid=job_uuid)
+            response = tapis_operation(jobUuid=job_uuid)
 
-            return JsonResponse(
-                {
-                    "status": 200,
-                    "response": data,
+        else:
+            # submit job
+            response = self._submit_job(request, body, tapis, username)
+
+        METRICS.info(
+            "Jobs",
+            extra={
+                "user": username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": operation,
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {
+                    "body": body,
+                    "response": response,
                 },
-                encoder=BaseTapisResultSerializer,
-            )
-
-        # submit job
-        response = self._submit_job(request, body, tapis, username)
+            },
+        )
 
         return JsonResponse(
             {
