@@ -87,7 +87,7 @@ class ProjectMembershipStep(AbstractStep):
                     Queue=self.settings.get("rt_queue") or "Accounts",
                     Subject=f"{self.project['title']} Project Membership Request for {self.user.username}",
                     Text=ticket_text,
-                    Requestors=self.user.email,
+                    Requestor=self.user.email,
                     CF_resource=self.settings.get("rt_tag") or "",
                 )
                 tracker.logout()
