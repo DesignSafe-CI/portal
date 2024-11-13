@@ -156,7 +156,7 @@ class SystemAccessStepV3(AbstractStep):
             system_id = system["system_id"]
             path = system["path"].format(username=self.user.username)
             try:
-                self.check_system(system_id, path)
+                self.check_system(system_id, path, skip_retry=True)
                 self.log(
                     f"Path and permissions already created for system: {system_id} and path: {path} for user: {self.user.username}"
                 )
