@@ -15,11 +15,14 @@ from designsafe.apps.onboarding.state import SetupState
 from designsafe.utils.encryption import createKeyPair
 from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
 from designsafe.apps.api.tasks import agave_indexer
+from designsafe.libs.common.decorators import retry
 
 
 logger = logging.getLogger(__name__)
 
 
+# retry for 5 minutes to account for allocation propagation
+@retry(UnauthorizedError, tries=-1, max_time=5 * 60)
 def create_system_credentials(  # pylint: disable=too-many-arguments
     client,
     username,
@@ -27,6 +30,7 @@ def create_system_credentials(  # pylint: disable=too-many-arguments
     private_key,
     system_id,
     skipCredentialCheck=False,  # pylint: disable=invalid-name
+    **kwargs,
 ) -> int:
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
@@ -102,7 +106,9 @@ class SystemAccessStepV3(AbstractStep):
         self.state = SetupState.PENDING
         self.log("Awaiting TACC systems access.")
 
-    def check_system(self, system_id, path="/") -> None:
+    # retry for 5 minutes to account for setfacl and allocation propagation
+    @retry(UnauthorizedError, tries=10, max_time=5 * 60)
+    def check_system(self, system_id, path="/", **kwargs) -> None:
         """
         Check whether a user already has access to a storage system by attempting a listing.
         """
@@ -120,7 +126,7 @@ class SystemAccessStepV3(AbstractStep):
 
         for system in self.settings.get("credentials_systems") or []:
             try:
-                self.check_system(system)
+                self.check_system(system, skip_retry=True)
                 self.log(f"Credentials already created for system: {system}")
                 continue
             except BaseTapyException:
