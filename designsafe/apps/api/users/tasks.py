@@ -1,9 +1,7 @@
-"""
-Workspace tasks
-"""
+""" Celery tasks for users api """
 
 from celery import shared_task
-from .views import _get_latest_allocations
+from .utils import _get_latest_allocations
 
 
 @shared_task(bind=True, max_retries=3, queue="indexing")
