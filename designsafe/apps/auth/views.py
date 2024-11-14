@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from designsafe.apps.api.users.tasks import cache_allocations
+from designsafe.apps.api.utils import get_client_ip
 from designsafe.apps.auth.tasks import new_user_alert
 from designsafe.apps.onboarding.execute import execute_setup_steps, new_user_setup_check
 from .models import TapisOAuthToken
@@ -138,6 +139,18 @@ def tapis_oauth_callback(request):
 
             login(request, user)
             launch_setup_checks(user)
+
+            METRICS.info(
+                "Auth",
+                extra={
+                    "user": user.username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": "LOGIN",
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": {},
+                },
+            )
         else:
             messages.error(
                 request,
