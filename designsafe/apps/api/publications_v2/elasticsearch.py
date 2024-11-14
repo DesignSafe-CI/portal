@@ -21,9 +21,9 @@ def index_publication(project_id):
     pub = Publication.objects.get(project_id=project_id)
     try:
         pub_es = IndexedPublication.get(project_id)
-        pub_es.update(**pub.tree)
+        pub_es.update(**pub.tree, created=pub.created)
 
     except NotFoundError:
-        pub_es = IndexedPublication(**pub.tree)
+        pub_es = IndexedPublication(**pub.tree, created=pub.created)
         pub_es.meta["id"] = project_id
         pub_es.save()

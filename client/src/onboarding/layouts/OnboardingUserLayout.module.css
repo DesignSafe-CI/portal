@@ -1,0 +1,10 @@
+.access {
+  text-align: right;
+}
+
+.content {
+  padding-bottom: 1em;
+}
+.content > * {
+  max-width: 768px; /* ~640px design * 1.2 design-to-app ratio */
+}

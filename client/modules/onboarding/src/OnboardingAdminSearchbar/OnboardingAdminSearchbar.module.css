@@ -1,0 +1,62 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* Children */
+
+/* Each direct child except the last */
+.container > *:not(:last-child) {
+  margin-right: 20px; /* 20px design * 1.2 design-to-app ratio */
+}
+.query-fieldset {
+  width: 560px; /* 70px + 396px design * 1.2 design-to-app ratio */
+}
+/* Ensure `.clear-button` text does not wrap at (arbitrary) 1280px laptop width */
+/* WARN: Non-standard un-documented first-party breakpoint */
+@media (max-width: 1700px) {
+  .query-fieldset {
+    width: 360px;
+  }
+}
+
+@media (max-width: 768px) {
+  .query-fieldset {
+    width: 260px;
+  }
+}
+/* FP-563: Support count in status message */
+.summary-fieldset {
+  /* No styles necessary, but defining class for consistency */
+}
+/* NOTE: Whenever filter and/or status message are restored, this selector must select the rightmost element of those */
+.clear-button {
+  /* .filter-fieldset { */
+  margin-left: auto; /* this is how to "justify-self" on flex children */
+}
+.clear-button {
+  /* composes: c-button--as-link from '../../styles/components/c-button.css'; */
+
+  /* RFC: This style might be best provided from an external yet-to-be-created class for table-top nav links */
+  font-weight: bold;
+}
+
+/* Children (of `-fieldset`) */
+
+.input {
+  /* composes: form-control from '../../styles/components/bootstrap.form.css'; */
+}
+.output {
+  /* … */
+}
+
+/* Hacks */
+
+.container,
+.submit-button,
+.clear-button,
+.input {
+  /* RFE: This style should be inherited from cascade of global styles */
+  font-size: 0.75rem; /* 12px (16px design * 1.2 design-to-app ratio) */
+}
