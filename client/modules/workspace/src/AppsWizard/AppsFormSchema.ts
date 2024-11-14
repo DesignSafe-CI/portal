@@ -188,7 +188,9 @@ export const getConfigurationFields = (
 
   if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
     configurationFields['execSystemLogicalQueue'] = {
-      description: `Select the queue this ${getAppRuntimeLabel(definition)} will execute on.`,
+      description: `Select the queue this ${getAppRuntimeLabel(
+        definition
+      )} will execute on.`,
       label: 'Queue',
       name: 'configuration.execSystemLogicalQueue',
       key: 'configuration.execSystemLogicalQueue',
@@ -203,8 +205,9 @@ export const getConfigurationFields = (
 
   if (definition.jobType === 'BATCH' && !definition.notes.hideAllocation) {
     configurationFields['allocation'] = {
-      description:
-        `Select the project allocation you would like to use with this ${getAppRuntimeLabel(definition)} submission.`,
+      description: `Select the project allocation you would like to use with this ${getAppRuntimeLabel(
+        definition
+      )} submission.`,
       label: 'Allocation',
       name: 'configuration.allocation',
       key: 'configuration.allocation',
@@ -222,12 +225,19 @@ export const getConfigurationFields = (
 
   if (!definition.notes.hideMaxMinutes) {
     configurationFields['maxMinutes'] = {
-      description: `The maximum number of minutes you expect this ${getAppRuntimeLabel(definition)} to run for. Maximum possible is ${getQueueMaxMinutes(
+      description: `The maximum number of minutes you expect this ${getAppRuntimeLabel(
+        definition
+      )} to run for. Maximum possible is ${getQueueMaxMinutes(
         definition,
         defaultExecSystem,
         queue?.name
-      )} minutes. After this amount of time your ${getAppRuntimeLabel(definition)} will end. Shorter run times result in shorter queue wait times.`,
-      label: `Maximum ${getAppRuntimeLabel(definition, true)} Runtime (minutes)`,
+      )} minutes. After this amount of time your ${getAppRuntimeLabel(
+        definition
+      )} will end. Shorter run times result in shorter queue wait times.`,
+      label: `Maximum ${getAppRuntimeLabel(
+        definition,
+        true
+      )} Runtime (minutes)`,
       name: 'configuration.maxMinutes',
       key: 'configuration.maxMinutes',
       required: true,
