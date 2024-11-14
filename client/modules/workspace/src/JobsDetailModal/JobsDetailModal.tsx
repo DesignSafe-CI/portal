@@ -80,6 +80,7 @@ export const JobsDetailModalBody: React.FC<{
       ></Collapse>
     ),
     ...(jobData.remoteOutcome && { 'Remote Outcome': jobData.remoteOutcome }),
+    ...(jobData.remoteJobId && { 'Remote Job ID': jobData.remoteJobId }),
   };
 
   if (jobData.remoteOutcome) {
