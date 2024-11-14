@@ -508,3 +508,21 @@ export const getOnDemandEnvVariables = (
   );
   return includeOnDemandVars;
 };
+
+/**
+ * Returns 'interactive session' as app type if it is interactive, otherwise 'job'
+ * 
+ * @param definition - TTapisApp
+ * @param titleCase - boolean, default is false.
+ * @returns string
+ */
+export const getAppRuntimeLabel = (definition: TTapisApp, titleCase: boolean = false): string => {
+  const label = definition.notes.isInteractive ? 'interactive session' : 'job';
+  
+  return titleCase
+    ? label
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    : label;
+};
