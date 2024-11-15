@@ -75,6 +75,7 @@ const InteractiveSessionButtons: React.FC<{
             show: true,
             interactiveSessionLink,
             message,
+            uuid: uuid,
           })
         }
       >

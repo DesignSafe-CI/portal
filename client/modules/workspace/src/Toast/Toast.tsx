@@ -11,7 +11,7 @@ import {
   useInteractiveModalContext,
   TInteractiveModalContext,
 } from '@client/hooks';
-import { getToastMessage } from '../utils';
+import { getToastMessage, isTerminalState } from '../utils';
 import styles from './Notifications.module.css';
 
 const Notifications = () => {
@@ -63,6 +63,17 @@ const Notifications = () => {
             navigate('/history');
           },
         });
+
+        // close interactive session modal if job is ended
+        if (
+          isTerminalState(notification.extra.status) &&
+          notification.extra.uuid === interactiveModalDetails.uuid
+        ) {
+          setInteractiveModalDetails({
+            show: false,
+          });
+        }
+
         break;
       case 'markAllNotificationsAsRead':
         // update unread count state

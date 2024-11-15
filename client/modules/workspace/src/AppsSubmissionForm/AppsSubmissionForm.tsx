@@ -379,7 +379,11 @@ export const AppsSubmissionForm: React.FC = () => {
     } else if (isSuccess) {
       reset(initialValues);
       if (definition.notes.isInteractive) {
-        setInteractiveModalDetails({ show: true, openedBySubmit: true });
+        setInteractiveModalDetails({
+          show: true,
+          openedBySubmit: true,
+          uuid: submitResult.uuid,
+        });
       }
     }
   }, [submitResult]);
