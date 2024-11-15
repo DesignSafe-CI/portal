@@ -12,8 +12,10 @@ from designsafe.apps.api.projects_v2.operations.project_publish_operations impor
     amend_publication_async,
 )
 from designsafe.apps.api.projects_v2.views import get_project_for_user
+from designsafe.apps.api.utils import get_client_ip
 
 logger = logging.getLogger(__name__)
+metrics = logging.getLogger("metrics")
 
 
 def handle_search(query_opts: dict, offset=0, limit=100):
@@ -173,6 +175,18 @@ class PublicationListingView(BaseApiView):
             "data-type": request.GET.get("data-type", None),
         }
 
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.listing",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"query": query_opts},
+            },
+        )
+
         has_query = any(query_opts.values())
         if has_query:
             hits, total = handle_search(query_opts, offset, limit)
@@ -218,6 +232,18 @@ class PublicationDetailView(BaseApiView):
         except Publication.DoesNotExist as exc:
             raise ApiException(status=404, message="Publication not found.") from exc
 
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.detail",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"project_id": project_id},
+            },
+        )
+
         pub_tree: nx.DiGraph = nx.node_link_graph(pub_meta.tree)
         file_tags = []
         for file_tag_arr in [
@@ -243,6 +269,18 @@ class PublicationPublishView(BaseApiView):
         request_body = json.loads(request.body)
         logger.debug(request_body)
 
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.publish",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": request_body},
+            },
+        )
+
         project_id = request_body.get("projectId", None)
         entities_to_publish = request_body.get("entityUuids", None)
 
@@ -265,6 +303,18 @@ class PublicationVersionView(BaseApiView):
         user = request.user
         request_body = json.loads(request.body)
         logger.debug(request_body)
+
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.version",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": request_body},
+            },
+        )
 
         project_id = request_body.get("projectId", None)
         entities_to_publish = request_body.get("entityUuids", None)
@@ -297,6 +347,18 @@ class PublicationAmendView(BaseApiView):
         user = request.user
         request_body = json.loads(request.body)
         logger.debug(request_body)
+
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.amend",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": request_body},
+            },
+        )
 
         project_id = request_body.get("projectId", None)
 

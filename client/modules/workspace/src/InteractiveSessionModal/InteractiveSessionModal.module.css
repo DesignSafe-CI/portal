@@ -1,13 +1,8 @@
-.session-modal-header {
-  background-color: #f4f4f4;
-  h5 {
-    font-weight: normal;
-  }
-}
-
 .session-modal-body {
   display: flex;
   flex-direction: column;
+  margin-bottom: 25px;
+  min-height: 225px;
   & > * {
     margin: 0.4rem;
   }
@@ -16,4 +11,8 @@
 .url {
   color: grey;
   font-style: italic;
+}
+
+.icon {
+  margin-left: 10px;
 }

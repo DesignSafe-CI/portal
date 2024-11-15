@@ -79,6 +79,9 @@ class DesignSafeProfile(models.Model):
     update_required = models.BooleanField(default=True)
     last_updated = models.DateTimeField(auto_now=True, null=True)
 
+    # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty, setup_complete will be set to True on first login
+    setup_complete = models.BooleanField(default=False)
+
     def send_mail(self, subject, body=None):
         send_mail(subject,
                   body,

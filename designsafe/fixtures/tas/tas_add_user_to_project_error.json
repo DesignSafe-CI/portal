@@ -1,0 +1,5 @@
+{
+  "status": "error",
+  "message": "Cannot add user.  User username is already a member of project 42237",
+  "result": null
+}

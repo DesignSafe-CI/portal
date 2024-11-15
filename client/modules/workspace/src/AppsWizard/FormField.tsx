@@ -2,30 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { Button, Form, Input, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { TFieldOptions, inputFileRegex } from '../AppsWizard/AppsFormSchema';
+import {
+  TFieldOptions,
+  tapisInputFileRegex,
+  TAppFileSettings,
+} from '../AppsWizard/AppsFormSchema';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
 
 export const FormField: React.FC<{
   name: string;
-  tapisFile?: boolean;
   parameterSet?: string;
   description?: string;
   label: string;
   required?: boolean;
   type: string;
-  tapisFileSelectionMode?: string;
+  fileSettings?: TAppFileSettings;
   placeholder?: string;
   options?: TFieldOptions[];
 }> = ({
   name,
-  tapisFile = false,
   parameterSet = null,
   description,
   label,
   required = false,
   type,
-  tapisFileSelectionMode = null,
+  fileSettings = null,
   ...props
 }) => {
   const { resetField, control, getValues, setValue, trigger } =
@@ -39,16 +41,17 @@ export const FormField: React.FC<{
     setIsModalOpen(true);
   };
   useEffect(() => {
-    if (tapisFile) {
+    setStorageSystem(null);
+
+    if (fileSettings?.fileNameRepresentation === 'FullTapisPath') {
       const inputFileValue = getValues(name);
-      const match = inputFileValue?.match(inputFileRegex);
-      if (match && match.groups) {
+      const match = inputFileValue?.match(tapisInputFileRegex);
+
+      if (match?.groups) {
         setStorageSystem(match.groups.storageSystem);
-      } else {
-        setStorageSystem(null);
       }
     }
-  }, [tapisFile, name, fieldState]);
+  }, [fileSettings, name, fieldState]);
 
   if (parameterSet) {
     parameterSetLabel = (
@@ -89,7 +92,7 @@ export const FormField: React.FC<{
           />
         ) : (
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            {tapisFile && (
+            {fileSettings && (
               <Form.Item name="prefix" noStyle>
                 <SecondaryButton onClick={handleSelectModalOpen}>
                   Select
@@ -133,11 +136,11 @@ export const FormField: React.FC<{
       {/* Select Modal has Form and input which cause state sharing with above FormItem
           So, SelectModal is outside FormItem.
        */}
-      {tapisFile && (
+      {fileSettings && (
         <SelectModal
           inputLabel={label}
           system={storageSystem}
-          selectionMode={tapisFileSelectionMode ?? 'both'}
+          appFileSettings={fileSettings}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSelect={(value: string) => {

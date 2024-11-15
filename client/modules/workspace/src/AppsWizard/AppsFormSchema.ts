@@ -19,6 +19,7 @@ import {
   getExecSystemsFromApp,
   getExecSystemFromId,
   getAppQueueValues,
+  getAppRuntimeLabel,
   getQueueValueForExecSystem,
   getQueueMaxMinutes,
   isAppTypeBATCH,
@@ -56,8 +57,7 @@ export type TField = {
   parameterSet?: string;
   description?: string;
   options?: TFieldOptions[];
-  tapisFile?: boolean;
-  tapisFileSelectionMode?: string;
+  fileSettings?: TAppFileSettings;
   placeholder?: string;
   readOnly?: boolean;
 };
@@ -96,7 +96,7 @@ export type TAppFormSchema = {
   };
 };
 
-export const inputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
+export const tapisInputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
 
 export const fieldDisplayOrder: Record<string, string[]> = {
   configuration: [
@@ -107,6 +107,14 @@ export const fieldDisplayOrder: Record<string, string[]> = {
     'allocation',
   ],
   outputs: ['name', 'archiveSystemId', 'archiveSystemDir'],
+};
+
+export type TAppFilePathRepresentation = 'FullTapisPath' | 'NameOnly';
+export type TAppFileSelectionMode = 'both' | 'file' | 'directory';
+
+export type TAppFileSettings = {
+  fileNameRepresentation: TAppFilePathRepresentation;
+  fileSelectionMode: TAppFileSelectionMode;
 };
 
 // See https://github.com/colinhacks/zod/issues/310 for Zod issue
@@ -135,10 +143,13 @@ export const getConfigurationSchema = (
     );
   }
 
-  configurationSchema['maxMinutes'] = getMaxMinutesValidation(
-    definition,
-    queue
-  );
+  if (!definition.notes.hideMaxMinutes) {
+    configurationSchema['maxMinutes'] = getMaxMinutesValidation(
+      definition,
+      queue
+    );
+  }
+
   if (!definition.notes.hideNodeCountAndCoresPerNode) {
     configurationSchema['nodeCount'] = getNodeCountValidation(
       definition,
@@ -177,7 +188,9 @@ export const getConfigurationFields = (
 
   if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
     configurationFields['execSystemLogicalQueue'] = {
-      description: 'Select the queue this job will execute on.',
+      description: `Select the queue this ${getAppRuntimeLabel(
+        definition
+      )} will execute on.`,
       label: 'Queue',
       name: 'configuration.execSystemLogicalQueue',
       key: 'configuration.execSystemLogicalQueue',
@@ -192,8 +205,9 @@ export const getConfigurationFields = (
 
   if (definition.jobType === 'BATCH' && !definition.notes.hideAllocation) {
     configurationFields['allocation'] = {
-      description:
-        'Select the project allocation you would like to use with this job submission.',
+      description: `Select the project allocation you would like to use with this ${getAppRuntimeLabel(
+        definition
+      )} submission.`,
       label: 'Allocation',
       name: 'configuration.allocation',
       key: 'configuration.allocation',
@@ -209,18 +223,27 @@ export const getConfigurationFields = (
     };
   }
 
-  configurationFields['maxMinutes'] = {
-    description: `The maximum number of minutes you expect this job to run for. Maximum possible is ${getQueueMaxMinutes(
-      definition,
-      defaultExecSystem,
-      queue?.name
-    )} minutes. After this amount of time your job will end. Shorter run times result in shorter queue wait times.`,
-    label: 'Maximum Job Runtime (minutes)',
-    name: 'configuration.maxMinutes',
-    key: 'configuration.maxMinutes',
-    required: true,
-    type: 'number',
-  };
+  if (!definition.notes.hideMaxMinutes) {
+    configurationFields['maxMinutes'] = {
+      description: `The maximum number of minutes you expect this ${getAppRuntimeLabel(
+        definition
+      )} to run for. Maximum possible is ${getQueueMaxMinutes(
+        definition,
+        defaultExecSystem,
+        queue?.name
+      )} minutes. After this amount of time your ${getAppRuntimeLabel(
+        definition
+      )} will end. Shorter run times result in shorter queue wait times.`,
+      label: `Maximum ${getAppRuntimeLabel(
+        definition,
+        true
+      )} Runtime (minutes)`,
+      name: 'configuration.maxMinutes',
+      key: 'configuration.maxMinutes',
+      required: true,
+      type: 'number',
+    };
+  }
 
   if (!definition.notes.hideNodeCountAndCoresPerNode) {
     configurationFields['nodeCount'] = {
@@ -316,6 +339,12 @@ const FormSchema = (
           name: `parameters.${parameterSet}.${label}`,
           key: paramId,
           type: 'text',
+          ...(param.notes?.inputType === 'fileInput' && {
+            fileSettings: {
+              fileNameRepresentation: 'NameOnly',
+              fileSelectionMode: 'file',
+            },
+          }),
         };
 
         if (param.notes?.enum_values) {
@@ -399,11 +428,14 @@ const FormSchema = (
       required: input.inputMode === 'REQUIRED',
       name: `inputs.${input.name}`,
       key: `inputs.${input.name}`,
-      tapisFile: true,
       type: 'text',
       placeholder: 'Browse Data Files',
       readOnly: input.inputMode === 'FIXED',
-      tapisFileSelectionMode: input.notes?.selectionMode ?? 'both',
+      fileSettings: {
+        fileNameRepresentation: 'FullTapisPath',
+        fileSelectionMode:
+          (input.notes?.selectionMode as TAppFileSelectionMode) ?? 'both',
+      },
     };
 
     appFields.fileInputs.schema[input.name] = z.string();
@@ -493,8 +525,10 @@ const FormSchema = (
       : '';
   }
 
-  appFields.configuration.defaults['maxMinutes'] =
-    definition.jobAttributes.maxMinutes;
+  if (!definition.notes.hideMaxMinutes) {
+    appFields.configuration.defaults['maxMinutes'] =
+      definition.jobAttributes.maxMinutes;
+  }
 
   if (!definition.notes.hideNodeCountAndCoresPerNode) {
     appFields.configuration.defaults['nodeCount'] =

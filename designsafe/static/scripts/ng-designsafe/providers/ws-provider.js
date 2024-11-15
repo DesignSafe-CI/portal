@@ -15,18 +15,20 @@ function WSBusService($rootScope, logger, configURL) {
      * @param {string} url
      */
     function init(url, retry) {
-        if (!retry) retry=1000 * Math.random()
+        if (!retry) retry = 1000 * Math.random();
         ws = new WebSocket(url);
-        ws.onopen = function() {};
-        ws.onmessage = function(e) {
+        ws.onopen = function () {
+            $rootScope.$on('notifications:markAllNotificationsAsRead', () => ws.send('markAllNotificationsAsRead'));
+        };
+        ws.onmessage = function (e) {
             let res = JSON.parse(e.data);
             processWSMessage(res);
         };
-        ws.onerror = function(e) {
+        ws.onerror = function (e) {
             logger.log('WS error: ', e);
         };
-        ws.onclose = function(e) {
-            console.log(`Websocket connection closed, retrying in ${Math.floor(retry/1000.0)}s`)
+        ws.onclose = function (e) {
+            console.log(`Websocket connection closed, retrying in ${Math.floor(retry / 1000.0)}s`);
             if (retry < 60000) setTimeout(() => init(url, retry * 2), retry);
         };
         service.ws = ws;
@@ -38,7 +40,15 @@ function WSBusService($rootScope, logger, configURL) {
      * @param {Object} msg
      */
     function processWSMessage(msg) {
-        $rootScope.$broadcast('ds.wsBus:notify', msg);
+        switch (msg.event_type) {
+            case 'markAllNotificationsAsRead':
+                $rootScope.$broadcast('ds.wsBus:markAllNotificationsAsRead');
+                break;
+
+            default:
+                $rootScope.$broadcast('ds.wsBus:notify', msg);
+                break;
+        }
     }
 
     let service = {
@@ -60,7 +70,7 @@ export class WSBusServiceProvider {
      */
     constructor() {
         this.configURL = '';
-        this.setUrl = url => {
+        this.setUrl = (url) => {
             this.configURL = url;
         };
     }

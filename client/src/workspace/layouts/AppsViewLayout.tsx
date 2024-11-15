@@ -51,6 +51,7 @@ export const AppsViewLayout: React.FC = () => {
                 <a
                   href={userGuideLink}
                   target="_blank"
+                  rel="noreferrer"
                   style={{ marginRight: 10 }}
                 >
                   View User Guide
@@ -59,7 +60,9 @@ export const AppsViewLayout: React.FC = () => {
             </Flex>
           </Header>
           {htmlApp ? (
-            <div className={styles['overflow']}>
+            <div
+              className={`${styles['overflow']} ${styles['html-app-container']}`}
+            >
               {parse(htmlApp.html as string)}
             </div>
           ) : (

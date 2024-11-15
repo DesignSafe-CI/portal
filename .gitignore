@@ -20,6 +20,7 @@ designsafe/templates/react-assets.html
 designsafe.env
 mysql.env
 rabbitmq.env
+ngrok.env
 rabbitmq.conf
 mysql.cnf
 
@@ -35,6 +36,7 @@ designsafe/apps/dashboard/templates/designsafe/apps/dashboard/index.html
 designsafe/apps/notifications/templates/designsafe/apps/notifications/index.html
 designsafe/apps/nco/templates/designsafe/apps/nco/nco_index.html
 designsafe/apps/nco/templates/designsafe/apps/nco/ttc_grants.html
+designsafe/apps/onboarding/templates/designsafe/apps/onboarding/index.html
 
 # local config files
 conf/elasticsearch/logging.yml
