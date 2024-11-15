@@ -12,7 +12,7 @@ import {
 import { useFormContext, useWatch, FieldValues } from 'react-hook-form';
 import { z, ZodTypeAny } from 'zod';
 import { TField, fieldDisplayOrder } from '../AppsWizard/AppsFormSchema';
-import { PrimaryButton } from '@client/common-components';
+import { JobSubmitButton } from '../JobSubmitButton/JobSubmitButton';
 import styles from './AppsSubmissionDetails.module.css';
 import { TTapisApp } from '@client/hooks';
 
@@ -255,14 +255,11 @@ export const AppsSubmissionDetails: React.FC<{
         style={itemStyle}
         className={styles.root}
         extra={
-          <PrimaryButton
-            htmlType="submit"
+          <JobSubmitButton
             disabled={!isValid}
             loading={isSubmitting}
-            style={{ width: 120 }}
-          >
-            Submit Job
-          </PrimaryButton>
+            interactive={definition.notes.isInteractive}
+          />
         }
       />
     </Card>

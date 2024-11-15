@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     'designsafe.apps.search',
     'designsafe.apps.geo',
     'designsafe.apps.rapid',
+    'designsafe.apps.onboarding',
 
     #haystack integration
     'haystack'
@@ -426,7 +427,7 @@ LOGGING = {
         'metrics': {
             'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
                       ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
-                      ' info=%(info)s'
+                      ' info=%(info)s timestamp=%(asctime)s portal=designsafe tenant=designsafe'
         },
     },
     'handlers': {
@@ -533,7 +534,6 @@ AGAVE_SANDBOX_SUPER_TOKEN = os.environ.get('AGAVE_SANDBOX_SUPER_TOKEN', '')
 
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
-AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM', 'designsafe.storage.frontera.work')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
@@ -543,12 +543,6 @@ AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
-
-TAPIS_SYSTEMS_TO_CONFIGURE = [
-    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
-]
 
 # Tapis Client Configuration
 PORTAL_ADMIN_USERNAME = os.environ.get('PORTAL_ADMIN_USERNAME')
@@ -670,7 +664,7 @@ SUPPORTED_TEXT_PREVIEW_EXTS = [
     '.java', '.js', '.less', '.m', '.make', '.md', '.ml', '.mm', '.msg', '.php',
     '.pl', '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml',
     '.sql', '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl',
-    '.json', '.out', '.err', '.geojson', '.do', '.sas', '.hazmapper'
+    '.json', '.out', '.err', '.geojson', '.do', '.sas', '.hazmapper', ".log"
 ]
 
 SUPPORTED_OBJECT_PREVIEW_EXTS = [
@@ -706,7 +700,31 @@ FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
 FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')
 
 CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('SESSION_COOKIE_DOMAIN')}"]
-WEBHOOK_POST_URL = os.environ.get('WEBHOOK_POST_URL', '')
+NGROK_DOMAIN = os.environ.get('NGROK_DOMAIN', os.environ.get('WEBHOOK_POST_URL', ''))
 
 STAFF_VPN_IP_PREFIX = os.environ.get("STAFF_VPN_IP_PREFIX", "129.114")
 USER_PROJECTS_LIMIT = os.environ.get("USER_PROJECTS_LIMIT", 500)
+
+# Onboarding
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+        "settings": {
+            "project_sql_id": 34076,  # project id for DesignSafe-Corral
+            "rt_queue": "DesignSafe-ci",
+        },
+    },
+    {
+        "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
+        "settings": {},
+    },
+    {
+        "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+        "settings": {
+            "credentials_systems": ["cloud.data", "designsafe.storage.default"],
+            "create_path_systems": [
+                {"system_id": "designsafe.storage.default", "path": "{username}"}
+            ],
+        },
+    },
+]
