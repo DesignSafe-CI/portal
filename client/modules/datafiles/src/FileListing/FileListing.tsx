@@ -9,6 +9,7 @@ import {
 import { NavLink } from 'react-router-dom';
 import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
 import { TFileListing, TFileTag, useDoiContext } from '@client/hooks';
+import styles from './FileListing.module.css';
 
 export function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
@@ -53,7 +54,7 @@ export const FileListing: React.FC<
       {
         title: 'File Name',
         dataIndex: 'name',
-        ellipsis: true,
+        ellipsis: false,
         width: '50%',
         render: (data, record) => (
           <>
@@ -122,6 +123,7 @@ export const FileListing: React.FC<
   return (
     <>
       <FileListingTable
+        className={styles['file-listing-table']}
         api={api}
         system={system}
         scheme={scheme}
