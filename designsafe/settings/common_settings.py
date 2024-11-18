@@ -427,7 +427,7 @@ LOGGING = {
         'metrics': {
             'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
                       ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
-                      ' info=%(info)s timestamp=%(asctime)s portal=designsafe tenant=designsafe'
+                      ' info=%(info)s timestamp=%(asctime)s trackingId=portal.%(sessionId)s portal=designsafe tenant=designsafe'
         },
     },
     'handlers': {
@@ -508,7 +508,7 @@ TAS_URL = os.environ.get('TAS_URL', None)
 ALLOCATIONS_TO_EXCLUDE = (
     os.environ.get("ALLOCATIONS_TO_EXCLUDE", "").split(",")
     if os.environ.get("ALLOCATIONS_TO_EXCLUDE")
-    else ["DesignSafe-DCV"]
+    else ["DesignSafe-DCV,DesignSafe-Corral"]
 )
 
 
