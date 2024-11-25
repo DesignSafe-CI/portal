@@ -5,6 +5,7 @@ type TInteractiveModalDetails = {
   interactiveSessionLink?: string;
   message?: string;
   openedBySubmit?: boolean;
+  uuid?: string;
 };
 
 export type TInteractiveModalContext = [
