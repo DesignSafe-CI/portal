@@ -11,9 +11,9 @@
         "steps": [
           {
             "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
-            "displayName": "Checking Project Membership",
-            "description": "This confirms if you have access to the project. If not, request access and\n                  wait for the system administrator’s approval.",
-            "userConfirm": "Request Project Access",
+            "displayName": "Access Computation and Data Resources",
+            "description": "This confirms if you have access to the computation and data resources. If not, request access and wait for the system administrator’s approval. This typically takes up to 1-2 hours during normal business hours, but can take up to 48 hours in some cases. Using an official institution email that aligns with your institution in your account profile expedites the process.",
+            "userConfirm": "Request Access to Computation and Data Resources",
             "staffApprove": "Add to DesignSafe project",
             "staffDeny": "Deny Project Access Request",
             "state": "completed",
