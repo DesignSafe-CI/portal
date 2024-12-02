@@ -42,9 +42,10 @@ class NcoTtcGrantsManager(object):
             query['Type'] = params['grant_type']
         if params['text_search']:
             query['$or'] = [
-                {'Title': {'$regex': params['text_search']}},
-                {'Abstract': {'$regex': params['text_search']}},
-                {'PiName': {'$regex': params['text_search']}},
+                {'Title': {'$regex': params['text_search'], '$options': 'i'}},
+                {'Abstract': {'$regex': params['text_search'], '$options': 'i'}},
+                {'PiName': {'$regex': params['text_search'], '$options': 'i'}},
+                {'CoPiNames': {'$regex': params['text_search'], '$options': 'i'}},
             ]
 
         #get the grants list

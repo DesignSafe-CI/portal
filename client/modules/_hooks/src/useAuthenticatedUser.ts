@@ -5,6 +5,8 @@ export type TUser = {
   email: string;
   institution: string;
   homedir: string;
+  isStaff: boolean;
+  setupComplete: boolean;
 };
 
 declare global {

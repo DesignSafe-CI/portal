@@ -91,9 +91,11 @@ export const JobsListingTable: React.FC<
     isLoading,
   ]);
 
-  const lastNotificationJobUUID = lastMessage
-    ? (JSON.parse(lastMessage.data) as TJobStatusNotification).extra.uuid
-    : '';
+  const lastMessageJSON = lastMessage?.data
+    ? (JSON.parse(lastMessage.data) as TJobStatusNotification)
+    : null;
+  const lastNotificationJobUUID =
+    lastMessageJSON?.event_type === 'job' ? lastMessageJSON.extra.uuid : '';
   const unreadJobUUIDs = unreadNotifs?.notifs.map((x) => x.extra.uuid) ?? [];
 
   /* RENDER THE TABLE */

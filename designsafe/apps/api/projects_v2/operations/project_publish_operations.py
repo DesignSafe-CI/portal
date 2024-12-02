@@ -25,6 +25,9 @@ from designsafe.apps.api.projects_v2.operations.datacite_operations import (
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
     archive_publication_async,
 )
+from designsafe.apps.api.projects_v2.operations.project_email_operations import (
+    send_project_permissions_alert,
+)
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
@@ -420,6 +423,11 @@ def copy_publication_files(
             },
             queue="indexing",
         )
+
+    except PermissionError as exc:
+        logger.error(exc)
+        send_project_permissions_alert(project_id, version, str(exc))
+
     finally:
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
 

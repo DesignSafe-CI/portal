@@ -1,0 +1,26 @@
+[
+    {
+        "email": "pi_user@username.com",
+        "firstName": "PILastname",
+        "id": 1234567,
+        "lastName": "PIFirstname",
+        "role": "PI",
+        "username": "username"
+    },
+    {
+      "email": "deleage_user@username.com",
+      "firstName": "DelegateLastname",
+      "id": 123456,
+      "lastName": "DelegateFirstname",
+      "role": "Delegate",
+      "username": "username"
+    },
+    {
+      "email": "user@username.com",
+      "firstName": "Lastname",
+      "id": 12345,
+      "lastName": "Firstname",
+      "role": "Standard",
+      "username": "username"
+    }
+]
