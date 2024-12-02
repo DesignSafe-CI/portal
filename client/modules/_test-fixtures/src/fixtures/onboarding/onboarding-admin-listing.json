@@ -11,9 +11,9 @@
         "steps": [
           {
             "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
-            "displayName": "Access Computation and Data Resources",
-            "description": "This confirms if you have access to the computation and data resources. If not, request access and wait for the system administrator’s approval. This typically takes up to 1-2 hours during normal business hours, but can take up to 48 hours in some cases. Using an official institution email that aligns with your institution in your account profile expedites the process.",
-            "userConfirm": "Request Access to Computation and Data Resources",
+            "displayName": "Initial Onboarding Status",
+            "description": "Requesting access initiates the onboarding process for accessing computation and data resources, and your status will change from Waiting for User to Waiting for Staff Approval. A ticket will be auto-generated for tracking and communications. Approval review typically takes up to 1-2 hours during normal business hours, but can take up to 48 hours in some cases. Once approved, your status will change to Completed.",
+            "userConfirm": "Request Access",
             "staffApprove": "Add to DesignSafe project",
             "staffDeny": "Deny Project Access Request",
             "state": "completed",

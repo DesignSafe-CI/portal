@@ -21,7 +21,7 @@ class ProjectMembershipStep(AbstractStep):
         """
         super().__init__(user)
         self.project = self.get_tas_project()
-        self.user_confirm = "Request Access to Computation and Data Resources"
+        self.user_confirm = "Request Access"
         self.staff_approve = f"Add to {self.project['title']}"
         self.staff_deny = "Deny Project Access Request"
 
@@ -47,7 +47,7 @@ class ProjectMembershipStep(AbstractStep):
                   wait for the system administrator’s approval."""
 
     def display_name(self):
-        return "Access Computation and Data Resources"
+        return "Initial Onboarding Status"
 
     def prepare(self):
         """Prepare the step"""
@@ -85,7 +85,7 @@ class ProjectMembershipStep(AbstractStep):
             if tracker.login():
                 result = tracker.create_ticket(
                     Queue=self.settings.get("rt_queue") or "Accounts",
-                    Subject=f"Request for DesignSafe Computation and Data Resources for {self.user.username}",
+                    Subject=f"Request for DesignSafe Onboarding for {self.user.username}",
                     Text=ticket_text,
                     Requestor=self.user.email,
                     CF_resource=self.settings.get("rt_tag") or "",
