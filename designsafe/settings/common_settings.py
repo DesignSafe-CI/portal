@@ -715,10 +715,6 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         },
     },
     {
-        "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
-        "settings": {},
-    },
-    {
         "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
         "settings": {
             "credentials_systems": ["cloud.data", "designsafe.storage.default"],
