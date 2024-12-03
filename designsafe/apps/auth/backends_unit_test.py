@@ -40,9 +40,15 @@ def update_institution_from_tas_mock(mocker):
 
 
 def test_launch_setup_checks(mocker, regular_user, settings):
-    mocker.patch("designsafe.apps.auth.views.new_user_setup_check")
+    # Mock the cache_allocations and execute_setup_steps
+    mock_cache_allocations = mocker.patch("designsafe.apps.auth.views.cache_allocations")
     mock_execute = mocker.patch("designsafe.apps.auth.views.execute_setup_steps")
+    
+    # Run the function under test
     launch_setup_checks(regular_user)
+    
+    # Assert the mocked methods were called with expected arguments
+    mock_cache_allocations.apply_async.assert_called_with(args=(regular_user.username,))
     mock_execute.apply_async.assert_called_with(args=["username"])
 
 

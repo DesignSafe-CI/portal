@@ -72,17 +72,11 @@ def launch_setup_checks(user):
 
     # Check onboarding settings
     new_user_setup_check(user)
+    cache_allocations.apply_async(args=(user.username,))
     if not user.profile.setup_complete:
         logger.info("Executing onboarding setup steps for %s", user.username)
         execute_setup_steps.apply_async(args=[user.username])
         return HttpResponseRedirect(reverse("designsafe_onboarding:user"))
-    else:
-        logger.info(
-            "Already onboarded, running non-onboarding steps (e.g. update cached "
-            "allocation information) for %s",
-            user.username,
-        )
-        cache_allocations.apply_async(args=(user.username,))
 
 
 def tapis_oauth_callback(request):
