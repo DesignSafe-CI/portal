@@ -75,14 +75,25 @@ def test_tapis_callback_mismatched_state(client):
 
 
 def test_launch_setup_checks(regular_user, mocker):
+    # Mock external dependencies
     mock_execute_setup_steps = mocker.patch(
         "designsafe.apps.auth.views.execute_setup_steps"
     )
     mock_new_user_setup_check = mocker.patch(
         "designsafe.apps.auth.views.new_user_setup_check"
     )
+    mock_cache_allocations = mocker.patch(
+        "designsafe.apps.auth.views.cache_allocations"
+    )
+    
+    # Run the function under test
     launch_setup_checks(regular_user)
+    
+    # Assert mocks were called with the expected arguments
     mock_new_user_setup_check.assert_called_with(regular_user)
+    mock_cache_allocations.apply_async.assert_called_with(
+        args=(regular_user.username,)
+    )
     mock_execute_setup_steps.apply_async.assert_called_with(
         args=[regular_user.username]
     )
