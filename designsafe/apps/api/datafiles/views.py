@@ -76,7 +76,7 @@ class DataFilesView(BaseApiView):
 
         try:
             response = datafiles_get_handler(
-                api, client, scheme, system, path, operation, username=request.user.username, **request.GET.dict())
+                api, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", username=request.user.username, **request.GET.dict())
             return JsonResponse(response)
         except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
             raise resource_expired_handler(api)
@@ -113,7 +113,7 @@ class DataFilesView(BaseApiView):
                 raise resource_unconnected_handler(api)
 
         try:
-            response = datafiles_put_handler(api, request.user.username, client, scheme, system, path, operation, body=body)
+            response = datafiles_put_handler(api, request.user.username, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", body=body)
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
 
@@ -144,7 +144,7 @@ class DataFilesView(BaseApiView):
             except AttributeError:
                 raise resource_unconnected_handler(api)
 
-        response = datafiles_post_handler(api, request.user.username, client, scheme, system, path, operation, body={**post_files, **post_body})
+        response = datafiles_post_handler(api, request.user.username, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", body={**post_files, **post_body})
 
         return JsonResponse(response)
 

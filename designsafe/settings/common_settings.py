@@ -428,7 +428,7 @@ LOGGING = {
         'metrics': {
             'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
                       ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
-                      ' info=%(info)s timestamp=%(asctime)s portal=designsafe tenant=designsafe'
+                      ' info=%(info)s timestamp=%(asctime)s trackingId=portal.%(sessionId)s portal=designsafe tenant=designsafe'
         },
     },
     'handlers': {
@@ -509,7 +509,7 @@ TAS_URL = os.environ.get('TAS_URL', None)
 ALLOCATIONS_TO_EXCLUDE = (
     os.environ.get("ALLOCATIONS_TO_EXCLUDE", "").split(",")
     if os.environ.get("ALLOCATIONS_TO_EXCLUDE")
-    else ["DesignSafe-DCV"]
+    else ["DesignSafe-DCV,DesignSafe-Corral"]
 )
 
 
@@ -716,10 +716,6 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
             "project_sql_id": 34076,  # project id for DesignSafe-Corral
             "rt_queue": "DesignSafe-ci",
         },
-    },
-    {
-        "step": "designsafe.apps.onboarding.steps.allocation.AllocationStep",
-        "settings": {},
     },
     {
         "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
