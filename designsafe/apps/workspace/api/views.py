@@ -561,7 +561,10 @@ class JobsView(AuthenticatedApiView):
         """Returns detailed information for a given job uuid"""
 
         job_uuid = request.GET.get("uuid")
-        data = client.jobs.getJob(jobUuid=job_uuid)
+        data = client.jobs.getJob(
+            jobUuid=job_uuid,
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+        )
 
         return data
 
@@ -584,6 +587,7 @@ class JobsView(AuthenticatedApiView):
             skip=skip,
             orderBy="lastUpdated(desc),name(asc)",
             select="allAttributes",
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
             **kwargs,
         )
         if isinstance(data, list):
@@ -626,6 +630,7 @@ class JobsView(AuthenticatedApiView):
             orderBy="lastUpdated(desc),name(asc)",
             request_body={"search": sql_queries},
             select="allAttributes",
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
         )
         return {"listing": data, "reachedEnd": len(data) < int(limit)}
 
@@ -645,7 +650,10 @@ class JobsView(AuthenticatedApiView):
         )
         tapis = request.user.tapis_oauth.client
         job_uuid = request.GET.get("uuid")
-        data = tapis.jobs.hideJob(jobUuid=job_uuid)
+        data = tapis.jobs.hideJob(
+            jobUuid=job_uuid,
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+        )
         return JsonResponse(
             {
                 "status": 200,
@@ -755,6 +763,9 @@ class JobsView(AuthenticatedApiView):
                 tapis.files.mkdir(
                     systemId=exec_system_id,
                     path=f"{system['home_dir'].format(tasdir)}/.tap",
+                    headers={
+                        "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
+                    },
                 )
 
         # Add webhook subscription for job status updates
@@ -771,7 +782,10 @@ class JobsView(AuthenticatedApiView):
         ]
 
         logger.info(f"user: {username} is submitting job: {job_post}")
-        response = tapis.jobs.submitJob(**job_post)
+        response = tapis.jobs.submitJob(
+            **job_post,
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+        )
         return response
 
     def post(self, request, *args, **kwargs):
@@ -797,7 +811,12 @@ class JobsView(AuthenticatedApiView):
                     status=400,
                 )
             tapis_operation = getattr(tapis.jobs, operation)
-            response = tapis_operation(jobUuid=job_uuid)
+            response = tapis_operation(
+                jobUuid=job_uuid,
+                headers={
+                    "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
+                },
+            )
 
         else:
             # submit job
