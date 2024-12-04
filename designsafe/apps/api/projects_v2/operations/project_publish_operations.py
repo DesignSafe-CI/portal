@@ -378,6 +378,10 @@ class ProjectFileNotFound(Exception):
     """exception raised when attempting to copy a non-existent file for publication"""
 
 
+class PublicationDirectoryAlreadyExists(Exception):
+    """exception raised when attempting to publish into a directory that exists already"""
+
+
 def copy_publication_files(
     path_mapping: dict, project_id: str, version: Optional[int] = None
 ):
@@ -393,6 +397,13 @@ def copy_publication_files(
             pub_dirname = f"{project_id}v{version}"
 
         pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
+
+        # Prevent multiple attempts to publish the same project files.
+        if os.path.isdir(pub_root_dir):
+            raise PublicationDirectoryAlreadyExists(
+                f"Directory already exists: {pub_root_dir}"
+            )
+
         os.makedirs(pub_root_dir, exist_ok=True)
 
         for src_path in path_mapping:
@@ -427,6 +438,7 @@ def copy_publication_files(
     except PermissionError as exc:
         logger.error(exc)
         send_project_permissions_alert(project_id, version, str(exc))
+        raise exc
 
     finally:
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
