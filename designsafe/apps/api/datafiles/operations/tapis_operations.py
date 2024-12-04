@@ -47,7 +47,8 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
     raw_listing = client.files.listFiles(systemId=system,
                                          path=(path or '/'),
                                          offset=int(offset),
-                                         limit=int(limit))
+                                         limit=int(limit),
+                                         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
 
     try:
         # Convert file objects to dicts for serialization.
@@ -83,7 +84,7 @@ def detail(client, system, path, *args, **kwargs):
     """
     Retrieve the uuid for a file by parsing the query string in _links.metadata.href
     """
-    _listing = client.files.listFiles(systemId=system, path=urllib.parse.quote(path), offset=0, limit=1)
+    _listing = client.files.listFiles(systemId=system, path=urllib.parse.quote(path), offset=0, limit=1, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
     f = _listing[0]
     listing_res = {
             'system': system,
@@ -229,7 +230,7 @@ def mkdir(client, system, path, dir_name):
     return {"result": "OK"}
 
 
-def move(client, src_system, src_path, dest_system, dest_path):
+def move(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
     """
     Move files and related file metadata
 
@@ -259,7 +260,8 @@ def move(client, src_system, src_path, dest_system, dest_path):
     client.files.moveCopy(systemId=src_system, 
                           path=src_path,
                           operation="MOVE",
-                          newPath=dest_path_full)
+                          newPath=dest_path_full,
+                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
     
     move_file_meta_async.delay(src_system, src_path, dest_system, dest_path_full)
 
@@ -286,7 +288,7 @@ def move(client, src_system, src_path, dest_system, dest_path):
     return {"result": "OK"}
 
 
-def copy(client, src_system, src_path, dest_system, dest_path):
+def copy(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
     """
     Copy files and related file metadata
 
@@ -321,7 +323,8 @@ def copy(client, src_system, src_path, dest_system, dest_path):
         copy_result = client.files.moveCopy(systemId=src_system,
                                             path=src_path,
                                             operation="COPY",
-                                            newPath=full_dest_path)
+                                            newPath=full_dest_path,
+                                            headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
     else:
         src_url = f'tapis://{src_system}/{src_path}'
         dest_url = f'tapis://{dest_system}/{full_dest_path}'
@@ -329,7 +332,7 @@ def copy(client, src_system, src_path, dest_system, dest_path):
         copy_response = client.files.createTransferTask(elements=[{
             'sourceURI': src_url,
             'destinationURI': dest_url
-        }])
+        }], headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
         copy_result = {
             'uuid': copy_response.uuid,
             'status': copy_response.status,
@@ -362,11 +365,12 @@ def copy(client, src_system, src_path, dest_system, dest_path):
     return dict(copy_result)
 
 
-def delete(client, system, path):
+def delete(client, system, path, *args, **kwargs):
     return client.files.delete(systemId=system,
-                               filePath=urllib.parse.quote(path))
+                               filePath=urllib.parse.quote(path),
+                               headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
 
-def rename(client, system, path, new_name):
+def rename(client, system, path, new_name, *args, **kwargs):
     """Renames a file. This is performed under the hood by moving the file to
     the same parent folder but with a new name.
 
@@ -397,7 +401,8 @@ def rename(client, system, path, new_name):
     client.files.moveCopy(systemId=system, 
                           path=path,
                           operation="MOVE",
-                          newPath=new_path)
+                          newPath=new_path,
+                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
 
     move_file_meta_async.delay(system, path, system, new_path)
 
@@ -415,7 +420,7 @@ def rename(client, system, path, new_name):
 
 
 
-def trash(client, system, path, trash_path):
+def trash(client, system, path, trash_path, *args, **kwargs):
     """Move a file to the .Trash folder.
 
     Params
@@ -442,7 +447,7 @@ def trash(client, system, path, trash_path):
     except tapipy.errors.NotFoundError:
         mkdir(client, system, trash_root, trash_foldername)
 
-    resp = move(client, system, path, system, trash_path)
+    resp = move(client, system, path, system, trash_path, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
 
     return resp
 
@@ -480,7 +485,10 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
 
 
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
-    response_json = client.files.insert(systemId=system, path=dest_path, file=uploaded_file)
+    response_json = client.files.insert(systemId=system,   
+                                        path=dest_path, 
+                                        file=uploaded_file, 
+                                        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
     return {"result": "OK"}
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': path,
@@ -540,7 +548,7 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
     except FileMetaModel.DoesNotExist:
         meta = {}
 
-    postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime)
+    postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
     url = postit_result.redeemUrl
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:

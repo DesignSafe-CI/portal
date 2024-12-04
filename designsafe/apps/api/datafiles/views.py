@@ -3,7 +3,9 @@ import logging
 from boxsdk.exception import BoxOAuthException
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.conf import settings
+from designsafe.libs.common.utils import check_group_membership
 from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
 from designsafe.apps.api.datafiles.notifications import notify
@@ -20,8 +22,12 @@ from designsafe.apps.api.utils import get_client_ip
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
 
+def check_project_admin_group(user):
+    """Check whether a user belongs to the Project Admin group"""
+    return check_group_membership(user, settings.PROJECT_ADMIN_GROUP)
 
-def get_client(user, api):
+
+def get_client(user, api, system=""):
     client_mappings = {
         'agave': 'tapis_oauth',
         'tapis': 'tapis_oauth',
@@ -30,6 +36,9 @@ def get_client(user, api):
         'box': 'box_user_token',
         'dropbox': 'dropbox_user_token'
     }
+    if api == 'tapis' and system.startswith("project-") and check_project_admin_group(user):
+        # Project admin users have full access to project systems.
+        return service_account()
     return getattr(user, client_mappings[api]).client
 
 
@@ -55,7 +64,7 @@ class DataFilesView(BaseApiView):
 
         if request.user.is_authenticated:
             try:
-                client = get_client(request.user, api)
+                client = get_client(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
         elif api in ('agave', 'tapis') and system in (settings.COMMUNITY_SYSTEM, 
@@ -67,7 +76,7 @@ class DataFilesView(BaseApiView):
 
         try:
             response = datafiles_get_handler(
-                api, client, scheme, system, path, operation, username=request.user.username, **request.GET.dict())
+                api, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", username=request.user.username, **request.GET.dict())
             return JsonResponse(response)
         except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
             raise resource_expired_handler(api)
@@ -99,12 +108,12 @@ class DataFilesView(BaseApiView):
         client = None
         if request.user.is_authenticated:
             try:
-                client = get_client(request.user, api)
+                client = get_client(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
 
         try:
-            response = datafiles_put_handler(api, request.user.username, client, scheme, system, path, operation, body=body)
+            response = datafiles_put_handler(api, request.user.username, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", body=body)
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
 
@@ -131,11 +140,11 @@ class DataFilesView(BaseApiView):
 
         if request.user.is_authenticated:
             try:
-                client = get_client(request.user, api)
+                client = get_client(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
 
-        response = datafiles_post_handler(api, request.user.username, client, scheme, system, path, operation, body={**post_files, **post_body})
+        response = datafiles_post_handler(api, request.user.username, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{request.session.session_key}", body={**post_files, **post_body})
 
         return JsonResponse(response)
 

@@ -31,7 +31,7 @@ export const OnboardingUserLayout: React.FC = () => {
         <Header style={headerStyle}>
           {authenticatedUser?.isStaff
             ? `Onboarding Administration for ${onboardingUser.username} - ${onboardingUser.lastName}, ${onboardingUser.firstName}`
-            : 'The following steps must be completed before accessing the portal'}
+            : ''}
         </Header>
         <>
           {onboardingUser.steps.map((step) => (
