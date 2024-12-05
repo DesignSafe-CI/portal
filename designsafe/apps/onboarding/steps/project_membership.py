@@ -21,7 +21,7 @@ class ProjectMembershipStep(AbstractStep):
         """
         super().__init__(user)
         self.project = self.get_tas_project()
-        self.user_confirm = "Request Project Access"
+        self.user_confirm = "Request Access"
         self.staff_approve = f"Add to {self.project['title']}"
         self.staff_deny = "Deny Project Access Request"
 
@@ -43,11 +43,10 @@ class ProjectMembershipStep(AbstractStep):
     def description(self):
         if self.settings is not None and "description" in self.settings:
             return self.settings["description"]
-        return """This confirms if you have access to the project. If not, request access and
-                  wait for the system administrator’s approval."""
+        return """Requesting access initiates the onboarding process for accessing computation and data resources, and your status will change from Waiting for User to Waiting for Staff Approval. A ticket will be auto-generated for tracking and communications. Approval review typically takes up to 1-2 hours during normal business hours, but can take up to 48 hours in some cases. Once approved, your status will change to Completed."""
 
     def display_name(self):
-        return "Checking Project Membership"
+        return "Initial Onboarding Status"
 
     def prepare(self):
         """Prepare the step"""
@@ -76,8 +75,8 @@ class ProjectMembershipStep(AbstractStep):
         """Send a project request to the RT system"""
         tracker = self.get_tracker()
         ticket_text = f"""
-            User {self.user.username} is requesting membership on the {self.project["title"]} project.
-            Please visit {request.build_absolute_uri(f'/onboarding/setup/{self.user.username}')}
+            User {self.user.username} is requesting access to DesignSafe Computation and Data Resources.
+            System administrator please visit {request.build_absolute_uri(f'/onboarding/setup/{self.user.username}')}
             to complete this request.
         """
 
@@ -85,7 +84,7 @@ class ProjectMembershipStep(AbstractStep):
             if tracker.login():
                 result = tracker.create_ticket(
                     Queue=self.settings.get("rt_queue") or "Accounts",
-                    Subject=f"{self.project['title']} Project Membership Request for {self.user.username}",
+                    Subject=f"Request for DesignSafe Onboarding for {self.user.username}",
                     Text=ticket_text,
                     Requestor=self.user.email,
                     CF_resource=self.settings.get("rt_tag") or "",
@@ -145,8 +144,8 @@ class ProjectMembershipStep(AbstractStep):
             if event.data and "ticket" in event.data:
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
-        request_text = f"""Your request for membership on the {self.project["title"]} project has been
-        denied. If you believe this is an error, please submit a help ticket.
+        request_text = f"""Your request for access to DesignSafe Computation and Data Resources has been
+        denied. You can still access the publicly available web pages and data. If you believe this is an error, please submit a help ticket.
         """
         if tracker.login():
             tracker.reply(ticket_id, text=request_text)
@@ -165,7 +164,7 @@ class ProjectMembershipStep(AbstractStep):
             if event.data and "ticket" in event.data:
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
-        request_text = f"""Your request for membership on the {self.project["title"]} project has been
+        request_text = f"""Your request for  access to DesignSafe Computation and Data Resources has been
         granted. Please login at https://{settings.SESSION_COOKIE_DOMAIN}/onboarding/setup to continue setting up your account.
         """
         if tracker.login():
