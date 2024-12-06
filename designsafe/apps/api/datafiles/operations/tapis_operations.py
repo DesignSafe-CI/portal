@@ -201,7 +201,7 @@ def download(client, system, path=None, paths=None, *args, **kwargs):
     return {"href": f"https://designsafe-download01.tacc.utexas.edu/download/{download_key}"}
 
 
-def mkdir(client, system, path, dir_name):
+def mkdir(client, system, path, dir_name, *args, **kwargs):
     """Create a new directory.
 
     Params
@@ -226,7 +226,8 @@ def mkdir(client, system, path, dir_name):
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
-                              queue='indexing')
+                              queue='indexing',
+                              headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
     return {"result": "OK"}
 
 
@@ -577,7 +578,7 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
     return {'href': url, 'fileType': file_type, 'fileMeta': meta}
 
 
-def download_bytes(client, system, path):
+def download_bytes(client, system, path, *args, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
