@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Layout, Space } from 'antd';
 import { PrimaryButton } from '@client/common-components';
 import { OnboardingStep } from '@client/onboarding';
