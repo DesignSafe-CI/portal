@@ -512,9 +512,14 @@ export const AppsSubmissionForm: React.FC = () => {
     ?.keyservice ? (
     <span>
       For help,{' '}
-      <Link className="wb-link" to={`tickets/create`}>
+      <a
+        rel="noopener noreferrer"
+        target="_blank"
+        className="wb-link"
+        href="https://www.designsafe-ci.org/help/submit-ticket/"
+      >
         submit a ticket.
-      </Link>
+      </a>
     </span>
   ) : (
     <span>
