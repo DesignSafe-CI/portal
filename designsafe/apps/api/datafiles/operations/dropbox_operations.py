@@ -81,7 +81,7 @@ def preview(client, system, path, *args, **kwargs):
     return {'href': url, 'fileType': file_type}
 
 
-def copy(client, src_system, src_path, dest_system, dest_path, filename, filetype='file', *args):
+def copy(client, src_system, src_path, dest_system, dest_path, filename, filetype='file', *args, **kwargs):
     if src_path and not src_path.startswith('/'):
         src_path = '/' + src_path
     if dest_path and not dest_path.startswith('/'):
@@ -93,7 +93,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, filename, filetyp
     return {}
 
 
-def download_bytes(client, system, path):
+def download_bytes(client, system, path, *args, **kwargs):
     if not path.startswith('/'):
         path = '/' + path
     (meta, response) = client.files_download(path)
@@ -103,7 +103,7 @@ def download_bytes(client, system, path):
     return result
 
 
-def upload(client, system, path, uploaded_file):
+def upload(client, system, path, uploaded_file, *args, **kwargs):
     if path and not path.startswith('/'):
         path = '/' + path
     upload_path = '{}/{}'.format(path, uploaded_file.name).replace('//', '/')
@@ -111,7 +111,7 @@ def upload(client, system, path, uploaded_file):
     return {}
 
 
-def mkdir(client, system, path, dirname):
+def mkdir(client, system, path, dirname, *args, **kwargs):
     if path and not path.startswith('/'):
         path = '/' + path
     folder_path = '{}/{}'.format(path, dirname).replace('//', '/')
