@@ -448,7 +448,7 @@ def trash(client, system, path, trash_path, *args, **kwargs):
     except tapipy.errors.NotFoundError:
         mkdir(client, system, trash_root, trash_foldername)
 
-    resp = move(client, system, path, system, trash_path, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    resp = move(client, system, path, system, trash_path, tapis_tracking_id=kwargs.get("tapis_tracking_id", ""))
 
     return resp
 
