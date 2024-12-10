@@ -786,6 +786,22 @@ class JobsView(AuthenticatedApiView):
             **job_post,
             headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
         )
+
+        METRICS.info(
+            "Jobs",
+            extra={
+                "user": username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "submitJob",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {
+                    "body": body,
+                    "response": response.__dict__ if response else None,
+                },
+            },
+        )
+
         return response
 
     def post(self, request, *args, **kwargs):
@@ -817,25 +833,25 @@ class JobsView(AuthenticatedApiView):
                     "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
                 },
             )
+            METRICS.info(
+                "Jobs",
+                extra={
+                    "user": username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": operation,
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": {
+                        "body": body,
+                        "response": response.__dict__ if response else None,
+                    },
+                },
+            )
 
         else:
             # submit job
             response = self._submit_job(request, body, tapis, username)
 
-        METRICS.info(
-            "Jobs",
-            extra={
-                "user": username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": operation,
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {
-                    "body": body,
-                    "response": response.__dict__ if response else None,
-                },
-            },
-        )
 
         return JsonResponse(
             {
