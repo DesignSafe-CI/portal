@@ -473,7 +473,7 @@ LOGGING = {
         },
         'metrics': {
             'handlers': ['metrics'],
-            'filters': ['guidfilter'],
+            'filters': ['guidFilter'],
             'level': 'INFO',
         },
     },
