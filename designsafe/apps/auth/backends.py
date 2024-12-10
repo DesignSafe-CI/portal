@@ -23,32 +23,10 @@ logger = logging.getLogger(__name__)
 @receiver(user_logged_out)
 def on_user_logged_out(sender, request, user, **kwargs):
     "Signal processor for user_logged_out"
-    backend = request.session.get("_auth_user_backend", None)
-    tas_backend_name = "%s.%s" % (TASBackend.__module__, TASBackend.__name__)
-    tapis_backend_name = "%s.%s" % (
-        TapisOAuthBackend.__module__,
-        TapisOAuthBackend.__name__,
-    )
 
-    if backend == tas_backend_name:
-        login_provider = "TACC"
-    elif backend == tapis_backend_name:
-        login_provider = "TACC"
-
-    logger.info(
-        "Revoking tapis token: %s",
-        TapisOAuthToken().get_masked_token(user.tapis_oauth.access_token),
-    )
-    backend = TapisOAuthBackend()
-    TapisOAuthBackend.revoke(backend, user.tapis_oauth.access_token)
-
-    logout_message = (
-        "<h4>You are Logged Out!</h4>"
-        "You are now logged out of DesignSafe! However, you may still "
-        f"be logged in at {login_provider}. To ensure security, you should close your "
-        "browser to end all authenticated sessions."
-    )
-    messages.warning(request, logout_message)
+    if user is not None and hasattr(user, "tapis_oauth"):
+        backend = TapisOAuthBackend()
+        TapisOAuthBackend.revoke(backend, user.tapis_oauth.access_token)
 
 
 class TASBackend(ModelBackend):
