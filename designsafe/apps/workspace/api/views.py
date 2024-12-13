@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
 from django.urls import reverse
+from tapipy.tapis import TapisResult
 from tapipy.errors import InternalServerError, UnauthorizedError
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.users.utils import get_user_data
@@ -787,21 +788,6 @@ class JobsView(AuthenticatedApiView):
             headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
         )
 
-        METRICS.info(
-            "Jobs",
-            extra={
-                "user": username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "submitJob",
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {
-                    "body": body,
-                    "uuid": response.uuid if response else None,
-                },
-            },
-        )
-
         return response
 
     def post(self, request, *args, **kwargs):
@@ -833,6 +819,17 @@ class JobsView(AuthenticatedApiView):
                     "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
                 },
             )
+
+        else:
+            response = self._submit_job(request, body, tapis, username)
+
+        if isinstance(response, TapisResult):
+            metrics_info = {
+                "body": body,
+            }
+            response_uuid = response.get("uuid", None)
+            if response_uuid:
+                metrics_info["response_uuid"] = response_uuid
             METRICS.info(
                 "Jobs",
                 extra={
@@ -841,17 +838,9 @@ class JobsView(AuthenticatedApiView):
                     "operation": operation,
                     "agent": request.META.get("HTTP_USER_AGENT"),
                     "ip": get_client_ip(request),
-                    "info": {
-                        "body": body,
-                        "response": response.__dict__ if response else None,
-                    },
+                    "info": metrics_info,
                 },
             )
-
-        else:
-            # submit job
-            response = self._submit_job(request, body, tapis, username)
-
 
         return JsonResponse(
             {
