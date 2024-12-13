@@ -797,7 +797,7 @@ class JobsView(AuthenticatedApiView):
                 "ip": get_client_ip(request),
                 "info": {
                     "body": body,
-                    "response": response.__dict__ if response else None,
+                    "uuid": response.uuid if response else None,
                 },
             },
         )
