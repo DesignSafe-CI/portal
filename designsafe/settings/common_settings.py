@@ -442,7 +442,7 @@ LOGGING = {
         'metrics': {
             'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
                       ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
-                      ' info=%(info)s timestamp=%(asctime)s trackingId=portal.%(sessionId)s guid=%(logGuid)s portal=designsafe tenant=designsafe'
+                      ' info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s portal=designsafe tenant=designsafe'
         },
     },
     'handlers': {
