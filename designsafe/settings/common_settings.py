@@ -455,6 +455,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'metrics',
+            'filters': ['guidFilter']
         },
     },
     'loggers': {
