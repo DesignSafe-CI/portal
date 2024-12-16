@@ -317,7 +317,7 @@ def generate_manifest_other(project_id, version=1):
     """Generate the file manifest for an Other-type project"""
     fido_client = Fido()
     pub = Publication.objects.get(project_id=project_id)
-    uuid = pub.tree.nodes[0]["uuid"]
+    uuid = pub.tree["nodes"][0]["uuid"]
     file_tags = pub.value.get("fileTags", [])
 
     if version and version > 1:
