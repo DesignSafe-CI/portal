@@ -43,8 +43,7 @@ class ProjectMembershipStep(AbstractStep):
     def description(self):
         if self.settings is not None and "description" in self.settings:
             return self.settings["description"]
-        return """This confirms if you have access to the project. If not, request access and
-                  wait for the system administrator’s approval."""
+        return """Requesting access initiates the onboarding process for accessing computation and data resources, and your status will change from Waiting for User to Waiting for Staff Approval. A ticket will be auto-generated for tracking and communications. Approval review typically takes up to 1-2 hours during normal business hours, but can take up to 48 hours in some cases. Once approved, your status will change to Completed."""
 
     def display_name(self):
         return "Initial Onboarding Status"

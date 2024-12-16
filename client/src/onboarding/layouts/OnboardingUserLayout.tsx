@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Layout, Space } from 'antd';
 import { PrimaryButton } from '@client/common-components';
 import { OnboardingStep } from '@client/onboarding';
@@ -38,9 +38,14 @@ export const OnboardingUserLayout: React.FC = () => {
             <OnboardingStep step={step} key={step.step} />
           ))}
           <div className={styles.access}>
-            <Link className="wb-link" to={`tickets/create`}>
+            <a
+              rel="noopener noreferrer"
+              target="_blank"
+              className="wb-link"
+              href="https://www.designsafe-ci.org/help/submit-ticket/"
+            >
               Get Help
-            </Link>
+            </a>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <PrimaryButton
               href="/dashboard/"

@@ -47,8 +47,8 @@
           },
           {
             "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
-            "displayName": "System Access",
-            "description": "Setting up access to TACC storage and execution systems. No action required.",
+            "displayName": "Data Depot Setup Status",
+            "description": "Data Depot Setup will initiate automatically once the Initial Onboarding Status is Complete. When Data Depot Setup Status is Complete you will be able to access the Data Depot private storage areas which is also a prerequisite to utilizing the HPC-enabled tools and applications. Reply to the onboarding ticket if Initial Onboarding Status is Complete but Data Depot Setup doesn't change to Complete.",
             "userConfirm": "Confirm",
             "staffApprove": "Approve",
             "staffDeny": "Deny",

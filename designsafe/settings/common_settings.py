@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import json
+import uuid
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
@@ -413,9 +414,22 @@ IMPERSONATE = {
 # Logger config
 #
 #####
+
+def guid_filter(record):
+    """Log filter that adds a guid to each entry"""
+
+    record.logGuid = uuid.uuid4().hex
+    return True
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    "filters": {
+        "guidFilter": {
+            "()": "django.utils.log.CallbackFilter",
+            "callback": guid_filter,
+        },
+    },
     'formatters': {
         'default': {
             'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s '
@@ -428,7 +442,7 @@ LOGGING = {
         'metrics': {
             'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
                       ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
-                      ' info=%(info)s timestamp=%(asctime)s trackingId=portal.%(sessionId)s portal=designsafe tenant=designsafe'
+                      ' info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s portal=designsafe tenant=designsafe'
         },
     },
     'handlers': {
@@ -459,6 +473,7 @@ LOGGING = {
         },
         'metrics': {
             'handlers': ['metrics'],
+            'filters': ['guidFilter'],
             'level': 'INFO',
         },
     },
