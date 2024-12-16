@@ -157,11 +157,13 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
 
     if not path.startswith('/'):
         path = '/' + path
-    if not path.endswith('/'):
-        path = path + '/'
+
+    path = f"/{path.strip('/')}"
+
     search = IndexedFile.search()
     search = search.query(ngram_query | match_query)
-    search = search.filter('prefix', **{'path._exact': path})
+    if path != '/':
+        search = search.filter('term', **{'path._comps': path})
     search = search.filter('term', **{'system._exact': system})
     search = search.extra(from_=int(offset), size=int(limit))
     res = search.execute()
@@ -219,7 +221,7 @@ def mkdir(client, system, path, dir_name, *args, **kwargs):
     -------
     dict
     """
-    path_input = str(Path(path) / Path(dir_name))
+    path_input = str(Path(path) / Path(dir_name)).rstrip(" ")
     client.files.mkdir(systemId=system, path=path_input)
 
 
