@@ -24,10 +24,11 @@
     padding-inline: 1.5rem;
     margin-block: 1.5rem;
 }
-/* To set height to twice line-height */
-/* SEE: ./app-page.css#L34-L36 (circa v7.1.4) */
+/* To set explicit height equal to N lines of text */
 .s-app-page p.c-app-card__desc {
-    height: 3.6em;
+    --lines: 3; /* to override Core-Styles c-app-card truncate */
+
+    height: calv(var(--lines) * var(--line-height));
 }
 
 /* Types */
