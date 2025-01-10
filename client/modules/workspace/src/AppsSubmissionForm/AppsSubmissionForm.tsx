@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import { Layout, Form, Col, Row, Alert, Button, Space } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { JobSubmitButton } from '../JobSubmitButton/JobSubmitButton';
 import {
@@ -512,9 +511,14 @@ export const AppsSubmissionForm: React.FC = () => {
     ?.keyservice ? (
     <span>
       For help,{' '}
-      <Link className="wb-link" to={`tickets/create`}>
+      <a
+        rel="noopener noreferrer"
+        target="_blank"
+        className="wb-link"
+        href="https://www.designsafe-ci.org/help/submit-ticket/"
+      >
         submit a ticket.
-      </Link>
+      </a>
     </span>
   ) : (
     <span>

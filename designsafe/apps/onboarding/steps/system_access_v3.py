@@ -97,10 +97,10 @@ class SystemAccessStepV3(AbstractStep):
     """System Access Step for Onboarding."""
 
     def display_name(self):
-        return "System Access"
+        return "Data Depot Setup Status"
 
     def description(self):
-        return "Setting up access to TACC storage and execution systems. No action required."
+        return "Data Depot Setup will initiate automatically once the Initial Onboarding Status is Complete. When Data Depot Setup Status is Complete you will be able to access the Data Depot private storage areas which is also a prerequisite to utilizing the HPC-enabled tools and applications. Reply to the onboarding ticket if Initial Onboarding Status is Complete but Data Depot Setup doesn't change to Complete."
 
     def prepare(self):
         self.state = SetupState.PENDING

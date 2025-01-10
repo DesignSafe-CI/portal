@@ -48,7 +48,7 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
                                          path=(path or '/'),
                                          offset=int(offset),
                                          limit=int(limit),
-                                         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+                                         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
     try:
         # Convert file objects to dicts for serialization.
@@ -84,7 +84,7 @@ def detail(client, system, path, *args, **kwargs):
     """
     Retrieve the uuid for a file by parsing the query string in _links.metadata.href
     """
-    _listing = client.files.listFiles(systemId=system, path=urllib.parse.quote(path), offset=0, limit=1, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+    _listing = client.files.listFiles(systemId=system, path=urllib.parse.quote(path), offset=0, limit=1, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     f = _listing[0]
     listing_res = {
             'system': system,
@@ -157,11 +157,13 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
 
     if not path.startswith('/'):
         path = '/' + path
-    if not path.endswith('/'):
-        path = path + '/'
+
+    path = f"/{path.strip('/')}"
+
     search = IndexedFile.search()
     search = search.query(ngram_query | match_query)
-    search = search.filter('prefix', **{'path._exact': path})
+    if path != '/':
+        search = search.filter('term', **{'path._comps': path})
     search = search.filter('term', **{'system._exact': system})
     search = search.extra(from_=int(offset), size=int(limit))
     res = search.execute()
@@ -201,7 +203,7 @@ def download(client, system, path=None, paths=None, *args, **kwargs):
     return {"href": f"https://designsafe-download01.tacc.utexas.edu/download/{download_key}"}
 
 
-def mkdir(client, system, path, dir_name):
+def mkdir(client, system, path, dir_name, *args, **kwargs):
     """Create a new directory.
 
     Params
@@ -219,14 +221,15 @@ def mkdir(client, system, path, dir_name):
     -------
     dict
     """
-    path_input = str(Path(path) / Path(dir_name))
+    path_input = str(Path(path) / Path(dir_name)).rstrip(" ")
     client.files.mkdir(systemId=system, path=path_input)
 
 
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': path,
                                       'recurse': False},
-                              queue='indexing')
+                              queue='indexing',
+                              headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     return {"result": "OK"}
 
 
@@ -261,7 +264,7 @@ def move(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
                           path=src_path,
                           operation="MOVE",
                           newPath=dest_path_full,
-                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     
     move_file_meta_async.delay(src_system, src_path, dest_system, dest_path_full)
 
@@ -324,7 +327,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
                                             path=src_path,
                                             operation="COPY",
                                             newPath=full_dest_path,
-                                            headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+                                            headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     else:
         src_url = f'tapis://{src_system}/{src_path}'
         dest_url = f'tapis://{dest_system}/{full_dest_path}'
@@ -332,7 +335,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
         copy_response = client.files.createTransferTask(elements=[{
             'sourceURI': src_url,
             'destinationURI': dest_url
-        }], headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+        }], headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
         copy_result = {
             'uuid': copy_response.uuid,
             'status': copy_response.status,
@@ -368,7 +371,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
 def delete(client, system, path, *args, **kwargs):
     return client.files.delete(systemId=system,
                                filePath=urllib.parse.quote(path),
-                               headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+                               headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
 def rename(client, system, path, new_name, *args, **kwargs):
     """Renames a file. This is performed under the hood by moving the file to
@@ -402,7 +405,7 @@ def rename(client, system, path, new_name, *args, **kwargs):
                           path=path,
                           operation="MOVE",
                           newPath=new_path,
-                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
     move_file_meta_async.delay(system, path, system, new_path)
 
@@ -447,7 +450,7 @@ def trash(client, system, path, trash_path, *args, **kwargs):
     except tapipy.errors.NotFoundError:
         mkdir(client, system, trash_root, trash_foldername)
 
-    resp = move(client, system, path, system, trash_path, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+    resp = move(client, system, path, system, trash_path, tapis_tracking_id=kwargs.get("tapis_tracking_id", ""))
 
     return resp
 
@@ -488,7 +491,7 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
     response_json = client.files.insert(systemId=system,   
                                         path=dest_path, 
                                         file=uploaded_file, 
-                                        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+                                        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     return {"result": "OK"}
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': path,
@@ -548,7 +551,7 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
     except FileMetaModel.DoesNotExist:
         meta = {}
 
-    postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id")})
+    postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     url = postit_result.redeemUrl
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
@@ -577,7 +580,7 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
     return {'href': url, 'fileType': file_type, 'fileMeta': meta}
 
 
-def download_bytes(client, system, path):
+def download_bytes(client, system, path, *args, **kwargs):
     """Creates a postit pointing to this file.
 
     Params
