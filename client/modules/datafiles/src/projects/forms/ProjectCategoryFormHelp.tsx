@@ -125,7 +125,7 @@ export const ProjectCategoryFormHelp: React.FC<{ projectType: string }> = ({
             files help others understand the context of your data.
           </div>
           <div>
-            <span className="category-yellow">
+            <span className="category-blue">
               Engineering/Geosciences Collection
             </span>{' '}
             Groups related data from the engineering/geosciences domain.
