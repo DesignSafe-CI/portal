@@ -17,7 +17,6 @@ export const ProjectCitation: React.FC<{
     entityDetails?.value.authors?.filter(
       (a) => a.fname && a.lname && a.authorship !== false
     ) ?? [];
-
   if (!data || !entityDetails) return null;
   return (
     <div>
