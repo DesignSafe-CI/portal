@@ -29,8 +29,12 @@ export const ProjectCitation: React.FC<{
             : `${author.fname[0]}. ${author.lname}`
         )
         .join(', ')}
-      . "{entityDetails.value.title}", in <i>{data.baseProject.value.title}</i>.
-      DesignSafe-CI. (DOI will appear after publication)
+      .{' '}
+      {data.baseProject.value.projectType !== 'other' && (
+        <span>"{entityDetails.value.title}", in </span>
+      )}
+      <i>{data.baseProject.value.title}</i>. DesignSafe-CI. (DOI will appear
+      after publication)
     </div>
   );
 };
@@ -66,8 +70,11 @@ export const PublishedCitation: React.FC<{
             : `${author.fname[0]}. ${author.lname}`
         )
         .join(', ')}{' '}
-      ({new Date(entityDetails.publicationDate).getFullYear()}). "
-      {entityDetails.value.title}", in <i>{data.baseProject.title}</i>
+      ({new Date(entityDetails.publicationDate).getFullYear()}).{' '}
+      {data.baseProject.projectType !== 'other' && (
+        <span>"{entityDetails.value.title}", in </span>
+      )}
+      <i>{data.baseProject.title}</i>
       {(version ?? 1) > 1 && <span> [Version {version}]</span>}. DesignSafe-CI.{' '}
       {doi && (
         <a
