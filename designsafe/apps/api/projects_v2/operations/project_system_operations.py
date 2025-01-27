@@ -103,7 +103,7 @@ def create_workspace_system(client, project_uuid: str) -> str:
     system_id = f"project-{project_uuid}"
     system_args = {
         "id": system_id,
-        "host": "cloud.corral.tacc.utexas.edu",
+        "host": "cloud.data.tacc.utexas.edu",
         "port": 22,
         "systemType": "LINUX",
         "defaultAuthnMethod": "PKI_KEYS",

@@ -121,7 +121,10 @@ export const PipelineOrderAuthors: React.FC<{
                         : `${author.fname[0]}. ${author.lname}`
                     )
                     .join(', ')}
-                  . "{entity.value.title}", in{' '}
+                  .{' '}
+                  {data.baseProject.value.projectType !== 'other' && (
+                    <span>"{entity.value.title}", in </span>
+                  )}
                   <i>{data.baseProject.value.title}</i>. DesignSafe-CI. (DOI
                   will appear after publication)
                 </div>
