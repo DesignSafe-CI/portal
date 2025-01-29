@@ -768,6 +768,7 @@ class JobsView(AuthenticatedApiView):
                         "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
                     },
                 )
+            job_post["parameterSet"]["envVariables"].append({"key": "_TAS_DIR", "value": tasdir})
 
         # Add webhook subscription for job status updates
         job_post["subscriptions"] = job_post.get("subscriptions", []) + [
