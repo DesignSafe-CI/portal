@@ -14,7 +14,6 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from designsafe.apps.api.users.tasks import cache_allocations
 from designsafe.apps.api.utils import get_client_ip
-from designsafe.apps.auth.tasks import new_user_alert
 from designsafe.apps.onboarding.execute import execute_setup_steps, new_user_setup_check
 from .models import TapisOAuthToken
 
@@ -125,11 +124,9 @@ def tapis_oauth_callback(request):
         user = authenticate(backend="tapis", token=token_data["access_token"])
 
         if user:
-            _, created = TapisOAuthToken.objects.update_or_create(
+            _ = TapisOAuthToken.objects.update_or_create(
                 user=user, defaults={**token_data}
             )
-            if created:
-                new_user_alert.apply_async(args=(user.username,))
 
             login(request, user)
             launch_setup_checks(user)

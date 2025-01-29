@@ -20,7 +20,10 @@ def get_datacite_json(
     """
 
     datacite_json = {}
-    is_other = pub_graph.nodes["NODE_ROOT"].get("projectType", None) == "other"
+    is_other = pub_graph.nodes["NODE_ROOT"].get("projectType", None) in [
+        "other",
+        "field_research",
+    ]
     if is_other:
         base_meta_node = next(
             (
@@ -49,10 +52,14 @@ def get_datacite_json(
     author_attr = []
     institutions = []
     entity_meta = pub_graph.nodes[entity_node]["value"]
-    for author in entity_meta.get("authors", []):
+    authors = entity_meta.get("authors", [])
+    datacite_authors = [
+        author for author in authors if not author.get("authorship") is False
+    ]
+    for author in datacite_authors:
         author_attr.append(
             {
-                "nameType": "Personal",
+                "name": f"{author.get('lname', '')}, {author.get('fname', '')}",
                 "givenName": author.get("fname", ""),
                 "familyName": author.get("lname", ""),
             }
