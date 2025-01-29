@@ -5,6 +5,7 @@ from django.conf import settings
 import elasticsearch
 import getpass
 logger = logging.getLogger(__name__)
+from designsafe.libs.elasticsearch.indices import init
 
 
 class Command(BaseCommand):
@@ -33,6 +34,7 @@ class Command(BaseCommand):
         username = options.get('username')
         remote = options.get('remote')
         local = options.get('local')
+        init()
 
         local_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[local]['hosts'],
                                                       timeout=300)
