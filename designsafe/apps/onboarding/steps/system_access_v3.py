@@ -122,14 +122,6 @@ class SystemAccessStepV3(AbstractStep):
         """
         self.user.tapis_oauth.client.files.listFiles(systemId=system_id, path=path)
 
-    # retry for 5 minutes to account for setfacl and allocation propagation
-    @retry(UnauthorizedError, tries=10, max_time=5 * 60)
-    def get_system(self, system_id, **kwargs) -> None:
-        """
-        Check whether a user already has access to a storage system by attempting a listing.
-        """
-        return self.user.tapis_oauth.client.systems.getSystem(systemId=system_id)
-
     def process(self):
         self.log(f"Processing system access for user {self.user.username}")
         for system in self.settings.get("access_systems") or []:
@@ -149,16 +141,9 @@ class SystemAccessStepV3(AbstractStep):
                 self.log(f"Creating credentials for system: {system}")
 
             try:
-                system_definition = self.get_system(system)
-                if system_definition.get("defaultAuthnMethod") != 'TMS_KEYS':
-                    (priv, pub) = createKeyPair()
-                    create_system_credentials_with_keys(
-                        self.user.tapis_oauth.client, self.user.username, pub, priv, system
-                    )
-                else:
-                    create_system_credentials(
-                        self.user.tapis_oauth.client, self.user.username, system, createTmsKeys=True
-                    )
+                create_system_credentials(
+                    self.user.tapis_oauth.client, self.user.username, system, createTmsKeys=True
+                )
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as exc:
                 logger.error(exc)
