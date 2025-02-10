@@ -44,6 +44,7 @@ def create_system_credentials_with_keys(  # pylint: disable=too-many-arguments
         **data,
     )
 
+
 # retry for 5 minutes to account for allocation propagation
 @retry(UnauthorizedError, tries=-1, max_time=5 * 60)
 def create_system_credentials(  # pylint: disable=too-many-arguments
@@ -127,7 +128,7 @@ class SystemAccessStepV3(AbstractStep):
         """
         Check whether a user already has access to a storage system by attempting a listing.
         """
-        return self.user.tapis_oauth.client.system.getSystem(systemId=system_id)
+        return self.user.tapis_oauth.client.systems.getSystem(systemId=system_id)
 
     def process(self):
         self.log(f"Processing system access for user {self.user.username}")
@@ -156,7 +157,7 @@ class SystemAccessStepV3(AbstractStep):
                     )
                 else:
                     create_system_credentials(
-                        self.user.tapis_oauth.client, self.user.username, system
+                        self.user.tapis_oauth.client, self.user.username, system, createTmsKeys=True
                     )
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as exc:
