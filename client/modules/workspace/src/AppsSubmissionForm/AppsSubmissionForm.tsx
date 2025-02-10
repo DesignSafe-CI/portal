@@ -374,7 +374,11 @@ export const AppsSubmissionForm: React.FC = () => {
 
   useEffect(() => {
     if (submitResult?.execSys) {
-      setPushKeysSystem(submitResult.execSys);
+      setPushKeysSystem(
+        pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS'
+          ? undefined
+          : submitResult.execSys
+      );
     } else if (isSuccess) {
       reset(initialValues);
       if (definition.notes.isInteractive) {
@@ -549,6 +553,23 @@ export const AppsSubmissionForm: React.FC = () => {
             }
             type="success"
             closable
+            showIcon
+            style={{ marginBottom: '1rem' }}
+          />
+        )}
+      {submitResult &&
+        submitResult.execSys &&
+        submitResult.execSys?.defaultAuthnMethod === 'TMS_Keys' && (
+          <Alert
+            message={
+              <>
+                There was a problem with file system access. Please submit a{' '}
+                <a href="/help/new-ticket/" target="_blank">
+                  ticket.
+                </a>
+              </>
+            }
+            type="warning"
             showIcon
             style={{ marginBottom: '1rem' }}
           />
