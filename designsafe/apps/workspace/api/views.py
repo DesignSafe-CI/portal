@@ -132,11 +132,17 @@ def test_system_needs_keys(tapis, username, system_id):
     """
     system_def = tapis.systems.getSystem(systemId=system_id)
     try:
+        tapis.files.listFiles(systemId=system_id, path="/")
+        return None
+    except (InternalServerError, UnauthorizedError):
         # Check if the system uses TMS_KEYS and create credentials if necessary
         if system_def.get("defaultAuthnMethod") == 'TMS_KEYS':
             create_system_credentials(tapis, username, system_id, createTmsKeys=True)
-        tapis.files.listFiles(systemId=system_id, path="/")
-    except (InternalServerError, UnauthorizedError):
+            try:
+                tapis.files.listFiles(systemId=system_id, path="/")
+                return None
+            except (InternalServerError, UnauthorizedError):
+                logger.warning(f"Authentication still failing for system: {system_id}")
         return system_def
 
 
