@@ -81,7 +81,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const { definition, license, defaultSystemNeedsKeys } = app;
 
   const defaultStorageHost = defaultStorageSystem.host;
-  const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
+  const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu', 'wma-exec-01.tacc.utexas.edu'].some(
     (s) => defaultStorageHost?.endsWith(s)
   );
 
