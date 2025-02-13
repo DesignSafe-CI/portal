@@ -81,15 +81,9 @@ export const AppsSubmissionForm: React.FC = () => {
   const { definition, license, defaultSystemNeedsKeys } = app;
 
   const defaultStorageHost = defaultStorageSystem.host;
-  const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu', 'wma-exec-01.tacc.utexas.edu'].some(
+  const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
     (s) => defaultStorageHost?.endsWith(s)
   );
-
-  // Check if user has default allocation if defaultStorageHost is not corral
-  const hasDefaultAllocation =
-    hasCorral || tasAllocations.hosts[defaultStorageHost];
-
-  const hasStorageSystems = !!storageSystems.length;
 
   const execSystems = getExecSystemsFromApp(
     definition,
@@ -99,6 +93,20 @@ export const AppsSubmissionForm: React.FC = () => {
     definition,
     execSystems
   ) as TTapisSystem;
+
+  const noStorageAllocationRequired =
+    defaultStorageSystem.notes?.noAllocationRequired;
+  const noExecAllocationRequired =
+    defaultExecSystem.notes?.noAllocationRequired;
+
+  // Check if user has default allocation if defaultStorageHost is not corral
+  const hasDefaultStorageAllocation =
+    hasCorral ||
+    noStorageAllocationRequired ||
+    tasAllocations.hosts[defaultStorageHost];
+
+  const hasStorageSystems = !!storageSystems.length;
+
   const allocations = getAllocationList(defaultExecSystem, tasAllocations);
   const portalAlloc = allocations.find((a) => a.startsWith('DS-HPC'));
 
@@ -138,10 +146,14 @@ export const AppsSubmissionForm: React.FC = () => {
   );
 
   let missingAllocation: string | undefined;
-  if (!hasDefaultAllocation && hasStorageSystems) {
+  if (!hasDefaultStorageAllocation && hasStorageSystems) {
     // User does not have default storage allocation
     missingAllocation = getSystemName(defaultStorageHost);
-  } else if (isAppTypeBATCH(definition) && !allocations.length) {
+  } else if (
+    isAppTypeBATCH(definition) &&
+    !allocations.length &&
+    !noExecAllocationRequired
+  ) {
     // User does not have allocation on execution system for a batch type app
     missingAllocation = getSystemName(defaultExecSystem.host);
   }
