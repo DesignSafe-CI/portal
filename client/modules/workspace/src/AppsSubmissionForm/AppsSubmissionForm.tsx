@@ -523,33 +523,33 @@ export const AppsSubmissionForm: React.FC = () => {
     submitJob(jobData);
   };
 
-  const defaultSystemNeedsKeysMessage = defaultStorageSystem.notes
-    ?.keyservice ? (
-    <span>
-      For help,{' '}
-      <a
-        rel="noopener noreferrer"
-        target="_blank"
-        className="wb-link"
-        href="https://www.designsafe-ci.org/help/submit-ticket/"
-      >
-        submit a ticket.
-      </a>
-    </span>
-  ) : (
-    <span>
-      If this is your first time logging in, you may need to&nbsp;
-      <a
-        className="data-files-nav-link"
-        type="button"
-        href="#"
-        onClick={() => setPushKeysSystem(defaultStorageSystem)}
-      >
-        push your keys
-      </a>
-      .
-    </span>
-  );
+  const defaultSystemNeedsKeysMessage =
+    defaultStorageSystem.defaultAuthnMethod === 'TMS_Keys' ? (
+      <span>
+        For help,{' '}
+        <a
+          rel="noopener noreferrer"
+          target="_blank"
+          className="wb-link"
+          href="https://www.designsafe-ci.org/help/submit-ticket/"
+        >
+          submit a ticket.
+        </a>
+      </span>
+    ) : (
+      <span>
+        If this is your first time logging in, you may need to&nbsp;
+        <a
+          className="data-files-nav-link"
+          type="button"
+          href="#"
+          onClick={() => setPushKeysSystem(defaultStorageSystem)}
+        >
+          push your keys
+        </a>
+        .
+      </span>
+    );
 
   return (
     <>
