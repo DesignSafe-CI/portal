@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { useAuthenticatedUser } from '../useAuthenticatedUser';
 
-export const USER_MYDATA_SYSTEM = 'designsafe.storage.default';
-export const USER_WORK_SYSTEM = 'cloud.data';
+export const USER_MYDATA_SYSTEM = 'designsafe.storage.default.tms';
+export const USER_WORK_SYSTEM = 'cloud.data.tms';
 
 export function getSystemRootDisplayName(
   api: string,
