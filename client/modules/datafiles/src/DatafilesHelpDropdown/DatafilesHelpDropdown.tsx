@@ -19,7 +19,7 @@ const items = [
   {
     label: (
       <a
-        href="/rw/user-guides/data-publication-guidelines/"
+        href="/user-guide/curating/guides/"
         target="_blank"
         rel="noopener noreferrer"
         aria-describedby="msg-open-new-window"
@@ -32,7 +32,7 @@ const items = [
   {
     label: (
       <a
-        href="/rw/user-guide/data-depot"
+        href="/user-guide/datadepot/"
         target="_blank"
         rel="noopener noreferrer"
         aria-describedby="msg-open-new-window"
@@ -48,7 +48,7 @@ const items = [
   {
     label: (
       <a
-        href="/rw/user-guides/data-transfer-guide/"
+        href="/user-guide/managingdata/datatransfer/"
         target="_blank"
         rel="noopener noreferrer"
         aria-describedby="msg-open-new-window"
@@ -61,7 +61,7 @@ const items = [
   {
     label: (
       <a
-        href="/faq/#!#faq-dcap"
+        href="/user-guide/curating/faq/"
         target="_blank"
         rel="noopener noreferrer"
         aria-describedby="msg-open-new-window"
@@ -74,7 +74,7 @@ const items = [
   {
     label: (
       <a
-        href="/faq/#!#faq-citation"
+        href="/user-guide/tools/advanced/dsfaq/#faq-citation/"
         target="_blank"
         rel="noopener noreferrer"
         aria-describedby="msg-open-new-window"
@@ -90,7 +90,7 @@ const items = [
   {
     label: (
       <a
-        href="/rw/user-guides/curating-publishing-projects/policies/publication/"
+        href="/user-guide/curating/policies/#data-publication-and-usage/"
         target="_blank"
         rel="noopener noreferrer"
         aria-describedby="msg-open-new-window"

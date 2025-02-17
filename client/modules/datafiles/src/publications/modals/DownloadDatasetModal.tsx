@@ -308,7 +308,7 @@ export const DownloadDatasetModal: React.FC<{
             {license && LICENSE_INFO_MAP[license]}
             <p>
               <a
-                href="/rw/user-guides/curating-publishing-projects/policies/publication/"
+                href="/user-guide/curating/policies/#data-publication-and-usage"
                 target="_blank"
                 aria-describedby="msg-open-new-window"
               >

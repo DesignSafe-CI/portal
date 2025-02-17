@@ -16,7 +16,7 @@
             "deploymentSystem": "designsafe.storage.default",
             "executionSystem": "designsafe.community.exec.stampede2.nores",
             "executionType": "HPC",
-            "helpURI": "https: //www.designsafe-ci.org/rw/user-guide/workspace/opensees/",
+            "helpURI": "https: //www.designsafe-ci.org/user-guide/tools/simulation/opensees/opensees/#opensees-on-designsafe-quick-start",
             "icon": null,
             "id": "OpenseesSp-3.0.0.6709u7",
             "inputs": [],

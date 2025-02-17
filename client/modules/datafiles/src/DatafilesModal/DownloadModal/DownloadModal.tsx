@@ -64,8 +64,8 @@ export const DownloadModal: React.FC<{
           of data at a time. Alternative approaches for transferring large
           amounts of data are provided in the Large Data Transfer Methods
           section of the Data Transfer Guide (
-          <a href="/rw/user-guides/data-transfer-guide/">
-            https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/
+          <a href="/user-guide/managingdata/datatransfer/">
+            https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/
           </a>
           ).
         </p>
