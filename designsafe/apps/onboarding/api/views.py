@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.utils.decorators import method_decorator
-from designsafe.libs.common.utils import check_onboarding_admin
+from designsafe.libs.common.utils import check_onboarding_admin, check_group_membership
 from designsafe.apps.api.views import AuthenticatedApiView, ApiException
 from designsafe.apps.api.users.utils import q_to_model_queries
 from designsafe.apps.onboarding.models import SetupEvent, SetupEventEncoder
@@ -259,7 +259,10 @@ class SetupStepView(AuthenticatedApiView):
         )
 
 
-@method_decorator(user_passes_test(check_onboarding_admin), name="dispatch")
+@method_decorator(
+    user_passes_test(lambda u: check_group_membership(u, "Onboarding Admin")),
+    name="dispatch",
+)
 class SetupAdminView(AuthenticatedApiView):
     """Admin view for managing user setup steps"""
 
