@@ -20,8 +20,9 @@ export const DownloadModal: React.FC<{
     setIsModalOpen(true);
   };
 
-  const zipUrl = `/api/datafiles/${api}/${scheme ?? 'public'
-    }/download/${system}/?doi=${doiString}`;
+  const zipUrl = `/api/datafiles/${api}/${
+    scheme ?? 'public'
+  }/download/${system}/?doi=${doiString}`;
 
   const handleDownload = () => {
     apiClient
