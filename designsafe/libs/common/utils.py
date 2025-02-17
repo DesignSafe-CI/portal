@@ -12,3 +12,21 @@ def check_group_membership(user, group_name: str) -> bool:
         return True
     except Group.DoesNotExist:
         return False
+
+
+def check_allow_impersonation(request):
+    """Check whether a user has impersonation privileges."""
+    if request.user.is_superuser:
+        return True
+    if check_group_membership(request.user, "Impersonator"):
+        return True
+    return False
+
+
+def check_onboarding_admin(request):
+    """Check whether a user has impersonation privileges."""
+    if request.user.is_superuser:
+        return True
+    if check_group_membership(request.user, "Onboarding Admin"):
+        return True
+    return False

@@ -404,7 +404,9 @@ BOOTSTRAP3 = {
 #
 #####
 IMPERSONATE = {
-    'REQUIRE_SUPERUSER': True,
+    'REQUIRE_SUPERUSER': False,
+    # Allow superusers and members of the 'Impersonator' group
+    'CUSTOM_ALLOW': 'designsafe.libs.common.utils.check_allow_impersonation',
     'ADMIN_DELETE_PERMISSION': True
 }
 
