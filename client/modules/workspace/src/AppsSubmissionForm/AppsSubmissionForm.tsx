@@ -85,12 +85,6 @@ export const AppsSubmissionForm: React.FC = () => {
     (s) => defaultStorageHost?.endsWith(s)
   );
 
-  // Check if user has default allocation if defaultStorageHost is not corral
-  const hasDefaultAllocation =
-    hasCorral || tasAllocations.hosts[defaultStorageHost];
-
-  const hasStorageSystems = !!storageSystems.length;
-
   const execSystems = getExecSystemsFromApp(
     definition,
     executionSystems as TTapisSystem[]
@@ -99,6 +93,20 @@ export const AppsSubmissionForm: React.FC = () => {
     definition,
     execSystems
   ) as TTapisSystem;
+
+  const noStorageAllocationRequired =
+    defaultStorageSystem.notes?.noAllocationRequired;
+  const noExecAllocationRequired =
+    defaultExecSystem.notes?.noAllocationRequired;
+
+  // Check if user has default allocation if defaultStorageHost is not corral
+  const hasDefaultStorageAllocation =
+    hasCorral ||
+    noStorageAllocationRequired ||
+    tasAllocations.hosts[defaultStorageHost];
+
+  const hasStorageSystems = !!storageSystems.length;
+
   const allocations = getAllocationList(defaultExecSystem, tasAllocations);
   const portalAlloc = allocations.find((a) => a.startsWith('DS-HPC'));
 
@@ -138,10 +146,14 @@ export const AppsSubmissionForm: React.FC = () => {
   );
 
   let missingAllocation: string | undefined;
-  if (!hasDefaultAllocation && hasStorageSystems) {
+  if (!hasDefaultStorageAllocation && hasStorageSystems) {
     // User does not have default storage allocation
     missingAllocation = getSystemName(defaultStorageHost);
-  } else if (isAppTypeBATCH(definition) && !allocations.length) {
+  } else if (
+    isAppTypeBATCH(definition) &&
+    !allocations.length &&
+    !noExecAllocationRequired
+  ) {
     // User does not have allocation on execution system for a batch type app
     missingAllocation = getSystemName(defaultExecSystem.host);
   }
@@ -374,7 +386,11 @@ export const AppsSubmissionForm: React.FC = () => {
 
   useEffect(() => {
     if (submitResult?.execSys) {
-      setPushKeysSystem(submitResult.execSys);
+      setPushKeysSystem(
+        pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS'
+          ? undefined
+          : submitResult.execSys
+      );
     } else if (isSuccess) {
       reset(initialValues);
       if (definition.notes.isInteractive) {
@@ -507,33 +523,33 @@ export const AppsSubmissionForm: React.FC = () => {
     submitJob(jobData);
   };
 
-  const defaultSystemNeedsKeysMessage = defaultStorageSystem.notes
-    ?.keyservice ? (
-    <span>
-      For help,{' '}
-      <a
-        rel="noopener noreferrer"
-        target="_blank"
-        className="wb-link"
-        href="https://www.designsafe-ci.org/help/submit-ticket/"
-      >
-        submit a ticket.
-      </a>
-    </span>
-  ) : (
-    <span>
-      If this is your first time logging in, you may need to&nbsp;
-      <a
-        className="data-files-nav-link"
-        type="button"
-        href="#"
-        onClick={() => setPushKeysSystem(defaultStorageSystem)}
-      >
-        push your keys
-      </a>
-      .
-    </span>
-  );
+  const defaultSystemNeedsKeysMessage =
+    defaultStorageSystem.defaultAuthnMethod === 'TMS_Keys' ? (
+      <span>
+        For help,{' '}
+        <a
+          rel="noopener noreferrer"
+          target="_blank"
+          className="wb-link"
+          href="https://www.designsafe-ci.org/help/submit-ticket/"
+        >
+          submit a ticket.
+        </a>
+      </span>
+    ) : (
+      <span>
+        If this is your first time logging in, you may need to&nbsp;
+        <a
+          className="data-files-nav-link"
+          type="button"
+          href="#"
+          onClick={() => setPushKeysSystem(defaultStorageSystem)}
+        >
+          push your keys
+        </a>
+        .
+      </span>
+    );
 
   return (
     <>
@@ -549,6 +565,23 @@ export const AppsSubmissionForm: React.FC = () => {
             }
             type="success"
             closable
+            showIcon
+            style={{ marginBottom: '1rem' }}
+          />
+        )}
+      {submitResult &&
+        submitResult.execSys &&
+        submitResult.execSys?.defaultAuthnMethod === 'TMS_Keys' && (
+          <Alert
+            message={
+              <>
+                There was a problem with file system access. Please submit a{' '}
+                <a href="/help/new-ticket/" target="_blank">
+                  ticket.
+                </a>
+              </>
+            }
+            type="warning"
             showIcon
             style={{ marginBottom: '1rem' }}
           />

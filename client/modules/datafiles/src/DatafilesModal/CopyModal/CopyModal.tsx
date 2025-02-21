@@ -6,6 +6,8 @@ import {
   useAuthenticatedUser,
   useFileCopy,
   usePathDisplayName,
+  USER_WORK_SYSTEM,
+  USER_MYDATA_SYSTEM,
 } from '@client/hooks';
 import {
   FileListingTable,
@@ -126,7 +128,7 @@ export const CopyModal: React.FC<{
   const defaultDestParams = useMemo(
     () => ({
       destApi: 'tapis',
-      destSystem: 'designsafe.storage.default',
+      destSystem: USER_MYDATA_SYSTEM,
       destPath: encodeURIComponent('/' + user?.username),
     }),
     [user]
@@ -154,7 +156,7 @@ export const CopyModal: React.FC<{
         setShowProjects(false);
         setDest({
           destApi: 'tapis',
-          destSystem: 'cloud.data',
+          destSystem: USER_WORK_SYSTEM,
           destPath: encodeURIComponent('/work/' + user?.homedir),
         });
         break;
