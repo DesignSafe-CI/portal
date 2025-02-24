@@ -100,6 +100,7 @@ export const tapisInputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
 
 export const fieldDisplayOrder: Record<string, string[]> = {
   configuration: [
+    'execSystemId',
     'execSystemLogicalQueue',
     'maxMinutes',
     'nodeCount',
@@ -187,6 +188,22 @@ export const getConfigurationFields = (
   ) as TTapisSystem;
 
   if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
+    configurationFields['execSystemId'] = {
+      description: `Select the Execution System this ${getAppRuntimeLabel(
+        definition
+      )} will execute on.`,
+      label: 'Execution System',
+      name: 'configuration.execSystemId',
+      key: 'configuration.execSystemId',
+      required: true,
+      readOnly: true,
+      type: 'select',
+      options: 
+        execSystems.map((e) => ({ value: e.id, label: e.id, disabled: true  })),
+    };
+  }
+
+  if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
     configurationFields['execSystemLogicalQueue'] = {
       description: `Select the queue this ${getAppRuntimeLabel(
         definition
@@ -195,6 +212,7 @@ export const getConfigurationFields = (
       name: 'configuration.execSystemLogicalQueue',
       key: 'configuration.execSystemLogicalQueue',
       required: true,
+      readOnly: true,
       type: 'select',
       options: getAppQueueValues(
         definition,
@@ -510,6 +528,12 @@ const FormSchema = (
   }) as TTapisSystemQueue;
 
   if (definition.jobType === 'BATCH') {
+    appFields.configuration.defaults['execSystemId'] = isAppTypeBATCH(
+      definition
+    )
+      ? definition.jobAttributes.execSystemId
+      : '';
+
     appFields.configuration.defaults['execSystemLogicalQueue'] = isAppTypeBATCH(
       definition
     )
