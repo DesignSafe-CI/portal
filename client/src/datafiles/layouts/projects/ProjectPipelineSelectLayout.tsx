@@ -37,7 +37,7 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
             <ul>
               <li>Publish new dataset(s) in your project.</li>
               <li>
-                If you need to publish subsequent dataset(s),&nbsp;
+              Subsequent dataset publishing is not allowed for this project type. If you need to add more datasets, please,&nbsp;
                 <a
                   href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
                   target="_blank"
