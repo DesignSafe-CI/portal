@@ -60,6 +60,7 @@ export type TField = {
   fileSettings?: TAppFileSettings;
   placeholder?: string;
   readOnly?: boolean;
+  hidden?: boolean;
 };
 
 export type TAppFieldSchema = {
@@ -592,13 +593,12 @@ const FormSchema = (
   appFields.outputs.defaults['archiveSystemId'] =
     defaultStorageSystem?.id || definition.jobAttributes.archiveSystemId;
   appFields.outputs.fields['archiveSystemId'] = {
-    description:
-      'System into which output files are archived after application execution.',
     label: 'Archive System',
     name: 'outputs.archiveSystemId',
     key: 'outputs.archiveSystemId',
     required: false,
     type: 'text',
+    hidden: true,
     placeholder:
       defaultStorageSystem.id || definition.jobAttributes.archiveSystemId,
   };
@@ -609,13 +609,16 @@ const FormSchema = (
   ] = `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`;
   appFields.outputs.fields['archiveSystemDir'] = {
     description:
-      'Directory into which output files are archived after application execution.',
+      'Directory into which output files are archived after application execution. The default location is My Data',
     label: 'Archive Directory',
     name: 'outputs.archiveSystemDir',
     key: 'outputs.archiveSystemDir',
     required: false,
     type: 'text',
     placeholder: `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
+    options: [
+      { label: '', hidden: true, disabled: true },
+    ]
   };
 
   return appFields;

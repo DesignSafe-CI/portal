@@ -18,6 +18,7 @@ export const FormField: React.FC<{
   required?: boolean;
   type: string;
   fileSettings?: TAppFileSettings;
+  hidden?: boolean;
   placeholder?: string;
   options?: TFieldOptions[];
 }> = ({
@@ -27,6 +28,7 @@ export const FormField: React.FC<{
   label,
   required = false,
   type,
+  hidden = false,
   fileSettings = null,
   ...props
 }) => {
@@ -82,6 +84,7 @@ export const FormField: React.FC<{
         }
         htmlFor={name}
         key={name}
+        hidden={hidden}
         style={{ textAlign: 'left', marginBottom: description ? 0 : 16 }}
       >
         {type === 'select' ? (
