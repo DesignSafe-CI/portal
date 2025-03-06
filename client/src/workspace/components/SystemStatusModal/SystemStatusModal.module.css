@@ -1,106 +1,111 @@
 .modal {
-  padding: 20px;
-  background: white;
-  border-radius: 4px;
-  min-width: 350px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.tabs {
-  display: flex;
-  gap: 0;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #ddd;
-}
-
-.tabButton {
-  padding: 8px 16px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 14px;
-  color: #707070;
-  position: relative;
-}
-
-.tabButton.active {
-  color: #1890ff;
-}
-
-.tabButton.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: #1890ff;
-}
-
-.content {
-  min-height: 200px;
-}
-
-.statusSection {
-  margin-bottom: 20px;
-}
-
-.statusRow {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.queueSection h4 {
-  margin-bottom: 12px;
-  color: #595959;
-}
-
-.queueTable {
-  border: 1px solid #f0f0f0;
-  border-radius: 4px;
-}
-
-.queueRow {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.queueRow:last-child {
-  border-bottom: none;
-}
-
-.loadingContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-}
-
-
-.horizontalSidebar {
+    background: white;
+    border-radius: 4px;
+    width: 400px;
+    color: rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+  }
+  
+  .tabs {
     display: flex;
-    justify-content: center;
-    gap: 15px;
-    padding: 10px;
-    background-color: #f5f5f5;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fafafa;
   }
   
   .tabButton {
-    padding: 8px 12px;
+    padding: 12px 16px;
+    background: none;
     border: none;
-    background-color: #0073e6;
-    color: white;
     cursor: pointer;
-    border-radius: 4px;
-    font-weight: bold;
+    font-size: 14px;
+    color: #595959;
+    position: relative;
+    transition: color 0.3s;
   }
   
   .tabButton:hover {
-    background-color: #005bb5;
+    color: #1677ff;
   }
   
+  .activeTab {
+    color: #1677ff;
+    font-weight: 500;
+  }
+  
+  .activeTab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #1677ff;
+  }
+  
+  .content {
+    padding: 16px;
+    min-height: 150px;
+  }
+  
+  .loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+  }
+  
+  .statusHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .statusHeader h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .statusGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+  
+  .statusItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .statusLabel {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin-bottom: 4px;
+  }
+  
+  .statusValue {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  .emptyState {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    color: #8c8c8c;
+  }
+  
+  .trigger {
+    color: #1890ff;
+    cursor: pointer;
+  }
+  
+  .trigger:hover {
+    color: #1677ff;
+    text-decoration: underline;
+  }

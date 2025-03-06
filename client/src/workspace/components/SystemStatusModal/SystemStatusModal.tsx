@@ -1,27 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { Tooltip, Spin, Alert } from 'antd';
+import { Tooltip, Spin, Alert, Badge } from 'antd';
 import styles from './SystemStatusModal.module.css';
 
-interface QueueData {
-  name: string;
-  running: number;
-  waiting: number;
-  backfill: number;
-}
-
-interface SystemInfo {
+// Define interfaces for the data
+interface SystemData {
   name: string;
   host: string;
-  queues: QueueData[];
   load: number;
   jobsRunning: number;
   jobsQueued: number;
-  jobsBlocked: number;
+  status: 'UP' | 'DOWN' | 'MAINTENANCE' | 'UNKNOWN';
 }
+
+// Add this mock data with the correct types
+const mockSystems: SystemData[] = [
+  {
+    name: 'Frontera',
+    host: 'frontera',
+    load: 85,
+    jobsRunning: 150,
+    jobsQueued: 25,
+    status: 'UP'
+  },
+  {
+    name: 'Lonestar6',
+    host: 'ls6',
+    load: 70,
+    jobsRunning: 100,
+    jobsQueued: 15,
+    status: 'UP'
+  },
+  {
+    name: 'Stampede3',
+    host: 'stampede3',
+    load: 90,
+    jobsRunning: 200,
+    jobsQueued: 30,
+    status: 'MAINTENANCE'
+  }
+];
 
 const SystemStatusContent: React.FC = () => {
   const [activeSystem, setActiveSystem] = useState('frontera');
-  const [statusData, setStatusData] = useState<Record<string, SystemInfo>>({});
+  const [systems, setSystems] = useState<SystemData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,19 +50,12 @@ const SystemStatusContent: React.FC = () => {
     const fetchStatus = async () => {
       try {
         setLoading(true);
-        // Use TACC's actual endpoint
-        const response = await fetch('/api/system-monitor/', {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+        // Comment out the fetch call temporarily
+        // const response = await fetch('/api/system-monitor/systems/');
+        // const data = await response.json();
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch system status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        setStatusData(data.result);
+        // Use mock data instead
+        setSystems(mockSystems);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -51,29 +65,38 @@ const SystemStatusContent: React.FC = () => {
     };
 
     fetchStatus();
-    const interval = setInterval(fetchStatus, 30000);
+    const interval = setInterval(fetchStatus, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  const systems = [
-    { name: 'Frontera', host: 'frontera' },
-    { name: 'Lonestar6', host: 'ls6' },
-    { name: 'Stampede3', host: 'stampede3' }
-  ];
+  // Get the currently selected system
+  const selectedSystem = systems.find(system => system.host === activeSystem);
+
+  const getStatusColor = (status: string) => {
+    switch(status) {
+      case 'UP': return 'success';
+      case 'DOWN': return 'error';
+      case 'MAINTENANCE': return 'warning';
+      default: return 'default';
+    }
+  };
 
   return (
     <div className={styles.modal}>
+      {/* Tabs at the top for system selection */}
       <div className={styles.tabs}>
-        {systems.map(({ name, host }) => (
+        {systems.map(system => (
           <button
-            key={host}
-            className={`${styles.tabButton} ${activeSystem === host ? styles.active : ''}`}
-            onClick={() => setActiveSystem(host)}
+            key={system.host}
+            className={`${styles.tabButton} ${activeSystem === system.host ? styles.activeTab : ''}`}
+            onClick={() => setActiveSystem(system.host)}
           >
-            {name}
+            {system.name}
           </button>
         ))}
       </div>
+      
+      {/* Content area */}
       <div className={styles.content}>
         {loading ? (
           <div className={styles.loadingContainer}>
@@ -86,38 +109,33 @@ const SystemStatusContent: React.FC = () => {
             type="error"
             showIcon
           />
-        ) : statusData[activeSystem] ? (
+        ) : selectedSystem ? (
           <>
-            <div className={styles.statusSection}>
-              <div className={styles.statusRow}>
-                <span>System Load:</span>
-                <span>{statusData[activeSystem].load}%</span>
+            <div className={styles.statusHeader}>
+              <h3>{selectedSystem.name}</h3>
+              <Badge 
+                status={getStatusColor(selectedSystem.status)} 
+                text={selectedSystem.status === 'UP' ? 'Operational' : selectedSystem.status} 
+              />
+            </div>
+            
+            <div className={styles.statusGrid}>
+              <div className={styles.statusItem}>
+                <div className={styles.statusLabel}>Load</div>
+                <div className={styles.statusValue}>{selectedSystem.load}%</div>
               </div>
-              <div className={styles.statusRow}>
-                <span>Jobs Running:</span>
-                <span>{statusData[activeSystem].jobsRunning}</span>
+              <div className={styles.statusItem}>
+                <div className={styles.statusLabel}>Running Jobs</div>
+                <div className={styles.statusValue}>{selectedSystem.jobsRunning}</div>
               </div>
-              <div className={styles.statusRow}>
-                <span>Jobs in Queue:</span>
-                <span>{statusData[activeSystem].jobsQueued}</span>
+              <div className={styles.statusItem}>
+                <div className={styles.statusLabel}>Waiting Jobs</div>
+                <div className={styles.statusValue}>{selectedSystem.jobsQueued}</div>
               </div>
             </div>
-            {statusData[activeSystem].queues && (
-              <div className={styles.queueSection}>
-                <h4>Queues</h4>
-                <div className={styles.queueTable}>
-                  {statusData[activeSystem].queues.map(queue => (
-                    <div key={queue.name} className={styles.queueRow}>
-                      <span>{queue.name}</span>
-                      <span>{queue.running}/{queue.waiting}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </>
         ) : (
-          <div>No data available for this system</div>
+          <div className={styles.emptyState}>No system data available</div>
         )}
       </div>
     </div>
@@ -130,10 +148,11 @@ export const SystemStatusModal: React.FC = () => {
       title={<SystemStatusContent />}
       trigger="hover"
       placement="bottomRight"
-      overlayStyle={{ width: '300px' }}
+      color="white"
+      overlayInnerStyle={{ padding: 0 }}
+      overlayStyle={{ maxWidth: '400px' }}
     >
       <a className={styles.trigger}>System Status</a>
     </Tooltip>
   );
 };
-
