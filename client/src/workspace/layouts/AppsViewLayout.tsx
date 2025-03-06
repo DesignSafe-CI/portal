@@ -1,4 +1,5 @@
 import React from 'react';
+import { SystemStatusModal } from '../components/SystemStatusModal/SystemStatusModal';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Outlet } from 'react-router-dom';
 import { Alert, Layout, Flex, Space } from 'antd';
@@ -47,16 +48,20 @@ export const AppsViewLayout: React.FC = () => {
                 <AppIcon name={icon} />
                 {app.definition.notes.label || app.definition.id}
               </div>
-              {userGuideLink && (
-                <a
-                  href={userGuideLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ marginRight: 10 }}
-                >
-                  View User Guide
-                </a>
-              )}
+              <div style={{ display: 'inline-block' }}> 
+                <SystemStatusModal />
+                {userGuideLink && (
+                  <a
+                    href={userGuideLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ marginLeft: '10px' }}
+                  >
+                    View User Guide
+                  </a>
+                )}
+              </div>
+              
             </Flex>
           </Header>
           {htmlApp ? (

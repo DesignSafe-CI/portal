@@ -1,0 +1,106 @@
+.modal {
+  padding: 20px;
+  background: white;
+  border-radius: 4px;
+  min-width: 350px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabButton {
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #707070;
+  position: relative;
+}
+
+.tabButton.active {
+  color: #1890ff;
+}
+
+.tabButton.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #1890ff;
+}
+
+.content {
+  min-height: 200px;
+}
+
+.statusSection {
+  margin-bottom: 20px;
+}
+
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.queueSection h4 {
+  margin-bottom: 12px;
+  color: #595959;
+}
+
+.queueTable {
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+}
+
+.queueRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.queueRow:last-child {
+  border-bottom: none;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+
+.horizontalSidebar {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #ccc;
+  }
+  
+  .tabButton {
+    padding: 8px 12px;
+    border: none;
+    background-color: #0073e6;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  
+  .tabButton:hover {
+    background-color: #005bb5;
+  }
+  
