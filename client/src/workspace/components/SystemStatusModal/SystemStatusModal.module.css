@@ -24,11 +24,11 @@
   }
   
   .tabButton:hover {
-    color: #1677ff;
+    color: black;
   }
   
   .activeTab {
-    color: #1677ff;
+    color: black;
     font-weight: 500;
   }
   

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tooltip, Spin, Alert, Badge } from 'antd';
 import styles from './SystemStatusModal.module.css';
 
-// Define interfaces for the data
+//Interfaces for the data
 interface SystemData {
   name: string;
   host: string;
@@ -12,12 +12,12 @@ interface SystemData {
   status: 'UP' | 'DOWN' | 'MAINTENANCE' | 'UNKNOWN';
 }
 
-// Add this mock data with the correct types
+//Mock data 
 const mockSystems: SystemData[] = [
   {
     name: 'Frontera',
     host: 'frontera',
-    load: 85,
+    load: 8,
     jobsRunning: 150,
     jobsQueued: 25,
     status: 'UP'
@@ -51,11 +51,11 @@ const SystemStatusContent: React.FC = () => {
       try {
         setLoading(true);
         // Comment out the fetch call temporarily
-        // const response = await fetch('/api/system-monitor/systems/');
-        // const data = await response.json();
+        const response = await fetch('/api/system-monitor/systems/');
+        const data = await response.json();
         
         // Use mock data instead
-        setSystems(mockSystems);
+        setSystems(data);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -69,7 +69,7 @@ const SystemStatusContent: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Get the currently selected system
+  //Get the currently selected system
   const selectedSystem = systems.find(system => system.host === activeSystem);
 
   const getStatusColor = (status: string) => {
