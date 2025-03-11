@@ -17,10 +17,14 @@ export const SystemsDocumentation: React.FC<{ execSystemId: string }> = ({
       url = 'https://docs.tacc.utexas.edu/#hpc-resource-guides';
       break;
   }
-    return (
-      <div style={{ lineHeight: '20px', textAlign: 'left', marginBottom: 16 }}>
-          For more information regarding systems, queues, and maximum nodes needed, please see
-          the <a href={url} target="_blank">documentation</a>.
-      </div>
-    );
+  return (
+    <div style={{ lineHeight: '20px', textAlign: 'left', marginBottom: 16 }}>
+      For more information regarding systems, queues, and maximum nodes needed,
+      please see the{' '}
+      <a href={url} target="_blank">
+        documentation
+      </a>
+      .
+    </div>
+  );
 };

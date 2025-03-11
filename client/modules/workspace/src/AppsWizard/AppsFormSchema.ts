@@ -199,8 +199,11 @@ export const getConfigurationFields = (
       required: true,
       readOnly: true,
       type: 'select',
-      options: 
-        execSystems.map((e) => ({ value: e.id, label: e.id, disabled: true  })),
+      options: execSystems.map((e) => ({
+        value: e.id,
+        label: e.id,
+        disabled: true,
+      })),
     };
   }
 
@@ -616,9 +619,7 @@ const FormSchema = (
     required: false,
     type: 'text',
     placeholder: `${username}/tapis-jobs-archive/\${JobCreateDate}/\${JobName}-\${JobUUID}`,
-    options: [
-      { label: '', hidden: true, disabled: true },
-    ]
+    options: [{ label: '', hidden: true, disabled: true }],
   };
 
   return appFields;

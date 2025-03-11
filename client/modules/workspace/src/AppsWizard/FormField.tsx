@@ -39,7 +39,7 @@ export const FormField: React.FC<{
   let parameterSetLabel: React.ReactElement | null = null;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [storageSystem, setStorageSystem] = useState<string | null>(null);
-  const systemDocumentation = (name === 'configuration.execSystemId');
+  const systemDocumentation = name === 'configuration.execSystemId';
 
   const handleSelectModalOpen = () => {
     setIsModalOpen(true);
