@@ -47,10 +47,9 @@ export const getHazmapperUrl = (
  * out.
  */
 export const filterHazmapperMaps = (maps: THazmapperMap[]): THazmapperMap[] => {
-  // Filter out non-production maps if we are DS prod (i.e. 'designsafe-ci.org')
-  if (window.location.origin.includes('designsafe-ci.org')) {
+  // Filter out non-production maps if we are DS prod
+  if (window.location.origin.startsWith('https://www.designsafe-ci.org')) {
     return maps.filter((map) => map.deployment === 'production');
   }
-
   return maps;
 };
