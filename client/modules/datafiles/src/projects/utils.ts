@@ -48,7 +48,10 @@ export const getHazmapperUrl = (
  */
 export const filterHazmapperMaps = (maps: THazmapperMap[]): THazmapperMap[] => {
   // Filter out non-production maps if we are DS prod
-  if (window.location.origin.startsWith('https://www.designsafe-ci.org')) {
+  if (
+    window.location.origin.startsWith('https://www.designsafe-ci.org') ||
+    window.location.origin.startsWith('https://designsafe-ci.org')
+  ) {
     return maps.filter((map) => map.deployment === 'production');
   }
   return maps;
