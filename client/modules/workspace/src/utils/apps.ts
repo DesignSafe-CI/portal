@@ -580,3 +580,15 @@ export const getAppRuntimeLabel = (
         .join(' ')
     : label;
 };
+
+/**
+ * Generic to compare arrays.
+ * @param a1 T[]
+ * @param a2 T[]
+ * @returns true if array elements are same.
+ */
+export const areArraysEqual = <T>(a1: T[], a2: T[]): boolean => {
+  return (
+    a1.length === a2.length && a1.every((value, index) => value === a2[index])
+  );
+};

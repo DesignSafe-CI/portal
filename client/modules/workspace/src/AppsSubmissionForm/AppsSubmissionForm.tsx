@@ -49,6 +49,7 @@ import {
 } from '../AppsWizard/Steps';
 import { SystemsPushKeysModal } from '../SystemsPushKeysModal/SystemsPushKeysModal';
 import {
+  areArraysEqual,
   getSystemName,
   getExecSystemFromId,
   getQueueValueForExecSystem,
@@ -117,8 +118,10 @@ export const AppsSubmissionForm: React.FC = () => {
       definition,
       computedExecSystems
     ) as TTapisSystem;
-    setAppExecSystems(computedExecSystems);
-    setDefaultExecSystem(computedDefaultExecSystem);
+    if (!areArraysEqual(appExecSystems, computedExecSystems)) {
+      setAppExecSystems(computedExecSystems);
+      setDefaultExecSystem(computedDefaultExecSystem);
+    }
   }, [definition, executionSystems]);
 
   const [allocations, setAllocations] = useState<string[]>([]);
@@ -138,7 +141,9 @@ export const AppsSubmissionForm: React.FC = () => {
     const foundPortalAlloc = newAllocations.find((a) => a.startsWith('DS-HPC'));
     if (foundPortalAlloc) {
       setPortalAlloc(foundPortalAlloc);
-      setValue('configuration.allocation', foundPortalAlloc);
+      if (!getValues('configuration.allocation')) {
+        setValue('configuration.allocation', foundPortalAlloc);
+      }
     }
   }, [appExecSystems]);
 
@@ -159,8 +164,6 @@ export const AppsSubmissionForm: React.FC = () => {
     username,
     portalAlloc,
   ]);
-
-  //const { fileInputs, parameterSet, configuration, outputs } = formSchema;
 
   // TODOv3: dynamic exec system and queues
   const initialValues: TFormValues = useMemo(
@@ -345,7 +348,7 @@ export const AppsSubmissionForm: React.FC = () => {
     } = previousValues.current;
 
     let updatedExecSystemId = execSystemValue;
-    let updatedExecSystems = appExecSystems; // Initially use current state
+    let updatedExecSystems = appExecSystems;
 
     // Allocation change handler
     if (prevAllocationValue !== allocationValue) {
@@ -358,14 +361,16 @@ export const AppsSubmissionForm: React.FC = () => {
           (sys): sys is TTapisSystem => sys !== undefined
         );
         setValue('configuration.execSystemId', defaultExecSystemId || '');
-        setAppExecSystems(updatedExecSystems); // Update state, but it won't be available immediately
+        if (!areArraysEqual(appExecSystems, updatedExecSystems)) {
+          setAppExecSystems(updatedExecSystems);
+        }
       }
     }
+    // ExecSystem change handler
     if (
       prevExecSystemValue !== updatedExecSystemId ||
       prevAllocationValue !== allocationValue
     ) {
-      // Always use updatedExecSystems instead of execSystems
       const execSystem = getExecSystemFromId(
         updatedExecSystems,
         updatedExecSystemId ?? ''
@@ -421,7 +426,7 @@ export const AppsSubmissionForm: React.FC = () => {
         const updatedSchema = getConfigurationSchema(
           definition,
           allocations,
-          appExecSystems, // Use updated value
+          appExecSystems,
           currentExecSystem,
           defaultQueue
         );
@@ -437,7 +442,7 @@ export const AppsSubmissionForm: React.FC = () => {
         const updatedFields = getConfigurationFields(
           definition,
           allocations,
-          appExecSystems, // Use updated value
+          appExecSystems,
           currentExecSystem,
           defaultQueue
         );
