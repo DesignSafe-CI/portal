@@ -76,7 +76,7 @@ export const FormField: React.FC<{
   return (
     <div style={{ lineHeight: '20px' }}>
       {systemDocumentation && (
-        <SystemsDocumentation projectType={getValues(name)} />
+        <SystemsDocumentation execSystemId={getValues(name)} />
       )}
       <FormItem
         control={control}
