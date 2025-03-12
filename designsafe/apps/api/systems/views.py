@@ -7,7 +7,7 @@ import logging
 import json
 from django.http import JsonResponse
 from designsafe.apps.api.views import AuthenticatedApiView
-from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
+from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials_with_keys
 from designsafe.utils.encryption import createKeyPair
 from .utils import add_pub_key_to_resource
 
@@ -43,7 +43,7 @@ class SystemKeysView(AuthenticatedApiView):
             hostname=body["hostname"],
         )
 
-        create_system_credentials(
+        create_system_credentials_with_keys(
             request.user.tapis_oauth.client,
             request.user.username,
             publ_key_str,
