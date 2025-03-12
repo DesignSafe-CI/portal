@@ -9,11 +9,12 @@ from django.http import (
     JsonResponse,
     HttpResponseBadRequest,
 )
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.utils.decorators import method_decorator
-from designsafe.apps.api.views import AuthenticatedApiView
+from designsafe.libs.common.utils import check_onboarding_admin, check_group_membership
+from designsafe.apps.api.views import AuthenticatedApiView, ApiException
 from designsafe.apps.api.users.utils import q_to_model_queries
 from designsafe.apps.onboarding.models import SetupEvent, SetupEventEncoder
 from designsafe.apps.onboarding.execute import (
@@ -103,7 +104,7 @@ class SetupStepView(AuthenticatedApiView):
         """
         # A user should only be able to retrieve info about themselves.
         # A staff member should be able to retrieve anyone.
-        if username != request.user.username and not request.user.is_staff:
+        if username != request.user.username and not check_onboarding_admin(request):
             raise PermissionDenied
 
         user = None
@@ -158,7 +159,7 @@ class SetupStepView(AuthenticatedApiView):
         """
         Move any step to COMPLETED
         """
-        if not request.user.is_staff:
+        if not check_onboarding_admin(request):
             raise PermissionDenied
         setup_step.state = SetupState.COMPLETED
         setup_step.log(
@@ -169,7 +170,7 @@ class SetupStepView(AuthenticatedApiView):
         """
         Call prepare() for the step. This should set it to its initial state.
         """
-        if not request.user.is_staff:
+        if not check_onboarding_admin(request):
             raise PermissionDenied
         setup_step.log(f"{setup_step.display_name()} reset by {request.user.username}")
 
@@ -227,6 +228,12 @@ class SetupStepView(AuthenticatedApiView):
             logger.exception("Error parsing POST data")
             return HttpResponseBadRequest()
 
+        is_admin_action = action in ["staff_approve", "staff_deny"]
+        if is_admin_action and not check_onboarding_admin(request):
+            raise ApiException(
+                "This action requires onboarding admin status.", status=403
+            )
+
         # Instantiate the step instance requested by the POST, from the SetupEvent model.
         setup_step = load_setup_step(user, step_name)
 
@@ -252,7 +259,10 @@ class SetupStepView(AuthenticatedApiView):
         )
 
 
-@method_decorator(staff_member_required, name="dispatch")
+@method_decorator(
+    user_passes_test(lambda u: check_group_membership(u, "Onboarding Admin")),
+    name="dispatch",
+)
 class SetupAdminView(AuthenticatedApiView):
     """Admin view for managing user setup steps"""
 
