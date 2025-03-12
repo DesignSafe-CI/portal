@@ -10,6 +10,7 @@ from logging import getLevelName
 import json
 from designsafe.apps.api.decorators import tapis_jwt_login
 from tapipy.errors import BaseTapyException
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -155,3 +156,44 @@ class LoggerApi(BaseApiView):
             },
         )
         return HttpResponse("OK", status=202)
+    
+
+
+class SystemMonitorProxyApi(BaseApiView):
+    """"
+    Proxy API for fetching system monitor data from Core Portal.
+    """
+
+    def get(self, request, hostname):
+        """"
+        Fetch system monitor data from Core Portal and return it.
+        """
+        CORE_PORTAL_API_BASE = "https://cep.tacc.utexas.edu/api/system-monitor"
+
+        url = f"{CORE_PORTAL_API_BASE}/{hostname}"
+        print(f"Proxy API calling: {url}") 
+
+        
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return JsonResponse(response.json(), safe=False)
+        except requests.exceptions.RequestException as e:
+            print("Proxy API Error:", str(e)) 
+            return JsonResponse({"error": str(e)}, status=500)
+            
+
+class SystemOverviewProxyApi(BaseApiView):
+    """
+    Proxy API for fetching system monitor overview data from Core Portal.
+    """
+    def get(self, request):
+        CORE_PORTAL_API_BASE = "https://cep.tacc.utexas.edu/api/system-monitor"
+        print(f"Proxy API calling: {CORE_PORTAL_API_BASE}") 
+        try:
+            response = requests.get(CORE_PORTAL_API_BASE, timeout=10)
+            response.raise_for_status()
+            return JsonResponse(response.json(), safe=False)
+        except requests.exceptions.RequestException as e:
+            print("Proxy API Error:", str(e)) 
+            return JsonResponse({"error": str(e)}, status=500)

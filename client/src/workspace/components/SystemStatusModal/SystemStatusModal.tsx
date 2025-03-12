@@ -1,141 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { Tooltip, Spin, Alert, Badge } from 'antd';
+import React, { useState } from 'react';
+import { Tooltip, Badge, Spin, Alert } from 'antd';
+import { SystemQueueTable } from './SystemQueueTable';
+import { useSystemOverview } from '../../../hooks/system-status/useSystemOverview'; 
 import styles from './SystemStatusModal.module.css';
 
-//Interfaces for the data
-interface SystemData {
-  name: string;
-  host: string;
-  load: number;
-  jobsRunning: number;
-  jobsQueued: number;
-  status: 'UP' | 'DOWN' | 'MAINTENANCE' | 'UNKNOWN';
-}
-
-//Mock data 
-const mockSystems: SystemData[] = [
-  {
-    name: 'Frontera',
-    host: 'frontera',
-    load: 8,
-    jobsRunning: 150,
-    jobsQueued: 25,
-    status: 'UP'
-  },
-  {
-    name: 'Lonestar6',
-    host: 'ls6',
-    load: 70,
-    jobsRunning: 100,
-    jobsQueued: 15,
-    status: 'UP'
-  },
-  {
-    name: 'Stampede3',
-    host: 'stampede3',
-    load: 90,
-    jobsRunning: 200,
-    jobsQueued: 30,
-    status: 'MAINTENANCE'
-  }
-];
-
 const SystemStatusContent: React.FC = () => {
-  const [activeSystem, setActiveSystem] = useState('frontera');
-  const [systems, setSystems] = useState<SystemData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [activeSystem, setActiveSystem] = useState('frontera'); //default system
 
-  useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        setLoading(true);
-        // Comment out the fetch call temporarily
-        const response = await fetch('/api/system-monitor/systems/');
-        const data = await response.json();
-        
-        // Use mock data instead
-        setSystems(data);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 60000);
-    return () => clearInterval(interval);
-  }, []);
+  const { systems, loading, error } = useSystemOverview(); 
 
-  //Get the currently selected system
-  const selectedSystem = systems.find(system => system.host === activeSystem);
+  const selectedSystem = systems.find(
+    (sys) => sys.display_name.toLowerCase() === activeSystem.toLowerCase()
+  );
 
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'UP': return 'success';
-      case 'DOWN': return 'error';
-      case 'MAINTENANCE': return 'warning';
-      default: return 'default';
-    }
+ 
+  //setting color for status of system
+  const getStatusColor = (system: typeof selectedSystem) => {
+    if (!system) return 'default';
+    if (!system.is_operational) return 'success';
+    if (!system.in_maintenance) return 'warning';
+    return 'success'; 
   };
+
+
+
 
   return (
     <div className={styles.modal}>
-      {/* Tabs at the top for system selection */}
+      {/* System selection tabs */}
       <div className={styles.tabs}>
-        {systems.map(system => (
+        {['frontera', 'lonestar6', 'Stampede3'].map((hostname) => (
           <button
-            key={system.host}
-            className={`${styles.tabButton} ${activeSystem === system.host ? styles.activeTab : ''}`}
-            onClick={() => setActiveSystem(system.host)}
+            key={hostname}
+            className={`${styles.tabButton} ${
+              activeSystem === hostname ? styles.activeTab : ''
+            }`}
+            onClick={() => setActiveSystem(hostname)}
           >
-            {system.name}
+            {hostname.toUpperCase()}
           </button>
         ))}
       </div>
-      
-      {/* Content area */}
+
+      {/* Main content area */}
       <div className={styles.content}>
         {loading ? (
           <div className={styles.loadingContainer}>
             <Spin />
           </div>
         ) : error ? (
-          <Alert
-            message="Error"
-            description={`Failed to fetch system status: ${error}`}
-            type="error"
-            showIcon
-          />
+          <Alert message="Error" description={error} type="error" showIcon />
         ) : selectedSystem ? (
           <>
+            {/* Top-level system overview */}
             <div className={styles.statusHeader}>
-              <h3>{selectedSystem.name}</h3>
-              <Badge 
-                status={getStatusColor(selectedSystem.status)} 
-                text={selectedSystem.status === 'UP' ? 'Operational' : selectedSystem.status} 
+              <h3>{selectedSystem.display_name.toUpperCase()}</h3>
+              <Badge
+                status={getStatusColor(selectedSystem)}
+                text={selectedSystem.is_operational ? 'Operational' : 'Not Operational'}
               />
             </div>
-            
+
             <div className={styles.statusGrid}>
               <div className={styles.statusItem}>
                 <div className={styles.statusLabel}>Load</div>
-                <div className={styles.statusValue}>{selectedSystem.load}%</div>
+                <div className={styles.statusValue}>
+                  {selectedSystem.load_percentage}%
+                </div>
               </div>
               <div className={styles.statusItem}>
                 <div className={styles.statusLabel}>Running Jobs</div>
-                <div className={styles.statusValue}>{selectedSystem.jobsRunning}</div>
+                <div className={styles.statusValue}>
+                  {selectedSystem.jobs.running}
+                </div>
               </div>
               <div className={styles.statusItem}>
                 <div className={styles.statusLabel}>Waiting Jobs</div>
-                <div className={styles.statusValue}>{selectedSystem.jobsQueued}</div>
+                <div className={styles.statusValue}>
+                  {selectedSystem.jobs.queued}
+                </div>
               </div>
+            </div>
+
+            {/* Queue table section */}
+            <div>
+              <SystemQueueTable hostname={activeSystem} />
             </div>
           </>
         ) : (
-          <div className={styles.emptyState}>No system data available</div>
+          <div>No data found for {activeSystem}</div>
         )}
       </div>
     </div>
@@ -144,7 +98,7 @@ const SystemStatusContent: React.FC = () => {
 
 export const SystemStatusModal: React.FC = () => {
   return (
-    <Tooltip 
+    <Tooltip
       title={<SystemStatusContent />}
       trigger="hover"
       placement="bottomRight"

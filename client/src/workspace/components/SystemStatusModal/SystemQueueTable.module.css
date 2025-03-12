@@ -1,0 +1,56 @@
+
+.queueTable {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 2px solid #ddd;
+    margin-top: 15px; 
+    padding: auto;
+
+
+  }
+  
+  .queueTable th,
+  .queueTable td {
+    padding: 8px;
+    text-align: left;
+  }
+
+  .statusCell {
+    text-align: center;
+  }
+
+
+  .statusBadge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+  }
+
+  .open {
+    background-color: #4ed12f;
+  }
+
+  .closed {
+    background-color: #dc3545;
+  }
+  
+
+  
+  
+  .queueTable th {
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 500;
+  }
+  
+  .queueTable td {
+    border-bottom: 1px solid #f0f0f0;
+  } 
+
+
+  
+
+
