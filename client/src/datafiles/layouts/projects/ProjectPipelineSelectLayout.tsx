@@ -12,7 +12,6 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
   );
 
   const projectType = data.baseProject?.value?.projectType; //getting selected project type value
-  //console.log(projectType)
 
   return (
     <div style={{ width: '100%', marginBottom: '24px' }}>
@@ -39,32 +38,33 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
             <hr />
             <ul>
               <li>Publish new dataset(s) in your project.</li>
-              {projectType == "other" ? (
-              <li>
-              Subsequent dataset publishing is not allowed for this project type. If you need to add more datasets, please&nbsp;
-                <a
-                  href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-describedby="msg-open-new-window"
-                >
-                  submit a ticket
-                </a>{' '}
-                with your project number and the name of the dataset(s).
-              </li>
+              {projectType == 'other' ? (
+                <li>
+                  Subsequent dataset publishing is not allowed for this project
+                  type. If you need to add more datasets, please&nbsp;
+                  <a
+                    href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-describedby="msg-open-new-window"
+                  >
+                    submit a ticket
+                  </a>{' '}
+                  with your project number and the name of the dataset(s).
+                </li>
               ) : (
-              <li>
-                If you need to publish subsequent dataset(s),&nbsp;
-                <a
-                  href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-describedby="msg-open-new-window"
-                >
-                 submit a ticket
-                </a>{' '}
-                with your project number and the name of the dataset(s).       
-              </li> 
+                <li>
+                  If you need to publish subsequent dataset(s),&nbsp;
+                  <a
+                    href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-describedby="msg-open-new-window"
+                  >
+                    submit a ticket
+                  </a>{' '}
+                  with your project number and the name of the dataset(s).
+                </li>
               )}
             </ul>
             <NavLink
