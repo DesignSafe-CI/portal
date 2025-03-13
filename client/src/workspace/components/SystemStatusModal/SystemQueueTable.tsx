@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Alert, Badge } from 'antd';
-import { useSystemQueue } from '../../../hooks/system-status/useSystemMonitor'; 
+import { useSystemQueue } from '../../../hooks/system-status/useSystemQueue'; 
 import styles from './SystemQueueTable.module.css';
 
 interface QueueItem {
   name: string;
   down: boolean;   //false → "Open", true → "Closed"
-  hidden: boolean; //If true, row won't be displayed
+  hidden: boolean; //If true row won't be displayed
   load: number;
   free: number;    
   running: number;
@@ -22,7 +22,7 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({ hostname }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  //Fetch data from use
+  //Fetch data from useSystemMonitor.js
   useEffect(() => {
     const fetchData = async () => {
       try {

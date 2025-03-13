@@ -17,10 +17,8 @@ const SystemStatusContent: React.FC = () => {
  
   //setting color for status of system
   const getStatusColor = (system: typeof selectedSystem) => {
-    if (!system) return 'default';
-    if (!system.is_operational) return 'success';
-    if (!system.in_maintenance) return 'warning';
-    return 'success'; 
+    if (system?.is_operational) return 'success';
+    if (system?.in_maintenance) return 'warning';
   };
 
 
@@ -34,7 +32,7 @@ const SystemStatusContent: React.FC = () => {
           <button
             key={hostname}
             className={`${styles.tabButton} ${
-              activeSystem === hostname ? styles.activeTab : ''
+              activeSystem === hostname ? styles .activeTab : ''
             }`}
             onClick={() => setActiveSystem(hostname)}
           >
@@ -43,7 +41,7 @@ const SystemStatusContent: React.FC = () => {
         ))}
       </div>
 
-      {/* Main content area */}
+      {/*Main content area*/}
       <div className={styles.content}>
         {loading ? (
           <div className={styles.loadingContainer}>
@@ -53,12 +51,12 @@ const SystemStatusContent: React.FC = () => {
           <Alert message="Error" description={error} type="error" showIcon />
         ) : selectedSystem ? (
           <>
-            {/* Top-level system overview */}
+            {/*Top-level system overview*/}
             <div className={styles.statusHeader}>
               <h3>{selectedSystem.display_name.toUpperCase()}</h3>
               <Badge
                 status={getStatusColor(selectedSystem)}
-                text={selectedSystem.is_operational ? 'Operational' : 'Not Operational'}
+                text={selectedSystem.is_operational ? 'Operational' : 'Maintenance'}
               />
             </div>
 
@@ -83,7 +81,7 @@ const SystemStatusContent: React.FC = () => {
               </div>
             </div>
 
-            {/* Queue table section */}
+            {/*Queue table section*/}
             <div>
               <SystemQueueTable hostname={activeSystem} />
             </div>

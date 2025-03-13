@@ -161,13 +161,10 @@ class LoggerApi(BaseApiView):
 
 class SystemMonitorProxyApi(BaseApiView):
     """"
-    Proxy API for fetching system monitor data from Core Portal.
+    Proxy API for fetching system queue data from Core Portal. 
     """
 
     def get(self, request, hostname):
-        """"
-        Fetch system monitor data from Core Portal and return it.
-        """
         CORE_PORTAL_API_BASE = "https://cep.tacc.utexas.edu/api/system-monitor"
 
         url = f"{CORE_PORTAL_API_BASE}/{hostname}"
@@ -185,7 +182,7 @@ class SystemMonitorProxyApi(BaseApiView):
 
 class SystemOverviewProxyApi(BaseApiView):
     """
-    Proxy API for fetching system monitor overview data from Core Portal.
+    Proxy API for fetching system monitor overview data from Core Portal. (Load%, Running, Waiting Jobs)
     """
     def get(self, request):
         CORE_PORTAL_API_BASE = "https://cep.tacc.utexas.edu/api/system-monitor"

@@ -1,3 +1,5 @@
+//used in portal/client/src/workspace/SystemQueueTable.tsx
+//for getting system overview data (load%, running jobs, waiting jobs)
 import { useState, useEffect } from 'react';
 
 interface HPCSystem {
@@ -28,6 +30,58 @@ export function useSystemOverview() {
           throw new Error(`Request failed: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
+
+      //Test Data - comment out "const data" above and replace with version below
+        /*
+        const data = [
+          {
+            "display_name": "Lonestar6",
+            "hostname": "ls6.tacc.utexas.edu",
+            "resource_type": "COMPUTE",
+            "load_percentage": 95,
+            "jobs": {
+              "running": 436,
+              "queued": 311
+            },
+            "online": true,
+            "reachable": true,
+            "queues_down": false,
+            "in_maintenance": true,
+            "is_operational": false
+          },
+          {
+            "display_name": "Frontera",
+            "hostname": "frontera.tacc.utexas.edu",
+            "resource_type": "COMPUTE",
+            "load_percentage": 98,
+            "jobs": {
+              "running": 250,
+              "queued": 1132
+            },
+            "online": true,
+            "reachable": true,
+            "queues_down": false,
+            "in_maintenance": true,
+            "is_operational": false
+          },
+          {
+            "display_name": "Stampede3",
+            "hostname": "stampede3.tacc.utexas.edu",
+            "resource_type": "COMPUTE",
+            "load_percentage": 90,
+            "jobs": {
+              "running": 458,
+              "queued": 49
+            },
+            "online": true,
+            "reachable": true,
+            "queues_down": false,
+            "in_maintenance": false,
+            "is_operational": true
+          }
+        ]
+        */
+
         setSystems(data);
         setError(null);
       } 

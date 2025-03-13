@@ -91,21 +91,3 @@
     font-size: 20px;
     font-weight: 500;
   }
-  
-  .emptyState {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 150px;
-    color: #8c8c8c;
-  }
-  
-  .trigger {
-    color: #1890ff;
-    cursor: pointer;
-  }
-  
-  .trigger:hover {
-    color: #1677ff;
-    text-decoration: underline;
-  }

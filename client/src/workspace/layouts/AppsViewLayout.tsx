@@ -55,7 +55,7 @@ export const AppsViewLayout: React.FC = () => {
                     href={userGuideLink}
                     target="_blank"
                     rel="noreferrer"
-                    style={{ marginLeft: '10px' }}
+                    style={{ marginLeft: '20px' }}
                   >
                     View User Guide
                   </a>

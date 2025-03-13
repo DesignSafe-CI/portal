@@ -5,8 +5,6 @@
     border-top: 2px solid #ddd;
     margin-top: 15px; 
     padding: auto;
-
-
   }
   
   .queueTable th,
@@ -14,11 +12,6 @@
     padding: 8px;
     text-align: left;
   }
-
-  .statusCell {
-    text-align: center;
-  }
-
 
   .statusBadge {
     display: inline-block;
@@ -37,9 +30,6 @@
   .closed {
     background-color: #dc3545;
   }
-  
-
-  
   
   .queueTable th {
     border-bottom: 1px solid #f0f0f0;
