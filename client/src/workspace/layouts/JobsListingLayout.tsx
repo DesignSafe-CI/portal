@@ -18,7 +18,7 @@ export const JobsListingLayout: React.FC = () => {
   return (
     <Layout style={{ gap: '5px', minWidth: '500px' }}>
       <Layout.Header style={headerStyle}>Job Status</Layout.Header>
-      <Layout.Content className={styles['listi ng-main']}>
+      <Layout.Content className={styles['listing-main']}>
         <div className={styles['listing-container']}>
           <JobsListing />
         </div>
