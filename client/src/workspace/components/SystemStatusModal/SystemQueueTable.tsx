@@ -22,7 +22,7 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({ hostname }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  //Fetch data from useSystemMonitor.js
+  //Fetch data from useSystemQueue.js
   useEffect(() => {
     const fetchData = async () => {
       try {
