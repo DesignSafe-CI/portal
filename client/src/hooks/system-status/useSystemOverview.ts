@@ -21,17 +21,17 @@ export function useSystemOverview() {
 
   useEffect(() => {
     async function fetchSystems() {
-      try 
-      {
+      try {
         setLoading(true);
         const response = await fetch('/api/proxy/system-monitor/');
-        if (!response.ok) 
-        {
-          throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(
+            `Request failed: ${response.status} ${response.statusText}`
+          );
         }
         const data = await response.json();
 
-      //Test Data - comment out "const data" above and replace with version below
+        //Test Data - comment out "const data" above and replace with version below
         /*
         const data = [
           {
@@ -84,13 +84,9 @@ export function useSystemOverview() {
 
         setSystems(data);
         setError(null);
-      } 
-      catch (err) 
-      {
+      } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
-      } 
-      finally 
-      {
+      } finally {
         setLoading(false);
       }
     }

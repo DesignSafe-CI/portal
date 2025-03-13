@@ -3,16 +3,18 @@
   for getting system queue data from core portal
 */
 export const useSystemQueue = async (hostname) => {
-    const response = await fetch(`/api/proxy/system-monitor/${hostname}/`);
-  
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-    }
-  
-    const data = await response.json();
+  const response = await fetch(`/api/proxy/system-monitor/${hostname}/`);
 
-    //Test Data - comment out "const data" above and replace with version below
-    /*
+  if (!response.ok) {
+    throw new Error(
+      `API request failed: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data = await response.json();
+
+  //Test Data - comment out "const data" above and replace with version below
+  /*
     const data = [
       {
         "name": "development$$$",
@@ -89,5 +91,5 @@ export const useSystemQueue = async (hostname) => {
     ]
     */
 
-    return data;
-  };
+  return data;
+};

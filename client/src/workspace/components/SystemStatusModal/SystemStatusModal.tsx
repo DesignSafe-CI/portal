@@ -1,28 +1,23 @@
 import React, { useState } from 'react';
 import { Tooltip, Badge, Spin, Alert } from 'antd';
 import { SystemQueueTable } from './SystemQueueTable';
-import { useSystemOverview } from '../../../hooks/system-status/useSystemOverview'; 
+import { useSystemOverview } from '../../../hooks/system-status/useSystemOverview';
 import styles from './SystemStatusModal.module.css';
 
 const SystemStatusContent: React.FC = () => {
   const [activeSystem, setActiveSystem] = useState('frontera'); //default system
 
-
-  const { systems, loading, error } = useSystemOverview(); 
+  const { systems, loading, error } = useSystemOverview();
 
   const selectedSystem = systems.find(
     (sys) => sys.display_name.toLowerCase() === activeSystem.toLowerCase()
   );
 
- 
   //setting color for status of system
   const getStatusColor = (system: typeof selectedSystem) => {
     if (system?.is_operational) return 'success';
     if (system?.in_maintenance) return 'warning';
   };
-
-
-
 
   return (
     <div className={styles.modal}>
@@ -32,7 +27,7 @@ const SystemStatusContent: React.FC = () => {
           <button
             key={hostname}
             className={`${styles.tabButton} ${
-              activeSystem === hostname ? styles .activeTab : ''
+              activeSystem === hostname ? styles.activeTab : ''
             }`}
             onClick={() => setActiveSystem(hostname)}
           >
@@ -56,7 +51,9 @@ const SystemStatusContent: React.FC = () => {
               <h3>{selectedSystem.display_name.toUpperCase()}</h3>
               <Badge
                 status={getStatusColor(selectedSystem)}
-                text={selectedSystem.is_operational ? 'Operational' : 'Maintenance'}
+                text={
+                  selectedSystem.is_operational ? 'Operational' : 'Maintenance'
+                }
               />
             </div>
 

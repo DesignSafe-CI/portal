@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Alert, Badge } from 'antd';
-import { useSystemQueue } from '../../../hooks/system-status/useSystemQueue'; 
+import { useSystemQueue } from '../../../hooks/system-status/useSystemQueue';
 import styles from './SystemQueueTable.module.css';
 
 interface QueueItem {
   name: string;
-  down: boolean;   //false → "Open", true → "Closed"
+  down: boolean; //false → "Open", true → "Closed"
   hidden: boolean; //If true row won't be displayed
   load: number;
-  free: number;    
+  free: number;
   running: number;
   waiting: number;
 }
@@ -17,7 +17,9 @@ interface SystemQueueTableProps {
   hostname: string;
 }
 
-export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({ hostname }) => {
+export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
+  hostname,
+}) => {
   const [queueData, setQueueData] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +44,6 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({ hostname }) 
   //Filter out any hidden queues
   const visibleQueues = queueData.filter((q) => !q.hidden);
 
-
   return (
     <table className={styles.queueTable}>
       <thead>
@@ -59,9 +60,13 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({ hostname }) 
           <tr key={idx}>
             <td>{queue.name}</td>
             <td>
-                <div className={`${styles.statusBadge} ${queue.down ? styles.closed : styles.open}`}>
-                    {queue.down ? "Closed" : "Open"}
-                </div>
+              <div
+                className={`${styles.statusBadge} ${
+                  queue.down ? styles.closed : styles.open
+                }`}
+              >
+                {queue.down ? 'Closed' : 'Open'}
+              </div>
             </td>
             <td>{queue.free}</td>
             <td>{queue.running}</td>
