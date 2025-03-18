@@ -27,11 +27,19 @@ def index_project(project_id):
     project_json = nx.node_link_data(project_tree)
     try:
         pub_es = IndexedProject.get(project_id)
-        pub_es.update(**project_json, uuid=project_meta.uuid, value=project_meta.value)
+        pub_es.update(
+            **project_json,
+            uuid=project_meta.uuid,
+            value=project_meta.value,
+            created=project_meta.created
+        )
 
     except NotFoundError:
         pub_es = IndexedProject(
-            **project_json, uuid=project_meta.uuid, value=project_meta.value
+            **project_json,
+            uuid=project_meta.uuid,
+            value=project_meta.value,
+            created=project_meta.created
         )
         pub_es.meta["id"] = project_id
         pub_es.save()

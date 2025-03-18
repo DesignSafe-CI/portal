@@ -596,7 +596,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'port': 2222,
         'homeDir': '/',
         'protocol': 'SFTP',
-        'host': 'cloud.corral.tacc.utexas.edu',
+        'host': 'cloud.data.tacc.utexas.edu',
         'publicAppsDir': None,
         'proxy': None,
         'rootDir': '/corral-repl/projects/NHERI/projects/{}',
@@ -683,7 +683,8 @@ SUPPORTED_TEXT_PREVIEW_EXTS = [
     '.java', '.js', '.less', '.m', '.make', '.md', '.ml', '.mm', '.msg', '.php',
     '.pl', '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml',
     '.sql', '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl',
-    '.json', '.out', '.err', '.geojson', '.do', '.sas', '.hazmapper', ".log"
+    '.json', '.out', '.err', '.geojson', '.do', '.sas', '.hazmapper', ".log", ".env",
+    ".exitcode", ".pid"
 ]
 
 SUPPORTED_OBJECT_PREVIEW_EXTS = [

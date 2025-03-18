@@ -138,7 +138,7 @@ export const AddFileFolder: React.FC = () => {
             </li>
             <li>
               <a
-                href="https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/"
+                href="https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ padding: '0px' }}

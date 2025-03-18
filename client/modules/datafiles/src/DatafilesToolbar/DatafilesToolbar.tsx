@@ -58,6 +58,7 @@ export function getToolbarRules(
       isAuthenticated &&
       selectedFiles.length >= 1 &&
       !isReadOnly &&
+      system !== USER_WORK_SYSTEM &&
       notContainingHazmapperFile,
     canDownload:
       selectedFiles.length >= 1 &&

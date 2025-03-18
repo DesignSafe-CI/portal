@@ -474,7 +474,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'port': 2222,
         'homeDir': '/',
         'protocol': 'SFTP',
-        'host': 'cloud.corral.tacc.utexas.edu',
+        'host': 'cloud.data.tacc.utexas.edu',
         'publicAppsDir': None,
         'proxy': None,
         'rootDir': '/corral-repl/projects/NHERI/projects/{}',

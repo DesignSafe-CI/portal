@@ -53,22 +53,10 @@ export const DatafilesSideNav: React.FC = () => {
           <hr style={{ margin: '0' }} />
 
           <DataFilesNavLink
-            to="/box"
-            tooltip="Access to my Box files for copying"
-          >
-            Box.com
-          </DataFilesNavLink>
-          <DataFilesNavLink
             to="/dropbox"
             tooltip="Access to my Dropbox files for copying"
           >
             Dropbox.com
-          </DataFilesNavLink>
-          <DataFilesNavLink
-            to="/googledrive"
-            tooltip="Access to my Google Drive files for copying"
-          >
-            Google Drive
           </DataFilesNavLink>
 
           <hr style={{ margin: '0' }} />
