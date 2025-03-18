@@ -17,6 +17,7 @@ const SystemStatusContent: React.FC = () => {
   const getStatusColor = (system: typeof selectedSystem) => {
     if (system?.is_operational) return 'success';
     if (system?.in_maintenance) return 'warning';
+    return 'error';
   };
 
   return (
@@ -79,7 +80,7 @@ const SystemStatusContent: React.FC = () => {
             </div>
 
             {/*Queue table section*/}
-            <div>
+            <div className={styles.tableContainer}>
               <SystemQueueTable hostname={activeSystem} />
             </div>
           </>
@@ -99,9 +100,9 @@ export const SystemStatusModal: React.FC = () => {
       placement="bottomRight"
       color="white"
       overlayInnerStyle={{ padding: 0 }}
-      overlayStyle={{ maxWidth: '400px' }}
+      overlayStyle={{ maxWidth: '500px' }}
     >
-      <a className={styles.trigger}>System Status</a>
+      <a>System Status</a>
     </Tooltip>
   );
 };

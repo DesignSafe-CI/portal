@@ -1,15 +1,20 @@
 .queueTable {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 0;
+
+  /*
   border-top: 2px solid #ddd;
   margin-top: 15px;
   padding: auto;
+  */
 }
 
 .queueTable th,
 .queueTable td {
   padding: 8px;
   text-align: left;
+  vertical-align: middle;
 }
 
 .statusBadge {
@@ -23,18 +28,18 @@
 }
 
 .open {
-  background-color: #4ed12f;
+ background-color: #52c41a; /* #4ed12f */
 }
 
 .closed {
-  background-color: #dc3545;
+background-color: #f5222d; /* #dc3545 */
 }
 
 .queueTable th {
-  border-bottom: 1px solid #f0f0f0;
-  font-weight: 500;
+  border-bottom: 1px solid #707070;
 }
 
+
 .queueTable td {
-  border-bottom: 1px solid #f0f0f0;
-}
+    border-bottom: 1px solid #f0f0f0;
+  }

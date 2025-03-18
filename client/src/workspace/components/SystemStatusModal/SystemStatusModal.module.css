@@ -1,7 +1,7 @@
 .modal {
   background: white;
   border-radius: 4px;
-  width: 400px;
+  width: 425px;
   color: rgba(0, 0, 0, 0.85);
   overflow: hidden;
 }
@@ -20,7 +20,6 @@
   font-size: 14px;
   color: #595959;
   position: relative;
-  transition: color 0.3s;
 }
 
 .tabButton:hover {
@@ -39,12 +38,15 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: #1677ff;
 }
 
 .content {
-  padding: 16px;
-  min-height: 150px;
+  max-height: 60vh;
+  padding: 15px;
+  min-height: 250px;
+  display: flex; /*  not sure  */
+  flex-direction: column; /*  not sure  */
+  
 }
 
 .loadingContainer {
@@ -58,7 +60,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 0px;
 }
 
 .statusHeader h3 {
@@ -91,3 +93,13 @@
   font-size: 20px;
   font-weight: 500;
 }
+
+.tableContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid #707070;
+  margin-top: 10px;
+}
+
