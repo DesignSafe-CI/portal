@@ -51,7 +51,7 @@ const FieldReconOverview1 = (
     <ul>
       <li>
         <a
-          href="/rw/user-guides/data-curation-publication/"
+          href="/user-guide/curating/guides/"
           target="_blank"
           aria-describedby="msg-open-new-window"
         >
@@ -61,7 +61,7 @@ const FieldReconOverview1 = (
       <li>
         {' '}
         <a
-          href="/rw/user-guides/data-publication-guidelines/"
+          href="/user-guide/curating/bestpractices/"
           target="_blank"
           aria-describedby="msg-open-new-window"
         >
