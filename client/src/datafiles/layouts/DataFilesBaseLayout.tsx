@@ -6,7 +6,11 @@ import {
   DatafilesHelpDropdown,
   DatafilesSideNav,
 } from '@client/datafiles';
-import { useAuthenticatedUser, notifyContext } from '@client/hooks';
+import {
+  useAuthenticatedUser,
+  notifyContext,
+  USER_MYDATA_SYSTEM,
+} from '@client/hooks';
 
 const { Sider } = Layout;
 
@@ -18,7 +22,7 @@ const DataFilesRoot: React.FC = () => {
   }
 
   const defaultPath = user?.username
-    ? '/tapis/designsafe.storage.default'
+    ? `/tapis/${USER_MYDATA_SYSTEM}`
     : '/public/designsafe.storage.published';
   const { pathname } = useLocation();
 
