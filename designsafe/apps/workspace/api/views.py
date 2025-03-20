@@ -93,6 +93,16 @@ def _get_systems(
     )
 
 
+def _get_exec_systems(user, systems):
+    """List of all enabled execution systems available for the user."""
+    tapis = user.tapis_oauth.client
+    search_string = "(canExec.eq.true)~(enabled.eq.true)"
+    if systems != ["All"]:
+        system_id_search = ','.join(systems)
+        search_string = f"(id.in.{system_id_search})~{search_string}"
+    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
+
+
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
 
@@ -103,6 +113,12 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
 
     data = {"definition": app_def}
+    exec_systems = getattr(app_def.notes, 'dynamicExecSystems', [])
+    if len(exec_systems) > 0:
+        data['execSystems'] = _get_exec_systems(user, exec_systems)
+    else:
+        # Get Execution System Info to process sytem specific data, example: queue information
+        data['execSystems'] = [tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)]
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}
