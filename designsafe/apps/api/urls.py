@@ -15,7 +15,7 @@ urlpatterns = [
     path("systems/", include('designsafe.apps.api.systems.urls')),
     path("proxy/system-monitor/<str:hostname>/", SystemMonitorProxyApi.as_view()),
     
-    path("proxy/system-monitor/", SystemOverviewProxyApi.as_view()),
+    path("proxy/status/", SystemOverviewProxyApi.as_view()),
 
     url(r'^projects/', include(('designsafe.apps.api.projects.urls', 'designsafe.apps.api.projects'),
                                namespace='ds_projects_api')),

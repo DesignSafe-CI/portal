@@ -1,6 +1,7 @@
 //used in portal/client/src/workspace/SystemQueueTable.tsx
-//for getting system overview data (load%, running jobs, waiting jobs)
-import { useState, useEffect } from 'react';
+//for getting system overview data (load%, running jobs, waiting jobs
+
+import { useQuery } from '@tanstack/react-query';
 
 interface HPCSystem {
   display_name: string;
@@ -8,39 +9,47 @@ interface HPCSystem {
   load_percentage: number;
   is_operational: boolean;
   in_maintenance: boolean;
-  jobs: {
-    running: number;
-    queued: number;
-  };
+  reachable: boolean;
+  queues_down: boolean;
+  running: number;
+  waiting: number;
+}
+
+async function fetchSystems(): Promise<HPCSystem[]> {
+  const response = await fetch(`/api/proxy/status/`);
+  if (!response.ok) {
+    throw new Error(
+      `Request failed: ${response.status} ${response.statusText}`
+    );
+  }
+  const raw = await response.json();
+
+  const data = raw.response;
+
+  return Object.keys(data)
+    .filter((key) => key !== 'Vista')
+    .map((key) => {
+      const system = data[key];
+      return {
+        display_name: system.display_name,
+        hostname: system.hostname,
+        load_percentage: Math.round(system.load * 100),
+        is_operational:
+          system.online &&
+          system.reachable &&
+          !(system.queues_down || system.in_maintenance),
+        in_maintenance: system.in_maintenance,
+        reachable: system.reachable,
+        queues_down: system.queues_down,
+        running: system.running,
+        waiting: system.waiting,
+      };
+    });
 }
 
 export function useSystemOverview() {
-  const [systems, setSystems] = useState<HPCSystem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchSystems() {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/proxy/system-monitor/');
-        if (!response.ok) {
-          throw new Error(
-            `Request failed: ${response.status} ${response.statusText}`
-          );
-        }
-        const data = await response.json();
-
-        setSystems(data);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchSystems();
-  }, []);
-
-  return { systems, loading, error };
+  return useQuery<HPCSystem[], Error>({
+    queryKey: ['systemOverview'],
+    queryFn: fetchSystems,
+  });
 }

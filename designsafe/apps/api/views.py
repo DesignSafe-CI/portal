@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
+from django.conf import settings
 from requests.exceptions import HTTPError
 from .exceptions import ApiException
 import logging
@@ -165,11 +166,7 @@ class SystemMonitorProxyApi(BaseApiView):
     """
 
     def get(self, request, hostname):
-        CORE_PORTAL_API_BASE = "https://cep.tacc.utexas.edu/api/system-monitor"
-
-        url = f"{CORE_PORTAL_API_BASE}/{hostname}"
-        print(f"Proxy API calling: {url}") 
-
+        url = f"{settings.CORE_PORTAL_API_BASE}/{hostname}"
         
         try:
             response = requests.get(url, timeout=10)
@@ -182,15 +179,17 @@ class SystemMonitorProxyApi(BaseApiView):
 
 class SystemOverviewProxyApi(BaseApiView):
     """
-    Proxy API for fetching system monitor overview data from Core Portal. (Load%, Running, Waiting Jobs)
+    Proxy API for fetching system monitor overview data from TAP. (Load%, Running, Waiting Jobs)
     """
     def get(self, request):
-        CORE_PORTAL_API_BASE = "https://cep.tacc.utexas.edu/api/system-monitor"
-        print(f"Proxy API calling: {CORE_PORTAL_API_BASE}") 
+        url = settings.TAPIS_API_STATUS
+
         try:
-            response = requests.get(CORE_PORTAL_API_BASE, timeout=10)
+            response = requests.get(url, timeout=10)
             response.raise_for_status()
-            return JsonResponse(response.json(), safe=False)
+            return JsonResponse({"response": response.json()}, status=200)
+             
+                 
         except requests.exceptions.RequestException as e:
             print("Proxy API Error:", str(e)) 
             return JsonResponse({"error": str(e)}, status=500)

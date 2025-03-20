@@ -5,8 +5,8 @@ import styles from './SystemQueueTable.module.css';
 
 interface QueueItem {
   name: string;
-  down: boolean; //false → "Open", true → "Closed"
-  hidden: boolean; //If true row won't be displayed
+  down: boolean;
+  hidden: boolean;
   load: number;
   free: number;
   running: number;
@@ -45,35 +45,52 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
   const visibleQueues = queueData.filter((q) => !q.hidden);
 
   return (
-    <table className={styles.queueTable}>
-      <thead>
-        <tr>
-          <th>Queue</th>
-          <th style={{ textAlign: 'center' }}>Status</th>
-          <th>Idle Nodes</th>
-          <th>Running Jobs</th>
-          <th>Waiting Jobs</th>
-        </tr>
-      </thead>
-      <tbody>
-        {visibleQueues.map((queue, idx) => (
-          <tr key={idx}>
-            <td>{queue.name}</td>
-            <td>
-              <div
-                className={`${styles.statusBadge} ${
-                  queue.down ? styles.closed : styles.open
-                }`}
-              >
-                {queue.down ? 'Closed' : 'Open'}
-              </div>
-            </td>
-            <td>{queue.free}</td>
-            <td>{queue.running}</td>
-            <td>{queue.waiting}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <>
+      {loading ? (
+        <div style={{ paddingTop: '40px', textAlign: 'center'}}>
+          <Spin />
+        </div>
+      ) : error ? (
+        <Alert
+          message="Error"
+          description={String(error)}
+          type="error"
+          showIcon
+        />
+      ) : queueData.length === 0 ? (
+        <div>Data not available</div>
+      ) : (
+        <table className={styles.queueTable}>
+          <thead>
+            <tr>
+              <th>Queue</th>
+              <th style={{ textAlign: 'center' }}>Status</th>
+              <th>Idle Nodes</th>
+              <th>Running Jobs</th>
+              <th>Waiting Jobs</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visibleQueues.map((queue, idx) => (
+              <tr key={idx}>
+                <td>{queue.name}</td>
+                <td>
+                  <div
+                    className={`${styles.statusBadge} ${
+                      queue.down ? styles.closed : styles.open
+                    }`}
+                  >
+                    {queue.down ? 'Closed' : 'Open'}
+                  </div>
+                </td>
+                <td>{queue.free}</td>
+                <td>{queue.running}</td>
+                <td>{queue.waiting}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
   );
 };

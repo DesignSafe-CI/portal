@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SystemStatusModal } from '../components/SystemStatusModal/SystemStatusModal';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Outlet } from 'react-router-dom';
-import { Alert, Layout, Flex, Space } from 'antd';
+import { Alert, Layout, Flex, Space, Button } from 'antd';
 import {
   AppsSubmissionForm,
   useGetAppParams,
@@ -38,6 +38,10 @@ export const AppsViewLayout: React.FC = () => {
     fontSize: 16,
   };
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const openModal = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
+
   return (
     <>
       <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
@@ -48,8 +52,10 @@ export const AppsViewLayout: React.FC = () => {
                 <AppIcon name={icon} />
                 {app.definition.notes.label || app.definition.id}
               </div>
-              <div style={{ display: 'inline-block' }}> 
-                <SystemStatusModal />
+              <div>
+                <Button type="link" onClick={openModal}>
+                  System Status
+                </Button>
                 {userGuideLink && (
                   <a
                     href={userGuideLink}
@@ -61,7 +67,6 @@ export const AppsViewLayout: React.FC = () => {
                   </a>
                 )}
               </div>
-              
             </Flex>
           </Header>
           {htmlApp ? (
@@ -94,6 +99,7 @@ export const AppsViewLayout: React.FC = () => {
         </Space>
       </Layout>
       <Outlet />
+      <SystemStatusModal isModalVisible={isModalVisible} onClose={closeModal} />
     </>
   );
 };
