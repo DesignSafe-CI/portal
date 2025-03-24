@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   useDataciteMetrics,
   useProjectDetail,
@@ -6,6 +6,42 @@ import {
 } from '@client/hooks';
 import { MetricsModal } from '../modals/MetricsModal';
 import styles from './ProjectCitation.module.css';
+
+const useClarivateMetrics = (doi: string, shouldFetch = true) => {
+  const [data, setData] = useState<{ citationCount: number | null }>({
+    citationCount: null,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    if (!doi || !shouldFetch) return;
+
+    const fetchClarivateMetrics = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/publications/clarivate/?doi=${doi}`);
+        const result = await response.json();
+        console.log('Clarivate result', result);
+
+        if (response.ok) {
+          setData({ citationCount: result.citation_count ?? 0 });
+        } else {
+          setIsError(true);
+        }
+      } catch (error) {
+        setIsError(true);
+      }
+      setIsLoading(false);
+    };
+
+    fetchClarivateMetrics();
+  }, [doi, shouldFetch]);
+
+  return { data, isLoading, isError };
+};
+
+export default useClarivateMetrics;
 
 export const ProjectCitation: React.FC<{
   projectId: string;
@@ -114,7 +150,15 @@ export const DownloadCitation: React.FC<{
       : '';
 
   const { data: dataciteMetrics } = useDataciteMetrics(doi, !preview);
+  const { data: clarivateMetrics, isLoading: isClarivateLoading, isError: isClarivateError } = useClarivateMetrics(doi, !preview);
 
+console.log('dataciteMetrics', dataciteMetrics);
+console.log('clarivateMetrics', clarivateMetrics);
+
+  if (isClarivateError) {
+    console.error("Error loading Clarivate metrics for DOI:", doi);
+  }
+  
   const openModal = () => {
     setIsModalVisible(true);
   };
@@ -167,8 +211,13 @@ export const DownloadCitation: React.FC<{
               {dataciteMetrics?.data.attributes.viewCount ?? '--'} Views
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <span className={styles['yellow-highlight']}>
-              {dataciteMetrics?.data.attributes.citationCount ?? '--'} Citations
+             <span className={styles['yellow-highlight']}>
+              {isClarivateLoading
+                ? ''
+                : isClarivateError
+                ? '--'
+                : clarivateMetrics?.citationCount ?? '--'}{' '}
+              Citations
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span
