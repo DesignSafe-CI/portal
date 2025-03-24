@@ -149,12 +149,16 @@ export const DownloadCitation: React.FC<{
       : '';
 
   const { data: dataciteMetrics } = useDataciteMetrics(doi, !preview);
-  const { data: clarivateMetrics, isLoading: isClarivateLoading, isError: isClarivateError } = useClarivateMetrics(doi, !preview);
+  const {
+    data: clarivateMetrics,
+    isLoading: isClarivateLoading,
+    isError: isClarivateError,
+  } = useClarivateMetrics(doi, !preview);
 
   if (isClarivateError) {
-    console.error("Error loading Clarivate metrics for DOI:", doi);
+    console.error('Error loading Clarivate metrics for DOI:', doi);
   }
-  
+
   const openModal = () => {
     setIsModalVisible(true);
   };
@@ -207,7 +211,7 @@ export const DownloadCitation: React.FC<{
               {dataciteMetrics?.data.attributes.viewCount ?? '--'} Views
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
-             <span className={styles['yellow-highlight']}>
+            <span className={styles['yellow-highlight']}>
               {isClarivateLoading
                 ? ''
                 : isClarivateError
