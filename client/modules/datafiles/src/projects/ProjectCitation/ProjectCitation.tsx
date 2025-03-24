@@ -151,9 +151,6 @@ export const DownloadCitation: React.FC<{
   const { data: dataciteMetrics } = useDataciteMetrics(doi, !preview);
   const { data: clarivateMetrics, isLoading: isClarivateLoading, isError: isClarivateError } = useClarivateMetrics(doi, !preview);
 
-console.log('dataciteMetrics', dataciteMetrics);
-console.log('clarivateMetrics', clarivateMetrics);
-
   if (isClarivateError) {
     console.error("Error loading Clarivate metrics for DOI:", doi);
   }
