@@ -22,7 +22,6 @@ const useClarivateMetrics = (doi: string, shouldFetch = true) => {
       try {
         const response = await fetch(`/api/publications/clarivate/?doi=${doi}`);
         const result = await response.json();
-        console.log('Clarivate result', result);
 
         if (response.ok) {
           setData({ citationCount: result.citation_count ?? 0 });
