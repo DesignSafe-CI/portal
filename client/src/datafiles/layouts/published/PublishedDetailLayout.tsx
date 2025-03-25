@@ -50,8 +50,14 @@ export const PublishedDetailLayout: React.FC = () => {
   const { data, isError } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
   const version = (projectId ?? '').split('v')[1];
+
+  // match /PRJ-XXXXvY and capture the version, Y
+  const pathRegex = /\/PRJ-[0-9]+v?([0-9]*)/;
+  const versionFromPath = (path ?? '').match(pathRegex)?.[1] || '1';
+
   const selectedVersion =
     version ||
+    versionFromPath ||
     searchParams.get('version') ||
     Math.max(...allVersions).toString();
 
