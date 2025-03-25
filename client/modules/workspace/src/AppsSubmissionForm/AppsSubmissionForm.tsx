@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Layout, Form, Col, Row, Alert, Button } from 'antd';
+import { Layout, Form, Col, Row, Alert, Button, Space } from 'antd';
 import { z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { JobSubmitButton } from '../JobSubmitButton/JobSubmitButton';
 import {
   useGetAppsSuspense,
   useGetJobSuspense,
@@ -19,6 +19,8 @@ import {
   TJobBody,
   useGetAllocationsSuspense,
   TTapisJob,
+  useInteractiveModalContext,
+  TInteractiveModalContext,
 } from '@client/hooks';
 import { AppsSubmissionDetails } from '../AppsSubmissionDetails/AppsSubmissionDetails';
 import { AppsWizard } from '../AppsWizard/AppsWizard';
@@ -54,6 +56,7 @@ import {
   mergeConfigurationDefaultsWithJobData,
   mergeParameterSetDefaultsWithJobData,
   mergeInputDefaultsWithJobData,
+  getOnDemandEnvVariables,
 } from '../utils';
 
 export const AppsSubmissionForm: React.FC = () => {
@@ -71,6 +74,9 @@ export const AppsSubmissionForm: React.FC = () => {
   const { data: jobData } = useGetJobSuspense('select', { uuid: jobUUID }) as {
     data: TTapisJob;
   };
+
+  const [, setInteractiveModalDetails] =
+    useInteractiveModalContext() as TInteractiveModalContext;
 
   const { definition, license, defaultSystemNeedsKeys } = app;
 
@@ -173,12 +179,14 @@ export const AppsSubmissionForm: React.FC = () => {
   type FieldNameUnion = keyof typeof fieldValues;
 
   const getSteps = (): TStep => {
-    const formSteps: TStep = {
-      configuration: getConfigurationStep(configuration.fields),
-      ...(definition.notes.isInteractive
-        ? {}
-        : { outputs: getOutputsStep(outputs.fields) }),
-    };
+    const formSteps: TStep = {};
+
+    if (configuration.fields && Object.keys(configuration.fields).length) {
+      formSteps.configuration = getConfigurationStep(configuration.fields);
+    }
+    if (!definition.notes.isInteractive) {
+      formSteps.outputs = getOutputsStep(outputs.fields);
+    }
     if (fileInputs.fields && Object.keys(fileInputs.fields).length) {
       formSteps.inputs = getInputsStep(fileInputs.fields);
     }
@@ -216,16 +224,16 @@ export const AppsSubmissionForm: React.FC = () => {
     outputs: outputs.fields,
   });
 
-  const initialSteps = useMemo(
-    () => getSteps(),
-    [
-      fileInputs.fields,
-      parameterSet.fields,
-      configuration.fields,
-      outputs.fields,
-      fields,
-    ]
-  );
+  const initialSteps = useMemo(() => {
+    const steps = getSteps();
+    return Object.keys(steps).length > 0 ? steps : {};
+  }, [
+    fileInputs.fields,
+    parameterSet.fields,
+    configuration.fields,
+    outputs.fields,
+    fields,
+  ]);
 
   const getInitialCurrentStep = (steps: TStep) => {
     if (steps.inputs) return 'inputs';
@@ -310,23 +318,25 @@ export const AppsSubmissionForm: React.FC = () => {
   }
 
   // Note: currently configuration is the only
-  // step that needs. This can be more generic
+  // step that needs update. This can be more generic
   // in future if the fields shape is same between
   // Step and Submission Detail View (mostly related to env vars)
   useEffect(() => {
-    const updatedConfigurationStep = getConfigurationStep(
-      fields.configuration as { [key: string]: TField }
-    );
+    if (configuration.fields && Object.keys(configuration.fields).length) {
+      const updatedConfigurationStep = getConfigurationStep(
+        fields.configuration as { [key: string]: TField }
+      );
 
-    const updatedSteps: TStep = {
-      ...steps,
-      configuration: {
-        ...steps.configuration,
-        ...updatedConfigurationStep,
-      },
-    };
+      const updatedSteps: TStep = {
+        ...steps,
+        configuration: {
+          ...steps.configuration,
+          ...updatedConfigurationStep,
+        },
+      };
 
-    setSteps(updatedSteps);
+      setSteps(updatedSteps);
+    }
   }, [fields]);
 
   // next step transition does not block on invalid fields
@@ -367,6 +377,13 @@ export const AppsSubmissionForm: React.FC = () => {
       setPushKeysSystem(submitResult.execSys);
     } else if (isSuccess) {
       reset(initialValues);
+      if (definition.notes.isInteractive) {
+        setInteractiveModalDetails({
+          show: true,
+          openedBySubmit: true,
+          uuid: submitResult.uuid,
+        });
+      }
     }
   }, [submitResult]);
 
@@ -452,6 +469,14 @@ export const AppsSubmissionForm: React.FC = () => {
         }
       )
     );
+    if (jobData.job.parameterSet['envVariables']) {
+      jobData.job.parameterSet['envVariables'] = jobData.job.parameterSet[
+        'envVariables'
+      ].concat(getOnDemandEnvVariables(definition));
+    } else {
+      jobData.job.parameterSet['envVariables'] =
+        getOnDemandEnvVariables(definition);
+    }
 
     // Add allocation scheduler option
     if (jobData.job.allocation) {
@@ -486,9 +511,14 @@ export const AppsSubmissionForm: React.FC = () => {
     ?.keyservice ? (
     <span>
       For help,{' '}
-      <Link className="wb-link" to={`tickets/create`}>
+      <a
+        rel="noopener noreferrer"
+        target="_blank"
+        className="wb-link"
+        href="https://www.designsafe-ci.org/help/submit-ticket/"
+      >
         submit a ticket.
-      </Link>
+      </a>
     </span>
   ) : (
     <span>
@@ -507,20 +537,22 @@ export const AppsSubmissionForm: React.FC = () => {
 
   return (
     <>
-      {submitResult && !submitResult.execSys && (
-        <Alert
-          message={
-            <>
-              Job submitted successfully. Monitor its progress in{' '}
-              <NavLink to={'/history'}>Job Status</NavLink>.
-            </>
-          }
-          type="success"
-          closable
-          showIcon
-          style={{ marginBottom: '1rem' }}
-        />
-      )}
+      {submitResult &&
+        !submitResult.execSys &&
+        !definition.notes.isInteractive && (
+          <Alert
+            message={
+              <>
+                Job submitted successfully. Monitor its progress in{' '}
+                <NavLink to={'/history'}>Job Status</NavLink>.
+              </>
+            }
+            type="success"
+            closable
+            showIcon
+            style={{ marginBottom: '1rem' }}
+          />
+        )}
       {missingAllocation && (
         <Alert
           message={
@@ -596,23 +628,51 @@ export const AppsSubmissionForm: React.FC = () => {
           >
             <fieldset disabled={readOnly}>
               <Row gutter={[64, 16]} align="top">
-                <Col span={14}>
-                  <AppsWizard
-                    step={steps[current]}
-                    handlePreviousStep={handlePreviousStep}
-                    handleNextStep={handleNextStep}
-                  />
-                </Col>
-                <Col span={10}>
-                  <AppsSubmissionDetails
-                    schema={schema}
-                    fields={fields}
-                    isSubmitting={isPending}
-                    current={current}
-                    setCurrent={setCurrent}
-                    definition={definition}
-                  />
-                </Col>
+                {Object.keys(steps || {}).length === 0 ? (
+                  <Col style={{ marginTop: '32px', marginLeft: '32px' }}>
+                    <Space direction="vertical" size="large">
+                      <div>
+                        {isSuccess ? (
+                          <span>
+                            Session has been launched. You can view status in{' '}
+                            <strong>Job Status</strong>.
+                          </span>
+                        ) : (
+                          definition.notes.jobLaunchDescription ??
+                          'This job is pre-configured. No input is necessary to submit the job.'
+                        )}
+                      </div>
+                      <div>
+                        <JobSubmitButton
+                          loading={isPending}
+                          interactive={definition.notes.isInteractive}
+                          disabled={isPending || isSuccess}
+                          success={isSuccess}
+                        />
+                      </div>
+                    </Space>
+                  </Col>
+                ) : (
+                  <>
+                    <Col span={14}>
+                      <AppsWizard
+                        step={steps[current]}
+                        handlePreviousStep={handlePreviousStep}
+                        handleNextStep={handleNextStep}
+                      />
+                    </Col>
+                    <Col span={10}>
+                      <AppsSubmissionDetails
+                        schema={schema}
+                        fields={fields}
+                        isSubmitting={isPending}
+                        current={current}
+                        setCurrent={setCurrent}
+                        definition={definition}
+                      />
+                    </Col>
+                  </>
+                )}
               </Row>
             </fieldset>
           </Form>

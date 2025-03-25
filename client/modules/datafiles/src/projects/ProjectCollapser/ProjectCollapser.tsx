@@ -17,8 +17,8 @@ export const ProjectCollapse: React.FC<
         if (header.length > 0) {
           const headerElement = header[0] as HTMLElement;
           headerElement.style.backgroundColor =
-            PROJECT_COLORS[entityName]['fill'];
-          headerElement.style.border = `1px solid ${PROJECT_COLORS[entityName]['outline']}`;
+            PROJECT_COLORS[entityName]?.['fill'];
+          headerElement.style.border = `1px solid ${PROJECT_COLORS[entityName]?.['outline']}`;
         }
       }
     },
@@ -33,9 +33,11 @@ export const ProjectCollapse: React.FC<
       style={{ flex: 1 }}
       items={[
         {
+          forceRender: true,
           label: (
             <span>
-              {DISPLAY_NAMES[entityName]} | <strong>{title}</strong>
+              {DISPLAY_NAMES[entityName] ?? 'Collection'} |{' '}
+              <strong>{title}</strong>
             </span>
           ),
           children,

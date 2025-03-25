@@ -4,6 +4,8 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import CheckboxSelectMultiple
+
+from designsafe.apps.workspace.forms import AppVariantForm
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from designsafe.apps.workspace.models.app_entries import (
     AppListingEntry,
@@ -23,35 +25,50 @@ class AppVariantInline(admin.StackedInline):
     extra = 0
     model = AppVariant
     fk_name = "bundle"
+    form = AppVariantForm
+
+    readonly_fields = ["href"]
 
     def get_fieldsets(self, request, obj=None):
         return [
             (
-                "Tapis App information",
+                None,
                 {
                     "fields": (
                         "app_type",
                         "app_id",
-                        "version",
-                    )
+                    ),
+                    "description": 'For the "App type" chosen, edit the corresponding set of fields below',
                 },
             ),
             (
-                "Display information",
+                "Tapis App",
+                {
+                    "fields": (
+                        "version",
+                        "href",
+                    ),
+                    "description": "Identifies the app version in the Workspace",
+                },
+            ),
+            (
+                "HTML or External app",
+                {
+                    "classes": ["collapse"],
+                    "fields": ["external_href", "html",],
+                    "description": "Defines link on CMS app page and display content in Workspace",
+                },
+            ),
+            (
+                "Display",
                 {
                     "fields": (
                         "label",
                         "description",
                         "enabled",
                         "priority",
-                    )
-                },
-            ),
-            (
-                "HTML App Body for app_type: HTML",
-                {
-                    "classes": ["collapse"],
-                    "fields": ["html"],
+                    ),
+                    "description": "Defines content display on CMS app list and in the Workspace app tray",
                 },
             ),
         ]

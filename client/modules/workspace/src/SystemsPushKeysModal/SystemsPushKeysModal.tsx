@@ -56,14 +56,10 @@ export const SystemsPushKeysModalBody: React.FC<{
         message={
           <>
             To proceed, you must authenticate to this system with a six-digit
-            one time passcode at least once. If you have not yet created an MFA
-            pairing for your account, navigate to your{' '}
-            <a href="https://tacc.utexas.edu/portal/account" target="_blank">
-              TACC User Portal Account
-            </a>
-            . A public key will be pushed to your <code>authorized_keys</code>{' '}
-            file on the system below. This will allow you to access this system
-            from this portal.
+            one time passcode at least once using the same MFA App you used to
+            log in to DesignSafe. A public key will be pushed to your{' '}
+            <code>authorized_keys</code> file on the system below. This will
+            allow you to access this system from this portal.
           </>
         }
         showIcon

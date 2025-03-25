@@ -78,7 +78,7 @@ def upload(client, system, path, uploaded_file, *args, **kwargs):
     client.files().create(body=file_meta, media_body=media).execute()
 
 
-def mkdir(client, system, path, dir_name):
+def mkdir(client, system, path, dir_name, *args, **kwargs):
     if not path:
         path = 'root'
     file_metadata = {
@@ -150,7 +150,7 @@ def preview(client, system, path, *args, **kwargs):
     return {'href': url, 'fileType': file_type}
 
 
-def copy(client, src_system, src_path, dest_system, dest_path, filename, filetype='file', *args):
+def copy(client, src_system, src_path, dest_system, dest_path, filename, filetype='file', *args, **kwargs):
     from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
     if not src_path:
         src_path = 'root'

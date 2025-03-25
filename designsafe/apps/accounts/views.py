@@ -11,12 +11,10 @@ from django.utils.translation import gettext_lazy as _
 from designsafe.apps.accounts import forms, integrations
 from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
                                              NotificationPreferences)
-from designsafe.apps.auth.tasks import check_or_configure_system_and_user_directory, get_systems_to_configure
 from designsafe.apps.accounts.tasks import create_report
 from pytas.http import TASClient
 from pytas.models import User as TASUser
 import logging
-import json
 import requests
 import re
 from termsandconditions.models import TermsAndConditions
@@ -49,7 +47,7 @@ def manage_profile(request):
         logger.info('exception e:{} {}'.format(type(e), e))
 
     context = {
-        'title': 'Account Profile',
+        'title': 'Manage Account',
         'profile': user_profile,
         'ds_profile': ds_profile,
         'demographics': demographics,
@@ -353,7 +351,7 @@ def profile_edit(request):
         form = forms.UserProfileForm(initial=tas_user)
 
     context = {
-        'title': 'Account Profile',
+        'title': 'Manage Account',
         'form': form,
         'pro_form': pro_form
     }
@@ -467,12 +465,6 @@ def email_confirmation(request, code=None):
                 user = tas.get_user(username=username)
                 if tas.verify_user(user['id'], code, password=password):
                     logger.info('TAS Account activation succeeded.')
-                    systems_to_configure = get_systems_to_configure(username)
-                    for system in systems_to_configure:
-                        check_or_configure_system_and_user_directory.apply_async(args=(user.username,
-                                                                                       system["system_id"],
-                                                                                       system["path"],
-                                                                                       system["create_path"]))
                     return HttpResponseRedirect(reverse('designsafe_accounts:manage_profile'))
                 else:
                     messages.error(request,
@@ -481,7 +473,7 @@ def email_confirmation(request, code=None):
                                    '<a href="/help">open a support ticket</a>.')
                     form = forms.EmailConfirmationForm(
                         initial={'code': code, 'username': username})
-            except:
+            except Exception:
                 logger.exception('TAS Account activation failed')
                 form.add_error('__all__',
                                'Account activation failed. Please confirm your '

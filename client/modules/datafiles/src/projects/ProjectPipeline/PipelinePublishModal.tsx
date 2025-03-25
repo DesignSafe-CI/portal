@@ -339,11 +339,19 @@ export const PipelinePublishModal: React.FC<{
             This submission represents my original work and meets the policies
             and requirements established by the DesignSafe-CI{' '}
             <a
-              href="/rw/user-guides/data-publication-guidelines/"
+              href="/user-guide/curating/policies/"
               target="_blank"
               aria-describedby="msg-open-new-window"
             >
-              Policies and Best Practices.
+              Policies
+            </a>
+            and
+            <a
+              href="user-guide/curating/bestpractices/"
+              target="_blank"
+              aria-describedby="msg-open-new-window"
+            >
+              Best Practices
             </a>
             I grant the Data Depot Repository (DDR) all required permissions and
             licenses to make the work I publish in the DDR available for
@@ -355,11 +363,19 @@ export const PipelinePublishModal: React.FC<{
               Disseminate the content in a variety of distribution formats
               according to the DDR{' '}
               <a
-                href="/rw/user-guides/data-publication-guidelines/"
+                href="/user-guide/curating/policies/"
                 target="_blank"
                 aria-describedby="msg-open-new-window"
               >
-                Policies and Best Practices.
+                Policies
+              </a>
+              and
+              <a
+                href="/user-guide/curating/bestpractices/"
+                target="_blank"
+                aria-describedby="msg-open-new-window"
+              >
+                Best Practices
               </a>{' '}
             </li>
             <li>Promote and advertise the content publicly in DesignSafe.</li>
@@ -397,7 +413,7 @@ export const PipelinePublishModal: React.FC<{
             If applicable, I warrant that I am following the IRB agreements in
             place for my research and following{' '}
             <a
-              href="/rw/user-guides/curating-publishing-projects/best-practices/data-publication/"
+              href="/user-guide/curating/policies/#data-publication-and-usage/"
               target="_blank"
               aria-describedby="msg-open-new-window"
             >

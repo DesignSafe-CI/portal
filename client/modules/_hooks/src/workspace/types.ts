@@ -1,6 +1,7 @@
 export type TParameterSetNotes = {
   isHidden?: boolean;
   fieldType?: string;
+  inputType?: string;
   validator?: {
     regex: string;
     message: string;
@@ -21,7 +22,7 @@ export type TJobKeyValuePair = {
   key: string;
   value: string;
   description?: string;
-  inputMode: string;
+  inputMode?: string;
   notes?: TParameterSetNotes;
 };
 
@@ -113,6 +114,8 @@ export type TTapisApp = {
     queueFilter?: string[];
     hideQueue?: boolean;
     hideAllocation?: boolean;
+    hideMaxMinutes?: boolean;
+    jobLaunchDescription?: string;
   };
   uuid: string;
   deleted: boolean;
@@ -191,7 +194,7 @@ export type TTapisJob = {
   stageAppTransactionId?: string;
   status: string;
   subscriptions: string;
-  tags: string[];
+  tags: string[] | null;
   tapisQueue: string;
   tenant: string;
   uuid: string;

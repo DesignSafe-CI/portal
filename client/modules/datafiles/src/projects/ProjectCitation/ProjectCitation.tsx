@@ -14,7 +14,9 @@ export const ProjectCitation: React.FC<{
   const { data } = useProjectDetail(projectId);
   const entityDetails = data?.entities.find((e) => e.uuid === entityUuid);
   const authors =
-    entityDetails?.value.authors?.filter((a) => a.fname && a.lname) ?? [];
+    entityDetails?.value.authors?.filter(
+      (a) => a.fname && a.lname && a.authorship !== false
+    ) ?? [];
   if (!data || !entityDetails) return null;
   return (
     <div>
@@ -27,8 +29,12 @@ export const ProjectCitation: React.FC<{
             : `${author.fname[0]}. ${author.lname}`
         )
         .join(', ')}
-      . "{entityDetails.value.title}", in <i>{data.baseProject.value.title}</i>.
-      DesignSafe-CI. (DOI will appear after publication)
+      .{' '}
+      {data.baseProject.value.projectType !== 'other' && (
+        <span>"{entityDetails.value.title}", in </span>
+      )}
+      <i>{data.baseProject.value.title}</i>. DesignSafe-CI. (DOI will appear
+      after publication)
     </div>
   );
 };
@@ -44,7 +50,8 @@ export const PublishedCitation: React.FC<{
     (child) => child.uuid === entityUuid && child.version === version
   );
 
-  const authors = entityDetails?.value.authors ?? [];
+  const authors =
+    entityDetails?.value.authors?.filter((a) => a.authorship !== false) ?? [];
   if (!data || !entityDetails) return null;
 
   const doi =
@@ -63,9 +70,12 @@ export const PublishedCitation: React.FC<{
             : `${author.fname[0]}. ${author.lname}`
         )
         .join(', ')}{' '}
-      ({new Date(entityDetails.publicationDate).getFullYear()}). "
-      {entityDetails.value.title}", in <i>{data.baseProject.title}</i>.
-      DesignSafe-CI.{' '}
+      ({new Date(entityDetails.publicationDate).getFullYear()}).{' '}
+      {data.baseProject.projectType !== 'other' && (
+        <span>"{entityDetails.value.title}", in </span>
+      )}
+      <i>{data.baseProject.title}</i>
+      {(version ?? 1) > 1 && <span> [Version {version}]</span>}. DesignSafe-CI.{' '}
       {doi && (
         <a
           href={`https://doi.org/${doi}`}

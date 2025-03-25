@@ -72,6 +72,10 @@ def ingest_entities_by_name(name):
     entities = iterate_entities(name)
     for entity in entities:
         schema_model = SCHEMA_MAPPING[entity["name"]]
+        if entity["value"].get("fileObjs"):
+            entity["value"]["fileObjs"] = [
+                e for e in entity["value"]["fileObjs"] if e.get("path", None)
+            ]
         try:
             value_model = schema_model.model_validate(entity["value"])
         except ValidationError as err:
@@ -124,7 +128,7 @@ def ingest_graphs():
 def fix_authors(meta: ProjectMetadata):
     """Ensure that authors contain complete name/institution information."""
     base_project = meta.base_project
-    print(meta.project_id)
+
     def get_complete_author(partial_author):
         if partial_author.get("name") and not partial_author.get("guest"):
             author_info = next(
@@ -160,6 +164,56 @@ def fix_authors(meta: ProjectMetadata):
     meta.save()
 
 
+def fix_guest_members():
+    """Fix guest members if they have not been added to the overall users field"""
+    base_projects = ProjectMetadata.objects.filter(name="designsafe.project")
+    project_schema = SCHEMA_MAPPING["designsafe.project"]
+    count = 0
+    for prj in base_projects:
+        existing_users = prj.value["users"]
+        legacy_guests = prj.value.get("guestMembers", [])
+
+        if legacy_guests:
+            print(prj.project_id)
+            for guest in legacy_guests:
+                already_added = any(
+                    (
+                        u
+                        for u in existing_users
+                        if (
+                            u["role"] == "guest"
+                            and u["fname"] == guest["fname"]
+                            and u["lname"] == guest["lname"]
+                            and u.get("email", "") == guest.get("email", "")
+                        )
+                    )
+                )
+                if not already_added:
+                    prj.value["users"].append(
+                        {
+                            "role": "guest",
+                            "inst": guest.get("inst", ""),
+                            "fname": guest.get("fname", ""),
+                            "lname": guest.get("lname", ""),
+                            "email": guest.get("email", ""),
+                        }
+                    )
+            project_schema.model_validate(prj.value)
+
+            ProjectMetadata.objects.filter(uuid=prj.uuid).update(value=prj.value)
+            count += 1
+    print(f"{count} projects migrated.")
+
+
+def fix_modified_dates():
+    """Set last_updated time to match existing metadata"""
+    name = "designsafe.project"
+    for project_meta in iterate_entities(name):
+        ProjectMetadata.objects.filter(uuid=project_meta["uuid"]).update(
+            last_updated=project_meta["lastUpdated"]
+        )
+
+
 def ingest_v2_projects():
     """Perform a complete ingest of Tapis V2 projects into the db."""
     ingest_base_projects()
@@ -167,6 +221,7 @@ def ingest_v2_projects():
     ingest_graphs()
     for meta in ProjectMetadata.objects.exclude(name="designsafe.project.graph"):
         fix_authors(meta)
+    fix_modified_dates()
 
 
 def ingest_publications():
@@ -209,13 +264,33 @@ def ingest_publications():
 def ingest_tombstones():
     """Ingest Elasticsearch tombstones into the db"""
 
+    tombstone_ids = [
+        "PRJ-1945",
+        "PRJ-1895",
+        "PRJ-2329",
+        "PRJ-2016",
+        "PRJ-2227",
+        "PRJ-2420",
+        "PRJ-3815",
+        "PRJ-3908",
+        "PRJ-4151",
+        "PRJ-4014",
+    ]
     all_pubs = (
-        IndexedPublication.search().filter(Q("term", status="tombstone")).execute().hits
+        IndexedPublication.search()
+        .filter(
+            Q("term", status="tombstone")
+            | Q("terms", **{"projectId._exact": tombstone_ids})
+        )
+        .execute()
+        .hits
     )
     print(all_pubs)
     for pub in all_pubs:
         try:
             pub_graph = combine_pub_versions(pub["projectId"])
+            for published_entity_node_id in pub_graph.successors("NODE_ROOT"):
+                pub_graph.nodes[published_entity_node_id]["value"]["tombstone"] = True
             latest_version: int = IndexedPublication.max_revision(pub["projectId"]) or 1
             pub_base = next(
                 (

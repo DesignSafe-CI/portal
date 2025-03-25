@@ -3,18 +3,19 @@
 import logging
 import json
 import networkx as nx
-from django.db import models
 from django.http import HttpRequest, JsonResponse
 from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import IndexedPublication
-from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     publish_project_async,
     amend_publication_async,
 )
+from designsafe.apps.api.projects_v2.views import get_project_for_user
+from designsafe.apps.api.utils import get_client_ip
 
 logger = logging.getLogger(__name__)
+metrics = logging.getLogger("metrics")
 
 
 def handle_search(query_opts: dict, offset=0, limit=100):
@@ -111,10 +112,12 @@ def handle_search(query_opts: dict, offset=0, limit=100):
     if search_string := query_opts["q"]:
         qs_query = Q(
             "query_string",
-            query=search_string,
+            # Elasticsearch can't parse query strings with unescaped slashes
+            query=search_string.replace("/", "\\/"),
             default_operator="AND",
             type="cross_fields",
             fields=[
+                "nodes.value.dois",
                 "nodes.value.description",
                 "nodes.value.keywords",
                 "nodes.value.title",
@@ -128,7 +131,13 @@ def handle_search(query_opts: dict, offset=0, limit=100):
                 "nodes.value.authors.inst",
             ],
         )
-        term_query = Q({"term": {"nodes.value.projectId.keyword": search_string}})
+        term_query = Q(
+            {
+                "term": {
+                    "nodes.value.projectId.keyword": search_string.replace("/", "\\/")
+                }
+            }
+        )
         query = query.filter(qs_query | term_query)
 
     hits = (
@@ -166,17 +175,33 @@ class PublicationListingView(BaseApiView):
             "data-type": request.GET.get("data-type", None),
         }
 
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.listing",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"query": query_opts},
+            },
+        )
+
         has_query = any(query_opts.values())
         if has_query:
             hits, total = handle_search(query_opts, offset, limit)
             publications_query = (
-                Publication.objects.filter(project_id__in=hits)
+                Publication.objects.filter(project_id__in=hits, is_published=True)
                 .defer("tree")
                 .order_by("-created")
             )
             publications = publications_query
         else:
-            publications_query = Publication.objects.defer("tree").order_by("-created")
+            publications_query = (
+                Publication.objects.filter(is_published=True)
+                .defer("tree")
+                .order_by("-created")
+            )
             total = publications_query.count()
             publications = publications_query[offset : offset + limit]
         result = [
@@ -207,6 +232,18 @@ class PublicationDetailView(BaseApiView):
         except Publication.DoesNotExist as exc:
             raise ApiException(status=404, message="Publication not found.") from exc
 
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.detail",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"project_id": project_id},
+            },
+        )
+
         pub_tree: nx.DiGraph = nx.node_link_graph(pub_meta.tree)
         file_tags = []
         for file_tag_arr in [
@@ -232,20 +269,25 @@ class PublicationPublishView(BaseApiView):
         request_body = json.loads(request.body)
         logger.debug(request_body)
 
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.publish",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": request_body},
+            },
+        )
+
         project_id = request_body.get("projectId", None)
         entities_to_publish = request_body.get("entityUuids", None)
 
         if (not project_id) or (not entities_to_publish):
             raise ApiException("Missing project ID or entity list.", status=400)
 
-        try:
-            user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        get_project_for_user(project_id, user)
 
         publish_project_async.apply_async([project_id, entities_to_publish])
         logger.debug(project_id)
@@ -262,6 +304,18 @@ class PublicationVersionView(BaseApiView):
         request_body = json.loads(request.body)
         logger.debug(request_body)
 
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.version",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": request_body},
+            },
+        )
+
         project_id = request_body.get("projectId", None)
         entities_to_publish = request_body.get("entityUuids", None)
         version_info = request_body.get("versionInfo", None)
@@ -269,14 +323,7 @@ class PublicationVersionView(BaseApiView):
         if (not project_id) or (not entities_to_publish):
             raise ApiException("Missing project ID or entity list.", status=400)
 
-        try:
-            user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        get_project_for_user(project_id, user)
 
         pub_root = Publication.objects.get(project_id=project_id)
         pub_tree: nx.DiGraph = nx.node_link_graph(pub_root.tree)
@@ -301,19 +348,24 @@ class PublicationAmendView(BaseApiView):
         request_body = json.loads(request.body)
         logger.debug(request_body)
 
+        metrics.info(
+            "Publications",
+            extra={
+                "user": request.user.username,
+                "sessionId": getattr(request.session, "session_key", ""),
+                "operation": "publications.amend",
+                "agent": request.META.get("HTTP_USER_AGENT"),
+                "ip": get_client_ip(request),
+                "info": {"body": request_body},
+            },
+        )
+
         project_id = request_body.get("projectId", None)
 
         if not project_id:
             raise ApiException("Missing project ID.", status=400)
 
-        try:
-            user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        get_project_for_user(project_id, user)
 
         amend_publication_async.apply_async([project_id])
         logger.debug(project_id)

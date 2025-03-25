@@ -1,6 +1,11 @@
 import { DatafilesToolbar, FileListing } from '@client/datafiles';
 import { BaseFileListingBreadcrumb } from '@client/common-components';
-import { useAuthenticatedUser, useFileListingRouteParams } from '@client/hooks';
+import {
+  useAuthenticatedUser,
+  useFileListingRouteParams,
+  USER_MYDATA_SYSTEM,
+  USER_WORK_SYSTEM,
+} from '@client/hooks';
 import { Button, Form, Input, Layout } from 'antd';
 import React from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
@@ -37,13 +42,11 @@ export const FileListingLayout: React.FC = () => {
   const { api, path, scheme, system } = useFileListingRouteParams();
   const { user } = useAuthenticatedUser();
 
-  const isUserHomeSystem = [
-    'designsafe.storage.default',
-    'designsafe.storage.frontera.work',
-  ].includes(system);
-
   const redirectHome =
-    user?.username && !path && api === 'tapis' && isUserHomeSystem;
+    user?.username && !path && api === 'tapis' && system === USER_MYDATA_SYSTEM;
+
+  const redirectWork =
+    user?.username && !path && api === 'tapis' && system === USER_WORK_SYSTEM;
   return (
     <Layout style={{ gap: '5px', minWidth: '500px' }}>
       <DatafilesToolbar searchInput={<FileListingSearchBar />} />
@@ -66,6 +69,12 @@ export const FileListingLayout: React.FC = () => {
           {redirectHome && (
             <Navigate
               to={`../${encodeURIComponent('/' + user.username)}`}
+              replace
+            />
+          )}
+          {redirectWork && (
+            <Navigate
+              to={`../${encodeURIComponent('/work/' + user.homedir)}`}
               replace
             />
           )}

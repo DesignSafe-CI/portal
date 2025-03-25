@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
+import useWebSocket from 'react-use-websocket';
 import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,6 +13,8 @@ import {
   TJobPostOperations,
   useReadNotifications,
   TGetNotificationsResponse,
+  useInteractiveModalContext,
+  TInteractiveModalContext,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -25,7 +28,6 @@ import {
   isInteractiveJob,
   isTerminalState,
 } from '../utils';
-import { InteractiveSessionModal } from '../InteractiveSessionModal';
 import styles from './JobsListing.module.css';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
 import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
@@ -58,16 +60,24 @@ export const JobActionButton: React.FC<{
 
 const InteractiveSessionButtons: React.FC<{
   uuid: string;
-  interactiveSessionLink: string;
+  interactiveSessionLink?: string;
   message?: string;
 }> = ({ uuid, interactiveSessionLink, message }) => {
-  const [interactiveModalState, setInteractiveModalState] = useState(false);
+  const [, setInteractiveModalDetails] =
+    useInteractiveModalContext() as TInteractiveModalContext;
 
   return (
     <>
       <SecondaryButton
         size="small"
-        onClick={() => setInteractiveModalState(true)}
+        onClick={() =>
+          setInteractiveModalDetails({
+            show: true,
+            interactiveSessionLink,
+            message,
+            uuid: uuid,
+          })
+        }
       >
         Open
       </SecondaryButton>
@@ -76,12 +86,6 @@ const InteractiveSessionButtons: React.FC<{
         operation="cancelJob"
         title="End"
         size="small"
-      />
-      <InteractiveSessionModal
-        isOpen={interactiveModalState}
-        interactiveSessionLink={interactiveSessionLink}
-        message={message}
-        onCancel={() => setInteractiveModalState(false)}
       />
     </>
   );
@@ -96,12 +100,16 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     markRead: false,
   });
   const { mutate: readNotifications } = useReadNotifications();
+  const { sendMessage } = useWebSocket(
+    `wss://${window.location.host}/ws/websockets/`
+  );
 
   // mark all as read on component mount
   useEffect(() => {
     readNotifications({
       eventTypes: ['interactive_session_ready', 'job'],
     });
+    sendMessage('markAllNotificationsAsRead');
 
     // update unread count state
     queryClient.setQueryData(
@@ -170,7 +178,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
                     <JobActionButton
                       uuid={job.uuid}
                       operation="resubmitJob"
-                      title="Resubmit"
+                      title="Relaunch"
                       size="small"
                     />
                   ) : (
@@ -242,9 +250,5 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
     [interactiveSessionNotifs]
   );
 
-  return (
-    <>
-      <JobsListingTable columns={columns} {...tableProps} />
-    </>
-  );
+  return <JobsListingTable columns={columns} {...tableProps} />;
 };

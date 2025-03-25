@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
+apiClient.defaults.timeout = 5 * 60 * 1000; // 5 minutes
+
 type TUploadFileParam = {
   api: string;
   system: string;

@@ -1,5 +1,5 @@
 import { TPublicationListingItem, usePublishedListing } from '@client/hooks';
-import { Button, Modal, Table, TableColumnsType, Tag } from 'antd';
+import { Alert, Button, Modal, Table, TableColumnsType, Tag } from 'antd';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -84,7 +84,13 @@ const columns: TableColumnsType<TPublicationListingItem> = [
   },
   {
     render: (_, record) => {
-      return <span>{`${record.keywords.join(', ')}`}</span>;
+      return (
+        <span>{`${record.keywords
+          .map((k) => k.split(';')) // Some old projects are semicolon-delimited
+          .flat()
+          .slice(0, 3)
+          .join(', ')}`}</span>
+      );
     },
     width: '15%',
     title: 'Keywords',
@@ -99,7 +105,7 @@ const columns: TableColumnsType<TPublicationListingItem> = [
 export const PublishedListing: React.FC = () => {
   const limit = 100;
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const { data, isLoading } = usePublishedListing(currentPage, limit);
+  const { data, isLoading, error } = usePublishedListing(currentPage, limit);
 
   return (
     <Table
@@ -116,6 +122,32 @@ export const PublishedListing: React.FC = () => {
         pageSize: 100,
         hideOnSinglePage: true,
         onChange: (page) => setCurrentPage(page),
+      }}
+      locale={{
+        emptyText: isLoading ? (
+          <div style={{ padding: '50px' }}>&nbsp;</div>
+        ) : (
+          <>
+            {error && (
+              <Alert
+                showIcon
+                type="error"
+                description={
+                  <span>
+                    An unexpected error occurred while retrieving publications.
+                  </span>
+                }
+              />
+            )}
+            {!error && (
+              <Alert
+                showIcon
+                type="info"
+                description={<span>No publications found.</span>}
+              />
+            )}
+          </>
+        ),
       }}
     ></Table>
   );

@@ -3,6 +3,7 @@ from django.db import models
 from django.db import connections, DatabaseError
 from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
+from pytas.http import TASClient
 import logging
 import six
 
@@ -74,8 +75,12 @@ class DesignSafeProfile(models.Model):
     professional_level = models.CharField(max_length=256, default=None, null=True)
     research_activities = models.ManyToManyField(DesignSafeProfileResearchActivities)
     institution = models.CharField(max_length=256, default=None, null=True)
+    homedir = models.CharField(max_length=256, default=None, null=True)
     update_required = models.BooleanField(default=True)
     last_updated = models.DateTimeField(auto_now=True, null=True)
+
+    # Default to False. If PORTAL_USER_ACCOUNT_SETUP_STEPS is empty, setup_complete will be set to True on first login
+    setup_complete = models.BooleanField(default=False)
 
     def send_mail(self, subject, body=None):
         send_mail(subject,
@@ -83,6 +88,22 @@ class DesignSafeProfile(models.Model):
                   settings.DEFAULT_FROM_EMAIL,
                   [self.user.email],
                   html_message=body)
+
+    def get_homedir(self):
+        """
+        Get a user's homedir.
+        If it does not exist in the database yet, retrieve and cache it.
+        """
+        if self.homedir:
+            return self.homedir
+
+        tas = TASClient()
+        tas_user = tas.get_user(username=self.user.username)
+
+        homedir = tas_user.get("homeDirectory", "")
+        self.homedir = homedir
+        self.save()
+        return homedir
 
 
 class NotificationPreferences(models.Model):

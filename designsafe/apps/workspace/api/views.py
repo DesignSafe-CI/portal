@@ -5,14 +5,14 @@
 
 import logging
 import json
+from urllib.parse import urlparse
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
-from django.contrib.auth import get_user_model
 from django.urls import reverse
-from pytas.http import TASClient
+from tapipy.tapis import TapisResult
 from tapipy.errors import InternalServerError, UnauthorizedError
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.users.utils import get_user_data
@@ -25,7 +25,7 @@ from designsafe.apps.workspace.models.app_entries import (
     AppTrayCategory,
     AppVariant,
 )
-from designsafe.apps.workspace.models.allocations import UserAllocations
+from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
 
 
@@ -113,61 +113,6 @@ def _get_app(app_id, app_version, user):
     return data
 
 
-def _get_tas_allocations(username):
-    """Returns user allocations on TACC resources
-
-    : returns: allocations
-    : rtype: dict
-    """
-
-    tas_client = TASClient(
-        baseURL=settings.TAS_URL,
-        credentials={
-            "username": settings.TAS_CLIENT_KEY,
-            "password": settings.TAS_CLIENT_SECRET,
-        },
-    )
-    tas_projects = tas_client.projects_for_user(username)
-
-    with open(
-        "designsafe/apps/workspace/api/tas_to_tacc_resources.json", encoding="utf-8"
-    ) as file:
-        tas_to_tacc_resources = json.load(file)
-
-    hosts = {}
-
-    for tas_proj in tas_projects:
-        # Each project from tas has an array of length 1 for its allocations
-        alloc = tas_proj["allocations"][0]
-        charge_code = tas_proj["chargeCode"]
-        if alloc["resource"] in tas_to_tacc_resources:
-            resource = dict(tas_to_tacc_resources[alloc["resource"]])
-            resource["allocation"] = dict(alloc)
-
-            # Separate active and inactive allocations and make single entry for each project
-            if resource["allocation"]["status"] == "Active":
-                if (
-                    resource["host"] in hosts
-                    and charge_code not in hosts[resource["host"]]
-                ):
-                    hosts[resource["host"]].append(charge_code)
-                elif resource["host"] not in hosts:
-                    hosts[resource["host"]] = [charge_code]
-    return {
-        "hosts": hosts,
-    }
-
-
-def _get_latest_allocations(username):
-    """
-    Creates or updates allocations cache for a given user and returns new allocations
-    """
-    user = get_user_model().objects.get(username=username)
-    allocations = _get_tas_allocations(username)
-    UserAllocations.objects.update_or_create(user=user, defaults={"value": allocations})
-    return allocations
-
-
 def test_system_needs_keys(tapis, system_id):
     """Tests a Tapis system by making a file listing call.
 
@@ -231,7 +176,7 @@ class AppsView(AuthenticatedApiView):
             extra={
                 "user": request.user.username,
                 "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "getAppsView",
+                "operation": "getApp",
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
                 "info": {"query": request.GET.dict()},
@@ -321,7 +266,7 @@ class AppsTrayView(AuthenticatedApiView):
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(enabled.eq.true)",
+            search="(enabled.eq.true)~(version.like.*)",
             listType="MINE",
             limit=-1,
         )
@@ -352,7 +297,7 @@ class AppsTrayView(AuthenticatedApiView):
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(enabled.eq.true)",
+            search="(enabled.eq.true)~(version.like.*)",
             listType="SHARED_PUBLIC",
             limit=-1,
         )
@@ -511,7 +456,7 @@ class AppsTrayView(AuthenticatedApiView):
             extra={
                 "user": request.user.username,
                 "sessionId": getattr(request.session, "session_key", ""),
-                "operation": "getAppsTrayView",
+                "operation": "getApps",
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
                 "info": {"query": request.GET.dict()},
@@ -589,7 +534,6 @@ class JobsView(AuthenticatedApiView):
             extra={
                 "user": request.user.username,
                 "sessionId": getattr(request.session, "session_key", ""),
-                "view": "JobsView",
                 "operation": operation,
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
@@ -618,7 +562,10 @@ class JobsView(AuthenticatedApiView):
         """Returns detailed information for a given job uuid"""
 
         job_uuid = request.GET.get("uuid")
-        data = client.jobs.getJob(jobUuid=job_uuid)
+        data = client.jobs.getJob(
+            jobUuid=job_uuid,
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+        )
 
         return data
 
@@ -627,14 +574,22 @@ class JobsView(AuthenticatedApiView):
 
         limit = int(request.GET.get("limit", 10))
         skip = int(request.GET.get("skip", 0))
+        filter_by_portal = request.GET.get("filterByPortal", False)
         portal_name = settings.PORTAL_NAMESPACE
+
+        kwargs = {}
+        if filter_by_portal:
+            kwargs["_tapis_query_parameters"] = {
+                "tags.contains": f"portalName: {portal_name}"
+            }
 
         data = client.jobs.getJobSearchList(
             limit=limit,
             skip=skip,
             orderBy="lastUpdated(desc),name(asc)",
-            _tapis_query_parameters={"tags.contains": f"portalName: {portal_name}"},
             select="allAttributes",
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+            **kwargs,
         )
         if isinstance(data, list):
             for index, job in enumerate(data):
@@ -656,10 +611,14 @@ class JobsView(AuthenticatedApiView):
 
         limit = int(request.GET.get("limit", 10))
         skip = int(request.GET.get("skip", 0))
+        filter_by_portal = request.GET.get("filterByPortal", False)
         portal_name = settings.PORTAL_NAMESPACE
 
-        sql_queries = [
-            f"(tags IN ('portalName: {portal_name}')) AND",
+        sql_queries = []
+        if filter_by_portal:
+            sql_queries.append(f"(tags IN ('portalName: {portal_name}')) AND")
+
+        sql_queries += [
             f"((name like '%{query_string}%') OR",
             f"(archiveSystemDir like '%{query_string}%') OR",
             f"(appId like '%{query_string}%') OR",
@@ -672,6 +631,7 @@ class JobsView(AuthenticatedApiView):
             orderBy="lastUpdated(desc),name(asc)",
             request_body={"search": sql_queries},
             select="allAttributes",
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
         )
         return {"listing": data, "reachedEnd": len(data) < int(limit)}
 
@@ -683,7 +643,6 @@ class JobsView(AuthenticatedApiView):
             extra={
                 "user": request.user.username,
                 "sessionId": getattr(request.session, "session_key", ""),
-                "view": "JobsView",
                 "operation": "delete",
                 "agent": request.META.get("HTTP_USER_AGENT"),
                 "ip": get_client_ip(request),
@@ -692,7 +651,10 @@ class JobsView(AuthenticatedApiView):
         )
         tapis = request.user.tapis_oauth.client
         job_uuid = request.GET.get("uuid")
-        data = tapis.jobs.hideJob(jobUuid=job_uuid)
+        data = tapis.jobs.hideJob(
+            jobUuid=job_uuid,
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+        )
         return JsonResponse(
             {
                 "status": 200,
@@ -714,9 +676,9 @@ class JobsView(AuthenticatedApiView):
         if not job_post.get("archiveSystemId"):
             job_post["archiveSystemId"] = settings.AGAVE_STORAGE_SYSTEM
         if not job_post.get("archiveSystemDir"):
-            job_post[
-                "archiveSystemDir"
-            ] = f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            job_post["archiveSystemDir"] = (
+                f"{username}/tapis-jobs-archive/${{JobCreateDate}}/${{JobName}}-${{JobUUID}}"
+            )
 
         # Check for and set license environment variable if app requires one
         lic_type = body.get("licenseType")
@@ -747,14 +709,18 @@ class JobsView(AuthenticatedApiView):
                 return {"execSys": system_needs_keys}
 
         if settings.DEBUG:
-            wh_base_url = settings.WEBHOOK_POST_URL + reverse(
+            parsed_url = urlparse(settings.NGROK_DOMAIN)
+            if not parsed_url.scheme:
+                webhook_base_url = f"https://{settings.NGROK_DOMAIN}"
+            else:
+                webhook_base_url = settings.NGROK_DOMAIN
+
+            interactive_wh_url = webhook_base_url + reverse(
                 "webhooks:interactive_wh_handler"
             )
-            jobs_wh_url = settings.WEBHOOK_POST_URL + reverse(
-                "webhooks:jobs_wh_handler"
-            )
+            jobs_wh_url = webhook_base_url + reverse("webhooks:jobs_wh_handler")
         else:
-            wh_base_url = request.build_absolute_uri(
+            interactive_wh_url = request.build_absolute_uri(
                 reverse("webhooks:interactive_wh_handler")
             )
             jobs_wh_url = request.build_absolute_uri(
@@ -766,12 +732,25 @@ class JobsView(AuthenticatedApiView):
             f"portalName: {settings.PORTAL_NAMESPACE}"
         ]
 
+        parameter_set = job_post.get("parameterSet", {})
+        env_variables = parameter_set.get("envVariables", [])
+        # Add user projects based on env var in the parameters.
+        for entry in env_variables:
+            if entry.get("key") == "_UserProjects":
+                projects = request.user.projects.order_by("-last_updated")
+                entry["value"] = " ".join(
+                    f"{project.uuid},{project.value['projectId'] if project.value['projectId'] != 'None' else project.uuid}"
+                    for project in projects[: settings.USER_PROJECTS_LIMIT]
+                )
+                job_post["parameterSet"]["envVariables"] = env_variables
+                break
+
         # Add additional data for interactive apps
         if body.get("isInteractive"):
             # Add webhook URL environment variable for interactive apps
             job_post["parameterSet"]["envVariables"] = job_post["parameterSet"].get(
                 "envVariables", []
-            ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": wh_base_url}]
+            ) + [{"key": "_INTERACTIVE_WEBHOOK_URL", "value": interactive_wh_url}]
             job_post["tags"].append("isInteractive")
 
             # Make sure $HOME/.tap directory exists for user when running interactive apps on TACC HPC Systems
@@ -785,7 +764,11 @@ class JobsView(AuthenticatedApiView):
                 tapis.files.mkdir(
                     systemId=exec_system_id,
                     path=f"{system['home_dir'].format(tasdir)}/.tap",
+                    headers={
+                        "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
+                    },
                 )
+            job_post["parameterSet"]["envVariables"].append({"key": "_TAS_DIR", "value": tasdir})
 
         # Add webhook subscription for job status updates
         job_post["subscriptions"] = job_post.get("subscriptions", []) + [
@@ -801,7 +784,11 @@ class JobsView(AuthenticatedApiView):
         ]
 
         logger.info(f"user: {username} is submitting job: {job_post}")
-        response = tapis.jobs.submitJob(**job_post)
+        response = tapis.jobs.submitJob(
+            **job_post,
+            headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},
+        )
+
         return response
 
     def post(self, request, *args, **kwargs):
@@ -819,19 +806,6 @@ class JobsView(AuthenticatedApiView):
                 status=400,
             )
 
-        METRICS.info(
-            "Jobs",
-            extra={
-                "user": username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "view": "JobsView",
-                "operation": operation,
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {"body": body},
-            },
-        )
-
         if operation != "submitJob":
             job_uuid = body.get("uuid")
             if job_uuid is None:
@@ -840,18 +814,34 @@ class JobsView(AuthenticatedApiView):
                     status=400,
                 )
             tapis_operation = getattr(tapis.jobs, operation)
-            data = tapis_operation(jobUuid=job_uuid)
-
-            return JsonResponse(
-                {
-                    "status": 200,
-                    "response": data,
+            response = tapis_operation(
+                jobUuid=job_uuid,
+                headers={
+                    "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
                 },
-                encoder=BaseTapisResultSerializer,
             )
 
-        # submit job
-        response = self._submit_job(request, body, tapis, username)
+        else:
+            response = self._submit_job(request, body, tapis, username)
+
+        if isinstance(response, TapisResult):
+            metrics_info = {
+                "body": body,
+            }
+            response_uuid = response.get("uuid", None)
+            if response_uuid:
+                metrics_info["response_uuid"] = response_uuid
+            METRICS.info(
+                "Jobs",
+                extra={
+                    "user": username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": operation,
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": metrics_info,
+                },
+            )
 
         return JsonResponse(
             {
@@ -865,37 +855,13 @@ class JobsView(AuthenticatedApiView):
 class AllocationsView(AuthenticatedApiView):
     """Allocations API View"""
 
-    def _get_allocations(self, user, force=False):
-        """
-        Returns indexed allocation data stored in Django DB, or fetches
-        allocations from TAS and stores them.
-        Parameters
-            ----------
-            username: str
-                TACC username to fetch allocations for.
-            Returns
-            -------
-            dict
-        """
-        username = user.username
-        try:
-            if force:
-                logger.info(f"Forcing TAS allocation retrieval for user:{username}")
-                raise ObjectDoesNotExist
-            result = {"hosts": {}}
-            result.update(UserAllocations.objects.get(user=user).value)
-            return result
-        except ObjectDoesNotExist:
-            # Fall back to getting allocations from TAS
-            return _get_latest_allocations(username)
-
     def get(self, request):
         """Returns active user allocations on TACC resources
 
         : returns: {'response': {'active': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive, 'hosts': hosts}}
         : rtype: dict
         """
-        data = self._get_allocations(request.user)
+        data = get_allocations(request.user)
         # Exclude allocation based on allocation setting list.
         for host, allocations in data["hosts"].items():
             data["hosts"][host] = [

@@ -3,13 +3,11 @@
 # from portal.utils.encryption import createKeyPair
 import logging
 from typing import Literal
+from celery import shared_task
 from tapipy.tapis import Tapis
 from django.conf import settings
-import celery
 from designsafe.apps.api.agave import service_account
-from celery import shared_task
-
-# from portal.apps.onboarding.steps.system_access_v3 import create_system_credentials, register_public_key
+from designsafe.libs.common.context_managers import AsyncTaskContext
 
 
 logger = logging.getLogger(__name__)
@@ -59,7 +57,7 @@ def set_workspace_acls(client, system_id, path, username, operation, role="write
 
 
 def submit_workspace_acls_job(
-    username: str, project_uuid: str, action=Literal["add", "remove"]
+    username: str, project_uuid: str, action: Literal["add", "remove", "dryrun"] = "add"
 ):
     """
     Submit a job to set ACLs on a project for a specific user. This should be used if
@@ -67,12 +65,13 @@ def submit_workspace_acls_job(
     the synchronous Tapis endpoint to be performant.
     """
     client = service_account()
+    username_string = username.split(",")[0]
 
     job_body = {
-        "name": f"setfacl-project-{project_uuid.split('-')[0]}-{username}-{action}",
+        "name": f"setfacl-project-{project_uuid.split('-')[0]}-{username_string}-{action}",
         "appId": "setfacl-corral-tg458981",
-        "appVersion": "0.0.1",
-        "description": "test app setfacl-corral-tg458981",
+        "appVersion": "0.0.2",
+        "description": "Add/Remove ACLs on a directory",
         "fileInputs": [],
         "parameterSet": {
             "appArgs": [],
@@ -104,7 +103,7 @@ def create_workspace_system(client, project_uuid: str) -> str:
     system_id = f"project-{project_uuid}"
     system_args = {
         "id": system_id,
-        "host": "cloud.corral.tacc.utexas.edu",
+        "host": "cloud.data.tacc.utexas.edu",
         "port": 22,
         "systemType": "LINUX",
         "defaultAuthnMethod": "PKI_KEYS",
@@ -153,28 +152,37 @@ def setup_project_file_system(project_uuid: str, users: list[str]):
     # User creates the system and adds their credential
     resp = create_workspace_system(service_client, project_uuid)
 
-    for username in users:
-        add_user_to_project_async.apply_async(args=[project_uuid, username])
+    # Add tg458981 to ensure it can read externally transferred data
+    acl_users = ["tg458981", *users]
+
+    add_users_to_project_async.apply_async(args=[project_uuid, acl_users])
 
     return resp
 
 
-def add_user_to_project(project_uuid: str, username: str, set_acls=True):
+def add_user_to_project(project_uuid: str, username: str):
     """
     Give a user POSIX and Tapis permissions on a workspace system.
     """
     service_client = service_account()
     system_id = f"project-{project_uuid}"
     logger.debug("Adding user %s to system %s", username, system_id)
-    if set_acls:
-        job_res = submit_workspace_acls_job(username, project_uuid, action="add")
-        logger.debug(
-            "Submitted workspace ACL job %s with UUID %s", job_res.name, job_res.uuid
-        )
+
     service_client.systems.shareSystem(systemId=system_id, users=[username])
     set_workspace_permissions(service_client, username, system_id, role="writer")
 
     return project_uuid
+
+
+def add_users_to_project(project_uuid: str, usernames: list[str]):
+    """Add multiple users to a project and set their ACLs using a single Tapis job."""
+    for username in usernames:
+        add_user_to_project(project_uuid, username)
+
+    job_res = submit_workspace_acls_job(",".join(usernames), project_uuid, action="add")
+    logger.debug(
+        "Submitted workspace ACL job %s with UUID %s", job_res.name, job_res.uuid
+    )
 
 
 def remove_user_from_project(project_uuid: str, username: str):
@@ -184,10 +192,6 @@ def remove_user_from_project(project_uuid: str, username: str):
     service_client = service_account()
     system_id = f"project-{project_uuid}"
     logger.debug("Removing user %s from system %s", username, system_id)
-    job_res = submit_workspace_acls_job(username, project_uuid, action="remove")
-    logger.debug(
-        "Submitted workspace ACL job %s with UUID %s", job_res.name, job_res.uuid
-    )
 
     service_client.systems.unShareSystem(systemId=system_id, users=[username])
     service_client.systems.revokeUserPerms(
@@ -200,18 +204,33 @@ def remove_user_from_project(project_uuid: str, username: str):
     return project_uuid
 
 
+def remove_users_from_project(project_uuid: str, usernames: list[str]):
+    """Remove multiple users from project, setting ACLs using a single Tapis job."""
+    for username in usernames:
+        remove_user_from_project(project_uuid, username)
+
+    acl_usernames = ",".join(usernames)
+
+    job_res = submit_workspace_acls_job(acl_usernames, project_uuid, action="remove")
+    logger.debug(
+        "Submitted workspace ACL job %s with UUID %s", job_res.name, job_res.uuid
+    )
+
+
 ##########################################
 # ASYNC TASKS FOR USER ADDITION/REMOVAL
 ##########################################
 
 
 @shared_task(bind=True)
-def add_user_to_project_async(self, project_uuid: str, username: str):
+def add_users_to_project_async(self, project_uuid: str, usernames: list[str]):
     """Async wrapper around add_user_to_project"""
-    add_user_to_project(project_uuid, username)
+    with AsyncTaskContext():
+        add_users_to_project(project_uuid, usernames)
 
 
 @shared_task(bind=True)
-def remove_user_from_project_async(self, project_uuid: str, username: str):
+def remove_users_from_project_async(self, project_uuid: str, usernames: str):
     """Async wrapper around remove_user_from_project"""
-    remove_user_from_project(project_uuid, username)
+    with AsyncTaskContext():
+        remove_users_from_project(project_uuid, usernames)
