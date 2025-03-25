@@ -40,62 +40,64 @@ export const EntityFileListingTable: React.FC<{
     path?: string;
     selectedFile?: TFileListing;
   }>({ isOpen: false });
-
+  const { projectId } = useParams();
   const doi = useDoiContext();
   const columns: TFileListingColumns = [
     {
       title: 'File Name',
       dataIndex: 'name',
       ellipsis: true,
-      render: (data, record) => (
-        <div>
-          {record.type === 'dir' ? (
-            <Link
-              className="listing-nav-link"
-              to={`./${encodeURIComponent(record.path)}${
-                doi ? `?doi=${doi}` : ''
-              }`}
-              style={{ pointerEvents: preview ? 'none' : 'all' }}
-              replace={false}
-            >
-              <i
-                role="none"
-                style={{ color: '#333333' }}
-                className="fa fa-folder"
-              >
-                &nbsp;&nbsp;
-              </i>
-              {data}
-            </Link>
-          ) : (
-            <>
-              <FileTypeIcon name={record.name} />
-              &nbsp;&nbsp;
-              <Button
-                type="link"
-                onClick={() =>
-                  setPreviewModalState({
-                    isOpen: true,
-                    path: record.path,
-                    selectedFile: { ...record, doi },
-                  })
-                }
-              >
-                {data}
-              </Button>
-            </>
-          )}
+      render: (data, record) => {
+        const fileNavPath = preview
+          ? `/projects/${projectId}/curation/${encodeURIComponent(record.path)}`
+          : `./${encodeURIComponent(record.path)}${doi ? `?doi=${doi}` : ''}`;
+        return (
           <div>
-            {treeData.value.fileTags
-              .filter((t) => t.path === record.path)
-              .map((t) => (
-                <Tag color="#337ab7" key={t.tagName}>
-                  {t.tagName}
-                </Tag>
-              ))}
+            {record.type === 'dir' ? (
+              <Link
+                className="listing-nav-link"
+                to={fileNavPath}
+                replace={false}
+              >
+                <i
+                  role="none"
+                  style={{ color: '#333333' }}
+                  className="fa fa-folder"
+                >
+                  &nbsp;&nbsp;
+                </i>
+                {data}
+              </Link>
+            ) : (
+              <>
+                <FileTypeIcon name={record.name} />
+                &nbsp;&nbsp;
+                <Button
+                  type="link"
+                  onClick={() =>
+                    setPreviewModalState({
+                      isOpen: true,
+                      path: record.path,
+                      selectedFile: { ...record, doi },
+                    })
+                  }
+                >
+                  {data}
+                </Button>
+              </>
+            )}
+            <div>
+              {treeData.value.fileTags
+                .filter((t) => t.path === record.path)
+                .map((t) => (
+                  <Tag color="#337ab7" key={t.tagName}>
+                    {t.tagName}
+                  </Tag>
+                ))}
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
   ];
   return (
@@ -166,27 +168,29 @@ function RecursiveTree({
         <EntityFileListingTable treeData={treeData} preview={preview} />
       </ProjectCollapse>
       <ul className={styles['tree-ul']}>
-        {(treeData.children ?? []).map((child) => (
-          <div key={child.id} style={{ display: 'inline-flex', flex: 1 }}>
-            <span
-              style={{
-                fontSize: '20px',
-                marginLeft: '5px',
-                marginRight: '7px',
-                marginTop: '3px',
-                color: PROJECT_COLORS[treeData.name]['outline'],
-              }}
-            >
-              <i role="none" className="fa fa-level-up fa-rotate-90"></i>
-            </span>
-            <RecursiveTree
-              treeData={child}
-              defaultOpen={defaultOpen}
-              preview={preview}
-              showEditCategories={showEditCategories}
-            />
-          </div>
-        ))}
+        {(treeData.children ?? [])
+          .sort((a, b) => a.order - b.order)
+          .map((child) => (
+            <div key={child.id} style={{ display: 'inline-flex', flex: 1 }}>
+              <span
+                style={{
+                  fontSize: '20px',
+                  marginLeft: '5px',
+                  marginRight: '7px',
+                  marginTop: '3px',
+                  color: PROJECT_COLORS[treeData.name]['outline'],
+                }}
+              >
+                <i role="none" className="fa fa-level-up fa-rotate-90"></i>
+              </span>
+              <RecursiveTree
+                treeData={child}
+                defaultOpen={defaultOpen}
+                preview={preview}
+                showEditCategories={showEditCategories}
+              />
+            </div>
+          ))}
       </ul>
     </li>
   );
@@ -267,7 +271,11 @@ export const PublishedEntityDisplay: React.FC<{
         {preview ? (
           <ProjectCitation projectId={projectId} entityUuid={treeData.uuid} />
         ) : (
-          <PublishedCitation projectId={projectId} entityUuid={treeData.uuid} />
+          <PublishedCitation
+            projectId={projectId}
+            entityUuid={treeData.uuid}
+            version={treeData.version ?? 1}
+          />
         )}
         <br />
         {citationMetrics && (
@@ -288,6 +296,7 @@ export const PublishedEntityDisplay: React.FC<{
         }}
         items={[
           {
+            forceRender: true,
             label: (
               <div style={{ textAlign: 'center' }}>
                 {' '}

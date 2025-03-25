@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import json
+import uuid
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
@@ -36,6 +37,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+DJANGO_MAINTENANCE = os.environ.get("DJANGO_MAINTENANCE", 'False') == 'True'
 RENDER_REACT = os.environ.get('RENDER_REACT', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
@@ -111,6 +113,7 @@ INSTALLED_APPS = (
     'designsafe.apps.search',
     'designsafe.apps.geo',
     'designsafe.apps.rapid',
+    'designsafe.apps.onboarding',
 
     #haystack integration
     'haystack'
@@ -152,6 +155,7 @@ MIDDLEWARE = (
     'designsafe.middleware.DesignSafeTermsMiddleware',
     'designsafe.middleware.DesignsafeProfileUpdateMiddleware',
     'designsafe.middleware.SiteMessageMiddleware',
+    'designsafe.middleware.MaintenanceMiddleware'
 )
 
 ROOT_URLCONF = 'designsafe.urls'
@@ -179,6 +183,7 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
+                'designsafe.context_processors.tas_homedir',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -399,7 +404,8 @@ BOOTSTRAP3 = {
 #
 #####
 IMPERSONATE = {
-    'REQUIRE_SUPERUSER': True
+    'REQUIRE_SUPERUSER': True,
+    'ADMIN_DELETE_PERMISSION': True
 }
 
 
@@ -408,9 +414,22 @@ IMPERSONATE = {
 # Logger config
 #
 #####
+
+def guid_filter(record):
+    """Log filter that adds a guid to each entry"""
+
+    record.logGuid = uuid.uuid4().hex
+    return True
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    "filters": {
+        "guidFilter": {
+            "()": "django.utils.log.CallbackFilter",
+            "callback": guid_filter,
+        },
+    },
     'formatters': {
         'default': {
             'format': '[DJANGO] %(levelname)s %(asctime)s %(module)s '
@@ -423,7 +442,7 @@ LOGGING = {
         'metrics': {
             'format': '[METRICS] %(levelname)s %(module)s %(name)s.%(funcName)s:%(lineno)s:'
                       ' %(message)s user=%(user)s ip=%(ip)s agent=%(agent)s sessionId=%(sessionId)s op=%(operation)s'
-                      ' info=%(info)s'
+                      ' info=%(info)s timestamp=%(asctime)s trackingId=portals.%(sessionId)s guid=%(logGuid)s portal=designsafe tenant=designsafe'
         },
     },
     'handlers': {
@@ -436,6 +455,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'metrics',
+            'filters': ['guidFilter']
         },
     },
     'loggers': {
@@ -454,6 +474,7 @@ LOGGING = {
         },
         'metrics': {
             'handlers': ['metrics'],
+            'filters': ['guidFilter'],
             'level': 'INFO',
         },
     },
@@ -504,7 +525,7 @@ TAS_URL = os.environ.get('TAS_URL', None)
 ALLOCATIONS_TO_EXCLUDE = (
     os.environ.get("ALLOCATIONS_TO_EXCLUDE", "").split(",")
     if os.environ.get("ALLOCATIONS_TO_EXCLUDE")
-    else ["DesignSafe-DCV"]
+    else ["DesignSafe-DCV,DesignSafe-Corral"]
 )
 
 
@@ -530,7 +551,6 @@ AGAVE_SANDBOX_SUPER_TOKEN = os.environ.get('AGAVE_SANDBOX_SUPER_TOKEN', '')
 
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
-AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM', 'designsafe.storage.frontera.work')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
@@ -540,12 +560,6 @@ AGAVE_JWT_SERVICE_ACCOUNT = os.environ.get('AGAVE_JWT_SERVICE_ACCOUNT')
 
 AGAVE_USER_STORE_ID = os.environ.get('AGAVE_USER_STORE_ID', 'TACC')
 AGAVE_USE_SANDBOX = os.environ.get('AGAVE_USE_SANDBOX', 'False').lower() == 'true'
-
-TAPIS_SYSTEMS_TO_CONFIGURE = [
-    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
-]
 
 # Tapis Client Configuration
 PORTAL_ADMIN_USERNAME = os.environ.get('PORTAL_ADMIN_USERNAME')
@@ -564,6 +578,8 @@ PORTAL_JOB_NOTIFICATION_STATES = ["PENDING", "STAGING_INPUTS", "RUNNING", "ARCHI
 DS_ADMIN_USERNAME = os.environ.get('DS_ADMIN_USERNAME')
 DS_ADMIN_PASSWORD = os.environ.get('DS_ADMIN_PASSWORD')
 
+PROJECT_ADMIN_GROUP = os.environ.get("PROJECT_ADMIN_GROUP", "Project Admin")
+
 PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     'id': 'project-{}',
     'site': 'tacc.utexas.edu',
@@ -580,7 +596,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'port': 2222,
         'homeDir': '/',
         'protocol': 'SFTP',
-        'host': 'cloud.corral.tacc.utexas.edu',
+        'host': 'cloud.data.tacc.utexas.edu',
         'publicAppsDir': None,
         'proxy': None,
         'rootDir': '/corral-repl/projects/NHERI/projects/{}',
@@ -620,7 +636,6 @@ try:
     from designsafe.settings.external_resource_settings import *
     from designsafe.settings.elasticsearch_settings import *
     from designsafe.settings.rt_settings import *
-    from designsafe.settings.external_resource_secrets import *
     from designsafe.settings.nco_mongo import *
 except ImportError:
     pass
@@ -668,7 +683,8 @@ SUPPORTED_TEXT_PREVIEW_EXTS = [
     '.java', '.js', '.less', '.m', '.make', '.md', '.ml', '.mm', '.msg', '.php',
     '.pl', '.properties', '.py', '.rb', '.sass', '.scala', '.script', '.sh', '.sml',
     '.sql', '.txt', '.vi', '.vim', '.xml', '.xsd', '.xsl', '.yaml', '.yml', '.tcl',
-    '.json', '.out', '.err', '.geojson', '.do', '.sas', '.hazmapper'
+    '.json', '.out', '.err', '.geojson', '.do', '.sas', '.hazmapper', ".log", ".env",
+    ".exitcode", ".pid"
 ]
 
 SUPPORTED_OBJECT_PREVIEW_EXTS = [
@@ -704,3 +720,27 @@ FEDORA_PASSWORD = os.environ.get('FEDORA_PASSWORD')
 FEDORA_CONTAINER= os.environ.get('FEDORA_CONTAINER', 'designsafe-publications-dev')
 
 CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('SESSION_COOKIE_DOMAIN')}"]
+NGROK_DOMAIN = os.environ.get('NGROK_DOMAIN', os.environ.get('WEBHOOK_POST_URL', ''))
+
+STAFF_VPN_IP_PREFIX = os.environ.get("STAFF_VPN_IP_PREFIX", "129.114")
+USER_PROJECTS_LIMIT = os.environ.get("USER_PROJECTS_LIMIT", 500)
+
+# Onboarding
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        "step": "designsafe.apps.onboarding.steps.project_membership.ProjectMembershipStep",
+        "settings": {
+            "project_sql_id": 34076,  # project id for DesignSafe-Corral
+            "rt_queue": "DesignSafe-ci",
+        },
+    },
+    {
+        "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
+        "settings": {
+            "credentials_systems": ["cloud.data", "designsafe.storage.default"],
+            "create_path_systems": [
+                {"system_id": "designsafe.storage.default", "path": "{username}"}
+            ],
+        },
+    },
+]

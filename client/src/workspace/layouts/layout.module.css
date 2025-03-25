@@ -14,6 +14,12 @@
   overflow: auto;
 }
 
+.html-app-container {
+  & p {
+    margin-block: 1em 2em;
+  }
+}
+
 .appDetail-placeholder-message {
   display: flex;
   justify-content: center;

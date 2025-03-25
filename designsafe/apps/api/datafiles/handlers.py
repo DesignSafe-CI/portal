@@ -30,19 +30,19 @@ operations_mapping = {
 }
 
 
-def datafiles_get_handler(api, client, scheme, system, path, operation, username=None, **kwargs):
+def datafiles_get_handler(api, client, scheme, system, path, operation, username=None, tapis_tracking_id=None, **kwargs):
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
     op = getattr(operations_mapping[api], operation)
 
     try:
-        return op(client, system, path, username=username, **kwargs)
+        return op(client, system, path, username=username, tapis_tracking_id=tapis_tracking_id, **kwargs)
     except BaseTapyException as exc:
         raise ApiException(message=exc.message, status=500) from exc
 
 
 def datafiles_post_handler(api, username, client, scheme, system,
-                           path, operation, body=None):
+                           path, operation, body=None, tapis_tracking_id=None):
 
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
@@ -51,7 +51,7 @@ def datafiles_post_handler(api, username, client, scheme, system,
     operation in notify_actions and notify(username, operation, '{} operation has started.'.format(operation.capitalize()), 'INFO', {})
 
     try:
-        result = op(client, system, path, **body)
+        result = op(client, system, path, tapis_tracking_id=tapis_tracking_id, **body)
         operation in notify_actions and notify(username, operation, '{} operation was successful.'.format(operation.capitalize()), 'SUCCESS', result)
         return result
     except Exception as exc:
@@ -60,7 +60,7 @@ def datafiles_post_handler(api, username, client, scheme, system,
 
 
 def datafiles_put_handler(api, username, client, scheme, system,
-                          path, operation, body=None):
+                          path, operation, body=None, tapis_tracking_id=None):
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
 
@@ -68,7 +68,7 @@ def datafiles_put_handler(api, username, client, scheme, system,
     operation in notify_actions and notify(username, operation, '{} operation has started.'.format(operation.capitalize()), 'INFO', {})
 
     try:
-        result = op(client, system, path, **body)
+        result = op(client, system, path, tapis_tracking_id=tapis_tracking_id, **body)
         if operation == 'copy' and system != body.get('dest_system', None):
             notify(username, operation, 'Your file transfer request has been received and will be processed shortly.'.format(operation.capitalize()), 'SUCCESS', result)
         else:

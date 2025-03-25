@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Flex, Layout } from 'antd';
 import {
@@ -7,6 +7,7 @@ import {
   useGetAppParams,
   AppsBreadcrumb,
   Toast,
+  InteractiveSessionModal,
 } from '@client/workspace';
 import { Spinner } from '@client/common-components';
 import {
@@ -14,6 +15,8 @@ import {
   useAppsListing,
   usePrefetchGetSystems,
   usePrefetchGetAllocations,
+  InteractiveModalContext,
+  useAuthenticatedUser,
 } from '@client/hooks';
 import styles from './layout.module.css';
 
@@ -23,8 +26,16 @@ const WorkspaceRoot: React.FC = () => {
   usePrefetchGetApps(useGetAppParams());
   usePrefetchGetSystems();
   usePrefetchGetAllocations();
+  const { user } = useAuthenticatedUser();
+
+  if (user && !user.setupComplete) {
+    window.location.replace(`${window.location.origin}/onboarding/setup`);
+  }
 
   const { data, isLoading } = useAppsListing();
+  const [interactiveModalDetails, setInteractiveModalDetails] = useState({
+    show: false,
+  });
 
   if (!data || isLoading)
     return (
@@ -41,7 +52,9 @@ const WorkspaceRoot: React.FC = () => {
   };
 
   return (
-    <>
+    <InteractiveModalContext.Provider
+      value={[interactiveModalDetails, setInteractiveModalDetails]}
+    >
       <Flex
         vertical
         style={{
@@ -71,7 +84,8 @@ const WorkspaceRoot: React.FC = () => {
         </Layout>
       </Flex>
       <Toast />
-    </>
+      <InteractiveSessionModal />
+    </InteractiveModalContext.Provider>
   );
 };
 

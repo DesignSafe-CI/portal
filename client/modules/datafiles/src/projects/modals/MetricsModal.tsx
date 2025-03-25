@@ -57,27 +57,21 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     };
   }
 
-  // Table 1: Usage Breakdown
-  const sumTotals = (data: DataEntry[], relationTypeId: string) => {
+  // Table 1: Aggregated Usage
+  const uniqueInvestigations =
+    usageMetricsData?.data?.attributes?.viewCount ?? 0;
+  const uniqueRequests = usageMetricsData?.data?.attributes?.downloadCount ?? 0;
+
+  const sumTotals = (data: DataEntry[] = [], relationTypeId: string) => {
     return data
       .filter(
-        (entry) => entry.attributes['relation-type-id'] === relationTypeId
+        (entry) => entry?.attributes?.['relation-type-id'] === relationTypeId
       )
-      .reduce((sum, entry) => sum + entry.attributes.total, 0);
+      .reduce((sum, entry) => sum + (entry?.attributes?.total ?? 0), 0);
   };
-
-  const uniqueInvestigations = sumTotals(
-    eventMetricsData.data,
-    'unique-dataset-investigations-regular'
-  );
-  const uniqueRequests = sumTotals(
-    eventMetricsData.data,
-    'unique-dataset-requests-regular'
-  );
-  const totalRequests = sumTotals(
-    eventMetricsData.data,
-    'total-dataset-requests-regular'
-  );
+  const totalRequests =
+    sumTotals(eventMetricsData?.data ?? [], 'total-dataset-requests-regular') ||
+    0;
 
   const dataSource = [
     {
@@ -96,7 +90,7 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           </Popover>
         </span>
       ),
-      data: uniqueInvestigations > 0 ? uniqueInvestigations : '--',
+      data: uniqueInvestigations > 0 ? uniqueInvestigations : 0,
     },
     {
       key: '2',
@@ -109,35 +103,35 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
           <Popover
             overlayStyle={{ maxWidth: '400px' }}
             title="Unique Requests (Downloads)"
-            content="Refers to the number of one-hour sessions during which a user   previewed/downloaded/copied files associated with this DOI."
+            content="Refers to the number of one-hour sessions during which a user previewed/downloaded/copied files associated with this DOI."
           >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
           </Popover>
         </span>
       ),
-      data: uniqueRequests > 0 ? uniqueRequests : '--',
+      data: uniqueRequests > 0 ? uniqueRequests : 0,
     },
     {
       key: '3',
       usage: (
         <span>
-          Dataset Total Requests{' '}
+          Total Requests{' '}
           <Popover
             overlayStyle={{ maxWidth: '400px' }}
-            title="Dataset Total Requests"
+            title="Total Requests"
             content="All downloads, previews, and copies of files plus Project Downloads."
           >
             <QuestionCircleOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
           </Popover>
         </span>
       ),
-      data: totalRequests > 0 ? totalRequests : '--',
+      data: totalRequests > 0 ? totalRequests : 0,
     },
   ];
 
   const columns = [
     {
-      title: 'Usage Breakdown',
+      title: 'Aggregated Usage',
       dataIndex: 'usage',
       key: 'usage',
     },
@@ -180,13 +174,19 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   }
 
   const mostRecentYear = useMemo(() => {
-    const orderedYears = usageMetricsData.data.attributes.viewsOverTime
+    const viewsOverTime = usageMetricsData?.data?.attributes?.viewsOverTime;
+
+    if (!viewsOverTime || viewsOverTime.length === 0) {
+      return null; // Handle cases where viewsOverTime is undefined or empty
+    }
+
+    const orderedYears = viewsOverTime
       .map((entry) => entry.yearMonth.split('-')[0]) // Get only the years
       .filter((year, index, array) => array.indexOf(year) === index) // Unique years
       .sort((a, b) => b.localeCompare(a)); // Sort descending
 
     return orderedYears.length > 0 ? orderedYears[0] : null; // Return the most recent year
-  }, [usageMetricsData.data.attributes.viewsOverTime]);
+  }, [usageMetricsData?.data?.attributes?.viewsOverTime]);
 
   const defaultYear = mostRecentYear || '';
 
@@ -199,47 +199,31 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   }, [defaultYear]);
 
   const [quarterSums, setQuarterSums] = useState<{
-    [key: string]: number | { [key: string]: number };
-  }>(() => {
-    const defaultSums: { [key: string]: number | { [key: string]: number } } = {
-      Q1: 0,
-      Q2: 0,
-      Q3: 0,
-      Q4: 0,
-    };
-
-    if (defaultYear) {
-      const viewsByQuarter = calculateQuarterSums(
-        usageMetricsData.data.attributes.viewsOverTime,
-        defaultYear
-      );
-      const downloadsByQuarter = calculateQuarterSums(
-        usageMetricsData.data.attributes.downloadsOverTime,
-        defaultYear
-      );
-      defaultSums['views'] = viewsByQuarter;
-      defaultSums['downloads'] = downloadsByQuarter;
-    }
-
-    return defaultSums;
+    views: { [key: string]: number };
+    downloads: { [key: string]: number };
+    totals: { [key: string]: number };
+  }>({
+    views: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 },
+    downloads: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 },
+    totals: { Q1: 0, Q2: 0, Q3: 0, Q4: 0 },
   });
 
   const processTotalRequests = (
     eventMetricsData: EventMetrics,
     year: string
   ) => {
-    return eventMetricsData.data.reduce(
+    return (eventMetricsData?.data ?? []).reduce(
       (acc: { [key: string]: number }, curr: DataEntryA) => {
+        const occurredAt = curr?.attributes?.['occurred-at'];
         if (
-          curr.attributes['relation-type-id'] ===
+          curr?.attributes?.['relation-type-id'] ===
             'total-dataset-requests-regular' &&
-          curr.attributes['occurred-at']
+          occurredAt
         ) {
-          const [occurredYear, occurredMonth] =
-            curr.attributes['occurred-at'].split('-');
+          const [occurredYear, occurredMonth] = occurredAt.split('-');
           if (occurredYear === year) {
             const quarter = `Q${Math.ceil(parseInt(occurredMonth) / 3)}`;
-            acc[quarter] = (acc[quarter] || 0) + curr.attributes.total;
+            acc[quarter] = (acc[quarter] || 0) + (curr?.attributes?.total ?? 0);
           }
         }
         return acc;
@@ -251,27 +235,27 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
   useEffect(() => {
     if (selectedYear) {
       const views = calculateQuarterSums(
-        usageMetricsData.data.attributes.viewsOverTime,
+        usageMetricsData?.data?.attributes?.viewsOverTime ?? [],
         selectedYear
       );
       const downloads = calculateQuarterSums(
-        usageMetricsData.data.attributes.downloadsOverTime,
+        usageMetricsData?.data?.attributes?.downloadsOverTime ?? [],
         selectedYear
       );
       const totals = processTotalRequests(eventMetricsData, selectedYear);
       setQuarterSums({ views, downloads, totals });
     }
-  }, [selectedYear, eventMetricsData, usageMetricsData.data.attributes]);
+  }, [selectedYear, eventMetricsData, usageMetricsData?.data?.attributes]);
 
   const handleYearChange = (value: string) => {
     setSelectedYear(value);
 
     const viewsByQuarter = calculateQuarterSums(
-      usageMetricsData.data.attributes.viewsOverTime,
+      usageMetricsData?.data?.attributes?.viewsOverTime ?? [],
       value
     );
     const downloadsByQuarter = calculateQuarterSums(
-      usageMetricsData.data.attributes.downloadsOverTime,
+      usageMetricsData?.data?.attributes?.downloadsOverTime ?? [],
       value
     );
     const totalRequestsQuarterlySums = processTotalRequests(
@@ -282,18 +266,16 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
     setQuarterSums({
       views: viewsByQuarter,
       downloads: downloadsByQuarter,
-      totalRequests: totalRequestsQuarterlySums.totalRequestsQuarterlySums,
+      totals: totalRequestsQuarterlySums,
     });
   };
+
   const years = useMemo(() => {
-    if (
-      usageMetricsData.data.attributes.viewsOverTime &&
-      usageMetricsData.data.attributes.viewsOverTime.length > 0
-    ) {
+    const viewsOverTime =
+      usageMetricsData?.data?.attributes?.viewsOverTime ?? [];
+    if (viewsOverTime.length > 0) {
       const uniqueYears = new Set(
-        usageMetricsData.data.attributes.viewsOverTime.map((item) =>
-          item.yearMonth.substring(0, 4)
-        )
+        viewsOverTime.map((item) => item?.yearMonth?.substring(0, 4))
       );
       return Array.from(uniqueYears).map((year) => (
         <Option key={year} value={year}>
@@ -302,48 +284,44 @@ export const MetricsModalBody: React.FC<MetricsModalProps> = ({
       ));
     }
     return [];
-  }, [usageMetricsData.data.attributes.viewsOverTime]);
+  }, [usageMetricsData?.data?.attributes?.viewsOverTime]);
 
   const quartersData = [
     {
       key: '1',
       quarters: 'Jan-Mar',
       uniqueInvestigations:
-        (quarterSums.views as { [key: string]: number }).Q1 || '--',
+        quarterSums?.views?.Q1 > 0 ? quarterSums.views.Q1 : '--',
       uniqueRequests:
-        (quarterSums.downloads as { [key: string]: number }).Q1 || '--',
-      totalRequests:
-        (quarterSums.totals as { [key: string]: number })?.Q1 || '--',
+        quarterSums?.downloads?.Q1 > 0 ? quarterSums.downloads.Q1 : '--',
+      totalRequests: quarterSums?.totals?.Q1 > 0 ? quarterSums.totals.Q1 : '--',
     },
     {
       key: '2',
-      quarters: 'Apr-Jul',
+      quarters: 'Apr-Jun',
       uniqueInvestigations:
-        (quarterSums.views as { [key: string]: number }).Q2 || '--',
+        quarterSums?.views?.Q2 > 0 ? quarterSums.views.Q2 : '--',
       uniqueRequests:
-        (quarterSums.downloads as { [key: string]: number }).Q2 || '--',
-      totalRequests:
-        (quarterSums.totals as { [key: string]: number })?.Q2 || '--',
+        quarterSums?.downloads?.Q2 > 0 ? quarterSums.downloads.Q2 : '--',
+      totalRequests: quarterSums?.totals?.Q2 > 0 ? quarterSums.totals.Q2 : '--',
     },
     {
       key: '3',
-      quarters: 'Aug-Oct',
+      quarters: 'Jul-Sep',
       uniqueInvestigations:
-        (quarterSums.views as { [key: string]: number }).Q3 || '--',
+        quarterSums?.views?.Q3 > 0 ? quarterSums.views.Q3 : '--',
       uniqueRequests:
-        (quarterSums.downloads as { [key: string]: number }).Q3 || '--',
-      totalRequests:
-        (quarterSums.totals as { [key: string]: number })?.Q3 || '--',
+        quarterSums?.downloads?.Q3 > 0 ? quarterSums.downloads.Q3 : '--',
+      totalRequests: quarterSums?.totals?.Q3 > 0 ? quarterSums.totals.Q3 : '--',
     },
     {
       key: '4',
-      quarters: 'Nov-Dec',
+      quarters: 'Oct-Dec',
       uniqueInvestigations:
-        (quarterSums.views as { [key: string]: number }).Q4 || '--',
+        quarterSums?.views?.Q4 > 0 ? quarterSums.views.Q4 : '--',
       uniqueRequests:
-        (quarterSums.downloads as { [key: string]: number }).Q4 || '--',
-      totalRequests:
-        (quarterSums.totals as { [key: string]: number })?.Q4 || '--',
+        quarterSums?.downloads?.Q4 > 0 ? quarterSums.downloads.Q4 : '--',
+      totalRequests: quarterSums?.totals?.Q4 > 0 ? quarterSums.totals.Q4 : '--',
     },
   ];
 

@@ -5,7 +5,7 @@
         <h1>You do not have permission to access the requested resource.</h1>
         <p>
             You do not have permission to access the requested resource. If you feel this
-            is in error, please <a href="{% url 'djangoRT:ticketcreate' %}?error_page={{ request.path }}&http_referer={{ request.META.HTTP_REFERER }}">submit a ticket</a>
+            is in error, please <a href="{% url 'djangoRT:ticketcreate' %}?http_referer={{ request.META.HTTP_REFERER }}">submit a ticket</a>
             and we will investigate how to get this resolved.
         </p>
     </div>

@@ -7,6 +7,7 @@ import {
   TTapisApp,
   TTapisSystemQueue,
   TTasAllocations,
+  TJobKeyValuePair,
 } from '@client/hooks';
 import { TFormValues } from '../AppsWizard/AppsFormSchema';
 import { UseFormSetValue } from 'react-hook-form';
@@ -471,4 +472,60 @@ export const findAppById = (
     }
   }
   return null;
+};
+
+/**
+ * Get list of env variables that are on demand and hidden
+ * in App Form.
+ * This could be useful to populate these env variables before
+ * submission to tapis
+ * @param definition app definition
+ * @returns list of key, value
+ */
+export const getOnDemandEnvVariables = (
+  definition: TTapisApp
+): { key: string; value: string }[] => {
+  const includeOnDemandVars: { key: string; value: string }[] = [];
+
+  Object.entries(definition.jobAttributes.parameterSet).forEach(
+    ([parameterSetKey, parameterSetValue]) => {
+      if (!Array.isArray(parameterSetValue)) return;
+
+      if (parameterSetKey === 'envVariables') {
+        parameterSetValue.forEach((param) => {
+          if (
+            param.notes?.isHidden &&
+            param.inputMode === 'INCLUDE_ON_DEMAND'
+          ) {
+            includeOnDemandVars.push({
+              key: (<TJobKeyValuePair>param).key,
+              value: (<TJobKeyValuePair>param).value,
+            });
+          }
+        });
+      }
+    }
+  );
+  return includeOnDemandVars;
+};
+
+/**
+ * Returns 'interactive session' as app type if it is interactive, otherwise 'job'
+ *
+ * @param definition - TTapisApp
+ * @param titleCase - boolean, default is false.
+ * @returns string
+ */
+export const getAppRuntimeLabel = (
+  definition: TTapisApp,
+  titleCase: boolean = false
+): string => {
+  const label = definition.notes.isInteractive ? 'interactive session' : 'job';
+
+  return titleCase
+    ? label
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    : label;
 };

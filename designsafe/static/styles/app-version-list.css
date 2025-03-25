@@ -67,5 +67,6 @@
 
 /* Bootstrap */
 .s-app-version-list .btn {
+    min-width: 18ch;
     padding-inline: 24px; /* double Bootstrap .btn padding */
 }

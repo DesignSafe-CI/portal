@@ -37,7 +37,7 @@
         <div> <span> Quick Links </span> </div>
         <div><a href="/account"> Manage Account </a> </div>
         <div> <a href="/data/browser"> Data Depot </a> </div>
-        <div> <a href="/rw/workspace"> Tools & Applications </a> </div>
+        <div> <a href="/workspace"> Tools & Applications </a> </div>
         <div> <a href="/recon-portal"> Recon Portal </a> </div>
         <div> <a href="/learning-center/overview"> Training </a> </div>
     </div>
@@ -114,7 +114,7 @@
                             <span class="label label-default"> {{note.datetime | date}} </span>
                         </div>
                         <div class="col-md-8">
-                            {{note.message}}
+                            {{note.event_type === 'interactive_session_ready' ? 'Ready to view' : note.message}}
                         </div>
                     </div>
                 </li>

@@ -39,5 +39,6 @@ export function useDataciteEvents(doi: string, enabled: boolean = true) {
       return getDataciteEvents({ doi, signal });
     },
     enabled: enabled && !!doi,
+    retry: false,
   });
 }

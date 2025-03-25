@@ -1,0 +1,12 @@
+.root {
+  overflow: hidden;
+}
+
+.processing {
+  display: flex;
+  align-items: center;
+}
+
+.processing > * {
+  margin-right: 0.5em;
+}

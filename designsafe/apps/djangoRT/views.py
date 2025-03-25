@@ -5,6 +5,7 @@ from django.urls import reverse
 from designsafe.apps.djangoRT import rtUtil, forms, rtModels
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.files.base import ContentFile
 from django.conf import settings
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.views import BaseApiView
@@ -73,7 +74,8 @@ def ticketcreate(request):
             requestor_meta = '%s %s <%s>' % (
                 form.cleaned_data['first_name'],
                 form.cleaned_data['last_name'],
-                form.cleaned_data['email'])
+                request.user.email
+            )
 
             meta = (
                 ('Opened by', request.user),
@@ -95,7 +97,7 @@ def ticketcreate(request):
 
             ticket = rtModels.Ticket(subject=form.cleaned_data['subject'],
                                      problem_description="\n  ".join(ticket_body.splitlines()),
-                                     requestor=form.cleaned_data['email'],
+                                     requestor=request.user.email,
                                      cc=form.cleaned_data.get('cc', ''))
 
             logger.debug('Creating ticket for user: %s' % form.cleaned_data)
@@ -105,12 +107,12 @@ def ticketcreate(request):
             if ticket_id > -1:
                 messages.success(request, 'Your ticket has been submitted.')
                 if 'attachment' in request.FILES:
+                    f = request.FILES['attachment']
                     rt.replyToTicket(
                         ticket_id,
-                        files=([request.FILES['attachment'].name,
-                                request.FILES['attachment'],
-                                mimetypes.guess_type(request.FILES['attachment'].name)],
-                               ))
+                        files=[(f.name,
+                                ContentFile(f.read()), f.content_type)
+                    ])
 
                 if request.user.is_authenticated:
                     return HttpResponseRedirect(reverse('djangoRT:ticketdetail',
@@ -163,8 +165,8 @@ def ticketreply(request, ticketId):
                     (
                        request.FILES['attachment'].name,
                        request.FILES['attachment'],
-                       mimetypes.guess_type(request.FILES['attachment'].name),
-                    ))
+                       request.FILES['attachment'].content_type),
+                    )
             if rt.replyToTicket(ticketId, text=reply_text, files=attachments):
                 return HttpResponseRedirect(reverse('djangoRT:ticketdetail',
                                                     args=[ticketId]))

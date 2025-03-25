@@ -80,6 +80,7 @@ export const JobsDetailModalBody: React.FC<{
       ></Collapse>
     ),
     ...(jobData.remoteOutcome && { 'Remote Outcome': jobData.remoteOutcome }),
+    ...(jobData.remoteJobId && { 'Remote Job ID': jobData.remoteJobId }),
   };
 
   if (jobData.remoteOutcome) {
@@ -235,7 +236,7 @@ export const JobsDetailModalBody: React.FC<{
           (isInteractiveJob(jobData) ? (
             <JobActionButton
               uuid={jobData.uuid}
-              title="Resubmit Job"
+              title="Relaunch Job"
               operation="resubmitJob"
               type="primary"
             />
@@ -296,21 +297,19 @@ export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
     <Modal
       className={`${styles.root} job-history-modal`}
       title={
-        <>
-          <header>
-            Job Detail: {uuid}
-            {jobData && (
-              <dl className={styles['header-details']}>
-                <dt>Job UUID: </dt>
-                <dd>{jobData.uuid}</dd>
-                <dt>Application: </dt>
-                <dd>{JSON.parse(jobData.notes).label || jobData.appId}</dd>
-                <dt>System: </dt>
-                <dd>{jobData.execSystemId}</dd>
-              </dl>
-            )}
-          </header>
-        </>
+        <header>
+          Job Detail: {uuid}
+          {jobData && (
+            <dl className={styles['header-details']}>
+              <dt>Job UUID: </dt>
+              <dd>{jobData.uuid}</dd>
+              <dt>Application: </dt>
+              <dd>{JSON.parse(jobData.notes).label || jobData.appId}</dd>
+              <dt>System: </dt>
+              <dd>{jobData.execSystemId}</dd>
+            </dl>
+          )}
+        </header>
       }
       width="60%"
       open={isModalOpen}

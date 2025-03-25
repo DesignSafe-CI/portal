@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import  ReconPortalBaseLayout  from './layouts/ReconPortalBaseLayout';
+import ReconPortalBaseLayout from './layouts/ReconPortalBaseLayout';
 
 const reconportalRouter = createBrowserRouter(
   [

@@ -41,5 +41,6 @@ export function useDataciteMetrics(doi: string, enabled: boolean = true) {
       return getDataciteMetrics({ doi, signal });
     },
     enabled: enabled && !!doi,
+    retry: false,
   });
 }

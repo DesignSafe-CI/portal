@@ -159,7 +159,9 @@ export const SubEntityDetails: React.FC<{
       </table>
       <DescriptionExpander>
         <strong>Description: </strong>
-        {entityValue.description || '(N/A)'}
+        <p className="render-linebreaks">
+          {entityValue.description || '(N/A)'}
+        </p>
       </DescriptionExpander>
     </section>
   );
