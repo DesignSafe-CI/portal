@@ -22,10 +22,7 @@ export { useUploadFile } from './useUploadFile';
 export { useUploadFolder } from './useUploadFolder';
 export { useFileDetail } from './useFileDetail';
 
-export {
-  usePathDisplayName,
-  getSystemRootDisplayName,
-} from './usePathDisplayName';
+export * from './usePathDisplayName';
 
 export * from './nees';
 export * from './projects';

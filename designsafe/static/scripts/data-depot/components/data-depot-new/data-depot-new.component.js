@@ -12,7 +12,7 @@ class DataDepotNewCtrl {
     this.Django = Django;
     this.FileListingService = FileListingService;
     this.FileOperationService = FileOperationService;
-    
+
   }
   $onInit() {
 
@@ -21,83 +21,87 @@ class DataDepotNewCtrl {
       createFiles: false,
       createProject: this.Django.context.authenticated
     };
-    
+
     // need to watch $rootScope here because this component lives outside the <ui-view/>
     this.$rootScope.$watch('this.$state.current.name', () => {
       this.test.createFiles = this.FileOperationService.getTests([]).upload
     })
-    
+
 
     const popoverHTML = `
-    <span>Our recommended method for bulk data transfer is <a href='https://www.designsafe-ci.org/rw/user-guides/globus-data-transfer-guide/'>using Globus.</a></span>
+    <span>Our recommended method for bulk data transfer is <a href='https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/'>using Globus.</a></span>
     `;
-    
+
     this.popoverHTML = this.$sce.trustAsHtml(popoverHTML);
 
   }
 
 
 
-    createFolder($event) {
-      if (this.FileOperationService.tests.upload) {
-        this.FileOperationService.openMkdirModal({
-          api: this.FileListingService.listings.main.params.api,
-          scheme: this.FileListingService.listings.main.params.scheme,
-          system: this.FileListingService.listings.main.params.system,
-          path: this.FileListingService.listings.main.params.path
-        });
-      } else {
-        $event.preventDefault();
-        $event.stopPropagation();
-      }
-    };
+  createFolder($event) {
+    if (this.FileOperationService.tests.upload) {
+      this.FileOperationService.openMkdirModal({
+        api: this.FileListingService.listings.main.params.api,
+        scheme: this.FileListingService.listings.main.params.scheme,
+        system: this.FileListingService.listings.main.params.system,
+        path: this.FileListingService.listings.main.params.path
+      });
+    } else {
+      $event.preventDefault();
+      $event.stopPropagation();
+    }
+  };
 
-    createProject($event) {
-      if (this.test.createProject) {
-        let modalInstance = this.$uibModal.open({
-          component: 'manageProject',
-          backdrop: 'static',
-          size: 'lg',
-        });
-        return modalInstance;
-      } else {
-        $event.preventDefault();
-        $event.stopPropagation();
-      }
-    };
+  createProject($event) {
+    if (this.test.createProject) {
+      let modalInstance = this.$uibModal.open({
+        component: 'manageProject',
+        backdrop: 'static',
+        size: 'lg',
+      });
+      return modalInstance;
+    } else {
+      $event.preventDefault();
+      $event.stopPropagation();
+    }
+  };
 
-    uploadFiles($event) {
-      if (this.FileOperationService.tests.upload) {
-        this.FileOperationService.openUploadModal({ directory: false, 
-          api: this.FileListingService.listings.main.params.api,
-          scheme: this.FileListingService.listings.main.params.scheme,
-          system: this.FileListingService.listings.main.params.system,
-          path: this.FileListingService.listings.main.params.path});
-      } else {
-        $event.preventDefault();
-        $event.stopPropagation();
-      }
-    };
+  uploadFiles($event) {
+    if (this.FileOperationService.tests.upload) {
+      this.FileOperationService.openUploadModal({
+        directory: false,
+        api: this.FileListingService.listings.main.params.api,
+        scheme: this.FileListingService.listings.main.params.scheme,
+        system: this.FileListingService.listings.main.params.system,
+        path: this.FileListingService.listings.main.params.path
+      });
+    } else {
+      $event.preventDefault();
+      $event.stopPropagation();
+    }
+  };
 
-    uploadFolders($event) {
-      if (this.FileOperationService.tests.upload) {
-        this.FileOperationService.openUploadModal({directory: true, 
-          api: this.FileListingService.listings.main.params.api,
-          scheme: this.FileListingService.listings.main.params.scheme,
-          system: this.FileListingService.listings.main.params.system,
-          path: this.FileListingService.listings.main.params.path});
-      } else {
-        $event.preventDefault();
-        $event.stopPropagation();
-      }
-    };
+  uploadFolders($event) {
+    if (this.FileOperationService.tests.upload) {
+      this.FileOperationService.openUploadModal({
+        directory: true,
+        api: this.FileListingService.listings.main.params.api,
+        scheme: this.FileListingService.listings.main.params.scheme,
+        system: this.FileListingService.listings.main.params.system,
+        path: this.FileListingService.listings.main.params.path
+      });
+    } else {
+      $event.preventDefault();
+      $event.stopPropagation();
+    }
+  };
 
-    
 
-  }
+
+}
 
 export const DataDepotNewComponent = {
-    controller: DataDepotNewCtrl,
-    controllerAs: '$ctrl',
-    template: DataDepotNewTemplate
+  controller: DataDepotNewCtrl,
+  controllerAs: '$ctrl',
+  template: DataDepotNewTemplate
 }

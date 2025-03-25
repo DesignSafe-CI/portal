@@ -1,0 +1,23 @@
+.root {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  border-bottom: 1px solid var(--global-color-primary--normal);
+}
+
+.name {
+  font-weight: bold;
+}
+
+.description {
+  padding-bottom: 1em;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+}
+
+.disabled {
+  color: var(--global-color-primary--light);
+}

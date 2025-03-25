@@ -7,8 +7,8 @@ from django.core.mail import send_mail
 
 # pylint: disable=unused-import
 from designsafe.apps.api.projects_v2.operations.project_system_operations import (
-    add_user_to_project_async,
-    remove_user_from_project_async,
+    add_users_to_project_async,
+    remove_users_from_project_async,
 )
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
@@ -18,6 +18,7 @@ from designsafe.apps.api.projects_v2.operations.project_publish_operations impor
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
     archive_publication_async,
 )
+from designsafe.apps.api.projects_v2.elasticsearch import reindex_projects
 from designsafe.libs.common.context_managers import AsyncTaskContext
 
 
@@ -65,3 +66,10 @@ def alert_sensitive_data(project_id, username):
                 [admin],
                 html_message=email_body,
             )
+
+
+@shared_task()
+def reindex_projects_async():
+    """Async wrapper around project reindex util"""
+    with AsyncTaskContext():
+        reindex_projects()

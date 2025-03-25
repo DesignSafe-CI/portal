@@ -60,14 +60,14 @@ def copy(client, src_system, src_path, dest_system, dest_path, filetype='file', 
 
     return {}
 
-def download_bytes(client, system, path):
+def download_bytes(client, system, path, *args, **kwargs):
     filename = client.file(path).get().name
     resp = client.file(path).content()
     result = io.BytesIO(resp)
     result.name = filename
     return result
 
-def upload(client, system, path, uploaded_file):
+def upload(client, system, path, uploaded_file, *args, **kwargs):
     if not path:
         folder = client.root_folder()
     else:
@@ -76,7 +76,7 @@ def upload(client, system, path, uploaded_file):
     folder.upload_stream(uploaded_file, file_name=uploaded_file.name)
     return {}
 
-def mkdir(client, system, path, dirname):
+def mkdir(client, system, path, dirname, *args, **kwargs):
     if not path:
         folder = client.root_folder()
     else:

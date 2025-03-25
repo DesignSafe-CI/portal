@@ -38,7 +38,7 @@ from impersonate import views as impersonate_views
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap, index
 from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap
-from designsafe import views
+
 
 sitemaps = {
         'home': HomeSitemap,
@@ -99,8 +99,9 @@ urlpatterns = [
             namespace='designsafe_applications')),
         # NOTE: /data is redirected to /data/browser via the CMS.
         url(r'^data/', include(('designsafe.apps.data.urls', 'designsafe.apps.data'), namespace='designsafe_data')),
-        url(r'^rw/workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'),
+        url(r'^workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'),
             namespace='designsafe_workspace')),
+        url(r'^rw/workspace/', include(('designsafe.apps.workspace.urls', 'designsafe.apps.workspace'))),
         path('api/workspace/', include('designsafe.apps.workspace.api.urls', namespace='workspace_api')),
         url(r'^notifications/', include(('designsafe.apps.notifications.urls', 'designsafe.apps.notifications'),
             namespace='designsafe_notifications')),
@@ -125,6 +126,12 @@ urlpatterns = [
             namespace='designsafe_accounts')),
         url(r'^register/$', RedirectView.as_view(
             pattern_name='designsafe_accounts:register', permanent=True), name='register'),
+
+        # onboarding
+        url(r'^onboarding/', include(('designsafe.apps.onboarding.urls', 'designsafe.apps.onboarding'),
+            namespace='designsafe_onboarding')),
+        path('api/onboarding/', include('designsafe.apps.onboarding.api.urls', namespace='designsafe_onboarding_api')),
+
 
         # dashboard
     url(r'^dashboard/', include(('designsafe.apps.dashboard.urls', 'designsafe.apps.dashboard'),

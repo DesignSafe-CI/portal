@@ -1,9 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { TBaseProjectValue, TProjectUser } from '@client/hooks';
+import {
+  TBaseProjectValue,
+  TProjectUser,
+  usePublicationVersions,
+  useSelectedFiles,
+} from '@client/hooks';
 
 import styles from './BaseProjectDetails.module.css';
 import { Button, Col, Popover, Row, Select, Tooltip } from 'antd';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { RelateDataModal } from './modals';
 import { ProjectInfoModal } from './modals/ProjectInfoModal';
 import { VersionChangesModal } from './modals/VersionChangesModal';
@@ -154,18 +159,22 @@ export const BaseProjectDetails: React.FC<{
     ...(projectValue.frTypes?.map((t) => t.name) ?? []),
   ].join(' | ');
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
+  const { unsetSelections } = useSelectedFiles(
+    'tapis',
+    'designsafe.storage.published',
+    ''
+  );
+  const navigate = useNavigate();
   const setSelectedVersion = (newVersion: number) => {
-    setSearchParams((prevParams) => {
-      prevParams.set('version', newVersion.toString());
-      return prevParams;
-    });
+    unsetSelections();
+    navigate(
+      `/public/designsafe.storage.published/${projectValue.projectId}?version=${newVersion}`
+    );
   };
 
-  const currentVersion = versions
-    ? parseInt(searchParams.get('version') ?? Math.max(...versions).toString())
-    : 1;
+  const { selectedVersion: currentVersion } = usePublicationVersions(
+    projectValue.projectId
+  );
 
   const filteredHazmapperMaps = filterHazmapperMaps(
     projectValue.hazmapperMaps ?? []
@@ -436,7 +445,7 @@ export const BaseProjectDetails: React.FC<{
       {projectValue.description && (
         <DescriptionExpander>
           <strong>Description: </strong>
-          {projectValue.description}
+          <p className="render-linebreaks">{projectValue.description}</p>
         </DescriptionExpander>
       )}
     </section>

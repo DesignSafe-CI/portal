@@ -44,7 +44,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
 
-
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -110,6 +110,7 @@ INSTALLED_APPS = (
     'designsafe.apps.search',
     'designsafe.apps.geo',
     'designsafe.apps.rapid',
+    'designsafe.apps.onboarding',
 
     #haystack integration
     # 'haystack'
@@ -169,6 +170,7 @@ TEMPLATES = [
                 'designsafe.context_processors.site_verification',
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
+                'designsafe.context_processors.tas_homedir',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -450,7 +452,6 @@ AGAVE_CLIENT_SECRET = os.environ.get('AGAVE_CLIENT_SECRET')
 AGAVE_TOKEN_SESSION_ID = os.environ.get('AGAVE_TOKEN_SESSION_ID', 'agave_token')
 AGAVE_SUPER_TOKEN = os.environ.get('AGAVE_SUPER_TOKEN')
 AGAVE_STORAGE_SYSTEM = os.environ.get('AGAVE_STORAGE_SYSTEM')
-AGAVE_WORKING_SYSTEM = os.environ.get('AGAVE_WORKING_SYSTEM')
 
 AGAVE_JWT_PUBKEY = os.environ.get('AGAVE_JWT_PUBKEY')
 AGAVE_JWT_ISSUER = os.environ.get('AGAVE_JWT_ISSUER')
@@ -473,7 +474,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
         'port': 2222,
         'homeDir': '/',
         'protocol': 'SFTP',
-        'host': 'cloud.corral.tacc.utexas.edu',
+        'host': 'cloud.data.tacc.utexas.edu',
         'publicAppsDir': None,
         'proxy': None,
         'rootDir': '/corral-repl/projects/NHERI/projects/{}',
@@ -481,6 +482,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
     }
 }
 PROJECT_ADMIN_USERS = ["test_prjadmin"]
+PROJECT_ADMIN_GROUP = "Project Admin"
 
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
 
@@ -510,7 +512,7 @@ else:
 GOOGLE_OAUTH2_CLIENT_SECRET = "CHANGE_ME"
 GOOGLE_OAUTH2_CLIENT_ID = "CHANGE_ME"
 
-WEBHOOK_POST_URL = "http://8cb9afb3.ngrok.io"
+NGROK_DOMAIN = "https://8cb9afb3.ngrok.io"
 
 # Box sync
 BOX_APP_CLIENT_ID = 'boxappclientid'
@@ -547,13 +549,6 @@ AGAVE_CLIENT_KEY = 'example_com_client_key'
 AGAVE_CLIENT_SECRET = 'example_com_client_secret'
 AGAVE_SUPER_TOKEN = 'example_com_client_token'
 AGAVE_STORAGE_SYSTEM = 'storage.example.com'
-AGAVE_WORKING_SYSTEM = 'storage.example.work'
-
-TAPIS_SYSTEMS_TO_CONFIGURE = [
-    {"system_id": AGAVE_STORAGE_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": AGAVE_WORKING_SYSTEM, "path": "{username}", "create_path": True},
-    {"system_id": "cloud.data", "path": "/ ", "create_path": False},
-]
 
 # Tapis Client Configuration
 PORTAL_ADMIN_USERNAME = ''
@@ -631,6 +626,20 @@ LOGGING = {
     },
 }
 
+# Channels
+WSGI_APPLICATION = 'designsafe.wsgi.application'
+ASGI_APPLICATION = 'designsafe.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.get('WS_BACKEND_HOST'),
+                       os.environ.get('WS_BACKEND_PORT'))],
+        },
+    },
+}
+
+
 PORTAL_DATA_DEPOT_MANAGERS = {
     'agave': 'designsafe.apps.api.agave.filemanager.private_data.PrivateDataFileManager',
     'shared': 'designsafe.apps.api.agave.filemanager.shared_data.SharedDataFileManager',
@@ -697,6 +706,11 @@ ES_INDICES = {
         'alias': ES_INDEX_PREFIX.format('publications_v2'),
         'document': 'designsafe.apps.api.publications_v2.elasticsearch.IndexedPublication',
         'kwargs': {}
+    },
+    'projects_v2': {
+        'alias': ES_INDEX_PREFIX.format('projects_v2'),
+        'document': 'designsafe.apps.api.projects_v2.elasticsearch.IndexedProject',
+        'kwargs': {"index.mapping.ignore_malformed": True} # Squash malformed date fields
     },
     'web_content': {
         'alias': ES_INDEX_PREFIX.format('web-content'),
@@ -772,3 +786,26 @@ FEDORA_URL = ''
 FEDORA_USERNAME = ''
 FEDORA_PASSWORD = ''
 FEDORA_CONTAINER= 'designsafe-publications-dev'
+
+# Onboarding
+PORTAL_USER_ACCOUNT_SETUP_STEPS = [
+    {
+        'step': 'designsafe.apps.onboarding.steps.test_steps.MockStep',
+        'settings': {
+            'key': 'value'
+        }
+    }
+]
+
+# TAS Authentication.
+TAS_URL = 'https://test.com'
+TAS_CLIENT_KEY = 'test'
+TAS_CLIENT_SECRET = 'test'
+
+# Redmine Tracker Authentication.
+RT_URL = 'test'
+RT_HOST = 'https://test.com'
+RT_UN = 'test'
+RT_PW = 'test'
+RT_QUEUE = 'test'
+RT_TAG = 'test_tag'

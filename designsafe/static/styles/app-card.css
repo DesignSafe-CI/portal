@@ -1,7 +1,7 @@
 /* STRUCTURE */
 
 /* To load most structure from Core-Styles */
-@import url("https://cdn.jsdelivr.net/gh/TACC/core-styles@v2.26.0/dist/components/c-app-card.css");
+@import url("https://cdn.jsdelivr.net/npm/@tacc/core-styles@v2.37.2/dist/components/c-app-card.css");
 
 
 
@@ -23,6 +23,12 @@
 .c-app-card__desc {
     padding-inline: 1.5rem;
     margin-block: 1.5rem;
+}
+/* To set explicit height equal to N lines of text */
+.s-app-page p.c-app-card__desc {
+    --lines: 3; /* to override Core-Styles c-app-card truncate */
+
+    height: calv(var(--lines) * var(--line-height));
 }
 
 /* Types */

@@ -68,7 +68,7 @@ export function getOutputPath(job: TTapisJob) {
 }
 
 export function isInteractiveJob(job: TTapisJob) {
-  return job.tags.includes('isInteractive');
+  return job.tags?.includes('isInteractive');
 }
 
 export function getJobInteractiveSessionInfo(

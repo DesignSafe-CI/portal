@@ -12,9 +12,14 @@ const { Sider } = Layout;
 
 const DataFilesRoot: React.FC = () => {
   const { user } = useAuthenticatedUser();
+
+  if (user && !user.setupComplete) {
+    window.location.replace(`${window.location.origin}/onboarding/setup`);
+  }
+
   const defaultPath = user?.username
     ? '/tapis/designsafe.storage.default'
-    : '/tapis/designsafe.storage.community';
+    : '/public/designsafe.storage.published';
   const { pathname } = useLocation();
 
   const [notifyApi, contextHolder] = notification.useNotification();
