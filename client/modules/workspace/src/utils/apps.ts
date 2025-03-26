@@ -11,6 +11,7 @@ import {
 } from '@client/hooks';
 import { TFormValues } from '../AppsWizard/AppsFormSchema';
 import { UseFormSetValue } from 'react-hook-form';
+import { getSystemName } from '../utils';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
 export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
@@ -64,7 +65,7 @@ export const getDefaultExecSystem = (
   execSystems: TTapisSystem[]
 ) => {
   // If dynamic exec system is not setup, use from job attributes.
-  if (!definition.notes.dynamicExecSystems) {
+  if (!isAppUsingDynamicExecSystem(definition)) {
     return getExecSystemFromId(
       execSystems,
       definition.jobAttributes.execSystemId
@@ -105,6 +106,26 @@ export const preprocessStringToNumber = (value: unknown): unknown => {
     return Number(value);
   }
   return value;
+};
+
+/**
+ * Get validator for system. Only runs for apps
+ * with dynamic execution system.
+ * @param {definition} app definition
+ * @param {executionSystems} collection of systems
+ * @returns {z.string()} exec system validation if it is enabled for app
+ */
+export const getExecSystemIdValidation = (
+  definition: TTapisApp,
+  executionSystems: TTapisSystem[]
+) => {
+  return definition.jobType === 'BATCH' && !!definition.notes.dynamicExecSystems
+    ? z
+        .string()
+        .refine((value) => executionSystems?.some((e) => e.id === value), {
+          message: 'A system is required to run this application.',
+        })
+    : z.string().optional();
 };
 
 /**
@@ -250,6 +271,25 @@ export const updateValuesForQueue = (
   if ((values.configuration.maxMinutes as number) > queue.maxMinutes) {
     setValue('configuration.maxMinutes', queue.maxMinutes);
   }
+};
+
+export const getAppExecSystems = (
+  executionSystems: TTapisSystem[]
+): { id: string; name: string }[] => {
+  return executionSystems
+    .map((exec_system) => {
+      const name =
+        exec_system?.notes?.label ??
+        getSystemName(
+          getExecSystemFromId(executionSystems, exec_system.id)?.host ?? ''
+        );
+
+      return {
+        id: exec_system.id,
+        name,
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 };
 
 /**
@@ -430,11 +470,22 @@ export const getExecSystemLogicalQueueValidation = (
  * the execution host of the selected app.
  */
 export const getAllocationList = (
-  execSystem: TTapisSystem,
-  allocations: TTasAllocations
+  definition: TTapisApp,
+  execSystem: TTapisSystem[],
+  allocations: TTasAllocations,
+  allocationToExecSysMap: Map<string, string[]>
 ) => {
+  if (isAppUsingDynamicExecSystem(definition)) {
+    return [...allocationToExecSysMap.keys()].filter((alloc: string) => {
+      const execSysList = allocationToExecSysMap.get(alloc);
+      return execSysList !== undefined && execSysList.length > 0;
+    });
+  }
+
   const matchingExecutionHost = Object.keys(allocations.hosts).find(
-    (host) => execSystem.host === host || execSystem.host.endsWith(`.${host}`)
+    (host) =>
+      execSystem.length > 0 &&
+      (execSystem[0].host === host || execSystem[0].host.endsWith(`.${host}`))
   );
 
   return matchingExecutionHost ? allocations.hosts[matchingExecutionHost] : [];
@@ -528,4 +579,16 @@ export const getAppRuntimeLabel = (
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ')
     : label;
+};
+
+/**
+ * Generic to compare arrays.
+ * @param a1 T[]
+ * @param a2 T[]
+ * @returns true if array elements are same.
+ */
+export const areArraysEqual = <T>(a1: T[], a2: T[]): boolean => {
+  return (
+    a1.length === a2.length && a1.every((value, index) => value === a2[index])
+  );
 };

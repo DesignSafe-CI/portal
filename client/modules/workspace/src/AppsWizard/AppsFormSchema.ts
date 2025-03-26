@@ -1,5 +1,6 @@
 import { z, ZodType, ZodObject, ZodRawShape } from 'zod';
 import {
+  TTasAllocations,
   TTapisApp,
   TJobKeyValuePair,
   TJobArgSpec,
@@ -24,6 +25,8 @@ import {
   getQueueMaxMinutes,
   isAppTypeBATCH,
   getExecSystemLogicalQueueValidation,
+  getExecSystemIdValidation,
+  getAppExecSystems,
   preprocessStringToNumber,
 } from '../utils';
 
@@ -100,11 +103,12 @@ export const tapisInputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
 
 export const fieldDisplayOrder: Record<string, string[]> = {
   configuration: [
+    'allocation',
+    'execSystemId',
     'execSystemLogicalQueue',
     'maxMinutes',
     'nodeCount',
     'coresPerNode',
-    'allocation',
   ],
   outputs: ['name', 'archiveSystemId', 'archiveSystemDir'],
 };
@@ -129,18 +133,26 @@ function asOptionalField<T extends z.ZodTypeAny>(schema: T) {
 export const getConfigurationSchema = (
   definition: TTapisApp,
   allocations: string[],
-  execSystem: TTapisSystem,
+  execSystems: TTapisSystem[],
+  selectedExecSystem: TTapisSystem,
   queue: TTapisSystemQueue
 ) => {
   const configurationSchema: { [dynamic: string]: ZodType } = {};
 
   if (definition.jobType === 'BATCH') {
     configurationSchema['execSystemLogicalQueue'] =
-      getExecSystemLogicalQueueValidation(definition, execSystem);
+      getExecSystemLogicalQueueValidation(definition, selectedExecSystem);
     configurationSchema['allocation'] = getAllocationValidation(
       definition,
       allocations
     );
+
+    if (definition.notes.dynamicExecSystems) {
+      configurationSchema['execSystemId'] = getExecSystemIdValidation(
+        definition,
+        execSystems
+      );
+    }
   }
 
   if (!definition.notes.hideMaxMinutes) {
@@ -171,20 +183,32 @@ export const getConfigurationSchema = (
 export const getConfigurationFields = (
   definition: TTapisApp,
   allocations: string[],
-  executionSystems: TTapisSystem[],
+  execSystems: TTapisSystem[],
+  selectedExecSystem: TTapisSystem,
   queue: TTapisSystemQueue
 ) => {
   const configurationFields: TDynamicField = {};
 
-  const execSystems = getExecSystemsFromApp(
-    definition,
-    executionSystems as TTapisSystem[]
-  );
-
   const defaultExecSystem = getExecSystemFromId(
     execSystems,
-    definition.jobAttributes.execSystemId
+    selectedExecSystem.id
   ) as TTapisSystem;
+
+  if (definition.jobType === 'BATCH' && !!definition.notes.dynamicExecSystems) {
+    configurationFields['execSystemId'] = {
+      description:
+        'Select the system this job will execute on. The systems available to run the job depend on allocation.',
+      label: 'System',
+      name: 'configuration.execSystemId',
+      key: 'configuration.execSystemId',
+      required: true,
+      type: 'select',
+      options: getAppExecSystems(execSystems).map((q) => ({
+        value: q.id,
+        label: q.name,
+      })),
+    };
+  }
 
   if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
     configurationFields['execSystemLogicalQueue'] = {
@@ -198,7 +222,7 @@ export const getConfigurationFields = (
       type: 'select',
       options: getAppQueueValues(
         definition,
-        execSystems[0].batchLogicalQueues
+        selectedExecSystem.batchLogicalQueues
       ).map((q) => ({ value: q, label: q })),
     };
   }
@@ -510,6 +534,9 @@ const FormSchema = (
   }) as TTapisSystemQueue;
 
   if (definition.jobType === 'BATCH') {
+    if (definition.notes.dynamicExecSystems) {
+      appFields.configuration.defaults['execSystemId'] = defaultExecSystem.id;
+    }
     appFields.configuration.defaults['execSystemLogicalQueue'] = isAppTypeBATCH(
       definition
     )
@@ -541,6 +568,7 @@ const FormSchema = (
   appFields.configuration.schema = getConfigurationSchema(
     definition,
     allocations,
+    execSystems,
     defaultExecSystem,
     queue
   );
@@ -548,6 +576,7 @@ const FormSchema = (
     definition,
     allocations,
     execSystems,
+    defaultExecSystem,
     queue
   );
 
@@ -595,6 +624,42 @@ const FormSchema = (
   };
 
   return appFields;
+};
+
+/**
+ * Builds a Map of Allocation project names to exec system id's supported
+ * by the allocation
+ * @param {*} definition
+ * @param {*} allocations
+ * @returns a Map of Allocation project id to exec system id
+ */
+export const buildMapOfAllocationsToExecSystems = (
+  execSystems: TTapisSystem[],
+  allocations: TTasAllocations
+): Map<string, string[]> => {
+  const allocationToExecSystems = new Map();
+
+  Object.entries(allocations.hosts).forEach(([host, allocationsForHost]) => {
+    allocationsForHost.forEach((allocation) => {
+      const matchingExecutionHosts: string[] = [];
+      execSystems.forEach((exec_sys: TTapisSystem) => {
+        if (exec_sys.host === host || exec_sys.host.endsWith(`.${host}`)) {
+          matchingExecutionHosts.push(exec_sys.id);
+        }
+      });
+
+      if (matchingExecutionHosts.length > 0) {
+        const existingAllocations =
+          allocationToExecSystems.get(allocation) || [];
+        allocationToExecSystems.set(allocation, [
+          ...existingAllocations,
+          ...matchingExecutionHosts,
+        ]);
+      }
+    });
+  });
+
+  return allocationToExecSystems;
 };
 
 export default FormSchema;
