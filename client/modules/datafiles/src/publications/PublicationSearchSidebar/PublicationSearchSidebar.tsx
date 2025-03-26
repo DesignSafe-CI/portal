@@ -15,7 +15,6 @@ Object.keys(dropdownOptions.experimentTypeOptions).forEach((k) => {
 
   optionsForFacility.forEach((o) => _optionKeySet.add(o.value));
 });
-console.log(experimentTypeOptions);
 
 export const PublicationSearchSidebar: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

@@ -27,6 +27,10 @@ from designsafe.apps.workspace.models.app_entries import (
 )
 from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
+from designsafe.apps.onboarding.steps.system_access_v3 import (
+    create_system_credentials,
+    create_system_credentials_with_keys,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -93,16 +97,6 @@ def _get_systems(
     )
 
 
-def _get_exec_systems(user, systems):
-    """List of all enabled execution systems available for the user."""
-    tapis = user.tapis_oauth.client
-    search_string = "(canExec.eq.true)~(enabled.eq.true)"
-    if systems != ["All"]:
-        system_id_search = ','.join(systems)
-        search_string = f"(id.in.{system_id_search})~{search_string}"
-    return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
-
-
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
 
@@ -113,12 +107,6 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
 
     data = {"definition": app_def}
-    exec_systems = getattr(app_def.notes, 'dynamicExecSystems', [])
-    if len(exec_systems) > 0:
-        data['execSystems'] = _get_exec_systems(user, exec_systems)
-    else:
-        # Get Execution System Info to process sytem specific data, example: queue information
-        data['execSystems'] = [tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)]
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}
@@ -129,18 +117,35 @@ def _get_app(app_id, app_version, user):
     return data
 
 
-def test_system_needs_keys(tapis, system_id):
+def test_system_needs_keys(tapis, username, system_id):
     """Tests a Tapis system by making a file listing call.
 
-    returns: SystemDef
-    """
+    If the system is TMS_KEYS-based, it attempts to create credentials before listing files.
 
+    Args:
+        tapis (Tapis): An instance of the Tapis client.
+        username (str)): The user to create credentials.
+        system_id (str): The ID of the Tapis system to test.
+
+    Returns:
+        SystemDef: The system definition if an error occurs.
+    """
+    system_def = tapis.systems.getSystem(systemId=system_id)
     try:
         tapis.files.listFiles(systemId=system_id, path="/")
+        return None
     except (InternalServerError, UnauthorizedError):
-        system_def = tapis.systems.getSystem(systemId=system_id)
+        # Check if the system uses TMS_KEYS and create credentials if necessary
+        if system_def.get("defaultAuthnMethod") == "TMS_KEYS":
+            try:
+                create_system_credentials(
+                    tapis, username, system_id, createTmsKeys=True
+                )
+                tapis.files.listFiles(systemId=system_id, path="/")
+                return None
+            except (InternalServerError, UnauthorizedError):
+                logger.warning(f"Authentication still failing for system: {system_id}")
         return system_def
-    return False
 
 
 class SystemListingView(AuthenticatedApiView):
@@ -717,7 +722,7 @@ class JobsView(AuthenticatedApiView):
         for system_id in list(
             set([job_post["archiveSystemId"], job_post["execSystemId"]])
         ):
-            system_needs_keys = test_system_needs_keys(tapis, system_id)
+            system_needs_keys = test_system_needs_keys(tapis, username, system_id)
             if system_needs_keys:
                 logger.info(
                     f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
@@ -784,7 +789,9 @@ class JobsView(AuthenticatedApiView):
                         "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
                     },
                 )
-            job_post["parameterSet"]["envVariables"].append({"key": "_TAS_DIR", "value": tasdir})
+            job_post["parameterSet"]["envVariables"].append(
+                {"key": "_TAS_DIR", "value": tasdir}
+            )
 
         # Add webhook subscription for job status updates
         job_post["subscriptions"] = job_post.get("subscriptions", []) + [
