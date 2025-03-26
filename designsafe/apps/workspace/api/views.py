@@ -136,9 +136,11 @@ def test_system_needs_keys(tapis, username, system_id):
         return None
     except (InternalServerError, UnauthorizedError):
         # Check if the system uses TMS_KEYS and create credentials if necessary
-        if system_def.get("defaultAuthnMethod") == 'TMS_KEYS':
+        if system_def.get("defaultAuthnMethod") == "TMS_KEYS":
             try:
-                create_system_credentials(tapis, username, system_id, createTmsKeys=True)
+                create_system_credentials(
+                    tapis, username, system_id, createTmsKeys=True
+                )
                 tapis.files.listFiles(systemId=system_id, path="/")
                 return None
             except (InternalServerError, UnauthorizedError):
@@ -787,7 +789,9 @@ class JobsView(AuthenticatedApiView):
                         "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
                     },
                 )
-            job_post["parameterSet"]["envVariables"].append({"key": "_TAS_DIR", "value": tasdir})
+            job_post["parameterSet"]["envVariables"].append(
+                {"key": "_TAS_DIR", "value": tasdir}
+            )
 
         # Add webhook subscription for job status updates
         job_post["subscriptions"] = job_post.get("subscriptions", []) + [
