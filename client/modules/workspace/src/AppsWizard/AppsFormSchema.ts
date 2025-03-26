@@ -541,12 +541,9 @@ const FormSchema = (
   if (definition.jobType === 'BATCH') {
     if (definition.notes.dynamicExecSystems) {
       appFields.configuration.defaults['execSystemId'] = defaultExecSystem.id;
+    } else {
+      appFields.configuration.defaults['execSystemId'] = definition.jobAttributes.execSystemId;
     }
-    appFields.configuration.defaults['execSystemId'] = isAppTypeBATCH(
-      definition
-    )
-      ? definition.jobAttributes.execSystemId
-      : '';
 
     appFields.configuration.defaults['execSystemLogicalQueue'] = isAppTypeBATCH(
       definition
