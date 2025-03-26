@@ -104,9 +104,9 @@ export const tapisInputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
 
 export const fieldDisplayOrder: Record<string, string[]> = {
   configuration: [
-    'allocation',
     'execSystemId',
     'execSystemLogicalQueue',
+    'allocation',
     'maxMinutes',
     'nodeCount',
     'coresPerNode',
@@ -195,7 +195,7 @@ export const getConfigurationFields = (
     selectedExecSystem.id
   ) as TTapisSystem;
 
-  if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
+  if (definition.jobType === 'BATCH') {
     configurationFields['execSystemId'] = {
       description: `Select the Execution System this ${getAppRuntimeLabel(
         definition

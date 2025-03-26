@@ -105,6 +105,9 @@ export const AppsSubmissionDetails: React.FC<{
         ) {
           return; // Hide the allocation, if that field is true
         }
+        if (key === 'outputs' && k === 'archiveSystemId') {
+          return; // Hide the archive system ID
+        }
         if (v instanceof Object) {
           Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
             const nestedFieldSchema = parent?.shape?.[k]?.shape?.[kk];
