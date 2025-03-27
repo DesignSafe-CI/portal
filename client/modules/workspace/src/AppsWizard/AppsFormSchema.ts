@@ -197,18 +197,17 @@ export const getConfigurationFields = (
 
   if (definition.jobType === 'BATCH') {
     configurationFields['execSystemId'] = {
-      description: `Select the Execution System this ${getAppRuntimeLabel(
-        definition
-      )} will execute on.`,
-      label: 'Execution System',
+      description:
+        'Select the system this job will execute on. The systems available to run the job depend on allocation.',
+      label: 'System',
       name: 'configuration.execSystemId',
       key: 'configuration.execSystemId',
       required: true,
       readOnly: true,
       type: 'select',
-      options: execSystems.map((e) => ({
-        value: e.id,
-        label: e.id,
+      options: getAppExecSystems(execSystems).map((q) => ({
+        value: q.id,
+        label: q.name,
         disabled: true,
       })),
     };
@@ -542,7 +541,8 @@ const FormSchema = (
     if (definition.notes.dynamicExecSystems) {
       appFields.configuration.defaults['execSystemId'] = defaultExecSystem.id;
     } else {
-      appFields.configuration.defaults['execSystemId'] = definition.jobAttributes.execSystemId;
+      appFields.configuration.defaults['execSystemId'] =
+        definition.jobAttributes.execSystemId;
     }
 
     appFields.configuration.defaults['execSystemLogicalQueue'] = isAppTypeBATCH(
