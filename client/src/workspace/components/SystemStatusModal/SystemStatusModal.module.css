@@ -8,6 +8,7 @@
 
 .tabs {
   display: flex;
+  justify-content: center;
   border-bottom: 1px solid #f0f0f0;
   background: #fafafa;
 }
@@ -44,8 +45,8 @@
   max-height: 60vh;
   padding: 15px;
   min-height: 250px;
-  display: flex; /*  not sure  */
-  flex-direction: column; /*  not sure  */
+  display: flex; 
+  flex-direction: column; 
   
 }
 

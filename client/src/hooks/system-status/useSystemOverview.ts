@@ -27,7 +27,7 @@ async function fetchSystems(): Promise<HPCSystem[]> {
   const data = raw.response;
 
   return Object.keys(data)
-    .filter((key) => key !== 'Vista')
+    .filter((key) => data[key].system_type === 'COMPUTE')
     .map((key) => {
       const system = data[key];
       return {

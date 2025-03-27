@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Badge, Spin, Alert} from 'antd';
+import { Modal, Badge, Spin, Alert } from 'antd';
 import { SystemQueueTable } from './SystemQueueTable';
 import { useSystemOverview } from '../../../hooks/system-status/useSystemOverview';
 import styles from './SystemStatusModal.module.css';
@@ -38,15 +38,15 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
     >
       <div className={styles.modal}>
         <div className={styles.tabs}>
-          {['frontera', 'lonestar6', 'Stampede3'].map((hostname) => (
+          {systems?.map((sys) => (
             <button
-              key={hostname}
+              key={sys.display_name}
               className={`${styles.tabButton} ${
-                activeSystem === hostname ? styles.activeTab : ''
+                activeSystem === sys.display_name ? styles.activeTab : ''
               }`}
-              onClick={() => setActiveSystem(hostname)}
+              onClick={() => setActiveSystem(sys.display_name)}
             >
-              {hostname.toUpperCase()}
+              {sys.display_name.toUpperCase()}
             </button>
           ))}
         </div>

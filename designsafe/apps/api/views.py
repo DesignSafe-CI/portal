@@ -160,13 +160,13 @@ class LoggerApi(BaseApiView):
     
 
 
-class SystemMonitorProxyApi(BaseApiView):
+class SystemQueueProxyApi(BaseApiView):
     """"
-    Proxy API for fetching system queue data from Core Portal. 
+    Proxy API for fetching system queue data from TAP. 
     """
 
     def get(self, request, hostname):
-        url = f"{settings.CORE_PORTAL_API_BASE}/{hostname}"
+        url = f"{settings.TAP_API_STATUS}/{hostname}"
         
         try:
             response = requests.get(url, timeout=10)
@@ -182,7 +182,7 @@ class SystemOverviewProxyApi(BaseApiView):
     Proxy API for fetching system monitor overview data from TAP. (Load%, Running, Waiting Jobs)
     """
     def get(self, request):
-        url = settings.TAPIS_API_STATUS
+        url = settings.TAP_API_STATUS
 
         try:
             response = requests.get(url, timeout=10)

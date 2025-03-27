@@ -569,11 +569,8 @@ TAPIS_CLIENT_KEY = os.environ.get('TAPIS_CLIENT_KEY')
 TAPIS_ADMIN_JWT = os.environ.get('TAPIS_ADMIN_JWT')
 TAPIS_TG458981_JWT = os.environ.get('TAPIS_TG458981_JWT')
 
-# Core Portal Configuration
-CORE_PORTAL_API_BASE = os.environ.get("CORE_PORTAL_API_BASE", "https://cep.tacc.utexas.edu/api/system-monitor")
-
 # Tapis API Configuration
-TAPIS_API_STATUS = os.environ.get("TAP_API_STATUS", "https://tap.tacc.utexas.edu/status/")
+TAP_API_STATUS = os.environ.get("TAP_API_STATUS", "https://tap.tacc.utexas.edu/status/")
 
 KEY_SERVICE_TOKEN = os.environ.get('KEY_SERVICE_TOKEN')
 

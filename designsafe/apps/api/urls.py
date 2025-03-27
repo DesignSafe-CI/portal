@@ -2,7 +2,7 @@
 from django.urls import re_path as url, include, path
 from designsafe.apps.api.views import LoggerApi
 from django.http import JsonResponse
-from .views import SystemMonitorProxyApi
+from .views import SystemQueueProxyApi
 from .views import SystemOverviewProxyApi
 
 urlpatterns = [
@@ -13,8 +13,7 @@ urlpatterns = [
     path("publications/v2/", include('designsafe.apps.api.publications_v2.urls')),
 
     path("systems/", include('designsafe.apps.api.systems.urls')),
-    path("proxy/system-monitor/<str:hostname>/", SystemMonitorProxyApi.as_view()),
-    
+    path("proxy/status/<str:hostname>/", SystemQueueProxyApi.as_view()),
     path("proxy/status/", SystemOverviewProxyApi.as_view()),
 
     url(r'^projects/', include(('designsafe.apps.api.projects.urls', 'designsafe.apps.api.projects'),

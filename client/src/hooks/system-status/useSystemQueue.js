@@ -3,7 +3,7 @@
   for getting system queue data from core portal
 */
 export const useSystemQueue = async (hostname) => {
-  const response = await fetch(`/api/proxy/system-monitor/${hostname}/`);
+  const response = await fetch(`/api/proxy/status/${hostname}/`);
 
   if (!response.ok) {
     throw new Error(
@@ -13,5 +13,10 @@ export const useSystemQueue = async (hostname) => {
 
   const data = await response.json();
 
-  return data;
+  const queueData = Object.entries(data.queues).map(([queueName, details]) => ({
+    name: queueName,
+    ...details,
+  }));
+
+  return queueData;
 };
