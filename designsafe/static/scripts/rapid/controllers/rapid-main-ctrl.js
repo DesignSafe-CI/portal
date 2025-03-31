@@ -248,9 +248,11 @@ export default class RapidMainCtrl {
     }
 
     search() {
-        if (!this.events || !this.openTopoData) return;
-        this.filtered_events = this.RapidDataService.searchEvents(this.events, this.filter_options);
-        this.filtered_openTopoData = this.RapidDataService.searchOpenTopo(this.openTopoData, this.opentopo_filter_options, this.filter_options);
+        if (!this.events && !this.openTopoData) return;
+        if (this.data_source)
+            this.filtered_events = this.RapidDataService.searchEvents(this.events, this.filter_options);
+        if (this.ot_data_source)
+            this.filtered_openTopoData = this.RapidDataService.searchOpenTopo(this.openTopoData, this.opentopo_filter_options, this.filter_options);
         
         // Handle Recon Portal Layer
         this.updateLayer(this.data_source, this.reconLayer, this.filtered_events);
