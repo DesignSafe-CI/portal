@@ -1,8 +1,8 @@
 <div style="margin: 0 10px 20px">
     <div class="btn-group btn-block">
-        <button class="btn btn-block btn-primary dropdown-toggle"
-                data-toggle="dropdown" ng-disabled="! $ctrl.test.enabled">
-        <i role="none" class="fa fa-plus-circle"></i> Add
+        <button class="btn btn-block btn-primary dropdown-toggle" data-toggle="dropdown"
+            ng-disabled="! $ctrl.test.enabled">
+            <i role="none" class="fa fa-plus-circle"></i> Add
         </button>
         <ul class="dropdown-menu">
             <li ng-class="{'disabled': ! $ctrl.test.createFiles}">
@@ -41,8 +41,11 @@
                     <span>Folder upload: max 25 files</span>
                 </a>
             </li>
-            <li ng-class="{'disabled': ! $ctrl.test.createFiles}" ng-init="popoverOpened=false" ng-mouseover="popoverOpened=true" ng-mouseleave="popoverOpened=false">
-                <a href='https://www.designsafe-ci.org/rw/user-guides/data-transfer-guide/' uib-popover-html="popoverHTML" popover-placement="right" popover-trigger="none" popover-is-open="popoverOpened">
+            <li ng-class="{'disabled': ! $ctrl.test.createFiles}" ng-init="popoverOpened=false"
+                ng-mouseover="popoverOpened=true" ng-mouseleave="popoverOpened=false">
+                <a href='https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/'
+                    uib-popover-html="popoverHTML" popover-placement="right" popover-trigger="none"
+                    popover-is-open="popoverOpened">
                     <span class="fa-stack fa-lg">
                         <i role="none" class="fa fa-hdd-o fa-stack-2x"></i>
                     </span>

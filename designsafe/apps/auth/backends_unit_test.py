@@ -1,9 +1,10 @@
 import pytest
 from django.contrib.auth import get_user_model
 from mock import Mock
-from designsafe.apps.auth.backends import TapisOAuthBackend
 from tapipy.tapis import TapisResult
 from tapipy.errors import BaseTapyException
+from designsafe.apps.auth.backends import TapisOAuthBackend
+from designsafe.apps.auth.views import launch_setup_checks
 
 pytestmark = pytest.mark.django_db
 
@@ -38,12 +39,17 @@ def update_institution_from_tas_mock(mocker):
     yield mocker.patch("designsafe.apps.auth.backends.update_institution_from_tas")
 
 
-# def test_launch_setup_checks(mocker, regular_user, settings):
-#     mocker.patch("designsafe.apps.auth.views.new_user_setup_check")
-#     mock_execute = mocker.patch("designsafe.apps.auth.views.execute_setup_steps")
-#     regular_user.profile.setup_complete = False
-#     launch_setup_checks(regular_user)
-#     mock_execute.apply_async.assert_called_with(args=["username"])
+def test_launch_setup_checks(mocker, regular_user, settings):
+    # Mock the cache_allocations and execute_setup_steps
+    mock_cache_allocations = mocker.patch("designsafe.apps.auth.views.cache_allocations")
+    mock_execute = mocker.patch("designsafe.apps.auth.views.execute_setup_steps")
+    
+    # Run the function under test
+    launch_setup_checks(regular_user)
+    
+    # Assert the mocked methods were called with expected arguments
+    mock_cache_allocations.apply_async.assert_called_with(args=(regular_user.username,))
+    mock_execute.apply_async.assert_called_with(args=["username"])
 
 
 def test_bad_backend_params(tapis_mock):

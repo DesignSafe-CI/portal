@@ -7,6 +7,7 @@ import {
   LicenseDisplay,
   UsernamePopover,
 } from './BaseProjectDetails';
+import { Alert } from 'antd';
 
 export const PublishedEntityDetails: React.FC<{
   entityValue: TEntityValue;
@@ -15,6 +16,25 @@ export const PublishedEntityDetails: React.FC<{
 }> = ({ entityValue, publicationDate, license }) => {
   return (
     <section style={{ marginBottom: '20px' }}>
+      {entityValue.tombstone && (
+        <Alert
+          showIcon
+          style={{ marginBottom: '12px' }}
+          type="warning"
+          message={
+            <strong>The following Dataset does not exist anymore</strong>
+          }
+          description={
+            <div>
+              The Dataset with DOI:{' '}
+              <a href={`https://doi.org/${entityValue.dois?.[0]}`}>
+                {entityValue.dois?.[0]}
+              </a>{' '}
+              was incomplete and removed. The metadata is still available.
+            </div>
+          }
+        />
+      )}
       <table
         style={{ width: '100%', marginBottom: '20px', borderSpacing: '200px' }}
       >
@@ -163,7 +183,7 @@ export const PublishedEntityDetails: React.FC<{
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.referencedData.map((ref) => (
                   <div key={JSON.stringify(ref)}>
-                    {ref.hrefType && `${ref.hrefType} | `}
+                    {ref.hrefType && `${ref.hrefType.toUpperCase()} | `}
                     <a href={ref.doi} rel="noopener noreferrer" target="_blank">
                       {ref.title}
                     </a>
@@ -201,7 +221,7 @@ export const PublishedEntityDetails: React.FC<{
       </table>
       <DescriptionExpander>
         <strong>Description: </strong>
-        {entityValue.description}
+        <p className="render-linebreaks">{entityValue.description}</p>
       </DescriptionExpander>
     </section>
   );

@@ -20,7 +20,7 @@ services:
 
   memcached:
     image: memcached:latest
-    command: ["memcached", "-I", "10m"]
+    command: ["memcached", "-I", "5m"]
     container_name: des_memcached
     hostname: des_memcached
 
@@ -74,7 +74,10 @@ services:
 
   django:
     image: designsafeci/portal:tapis-v3
-    env_file: ../env_files/designsafe.env
+    env_file:
+      - path: ../env_files/designsafe.env
+      - path: ../env_files/ngrok.env
+        required: false
     links:
       - memcached:memcached
       - rabbitmq:rabbitmq
@@ -95,7 +98,10 @@ services:
 
   websockets:
     image: designsafeci/portal:tapis-v3
-    env_file: ../env_files/designsafe.env
+    env_file:
+      - path: ../env_files/designsafe.env
+      - path: ../env_files/ngrok.env
+        required: false
     volumes:
       - ../../.:/srv/www/designsafe
       - ../../data/media:/srv/www/designsafe/media
@@ -105,7 +111,10 @@ services:
 
   workers:
     image: designsafeci/portal:tapis-v3
-    env_file: ../env_files/designsafe.env
+    env_file:
+      - path: ../env_files/designsafe.env
+      - path: ../env_files/ngrok.env
+        required: false
     links:
       - memcached:memcached
       - rabbitmq:rabbitmq
@@ -121,6 +130,19 @@ services:
     command: /srv/www/designsafe/bin/run-celery-debug.sh
     container_name: des_workers
     hostname: des_workers
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    command:
+      - "http"
+      - --url=${NGROK_DOMAIN}
+      - "https://host.docker.internal:443"
+    ports:
+      - 4040:4040
+    container_name: des_ngrok
+    hostname: des_ngrok
 
 volumes:
   redis_data_v3:

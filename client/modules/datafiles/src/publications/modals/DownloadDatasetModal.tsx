@@ -1,7 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Alert, Button, Modal, Spin } from 'antd';
 import DatafilesModal from '../../DatafilesModal/DatafilesModal';
-import { useFileDetail, usePublicationVersions } from '@client/hooks';
+import {
+  useFileDetail,
+  usePublicationDetail,
+  usePublicationVersions,
+} from '@client/hooks';
 import { toBytes } from '@client/common-components';
 
 const gnuGeneralLicenseInfo = (
@@ -219,6 +223,11 @@ export const DownloadDatasetModal: React.FC<{
   };
 
   const { selectedVersion } = usePublicationVersions(projectId);
+  const { data: publicationData } = usePublicationDetail(projectId);
+  const doiString = publicationData?.tree.children
+    .map((c) => c.value.dois?.[0])
+    .filter((doi) => !!doi)
+    .join(',');
 
   const archivePath =
     selectedVersion > 1
@@ -299,7 +308,7 @@ export const DownloadDatasetModal: React.FC<{
             {license && LICENSE_INFO_MAP[license]}
             <p>
               <a
-                href="/rw/user-guides/curating-publishing-projects/policies/publication/"
+                href="/user-guide/curating/policies/#data-publication-and-usage"
                 target="_blank"
                 aria-describedby="msg-open-new-window"
               >
@@ -311,7 +320,7 @@ export const DownloadDatasetModal: React.FC<{
                 api="tapis"
                 system="designsafe.storage.published"
                 scheme="public"
-                selectedFiles={[data]}
+                selectedFiles={[{ ...data, doi: doiString }]}
               >
                 {({ onClick }) => (
                   <Button

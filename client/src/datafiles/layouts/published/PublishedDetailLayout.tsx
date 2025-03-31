@@ -5,7 +5,11 @@ import {
   PublishedCitation,
   DownloadCitation,
 } from '@client/datafiles';
-import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
+import {
+  apiClient,
+  usePublicationDetail,
+  usePublicationVersions,
+} from '@client/hooks';
 import React, { useEffect } from 'react';
 import { Alert, Button, Form, Input, Layout, Spin } from 'antd';
 import { Navigate, Outlet, useParams, useSearchParams } from 'react-router-dom';
@@ -46,6 +50,17 @@ export const PublishedDetailLayout: React.FC = () => {
   const { data, isError } = usePublicationDetail(projectId ?? '');
   const { allVersions } = usePublicationVersions(projectId ?? '');
   const version = (projectId ?? '').split('v')[1];
+
+  // match /PRJ-XXXXvY and capture the version, Y
+  const pathRegex = /\/PRJ-[0-9]+v?([0-9]*)/;
+  const versionFromPath = (path ?? '').match(pathRegex)?.[1] || '1';
+
+  const selectedVersion =
+    version ||
+    versionFromPath ||
+    searchParams.get('version') ||
+    Math.max(...allVersions).toString();
+
   useEffect(() => {
     if (version) {
       const newSearchParams = new URLSearchParams(searchParams);
@@ -53,6 +68,20 @@ export const PublishedDetailLayout: React.FC = () => {
       setSearchParams(newSearchParams);
     }
   }, [version, searchParams, setSearchParams]);
+
+  // List files in the project root for metrics/reporting purposes.
+  useEffect(() => {
+    if (!data) return;
+
+    data?.baseProject.projectType !== 'other' &&
+      apiClient.get(
+        `/api/datafiles/tapis/public/listing/designsafe.storage.published/${projectId}${
+          selectedVersion && parseInt(selectedVersion) > 1
+            ? `v${selectedVersion}`
+            : ''
+        }`
+      );
+  }, [data, selectedVersion, searchParams, projectId]);
 
   if (isError) {
     return (
@@ -117,27 +146,48 @@ export const PublishedDetailLayout: React.FC = () => {
       </div>
 
       {data.baseProject.projectType === 'other' && (
-        <section
-          style={{
-            backgroundColor: '#eef9fc',
-            padding: '10px 20px',
-            margin: '10px 0px',
-          }}
-        >
-          <strong>Cite This Data:</strong>
+        <>
+          {data.baseProject.tombstone && (
+            <Alert
+              showIcon
+              type="warning"
+              message={
+                <strong>The following Dataset does not exist anymore</strong>
+              }
+              description={
+                <div>
+                  The Dataset with DOI:{' '}
+                  <a href={`https://doi.org/${data.baseProject.dois[0]}`}>
+                    {data.baseProject.dois[0]}
+                  </a>{' '}
+                  was incomplete and removed. The metadata is still available.
+                </div>
+              }
+            />
+          )}
+          <section
+            style={{
+              backgroundColor: '#eef9fc',
+              padding: '10px 20px',
+              margin: '10px 0px',
+            }}
+          >
+            <strong>Cite This Data:</strong>
 
-          <PublishedCitation
-            projectId={projectId}
-            entityUuid={data.tree.children[0].uuid}
-          />
-          <br />
-          <div>
-            <DownloadCitation
+            <PublishedCitation
               projectId={projectId}
               entityUuid={data.tree.children[0].uuid}
+              version={parseInt(selectedVersion)}
             />
-          </div>
-        </section>
+            <br />
+            <div>
+              <DownloadCitation
+                projectId={projectId}
+                entityUuid={data.tree.children[0].uuid}
+              />
+            </div>
+          </section>
+        </>
       )}
       <BaseProjectDetails
         projectValue={data?.baseProject}

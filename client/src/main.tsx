@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
 import reconportalRouter from './reconportal/reconportalRouter';
+import onboardingRouter from './onboarding/onboardingRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
 
 const queryClient = new QueryClient();
@@ -69,6 +70,20 @@ if (datafilesElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={datafilesRouter} />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
+const onboardingElement = document.getElementById('onboarding-root');
+if (onboardingElement) {
+  const onboardingRoot = ReactDOM.createRoot(onboardingElement as HTMLElement);
+  onboardingRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <RouterProvider router={onboardingRouter} />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>

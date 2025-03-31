@@ -5,9 +5,9 @@
   "private": true,
   "main": "manage.py",
   "engines": {
-   "node": "~16.20.2",
-   "npm": "~8.19.4"
- },
+    "node": "~16.20.2",
+    "npm": "~8.19.4"
+  },
   "scripts": {
     "test": "./node_modules/.bin/karma start karma.conf.js --single-run",
     "report-coverage": "./node_modules/.bin/codecov",
@@ -60,6 +60,7 @@
     "webpack-cli": "^4.1.0"
   },
   "dependencies": {
+    "@turf/turf": "^7.0.0",
     "angular": "^1.6.10",
     "angular-animate": "^1.6.10",
     "angular-aria": "^1.6.10",

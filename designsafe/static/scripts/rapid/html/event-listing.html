@@ -5,16 +5,16 @@
              'tornado':event.event_type === 'tornado',
              'landslide':event.event_type === 'landslide',
              'hurricane':event.event_type === 'hurricane',
-
+             'openTopoData': event.properties.host === 'OpenTopo',
             }"
   >
-  <div class="event-title"> {{event.title}} </div>
+  <div class="event-title"> {{event.title || event.properties.name}} </div>
   <div class="row">
-    <span> {{event.location_description}} </span>
+    <span> {{event.location_description || event.properties.description}} </span>
   </div>
   <div class="row">
     <div class="left">
-      <span class="event-date"> {{event.event_date | date: 'yyyy-MM-dd'}} </span>
+      <span class="event-date"> {{(event.event_date || event.properties.dateCreated) | date: 'yyyy-MM-dd'}} </span>
     </div>
     <div class="right">
       <span
@@ -25,11 +25,19 @@
                    'tornado':event.event_type === 'tornado',
                    'landslide':event.event_type === 'landslide',
                    'hurricane':event.event_type === 'hurricane',
-
+                   'openTopoData': event.properties.host === 'OpenTopo',
                   }"
       >
-        {{event.event_type}}
+        {{event.event_type || event.properties.host}}
       </span>
     </div>
+  </div>
+  <div class="row" ng-if="event.properties.keywords">
+    <span>
+      keywords :
+    </span>
+    <span class="event-keywords">
+      {{event.properties.keywords}}
+    </span>
   </div>
 </div>

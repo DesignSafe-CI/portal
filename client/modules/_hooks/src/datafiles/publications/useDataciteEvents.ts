@@ -21,7 +21,7 @@ export async function getDataciteEvents({
 }) {
   const dataciteEvents = `/api/publications/data-cite/events?source-id=datacite-usage&doi=${encodeURIComponent(
     doi
-  )}`;
+  )}&page[size]=1000`;
 
   // Fetch data from both endpoints simultaneously
   const respDataciteEvents = await apiClient.get<DataciteEventsResponse>(
@@ -39,5 +39,6 @@ export function useDataciteEvents(doi: string, enabled: boolean = true) {
       return getDataciteEvents({ doi, signal });
     },
     enabled: enabled && !!doi,
+    retry: false,
   });
 }

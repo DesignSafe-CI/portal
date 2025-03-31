@@ -23,6 +23,8 @@ import {
   TFileListing,
 } from '@client/hooks';
 
+import { TAppFileSettings } from '../AppsWizard/AppsFormSchema';
+
 import {
   BaseFileListingBreadcrumb,
   FileListingTable,
@@ -103,9 +105,13 @@ const getSystemRootPath = (
   storageSystem: TTapisSystem | undefined,
   user: TUser | undefined
 ): string => {
-  return storageSystem?.notes?.isMyData
-    ? encodeURIComponent('/' + user?.username)
-    : '';
+  if (storageSystem?.notes?.isMyData) {
+    return encodeURIComponent('/' + user?.username);
+  }
+  if (storageSystem?.notes?.hasWork) {
+    return encodeURIComponent('/work/' + user?.homedir);
+  }
+  return '';
 };
 
 const getBackPath = (
@@ -148,7 +154,7 @@ const getParentFolder = (
 function getFilesColumns(
   api: string,
   path: string,
-  selectionMode: string,
+  appFileSettings: TAppFileSettings,
   searchTerm: string | null,
   clearSearchTerm: () => void,
   selectionCallback: (path: string) => void,
@@ -229,9 +235,11 @@ function getFilesColumns(
       title: '',
       render: (_, record, index) => {
         const selectionModeAllowed =
-          (record.type === 'dir' && selectionMode === 'directory') ||
-          (record.type === 'file' && selectionMode === 'file') ||
-          selectionMode === 'both';
+          (record.type === 'dir' &&
+            appFileSettings.fileSelectionMode === 'directory') ||
+          (record.type === 'file' &&
+            appFileSettings.fileSelectionMode === 'file') ||
+          appFileSettings.fileSelectionMode === 'both';
         const isNotRoot =
           index > 0 ||
           record.system.startsWith(projectPrefix) ||
@@ -240,9 +248,15 @@ function getFilesColumns(
 
         return shouldRenderSelectButton ? (
           <SecondaryButton
-            onClick={() =>
-              selectionCallback(`${api}://${record.system}${record.path}`)
-            }
+            onClick={() => {
+              const lastPartOfPath = record.path.split('/').pop() ?? '';
+              const filePath =
+                appFileSettings.fileNameRepresentation === 'FullTapisPath'
+                  ? `${api}://${record.system}${record.path}`
+                  : lastPartOfPath;
+
+              selectionCallback(filePath);
+            }}
           >
             Select
           </SecondaryButton>
@@ -255,11 +269,11 @@ function getFilesColumns(
 export const SelectModal: React.FC<{
   inputLabel: string;
   system: string | null;
-  selectionMode: string;
+  appFileSettings: TAppFileSettings;
   isOpen: boolean;
   onClose: () => void;
   onSelect: (value: string) => void;
-}> = ({ inputLabel, system, selectionMode, isOpen, onClose, onSelect }) => {
+}> = ({ inputLabel, system, appFileSettings, isOpen, onClose, onSelect }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [form] = Form.useForm();
@@ -298,7 +312,7 @@ export const SelectModal: React.FC<{
       return (a.notes?.isMyData ? 0 : 1) - (b.notes?.isMyData ? 0 : 1);
     })
     .map((system) => ({
-      label: system.notes.label,
+      label: system.notes?.hasWork ? 'Work' : system.notes.label ?? system.id,
       value: system.id,
     }));
   systemOptions.push({ label: 'My Projects', value: 'myprojects' });
@@ -363,7 +377,9 @@ export const SelectModal: React.FC<{
       selectedPath: getSystemRootPath(system, user),
       scheme: getScheme(system),
     });
-    setSystemLabel(system.notes.label ?? system.id);
+    setSystemLabel(
+      system.notes?.hasWork ? 'Work' : system.notes.label ?? system.id
+    );
   };
 
   const onProjectSelect = (uuid: string, projectId: string) => {
@@ -414,7 +430,7 @@ export const SelectModal: React.FC<{
       getFilesColumns(
         selectedApi,
         selectedPath,
-        selectionMode,
+        appFileSettings,
         searchTerm,
         clearSearchTerm,
         (selection: string) => selectCallback(selection),
@@ -429,7 +445,7 @@ export const SelectModal: React.FC<{
       selectedSystem,
       selectedPath,
       systemLabel,
-      selectionMode,
+      appFileSettings,
       selectCallback,
     ]
   );

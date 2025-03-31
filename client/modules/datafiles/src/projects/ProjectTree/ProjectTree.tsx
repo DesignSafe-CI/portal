@@ -86,7 +86,7 @@ const ProjectTreeDisplay: React.FC<{
   if (!entity) return null;
   return (
     <>
-      <span> &nbsp;{entity.value.title}&nbsp;</span>
+      <span style={{ marginLeft: '5px' }}>{entity.value.title}</span>
       <Button
         type="text"
         disabled={order === 0}
@@ -137,8 +137,8 @@ const RecursiveTree: React.FC<{
         <div
           className={styles['tree-list-badge']}
           style={{
-            backgroundColor: PROJECT_COLORS[treeData.name].fill,
-            outline: `1px solid ${PROJECT_COLORS[treeData.name].outline}`,
+            backgroundColor: PROJECT_COLORS[treeData.name]?.fill,
+            outline: `1px solid ${PROJECT_COLORS[treeData.name]?.outline}`,
           }}
         >
           {DISPLAY_NAMES[treeData.name]}

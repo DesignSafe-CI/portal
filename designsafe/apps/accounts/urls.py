@@ -30,7 +30,7 @@ def menu_items(**kwargs):
     if 'type' in kwargs and kwargs['type'] == 'account':
         return [
             {
-                'label': _('Account Profile'),
+                'label': _('Manage Account'),
                 'url': reverse('designsafe_accounts:index'),
                 'children': [],
             },

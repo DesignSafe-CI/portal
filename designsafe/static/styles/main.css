@@ -574,6 +574,10 @@ label.required:after,
   padding-right: 10px;
 }
 
+.no-underline-on-hover {
+  text-decoration: none !important;
+}
+
 dd {
     margin-bottom: .5em;
 }

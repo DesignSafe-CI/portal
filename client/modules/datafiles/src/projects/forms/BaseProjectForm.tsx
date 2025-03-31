@@ -281,7 +281,11 @@ export const BaseProjectForm: React.FC<{
             ]}
             className="inner-form-item"
           >
-            <UserSelect userRole="pi" maxCount={1} />
+            <UserSelect
+              userRole="pi"
+              maxCount={1}
+              existingUsers={watchedUsers}
+            />
           </Form.Item>
         </Form.Item>
         <Form.Item
@@ -292,7 +296,7 @@ export const BaseProjectForm: React.FC<{
           <br />
           <br />
           <Form.Item name="coPis" initialValue={[]} className="inner-form-item">
-            <UserSelect userRole="co_pi" />
+            <UserSelect userRole="co_pi" existingUsers={watchedUsers} />
           </Form.Item>
         </Form.Item>
       </div>
@@ -305,7 +309,7 @@ export const BaseProjectForm: React.FC<{
           initialValue={[]}
           className="inner-form-item"
         >
-          <UserSelect userRole="team_member" />
+          <UserSelect userRole="team_member" existingUsers={watchedUsers} />
         </Form.Item>
       </Form.Item>
 
@@ -329,7 +333,10 @@ export const BaseProjectForm: React.FC<{
               ]}
               className="inner-form-item"
             >
-              <AuthorSelect projectUsers={watchedUsers} />
+              <AuthorSelect
+                projectUsers={watchedUsers}
+                currentAuthors={data?.baseProject.value.authors ?? []}
+              />
             </Form.Item>
           </Form.Item>
 

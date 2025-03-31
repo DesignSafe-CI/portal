@@ -19,7 +19,7 @@
         "version": "51.33",
         "revision": 4,
         "isPublic": true,
-        "helpURI": "https://www.designsafe-ci.org/rw/user-guide/workspace/adcirc/",
+        "helpURI": "https://www.designsafe-ci.org/user-guide/tools/simulation/adcirc/adcirc/",
         "label": "ADCIRC-V51 (Stampede2)",
         "owner": "ds_admin",
         "shortDescription": "ADCIRC provides user with a sequential ADCIRC program. It is ideal to run small models on DesignSafe.",

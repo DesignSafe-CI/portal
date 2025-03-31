@@ -9,6 +9,7 @@ import zipfile
 from typing import Optional
 from django.conf import settings
 from celery import shared_task
+from designsafe.libs.common.context_managers import AsyncTaskContext
 from designsafe.apps.api.publications_v2.models import Publication
 
 logger = logging.getLogger(__name__)
@@ -91,4 +92,5 @@ def archive(project_id: str, version: Optional[int] = None):
 @shared_task
 def archive_publication_async(project_id: str, version: Optional[str] = 1):
     """async wrapper around archive"""
-    archive(project_id, version)
+    with AsyncTaskContext():
+        archive(project_id, version)

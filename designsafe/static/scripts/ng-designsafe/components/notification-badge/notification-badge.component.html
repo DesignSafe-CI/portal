@@ -1,17 +1,18 @@
-<div id="notification-container" class="dropdown btn btn-link" uib-dropdown auto-close="outsideClick">
-    <a id="dLabel" class="dropdown-toggle" role="button" uib-dropdown-toggle ng-click="list()">
-      <i id="notification_bell" role="none" class="fa fa-bell fa-2x"></i>
-      <span id="notification_badge" class="label label-as-badge" ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
-        {{data.unread}}
-      </span>
+<div id="notification-container" class="dropdown btn" uib-dropdown auto-close="outsideClick">
+    <a id="dLabel" style="display: flex; align-items: center;" class="dropdown-toggle no-underline-on-hover" role="button" uib-dropdown-toggle ng-click="list()">
+        <i id="notification_bell" role="none" class="fa fa-bell fa-2x"></i>
+        <span id="notification_badge" class="label label-as-badge" ng-class="data.unread > 0 ? 'label-info' : 'label-default'" title="Notifications">
+          {{data.unread}}
+        </span>
+      <h3 class="menu-title">Job Status</h3>
     </a>
     <div class="arrow-up"></div>
     <ul uib-dropdown-menu class="dropdown-menu notifications" aria-labelledby="dLabel">
       <div class="notification-heading">
-          <h3 class="menu-title">Notifications</h3>
-          <a href="/rw/workspace/history">
+          <h3 class="menu-title"></h3>
+          <a href="/workspace/history">
             <h3 class="menu-title pull-right">
-              View all
+              View all Jobs
               <i class="glyphicon glyphicon-circle-arrow-right"></i>
             </h3>
           </a>
@@ -26,7 +27,7 @@
                       {{x.datetime| date:'h:mm a'}}
                   </dt>
                   <dd class="item-info">
-                    <span>{{x.message}}</span>
+                    <span>{{x.message || "Interactive session ready to view."}}</span>
                     <div ng-if="x.extra.path" uib-tooltip="{{x.extra.path}}" tooltip-trigger="{{{true: 'mouseenter', false: 'never'}[x.extra.path.length > 44]}}">
                       <div id="notif-path">
                         <bdi>{{x.extra.path}}</bdi>
