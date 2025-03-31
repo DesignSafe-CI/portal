@@ -20,6 +20,7 @@ services:
 
   memcached:
     image: memcached:latest
+    command: ["memcached", "-I", "10m"]
     container_name: des_memcached
     hostname: des_memcached
 
