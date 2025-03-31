@@ -1,3 +1,5 @@
+# pylint: disable=invalid-name
+
 import uuid
 import os
 import json
@@ -11,19 +13,27 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model, models
 from django.db.models import Q
+from tapipy.tapis import Tapis
+from django.views.decorators.cache import cache_page
+
 
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
 import requests
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.core.cache import cache
+import threading
 
 logger = logging.getLogger(__name__)
 metrics_logger = logging.getLogger('metrics')
 
 from designsafe import settings
+
+TAPIS_TENANT_BASEURL = os.environ.get("TAPIS_TENANT_BASEURL")
+TAPIS_ADMIN_JWT = os.environ.get("TAPIS_ADMIN_JWT")
 
 def thumbnail_image(fobj, size=(400, 400)):
     im = Image.open(fobj)
@@ -72,38 +82,72 @@ def get_events(request):
     out = [h.to_dict() for h in s[0:total]]
     return JsonResponse(out, safe=False)
 
+
+@cache_page(60 * 60 * 6)  # Caches the view for 6 hours
 @csrf_exempt
 @require_GET
 def opentopo_data(request):
-    url = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false' #request.GET.get('url')
-
-    if not url:
-        return JsonResponse({'error': 'URL parameter is required'}, status=400)
-    
-    cache_key = f"proxy_response_{url}"
-    cache_timeout = 23 * 60 * 60
-
-    # Check for cached response
-    cached_response = cache.get(cache_key)
-    if cached_response is not None:
-        logger.debug(f"Cache hit for {cache_key}")
-        return JsonResponse(cached_response, safe=False)
-
+    """
+    Get open topo data for entire world.
+    """
+    # detail=true allows us to get coordinates for each dataset
+    OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false'
     try:
-        logger.debug(f"Cache miss for {cache_key}")
-        response = requests.get(url)
+        logger.debug("Requesting opentopo data")
+        response = requests.get(OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD)
         response.raise_for_status()
         response_data = response.json()
-
-        # Cache the response
-        cache.set(cache_key, response_data, cache_timeout)
-        logger.debug(f"Cache set for {cache_key}")
-
         return JsonResponse(response_data, safe=False, status=response.status_code)
     except requests.RequestException as e:
-        logger.error(f"Error fetching URL {url}: {str(e)}")
+        logger.error(f"Error fetching URL {OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD}: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
+
+def get_opentopodata_center(request):
+    client = Tapis(
+        base_url=TAPIS_TENANT_BASEURL,
+        access_token=TAPIS_ADMIN_JWT
+        )
+    file_path = '/Recon Portal/opentopgraphy_catalog/opentopography_catalog_of_spatial_boundaries_center_points.geojson'
+    try:
+        file_contents = client.files.getContents(
+            systemId='designsafe.storage.community',
+            path=file_path
+        )
+        data = json.loads(file_contents)
+    except FileNotFoundError:
+        return JsonResponse({'error': 'File not found'}, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Error decoding JSON'}, status=400)
+
+    return JsonResponse(data, safe=False)
+
+def get_opentopo_polygon_coordinates(request, doiUrl=None):
+    client = Tapis(
+        base_url=TAPIS_TENANT_BASEURL,
+        access_token=TAPIS_ADMIN_JWT
+        )
+    file_path = '/Recon Portal/opentopgraphy_catalog/opentopography_catalog_of_spatial_boundaries_full_geometry.geojson'
+    try:
+        file_contents = client.files.getContents(
+            systemId='designsafe.storage.community',
+            path=file_path
+        )
+        data = json.loads(file_contents)
+    except FileNotFoundError:
+        return JsonResponse({'error': 'File not found'}, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Error decoding JSON'}, status=400)
+
+    if doiUrl:
+        feature = next((f for f in data['features'] if f['properties'].get('doiUrl') == doiUrl), None)
+        
+        if not feature:
+            return JsonResponse({'error': 'Feature not found'}, status=404)
+
+        return JsonResponse(feature, safe=False)
+
+    return JsonResponse(data, safe=False)
 
 @user_passes_test(rapid_admin_check)
 @login_required
