@@ -1,6 +1,5 @@
-// src/reconportal/useGetEventTypes.ts
 import { useSuspenseQuery, useQueryClient } from '@tanstack/react-query';
-import apiClient, { TApiError } from '../apiClient';
+import apiClient from '../apiClient';
 
 export type EventTypeResponse = {
   display_name: string;

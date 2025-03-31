@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import * as turf from '@turf/turf';
-import { Feature, Point, Polygon, MultiPolygon } from 'geojson';
+import { Feature, Point } from 'geojson';
 
 export type OpenTopoFeature = {
   type: 'Feature';

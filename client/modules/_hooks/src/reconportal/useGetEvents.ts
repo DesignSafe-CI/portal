@@ -1,6 +1,6 @@
 // src/reconportal/useGetEvents.ts
 import { useQuery } from '@tanstack/react-query';
-import apiClient, { TApiError } from '../apiClient';
+import apiClient from '../apiClient';
 
 export type Dataset = {
   url: string;
