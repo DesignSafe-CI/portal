@@ -4,9 +4,11 @@ from typing import Optional, Literal
 import subprocess
 import os
 import shutil
+import copy
 import datetime
 from pathlib import Path
 import logging
+import requests
 from django.conf import settings
 from django.db import close_old_connections
 import networkx as nx
@@ -18,9 +20,13 @@ from designsafe.apps.api.projects_v2.operations.datacite_operations import (
     get_datacite_json,
     publish_datacite_doi,
     upsert_datacite_json,
+    get_doi_publication_date,
 )
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
     archive_publication_async,
+)
+from designsafe.apps.api.projects_v2.operations.project_email_operations import (
+    send_project_permissions_alert,
 )
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import index_publication
@@ -204,7 +210,9 @@ def add_values_to_tree(project_id: str) -> nx.DiGraph:
     for node_id in publication_tree:
         uuid = publication_tree.nodes[node_id]["uuid"]
         if uuid is not None:
-            publication_tree.nodes[node_id]["value"] = entity_map[uuid].value
+            publication_tree.nodes[node_id]["value"] = copy.deepcopy(
+                entity_map[uuid].value
+            )
 
     return publication_tree
 
@@ -316,21 +324,22 @@ def get_publication_subtree(
     return subtree, path_mapping
 
 
-def fix_publication_dates(existing_tree: nx.DiGraph, incoming_tree: nx.DiGraph):
+def fix_publication_dates(incoming_tree: nx.DiGraph):
     """
     Update publication date on versioned pubs to match the initial publication date.
     """
-    initial_pub_dates = {}
-    for published_entity in existing_tree.successors("NODE_ROOT"):
-        published_uuid = existing_tree.nodes[published_entity]["uuid"]
-        initial_pub_dates[published_uuid] = existing_tree.nodes[published_entity][
-            "publicationDate"
-        ]
-    for node in incoming_tree:
-        if incoming_tree.nodes[node]["uuid"] in initial_pub_dates:
-            incoming_tree.nodes[node]["publicationDate"] = initial_pub_dates[
-                incoming_tree.nodes[node]["uuid"]
-            ]
+
+    for incoming_node in incoming_tree.successors("NODE_ROOT"):
+        node_data = incoming_tree.nodes[incoming_node]
+        existing_doi = next(iter(node_data["value"].get("dois", [])), None)
+        if existing_doi:
+            try:
+                existing_pub_date = get_doi_publication_date(existing_doi)
+                incoming_tree.nodes[incoming_node]["publicationDate"] = (
+                    datetime.datetime.fromisoformat(existing_pub_date).isoformat()
+                )
+            except requests.HTTPError:
+                logger.error("Datacite lookup error for DOI %s", existing_doi)
 
     return incoming_tree
 
@@ -353,12 +362,13 @@ def get_publication_full_tree(
 
     full_tree = nx.compose_all(subtrees)
 
+    # Update publication date on versioned/amended pubs to match the initial publication date.
+    full_tree = fix_publication_dates(full_tree)
+
     if version and version > 1:
         existing_pub = Publication.objects.get(project_id=project_id)
         published_tree: nx.DiGraph = nx.node_link_graph(existing_pub.tree)
 
-        # Update publication date on versioned pubs to match the initial publication date.
-        full_tree = fix_publication_dates(published_tree, full_tree)
         full_tree = nx.compose(published_tree, full_tree)
 
     return full_tree, full_path_mapping
@@ -366,6 +376,10 @@ def get_publication_full_tree(
 
 class ProjectFileNotFound(Exception):
     """exception raised when attempting to copy a non-existent file for publication"""
+
+
+class PublicationDirectoryAlreadyExists(Exception):
+    """exception raised when attempting to publish into a directory that exists already"""
 
 
 def copy_publication_files(
@@ -383,6 +397,13 @@ def copy_publication_files(
             pub_dirname = f"{project_id}v{version}"
 
         pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
+
+        # Prevent multiple attempts to publish the same project files.
+        if os.path.isdir(pub_root_dir):
+            raise PublicationDirectoryAlreadyExists(
+                f"Directory already exists: {pub_root_dir}"
+            )
+
         os.makedirs(pub_root_dir, exist_ok=True)
 
         for src_path in path_mapping:
@@ -413,6 +434,12 @@ def copy_publication_files(
             },
             queue="indexing",
         )
+
+    except PermissionError as exc:
+        logger.error(exc)
+        send_project_permissions_alert(project_id, version, str(exc))
+        raise exc
+
     finally:
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
 

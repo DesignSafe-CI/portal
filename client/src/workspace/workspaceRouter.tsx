@@ -7,6 +7,13 @@ import { JobsListingLayout } from './layouts/JobsListingLayout';
 import { AppsViewLayout } from './layouts/AppsViewLayout';
 import { AppsPlaceholderLayout } from './layouts/AppsPlaceholderLayout';
 
+const getBaseName = () => {
+  if (window.location.pathname.startsWith('/rw/workspace')) {
+    return '/rw/workspace';
+  }
+  return '/workspace';
+};
+
 const workspaceRouter = createBrowserRouter(
   [
     {
@@ -44,7 +51,7 @@ const workspaceRouter = createBrowserRouter(
       ],
     },
   ],
-  { basename: '/rw/workspace' }
+  { basename: getBaseName() }
 );
 
 export default workspaceRouter;

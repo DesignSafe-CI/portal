@@ -34,7 +34,6 @@ class BaseTicketForm(forms.Form):
     """
     first_name = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
     last_name = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
-    email = forms.EmailField(widget=forms.EmailInput(), required=True)
     subject = forms.CharField(widget=forms.TextInput(), max_length=255, required=True)
 
     category_choices = (('', 'Choose one'),) + settings.TICKET_CATEGORIES

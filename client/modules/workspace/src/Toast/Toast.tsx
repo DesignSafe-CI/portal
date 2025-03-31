@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { useQueryClient } from '@tanstack/react-query';
-import { notification } from 'antd';
+import { notification, Flex } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '@client/common-components';
-import { TJobStatusNotification } from '@client/hooks';
-import { getToastMessage } from '../utils';
+import {
+  TJobStatusNotification,
+  TGetNotificationsResponse,
+  useInteractiveModalContext,
+  TInteractiveModalContext,
+} from '@client/hooks';
+import { getToastMessage, isTerminalState } from '../utils';
 import styles from './Notifications.module.css';
 
 const Notifications = () => {
@@ -14,36 +20,82 @@ const Notifications = () => {
   );
 
   const [api, contextHolder] = notification.useNotification({ maxCount: 1 });
+  const [interactiveModalDetails, setInteractiveModalDetails] =
+    useInteractiveModalContext() as TInteractiveModalContext;
 
   const queryClient = useQueryClient();
 
   const navigate = useNavigate();
 
   const handleNotification = (notification: TJobStatusNotification) => {
-    if (
-      notification.event_type === 'job' ||
-      notification.event_type === 'interactive_session_ready'
-    ) {
-      queryClient.invalidateQueries({
-        queryKey: ['workspace', 'notifications'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['workspace', 'jobsListing'],
-      });
-      api.open({
-        message: getToastMessage(notification),
-        placement: 'bottomLeft',
-        icon: <Icon className={`ds-icon-Job-Status`} label="Job-Status" />,
-        className: `${
-          notification.extra.status === 'FAILED' && styles['toast-is-error']
-        }`,
-        closeIcon: false,
-        duration: 5,
-        onClick: () => {
-          navigate('/history');
-        },
-        style: { cursor: 'pointer' },
-      });
+    switch (notification.event_type) {
+      case 'interactive_session_ready':
+        if (interactiveModalDetails.show) {
+          setInteractiveModalDetails({
+            ...interactiveModalDetails,
+            interactiveSessionLink: notification.action_link,
+            message: notification.message,
+          });
+        }
+      /* falls through */
+      case 'job':
+        queryClient.invalidateQueries({
+          queryKey: ['workspace', 'notifications'],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['workspace', 'jobsListing'],
+        });
+        api.open({
+          message: (
+            <Flex justify="space-between">
+              {getToastMessage(notification)}
+              <RightOutlined style={{ marginRight: -5, marginLeft: 10 }} />
+            </Flex>
+          ),
+          placement: 'bottomLeft',
+          icon: <Icon className={`ds-icon-Job-Status`} label="Job-Status" />,
+          className: `${
+            notification.extra.status === 'FAILED' && styles['toast-is-error']
+          } ${styles.root}`,
+          closeIcon: false,
+          duration: 5,
+          onClick: () => {
+            navigate('/history');
+          },
+        });
+
+        // close interactive session modal if job is ended
+        if (
+          isTerminalState(notification.extra.status) &&
+          notification.extra.uuid === interactiveModalDetails.uuid
+        ) {
+          setInteractiveModalDetails({
+            show: false,
+          });
+        }
+
+        break;
+      case 'markAllNotificationsAsRead':
+        // update unread count state
+        queryClient.setQueryData(
+          [
+            'workspace',
+            'notifications',
+            {
+              eventTypes: ['interactive_session_ready', 'job'],
+              read: false,
+              markRead: false,
+            },
+          ],
+          (oldData: TGetNotificationsResponse) => {
+            return {
+              ...oldData,
+              notifs: [],
+              unread: 0,
+            };
+          }
+        );
+        break;
     }
   };
 
@@ -53,7 +105,7 @@ const Notifications = () => {
     }
   }, [lastMessage]);
 
-  return <>{contextHolder}</>;
+  return contextHolder;
 };
 
 export default Notifications;

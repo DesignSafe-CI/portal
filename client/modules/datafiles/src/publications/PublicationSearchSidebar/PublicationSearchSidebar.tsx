@@ -3,6 +3,20 @@ import React from 'react';
 import * as dropdownOptions from '../../projects/forms/ProjectFormDropdowns';
 import styles from './PublicationSearchSidebar.module.css';
 import { useSearchParams } from 'react-router-dom';
+import { DefaultOptionType } from 'antd/es/select';
+
+const experimentTypeOptions: DefaultOptionType[] = [];
+const _optionKeySet = new Set();
+Object.keys(dropdownOptions.experimentTypeOptions).forEach((k) => {
+  const optionsForFacility = dropdownOptions.experimentTypeOptions[k];
+  optionsForFacility
+    .filter((o) => !_optionKeySet.has(o.value))
+    .forEach((dedupedOption) => experimentTypeOptions.push(dedupedOption));
+
+  optionsForFacility.forEach((o) => _optionKeySet.add(o.value));
+});
+console.log(experimentTypeOptions);
+
 export const PublicationSearchSidebar: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -85,23 +99,12 @@ export const PublicationSearchSidebar: React.FC = () => {
             id="experiment-type-select"
             virtual={false}
             allowClear
-            disabled={
-              !Object.keys(dropdownOptions.experimentTypeOptions).includes(
-                searchParams.get('facility') ?? ''
-              )
-            }
             value={searchParams.get('experiment-type')}
             onChange={(v) => setSearchParam('experiment-type', v)}
-            options={
-              searchParams.get('experimentType')
-                ? [
-                    { label: 'All Types', value: null },
-                    ...dropdownOptions.experimentTypeOptions[
-                      searchParams.get('experimentType') ?? ''
-                    ],
-                  ]
-                : []
-            }
+            options={[
+              { label: 'All Types', value: null },
+              ...experimentTypeOptions,
+            ]}
             style={{ width: '100%' }}
             placeholder="All Types"
           />

@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
+apiClient.defaults.timeout = 5 * 60 * 1000; // 5 minutes
+
 type TUploadFolderParam = {
   api: string;
   system: string;
@@ -8,7 +10,6 @@ type TUploadFolderParam = {
   path: string;
   uploaded_folder: FormData;
 };
-
 function uploadFolderFn(params: TUploadFolderParam) {
   const { api, system, scheme, path, uploaded_folder } = params;
   return apiClient.post(
