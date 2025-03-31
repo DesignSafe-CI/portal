@@ -102,7 +102,8 @@ function preprocessData(data: OpenTopoResponse): ProcessedOpenTopoData {
     } else {
       let geometry = {} as OpenTopoFeature['geometry'];
       if (spatialCoverage?.geo?.geojson?.features?.[0]?.geometry) {
-        geometry = spatialCoverage.geo.geojson.features[0].geometry as OpenTopoFeature['geometry'];
+        geometry = spatialCoverage.geo.geojson.features[0]
+          .geometry as OpenTopoFeature['geometry'];
       }
 
       const feature: OpenTopoFeature = {
@@ -125,7 +126,10 @@ function preprocessData(data: OpenTopoResponse): ProcessedOpenTopoData {
       result.features.push(feature);
 
       // Generate centroid
-      if (geometry && (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon')) {
+      if (
+        geometry &&
+        (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon')
+      ) {
         const geomShape = turf.centroid(feature as Feature);
         const centroidFeature: OpenTopoFeature = {
           type: 'Feature',
@@ -138,7 +142,10 @@ function preprocessData(data: OpenTopoResponse): ProcessedOpenTopoData {
             dateCreated,
             keywords,
             temporalCoverage,
-            url: `/datasetMetadata?otCollectionID=OT.${identifier.value.split('.').slice(1).join('.')}`,
+            url: `/datasetMetadata?otCollectionID=OT.${identifier.value
+              .split('.')
+              .slice(1)
+              .join('.')}`,
             productAvailable: fileFormat,
           },
           geometry: {

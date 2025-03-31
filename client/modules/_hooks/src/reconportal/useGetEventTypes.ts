@@ -8,7 +8,9 @@ export type EventTypeResponse = {
 };
 
 async function getEventTypes() {
-  const res = await apiClient.get<EventTypeResponse[]>('/recon-portal/event-types');
+  const res = await apiClient.get<EventTypeResponse[]>(
+    '/recon-portal/event-types'
+  );
   return res.data;
 }
 
