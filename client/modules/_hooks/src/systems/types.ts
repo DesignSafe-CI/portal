@@ -59,10 +59,10 @@ export type TTapisSystem = {
   tags: [];
   notes: {
     label?: string;
-    keyservice?: boolean;
     isMyData?: boolean;
     hasWork?: boolean;
     portalNames: string[];
+    noAllocationRequired?: boolean;
   };
   importRefId?: string;
   uuid: string;

@@ -33,7 +33,6 @@ export const UploadFolderModalBody: React.FC<{
     try {
       for (let i = 0; i < fileList.length; i++) {
         const formData = new FormData();
-        console.log(fileList[i]);
         formData.append('uploaded_file', fileList[i] as FileType);
         formData.append('file_name', fileList[i].name);
         formData.append(

@@ -1,7 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './DatafilesSideNav.module.css';
-import { useAuthenticatedUser } from '@client/hooks';
+import {
+  useAuthenticatedUser,
+  USER_MYDATA_SYSTEM,
+  USER_WORK_SYSTEM,
+} from '@client/hooks';
 import { Tooltip } from 'antd';
 
 const DataFilesNavLink: React.FC<
@@ -31,14 +35,14 @@ export const DatafilesSideNav: React.FC = () => {
       {user && (
         <>
           <DataFilesNavLink
-            to={`/tapis/designsafe.storage.default`}
+            to={`/tapis/${USER_MYDATA_SYSTEM}`}
             tooltip="Private directory for your data"
           >
             My Data
           </DataFilesNavLink>
 
           <DataFilesNavLink
-            to={`/tapis/cloud.data/`}
+            to={`/tapis/${USER_WORK_SYSTEM}/`}
             tooltip="Work directory on TACC HPC machines for use with Jupyter"
           >
             Work
