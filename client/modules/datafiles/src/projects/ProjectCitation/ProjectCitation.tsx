@@ -3,6 +3,7 @@ import {
   useDataciteMetrics,
   useProjectDetail,
   usePublicationDetail,
+  useClarivateMetrics,
 } from '@client/hooks';
 import { MetricsModal } from '../modals/MetricsModal';
 import styles from './ProjectCitation.module.css';
@@ -114,6 +115,15 @@ export const DownloadCitation: React.FC<{
       : '';
 
   const { data: dataciteMetrics } = useDataciteMetrics(doi, !preview);
+  const {
+    data: clarivateMetrics,
+    isLoading: isClarivateLoading,
+    isError: isClarivateError,
+  } = useClarivateMetrics(doi, !preview);
+
+  if (isClarivateError) {
+    console.error('Error loading Clarivate metrics for DOI:', doi);
+  }
 
   const openModal = () => {
     setIsModalVisible(true);
@@ -168,7 +178,13 @@ export const DownloadCitation: React.FC<{
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span className={styles['yellow-highlight']}>
-              {dataciteMetrics?.data.attributes.citationCount ?? '--'} Citations
+              {isClarivateLoading
+                ? 'Loading...'
+                : isClarivateError ||
+                  typeof clarivateMetrics?.citationCount !== 'number'
+                ? '0'
+                : clarivateMetrics.citationCount}{' '}
+              Citations
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span
