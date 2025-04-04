@@ -287,6 +287,10 @@ def clarivate_single_api(doi):
         return citations
 
     except requests.exceptions.RequestException as e:
-        return {"error": str(e)}
+        return {
+            "error": str(e),
+        }
     except (KeyError, IndexError) as e:
-        return {"error": "Unexpected response format"}
+        return {
+            "error": "Unexpected response format",
+        }

@@ -3,44 +3,10 @@ import {
   useDataciteMetrics,
   useProjectDetail,
   usePublicationDetail,
+  useClarivateMetrics
 } from '@client/hooks';
 import { MetricsModal } from '../modals/MetricsModal';
 import styles from './ProjectCitation.module.css';
-
-const useClarivateMetrics = (doi: string, shouldFetch = true) => {
-  const [data, setData] = useState<{ citationCount: number | null }>({
-    citationCount: null,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    if (!doi || !shouldFetch) return;
-
-    const fetchClarivateMetrics = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`/api/publications/clarivate/?doi=${doi}`);
-        const result = await response.json();
-
-        if (response.ok) {
-          setData({ citationCount: result.citation_count ?? 0 });
-        } else {
-          setIsError(true);
-        }
-      } catch (error) {
-        setIsError(true);
-      }
-      setIsLoading(false);
-    };
-
-    fetchClarivateMetrics();
-  }, [doi, shouldFetch]);
-
-  return { data, isLoading, isError };
-};
-
-export default useClarivateMetrics;
 
 export const ProjectCitation: React.FC<{
   projectId: string;
@@ -213,10 +179,11 @@ export const DownloadCitation: React.FC<{
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span className={styles['yellow-highlight']}>
               {isClarivateLoading
-                ? ''
-                : isClarivateError
-                ? '--'
-                : clarivateMetrics?.citationCount ?? '--'}{' '}
+                ? 'Loading...'
+                : isClarivateError ||
+                  typeof clarivateMetrics?.citationCount !== 'number'
+                ? '0'
+                : clarivateMetrics.citationCount}{' '}
               Citations
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
