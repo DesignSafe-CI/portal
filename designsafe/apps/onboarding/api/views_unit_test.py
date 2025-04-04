@@ -45,12 +45,12 @@ def test_get_user_unauthenticated_forbidden(client, regular_user):
     assert response.status_code == 401
 
 
-def test_get_other_user_forbidden(client, authenticated_user, staff_user):
-    response = client.get("/api/onboarding/user/{}/".format(staff_user.username))
+def test_get_other_user_forbidden(client, authenticated_user, onboarding_admin_user):
+    response = client.get("/api/onboarding/user/{}/".format(onboarding_admin_user.username))
     assert response.status_code == 403
 
 
-def test_get_user_as_staff(client, authenticated_staff, regular_user):
+def test_get_user_as_staff(client, authenticated_onboarding_admin, regular_user):
     response = client.get("/api/onboarding/user/{}/".format(regular_user.username))
     assert response.status_code == 200
     result = json.loads(response.content)["response"]
@@ -59,7 +59,7 @@ def test_get_user_as_staff(client, authenticated_staff, regular_user):
 
 
 def test_get_user_as_staff_with_steps(
-    settings, authenticated_staff, client, mock_steps
+    settings, authenticated_onboarding_admin, client, mock_steps
 ):
     response = client.get("/api/onboarding/user/username", follow=True)
     result = response.json()["response"]
@@ -69,7 +69,7 @@ def test_get_user_as_staff_with_steps(
     assert len(result["steps"][0]["events"]) == 2
 
 
-def test_get_non_existent_user_as_staff(client, authenticated_staff):
+def test_get_non_existent_user_as_staff(client, authenticated_onboarding_admin):
     response = client.get("/api/onboarding/user/non_existent_user/")
     assert response.status_code == 404
 
@@ -158,12 +158,12 @@ def test_reset_not_staff(client, authenticated_user):
     assert response.status_code == 403
 
 
-def test_reset(rf, staff_user, regular_user, mocked_log_setup_state):
+def test_reset(rf, onboarding_admin_user, regular_user, mocked_log_setup_state):
     # The reset function should call prepare on a step
     # and flag the user's setup_complete as False
     view = SetupStepView()
     request = rf.post("/api/onboarding/user/username")
-    request.user = staff_user
+    request.user = onboarding_admin_user
     mock_step = MagicMock()
     mock_step.user = regular_user
 
@@ -191,7 +191,7 @@ def test_complete_not_staff(client, authenticated_user):
 
 
 def test_complete(
-    client, authenticated_staff, regular_user, mock_steps, mocked_executor
+    client, authenticated_onboarding_admin, regular_user, mock_steps, mocked_executor
 ):
     response = client.post(
         "/api/onboarding/user/{}/".format(regular_user.username),
@@ -220,7 +220,7 @@ SetupAdminView tests
 """
 
 
-def test_admin_route(client, authenticated_staff):
+def test_admin_route(client, authenticated_onboarding_admin):
     # If the user is authenticated and is_staff, then the route should
     # return a JsonResponse
     response = client.get("/api/onboarding/admin/")
@@ -243,7 +243,7 @@ def test_get_user_onboarding(mock_steps, regular_user):
     )
 
 
-def test_get_no_profile(client, authenticated_staff, regular_user):
+def test_get_no_profile(client, authenticated_onboarding_admin, regular_user):
     # Test that no object is returned for a user with no profile
     regular_user.profile.delete()
     response = client.get("/api/onboarding/admin/")
@@ -259,12 +259,12 @@ def test_get_no_profile(client, authenticated_staff, regular_user):
     )
 
 
-def test_get(client, authenticated_staff, regular_user, mock_steps):
+def test_get(client, authenticated_onboarding_admin, regular_user, mock_steps):
     regular_user.profile.setup_complete = False
     regular_user.profile.save()
 
-    authenticated_staff.profile.setup_complete = True
-    authenticated_staff.profile.save()
+    authenticated_onboarding_admin.profile.setup_complete = True
+    authenticated_onboarding_admin.profile.save()
 
     # Make a request without 'showIncompleteOnly' parameter
     response = client.get("/api/onboarding/admin/")
@@ -304,7 +304,7 @@ def test_get(client, authenticated_staff, regular_user, mock_steps):
     assert len(users_incomplete) == 1
 
 
-def test_get_search(client, authenticated_staff, regular_user, mock_steps):
+def test_get_search(client, authenticated_onboarding_admin, regular_user, mock_steps):
     response = client.get("/api/onboarding/admin/?q=Firstname")
     result = json.loads(response.content)["response"]
 
