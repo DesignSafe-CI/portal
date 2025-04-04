@@ -3,7 +3,7 @@ import {
   useDataciteMetrics,
   useProjectDetail,
   usePublicationDetail,
-  useClarivateMetrics
+  useClarivateMetrics,
 } from '@client/hooks';
 import { MetricsModal } from '../modals/MetricsModal';
 import styles from './ProjectCitation.module.css';

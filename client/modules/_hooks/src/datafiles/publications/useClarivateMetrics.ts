@@ -15,6 +15,6 @@ export const useClarivateMetrics = (doi: string, shouldFetch = true) => {
         citationCount: result.citation_count ?? 0,
       };
     },
-    enabled: !!doi && shouldFetch, 
+    enabled: !!doi && shouldFetch,
   });
 };
