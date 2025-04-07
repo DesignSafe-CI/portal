@@ -14,6 +14,14 @@ export type TJobArgSpec = {
   name: string;
   arg?: string;
   description?: string;
+  include?: boolean;
+  notes?: TParameterSetNotes;
+};
+
+export type TAppArgSpec = {
+  name: string;
+  arg?: string;
+  description?: string;
   inputMode?: string;
   notes?: TParameterSetNotes;
 };
@@ -78,9 +86,9 @@ export type TTapisApp = {
     mpiCmd: string;
     cmdPrefix?: string;
     parameterSet: {
-      appArgs: TJobArgSpecs;
-      containerArgs: TJobArgSpecs;
-      schedulerOptions: TJobArgSpecs;
+      appArgs: TAppArgSpec[];
+      containerArgs: TAppArgSpec[];
+      schedulerOptions: TAppArgSpec[];
       envVariables: TJobKeyValuePair[];
       archiveFilter: {
         includes: string[];
