@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import json
 import uuid
+from hashlib import sha256
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
@@ -419,6 +420,7 @@ def guid_filter(record):
     """Log filter that adds a guid to each entry"""
 
     record.logGuid = uuid.uuid4().hex
+    record.sessionId = sha256(record.sessionId.encode()).hexdigest()
     return True
 
 LOGGING = {
