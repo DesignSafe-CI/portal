@@ -93,7 +93,7 @@ export const MicrosurveyModal: React.FC<{
       okButtonProps={{ hidden: true }}
     >
       <p>
-        While your data is downloading, please helps us support the natural
+        While your data is downloading, please help us support the natural
         hazards community by completing this anonymous survey. This will help
         the researcher who published the data understand where their data is
         being used and it will help us to improve our metrics reports to the
