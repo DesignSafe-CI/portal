@@ -20,7 +20,6 @@ export type TAppResponse = {
     enabled?: boolean;
   };
   defaultSystemNeedsKeys?: TTapisSystem;
-  execSystems?: TTapisSystem[];
 };
 
 export type TGetAppsResponse = {
