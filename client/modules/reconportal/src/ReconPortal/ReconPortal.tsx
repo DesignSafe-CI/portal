@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './ReconPortal.module.css';
-import { Layout, Flex } from 'antd';
+import { Layout } from 'antd';
 
 const { Content } = Layout;
 export const ReconPortal: React.FC = () => {
