@@ -1,15 +1,14 @@
-// src/reconportal/useGetEvents.ts
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
-export type Dataset = {
+export type ReconPortalDataset = {
   url: string;
   title: string;
   doi: string;
   id: string;
 };
 
-export type EventsResponse = {
+export type ReconPortalEvents = {
   location_description: string;
   location: {
     lat: number;
@@ -19,11 +18,11 @@ export type EventsResponse = {
   event_type: string;
   title: string;
   created_date: string;
-  datasets: Dataset[];
+  datasets: ReconPortalDataset[];
 };
 
 async function getEvents() {
-  const res = await apiClient.get<EventsResponse[]>('/recon-portal/events');
+  const res = await apiClient.get<ReconPortalEvents[]>('/recon-portal/events');
   return res.data;
 }
 
@@ -33,8 +32,8 @@ export const getEventsQuery = () => ({
   staleTime: 1000 * 60 * 5, // 5 minute stale time
 });
 
-export function useGetEvents() {
-  return useQuery(getEventsQuery());
+export function useGetReconPortalEvents(): UseQueryResult<ReconPortalEvents[]> {
+  return useQuery<ReconPortalEvents[]>(getEventsQuery());
 }
 
-export default useGetEvents;
+export default useGetReconPortalEvents;

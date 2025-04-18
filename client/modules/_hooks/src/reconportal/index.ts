@@ -1,3 +1,3 @@
-export * from './useGetEvents';
-export * from './useGetEventTypes';
+export * from './useGetReconPortalEvents';
+export * from './useGetReconPortalEventTypes';
 export * from './useGetOpenTopo';
