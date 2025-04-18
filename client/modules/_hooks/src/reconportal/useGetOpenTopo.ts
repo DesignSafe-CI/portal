@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { FeatureCollection } from 'geojson';
 import apiClient from '../apiClient';
 
-
 export type OpenTopoDataset = {
   name: string;
   identifier: {
@@ -38,16 +37,16 @@ export type OpenTopoDataset = {
   };
 };
 
-
 export type OpenTopoDatasetList = {
   Datasets: {
     Dataset: OpenTopoDataset;
   }[];
 };
 
-
 async function fetchOpenTopoData(): Promise<OpenTopoDatasetList> {
-  const res = await apiClient.get<OpenTopoDatasetList>('/recon-portal/opentopo/');
+  const res = await apiClient.get<OpenTopoDatasetList>(
+    '/recon-portal/opentopo/'
+  );
   return res.data;
 }
 

@@ -1,4 +1,4 @@
-import { useQuery, UseQueryResult} from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 
 export type ReconPortalDataset = {
