@@ -30,6 +30,7 @@ const themeConfig: ThemeConfig = {
     },
     Layout: {
       bodyBg: 'transparent',
+      siderBg: 'transparent',
     },
     Steps: {
       colorPrimary: '#1cb500',
@@ -90,10 +91,10 @@ if (onboardingElement) {
   );
 }
 
-const rapidElement = document.getElementById('rapid-root');
-if (rapidElement) {
-  const rapidRoot = ReactDOM.createRoot(rapidElement as HTMLElement);
-  rapidRoot.render(
+const reconElement = document.getElementById('recon-root');
+if (reconElement) {
+  const reconRoot = ReactDOM.createRoot(reconElement as HTMLElement);
+  reconRoot.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
