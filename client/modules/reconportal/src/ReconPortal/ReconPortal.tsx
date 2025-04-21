@@ -7,7 +7,9 @@ const { Content } = Layout;
 export const ReconPortal: React.FC = () => {
   return (
     <Layout className={styles.root}>
-      <Content><LeafletMap/></Content>
+      <Content>
+        <LeafletMap />
+      </Content>
     </Layout>
   );
 };
