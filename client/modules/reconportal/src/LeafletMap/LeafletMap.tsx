@@ -1,11 +1,8 @@
-import React, { useMemo, useCallback } from 'react';
+import React from 'react';
 import {
   MapContainer,
   ZoomControl,
-  Marker,
   TileLayer,
-  WMSTileLayer,
-  GeoJSON,
   LayersControl,
 } from 'react-leaflet';
 
@@ -59,9 +56,6 @@ export const LeafletMap: React.FC = () => {
             />
         </LayersControl.BaseLayer>
       </LayersControl>
-
-      <Marker position={mapConfig.startingCenter} />
-
 
       {/* Zoom control */}
       <ZoomControl position="topright" />
