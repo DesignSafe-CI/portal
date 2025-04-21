@@ -628,6 +628,10 @@ DATACITE_USER = os.environ.get('DATACITE_USER')
 DATACITE_PASS = os.environ.get('DATACITE_PASS')
 DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER')
 
+# Clarivate/World of Citation
+WOS_URL = os.environ.get('WOS_URL', 'https://api.clarivate.com/apis/wos-starter/v1/documents')
+WOS_PASS = os.environ.get('WOS_APIKEY', '')
+
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
 if os.environ.get('PORTAL_PROFILE') == 'True':
     PORTAL_PROFILE = True
