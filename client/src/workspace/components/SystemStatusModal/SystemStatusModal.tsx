@@ -13,7 +13,7 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
   isModalVisible,
   onClose,
 }) => {
-  const [activeSystem, setActiveSystem] = useState('Stampede3');
+  const [activeSystem, setActiveSystem] = useState('frontera');
 
   const { data: systems, isLoading, isError, error } = useSystemOverview();
 
@@ -34,7 +34,8 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
       open={isModalVisible}
       onCancel={onClose}
       footer={null}
-      width={500}
+      width={800}
+      style={{ top: '230px' }}
     >
       <div className={styles.modal}>
         <div className={styles.tabs}>
@@ -46,7 +47,7 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
               }`}
               onClick={() => setActiveSystem(sys.display_name)}
             >
-              {sys.display_name.toUpperCase()}
+              {sys.display_name}
             </button>
           ))}
         </div>
@@ -66,17 +67,24 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
           ) : selectedSystem ? (
             <>
               <div className={styles.statusHeader}>
-                <h3>{selectedSystem.display_name.toUpperCase()}</h3>
-                <Badge
-                  status={getStatusColor(selectedSystem)}
-                  text={
-                    selectedSystem.is_operational
+                <div className={styles.statusTitleContainer}>
+                  <span className={styles.statusTitle}>
+                    {selectedSystem.display_name} Status:
+                  </span>
+                  <div
+                    className={`${styles.statusBadge} ${
+                      selectedSystem.is_operational
+                        ? styles.open
+                        : styles.closed
+                    }`}
+                  >
+                    {selectedSystem.is_operational
                       ? 'Operational'
-                      : 'Maintenance'
-                  }
-                />
+                      : 'Maintenance'}
+                  </div>
+                </div>
               </div>
-
+              {/*
               <div className={styles.statusGrid}>
                 <div className={styles.statusItem}>
                   <div className={styles.statusLabel}>Load</div>
@@ -103,7 +111,7 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
                   </div>
                 </div>
               </div>
-
+*/}
               <div className={styles.tableContainer}>
                 <SystemQueueTable hostname={activeSystem} />
               </div>
@@ -116,3 +124,4 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
     </Modal>
   );
 };
+

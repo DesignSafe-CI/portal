@@ -1,25 +1,27 @@
 .modal {
   background: white;
-  border-radius: 4px;
-  width: 425px;
+  /* width: 528px; */
+  width: 100%;
   color: rgba(0, 0, 0, 0.85);
   overflow: hidden;
 }
 
 .tabs {
   display: flex;
-  justify-content: center;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fafafa;
+  justify-content: left;
+  border-bottom: 1px solid #ffffff;
+  background: #ffffff;
+  margin-bottom: 20px;
 }
 
 .tabButton {
-  padding: 12px 16px;
+  padding: 12px 15px;
   background: none;
   border: none;
   cursor: pointer;
   font-size: 14px;
-  color: #595959;
+  font-weight: 500;
+  color: #797979;
   position: relative;
 }
 
@@ -36,18 +38,19 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 2px;
+  right: 2px;
   height: 2px;
+  background-color: #136AC9;
+  width: 100%;
 }
 
 .content {
-  max-height: 60vh;
-  padding: 15px;
-  min-height: 250px;
-  display: flex; 
+  display: flex;
   flex-direction: column; 
-  
+  width: 100%;
+  margin-left: 0px;
+  margin-bottom: 15px;
 }
 
 .loadingContainer {
@@ -70,6 +73,18 @@
   font-weight: 500;
 }
 
+.statusTitleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.statusTitle {
+  font-weight: 500;
+  margin: 5px;
+}
+
+/*
 .statusGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -95,12 +110,38 @@
   font-weight: 500;
 }
 
+*/
+
 .tableContainer {
   display: flex;
   flex: 1;
-  flex-direction: column;
   overflow: auto;
-  border: 1px solid #707070;
-  margin-top: 10px;
 }
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  color: white;
+  text-align: center;
+}
+
+.open {
+  background-color: #48A69C; 
+}
+
+.closed {
+  background-color: #EB6E6E; 
+}
+
+.scaledContainer {
+  transform: scale(1.5);
+  transform-origin: top center;
+}
+
+
+
+
 

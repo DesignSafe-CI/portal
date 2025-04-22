@@ -58,7 +58,7 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
           showIcon
         />
       ) : queueData.length === 0 ? (
-        <div>Data not available</div>
+        <div className={styles.queueUnavailable}>Data not available</div>
       ) : (
         <table className={styles.queueTable}>
           <thead>
@@ -94,3 +94,4 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
     </>
   );
 };
+
