@@ -70,54 +70,6 @@ class RapidTests(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Create")
 
-    @mock.patch('designsafe.apps.rapid.views.Tapis')
-    def test_get_opentopodata_center(self, mock_tapis):
-        mock_client = mock_tapis.return_value
-        file_name = 'opentopography_catalog_of_spatial_boundaries_center_points.geojson'
-        with open('designsafe/apps/rapid/'+file_name, 'rb') as file:
-            fileContents = file.read()
-        mock_client.files.getContents.return_value = fileContents
-        url = reverse('designsafe_rapid:get_opentopodata_center')
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "FeatureCollection")
-        mock_client.files.getContents.assert_called_once_with(
-            systemId='designsafe.storage.community',
-            path='/Recon Portal/opentopgraphy_catalog/'+file_name
-        )
-
-    @mock.patch('designsafe.apps.rapid.views.Tapis')
-    def test_get_opentopo_coordinates(self, mock_tapis):
-        mock_client = mock_tapis.return_value
-        file_name = 'opentopography_catalog_of_spatial_boundaries_full_geometry.geojson'
-        with open('designsafe/apps/rapid/'+file_name, 'rb') as file:
-            fileContents = file.read()
-        mock_client.files.getContents.return_value = fileContents
-        url = reverse('designsafe_rapid:get_opentopo_polygon_coordinates')
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "FeatureCollection")
-        mock_client.files.getContents.assert_called_once_with(
-            systemId='designsafe.storage.community',
-            path='/Recon Portal/opentopgraphy_catalog/'+file_name
-        )
-
-    @mock.patch('designsafe.apps.rapid.views.Tapis')
-    def test_get_opentopo_coordinates_with_doi(self, mock_tapis):
-        mock_client = mock_tapis.return_value
-        file_name = 'opentopography_catalog_of_spatial_boundaries_full_geometry.geojson'
-        with open('designsafe/apps/rapid/'+file_name, 'rb') as file:
-            fileContents = file.read()
-        mock_client.files.getContents.return_value = fileContents
-        url = reverse('designsafe_rapid:get_opentopo_polygon_coordinates', kwargs={'doiUrl': 'https://doi.org/10.5069/G9P55KPR'})
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Feature")
-        mock_client.files.getContents.assert_called_once_with(
-                systemId='designsafe.storage.community',
-                path='/Recon Portal/opentopgraphy_catalog/'+file_name
-            )
-
 
 @pytest.mark.django_db
 def test_opentopo_data_success(client, requests_mock):

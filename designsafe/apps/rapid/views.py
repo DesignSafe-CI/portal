@@ -103,52 +103,6 @@ def opentopo_data(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-def get_opentopodata_center(request):
-    client = Tapis(
-        base_url=TAPIS_TENANT_BASEURL,
-        access_token=TAPIS_ADMIN_JWT
-        )
-    file_path = '/Recon Portal/opentopgraphy_catalog/opentopography_catalog_of_spatial_boundaries_center_points.geojson'
-    try:
-        file_contents = client.files.getContents(
-            systemId='designsafe.storage.community',
-            path=file_path
-        )
-        data = json.loads(file_contents)
-    except FileNotFoundError:
-        return JsonResponse({'error': 'File not found'}, status=404)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Error decoding JSON'}, status=400)
-
-    return JsonResponse(data, safe=False)
-
-def get_opentopo_polygon_coordinates(request, doiUrl=None):
-    client = Tapis(
-        base_url=TAPIS_TENANT_BASEURL,
-        access_token=TAPIS_ADMIN_JWT
-        )
-    file_path = '/Recon Portal/opentopgraphy_catalog/opentopography_catalog_of_spatial_boundaries_full_geometry.geojson'
-    try:
-        file_contents = client.files.getContents(
-            systemId='designsafe.storage.community',
-            path=file_path
-        )
-        data = json.loads(file_contents)
-    except FileNotFoundError:
-        return JsonResponse({'error': 'File not found'}, status=404)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Error decoding JSON'}, status=400)
-
-    if doiUrl:
-        feature = next((f for f in data['features'] if f['properties'].get('doiUrl') == doiUrl), None)
-        
-        if not feature:
-            return JsonResponse({'error': 'Feature not found'}, status=404)
-
-        return JsonResponse(feature, safe=False)
-
-    return JsonResponse(data, safe=False)
-
 @user_passes_test(rapid_admin_check)
 @login_required
 def admin(request):

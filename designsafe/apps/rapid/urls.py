@@ -4,8 +4,6 @@ from designsafe.apps.rapid import views
 
 
 urlpatterns = [
-    url(r'^opentopodata_center/?$', views.get_opentopodata_center, name="get_opentopodata_center"),
-    url(r'^opentopo_coordinates/?(?P<doiUrl>[-\w\.:/]+)?/?$', views.get_opentopo_polygon_coordinates, name="get_opentopo_polygon_coordinates"),
     url(r'^event-types/?$', views.get_event_types, name="get_event_types"),
     url(r'^events/?$', views.get_events, name="get_events"),
     url(r'^admin/?$', views.admin, name="admin"),
