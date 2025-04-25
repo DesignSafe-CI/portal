@@ -693,6 +693,20 @@ export const AppsSubmissionForm: React.FC = () => {
       delete jobData.job.allocation;
     }
 
+    const schedOpts = definition.jobAttributes.parameterSet?.schedulerOptions;
+    if (schedOpts) {
+      schedOpts.forEach((opt) => {
+        if (opt.notes?.isReservation) {
+          const reservation = jobData.job.parameterSet.schedulerOptions.find(
+            (option) => option.name === 'TACC Reservation'
+          );
+          if (reservation) {
+            reservation.arg = `--reservations=${reservation.arg}`;
+          }
+        }
+      });
+    }
+
     // Before job submission, ensure the memory limit is not above queue limit.
     if (definition.jobType === 'BATCH') {
       const queue = getExecSystemFromId(
