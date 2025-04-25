@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import json
 import uuid
+from hashlib import sha256
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
@@ -419,6 +420,7 @@ def guid_filter(record):
     """Log filter that adds a guid to each entry"""
 
     record.logGuid = uuid.uuid4().hex
+    record.sessionId = sha256(record.sessionId.encode()).hexdigest()
     return True
 
 LOGGING = {
@@ -625,6 +627,10 @@ DATACITE_URL = os.environ.get('DATACITE_URL', 'https://doi.test.datacite.org/')
 DATACITE_USER = os.environ.get('DATACITE_USER')
 DATACITE_PASS = os.environ.get('DATACITE_PASS')
 DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER')
+
+# Clarivate/World of Citation
+WOS_URL = os.environ.get('WOS_URL', 'https://api.clarivate.com/apis/wos-starter/v1/documents')
+WOS_PASS = os.environ.get('WOS_APIKEY', '')
 
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
 if os.environ.get('PORTAL_PROFILE') == 'True':
