@@ -701,7 +701,7 @@ export const AppsSubmissionForm: React.FC = () => {
             (option) => option.name === 'TACC Reservation'
           );
           if (reservation) {
-            reservation.arg = `--reservations=${reservation.arg}`;
+            reservation.arg = `--reservation=${reservation.arg}`;
           }
         }
       });
