@@ -1,22 +1,34 @@
 .icon {
-    color: #49A59C; 
-    font-size: 16px;
-  }
-  
-  .badge {
-    margin: 0 10px;
-  }
-  
-  .root:hover,
-  .root:focus,
-  .highlighted-row,
-  .highlighted-row:hover,
-  .highlighted-row:focus {
-    background-color: #cbdded;
-    text-decoration: none;
-  }
-  
-  .highlighted-row:hover {
-    cursor: unset;
-  }
-  
+  color: #49a59c;
+  font-size: 16px;
+}
+
+.badge {
+  margin: 0 10px;
+}
+
+.root:hover,
+.root:focus,
+.highlighted-row,
+.highlighted-row:hover,
+.highlighted-row:focus {
+  background-color: #cbdded;
+  text-decoration: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.highlighted-row:hover {
+  cursor: unset;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 15px 0px;
+  font-size: 14px;
+  border-right: 1px solid var(--global-color-primary--normal);
+  border-bottom: 1px solid var(--global-color-primary--normal);
+  background: transparent;
+  color: black;
+}

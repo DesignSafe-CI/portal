@@ -21,7 +21,6 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
     (sys) => sys.display_name.toLowerCase() === activeSystem.toLowerCase()
   );
 
-  //setting color for status of system
   const getStatusColor = (system: typeof selectedSystem) => {
     if (system?.is_operational) return 'success';
     if (system?.in_maintenance) return 'warning';
@@ -84,34 +83,6 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
                   </div>
                 </div>
               </div>
-              {/*
-              <div className={styles.statusGrid}>
-                <div className={styles.statusItem}>
-                  <div className={styles.statusLabel}>Load</div>
-                  <div className={styles.statusValue}>
-                    {selectedSystem.load_percentage != null
-                      ? `${selectedSystem.load_percentage}%`
-                      : '--'}
-                  </div>
-                </div>
-                <div className={styles.statusItem}>
-                  <div className={styles.statusLabel}>Running Jobs</div>
-                  <div className={styles.statusValue}>
-                    {selectedSystem.running != null
-                      ? selectedSystem.running
-                      : '--'}
-                  </div>
-                </div>
-                <div className={styles.statusItem}>
-                  <div className={styles.statusLabel}>Waiting Jobs</div>
-                  <div className={styles.statusValue}>
-                    {selectedSystem.waiting != null
-                      ? selectedSystem.waiting
-                      : '--'}
-                  </div>
-                </div>
-              </div>
-*/}
               <div className={styles.tableContainer}>
                 <SystemQueueTable hostname={activeSystem} />
               </div>

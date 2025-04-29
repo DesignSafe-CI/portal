@@ -24,7 +24,7 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  //Fetch data from useSystemQueue.js
+  //Fetch data from useSystemQueue.ts
   useEffect(() => {
     const fetchData = async () => {
       try {

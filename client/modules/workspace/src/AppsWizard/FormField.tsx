@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Input, Select } from 'antd';
+import { Button, Form, Input, Select, Badge } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
@@ -9,6 +9,20 @@ import {
 } from '../AppsWizard/AppsFormSchema';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
+import { useSystemOverview } from '../../../../src/hooks/system-status/useSystemOverview';
+import { useSystemQueue } from '../../../../src/hooks/system-status/useSystemQueue';
+import systemStatusStyles from '../../../../src/workspace/components/SystemStatusModal/SystemStatusModal.module.css';
+import queueStyles from '../../../../src/workspace/components/SystemStatusModal/SystemQueueTable.module.css';
+
+interface QueueItem {
+  name: string;
+  down: boolean;
+  hidden: boolean;
+  load: number;
+  free: number;
+  running: number;
+  waiting: number;
+}
 
 export const FormField: React.FC<{
   name: string;
@@ -20,6 +34,7 @@ export const FormField: React.FC<{
   fileSettings?: TAppFileSettings;
   placeholder?: string;
   options?: TFieldOptions[];
+  readOnly?: boolean;
 }> = ({
   name,
   parameterSet = null,
@@ -28,11 +43,62 @@ export const FormField: React.FC<{
   required = false,
   type,
   fileSettings = null,
+  readOnly = false,
   ...props
 }) => {
   const { resetField, control, getValues, setValue, trigger } =
     useFormContext();
   const fieldState = useWatch({ control, name });
+
+  const { data: systems } = useSystemOverview();
+  const selectedSystemId = getValues('configuration.execSystemId');
+  const selectedSystem = systems?.find(
+    (sys) => sys.display_name.toLowerCase() === selectedSystemId?.toLowerCase()
+  );
+
+  const [queueData, setQueueData] = useState<QueueItem[]>([]);
+  useEffect(() => {
+    if (selectedSystem) {
+      useSystemQueue(selectedSystem.display_name.toLowerCase())
+        .then((result) => setQueueData(result))
+        .catch(() => setQueueData([]));
+    }
+  }, [selectedSystem]);
+
+  // Attempt to make Stampede3 queue status appear, same async pattern used in useSystemQueuem, currently not working (frontera working fine)...
+  /*
+const [queueData, setQueueData] = useState<QueueItem[]>([]);
+const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+  if (!selectedSystem) {
+    setQueueData([]);
+    return;
+  }
+  
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const result = await useSystemQueue(selectedSystem.display_name.toLowerCase());
+      setQueueData(result);
+    } catch (err) {
+      console.error("Error fetching queue data:", err);
+      setQueueData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  fetchData();
+}, [selectedSystem]);
+
+*/
+
+  const selectedQueueName = getValues('configuration.execSystemLogicalQueue');
+  console.log('QueueData:', queueData, 'SelectedQueueName:', selectedQueueName);
+
+  const selectedQueue = queueData.find((q) => q.name === selectedQueueName);
+
   let parameterSetLabel: React.ReactElement | null = null;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [storageSystem, setStorageSystem] = useState<string | null>(null);
@@ -85,11 +151,111 @@ export const FormField: React.FC<{
         style={{ textAlign: 'left', marginBottom: description ? 0 : 16 }}
       >
         {type === 'select' ? (
-          <Select
-            {...props}
-            value={getValues(name)}
-            style={{ textAlign: 'left' }}
-          />
+          name === 'configuration.execSystemId' ? (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Select
+                {...props}
+                value={selectedSystemId}
+                disabled={readOnly}
+                suffixIcon={readOnly ? null : undefined}
+                style={{
+                  textAlign: 'left',
+                  maxWidth: 150,
+                  width: '20%',
+                  backgroundColor: readOnly ? '#F4F4F4' : undefined,
+                }}
+              />
+
+              {selectedSystem && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginLeft: 12,
+                  }}
+                >
+                  <span style={{ marginRight: -5, marginLeft: 8 }}>
+                    {selectedSystemId.charAt(0).toUpperCase() +
+                      selectedSystemId.slice(1)}{' '}
+                    status:
+                  </span>
+                  <div
+                    className={`${systemStatusStyles.statusBadge} ${
+                      selectedSystem.is_operational
+                        ? systemStatusStyles.open
+                        : systemStatusStyles.closed
+                    }`}
+                    style={{ marginLeft: 12 }}
+                  >
+                    {selectedSystem.is_operational
+                      ? 'Operational'
+                      : 'Maintenance'}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : name === 'configuration.execSystemLogicalQueue' ? (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Select
+                {...props}
+                value={selectedQueueName}
+                onChange={(value) => {
+                  setValue('configuration.execSystemLogicalQueue', value);
+                }}
+                style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
+              />
+              {selectedQueueName &&
+                (selectedQueue ? (
+                  // If queue is found, show Open/Closed
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginLeft: 12,
+                    }}
+                  >
+                    <span style={{ marginRight: -5, marginLeft: 8 }}>
+                      Queue Status:
+                    </span>
+                    <div
+                      className={`${queueStyles.statusBadge} ${
+                        selectedQueue.down
+                          ? queueStyles.closed
+                          : queueStyles.open
+                      }`}
+                      style={{ marginLeft: 12 }}
+                    >
+                      {selectedQueue.down ? 'Closed' : 'Open'}
+                    </div>
+                  </div>
+                ) : (
+                  // If queue is not found (including empty queueData), show Not Available
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginLeft: 12,
+                    }}
+                  >
+                    <span style={{ marginRight: -5, marginLeft: 8 }}>
+                      Queue Status:
+                    </span>
+                    <div
+                      className={`${queueStyles.statusBadge} ${queueStyles.closed}`}
+                      style={{ marginLeft: 12 }}
+                    >
+                      Not Available
+                    </div>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <Select
+              {...props}
+              value={getValues(name)}
+              style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
+            />
+          )
         ) : (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {fileSettings && (
@@ -103,7 +269,7 @@ export const FormField: React.FC<{
               {...props}
               type={type}
               value={getValues(name)}
-              style={{ marginRight: '8px' }}
+              style={{ marginRight: '8px', maxWidth: 150, width: '20%' }}
             />
             <Button
               type="link"

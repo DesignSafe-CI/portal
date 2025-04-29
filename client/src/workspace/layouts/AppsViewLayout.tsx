@@ -38,10 +38,6 @@ export const AppsViewLayout: React.FC = () => {
     fontSize: 16,
   };
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const openModal = () => setIsModalVisible(true);
-  const closeModal = () => setIsModalVisible(false);
-
   return (
     <>
       <Layout style={{ overflowY: 'scroll', overflowX: 'hidden' }}>
@@ -53,9 +49,6 @@ export const AppsViewLayout: React.FC = () => {
                 {app.definition.notes.label || app.definition.id}
               </div>
               <div>
-                <Button type="link" onClick={openModal}>
-                  System Status
-                </Button>
                 {userGuideLink && (
                   <a
                     href={userGuideLink}
@@ -99,7 +92,6 @@ export const AppsViewLayout: React.FC = () => {
         </Space>
       </Layout>
       <Outlet />
-      <SystemStatusModal isModalVisible={isModalVisible} onClose={closeModal} />
     </>
   );
 };

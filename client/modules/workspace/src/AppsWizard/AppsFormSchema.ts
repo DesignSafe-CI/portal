@@ -1,4 +1,5 @@
 import { z, ZodType, ZodObject, ZodRawShape } from 'zod';
+import styles from './AppsWizard.module.css';
 import {
   TTapisApp,
   TJobKeyValuePair,
@@ -100,11 +101,12 @@ export const tapisInputFileRegex = /^tapis:\/\/(?<storageSystem>[^/]+)/;
 
 export const fieldDisplayOrder: Record<string, string[]> = {
   configuration: [
+    'allocation',
+    'execSystemId',
     'execSystemLogicalQueue',
     'maxMinutes',
     'nodeCount',
     'coresPerNode',
-    'allocation',
   ],
   outputs: ['name', 'archiveSystemId', 'archiveSystemDir'],
 };
@@ -135,6 +137,7 @@ export const getConfigurationSchema = (
   const configurationSchema: { [dynamic: string]: ZodType } = {};
 
   if (definition.jobType === 'BATCH') {
+    configurationSchema['execSystemId'] = z.string();
     configurationSchema['execSystemLogicalQueue'] =
       getExecSystemLogicalQueueValidation(definition, execSystem);
     configurationSchema['allocation'] = getAllocationValidation(
@@ -186,6 +189,27 @@ export const getConfigurationFields = (
     definition.jobAttributes.execSystemId
   ) as TTapisSystem;
 
+  if (definition.jobType === 'BATCH') {
+    const systemOptions = execSystems.map((sys) => ({
+      value: sys.id,
+      label: sys.id,
+    }));
+    const isMulti = systemOptions.length > 1;
+
+    configurationFields.execSystemId = {
+      label: 'System',
+      name: 'configuration.execSystemId',
+      key: 'configuration.execSystemId',
+      type: 'select',
+      required: true,
+      options: systemOptions,
+      readOnly: !isMulti,
+      description: isMulti
+        ? 'Select the high-performance computing system you want this job to run on.'
+        : 'This application is compiled only for one system.',
+    };
+  }
+
   if (definition.jobType === 'BATCH' && !definition.notes.hideQueue) {
     configurationFields['execSystemLogicalQueue'] = {
       description: `Select the queue this ${getAppRuntimeLabel(
@@ -205,9 +229,9 @@ export const getConfigurationFields = (
 
   if (definition.jobType === 'BATCH' && !definition.notes.hideAllocation) {
     configurationFields['allocation'] = {
-      description: `Select the project allocation you would like to use with this ${getAppRuntimeLabel(
+      description: `Select the allocation you would like to charge this ${getAppRuntimeLabel(
         definition
-      )} submission.`,
+      )} to.`,
       label: 'Allocation',
       name: 'configuration.allocation',
       key: 'configuration.allocation',
@@ -247,8 +271,8 @@ export const getConfigurationFields = (
 
   if (!definition.notes.hideNodeCountAndCoresPerNode) {
     configurationFields['nodeCount'] = {
-      description: 'Number of requested process nodes for the job.',
-      label: 'Node Count',
+      description: 'Number of requested process nodes',
+      label: 'Number of Nodes',
       name: 'configuration.nodeCount',
       key: 'configuration.nodeCount',
       required: true,
@@ -256,8 +280,7 @@ export const getConfigurationFields = (
     };
 
     configurationFields['coresPerNode'] = {
-      description:
-        'Number of processors (cores) per node for the job. e.g. a selection of 16 processors per node along with 4 nodes will result in 16 processors on 4 nodes, with 64 processors total.',
+      description: 'Number of processors (cores) per node',
       label: 'Cores Per Node',
       name: 'configuration.coresPerNode',
       key: 'configuration.coresPerNode',
@@ -523,6 +546,9 @@ const FormSchema = (
         ? allocations[0]
         : ''
       : '';
+
+    appFields.configuration.defaults['execSystemId'] =
+      definition.jobAttributes.execSystemId;
   }
 
   if (!definition.notes.hideMaxMinutes) {

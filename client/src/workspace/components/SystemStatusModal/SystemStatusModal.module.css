@@ -1,6 +1,5 @@
 .modal {
   background: white;
-  /* width: 528px; */
   width: 100%;
   color: rgba(0, 0, 0, 0.85);
   overflow: hidden;
@@ -84,33 +83,6 @@
   margin: 5px;
 }
 
-/*
-.statusGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.statusItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.statusLabel {
-  font-size: 14px;
-  color: #8c8c8c;
-  margin-bottom: 4px;
-}
-
-.statusValue {
-  font-size: 20px;
-  font-weight: 500;
-}
-
-*/
 
 .tableContainer {
   display: flex;
@@ -121,8 +93,8 @@
 .statusBadge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  font-size: 12px;
+  padding: 1px 5px;
+  font-size: 11px;
   border-radius: 4px;
   color: white;
   text-align: center;
@@ -136,12 +108,18 @@
   background-color: #EB6E6E; 
 }
 
-.scaledContainer {
-  transform: scale(1.5);
-  transform-origin: top center;
+
+:global(.ant-modal-content) {
+  padding: 0 !important;
 }
 
 
+:global(.ant-modal-header) {
+  background-color: #F4F4F4 !important;   
+  border-bottom: none !important;
+  padding: 16px 24px !important;    
+}
 
-
-
+:global(.ant-modal-body) {
+  padding: 0px 24px 24px 24px !important; 
+}

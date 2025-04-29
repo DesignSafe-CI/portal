@@ -13,15 +13,6 @@ export const JobStatusNav: React.FC = () => {
   });
   const unreadNotifs = new Set(data?.notifs.map((x) => x.extra.uuid)).size;
 
-  const { Header } = Layout;
-
-  const headerStyle = {
-    background: 'transparent',
-    padding: 0,
-    borderBottom: '1px solid var(--global-color-primary--normal)',
-    fontSize: 14,
-    borderRight: '1px solid var(--global-color-primary--normal)',
-  };
   return (
     <NavLink
       to={`history`}
@@ -29,7 +20,7 @@ export const JobStatusNav: React.FC = () => {
         isActive ? styles['highlighted-row'] : styles.root
       }
     >
-      <Header style={headerStyle}>
+      <div className={styles.navItem}>
         <Badge count={unreadNotifs} size="small" className={styles.badge}>
           <Icon
             className={`ds-icon-Job-Status ${styles.icon}`}
@@ -37,7 +28,7 @@ export const JobStatusNav: React.FC = () => {
           />
         </Badge>
         Job Status
-      </Header>
+      </div>
     </NavLink>
   );
 };
