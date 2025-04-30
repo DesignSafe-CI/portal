@@ -15,6 +15,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 import json
 import uuid
+from hashlib import sha256
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
@@ -419,6 +420,7 @@ def guid_filter(record):
     """Log filter that adds a guid to each entry"""
 
     record.logGuid = uuid.uuid4().hex
+    record.sessionId = sha256(record.sessionId.encode()).hexdigest()
     return True
 
 LOGGING = {
@@ -626,6 +628,10 @@ DATACITE_USER = os.environ.get('DATACITE_USER')
 DATACITE_PASS = os.environ.get('DATACITE_PASS')
 DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER')
 
+# Clarivate/World of Citation
+WOS_URL = os.environ.get('WOS_URL', 'https://api.clarivate.com/apis/wos-starter/v1/documents')
+WOS_PASS = os.environ.get('WOS_APIKEY', '')
+
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
 if os.environ.get('PORTAL_PROFILE') == 'True':
     PORTAL_PROFILE = True
@@ -737,7 +743,9 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     {
         "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
         "settings": {
-            "credentials_systems": ["cloud.data", "designsafe.storage.default"],
+            "credentials_systems": os.environ.get(
+                "TMS_SYSTEMS", "cloud.data,designsafe.storage.default,wma-exec-01"
+            ).split(","),
             "create_path_systems": [
                 {"system_id": "designsafe.storage.default", "path": "{username}"}
             ],
