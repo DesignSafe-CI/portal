@@ -296,7 +296,7 @@ export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
       className={`${styles.root} job-history-modal`}
       title={
         <header>
-          Job Detail: {jobData.name}
+          Job Detail: {jobData?.name}
           {jobData && (
             <dl className={styles['header-details']}>
               <dt>Job UUID: </dt>
