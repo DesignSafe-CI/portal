@@ -101,7 +101,7 @@ export const JobsDetailModalBody: React.FC<{
         : undefined,
     Allocation: 'allocation' in jobDisplay ? jobDisplay.allocation : undefined,
     Reservation:
-      'reservation' in jobDisplay ? jobDisplay.reservation.arg : undefined,
+      'reservation' in jobDisplay ? jobDisplay.reservation?.arg : undefined,
     'Execution Directory':
       'execSystemExecDir' in jobData ? jobData.execSystemExecDir : undefined,
   };

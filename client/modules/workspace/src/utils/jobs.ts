@@ -242,7 +242,7 @@ export function getJobDisplayInformation(
 
       if (schedulerOptions) {
         schedulerOptions.forEach((opt) => {
-          if (opt.notes?.isReservation) {
+          if (opt.notes?.isReservation && opt.arg) {
             opt.arg = opt.arg.replace('--reservation=', '');
             display.reservation = opt;
           }
@@ -372,9 +372,14 @@ export const mergeParameterSetDefaultsWithJobData = (
     const jobParams = jobParameterSet[key as keyof TParameterSetSubmit];
     if (key == 'schedulerOptions') {
       jobParams.forEach((param) => {
-        if (param?.notes == '{"isReservation":true}') {
-          const reservationArg = param.arg;
-          param.arg = reservationArg.replace('--reservation=', '');
+        if (
+          typeof param.notes == 'string' &&
+          param.notes === '{"isReservation":true}'
+        ) {
+          if ('arg' in param) {
+            const reservationArg = param.arg;
+            param.arg = reservationArg?.replace('--reservation=', '');
+          }
         }
       });
     }
