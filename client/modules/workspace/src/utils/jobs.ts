@@ -360,6 +360,14 @@ export const mergeParameterSetDefaultsWithJobData = (
 
   for (const key in parameterSet) {
     const jobParams = jobParameterSet[key as keyof TParameterSetSubmit];
+    if (key == 'schedulerOptions') {
+      jobParams.forEach((param) => {
+        if (param?.notes == '{"isReservation":true}') {
+          const reservationArg = param.arg;
+          param.arg = reservationArg.replace('--reservation=', '');
+        }
+      });
+    }
     if (
       jobParams &&
       typeof jobParams === 'object' &&
