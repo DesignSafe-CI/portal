@@ -96,9 +96,7 @@ export const JobsDetailModalBody: React.FC<{
         ? String(jobDisplay.coresPerNode)
         : undefined,
     'Node Count':
-      'coresPerNode' in jobDisplay
-        ? String(jobDisplay.coresPerNode)
-        : undefined,
+      'nodeCount' in jobDisplay ? String(jobDisplay.nodeCount) : undefined,
     Allocation: 'allocation' in jobDisplay ? jobDisplay.allocation : undefined,
     'Execution Directory':
       'execSystemExecDir' in jobData ? jobData.execSystemExecDir : undefined,
@@ -298,7 +296,7 @@ export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
       className={`${styles.root} job-history-modal`}
       title={
         <header>
-          Job Detail: {uuid}
+          Job Detail: {jobData?.name}
           {jobData && (
             <dl className={styles['header-details']}>
               <dt>Job UUID: </dt>
