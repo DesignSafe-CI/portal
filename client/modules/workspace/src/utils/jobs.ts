@@ -126,6 +126,7 @@ export type TJobDisplayInfo = {
   queue?: string;
   coresPerNode?: number;
   nodeCount?: number;
+  reservation?: TJobArgSpec;
 };
 
 function getParameterSetNotesLabel(obj: unknown): string | undefined {
@@ -237,6 +238,15 @@ export function getJobDisplayInformation(
       if (!app.definition.notes.hideNodeCountAndCoresPerNode) {
         display.coresPerNode = job.coresPerNode;
         display.nodeCount = job.nodeCount;
+      }
+
+      if (schedulerOptions) {
+        schedulerOptions.forEach((opt) => {
+          if (opt.notes?.isReservation) {
+            opt.arg = opt.arg.replace('--reservation=', '');
+            display.reservation = opt;
+          }
+        });
       }
 
       // Tapis adds env variables when envKey is used, filter those out
