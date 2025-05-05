@@ -7,7 +7,9 @@ export const SystemsPushKeysModalBody: React.FC<{
   system?: TTapisSystem;
   onSuccess?: () => void;
   handleCancel: () => void;
-}> = ({ system, onSuccess, handleCancel }) => {
+  execSystem: string;
+  isInMaintenance: boolean;
+}> = ({ system, execSystem, isInMaintenance, onSuccess, handleCancel }) => {
   const {
     mutate: pushKeys,
     error: pushKeysError,
@@ -65,6 +67,20 @@ export const SystemsPushKeysModalBody: React.FC<{
         showIcon
         style={{ margin: '15px 10px' }}
       />
+      {isInMaintenance && (
+        <Alert
+          showIcon
+          type="info"
+          style={{ margin: '15px 10px' }}
+          message={
+            <>
+              <p>The system {execSystem} is undergoing maintenance.  Please check back
+                later for availability.</p>
+              <p>Thank you for your patience.</p>
+            </>
+          }
+        />
+      )}
       <Form
         autoComplete="off"
         layout="vertical"
@@ -129,7 +145,9 @@ export const SystemsPushKeysModal: React.FC<{
   setIsModalOpen: React.Dispatch<
     React.SetStateAction<TTapisSystem | undefined>
   >;
-}> = ({ onSuccess, isModalOpen, setIsModalOpen }) => {
+  execSystem: string;
+  isInMaintenance: boolean;
+}> = ({ onSuccess, isModalOpen, execSystem, isInMaintenance, setIsModalOpen }) => {
   const handleCancel = () => {
     setIsModalOpen(undefined);
   };
@@ -139,6 +157,8 @@ export const SystemsPushKeysModal: React.FC<{
       system={isModalOpen}
       onSuccess={onSuccess}
       handleCancel={handleCancel}
+      execSystem={execSystem}
+      isInMaintenance={isInMaintenance}
     />
   );
 };

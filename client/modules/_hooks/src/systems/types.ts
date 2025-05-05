@@ -72,3 +72,8 @@ export type TTapisSystem = {
   created: string;
   updated: string;
 };
+
+export type TTapisSystemInMaintenance = {
+  id: string;
+  in_maintenance: boolean;
+};

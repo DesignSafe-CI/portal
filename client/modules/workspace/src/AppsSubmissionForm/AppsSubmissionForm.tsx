@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Layout, Form, Col, Row, Alert, Button, Space } from 'antd';
-import { z } from 'zod';
+import { boolean, z } from 'zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { JobSubmitButton } from '../JobSubmitButton/JobSubmitButton';
@@ -87,7 +87,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const [, setInteractiveModalDetails] =
     useInteractiveModalContext() as TInteractiveModalContext;
 
-  const { definition, license, defaultSystemNeedsKeys } = app;
+  const { definition, license, defaultSystemNeedsKeys, systemInMaintenance } = app;
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -124,6 +124,8 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [definition, executionSystems]);
 
+  const isSystemsInMaintenance = !!(systemInMaintenance ?? []).find((s) => s.id === defaultExecSystem?.id)
+  
   const [allocations, setAllocations] = useState<string[]>([]);
   const [portalAlloc, setPortalAlloc] = useState<string | undefined>(undefined);
 
@@ -842,6 +844,8 @@ export const AppsSubmissionForm: React.FC = () => {
       <SystemsPushKeysModal
         isModalOpen={pushKeysSystem}
         setIsModalOpen={setPushKeysSystem}
+        execSystem={defaultExecSystem?.id || ''}
+        isInMaintenance={isSystemsInMaintenance}
         onSuccess={() => submitVariables && submitJob(submitVariables)}
       />
     </>

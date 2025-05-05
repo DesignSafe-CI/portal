@@ -27,6 +27,7 @@ from designsafe.apps.workspace.models.app_entries import (
 )
 from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
+import requests
 
 
 logger = logging.getLogger(__name__)
@@ -102,6 +103,16 @@ def _get_exec_systems(user, systems):
         search_string = f"(id.in.{system_id_search})~{search_string}"
     return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
 
+def _get_mnt_systems():
+    status_json = requests.get('https://tap.tacc.utexas.edu/status/').json()
+    systems = []
+    for systemStatus in status_json:
+        system = SystemStatus(status_json[systemStatus]).to_dict()
+        if system.get('in_maintenance') == True:
+            systems.append(system)
+    
+    return systems
+
 
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
@@ -125,9 +136,24 @@ def _get_app(app_id, app_version, user):
     if lic_type is not None:
         lic = _get_user_app_license(lic_type, user)
         data["license"]["enabled"] = lic is not None
-
+    
     return data
 
+class SystemStatus:
+
+    def __init__(self, system_dict):
+        try:
+            if system_dict.get('tas_name') == 'lonestar6':
+                self.id = 'ls6'
+            else:
+                self.id = system_dict.get('tas_name').lower()
+            self.in_maintenance = system_dict.get('in_maintenance')
+        except Exception as exc:
+            logger.error(exc)
+
+    def to_dict(self):
+        r = json.dumps(self.__dict__)
+        return json.loads(r)
 
 def test_system_needs_keys(tapis, system_id):
     """Tests a Tapis system by making a file listing call.
@@ -218,6 +244,8 @@ class AppsView(AuthenticatedApiView):
 
         except ObjectDoesNotExist:
             data = _get_app(app_id, app_version, request.user)
+
+        data['systemInMaintenance'] = _get_mnt_systems()
 
         # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
         # Check if default storage system needs keys pushed
