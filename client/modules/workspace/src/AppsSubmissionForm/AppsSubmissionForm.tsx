@@ -87,7 +87,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const [, setInteractiveModalDetails] =
     useInteractiveModalContext() as TInteractiveModalContext;
 
-  const { definition, license, defaultSystemNeedsKeys, systemInMaintenance } = app;
+  const { definition, license, defaultSystemNeedsKeys, systemStatus } = app;
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -124,7 +124,7 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [definition, executionSystems]);
 
-  const isSystemsInMaintenance = !!(systemInMaintenance ?? []).find((s) => s.id === defaultExecSystem?.id)
+  const isSystemUnreachable = !!(systemStatus ?? []).find((s) => s.id === defaultExecSystem?.id)
   
   const [allocations, setAllocations] = useState<string[]>([]);
   const [portalAlloc, setPortalAlloc] = useState<string | undefined>(undefined);
@@ -845,7 +845,7 @@ export const AppsSubmissionForm: React.FC = () => {
         isModalOpen={pushKeysSystem}
         setIsModalOpen={setPushKeysSystem}
         execSystem={defaultExecSystem?.id || ''}
-        isInMaintenance={isSystemsInMaintenance}
+        isSystemUnreachable={isSystemUnreachable}
         onSuccess={() => submitVariables && submitJob(submitVariables)}
       />
     </>

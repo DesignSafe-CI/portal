@@ -73,7 +73,7 @@ export type TTapisSystem = {
   updated: string;
 };
 
-export type TTapisSystemInMaintenance = {
+export type TTapisSystemStatus = {
   id: string;
-  in_maintenance: boolean;
+  reachable: boolean;
 };

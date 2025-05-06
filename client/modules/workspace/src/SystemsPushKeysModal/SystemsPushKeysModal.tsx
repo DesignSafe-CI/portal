@@ -8,8 +8,8 @@ export const SystemsPushKeysModalBody: React.FC<{
   onSuccess?: () => void;
   handleCancel: () => void;
   execSystem: string;
-  isInMaintenance: boolean;
-}> = ({ system, execSystem, isInMaintenance, onSuccess, handleCancel }) => {
+  isSystemUnreachable: boolean;
+}> = ({ system, execSystem, isSystemUnreachable, onSuccess, handleCancel }) => {
   const {
     mutate: pushKeys,
     error: pushKeysError,
@@ -67,10 +67,10 @@ export const SystemsPushKeysModalBody: React.FC<{
         showIcon
         style={{ margin: '15px 10px' }}
       />
-      {isInMaintenance && (
+      {isSystemUnreachable && (
         <Alert
           showIcon
-          type="info"
+          type="warning"
           style={{ margin: '15px 10px' }}
           message={
             <>
@@ -146,8 +146,8 @@ export const SystemsPushKeysModal: React.FC<{
     React.SetStateAction<TTapisSystem | undefined>
   >;
   execSystem: string;
-  isInMaintenance: boolean;
-}> = ({ onSuccess, isModalOpen, execSystem, isInMaintenance, setIsModalOpen }) => {
+  isSystemUnreachable: boolean;
+}> = ({ onSuccess, isModalOpen, execSystem, isSystemUnreachable, setIsModalOpen }) => {
   const handleCancel = () => {
     setIsModalOpen(undefined);
   };
@@ -158,7 +158,7 @@ export const SystemsPushKeysModal: React.FC<{
       onSuccess={onSuccess}
       handleCancel={handleCancel}
       execSystem={execSystem}
-      isInMaintenance={isInMaintenance}
+      isSystemUnreachable={isSystemUnreachable}
     />
   );
 };

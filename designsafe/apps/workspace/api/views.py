@@ -103,14 +103,13 @@ def _get_exec_systems(user, systems):
         search_string = f"(id.in.{system_id_search})~{search_string}"
     return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
 
-def _get_mnt_systems():
+def _get_system_status():
     status_json = requests.get('https://tap.tacc.utexas.edu/status/').json()
     systems = []
     for systemStatus in status_json:
         system = SystemStatus(status_json[systemStatus]).to_dict()
-        if system.get('in_maintenance') == True:
+        if system.get('reachable') == False:
             systems.append(system)
-    
     return systems
 
 
@@ -147,7 +146,7 @@ class SystemStatus:
                 self.id = 'ls6'
             else:
                 self.id = system_dict.get('tas_name').lower()
-            self.in_maintenance = system_dict.get('in_maintenance')
+            self.reachable = system_dict.get('reachable')
         except Exception as exc:
             logger.error(exc)
 
@@ -245,7 +244,7 @@ class AppsView(AuthenticatedApiView):
         except ObjectDoesNotExist:
             data = _get_app(app_id, app_version, request.user)
 
-        data['systemInMaintenance'] = _get_mnt_systems()
+        data['systemStatus'] = _get_system_status()
 
         # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
         # Check if default storage system needs keys pushed
