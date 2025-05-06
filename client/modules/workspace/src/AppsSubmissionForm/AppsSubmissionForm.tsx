@@ -124,8 +124,10 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [definition, executionSystems]);
 
-  const isSystemUnreachable = !!(systemStatus ?? []).find((s) => s.id === defaultExecSystem?.id)
-  
+  const isSystemUnreachable = !!(systemStatus ?? []).find(
+    (s) => s.id === defaultExecSystem?.id
+  );
+
   const [allocations, setAllocations] = useState<string[]>([]);
   const [portalAlloc, setPortalAlloc] = useState<string | undefined>(undefined);
 

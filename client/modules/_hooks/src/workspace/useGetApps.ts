@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { TTapisApp } from './types';
-import { TTapisSystem,TTapisSystemStatus } from '../systems/types';
+import { TTapisSystem, TTapisSystemStatus } from '../systems/types';
 
 export type TAppParamsType = {
   appId: string;

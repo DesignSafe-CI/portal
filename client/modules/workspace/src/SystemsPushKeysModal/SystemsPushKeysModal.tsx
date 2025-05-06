@@ -74,8 +74,10 @@ export const SystemsPushKeysModalBody: React.FC<{
           style={{ margin: '15px 10px' }}
           message={
             <>
-              <p>The system {execSystem} is undergoing maintenance.  Please check back
-                later for availability.</p>
+              <p>
+                The system {execSystem} is undergoing maintenance. Please check
+                back later for availability.
+              </p>
               <p>Thank you for your patience.</p>
             </>
           }
@@ -147,7 +149,13 @@ export const SystemsPushKeysModal: React.FC<{
   >;
   execSystem: string;
   isSystemUnreachable: boolean;
-}> = ({ onSuccess, isModalOpen, execSystem, isSystemUnreachable, setIsModalOpen }) => {
+}> = ({
+  onSuccess,
+  isModalOpen,
+  execSystem,
+  isSystemUnreachable,
+  setIsModalOpen,
+}) => {
   const handleCancel = () => {
     setIsModalOpen(undefined);
   };
