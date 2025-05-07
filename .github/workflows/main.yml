@@ -18,7 +18,7 @@ jobs:
     - name: Fetch base and install Poetry
       run: |
         git fetch origin ${{github.base_ref}}
-        pipx install poetry
+        pipx install poetry==2.1.1
 
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -31,7 +31,7 @@ jobs:
         cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
     - run: |
-        poetry install
+        poetry sync
 
     - name: Run Server-side unit tests and generate coverage report
       run: |
@@ -45,7 +45,7 @@ jobs:
     - name: Fetch base and install Poetry
       run: |
         git fetch origin ${{github.base_ref}}
-        pipx install poetry
+        pipx install poetry==2.1.1
 
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -55,7 +55,7 @@ jobs:
 
     - name: Install Python Packages
       run:  |
-        poetry install
+        poetry sync
 
     - name: Run Server-side linting with pytest
       # Only run on new files for now-- for all changes, filter is ACMRTUXB

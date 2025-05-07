@@ -96,8 +96,8 @@ docs/_build/
 .docs/build
 target/
 venv/
+.venv/
 metrics/
-.python-version
 
 # ignore Google Drive API secrets
 *secrets.json
