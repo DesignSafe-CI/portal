@@ -13,13 +13,18 @@ export const PublicationSearchToolbar: React.FC = () => {
   const searchBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const storedSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    const storedSearches = JSON.parse(
+      localStorage.getItem('recentSearches') || '[]'
+    );
     setRecentSearches(storedSearches);
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
+      if (
+        searchBarRef.current &&
+        !searchBarRef.current.contains(event.target as Node)
+      ) {
         setShowTips(false);
       }
     };
@@ -30,7 +35,10 @@ export const PublicationSearchToolbar: React.FC = () => {
   }, []);
 
   const updateRecentSearches = (newSearch: string) => {
-    const updatedSearches = [newSearch, ...recentSearches.filter((s) => s !== newSearch)].slice(0, 5);
+    const updatedSearches = [
+      newSearch,
+      ...recentSearches.filter((s) => s !== newSearch),
+    ].slice(0, 5);
     setRecentSearches(updatedSearches);
     localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
   };
@@ -65,8 +73,20 @@ export const PublicationSearchToolbar: React.FC = () => {
   const yearOptions = datesInRange.map((y) => ({ label: y, value: y }));
 
   return (
-    <div ref={searchBarRef} style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-      <Form onFinish={(data) => setSearchParam('q', data.query)} style={{ display: 'inline-flex', flex: 1, minWidth: '250px' }}>
+    <div
+      ref={searchBarRef}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+      }}
+    >
+      <Form
+        onFinish={(data) => setSearchParam('q', data.query)}
+        style={{ display: 'inline-flex', flex: 1, minWidth: '250px' }}
+      >
         <Button htmlType="submit" type="primary" className="success-button">
           <i className="fa fa-search" /> &nbsp;Search
         </Button>
@@ -81,20 +101,50 @@ export const PublicationSearchToolbar: React.FC = () => {
       </Form>
 
       {showTips && (
-        <Collapse bordered={false} defaultActiveKey={['1', '2']} style={{ width: '100%' }}>
+        <Collapse
+          bordered={false}
+          defaultActiveKey={['1', '2']}
+          style={{ width: '100%' }}
+        >
           <Panel header="Search Tips" key="1">
-            <p><strong>"exact phrase"</strong> - Use quotes to search for exact phrases.</p>
-            <p><strong>word1 OR word2</strong> - Find results containing either word.</p>
-            <p><strong>word1 AND word2, word3 word4</strong> - Use AND, commas, and spaces to find results containing each word.</p>
+            <p>
+              <strong>"exact phrase"</strong> - Use quotes to search for exact
+              phrases.
+            </p>
+            <p>
+              <strong>word1 OR word2</strong> - Find results containing either
+              word.
+            </p>
+            <p>
+              <strong>word1 AND word2, word3 word4</strong> - Use AND, commas,
+              and spaces to find results containing each word.
+            </p>
           </Panel>
           <Panel header="Recent Searches" key="2">
             {recentSearches.length ? (
               recentSearches.map((term, index) => (
-                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <p style={{ cursor: 'pointer', color: 'blue', margin: 0 }} onClick={() => setSearchParam('q', term)}>
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <p
+                    style={{ cursor: 'pointer', color: 'blue', margin: 0 }}
+                    onClick={() => setSearchParam('q', term)}
+                  >
                     {term}
                   </p>
-                  <CloseOutlined style={{ marginLeft: '8px', color: 'red', cursor: 'pointer' }} onClick={() => removeSearchTerm(term)} />
+                  <CloseOutlined
+                    style={{
+                      marginLeft: '8px',
+                      color: 'red',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => removeSearchTerm(term)}
+                  />
                 </div>
               ))
             ) : (
