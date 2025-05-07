@@ -8,6 +8,7 @@ export type TParameterSetNotes = {
   };
   enum_values?: [{ [dynamic: string]: string }];
   label?: string;
+  isReservation?: boolean;
 };
 
 export type TJobArgSpec = {
