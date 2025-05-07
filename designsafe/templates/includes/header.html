@@ -50,7 +50,7 @@
         <li><a href="{% url 'designsafe_workspace:workspace' %}">Tools & Applications</a></li>
         <li><a href="{% url 'designsafe_accounts:index' %}">Manage Account</a></li>
         <li><a href="{% url 'djangoRT:mytickets' %}">My Tickets</a></li>
-        {% if user.is_staff %}
+        {% if user|has_group:'Onboarding Admin' %}
         <li><a href="{% url 'designsafe_onboarding:admin'%}" target="_self">Onboarding Admin</a></li>
         {% endif %}
         {% if user|has_group:'Rapid Admin' %}
