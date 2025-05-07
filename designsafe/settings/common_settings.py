@@ -422,7 +422,8 @@ def guid_filter(record):
     """Log filter that adds a guid to each entry"""
 
     record.logGuid = uuid.uuid4().hex
-    record.sessionId = sha256(record.sessionId.encode()).hexdigest()
+    if record.sessionId is not None:
+        record.sessionId = sha256(record.sessionId.encode()).hexdigest()
     return True
 
 LOGGING = {
