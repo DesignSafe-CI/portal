@@ -1,8 +1,7 @@
-import { Button, Form, Input, Select, Collapse } from 'antd';
+import { Button, Form, Input, Collapse } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import * as dropdownOptions from '../../projects/forms/ProjectFormDropdowns';
 
 const { Panel } = Collapse;
 
@@ -70,7 +69,6 @@ export const PublicationSearchToolbar: React.FC = () => {
   for (let i = currentYear; i >= 2015; i--) {
     datesInRange.push(i);
   }
-  const yearOptions = datesInRange.map((y) => ({ label: y, value: y }));
 
   return (
     <div
