@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   apiClient,
   DoiContextProvider,
@@ -25,7 +25,7 @@ import {
   FileTypeIcon,
   TFileListingColumns,
 } from '@client/common-components';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
@@ -225,6 +225,14 @@ export const PublishedEntityDisplay: React.FC<{
       : '';
   const { data: citationMetrics } = useDataciteMetrics(dois, !preview);
 
+  const publishedRef = useRef<HTMLElement>(null);
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash === `#detail-${treeData.uuid}`) {
+      publishedRef.current?.scrollIntoView();
+    }
+  }, [publishedRef, location, treeData.uuid]);
+
   useEffect(() => {
     if (active && !preview) {
       const identifier = dois ?? treeData.uuid;
@@ -237,7 +245,11 @@ export const PublishedEntityDisplay: React.FC<{
   }, [active, preview, dois, projectId, treeData.name, treeData.uuid]);
 
   return (
-    <section>
+    <section
+      id={`#detail-${treeData.uuid}`}
+      ref={publishedRef}
+      style={{ scrollMargin: '70px' }}
+    >
       <div
         className={styles['pub-show-button']}
         style={{
@@ -399,6 +411,8 @@ export const PublicationView: React.FC<{
   const { children } = data?.tree ?? {};
 
   const { selectedVersion } = usePublicationVersions(projectId);
+  const { hash } = useLocation();
+  const openUuid = hash.split('#detail-').slice(-1)[0];
 
   const sortedChildren = useMemo(
     () => [...(children ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
@@ -420,7 +434,10 @@ export const PublicationView: React.FC<{
               license={data.baseProject.license}
               projectId={projectId}
               treeData={child}
-              defaultOpen={idx === 0 && sortedChildren.length === 1}
+              defaultOpen={
+                (idx === 0 && sortedChildren.length === 1) ||
+                child.uuid === openUuid
+              }
               key={child.id}
             />
           </DoiContextProvider>
