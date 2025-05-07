@@ -1,0 +1,8 @@
+.root {
+  padding: 5px;
+  height: inherit;
+}
+
+.header {
+  color: var(--ds-accent-color);
+}
