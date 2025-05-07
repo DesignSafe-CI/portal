@@ -64,7 +64,7 @@ dependencies = [
     "djangocms-admin-style == 3.2.6",
     "pydantic (>= 2.5.0, <3.0.0)",
     "networkx (>= 3.2.1, <4.0.0)",
-    "tapipy (>= 1.7.1, <2.0.0)",
+    "tapipy (>= 1.8.1, <2.0.0)",
     "pycryptodome (>= 3.20.0, <4.0.0)",
     "paramiko (>= 3.4.0, <4.0.0)"
 ]
@@ -78,7 +78,6 @@ attrdict = { git = "https://github.com/DesignSafe-CI/AttrDict", rev = "83b779ee8
 django-recaptcha2 = { git = "https://github.com/DesignSafe-CI/django-recaptcha2", tag = "v1.4.1--compat-django4" }
 djangocms-cascade = { git = "https://github.com/DesignSafe-CI/djangocms-cascade", rev = "9e9f9e3088a0fcfdc1b27ad7e08b68390aa6a570" }
 djangocms-forms-maintained = { git = "https://github.com/TACC/djangocms-forms", rev = "63ead9288c2ea65139124698bffc0ad01d182afa" }
-
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.0"

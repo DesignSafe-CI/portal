@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # retry for 5 minutes to account for allocation propagation
 @retry(UnauthorizedError, tries=-1, max_time=5 * 60)
-def create_system_credentials(  # pylint: disable=too-many-arguments
+def create_system_credentials_with_keys(  # pylint: disable=too-many-arguments
     client,
     username,
     public_key,
@@ -45,18 +45,26 @@ def create_system_credentials(  # pylint: disable=too-many-arguments
     )
 
 
-def register_public_key(
-    username, publicKey, system_id  # pylint: disable=invalid-name
+# retry for 5 minutes to account for allocation propagation
+@retry(UnauthorizedError, tries=-1, max_time=5 * 60)
+def create_system_credentials(  # pylint: disable=too-many-arguments
+    client,
+    username,
+    system_id,
+    createTmsKeys,
+    skipCredentialCheck=False,  # pylint: disable=invalid-name
+    **kwargs,
 ) -> int:
     """
-    Push a public key to the Key Service API.
+    Setup user's auth credential on a Tapis system using TMS.
     """
-    url = "https://api.tacc.utexas.edu/keys/v2/" + username
-    headers = {"Authorization": f"Bearer {settings.KEY_SERVICE_TOKEN}"}
-    data = {"key_value": publicKey, "tags": [{"name": "system", "value": system_id}]}
-    response = requests.post(url, json=data, headers=headers, timeout=60)
-    response.raise_for_status()
-    return response.status_code
+    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using TMS")
+    client.systems.createUserCredential(
+        systemId=system_id,
+        userName=username,
+        createTmsKeys=createTmsKeys,
+        skipCredentialCheck=skipCredentialCheck,
+    )
 
 
 def set_user_permissions(user, system_id):
@@ -132,20 +140,9 @@ class SystemAccessStepV3(AbstractStep):
             except BaseTapyException:
                 self.log(f"Creating credentials for system: {system}")
 
-            (priv, pub) = createKeyPair()
-
-            try:
-                register_public_key(self.user.username, pub, system)
-                self.log(f"Successfully registered public key for system: {system}")
-            except HTTPError as exc:
-                logger.error(exc)
-                self.fail(
-                    f"Failed to register public key with key service for system: {system}"
-                )
-
             try:
                 create_system_credentials(
-                    self.user.tapis_oauth.client, self.user.username, pub, priv, system
+                    self.user.tapis_oauth.client, self.user.username, system, createTmsKeys=True
                 )
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as exc:
