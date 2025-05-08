@@ -59,40 +59,11 @@ export const FormField: React.FC<{
   const [queueData, setQueueData] = useState<QueueItem[]>([]);
   useEffect(() => {
     if (selectedSystem) {
-      useSystemQueue(selectedSystem.display_name.toLowerCase())
+      useSystemQueue(selectedSystem.display_name)
         .then((result) => setQueueData(result))
         .catch(() => setQueueData([]));
     }
   }, [selectedSystem]);
-
-  // Attempt to make Stampede3 queue status appear, same async pattern used in useSystemQueuem, currently not working (frontera working fine)...
-  /*
-const [queueData, setQueueData] = useState<QueueItem[]>([]);
-const [loading, setLoading] = useState(false);
-
-useEffect(() => {
-  if (!selectedSystem) {
-    setQueueData([]);
-    return;
-  }
-  
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const result = await useSystemQueue(selectedSystem.display_name.toLowerCase());
-      setQueueData(result);
-    } catch (err) {
-      console.error("Error fetching queue data:", err);
-      setQueueData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  fetchData();
-}, [selectedSystem]);
-
-*/
 
   const selectedQueueName = getValues('configuration.execSystemLogicalQueue');
   console.log('QueueData:', queueData, 'SelectedQueueName:', selectedQueueName);
@@ -229,7 +200,7 @@ useEffect(() => {
                     </div>
                   </div>
                 ) : (
-                  // If queue is not found (including empty queueData), show Not Available
+                  // If queue info if buffering or is not found (including empty queueData), show "Not Available"
                   <div
                     style={{
                       display: 'flex',
