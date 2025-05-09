@@ -103,9 +103,14 @@ export const PublicationSearchToolbar: React.FC = () => {
         <Collapse
           bordered={false}
           defaultActiveKey={['1', '2']}
+          expandIconPosition="end"
           style={{ width: '100%' }}
         >
-          <Panel header="Search Tips" key="1">
+          <Panel
+            header={<strong>Search Tips</strong>}
+            key="1"
+            showArrow={false}
+          >
             <p>
               <strong>"exact phrase"</strong> - Use quotes to search for exact
               phrases.
@@ -119,17 +124,22 @@ export const PublicationSearchToolbar: React.FC = () => {
               and spaces to find results containing each word.
             </p>
           </Panel>
-          <Panel header="Recent Searches" key="2">
+          <Panel
+            header={<strong>Recent Searches</strong>}
+            key="2"
+            showArrow={false}
+          >
             {recentSearches.length ? (
               recentSearches.map((term, idx) => (
                 <div
                   key={idx}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
+                  <i
+                    role="none"
+                    className="fa fa-search"
+                    style={{ color: '#337ab7' }}
+                  />
                   <p
                     style={{ cursor: 'pointer', color: '#337ab7', margin: 0 }}
                     onClick={() => setSearchParam('q', term)}
