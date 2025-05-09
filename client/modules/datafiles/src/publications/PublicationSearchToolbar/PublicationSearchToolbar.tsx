@@ -50,7 +50,10 @@ export const PublicationSearchToolbar: React.FC = () => {
   const updateRecentSearches = (newSearch: string) => {
     const current = getRecentSearches();
     if (current[0] === newSearch) return;
-    const updated = [newSearch, ...current.filter(s => s !== newSearch)].slice(0, 5);
+    const updated = [
+      newSearch,
+      ...current.filter((s) => s !== newSearch),
+    ].slice(0, 5);
     localStorage.setItem('recentSearches', JSON.stringify(updated));
   };
 
@@ -70,11 +73,21 @@ export const PublicationSearchToolbar: React.FC = () => {
   return (
     <div
       ref={searchBarRef}
-      style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', flexWrap: 'wrap' }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+      }}
     >
-      <Form onFinish={({ query }) => setSearchParam('q', query)} style={{ display: 'inline-flex', flex: 1, minWidth: '250px' }}>
+      <Form
+        onFinish={({ query }) => setSearchParam('q', query)}
+        style={{ display: 'inline-flex', flex: 1, minWidth: '250px' }}
+      >
         <Button htmlType="submit" type="primary" className="success-button">
-          <i className="fa fa-search" />&nbsp;Search
+          <i className="fa fa-search" />
+          &nbsp;Search
         </Button>
         <Form.Item name="query" style={{ marginBottom: 0, flex: 1 }}>
           <Input
@@ -87,17 +100,40 @@ export const PublicationSearchToolbar: React.FC = () => {
       </Form>
 
       {showTips && (
-        <Collapse bordered={false} defaultActiveKey={["1", "2"]} style={{ width: '100%' }}>
+        <Collapse
+          bordered={false}
+          defaultActiveKey={['1', '2']}
+          style={{ width: '100%' }}
+        >
           <Panel header="Search Tips" key="1">
-            <p><strong>"exact phrase"</strong> - Use quotes to search for exact phrases.</p>
-            <p><strong>word1 OR word2</strong> - Find results containing either word.</p>
-            <p><strong>word1 AND word2, word3 word4</strong> - Use AND, commas, and spaces to find results containing each word.</p>
+            <p>
+              <strong>"exact phrase"</strong> - Use quotes to search for exact
+              phrases.
+            </p>
+            <p>
+              <strong>word1 OR word2</strong> - Find results containing either
+              word.
+            </p>
+            <p>
+              <strong>word1 AND word2, word3 word4</strong> - Use AND, commas,
+              and spaces to find results containing each word.
+            </p>
           </Panel>
           <Panel header="Recent Searches" key="2">
             {recentSearches.length ? (
               recentSearches.map((term, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <p style={{ cursor: 'pointer', color: '#337ab7', margin: 0 }} onClick={() => setSearchParam('q', term)}>
+                <div
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <p
+                    style={{ cursor: 'pointer', color: '#337ab7', margin: 0 }}
+                    onClick={() => setSearchParam('q', term)}
+                  >
                     {term}
                   </p>
                 </div>
