@@ -76,7 +76,7 @@ class DataFilesView(BaseApiView):
             return JsonResponse({'message': 'Please log in to access this feature.'}, status=403)
 
         try:
-            session_key_hash = sha256(request.session.session_key.encode()).hexdigest()
+            session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
             response = datafiles_get_handler(
                 api, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", username=request.user.username, **request.GET.dict())
             return JsonResponse(response)
@@ -115,7 +115,7 @@ class DataFilesView(BaseApiView):
                 raise resource_unconnected_handler(api)
 
         try:
-            session_key_hash = sha256(request.session.session_key.encode()).hexdigest()
+            session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
             response = datafiles_put_handler(api, request.user.username, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", body=body)
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
@@ -147,7 +147,7 @@ class DataFilesView(BaseApiView):
             except AttributeError:
                 raise resource_unconnected_handler(api)
         
-        session_key_hash = sha256(request.session.session_key.encode()).hexdigest()
+        session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
         response = datafiles_post_handler(api, request.user.username, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", body={**post_files, **post_body})
 
         return JsonResponse(response)
