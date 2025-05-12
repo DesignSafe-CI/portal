@@ -56,8 +56,6 @@ const WorkspaceRoot: React.FC = () => {
     alignContent: 'center',
   };
 
-
-
   return (
     <InteractiveModalContext.Provider
       value={[interactiveModalDetails, setInteractiveModalDetails]}

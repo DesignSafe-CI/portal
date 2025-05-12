@@ -95,4 +95,3 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
     </Modal>
   );
 };
-

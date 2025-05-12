@@ -47,7 +47,7 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
   return (
     <>
       {loading ? (
-        <div style={{ paddingTop: '40px', textAlign: 'center'}}>
+        <div style={{ paddingTop: '40px', textAlign: 'center' }}>
           <Spin />
         </div>
       ) : error ? (
@@ -94,4 +94,3 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
     </>
   );
 };
-

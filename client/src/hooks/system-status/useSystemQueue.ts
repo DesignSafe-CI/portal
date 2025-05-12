@@ -3,7 +3,6 @@
   for getting system queue data from core portal
 */
 
-
 interface QueueDetails {
   down: boolean;
   hidden: boolean;
@@ -23,7 +22,9 @@ export interface QueueItem extends QueueDetails {
   name: string;
 }
 
-export const useSystemQueue = async (hostname: string): Promise<QueueItem[]> => {
+export const useSystemQueue = async (
+  hostname: string
+): Promise<QueueItem[]> => {
   const response = await fetch(`/api/proxy/status/${hostname}/`);
 
   if (!response.ok) {
@@ -34,11 +35,12 @@ export const useSystemQueue = async (hostname: string): Promise<QueueItem[]> => 
 
   const data: SystemQueueResponse = await response.json();
 
-  const queueData: QueueItem[] = Object.entries(data.queues).map(([queueName, details]) => ({
-    name: queueName,
-    ...details,
-  }));
+  const queueData: QueueItem[] = Object.entries(data.queues).map(
+    ([queueName, details]) => ({
+      name: queueName,
+      ...details,
+    })
+  );
 
   return queueData;
 };
-

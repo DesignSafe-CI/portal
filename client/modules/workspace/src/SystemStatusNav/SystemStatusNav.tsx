@@ -8,7 +8,9 @@ interface SystemStatusNavProps {
   onOpenModal: () => void;
 }
 
-export const SystemStatusNav: React.FC<SystemStatusNavProps> = ({ onOpenModal}) => (
+export const SystemStatusNav: React.FC<SystemStatusNavProps> = ({
+  onOpenModal,
+}) => (
   <div
     className={styles.root}
     onClick={onOpenModal}

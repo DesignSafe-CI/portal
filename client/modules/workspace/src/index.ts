@@ -4,7 +4,7 @@ export { default as AppIcon } from './AppsSubmissionForm/AppIcon';
 export * from './JobsListing/JobsListing';
 export * from './JobsDetailModal/JobsDetailModal';
 export * from './JobStatusNav/JobStatusNav';
-export * from './SystemStatusNav/SystemStatusNav'
+export * from './SystemStatusNav/SystemStatusNav';
 export * from './AppsBreadcrumb/AppsBreadcrumb';
 export * from './SystemsPushKeysModal/SystemsPushKeysModal';
 export * from './Toast';
