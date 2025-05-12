@@ -40,13 +40,13 @@
   left: 2px;
   right: 2px;
   height: 2px;
-  background-color: #136AC9;
+  background-color: #136ac9;
   width: 100%;
 }
 
 .content {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   width: 100%;
   margin-left: 0px;
   margin-bottom: 15px;
@@ -83,7 +83,6 @@
   margin: 5px;
 }
 
-
 .tableContainer {
   display: flex;
   flex: 1;
@@ -101,25 +100,23 @@
 }
 
 .open {
-  background-color: #48A69C; 
+  background-color: #48a69c;
 }
 
 .closed {
-  background-color: #EB6E6E; 
+  background-color: #eb6e6e;
 }
-
 
 :global(.ant-modal-content) {
   padding: 0 !important;
 }
 
-
 :global(.ant-modal-header) {
-  background-color: #F4F4F4 !important;   
+  background-color: #f4f4f4 !important;
   border-bottom: none !important;
-  padding: 16px 24px !important;    
+  padding: 16px 24px !important;
 }
 
 :global(.ant-modal-body) {
-  padding: 0px 24px 24px 24px !important; 
+  padding: 0px 24px 24px 24px !important;
 }
