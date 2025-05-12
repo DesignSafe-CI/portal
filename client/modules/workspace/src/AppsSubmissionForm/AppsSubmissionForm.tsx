@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from 'react';
 import { NavLink } from 'react-router-dom';
 import { Layout, Form, Col, Row, Alert, Button, Space } from 'antd';
 import { z } from 'zod';
@@ -19,6 +25,7 @@ import {
   TJobBody,
   useGetAllocationsSuspense,
   TTapisJob,
+  TTapisApp,
   useInteractiveModalContext,
   TInteractiveModalContext,
 } from '@client/hooks';
@@ -31,6 +38,7 @@ import {
   TAppFieldSchema,
   getConfigurationSchema,
   getConfigurationFields,
+  buildMapOfAllocationsToExecSystems,
 } from '../AppsWizard/AppsFormSchema';
 import {
   getInputsStep,
@@ -41,6 +49,7 @@ import {
 } from '../AppsWizard/Steps';
 import { SystemsPushKeysModal } from '../SystemsPushKeysModal/SystemsPushKeysModal';
 import {
+  areArraysEqual,
   getSystemName,
   getExecSystemFromId,
   getQueueValueForExecSystem,
@@ -62,7 +71,7 @@ import {
 export const AppsSubmissionForm: React.FC = () => {
   const { appId, appVersion, jobUUID } = useGetAppParams();
   const { data: app } = useGetAppsSuspense({ appId, appVersion });
-  const { data: tasAllocations } = useGetAllocationsSuspense();
+  const { data: allAllocations } = useGetAllocationsSuspense();
 
   const {
     data: { executionSystems, storageSystems, defaultStorageSystem },
@@ -85,31 +94,97 @@ export const AppsSubmissionForm: React.FC = () => {
     (s) => defaultStorageHost?.endsWith(s)
   );
 
+  const noStorageAllocationRequired =
+    defaultStorageSystem.notes?.noAllocationRequired;
+
   // Check if user has default allocation if defaultStorageHost is not corral
-  const hasDefaultAllocation =
-    hasCorral || tasAllocations.hosts[defaultStorageHost];
+  const hasDefaultStorageAllocation =
+    hasCorral ||
+    noStorageAllocationRequired ||
+    allAllocations.hosts[defaultStorageHost];
 
   const hasStorageSystems = !!storageSystems.length;
+  const [appExecSystems, setAppExecSystems] =
+    useState<TTapisSystem[]>(executionSystems);
+  const [filteredExecSystems, setFilteredExecSystems] = useState<
+    TTapisSystem[]
+  >([]);
+  const [defaultExecSystem, setDefaultExecSystem] =
+    useState<TTapisSystem | null>(
+      appExecSystems && appExecSystems.length > 0 ? appExecSystems[0] : null
+    );
 
-  const execSystems = getExecSystemsFromApp(
-    definition,
-    executionSystems as TTapisSystem[]
+  const allocationToExecSysMap = buildMapOfAllocationsToExecSystems(
+    appExecSystems,
+    allAllocations
   );
-  const defaultExecSystem = getDefaultExecSystem(
-    definition,
-    execSystems
-  ) as TTapisSystem;
-  const allocations = getAllocationList(defaultExecSystem, tasAllocations);
-  const portalAlloc = allocations.find((a) => a.startsWith('DS-HPC'));
 
-  const { fileInputs, parameterSet, configuration, outputs } = FormSchema(
+  // Update available exec systems for app based on app's dynamicExecSystems filter
+  useEffect(() => {
+    const computedExecSystems = getExecSystemsFromApp(
+      definition,
+      executionSystems as TTapisSystem[]
+    );
+    const computedDefaultExecSystem = getDefaultExecSystem(
+      definition,
+      computedExecSystems
+    ) as TTapisSystem;
+    if (!areArraysEqual(appExecSystems, computedExecSystems)) {
+      setAppExecSystems(computedExecSystems);
+      setFilteredExecSystems(computedExecSystems);
+      setDefaultExecSystem(computedDefaultExecSystem);
+    }
+  }, [definition, executionSystems]);
+
+  const [allocations, setAllocations] = useState<string[]>(
+    getAllocationList(
+      definition,
+      appExecSystems,
+      allAllocations,
+      allocationToExecSysMap
+    )
+  );
+  const [portalAlloc, setPortalAlloc] = useState<string | undefined>(undefined);
+  const [noExecAllocationRequired, setNoExecAllocationRequired] =
+    useState<boolean>(true);
+
+  // adjust the allocation list based on what exec systemss
+  // are in the app definition and the host list.
+  useEffect(() => {
+    const newAllocations = getAllocationList(
+      definition,
+      appExecSystems,
+      allAllocations,
+      allocationToExecSysMap
+    );
+    setAllocations(newAllocations);
+
+    const foundPortalAlloc = newAllocations.find((a) => a.startsWith('DS-HPC'));
+    if (foundPortalAlloc) {
+      setPortalAlloc(foundPortalAlloc);
+      if (!getValues('configuration.allocation')) {
+        setValue('configuration.allocation', foundPortalAlloc);
+      }
+    }
+  }, [appExecSystems]);
+
+  const { fileInputs, parameterSet, configuration, outputs } = useMemo(() => {
+    return FormSchema(
+      definition,
+      executionSystems,
+      allocations,
+      defaultStorageSystem,
+      username,
+      portalAlloc
+    );
+  }, [
     definition,
     executionSystems,
     allocations,
     defaultStorageSystem,
     username,
-    portalAlloc
-  );
+    portalAlloc,
+  ]);
 
   // TODOv3: dynamic exec system and queues
   const initialValues: TFormValues = useMemo(
@@ -137,23 +212,24 @@ export const AppsSubmissionForm: React.FC = () => {
     [definition, jobData]
   );
 
-  let missingAllocation: string | undefined;
-  if (!hasDefaultAllocation && hasStorageSystems) {
-    // User does not have default storage allocation
-    missingAllocation = getSystemName(defaultStorageHost);
-  } else if (isAppTypeBATCH(definition) && !allocations.length) {
-    // User does not have allocation on execution system for a batch type app
-    missingAllocation = getSystemName(defaultExecSystem.host);
-  }
-
-  // const exec_sys = getExecSystemFromId(app, state.execSystemId);
-  // const queue = getQueueValueForExecSystem(
-  //   app,
-  //   exec_sys,
-  //   state.execSystemLogicalQueue
-  // );
-
-  // const currentExecSystem = getExecSystemFromId(app, state.execSystemId);
+  const [missingAllocation, setMissingAllocation] = useState<
+    string | undefined
+  >(undefined);
+  useEffect(() => {
+    if (!hasDefaultStorageAllocation && hasStorageSystems) {
+      // User does not have default storage allocation
+      setMissingAllocation(getSystemName(defaultStorageHost));
+    } else if (
+      isAppTypeBATCH(definition) &&
+      !allocations.length &&
+      !noExecAllocationRequired
+    ) {
+      // User does not have allocation on execution system for a batch type app
+      setMissingAllocation(getSystemName(defaultExecSystem?.host ?? ''));
+    } else {
+      setMissingAllocation(undefined);
+    }
+  }, [allocations]);
 
   const [schema, setSchema] = useState<TAppFieldSchema>({
     inputs: z.object(fileInputs.schema),
@@ -233,6 +309,7 @@ export const AppsSubmissionForm: React.FC = () => {
     configuration.fields,
     outputs.fields,
     fields,
+    getSteps,
   ]);
 
   const getInitialCurrentStep = (steps: TStep) => {
@@ -248,60 +325,181 @@ export const AppsSubmissionForm: React.FC = () => {
     const newSteps = getSteps();
     setSteps(newSteps);
     setCurrent(getInitialCurrentStep(newSteps));
-  }, [initialValues]);
+  }, [initialValues, reset]);
 
-  // Queue dependency handler.
-  const queueValue = watch('configuration.execSystemLogicalQueue');
-  React.useEffect(() => {
-    if (queueValue) {
+  function getExecSystemsForAllocation(
+    definition: TTapisApp,
+    allocation: string | undefined
+  ) {
+    if (!definition.notes?.dynamicExecSystems) {
+      return {
+        allocationExecSystems: undefined,
+        defaultExecSystemId: definition.jobAttributes.execSystemId,
+      };
+    }
+
+    const allocationExecSystemIds =
+      allocationToExecSysMap.get(allocation || '') || [];
+    const defaultExecSystemId = allocationExecSystemIds.includes(
+      definition.jobAttributes.execSystemId
+    )
+      ? definition.jobAttributes.execSystemId
+      : allocationExecSystemIds[0];
+
+    const allocationExecSystems = allocationExecSystemIds.map((e) =>
+      appExecSystems.find((es) => es.id === e)
+    );
+    return { allocationExecSystems, defaultExecSystemId };
+  }
+
+  // Dependency handler.
+  const [queueValue, allocationValue, execSystemValue] = watch([
+    'configuration.execSystemLogicalQueue',
+    'configuration.allocation',
+    'configuration.execSystemId',
+  ]);
+
+  const previousValues = useRef({
+    queueValue,
+    allocationValue,
+    execSystemValue,
+  });
+
+  useEffect(() => {
+    const {
+      queueValue: prevQueueValue,
+      allocationValue: prevAllocationValue,
+      execSystemValue: prevExecSystemValue,
+    } = previousValues.current;
+
+    let updatedExecSystemId = execSystemValue;
+    let updatedExecSystems = appExecSystems;
+
+    // Allocation change handler
+    if (prevAllocationValue !== allocationValue) {
+      const { allocationExecSystems, defaultExecSystemId } =
+        getExecSystemsForAllocation(definition, allocationValue);
+
+      if (allocationExecSystems) {
+        updatedExecSystemId = defaultExecSystemId;
+        updatedExecSystems = (allocationExecSystems ?? []).filter(
+          (sys): sys is TTapisSystem => sys !== undefined
+        );
+
+        setValue('configuration.execSystemId', defaultExecSystemId || '');
+        if (!areArraysEqual(filteredExecSystems, updatedExecSystems)) {
+          setFilteredExecSystems(updatedExecSystems);
+        }
+      }
+    }
+    // ExecSystem change handler
+    if (
+      prevExecSystemValue !== updatedExecSystemId ||
+      prevAllocationValue !== allocationValue
+    ) {
       const execSystem = getExecSystemFromId(
-        execSystems,
-        definition.jobAttributes.execSystemId
+        updatedExecSystems,
+        updatedExecSystemId ?? ''
       );
-      if (!execSystem) return;
+
+      if (execSystem) {
+        const newQueue = getQueueValueForExecSystem({
+          exec_sys: execSystem,
+          queue_name: execSystem.batchDefaultLogicalQueue,
+        });
+
+        if (newQueue?.name !== queueValue) {
+          setValue('configuration.execSystemLogicalQueue', newQueue?.name);
+        }
+
+        updateValuesForQueue(
+          updatedExecSystems,
+          updatedExecSystemId ?? definition.jobAttributes.execSystemId,
+          fieldValues,
+          setValue
+        );
+      }
+    }
+
+    // Queue change handler
+    if (prevQueueValue !== queueValue) {
       updateValuesForQueue(
-        execSystems,
-        definition.jobAttributes.execSystemId,
-        getValues(),
+        updatedExecSystems,
+        execSystemValue ?? definition.jobAttributes.execSystemId,
+        fieldValues,
         setValue
       );
-      const queue = getQueueValueForExecSystem({
-        exec_sys: execSystem,
-        queue_name: queueValue as string,
-      });
-      if (!queue) return;
-
-      // Only configuration is dependent on queue values
-      const updatedSchema = getConfigurationSchema(
-        definition,
-        allocations,
-        execSystem,
-        queue
-      );
-
-      setSchema((prevSchema) => ({
-        ...prevSchema,
-        configuration: z.object(updatedSchema),
-      }));
-
-      const updatedFields = getConfigurationFields(
-        definition,
-        allocations,
-        [execSystem],
-        queue
-      );
-
-      setFields((prevFields) => ({
-        ...prevFields,
-        configuration: updatedFields,
-      }));
     }
-  }, [queueValue, setValue]);
+
+    // Update ref values
+    previousValues.current = { queueValue, allocationValue, execSystemValue };
+  }, [queueValue, allocationValue, execSystemValue]);
+
+  // Update schema and fields based on new exec system or queue
+  useEffect(() => {
+    const currentExecSystem = getExecSystemFromId(
+      filteredExecSystems,
+      execSystemValue ?? definition.jobAttributes.execSystemId
+    );
+
+    if (currentExecSystem) {
+      setNoExecAllocationRequired(
+        !!currentExecSystem.notes?.noAllocationRequired
+      );
+
+      const defaultQueue = getQueueValueForExecSystem({
+        exec_sys: currentExecSystem,
+        queue_name: queueValue,
+      });
+
+      if (defaultQueue) {
+        // Update schema based on new allocation or execution system
+        const updatedSchema = getConfigurationSchema(
+          definition,
+          allocations,
+          filteredExecSystems,
+          currentExecSystem,
+          defaultQueue
+        );
+
+        setSchema((prevSchema) =>
+          JSON.stringify(prevSchema.configuration) !==
+          JSON.stringify(updatedSchema)
+            ? { ...prevSchema, configuration: z.object(updatedSchema) }
+            : prevSchema
+        );
+
+        // Update form fields based on new allocation or execution system
+        const updatedFields = getConfigurationFields(
+          definition,
+          allocations,
+          filteredExecSystems,
+          currentExecSystem,
+          defaultQueue
+        );
+
+        setFields((prevFields) =>
+          JSON.stringify(prevFields.configuration) !==
+          JSON.stringify(updatedFields)
+            ? { ...prevFields, configuration: updatedFields }
+            : prevFields
+        );
+      }
+    }
+  }, [
+    allocations,
+    execSystemValue,
+    queueValue,
+    definition,
+    filteredExecSystems,
+  ]);
 
   // TODO: DES-2916: Use Zod's superRefine feature instead of manually updating schema and tracking schema changes.
-  React.useEffect(() => {
+  useEffect(() => {
     // Note: trigger is a no op if the field does not exist. So, it is fine to define all.
     methods.trigger([
+      'configuration.allocation',
+      'configuration.execSystemId',
       'configuration.nodeCount',
       'configuration.maxMinutes',
       'configuration.coresPerNode',
@@ -374,7 +572,11 @@ export const AppsSubmissionForm: React.FC = () => {
 
   useEffect(() => {
     if (submitResult?.execSys) {
-      setPushKeysSystem(submitResult.execSys);
+      setPushKeysSystem(
+        pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS'
+          ? undefined
+          : submitResult.execSys
+      );
     } else if (isSuccess) {
       reset(initialValues);
       if (definition.notes.isInteractive) {
@@ -491,11 +693,25 @@ export const AppsSubmissionForm: React.FC = () => {
       delete jobData.job.allocation;
     }
 
+    const schedOpts = definition.jobAttributes.parameterSet?.schedulerOptions;
+    if (schedOpts) {
+      schedOpts.forEach((opt) => {
+        if (opt.notes?.isReservation) {
+          const reservation = jobData.job.parameterSet.schedulerOptions.find(
+            (option) => option.name === 'TACC Reservation'
+          );
+          if (reservation) {
+            reservation.arg = `--reservation=${reservation.arg}`;
+          }
+        }
+      });
+    }
+
     // Before job submission, ensure the memory limit is not above queue limit.
     if (definition.jobType === 'BATCH') {
       const queue = getExecSystemFromId(
-        execSystems,
-        definition.jobAttributes.execSystemId
+        executionSystems,
+        jobData.job.execSystemId ?? definition.jobAttributes.execSystemId
       )?.batchLogicalQueues.find(
         (q) => q.name === jobData.job.execSystemLogicalQueue
       );
@@ -507,33 +723,33 @@ export const AppsSubmissionForm: React.FC = () => {
     submitJob(jobData);
   };
 
-  const defaultSystemNeedsKeysMessage = defaultStorageSystem.notes
-    ?.keyservice ? (
-    <span>
-      For help,{' '}
-      <a
-        rel="noopener noreferrer"
-        target="_blank"
-        className="wb-link"
-        href="https://www.designsafe-ci.org/help/submit-ticket/"
-      >
-        submit a ticket.
-      </a>
-    </span>
-  ) : (
-    <span>
-      If this is your first time logging in, you may need to&nbsp;
-      <a
-        className="data-files-nav-link"
-        type="button"
-        href="#"
-        onClick={() => setPushKeysSystem(defaultStorageSystem)}
-      >
-        push your keys
-      </a>
-      .
-    </span>
-  );
+  const defaultSystemNeedsKeysMessage =
+    defaultStorageSystem.defaultAuthnMethod === 'TMS_Keys' ? (
+      <span>
+        For help,{' '}
+        <a
+          rel="noopener noreferrer"
+          target="_blank"
+          className="wb-link"
+          href="https://www.designsafe-ci.org/help/submit-ticket/"
+        >
+          submit a ticket.
+        </a>
+      </span>
+    ) : (
+      <span>
+        If this is your first time logging in, you may need to&nbsp;
+        <a
+          className="data-files-nav-link"
+          type="button"
+          href="#"
+          onClick={() => setPushKeysSystem(defaultStorageSystem)}
+        >
+          push your keys
+        </a>
+        .
+      </span>
+    );
 
   return (
     <>
@@ -549,6 +765,23 @@ export const AppsSubmissionForm: React.FC = () => {
             }
             type="success"
             closable
+            showIcon
+            style={{ marginBottom: '1rem' }}
+          />
+        )}
+      {submitResult &&
+        submitResult.execSys &&
+        submitResult.execSys?.defaultAuthnMethod === 'TMS_Keys' && (
+          <Alert
+            message={
+              <>
+                There was a problem with file system access. Please submit a{' '}
+                <a href="/help/new-ticket/" target="_blank">
+                  ticket.
+                </a>
+              </>
+            }
+            type="warning"
             showIcon
             style={{ marginBottom: '1rem' }}
           />

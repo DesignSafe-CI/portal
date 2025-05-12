@@ -165,6 +165,7 @@ export const PublishedEntityDetails: React.FC<{
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.relatedWork.map((assoc) => (
                   <div key={JSON.stringify(assoc)}>
+                    {assoc.hrefType && `${assoc.hrefType.toUpperCase()} | `}
                     <a
                       href={assoc.href}
                       rel="noopener noreferrer"
@@ -179,7 +180,7 @@ export const PublishedEntityDetails: React.FC<{
           )}
           {(entityValue.referencedData?.length ?? 0) > 0 && (
             <tr className={styles['prj-row']}>
-              <td>Related Work</td>
+              <td>Referenced Data</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.referencedData.map((ref) => (
                   <div key={JSON.stringify(ref)}>

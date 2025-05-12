@@ -353,15 +353,7 @@ class ProjectEntityView(BaseApiView):
         user = request.user
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
-
-        try:
-            project: ProjectMetadata = user.projects.get(
-                models.Q(uuid=project_id) | models.Q(value__projectId=project_id)
-            )
-        except ProjectMetadata.DoesNotExist as exc:
-            raise ApiException(
-                "User does not have access to the requested project", status=403
-            ) from exc
+        project = get_project_for_user(project_id, user)
 
         req_body = json.loads(request.body)
 
