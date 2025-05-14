@@ -140,7 +140,7 @@ def test_system_needs_keys(tapis, username, system_id):
                 )
                 return False
             except (InternalServerError, UnauthorizedError):
-                logger.warning(f"Authentication still failing for system: {system_id}, user: {username}")
+                logger.error(f"TMS_KEYS credential generation failed for system: {system_id}, user: {username}")
                 raise
         return True
 
