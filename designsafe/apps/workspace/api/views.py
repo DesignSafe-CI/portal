@@ -341,6 +341,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "priority",
             "short_label",
             "version",
         ]
@@ -357,6 +358,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "priority",
             "short_label",
             "version",
         ]
@@ -387,7 +389,8 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
                     bundle_user_guide_link=F("bundle__user_guide_link"),
-                ).values(*values)
+                )
+                .values(*values)
             )
 
             html_apps = list(
