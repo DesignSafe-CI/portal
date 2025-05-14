@@ -7,8 +7,6 @@ from django.conf import settings
 from dropbox.exceptions import AuthError as DropboxAuthError
 from google.auth.exceptions import GoogleAuthError
 from requests.exceptions import HTTPError
-from tapipy.errors import InternalServerError, UnauthorizedError
-from designsafe.libs.common.decorators import retry
 from designsafe.libs.common.utils import check_group_membership
 from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
 from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
@@ -17,7 +15,6 @@ from designsafe.apps.api.datafiles.models import DataFilesSurveyResult, DataFile
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.api.utils import get_client_ip
-from designsafe.apps.workspace.api.views import test_system_needs_keys
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -44,7 +41,6 @@ def get_client(user, api, system=""):
 
 
 class DataFilesView(BaseApiView):
-    @retry(UnauthorizedError, tries=3, max_time=15)
     def get(self, request, api, operation=None, scheme='private', system=None, path=''):
 
         doi = request.GET.get('doi', None)
@@ -83,24 +79,6 @@ class DataFilesView(BaseApiView):
             return JsonResponse(response)
         except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
             raise resource_expired_handler(api)
-        except (InternalServerError, UnauthorizedError) as e:
-            error_status = e.response.status_code
-            if error_status in [401, 500]:
-                logger.info(e)
-
-                system_needs_keys = test_system_needs_keys(client, request.user.username, system)
-                if system_needs_keys:
-                    logger.info(
-                        f"Keys for user {request.user.username} must be manually pushed to system: {system_needs_keys.id}"
-                    )
-                    return JsonResponse({'message': str(e)}, status=e.response.status_code)
-
-                # If the user has valid system credentials, retry the request
-                session_key_hash = sha256((request.session.session_key or '').encode()).hexdigest()
-                response = datafiles_get_handler(
-                    api, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", username=request.user.username, **request.GET.dict())
-                return JsonResponse(response)
-            raise e
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)
 
