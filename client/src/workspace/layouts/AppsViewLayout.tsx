@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { SystemStatusModal } from '../components/SystemStatusModal/SystemStatusModal';
+import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Outlet } from 'react-router-dom';
-import { Alert, Layout, Flex, Space, Button } from 'antd';
+import { Alert, Layout, Flex, Space } from 'antd';
 import {
   AppsSubmissionForm,
   useGetAppParams,

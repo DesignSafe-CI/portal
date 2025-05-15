@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Layout, Badge } from 'antd';
+import { Badge } from 'antd';
 import { Icon } from '@client/common-components';
 import styles from './JobStatusNav.module.css';
 import { useGetNotifications } from '@client/hooks';

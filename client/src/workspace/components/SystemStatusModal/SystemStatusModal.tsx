@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Badge, Spin, Alert } from 'antd';
+import { Modal, Spin, Alert } from 'antd';
 import { SystemQueueTable } from './SystemQueueTable';
 import { useSystemOverview } from '../../../hooks/system-status/useSystemOverview';
 import styles from './SystemStatusModal.module.css';
@@ -15,17 +15,11 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
 }) => {
   const [activeSystem, setActiveSystem] = useState('frontera');
 
-  const { data: systems, isLoading, isError, error } = useSystemOverview();
+  const { data: systems, isLoading, error } = useSystemOverview();
 
   const selectedSystem = systems?.find(
     (sys) => sys.display_name.toLowerCase() === activeSystem.toLowerCase()
   );
-
-  const getStatusColor = (system: typeof selectedSystem) => {
-    if (system?.is_operational) return 'success';
-    if (system?.in_maintenance) return 'warning';
-    return 'error';
-  };
 
   return (
     <Modal

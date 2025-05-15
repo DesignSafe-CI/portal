@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 import { Badge } from 'antd';
 import { Icon } from '@client/common-components';
 import styles from './SystemStatusNav.module.css';

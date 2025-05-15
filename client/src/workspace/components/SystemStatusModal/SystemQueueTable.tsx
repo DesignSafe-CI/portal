@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Spin, Alert, Badge } from 'antd';
+import { Spin, Alert } from 'antd';
 import { useSystemQueue } from '../../../hooks/system-status/useSystemQueue';
 import styles from './SystemQueueTable.module.css';
 
