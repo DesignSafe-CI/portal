@@ -255,7 +255,7 @@ class AppsTrayView(AuthenticatedApiView):
         valid_tapis_apps = []
         for portal_app in portal_apps:
             portal_app_id = (
-                f"{portal_app['app_id']}-{portal_app['version']}"
+                (portal_app["app_id"], portal_app["version"])
                 if portal_app["version"]
                 else portal_app["app_id"]
             )
@@ -265,7 +265,7 @@ class AppsTrayView(AuthenticatedApiView):
                 (
                     x
                     for x in sorted(tapis_apps, key=lambda y: y.version)
-                    if portal_app_id in [x.id, f"{x.id}-{x.version}"]
+                    if portal_app_id in [x.id, (x.id, x.version)]
                 ),
                 None,
             )
@@ -287,7 +287,7 @@ class AppsTrayView(AuthenticatedApiView):
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(enabled.eq.true)~(version.like.*)",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
             listType="MINE",
             limit=-1,
         )
@@ -318,7 +318,7 @@ class AppsTrayView(AuthenticatedApiView):
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(enabled.eq.true)~(version.like.*)",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
             listType="SHARED_PUBLIC",
             limit=-1,
         )
@@ -341,6 +341,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "priority",
             "short_label",
             "version",
         ]
@@ -357,6 +358,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "priority",
             "short_label",
             "version",
         ]
@@ -387,7 +389,8 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
                     bundle_user_guide_link=F("bundle__user_guide_link"),
-                ).values(*values)
+                )
+                .values(*values)
             )
 
             html_apps = list(
