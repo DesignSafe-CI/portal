@@ -4,6 +4,7 @@ import { TOnboardingStep } from '@client/hooks';
 import styles from './OnboardingStatus.module.css';
 
 const getContents = (step: TOnboardingStep) => {
+  console.log('Onboarding step:', step); // <-- Add this line
   let color = '';
   switch (step.state) {
     case 'processing':
@@ -38,6 +39,7 @@ const getContents = (step: TOnboardingStep) => {
     case 'userwait':
       return <Tag color={color}>Waiting for User</Tag>;
     case 'failed':
+      return <Tag color={color}>Unsuccessful, view log</Tag>;
     case 'error':
       return <Tag color={color}>Unsuccessful</Tag>;
     case null:
@@ -64,5 +66,6 @@ export const OnboardingStatus = ({ step }: { step: TOnboardingStep }) => {
   if (!contents) {
     return null;
   }
+
   return <span className={styles.root}>{getContents(step)}</span>;
 };
