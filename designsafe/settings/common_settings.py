@@ -747,7 +747,7 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
         "settings": {
             "credentials_systems": os.environ.get(
-                "TMS_SYSTEMS", "cloud.data,designsafe.storage.default,wma-exec-01"
+                "TMS_SYSTEMS", "designsafe.storage.default,cloud.data,wma-exec-01,wma-dcv-01,vista,frontera,stampede3,ls6"
             ).split(","),
             "create_path_systems": [
                 {"system_id": "designsafe.storage.default", "path": "{username}"}

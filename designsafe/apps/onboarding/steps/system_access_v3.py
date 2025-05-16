@@ -1,9 +1,6 @@
 """System Access Step for Onboarding."""
 
 import logging
-import requests
-from requests.exceptions import HTTPError
-from django.conf import settings
 from tapipy.errors import (
     NotFoundError,
     BaseTapyException,
@@ -12,7 +9,6 @@ from tapipy.errors import (
 )
 from designsafe.apps.onboarding.steps.abstract import AbstractStep
 from designsafe.apps.onboarding.state import SetupState
-from designsafe.utils.encryption import createKeyPair
 from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
 from designsafe.apps.api.tasks import agave_indexer
 from designsafe.libs.common.decorators import retry

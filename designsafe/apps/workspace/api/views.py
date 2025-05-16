@@ -27,10 +27,7 @@ from designsafe.apps.workspace.models.app_entries import (
 )
 from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
-from designsafe.apps.onboarding.steps.system_access_v3 import (
-    create_system_credentials,
-    create_system_credentials_with_keys,
-)
+from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
 
 
 logger = logging.getLogger(__name__)
@@ -128,24 +125,24 @@ def test_system_needs_keys(tapis, username, system_id):
         system_id (str): The ID of the Tapis system to test.
 
     Returns:
-        SystemDef: The system definition if an error occurs.
+        bool
     """
-    system_def = tapis.systems.getSystem(systemId=system_id)
     try:
-        tapis.files.listFiles(systemId=system_id, path="/")
-        return None
+        tapis.systems.checkUserCredential(systemId=system_id, userName=username)
+        return False
     except (InternalServerError, UnauthorizedError):
         # Check if the system uses TMS_KEYS and create credentials if necessary
+        system_def = tapis.systems.getSystem(systemId=system_id)
         if system_def.get("defaultAuthnMethod") == "TMS_KEYS":
             try:
                 create_system_credentials(
                     tapis, username, system_id, createTmsKeys=True
                 )
-                tapis.files.listFiles(systemId=system_id, path="/")
-                return None
+                return False
             except (InternalServerError, UnauthorizedError):
-                logger.warning(f"Authentication still failing for system: {system_id}")
-        return system_def
+                logger.error(f"TMS_KEYS credential generation failed for system: {system_id}, user: {username}")
+                raise
+        return True
 
 
 class SystemListingView(AuthenticatedApiView):
@@ -223,19 +220,6 @@ class AppsView(AuthenticatedApiView):
 
         except ObjectDoesNotExist:
             data = _get_app(app_id, app_version, request.user)
-
-        # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
-        # Check if default storage system needs keys pushed
-        # if settings.AGAVE_STORAGE_SYSTEM:
-        #     tapis = request.user.tapis_oauth.client
-        #     system_needs_keys = test_system_needs_keys(
-        #         tapis, settings.AGAVE_STORAGE_SYSTEM
-        #     )
-        #     if system_needs_keys:
-        #         logger.info(
-        #             f"Keys for user {request.user.username} must be manually pushed to system: {system_needs_keys.id}"
-        #         )
-        #         data["defaultSystemNeedsKeys"] = system_needs_keys
 
         return JsonResponse(
             {
