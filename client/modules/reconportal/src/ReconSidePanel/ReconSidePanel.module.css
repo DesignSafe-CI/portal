@@ -6,3 +6,65 @@
 .header {
   color: var(--ds-accent-color);
 }
+
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  background: var(--global-color-primary--xx-light);
+  z-index: 1;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--global-color-primary--light);
+}
+
+.scrollableList {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: 48px;
+}
+
+.eventContainer:first-child {
+  margin-top: 24px;
+  border-top: 1px solid var(--global-color-primary--light);
+}
+
+.eventContainer {
+  width: 100%;
+  border-bottom: 1px solid var(--global-color-primary--light);
+}
+
+.eventContainer:nth-child(even) :global(.ant-card) {
+  background-color: var(--global-color-primary--x-light) !important;
+}
+
+.eventContainer:last-child {
+  border-bottom: none;
+}
+
+.eventCard {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.eventTitle {
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.eventLocation {
+  color: var(--global-color-primary--dark);
+  margin: 8px 0;
+}
+
+.eventType {
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--global-color-primary--xx-light);
+}
+
+.eventList {
+  width: 100%;
+}

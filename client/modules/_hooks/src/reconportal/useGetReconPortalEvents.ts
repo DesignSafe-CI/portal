@@ -8,6 +8,16 @@ export type ReconPortalDataset = {
   id: string;
 };
 
+export type ReconPortalEventProperties = {
+  name: string;
+  host: string;
+  description: string;
+  dateCreated: string;
+  productAvailable?: string;
+  temporalCoverage?: string;
+  keywords?: string;
+};
+
 export type ReconPortalEvents = {
   location_description: string;
   location: {
@@ -19,6 +29,8 @@ export type ReconPortalEvents = {
   title: string;
   created_date: string;
   datasets: ReconPortalDataset[];
+  main_image_uuid?: string;
+  properties?: ReconPortalEventProperties;
 };
 
 async function getEvents() {
