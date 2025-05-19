@@ -9,6 +9,7 @@ import {
 } from '../AppsWizard/AppsFormSchema';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
+import { SystemsDocumentation } from './SystemsDocumentation';
 
 export const FormField: React.FC<{
   name: string;
@@ -18,6 +19,7 @@ export const FormField: React.FC<{
   required?: boolean;
   type: string;
   fileSettings?: TAppFileSettings;
+  hidden?: boolean;
   placeholder?: string;
   options?: TFieldOptions[];
 }> = ({
@@ -27,6 +29,7 @@ export const FormField: React.FC<{
   label,
   required = false,
   type,
+  hidden = false,
   fileSettings = null,
   ...props
 }) => {
@@ -36,6 +39,7 @@ export const FormField: React.FC<{
   let parameterSetLabel: React.ReactElement | null = null;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [storageSystem, setStorageSystem] = useState<string | null>(null);
+  const systemDocumentation = name === 'configuration.execSystemId';
 
   const handleSelectModalOpen = () => {
     setIsModalOpen(true);
@@ -71,6 +75,9 @@ export const FormField: React.FC<{
 
   return (
     <div style={{ lineHeight: '20px' }}>
+      {systemDocumentation && (
+        <SystemsDocumentation execSystemId={getValues(name)} />
+      )}
       <FormItem
         control={control}
         name={name}
@@ -82,6 +89,7 @@ export const FormField: React.FC<{
         }
         htmlFor={name}
         key={name}
+        hidden={hidden}
         style={{ textAlign: 'left', marginBottom: description ? 0 : 16 }}
       >
         {type === 'select' ? (
