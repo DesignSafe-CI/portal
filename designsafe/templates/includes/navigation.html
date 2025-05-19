@@ -4,15 +4,15 @@
     <div class="navbar-header">
       <ul class="nav navbar-nav hidden-xs">
         <li>
-          <button class="navbar-toggle hidden-sm hidden-md hidden-lg" data-toggle="dropdown" aria-expanded="true" style="display:inherit">
-            <span class="sr-only">Section navigation</span>
-            <span class="icon-bar" role="presentation"></span>
-            <span class="icon-bar" role="presentation"></span>
-            <span class="icon-bar" role="presentation"></span>
-          </button>
-          <ul class="dropdown-menu">
-            {% include 'includes/global_nav.html' %}
-          </ul>
+    <button class="navbar-toggle hidden-sm hidden-md hidden-lg" data-toggle="dropdown" aria-expanded="true" style="display:inherit">
+      <span class="sr-only">Section navigation</span>
+      <span class="icon-bar" role="presentation"></span>
+      <span class="icon-bar" role="presentation"></span>
+      <span class="icon-bar" role="presentation"></span>
+    </button>
+    <ul class="dropdown-menu">
+      {% include 'includes/global_nav.html' %}
+    </ul>
         </li>
       </ul>
       <!-- {% if section_root %}
@@ -32,9 +32,25 @@
          {% show_menu 1 2 100 100 "includes/cms_menu.html" %}
       </ul>
       <form class="navbar-form navbar-right" role="search">
-        <button class="btn btn-default" id="search_button"> <i class="fa fa-search" role="none"></i><span class="sr-only">Search</span></button>
-        <input class="form-control" id="searchfield" placeholder="Search DesignSafe" aria-label="Search DesignSafe" style="margin-right:1rem">
-
+        <button class="btn btn-default" id="search_button">
+          <i class="fa fa-search" role="none"></i>
+          <span class="sr-only">Search</span>
+        </button>
+        <input
+          class="form-control"
+          id="searchfield"
+          placeholder="Search DesignSafe"
+          aria-label="Search DesignSafe"
+          style="margin-right:1rem"
+          autocomplete="off"
+          uib-popover-template="'searchTips.html'"
+          popover-title="Search Tips"
+          popover-trigger="'focus'"
+          popover-placement="bottom-left"
+          popover-class="search-tips-popover"
+          popover-append-to-body="true"
+        >
+        
         <input type="radio" name="search-radio" id="search-radio-website" value="website" checked="checked" style="display:table-cell; vertical-align: middle; margin-top:0px;margin-right:0.25rem;">
         <label for="search-radio-website" style="color:white; margin-bottom:0px; margin-right:1rem; vertical-align: middle;">Website</label>
         <input type="radio" name="search-radio" id="search-radio-datasets" value="datasets" style="display:table-cell; vertical-align: middle; margin-top:0px; margin-right:0.25rem;">
@@ -44,3 +60,22 @@
     </div>
   </div>
 </nav>
+
+<!-- Popover template for search tips -->
+<script type="text/ng-template" id="searchTips.html">
+  <div style="max-width:300px; padding:8px;">
+    <h5 style="margin-top:0;"><strong>Search Tips</strong></h5>
+    <ul class="list-unstyled" style="margin:0 0 8px 0; padding:0;">
+      <li><strong>"exact phrase"</strong> – Use quotes to search for exact phrases.</li>
+      <li><strong>word1 OR word2</strong> – Find results containing either word.</li>
+      <li><strong>word1 AND word2, word3 word4</strong> – Use AND, commas, and spaces to find results containing each word.</li>
+    </ul>
+    <h5 style="margin:0 0 4px 0;"><strong>Recent Searches</strong></h5>
+    <ul class="list-unstyled" style="margin:0; padding:0;">
+      <li ng-repeat="term in $ctrl.recentSearches">
+        <a href ng-click="$ctrl.search_browse(term)" style="cursor:pointer; color:#337ab7;">{{term}}</a>
+      </li>
+      <li ng-if="!$ctrl.recentSearches.length"><em>No recent searches</em></li>
+    </ul>
+  </div>
+</script>
