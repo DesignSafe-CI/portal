@@ -7,17 +7,19 @@ import { useGetAppParams } from '../utils';
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
-  type MenuItem = Required<MenuProps>['items'][number];
+  type MenuItem = Required<MenuProps>['items'][number] & { priority: number };
 
   function getItem(
     label: React.ReactNode,
     key: string,
+    priority: number,
     children?: MenuItem[],
     type?: 'group'
   ): MenuItem {
     return {
       label,
       key,
+      priority,
       children,
       type,
     } as MenuItem;
@@ -46,7 +48,8 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
               >
                 {app.shortLabel || app.label || app.bundle_label}
               </NavLink>,
-              `${app.app_id}${app.version}${app.bundle_id}`
+              `${app.app_id}${app.version}${app.bundle_id}`,
+              app.priority
             )
           );
         } else {
@@ -61,7 +64,8 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
                 >
                   {app.shortLabel || app.label || app.bundle_label}
                 </NavLink>,
-                `${app.app_id}${app.version}${app.bundle_id}`
+                `${app.app_id}${app.version}${app.bundle_id}`,
+                app.priority
               ),
             ],
             label: app.bundle_label,
@@ -78,13 +82,20 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
             >
               {app.shortLabel || app.label || app.bundle_label}
             </NavLink>,
-            `${app.app_id}${app.version}${app.bundle_id}`
+            `${app.app_id}${app.version}${app.bundle_id}`,
+            app.priority
           )
         );
       }
     });
-    const bundleItems = Object.entries(bundles).map(([bundleKey, bundle]) =>
-      getItem(`${bundle.label} [${bundle.apps.length}]`, bundleKey, bundle.apps)
+    const bundleItems = Object.entries(bundles).map(
+      ([bundleKey, bundle], index) =>
+        getItem(
+          `${bundle.label} [${bundle.apps.length}]`,
+          bundleKey,
+          index,
+          bundle.apps.sort((a, b) => a.priority - b.priority)
+        )
     );
 
     return categoryItems
@@ -96,6 +107,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     return getItem(
       `${category.title} [${category.apps.length}]`,
       category.title,
+      category.priority,
       getCategoryApps(category)
     );
   });

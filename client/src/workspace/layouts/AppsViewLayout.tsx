@@ -17,13 +17,11 @@ export const AppsViewLayout: React.FC = () => {
   const { data: app } = useGetAppsSuspense({ appId, appVersion });
   const { data } = useAppsListing();
 
-  const icon =
-    findAppById(data, app.definition.id)?.icon ||
-    app.definition.notes.icon ||
-    'Generic-App';
+  const portalApp = findAppById(data, app.definition.id);
+
+  const icon = portalApp?.icon || app.definition.notes.icon || 'Generic-App';
   const userGuideLink =
-    findAppById(data, app.definition.id)?.userGuideLink ||
-    app.definition.notes.helpUrl;
+    portalApp?.userGuideLink || app.definition.notes.helpUrl;
 
   const htmlApp = data?.htmlDefinitions[appId];
   const key = `${appId}-${appVersion}`;
@@ -45,7 +43,9 @@ export const AppsViewLayout: React.FC = () => {
             <Flex justify="space-between">
               <div>
                 <AppIcon name={icon} />
-                {app.definition.notes.label || app.definition.id}
+                {portalApp?.label ||
+                  app.definition.notes.label ||
+                  app.definition.id}
               </div>
               {userGuideLink && (
                 <a
