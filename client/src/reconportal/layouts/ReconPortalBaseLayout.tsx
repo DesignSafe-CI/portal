@@ -9,7 +9,7 @@ const ReconPortalRoot: React.FC = () => {
     <Flex
       vertical
       style={{
-        margin: '-20px 0 0 5px',
+        margin: '-20px 0 0 0px',
         height: '100vh',
       }}
     >
