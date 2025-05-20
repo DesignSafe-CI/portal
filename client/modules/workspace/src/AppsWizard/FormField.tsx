@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Input, Select, Badge } from 'antd';
+import { Button, Form, Input, Select } from 'antd';
 import { FormItem } from 'react-hook-form-antd';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
@@ -9,12 +9,10 @@ import {
 } from '../AppsWizard/AppsFormSchema';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
-import { useSystemOverview } from '../../../../src/hooks/system-status/useSystemOverview';
-import { useSystemQueue } from '../../../../src/hooks/system-status/useSystemQueue';
-import systemStatusStyles from '../../../../src/workspace/components/SystemStatusModal/SystemStatusModal.module.css';
-import queueStyles from '../../../../src/workspace/components/SystemStatusModal/SystemQueueTable.module.css';
+import { useSystemOverview, useSystemQueue } from '@client/hooks';
+import { systemStatusStyles, queueStyles } from '@client/workspace';
 
-interface QueueItem {
+export type TTapisSystemQueue = {
   name: string;
   down: boolean;
   hidden: boolean;
@@ -22,7 +20,7 @@ interface QueueItem {
   free: number;
   running: number;
   waiting: number;
-}
+};
 
 export const FormField: React.FC<{
   name: string;
@@ -52,11 +50,21 @@ export const FormField: React.FC<{
 
   const { data: systems } = useSystemOverview();
   const selectedSystemId = getValues('configuration.execSystemId');
+
+  const getDisplayName = (systemId: string) => {
+    if (!systemId) return '';
+    if (systemId.toLowerCase() === 'ls6') {
+      return 'Lonestar6';
+    }
+    return systemId.charAt(0).toUpperCase() + systemId.slice(1);
+  };
+
+  const displayName = getDisplayName(selectedSystemId);
   const selectedSystem = systems?.find(
-    (sys) => sys.display_name.toLowerCase() === selectedSystemId?.toLowerCase()
+    (sys) => sys.display_name === displayName
   );
 
-  const [queueData, setQueueData] = useState<QueueItem[]>([]);
+  const [queueData, setQueueData] = useState<TTapisSystemQueue[]>([]);
   useEffect(() => {
     if (selectedSystem) {
       useSystemQueue(selectedSystem.display_name)
@@ -66,7 +74,6 @@ export const FormField: React.FC<{
   }, [selectedSystem]);
 
   const selectedQueueName = getValues('configuration.execSystemLogicalQueue');
-  console.log('QueueData:', queueData, 'SelectedQueueName:', selectedQueueName);
 
   const selectedQueue = queueData.find((q) => q.name === selectedQueueName);
 

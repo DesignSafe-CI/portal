@@ -1,5 +1,4 @@
 import { z, ZodType, ZodObject, ZodRawShape } from 'zod';
-import styles from './AppsWizard.module.css';
 import {
   TTasAllocations,
   TTapisApp,
@@ -197,9 +196,9 @@ export const getConfigurationFields = (
   ) as TTapisSystem;
 
   if (definition.jobType === 'BATCH') {
-    const systemOptions = execSystems.map((sys) => ({
+    const systemOptions = getAppExecSystems(execSystems).map((sys) => ({
       value: sys.id,
-      label: sys.id,
+      label: sys.name, 
     }));
     const isMulti = systemOptions.length > 1;
 
@@ -287,7 +286,7 @@ export const getConfigurationFields = (
     };
 
     configurationFields['coresPerNode'] = {
-      description: 'Number of processors (cores) per node',
+      description: 'Number of processors (cores) per node.',
       label: 'Cores Per Node',
       name: 'configuration.coresPerNode',
       key: 'configuration.coresPerNode',
