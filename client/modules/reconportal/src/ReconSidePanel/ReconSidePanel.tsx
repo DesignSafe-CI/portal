@@ -60,7 +60,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
 }) => {
   const { Content } = Layout;
   const { Search } = Input;
-  const { Text, Link, Title } = Typography;
+  const { Text, Link } = Typography;
   const navigate = useNavigate();
   const { eventId } = useParams();
 
@@ -90,7 +90,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     filterEvents(searchText, value, selectedYear);
   };
 
-  const handleYearChange = (date: any) => {
+  const handleYearChange = (date: dayjs.Dayjs | null) => {
     const year = date ? date.format('YYYY') : null;
     setSelectedYear(year);
     filterEvents(searchText, selectedEventType, year);
