@@ -1,8 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Layout, LayoutProps, Image, Input, Select, DatePicker, Typography, List, Card, Button, Tag } from 'antd';
+import {
+  Flex,
+  Layout,
+  LayoutProps,
+  Image,
+  Input,
+  Select,
+  DatePicker,
+  Typography,
+  List,
+  Card,
+  Button,
+  Tag,
+} from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ReconSidePanel.module.css';
-import { useGetReconPortalEventTypes, useGetReconPortalEvents, type ReconPortalEvents, type EventTypeResponse } from '@client/hooks';
+import {
+  useGetReconPortalEventTypes,
+  useGetReconPortalEvents,
+  type ReconPortalEvents,
+  type EventTypeResponse,
+} from '@client/hooks';
 import { formatDate } from '@client/workspace';
 import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
@@ -17,12 +35,18 @@ const EVENT_TYPE_COLORS = {
 };
 
 const markerIconUrls = {
-  earthquake: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
-  flood: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-  tsunami: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-  landslide: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-  hurricane: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-  tornado: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
+  earthquake:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+  flood:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+  tsunami:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
+  landslide:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+  hurricane:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  tornado:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
 };
 
 const getEventIdentifier = (event: ReconPortalEvents): string => {
@@ -39,8 +63,10 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   const { Text, Link, Title } = Typography;
   const navigate = useNavigate();
   const { eventId } = useParams();
-  
-  const [selectedEventType, setSelectedEventType] = useState<string | null>(null);
+
+  const [selectedEventType, setSelectedEventType] = useState<string | null>(
+    null
+  );
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [filteredEvents, setFilteredEvents] = useState<ReconPortalEvents[]>([]);
@@ -70,22 +96,29 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     filterEvents(searchText, selectedEventType, year);
   };
 
-  const filterEvents = (search: string, eventType: string | null, year: string | null) => {
+  const filterEvents = (
+    search: string,
+    eventType: string | null,
+    year: string | null
+  ) => {
     let filtered = [...events];
 
     if (search) {
-      filtered = filtered.filter(event => 
-        event.title.toLowerCase().includes(search.toLowerCase()) ||
-        event.location_description.toLowerCase().includes(search.toLowerCase())
+      filtered = filtered.filter(
+        (event) =>
+          event.title.toLowerCase().includes(search.toLowerCase()) ||
+          event.location_description
+            .toLowerCase()
+            .includes(search.toLowerCase())
       );
     }
 
     if (eventType) {
-      filtered = filtered.filter(event => event.event_type === eventType);
+      filtered = filtered.filter((event) => event.event_type === eventType);
     }
 
     if (year) {
-      filtered = filtered.filter(event => {
+      filtered = filtered.filter((event) => {
         const eventDate = new Date(event.event_date);
         return eventDate.getFullYear().toString() === year;
       });
@@ -104,13 +137,14 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
 
   const renderEventCard = (event: ReconPortalEvents) => {
     const title = event.title || event.properties?.name || '';
-    const description = event.location_description || event.properties?.description || '';
+    const description =
+      event.location_description || event.properties?.description || '';
     const date = event.event_date || event.properties?.dateCreated || '';
     const eventType = event.event_type || event.properties?.host || '';
 
     return (
       <div className={styles.eventContainer}>
-        <Card 
+        <Card
           className={styles.eventCard}
           onClick={() => handleEventClick(event)}
           hoverable
@@ -122,7 +156,9 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               {formatDate(new Date(date))}
             </Text>
             <Tag
-              color={EVENT_TYPE_COLORS[eventType as keyof typeof EVENT_TYPE_COLORS]}
+              color={
+                EVENT_TYPE_COLORS[eventType as keyof typeof EVENT_TYPE_COLORS]
+              }
               style={{
                 fontWeight: 600,
                 fontSize: 14,
@@ -139,22 +175,30 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
 
   const renderEventDetail = (event: ReconPortalEvents) => {
     const title = event.title || event.properties?.name || '';
-    const description = event.location_description || event.properties?.description || '';
+    const description =
+      event.location_description || event.properties?.description || '';
     const date = event.event_date || event.properties?.dateCreated || '';
     const eventType = event.event_type || event.properties?.host || '';
-    const eventTypeColor = EVENT_TYPE_COLORS[eventType as keyof typeof EVENT_TYPE_COLORS] || '#ccc';
+    const eventTypeColor =
+      EVENT_TYPE_COLORS[eventType as keyof typeof EVENT_TYPE_COLORS] || '#ccc';
     const datasets = event.datasets || [];
     return (
       <div className={styles.eventDetail}>
         <Card className={styles.eventDetailCard}>
           <Flex className={styles.eventDetailTitleRow}>
             <span>
-              <img src={markerIconUrls[eventType as keyof typeof markerIconUrls]} alt={eventType} 
-               style={{ width: '24px', height: '36px', marginRight: '8px' }}
+              <img
+                src={markerIconUrls[eventType as keyof typeof markerIconUrls]}
+                alt={eventType}
+                style={{ width: '24px', height: '36px', marginRight: '8px' }}
               />
               {title}
             </span>
-            <Button shape="circle" icon={<CloseOutlined />} onClick={handleBackClick} />
+            <Button
+              shape="circle"
+              icon={<CloseOutlined />}
+              onClick={handleBackClick}
+            />
           </Flex>
           <Flex vertical className={styles.eventDetailField}>
             <span className={styles.eventDetailLabel}>Location</span>
@@ -162,26 +206,28 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
           </Flex>
           <Flex vertical className={styles.eventDetailField}>
             <span className={styles.eventDetailLabel}>Hazard Date</span>
-            <span className={styles.eventDetailValue}>{formatDate(new Date(date))}</span>
+            <span className={styles.eventDetailValue}>
+              {formatDate(new Date(date))}
+            </span>
           </Flex>
           <Flex vertical className={styles.eventDetailField} align="flex-start">
             <span className={styles.eventDetailLabel}>Hazard Type</span>
-            <Tag
-              color={eventTypeColor}
-              className={styles.eventDetailTag}
-            >
+            <Tag color={eventTypeColor} className={styles.eventDetailTag}>
               {eventType}
             </Tag>
           </Flex>
         </Card>
         <div style={{ textAlign: 'center', margin: '24px 0 8px 0' }}>
-          <span style={{ fontWeight: 600 }}>
-            Reconaissance Data
-          </span>
+          <span style={{ fontWeight: 600 }}>Reconaissance Data</span>
         </div>
-        <Flex vertical align="center" gap={8} className={styles.reconDataSection}>
+        <Flex
+          vertical
+          align="center"
+          gap={8}
+          className={styles.reconDataSection}
+        >
           {datasets.length > 0 ? (
-            datasets.map((ds: { title: string, url: string }, idx: number) => (
+            datasets.map((ds: { title: string; url: string }, idx: number) => (
               <a
                 key={idx}
                 href={ds.url}
@@ -200,15 +246,22 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     );
   };
 
-  const selectedEvent = eventId ? events.find(event => getEventIdentifier(event) === eventId) : null;
+  const selectedEvent = eventId
+    ? events.find((event) => getEventIdentifier(event) === eventId)
+    : null;
 
   return (
     <Layout {...props}>
       <Flex vertical style={{ height: '100%' }}>
         <div className={styles.stickyHeader}>
-          <Flex align="center" justify="center" className={styles.header} gap={20}>
-            <Image 
-              src="/static/scripts/rapid/images/logoicon.png" 
+          <Flex
+            align="center"
+            justify="center"
+            className={styles.header}
+            gap={20}
+          >
+            <Image
+              src="/static/scripts/rapid/images/logoicon.png"
               preview={false}
               style={{ width: '48px', height: '48px' }}
             />
@@ -221,11 +274,24 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
             <>
               <div style={{ padding: '16px' }}>
                 <Flex vertical gap={8}>
-                  <Text style={{ textAlign: 'left', fontSize: '14px', color: '#666' }}>
-                    Explore natural hazard datasets from DesignSafe, Open Topography, and other sources
+                  <Text
+                    style={{
+                      textAlign: 'left',
+                      fontSize: '14px',
+                      color: '#666',
+                    }}
+                  >
+                    Explore natural hazard datasets from DesignSafe, Open
+                    Topography, and other sources
                   </Text>
 
-                  <Text style={{ textAlign: 'left', fontSize: '14px', width: '100%' }}>
+                  <Text
+                    style={{
+                      textAlign: 'left',
+                      fontSize: '14px',
+                      width: '100%',
+                    }}
+                  >
                     <Link href="/user-guide/tools/recon/">
                       Learn how to contribute your datasets
                     </Link>
@@ -241,8 +307,12 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                   size="large"
                   onSearch={onSearch}
                 />
-                
-                <Flex gap={16} justify="space-between" style={{ width: '100%', marginTop: '16px' }}>
+
+                <Flex
+                  gap={16}
+                  justify="space-between"
+                  style={{ width: '100%', marginTop: '16px' }}
+                >
                   <Select
                     placeholder="Select Event Type"
                     style={{ flex: 1 }}
@@ -251,7 +321,10 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                     allowClear
                   >
                     {eventTypes.map((eventType: EventTypeResponse) => (
-                      <Select.Option key={eventType.name} value={eventType.name}>
+                      <Select.Option
+                        key={eventType.name}
+                        value={eventType.name}
+                      >
                         {eventType.display_name}
                       </Select.Option>
                     ))}
@@ -279,9 +352,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               />
             </>
           ) : (
-            <div style={{  }}>
-              {renderEventDetail(selectedEvent)}
-            </div>
+            <div style={{}}>{renderEventDetail(selectedEvent)}</div>
           )}
         </div>
       </Flex>
