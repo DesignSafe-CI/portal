@@ -198,7 +198,7 @@ export const getConfigurationFields = (
   if (definition.jobType === 'BATCH') {
     const systemOptions = getAppExecSystems(execSystems).map((sys) => ({
       value: sys.id,
-      label: sys.name, 
+      label: sys.name,
     }));
     const isMulti = systemOptions.length > 1;
 

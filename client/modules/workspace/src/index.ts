@@ -13,7 +13,3 @@ export * from './constants';
 export * from './InteractiveSessionModal';
 export { default as systemStatusStyles } from '../../../src/workspace/components/SystemStatusModal/SystemStatusModal.module.css';
 export { default as queueStyles } from '../../../src/workspace/components/SystemStatusModal/SystemQueueTable.module.css';
-
-//or maybe this way is better for the css stuff? 
-
-//

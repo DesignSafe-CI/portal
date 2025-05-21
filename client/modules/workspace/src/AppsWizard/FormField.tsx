@@ -22,6 +22,115 @@ export type TTapisSystemQueue = {
   waiting: number;
 };
 
+const ExtendedSelect: React.FC<{
+  after?: React.FC<any>;
+  name: string;
+  value: any;
+  style?: React.CSSProperties;
+  [key: string]: any;
+}> = ({ after: After, name, value, style = {}, ...props }) => {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <Select
+        {...props}
+        value={value}
+        style={{ textAlign: 'left', maxWidth: 150, width: '20%', ...style }}
+      />
+      {After && <After name={name} value={value} />}
+    </div>
+  );
+};
+
+const SystemStatus: React.FC<{
+  value: string;
+}> = ({ value }) => {
+  const { getValues } = useFormContext();
+  const { data: systems } = useSystemOverview();
+
+  const getDisplayName = (systemId: string) => {
+    if (!systemId) return '';
+    if (systemId.toLowerCase() === 'ls6') {
+      return 'Lonestar6';
+    }
+    return systemId.charAt(0).toUpperCase() + systemId.slice(1);
+  };
+
+  const displayName = getDisplayName(value);
+  const selectedSystem = systems?.find(
+    (sys) => sys.display_name === displayName
+  );
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
+      <span style={{ marginRight: -5, marginLeft: 8 }}>
+        {value.charAt(0).toUpperCase() + value.slice(1)} status:
+      </span>
+      <div
+        className={`${systemStatusStyles.statusBadge} ${
+          selectedSystem?.is_operational
+            ? systemStatusStyles.open
+            : systemStatusStyles.closed
+        }`}
+        style={{ marginLeft: 12 }}
+      >
+        {selectedSystem?.is_operational ? 'Operational' : 'Maintenance'}
+      </div>
+    </div>
+  );
+};
+
+const QueueStatus: React.FC<{
+  value: string;
+}> = ({ value }) => {
+  const { getValues } = useFormContext();
+  const selectedSystemId = getValues('configuration.execSystemId');
+  const [queueData, setQueueData] = useState<TTapisSystemQueue[]>([]);
+
+  const getDisplayName = (systemId: string) => {
+    if (!systemId) return '';
+    if (systemId.toLowerCase() === 'ls6') {
+      return 'Lonestar6';
+    }
+    return systemId.charAt(0).toUpperCase() + systemId.slice(1);
+  };
+
+  const displayName = getDisplayName(selectedSystemId);
+
+  useEffect(() => {
+    if (displayName) {
+      useSystemQueue(displayName)
+        .then((result) => setQueueData(result))
+        .catch(() => setQueueData([]));
+    }
+  }, [displayName]);
+
+  const selectedQueue = queueData.find((q) => q.name === value);
+
+  if (!value) return null;
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
+      <span style={{ marginRight: -5, marginLeft: 8 }}>Queue Status:</span>
+      <div
+        className={`${queueStyles.statusBadge} ${
+          selectedQueue
+            ? selectedQueue.down
+              ? queueStyles.closed
+              : queueStyles.open
+            : queueStyles.closed
+        }`}
+        style={{ marginLeft: 12 }}
+      >
+        {selectedQueue
+          ? selectedQueue.down
+            ? 'Closed'
+            : 'Open'
+          : 'Not Available'}
+      </div>
+    </div>
+  );
+};
+
 export const FormField: React.FC<{
   name: string;
   parameterSet?: string;
@@ -47,35 +156,6 @@ export const FormField: React.FC<{
   const { resetField, control, getValues, setValue, trigger } =
     useFormContext();
   const fieldState = useWatch({ control, name });
-
-  const { data: systems } = useSystemOverview();
-  const selectedSystemId = getValues('configuration.execSystemId');
-
-  const getDisplayName = (systemId: string) => {
-    if (!systemId) return '';
-    if (systemId.toLowerCase() === 'ls6') {
-      return 'Lonestar6';
-    }
-    return systemId.charAt(0).toUpperCase() + systemId.slice(1);
-  };
-
-  const displayName = getDisplayName(selectedSystemId);
-  const selectedSystem = systems?.find(
-    (sys) => sys.display_name === displayName
-  );
-
-  const [queueData, setQueueData] = useState<TTapisSystemQueue[]>([]);
-  useEffect(() => {
-    if (selectedSystem) {
-      useSystemQueue(selectedSystem.display_name)
-        .then((result) => setQueueData(result))
-        .catch(() => setQueueData([]));
-    }
-  }, [selectedSystem]);
-
-  const selectedQueueName = getValues('configuration.execSystemLogicalQueue');
-
-  const selectedQueue = queueData.find((q) => q.name === selectedQueueName);
 
   let parameterSetLabel: React.ReactElement | null = null;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -130,106 +210,31 @@ export const FormField: React.FC<{
       >
         {type === 'select' ? (
           name === 'configuration.execSystemId' ? (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Select
-                {...props}
-                value={selectedSystemId}
-                disabled={readOnly}
-                suffixIcon={readOnly ? null : undefined}
-                style={{
-                  textAlign: 'left',
-                  maxWidth: 150,
-                  width: '20%',
-                  backgroundColor: readOnly ? '#F4F4F4' : undefined,
-                }}
-              />
-
-              {selectedSystem && (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginLeft: 12,
-                  }}
-                >
-                  <span style={{ marginRight: -5, marginLeft: 8 }}>
-                    {selectedSystemId.charAt(0).toUpperCase() +
-                      selectedSystemId.slice(1)}{' '}
-                    status:
-                  </span>
-                  <div
-                    className={`${systemStatusStyles.statusBadge} ${
-                      selectedSystem.is_operational
-                        ? systemStatusStyles.open
-                        : systemStatusStyles.closed
-                    }`}
-                    style={{ marginLeft: 12 }}
-                  >
-                    {selectedSystem.is_operational
-                      ? 'Operational'
-                      : 'Maintenance'}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : name === 'configuration.execSystemLogicalQueue' ? (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Select
-                {...props}
-                value={selectedQueueName}
-                onChange={(value) => {
-                  setValue('configuration.execSystemLogicalQueue', value);
-                }}
-                style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
-              />
-              {selectedQueueName &&
-                (selectedQueue ? (
-                  // If queue is found, show Open/Closed
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      marginLeft: 12,
-                    }}
-                  >
-                    <span style={{ marginRight: -5, marginLeft: 8 }}>
-                      Queue Status:
-                    </span>
-                    <div
-                      className={`${queueStyles.statusBadge} ${
-                        selectedQueue.down
-                          ? queueStyles.closed
-                          : queueStyles.open
-                      }`}
-                      style={{ marginLeft: 12 }}
-                    >
-                      {selectedQueue.down ? 'Closed' : 'Open'}
-                    </div>
-                  </div>
-                ) : (
-                  // If queue info if buffering or is not found (including empty queueData), show "Not Available"
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      marginLeft: 12,
-                    }}
-                  >
-                    <span style={{ marginRight: -5, marginLeft: 8 }}>
-                      Queue Status:
-                    </span>
-                    <div
-                      className={`${queueStyles.statusBadge} ${queueStyles.closed}`}
-                      style={{ marginLeft: 12 }}
-                    >
-                      Not Available
-                    </div>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <Select
+            <ExtendedSelect
               {...props}
+              name={name}
+              value={getValues(name)}
+              disabled={readOnly}
+              suffixIcon={readOnly ? null : undefined}
+              style={{
+                backgroundColor: readOnly ? '#F4F4F4' : undefined,
+              }}
+              after={SystemStatus}
+            />
+          ) : name === 'configuration.execSystemLogicalQueue' ? (
+            <ExtendedSelect
+              {...props}
+              name={name}
+              value={getValues(name)}
+              onChange={(value: string) => {
+                setValue('configuration.execSystemLogicalQueue', value);
+              }}
+              after={QueueStatus}
+            />
+          ) : (
+            <ExtendedSelect
+              {...props}
+              name={name}
               value={getValues(name)}
               style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
             />
