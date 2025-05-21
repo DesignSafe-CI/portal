@@ -20,10 +20,28 @@ export const AppsViewLayout: React.FC = () => {
   const portalApp = findAppById(data, app.definition.id);
 
   const icon = portalApp?.icon || app.definition.notes.icon || 'Generic-App';
-  const userGuideLink =
-    portalApp?.userGuideLink || app.definition.notes.helpUrl;
 
   const htmlApp = data?.htmlDefinitions[appId];
+  const rawHtml = (htmlApp?.html as string) || '';
+
+  // Determine the User Guide link: metadata or extract from HTML blob
+  let userGuideLink = portalApp?.userGuideLink || app.definition.notes.helpUrl;
+  if (!userGuideLink && rawHtml) {
+    // Match the anchor styled as a button: <a class="btn btn-secondary" href="...">User Guide</a>
+    const match = rawHtml.match(
+      /<a[^>]*class=["']btn btn-secondary["'][^>]*href=["']([^"']+)["'][^>]*>\s*User Guide\s*<\/[aA]>/i
+    );
+    if (match) {
+      userGuideLink = match[1];
+    }
+  }
+
+  // Remove User Guide button/link from body HTML
+  const filteredHtml = rawHtml.replace(
+    /<a[^>]*class=["']btn btn-secondary["'][^>]*>[^<]*<\/[aA]>/gi,
+    ''
+  );
+
   const key = `${appId}-${appVersion}`;
 
   const { Header } = Layout;
@@ -63,7 +81,7 @@ export const AppsViewLayout: React.FC = () => {
             <div
               className={`${styles['overflow']} ${styles['html-app-container']}`}
             >
-              {parse(htmlApp.html as string)}
+              {parse(filteredHtml)}
             </div>
           ) : (
             <ErrorBoundary
