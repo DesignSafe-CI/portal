@@ -18,12 +18,14 @@ export const AppsViewLayout: React.FC = () => {
   const { data } = useAppsListing();
 
   const portalApp = findAppById(data, app.definition.id);
-
   const icon = portalApp?.icon || app.definition.notes.icon || 'Generic-App';
+
+  const htmlApp = data?.htmlDefinitions[appId];
+  const rawHtml = (htmlApp?.html as string) || '';
+
   const userGuideLink =
     portalApp?.userGuideLink || app.definition.notes.helpUrl;
 
-  const htmlApp = data?.htmlDefinitions[appId];
   const key = `${appId}-${appVersion}`;
 
   const { Header } = Layout;
