@@ -18,24 +18,14 @@ export const AppsViewLayout: React.FC = () => {
   const { data } = useAppsListing();
 
   const portalApp = findAppById(data, app.definition.id);
-
   const icon = portalApp?.icon || app.definition.notes.icon || 'Generic-App';
 
   const htmlApp = data?.htmlDefinitions[appId];
-  const rawHtml = (htmlApp?.html as string) || '';
-
-  // Determine the User Guide link: metadata or extract from HTML blob
-  let userGuideLink = portalApp?.userGuideLink || app.definition.notes.helpUrl;
-  if (!userGuideLink && rawHtml) {
-    // Match the anchor styled as a button: <a class="btn btn-secondary" href="...">User Guide</a>
-    const match = rawHtml.match(
-      /<a[^>]*class=["']btn btn-secondary["'][^>]*href=["']([^"']+)["'][^>]*>\s*User Guide\s*<\/[aA]>/i
-    );
-    if (match) {
-      userGuideLink = match[1];
-    }
-  }
-
+  const rawHtml = (htmlApp?.html as string) || '';  
+  
+  const htmlLink = (htmlApp as any)?.user_guide_link;
+  const userGuideLink = htmlLink || portalApp?.userGuideLink || app.definition.notes.helpUrl;
+  
   // Remove User Guide button/link from body HTML
   const filteredHtml = rawHtml.replace(
     /<a[^>]*class=["']btn btn-secondary["'][^>]*>[^<]*<\/[aA]>/gi,
