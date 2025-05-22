@@ -21,11 +21,12 @@ export const AppsViewLayout: React.FC = () => {
   const icon = portalApp?.icon || app.definition.notes.icon || 'Generic-App';
 
   const htmlApp = data?.htmlDefinitions[appId];
-  const rawHtml = (htmlApp?.html as string) || '';  
-  
+  const rawHtml = (htmlApp?.html as string) || '';
+
   const htmlLink = (htmlApp as any)?.user_guide_link;
-  const userGuideLink = htmlLink || portalApp?.userGuideLink || app.definition.notes.helpUrl;
-  
+  const userGuideLink =
+    htmlLink || portalApp?.userGuideLink || app.definition.notes.helpUrl;
+
   // Remove User Guide button/link from body HTML
   const filteredHtml = rawHtml.replace(
     /<a[^>]*class=["']btn btn-secondary["'][^>]*>[^<]*<\/[aA]>/gi,
