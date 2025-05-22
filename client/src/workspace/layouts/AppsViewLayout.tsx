@@ -24,15 +24,7 @@ export const AppsViewLayout: React.FC = () => {
   const rawHtml = (htmlApp?.html as string) || '';
 
   const userGuideLink =
-    htmlApp?.userGuideLink ||
-    portalApp?.userGuideLink ||
-    app.definition.notes.helpUrl;
-
-  // Remove any btn-styled links (User Guide buttons) from HTML blob
-  const filteredHtml = rawHtml.replace(
-    /<a[^>]*class=["'][^"']*btn[^"']*["'][^>]*>.*?<\/a>/gi,
-    ''
-  );
+    portalApp?.userGuideLink || app.definition.notes.helpUrl;
 
   const key = `${appId}-${appVersion}`;
 
@@ -73,7 +65,7 @@ export const AppsViewLayout: React.FC = () => {
             <div
               className={`${styles['overflow']} ${styles['html-app-container']}`}
             >
-              {parse(filteredHtml)}
+              {parse(htmlApp.html as string)}
             </div>
           ) : (
             <ErrorBoundary
