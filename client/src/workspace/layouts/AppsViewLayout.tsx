@@ -23,13 +23,14 @@ export const AppsViewLayout: React.FC = () => {
   const htmlApp = data?.htmlDefinitions[appId];
   const rawHtml = (htmlApp?.html as string) || '';
 
-  const htmlLink = (htmlApp as any)?.user_guide_link;
   const userGuideLink =
-    htmlLink || portalApp?.userGuideLink || app.definition.notes.helpUrl;
+    htmlApp?.userGuideLink ||
+    portalApp?.userGuideLink ||
+    app.definition.notes.helpUrl;
 
-  // Remove User Guide button/link from body HTML
+  // Remove any btn-styled links (User Guide buttons) from HTML blob
   const filteredHtml = rawHtml.replace(
-    /<a[^>]*class=["']btn btn-secondary["'][^>]*>[^<]*<\/[aA]>/gi,
+    /<a[^>]*class=["'][^"']*btn[^"']*["'][^>]*>.*?<\/a>/gi,
     ''
   );
 
