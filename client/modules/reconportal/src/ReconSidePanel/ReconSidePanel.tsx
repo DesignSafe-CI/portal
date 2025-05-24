@@ -13,13 +13,14 @@ import {
   Button,
   Tag,
 } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ReconSidePanel.module.css';
 import {
   useGetReconPortalEventTypes,
   useGetReconPortalEvents,
   type ReconPortalEvents,
   type EventTypeResponse,
+  useSelectedReconPortalEvent,
+  getReconPortalEventIdentifier,
 } from '@client/hooks';
 import { formatDate } from '@client/workspace';
 import dayjs from 'dayjs';
@@ -49,11 +50,6 @@ const markerIconUrls = {
     'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
 };
 
-const getEventIdentifier = (event: ReconPortalEvents): string => {
-  const title = event.title || event.properties?.name || '';
-  return `${title}`.toLowerCase().replace(/[^a-z0-9]/g, '-');
-};
-
 export const ReconSidePanel: React.FC<LayoutProps> = ({
   children,
   ...props
@@ -61,8 +57,11 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   const { Content } = Layout;
   const { Search } = Input;
   const { Text, Link } = Typography;
-  const navigate = useNavigate();
-  const { eventId } = useParams();
+
+  const {
+    selectedReconPortalEventIdentfier,
+    setSelectedReconPortalEventIdentifier,
+  } = useSelectedReconPortalEvent();
 
   const [selectedEventType, setSelectedEventType] = useState<string | null>(
     null
@@ -128,11 +127,11 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   };
 
   const handleEventClick = (event: ReconPortalEvents) => {
-    navigate(`/${getEventIdentifier(event)}`);
+    setSelectedReconPortalEventIdentifier(getReconPortalEventIdentifier(event));
   };
 
   const handleBackClick = () => {
-    navigate('/');
+    setSelectedReconPortalEventIdentifier(null);
   };
 
   const renderEventCard = (event: ReconPortalEvents) => {
@@ -246,8 +245,12 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     );
   };
 
-  const selectedEvent = eventId
-    ? events.find((event) => getEventIdentifier(event) === eventId)
+  const selectedEvent = selectedReconPortalEventIdentfier
+    ? events.find(
+        (event) =>
+          getReconPortalEventIdentifier(event) ===
+          selectedReconPortalEventIdentfier
+      )
     : null;
 
   return (
