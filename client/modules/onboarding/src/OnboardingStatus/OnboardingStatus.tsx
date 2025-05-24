@@ -4,7 +4,7 @@ import { TOnboardingStep } from '@client/hooks';
 import styles from './OnboardingStatus.module.css';
 
 const getContents = (step: TOnboardingStep) => {
-  console.log('Onboarding step:', step); // <-- Add this line
+  console.log('Onboarding step:', step); // ttsesttt
   let color = '';
   switch (step.state) {
     case 'processing':
@@ -30,6 +30,14 @@ const getContents = (step: TOnboardingStep) => {
   }
   if ('customStatus' in step) {
     return <Tag color={color}>{step.customStatus}</Tag>;
+  }
+
+  if (
+    step.events &&
+    step.events[0] &&
+    step.events[0].message === 'Portal access request has not been approved.'
+  ) {
+    return <Tag color="red">Denied</Tag>;
   }
   switch (step.state) {
     case 'pending':
