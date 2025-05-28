@@ -25,8 +25,9 @@ export const ProjectCitation: React.FC<{
       {authors
         .map((author, idx) =>
           idx === 0
-            ? `${author.lname}, ${author.fname[0]}${authors.length > 1 ? '.' : ''
-            }`
+            ? `${author.lname}, ${author.fname[0]}${
+                authors.length > 1 ? '.' : ''
+              }`
             : `${author.fname[0]}. ${author.lname}`
         )
         .join(', ')}
@@ -65,8 +66,9 @@ export const PublishedCitation: React.FC<{
       {authors
         .map((author, idx) =>
           idx === 0
-            ? `${author.lname}, ${author.fname[0]}${authors.length > 1 ? '.' : ''
-            }`
+            ? `${author.lname}, ${author.fname[0]}${
+                authors.length > 1 ? '.' : ''
+              }`
             : `${author.fname[0]}. ${author.lname}`
         )
         .join(', ')}{' '}
@@ -174,7 +176,8 @@ export const DownloadCitation: React.FC<{
                 title="Unique Requests"
                 content="User sessions in which one or more files are downloaded or previewed."
               >
-                {dataciteMetrics?.data.attributes.downloadCount ?? '--'} Unique Requests
+                {dataciteMetrics?.data.attributes.downloadCount ?? '--'} Unique
+                Requests
               </Popover>
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -185,7 +188,8 @@ export const DownloadCitation: React.FC<{
                 content="User sessions in which any project or publications metadata is viewed,
                           or one or more files is downloaded or previewed"
               >
-                {dataciteMetrics?.data.attributes.viewCount ?? '--'} Unique Investigations
+                {dataciteMetrics?.data.attributes.viewCount ?? '--'} Unique
+                Investigations
               </Popover>
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -194,8 +198,8 @@ export const DownloadCitation: React.FC<{
                 ? 'Loading...'
                 : isClarivateError ||
                   typeof clarivateMetrics?.citationCount !== 'number'
-                  ? '0'
-                  : clarivateMetrics.citationCount}{' '}
+                ? '0'
+                : clarivateMetrics.citationCount}{' '}
               Citations
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;
