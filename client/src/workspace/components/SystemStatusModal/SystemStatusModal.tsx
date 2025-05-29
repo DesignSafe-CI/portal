@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Spin, Alert } from 'antd';
 import { SystemQueueTable } from './SystemQueueTable';
-import { useSystemOverview } from '../../../hooks/system-status/useSystemOverview';
+import { useSystemOverview } from '@client/hooks';
 import styles from './SystemStatusModal.module.css';
 
 interface SystemStatusModalProps {

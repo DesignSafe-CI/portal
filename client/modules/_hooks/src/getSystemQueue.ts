@@ -1,8 +1,3 @@
-/*
-  Used in portal/client/src/workspace/SystemQueueTable.tsx 
-  for getting system queue data from core portal
-*/
-
 interface QueueDetails {
   down: boolean;
   hidden: boolean;
@@ -22,7 +17,7 @@ export interface QueueItem extends QueueDetails {
   name: string;
 }
 
-export const useSystemQueue = async (
+export const getSystemQueue = async (
   hostname: string
 ): Promise<QueueItem[]> => {
   const response = await fetch(`/api/proxy/status/${hostname}/`);

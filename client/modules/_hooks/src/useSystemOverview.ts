@@ -1,6 +1,3 @@
-//used in portal/client/src/workspace/SystemQueueTable.tsx
-//for getting system overview data (load%, running jobs, waiting jobs
-
 import { useQuery } from '@tanstack/react-query';
 
 interface HPCSystem {

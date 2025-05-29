@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Alert } from 'antd';
-import { useSystemQueue } from '../../../hooks/system-status/useSystemQueue';
+import { getSystemQueue } from '@client/hooks';
+
+
 import styles from './SystemQueueTable.module.css';
 
 interface QueueItem {
@@ -24,12 +26,11 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  //Fetch data from useSystemQueue.ts
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const result = await useSystemQueue(hostname);
+        const result = await getSystemQueue(hostname);
         setQueueData(result);
         setError(null);
       } catch (err) {

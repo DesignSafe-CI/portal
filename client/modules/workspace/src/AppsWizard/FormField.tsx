@@ -9,7 +9,7 @@ import {
 } from '../AppsWizard/AppsFormSchema';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
-import { useSystemOverview, useSystemQueue } from '@client/hooks';
+import { useSystemOverview, getSystemQueue } from '@client/hooks';
 import { systemStatusStyles, queueStyles } from '@client/workspace';
 
 export type TTapisSystemQueue = {
@@ -98,8 +98,8 @@ const QueueStatus: React.FC<{
 
   useEffect(() => {
     if (displayName) {
-      useSystemQueue(displayName)
-        .then((result) => setQueueData(result))
+      getSystemQueue(displayName)
+        .then((result: Awaited<ReturnType<typeof getSystemQueue>>) => setQueueData(result))
         .catch(() => setQueueData([]));
     }
   }, [displayName]);
