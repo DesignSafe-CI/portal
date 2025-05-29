@@ -99,7 +99,9 @@ const QueueStatus: React.FC<{
   useEffect(() => {
     if (displayName) {
       getSystemQueue(displayName)
-        .then((result: Awaited<ReturnType<typeof getSystemQueue>>) => setQueueData(result))
+        .then((result: Awaited<ReturnType<typeof getSystemQueue>>) =>
+          setQueueData(result)
+        )
         .catch(() => setQueueData([]));
     }
   }, [displayName]);

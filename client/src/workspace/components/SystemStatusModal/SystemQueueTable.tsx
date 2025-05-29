@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Spin, Alert } from 'antd';
 import { getSystemQueue } from '@client/hooks';
 
-
 import styles from './SystemQueueTable.module.css';
 
 interface QueueItem {
