@@ -98,7 +98,7 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    $ sudo vim /etc/hosts
    ```
 
-   Now you can navigate to [designsafe.dev](designsafe.dev) in your browser.
+   Now you can navigate to [designsafe.dev](https://designsafe.dev) in your browser.
 
 ## Next steps
 
