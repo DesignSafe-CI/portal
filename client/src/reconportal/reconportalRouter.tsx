@@ -9,6 +9,10 @@ const reconportalRouter = createBrowserRouter(
       element: <ReconPortalBaseLayout />,
       children: [
         {
+          path: ':eventId',
+          element: <ReconPortalBaseLayout />,
+        },
+        {
           path: '*',
           element: <Navigate to={'/'} replace={true} />,
         },
