@@ -7,6 +7,7 @@ from pathlib import Path
 import tapipy
 from designsafe.apps.api.datafiles.utils import *
 from designsafe.apps.data.models.elasticsearch import IndexedFile
+from designsafe.apps.api.publications.models import PublicationSymlink
 from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
 from designsafe.apps.api.filemeta.models import FileMetaModel
 from designsafe.apps.api.filemeta.tasks import move_file_meta_async, copy_file_meta_async
@@ -43,6 +44,47 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
 
     if q:
         return search(client, system, path, offset=0, limit=100, query_string=q, **kwargs)
+    if system == settings.PUBLISHED_SYSTEM:
+        raw_listing = client.files.listFiles(
+            systemId=system,
+            path=(path or '/'),
+            offset=int(offset),
+            limit=int(limit),
+            headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")}
+        )
+        listing = []
+        for f in raw_listing:
+            print("Item:", f.name, "type:", getattr(f, "type", None), "path:", f.path)
+            accessor = f"tapis://{system}/{f.path}"
+            # Only adjust type if it's a symlink
+            if getattr(f, "type", None) == "link":
+                try:
+                    rec = PublicationSymlink.objects.get(accessor=accessor)
+                    type_str = rec.link_type    # 'file' or 'dir'
+                    format_str = 'folder' if type_str == 'dir' else 'raw'
+                    print(f"Symlink override: {accessor} -> {type_str}")
+                except PublicationSymlink.DoesNotExist:
+                    type_str = 'file'           # default/fallback
+                    format_str = 'raw'
+                    print(f"Symlink not found in DB, defaulting to file: {accessor}")
+            else:
+                type_str = 'dir' if f.type == 'dir' else 'file'
+                format_str = 'folder' if f.type == 'dir' else 'raw'
+            listing.append({
+                'system': system,
+                'type': type_str,
+                'format': format_str,
+                'mimeType': f.mimeType,
+                'path': f"/{f.path}",
+                'name': f.name,
+                'length': f.size,
+                'lastModified': f.lastModified,
+                '_links': {'self': {'href': f.url}},
+            })
+        return {
+            'listing': listing,
+            'reachedEnd': len(listing) < int(limit),
+        }
 
     raw_listing = client.files.listFiles(systemId=system,
                                          path=(path or '/'),
