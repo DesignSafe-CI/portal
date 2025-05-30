@@ -100,7 +100,7 @@ If you are on a Mac or a Windows machine, the recommended method is to install
 
 7. Login to the Portal in your browser at [designsafe.dev/login](https://designsafe.dev/login).
 
-    _To [login to the CMS admin](designsafe.dev/admin), [set your user as staff or superuser](https://github.com/DesignSafe-CI/portal/wiki/How-to-Set-Your-User-as-Staff-or-Superuser)._
+    _To [login to the CMS admin](designsafe.dev/admin), [set your user as staff or superuser](https://github.com/DesignSafe-CI/portal/wiki/How-to-Set-Your-User-as-Staff-or-Superuser). To access [the workspace](https://designsafe.dev/workspace/) quickly, [bypass the profile edit form](https://github.com/DesignSafe-CI/portal/wiki/How-to-Bypass-Profile-Edit-Form)._
 
 ## Next steps
 
