@@ -405,7 +405,9 @@ BOOTSTRAP3 = {
 #
 #####
 IMPERSONATE = {
-    'REQUIRE_SUPERUSER': True,
+    'REQUIRE_SUPERUSER': False,
+    # Allow superusers and members of the 'Impersonator' group
+    'CUSTOM_ALLOW': 'designsafe.libs.common.utils.check_allow_impersonation',
     'ADMIN_DELETE_PERMISSION': True
 }
 
@@ -420,7 +422,8 @@ def guid_filter(record):
     """Log filter that adds a guid to each entry"""
 
     record.logGuid = uuid.uuid4().hex
-    record.sessionId = sha256(record.sessionId.encode()).hexdigest()
+    if record.sessionId is not None:
+        record.sessionId = sha256(record.sessionId.encode()).hexdigest()
     return True
 
 LOGGING = {
@@ -744,7 +747,7 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         "step": "designsafe.apps.onboarding.steps.system_access_v3.SystemAccessStepV3",
         "settings": {
             "credentials_systems": os.environ.get(
-                "TMS_SYSTEMS", "cloud.data,designsafe.storage.default,wma-exec-01"
+                "TMS_SYSTEMS", "designsafe.storage.default,cloud.data,wma-exec-01,wma-dcv-01,vista,frontera,stampede3,ls6"
             ).split(","),
             "create_path_systems": [
                 {"system_id": "designsafe.storage.default", "path": "{username}"}
