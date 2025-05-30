@@ -1,5 +1,5 @@
 .icon {
-  color: #cc443e;
+  color: #49a59c;
   font-size: 16px;
 }
 
@@ -28,6 +28,7 @@
   padding: 15px 0px;
   font-size: 14px;
   border-right: 1px solid var(--global-color-primary--normal);
+  border-bottom: 1px solid var(--global-color-primary--normal);
   background: transparent;
   color: black;
 }
