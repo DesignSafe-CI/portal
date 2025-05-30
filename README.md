@@ -100,6 +100,8 @@ If you are on a Mac or a Windows machine, the recommended method is to install
 
 7. Login to the Portal in your browser at [designsafe.dev/login](https://designsafe.dev/login).
 
+    _To [login to the CMS admin](designsafe.dev/admin), [set your user as staff or superuser](https://github.com/DesignSafe-CI/portal/wiki/How-to-Set-Your-User-as-Staff-or-Superuser)._
+
 ## Next steps
 
 ### Installing local CA
