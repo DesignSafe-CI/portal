@@ -409,8 +409,8 @@ class AppsTrayView(AuthenticatedApiView):
 
             # Add html apps to html_definitions
             for html_app in html_apps:
+                html_app["userGuideLink"] = html_app.get("bundle_user_guide_link", "")
                 html_definitions[html_app["app_id"]] = html_app
-
                 category_result["apps"].append(html_app)
 
             category_result["apps"] = sorted(
