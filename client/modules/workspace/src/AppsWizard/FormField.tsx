@@ -9,7 +9,7 @@ import {
 } from '../AppsWizard/AppsFormSchema';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
-import { useSystemOverview, getSystemQueue } from '@client/hooks';
+import { useSystemOverview, useSystemQueue } from '@client/hooks';
 import { systemStatusStyles, queueStyles } from '@client/workspace';
 
 export type TTapisSystemQueue = {
@@ -84,7 +84,6 @@ const QueueStatus: React.FC<{
 }> = ({ value }) => {
   const { getValues } = useFormContext();
   const selectedSystemId = getValues('configuration.execSystemId');
-  const [queueData, setQueueData] = useState<TTapisSystemQueue[]>([]);
 
   const getDisplayName = (systemId: string) => {
     if (!systemId) return '';
@@ -96,17 +95,8 @@ const QueueStatus: React.FC<{
 
   const displayName = getDisplayName(selectedSystemId);
 
-  useEffect(() => {
-    if (displayName) {
-      getSystemQueue(displayName)
-        .then((result: Awaited<ReturnType<typeof getSystemQueue>>) =>
-          setQueueData(result)
-        )
-        .catch(() => setQueueData([]));
-    }
-  }, [displayName]);
-
-  const selectedQueue = queueData.find((q) => q.name === value);
+  const { data: queueData } = useSystemQueue(displayName);
+  const selectedQueue = queueData?.find((q) => q.name === value);
 
   if (!value) return null;
 

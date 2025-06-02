@@ -1,18 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Spin, Alert } from 'antd';
-import { getSystemQueue } from '@client/hooks';
+import { useSystemQueue } from '@client/hooks';
 
 import styles from './SystemQueueTable.module.css';
-
-interface QueueItem {
-  name: string;
-  down: boolean;
-  hidden: boolean;
-  load: number;
-  free: number;
-  running: number;
-  waiting: number;
-}
 
 interface SystemQueueTableProps {
   hostname: string;
@@ -21,32 +11,13 @@ interface SystemQueueTableProps {
 export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
   hostname,
 }) => {
-  const [queueData, setQueueData] = useState<QueueItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: queueData, isLoading, error } = useSystemQueue(hostname);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const result = await getSystemQueue(hostname);
-        setQueueData(result);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [hostname]);
-
-  //Filter out any hidden queues
-  const visibleQueues = queueData.filter((q) => !q.hidden);
+  const visibleQueues = (queueData ?? []).filter((q) => !q.hidden);
 
   return (
     <>
-      {loading ? (
+      {isLoading ? (
         <div style={{ paddingTop: '40px', textAlign: 'center' }}>
           <Spin />
         </div>
@@ -57,7 +28,7 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
           type="error"
           showIcon
         />
-      ) : queueData.length === 0 ? (
+      ) : !queueData || queueData.length === 0 ? (
         <div className={styles.queueUnavailable}>Data not available</div>
       ) : (
         <table className={styles.queueTable}>
