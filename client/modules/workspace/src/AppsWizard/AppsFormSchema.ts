@@ -196,10 +196,7 @@ export const getConfigurationFields = (
   ) as TTapisSystem;
 
   if (definition.jobType === 'BATCH') {
-    const systemOptions = getAppExecSystems(execSystems).map((sys) => ({
-      value: sys.id,
-      label: sys.name,
-    }));
+    const systemOptions = getAppExecSystems(execSystems);
     const isMulti = systemOptions.length > 1;
 
     configurationFields.execSystemId = {

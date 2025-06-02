@@ -275,21 +275,21 @@ export const updateValuesForQueue = (
 
 export const getAppExecSystems = (
   executionSystems: TTapisSystem[]
-): { id: string; name: string }[] => {
+): { value: string; label: string }[] => {
   return executionSystems
     .map((exec_system) => {
-      const name =
+      const label =
         exec_system?.notes?.label ??
         getSystemName(
           getExecSystemFromId(executionSystems, exec_system.id)?.host ?? ''
         );
 
       return {
-        id: exec_system.id,
-        name,
+        value: exec_system.id,
+        label,
       };
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => a.label.localeCompare(b.label));
 };
 
 /**
