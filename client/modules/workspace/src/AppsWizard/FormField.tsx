@@ -12,7 +12,7 @@ import { SelectModal } from '../SelectModal/SelectModal';
 import { useSystemOverview, useSystemQueue } from '@client/hooks';
 import { systemStatusStyles, queueStyles } from '@client/workspace';
 
-export type TTapisSystemQueue = {
+export type QueueDetails = {
   name: string;
   down: boolean;
   hidden: boolean;
