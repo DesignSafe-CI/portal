@@ -273,6 +273,14 @@ export const updateValuesForQueue = (
   }
 };
 
+export const getSystemDisplayName = (systemId: string): string => {
+  if (!systemId) return '';
+  if (systemId.toLowerCase() === 'ls6') {
+    return 'Lonestar6';
+  }
+  return systemId.charAt(0).toUpperCase() + systemId.slice(1);
+};
+
 export const getAppExecSystems = (
   executionSystems: TTapisSystem[]
 ): { value: string; label: string }[] => {

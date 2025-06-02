@@ -7,6 +7,7 @@ import {
   tapisInputFileRegex,
   TAppFileSettings,
 } from '../AppsWizard/AppsFormSchema';
+import { getSystemDisplayName } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
 import { useSystemOverview, useSystemQueue } from '@client/hooks';
@@ -44,18 +45,8 @@ const ExtendedSelect: React.FC<{
 const SystemStatus: React.FC<{
   value: string;
 }> = ({ value }) => {
-  const { getValues } = useFormContext();
   const { data: systems } = useSystemOverview();
-
-  const getDisplayName = (systemId: string) => {
-    if (!systemId) return '';
-    if (systemId.toLowerCase() === 'ls6') {
-      return 'Lonestar6';
-    }
-    return systemId.charAt(0).toUpperCase() + systemId.slice(1);
-  };
-
-  const displayName = getDisplayName(value);
+  const displayName = getSystemDisplayName(value);
   const selectedSystem = systems?.find(
     (sys) => sys.display_name === displayName
   );
@@ -84,17 +75,7 @@ const QueueStatus: React.FC<{
 }> = ({ value }) => {
   const { getValues } = useFormContext();
   const selectedSystemId = getValues('configuration.execSystemId');
-
-  const getDisplayName = (systemId: string) => {
-    if (!systemId) return '';
-    if (systemId.toLowerCase() === 'ls6') {
-      return 'Lonestar6';
-    }
-    return systemId.charAt(0).toUpperCase() + systemId.slice(1);
-  };
-
-  const displayName = getDisplayName(selectedSystemId);
-
+  const displayName = getSystemDisplayName(selectedSystemId);
   const { data: queueData } = useSystemQueue(displayName);
   const selectedQueue = queueData?.find((q) => q.name === value);
 
