@@ -46,7 +46,6 @@ const getContents = (step: TOnboardingStep) => {
     case 'userwait':
       return <Tag color={color}>Waiting for User</Tag>;
     case 'failed':
-      return <Tag color={color}>Unsuccessful, view log</Tag>;
     case 'error':
       return <Tag color={color}>Unsuccessful</Tag>;
     case null:
