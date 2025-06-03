@@ -54,22 +54,23 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
         )
         listing = []
         for f in raw_listing:
+            type_str = 'dir' if f.type == 'dir' else 'file'
+            format_str = 'folder' if f.type == 'dir' else 'raw'
             print("Item:", f.name, "type:", getattr(f, "type", None), "path:", f.path)
-            accessor = f"tapis://{system}/{f.path}"
-            # Only adjust type if it's a symlink
-            if getattr(f, "type", None) == "link":
+
+            if getattr(f, "type", None) == "symbolic_link":
+                accessor = f"tapis://{system}/{f.path}"
                 try:
-                    rec = PublicationSymlink.objects.get(accessor=accessor)
-                    type_str = rec.link_type    # 'file' or 'dir'
+                    rec = PublicationSymlink.objects.get(tapis_accessor=accessor)
+                    type_str = rec.type    # 'file' or 'dir'
                     format_str = 'folder' if type_str == 'dir' else 'raw'
                     print(f"Symlink override: {accessor} -> {type_str}")
                 except PublicationSymlink.DoesNotExist:
-                    type_str = 'file'           # default/fallback
+                    # Fallback
+                    type_str = 'file'
                     format_str = 'raw'
                     print(f"Symlink not found in DB, defaulting to file: {accessor}")
-            else:
-                type_str = 'dir' if f.type == 'dir' else 'file'
-                format_str = 'folder' if f.type == 'dir' else 'raw'
+
             listing.append({
                 'system': system,
                 'type': type_str,
@@ -92,8 +93,14 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
                                          limit=int(limit),
                                          headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
 
+    raw_listing = client.files.listFiles(
+        systemId=system,
+        path=(path or '/'),
+        offset=int(offset),
+        limit=int(limit),
+        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")}
+    )
     try:
-        # Convert file objects to dicts for serialization.
         listing = list(map(lambda f: {
             'system': system,
             'type': 'dir' if f.type == 'dir' else 'file',
@@ -103,16 +110,14 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
             'name': f.name,
             'length': f.size,
             'lastModified': f.lastModified,
-            '_links': {
-                'self': {'href': f.url}
-            }}, raw_listing))
+            '_links': {'self': {'href': f.url}}
+        }, raw_listing))
     except IndexError:
-        # Return [] if the listing is empty.
         listing = []
-    # Update Elasticsearch after each listing.
-    # agave_listing_indexer.delay(listing)
+
     agave_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
+
 
 
 def logentity(client, system, path, *args, **kwargs):
