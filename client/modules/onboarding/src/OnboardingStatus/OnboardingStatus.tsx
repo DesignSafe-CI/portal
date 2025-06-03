@@ -32,9 +32,7 @@ const getContents = (step: TOnboardingStep) => {
   }
 
   if (
-    step.events &&
-    step.events[0] &&
-    step.events[0].message === 'Portal access request has not been approved.'
+    step.events?.[0]?.message === 'Portal access request has not been approved.'
   ) {
     return <Tag color="red">Denied</Tag>;
   }
