@@ -21,6 +21,10 @@ async function fetchSystems(): Promise<HPCSystem[]> {
   }
   const raw = await response.json();
 
+  if (raw.status === 'error') {
+    throw new Error(raw.error || 'Failed to fetch system data');
+  }
+
   const data = raw.response;
 
   return Object.keys(data)

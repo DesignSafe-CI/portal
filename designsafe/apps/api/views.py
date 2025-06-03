@@ -195,9 +195,17 @@ class SystemOverviewProxyApi(BaseApiView):
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
-            return JsonResponse({"response": response.json()}, status=200)
+            return JsonResponse({
+                "response": response.json(),
+                "status": "success"
+            }, status=200)
              
-                 
         except requests.exceptions.RequestException as e:
-            print("Proxy API Error:", str(e)) 
-            return JsonResponse({"error": str(e)}, status=500)
+            logger.exception("Proxy API Error:", str(e)) 
+            return JsonResponse({
+                "response": None,
+                "status": "error",
+                "error": str(e)
+            }, status=500)
+        
+
