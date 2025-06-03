@@ -26,9 +26,11 @@ async function fetchSystemQueue(hostname: string): Promise<QueueItem[]> {
       `API request failed: ${response.status} ${response.statusText}`
     );
   }
-  const data: SystemQueueResponse = await response.json();
+  const data = await response.json();
 
-  return Object.entries(data.queues).map(([queueName, details]) => ({
+  const queues = (data.response as SystemQueueResponse).queues;
+
+  return Object.entries(queues).map(([queueName, details]) => ({
     name: queueName,
     ...details,
   }));
