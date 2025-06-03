@@ -11,7 +11,8 @@ import { getSystemDisplayName } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
 import { useSystemOverview, useSystemQueue } from '@client/hooks';
-import { systemStatusStyles, queueStyles } from '@client/workspace';
+import systemStatusStyles from '../components/SystemStatusModal/SystemStatusModal.module.css';
+import queueStyles from '../components/SystemStatusModal/SystemQueueTable.module.css';
 
 export type QueueDetails = {
   name: string;

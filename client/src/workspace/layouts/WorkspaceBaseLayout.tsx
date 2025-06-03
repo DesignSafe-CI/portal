@@ -19,7 +19,7 @@ import {
   InteractiveModalContext,
   useAuthenticatedUser,
 } from '@client/hooks';
-import { SystemStatusModal } from '../components/SystemStatusModal/SystemStatusModal';
+import { SystemStatusModal } from '@client/workspace';
 import styles from './layout.module.css';
 
 const { Sider, Header } = Layout;

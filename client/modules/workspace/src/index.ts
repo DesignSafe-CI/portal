@@ -11,5 +11,4 @@ export * from './Toast';
 export * from './utils';
 export * from './constants';
 export * from './InteractiveSessionModal';
-export { default as systemStatusStyles } from '../../../src/workspace/components/SystemStatusModal/SystemStatusModal.module.css';
-export { default as queueStyles } from '../../../src/workspace/components/SystemStatusModal/SystemQueueTable.module.css';
+export * from './components/SystemStatusModal/SystemStatusModal';
