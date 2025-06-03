@@ -25,11 +25,14 @@ export type QueueDetails = {
 };
 
 const ExtendedSelect: React.FC<{
-  after?: React.FC<any>;
+  after?: React.FC<{
+    name: string;
+    value: string;
+  }>;
   name: string;
-  value: any;
+  value: string;
   style?: React.CSSProperties;
-  [key: string]: any;
+  [key: string]: unknown;
 }> = ({ after: After, name, value, style = {}, ...props }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
