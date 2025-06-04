@@ -14,16 +14,6 @@ import { useSystemOverview, useSystemQueue } from '@client/hooks';
 import systemStatusStyles from '../components/SystemStatusModal/SystemStatusModal.module.css';
 import queueStyles from '../components/SystemStatusModal/SystemQueueTable.module.css';
 
-export type QueueDetails = {
-  name: string;
-  down: boolean;
-  hidden: boolean;
-  load: number;
-  free: number;
-  running: number;
-  waiting: number;
-};
-
 const ExtendedSelect: React.FC<{
   after?: React.FC<{
     name: string;
