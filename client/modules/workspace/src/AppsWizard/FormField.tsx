@@ -7,8 +7,106 @@ import {
   tapisInputFileRegex,
   TAppFileSettings,
 } from '../AppsWizard/AppsFormSchema';
+import { getSystemDisplayName } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
+import { useSystemOverview, useSystemQueue } from '@client/hooks';
+import systemStatusStyles from '../components/SystemStatusModal/SystemStatusModal.module.css';
+import queueStyles from '../components/SystemStatusModal/SystemQueueTable.module.css';
+
+export type QueueDetails = {
+  name: string;
+  down: boolean;
+  hidden: boolean;
+  load: number;
+  free: number;
+  running: number;
+  waiting: number;
+};
+
+const ExtendedSelect: React.FC<{
+  after?: React.FC<{
+    name: string;
+    value: string;
+  }>;
+  name: string;
+  value: string;
+  style?: React.CSSProperties;
+  [key: string]: unknown;
+}> = ({ after: After, name, value, style = {}, ...props }) => {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <Select
+        {...props}
+        value={value}
+        style={{ textAlign: 'left', maxWidth: 150, width: '20%', ...style }}
+      />
+      {After && <After name={name} value={value} />}
+    </div>
+  );
+};
+
+const SystemStatus: React.FC<{
+  value: string;
+}> = ({ value }) => {
+  const { data: systems } = useSystemOverview();
+  const displayName = getSystemDisplayName(value);
+  const selectedSystem = systems?.find(
+    (sys) => sys.display_name === displayName
+  );
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
+      <span style={{ marginRight: -5, marginLeft: 8 }}>
+        {value.charAt(0).toUpperCase() + value.slice(1)} status:
+      </span>
+      <div
+        className={`${systemStatusStyles.statusBadge} ${
+          selectedSystem?.is_operational
+            ? systemStatusStyles.open
+            : systemStatusStyles.closed
+        }`}
+        style={{ marginLeft: 12 }}
+      >
+        {selectedSystem?.is_operational ? 'Operational' : 'Maintenance'}
+      </div>
+    </div>
+  );
+};
+
+const QueueStatus: React.FC<{
+  value: string;
+}> = ({ value }) => {
+  const { getValues } = useFormContext();
+  const selectedSystemId = getValues('configuration.execSystemId');
+  const displayName = getSystemDisplayName(selectedSystemId);
+  const { data: queueData } = useSystemQueue(displayName);
+  const selectedQueue = queueData?.find((q) => q.name === value);
+
+  if (!value) return null;
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
+      <span style={{ marginRight: -5, marginLeft: 8 }}>Queue Status:</span>
+      <div
+        className={`${queueStyles.statusBadge} ${
+          selectedQueue
+            ? selectedQueue.down
+              ? queueStyles.closed
+              : queueStyles.open
+            : queueStyles.closed
+        }`}
+        style={{ marginLeft: 12 }}
+      >
+        {selectedQueue
+          ? selectedQueue.down
+            ? 'Closed'
+            : 'Open'
+          : 'Not Available'}
+      </div>
+    </div>
+  );
+};
 
 export const FormField: React.FC<{
   name: string;
@@ -20,6 +118,7 @@ export const FormField: React.FC<{
   fileSettings?: TAppFileSettings;
   placeholder?: string;
   options?: TFieldOptions[];
+  readOnly?: boolean;
 }> = ({
   name,
   parameterSet = null,
@@ -28,11 +127,13 @@ export const FormField: React.FC<{
   required = false,
   type,
   fileSettings = null,
+  readOnly = false,
   ...props
 }) => {
   const { resetField, control, getValues, setValue, trigger } =
     useFormContext();
   const fieldState = useWatch({ control, name });
+
   let parameterSetLabel: React.ReactElement | null = null;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [storageSystem, setStorageSystem] = useState<string | null>(null);
@@ -85,11 +186,36 @@ export const FormField: React.FC<{
         style={{ textAlign: 'left', marginBottom: description ? 0 : 16 }}
       >
         {type === 'select' ? (
-          <Select
-            {...props}
-            value={getValues(name)}
-            style={{ textAlign: 'left' }}
-          />
+          name === 'configuration.execSystemId' ? (
+            <ExtendedSelect
+              {...props}
+              name={name}
+              value={getValues(name)}
+              disabled={readOnly}
+              suffixIcon={readOnly ? null : undefined}
+              style={{
+                backgroundColor: readOnly ? '#F4F4F4' : undefined,
+              }}
+              after={SystemStatus}
+            />
+          ) : name === 'configuration.execSystemLogicalQueue' ? (
+            <ExtendedSelect
+              {...props}
+              name={name}
+              value={getValues(name)}
+              onChange={(value: string) => {
+                setValue('configuration.execSystemLogicalQueue', value);
+              }}
+              after={QueueStatus}
+            />
+          ) : (
+            <ExtendedSelect
+              {...props}
+              name={name}
+              value={getValues(name)}
+              style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
+            />
+          )
         ) : (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {fileSettings && (
@@ -103,7 +229,7 @@ export const FormField: React.FC<{
               {...props}
               type={type}
               value={getValues(name)}
-              style={{ marginRight: '8px' }}
+              style={{ marginRight: '8px', maxWidth: 150, width: '20%' }}
             />
             <Button
               type="link"
