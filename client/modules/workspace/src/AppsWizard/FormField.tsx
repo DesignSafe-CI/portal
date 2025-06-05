@@ -25,11 +25,11 @@ const ExtendedSelect: React.FC<{
   [key: string]: unknown;
 }> = ({ after: After, name, value, style = {}, ...props }) => {
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
+    <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
       <Select
         {...props}
         value={value}
-        style={{ textAlign: 'left', maxWidth: 150, width: '20%', ...style }}
+        style={{ textAlign: 'left', ...style }}
       />
       {After && <After name={name} value={value} />}
     </div>
@@ -185,6 +185,8 @@ export const FormField: React.FC<{
               suffixIcon={readOnly ? null : undefined}
               style={{
                 backgroundColor: readOnly ? '#F4F4F4' : undefined,
+                maxWidth: 150,
+                width: '20%',
               }}
               after={SystemStatus}
             />
@@ -193,6 +195,7 @@ export const FormField: React.FC<{
               {...props}
               name={name}
               value={getValues(name)}
+              style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
               onChange={(value: string) => {
                 setValue('configuration.execSystemLogicalQueue', value);
               }}
@@ -203,7 +206,9 @@ export const FormField: React.FC<{
               {...props}
               name={name}
               value={getValues(name)}
-              style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
+              style={
+                   { textAlign: 'left', maxWidth: 150, width: '20%' }
+              }
             />
           )
         ) : (
@@ -219,7 +224,7 @@ export const FormField: React.FC<{
               {...props}
               type={type}
               value={getValues(name)}
-              style={{ marginRight: '8px', maxWidth: 150, width: '20%' }}
+              style={name.startsWith('outputs') ? { marginRight: '8px', width: '100%' } : { marginRight: '8px', maxWidth: 150, width: '20%' }}
             />
             <Button
               type="link"
