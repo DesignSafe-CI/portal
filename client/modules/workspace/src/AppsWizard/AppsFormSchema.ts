@@ -42,6 +42,7 @@ export type TFieldOptions = {
   value?: string;
   hidden?: boolean;
   disabled?: boolean;
+  isReservation?: string;
 };
 
 export type TFormValues = {
@@ -106,6 +107,7 @@ export const fieldDisplayOrder: Record<string, string[]> = {
     'allocation',
     'execSystemId',
     'execSystemLogicalQueue',
+    'TACC Reservation',
     'maxMinutes',
     'nodeCount',
     'coresPerNode',
@@ -173,6 +175,15 @@ export const getConfigurationSchema = (
       queue
     );
   }
+
+  if (
+    definition.jobAttributes.parameterSet?.schedulerOptions['TACC Reservation']
+  ) {
+    configurationSchema['TACC Reservation'] =
+      definition.jobAttributes.parameterSet?.schedulerOptions[
+        'TACC Reservation'
+      ];
+  }
   return configurationSchema;
 };
 
@@ -185,7 +196,8 @@ export const getConfigurationFields = (
   allocations: string[],
   execSystems: TTapisSystem[],
   selectedExecSystem: TTapisSystem,
-  queue: TTapisSystemQueue
+  queue: TTapisSystemQueue,
+  reservation?: string[]
 ) => {
   const configurationFields: TDynamicField = {};
 

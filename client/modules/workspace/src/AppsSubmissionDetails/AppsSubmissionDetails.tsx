@@ -89,6 +89,8 @@ export const AppsSubmissionDetails: React.FC<{
         entries.sort(
           (a, b) => displayOrder.indexOf(a[0]) - displayOrder.indexOf(b[0])
         );
+        // console.log('fieldDisplayOrder');
+        // console.log(displayOrder);
       }
       entries.forEach(([k, v], childIndex) => {
         if (
@@ -138,6 +140,8 @@ export const AppsSubmissionDetails: React.FC<{
           });
         } else {
           const fieldSchema = parent?.shape?.[k];
+          // console.log('fieldSchema');
+          // console.log(fieldSchema);
           const isRequired = isFieldRequired(fieldSchema, v);
           items.push({
             key: k,
