@@ -7,6 +7,7 @@ from pathlib import Path
 import tapipy
 from designsafe.apps.api.datafiles.utils import *
 from designsafe.apps.data.models.elasticsearch import IndexedFile
+from designsafe.apps.api.datafiles.models import PublicationSymlink
 from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
 from designsafe.apps.api.filemeta.models import FileMetaModel
 from designsafe.apps.api.filemeta.tasks import move_file_meta_async, copy_file_meta_async
@@ -43,32 +44,45 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
 
     if q:
         return search(client, system, path, offset=0, limit=100, query_string=q, **kwargs)
+    raw_listing = client.files.listFiles(
+        systemId=system,
+        path=(path or '/'),
+        offset=int(offset),
+        limit=int(limit),
+        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")}
+    )
 
-    raw_listing = client.files.listFiles(systemId=system,
-                                         path=(path or '/'),
-                                         offset=int(offset),
-                                         limit=int(limit),
-                                         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    listing = []
+    for f in raw_listing:
+        accessor = f"tapis://{system}/{f.path}"
+        type_str = 'dir' if f.type == 'dir' else 'file'
+        format_str = 'folder' if type_str == 'dir' else 'raw'
 
-    try:
-        # Convert file objects to dicts for serialization.
-        listing = list(map(lambda f: {
+        # Update type/format if it's a symlink and we have a DB match
+        if getattr(f, "type", None) == "symbolic_link":
+            try:
+                rec = PublicationSymlink.objects.get(accessor=accessor)
+                type_str = rec.link_type
+                format_str = 'folder' if type_str == 'dir' else 'raw'
+            except PublicationSymlink.DoesNotExist:
+                type_str = 'file'
+                format_str = 'raw'
+        else:
+            type_str = 'dir' if f.type == 'dir' else 'file'
+            format_str = 'folder' if type_str == 'dir' else 'raw'       
+
+        listing.append({
             'system': system,
-            'type': 'dir' if f.type == 'dir' else 'file',
-            'format': 'folder' if f.type == 'dir' else 'raw',
+            'type': type_str,
+            'format': format_str,
             'mimeType': f.mimeType,
             'path': f"/{f.path}",
             'name': f.name,
             'length': f.size,
             'lastModified': f.lastModified,
-            '_links': {
-                'self': {'href': f.url}
-            }}, raw_listing))
-    except IndexError:
-        # Return [] if the listing is empty.
-        listing = []
-    # Update Elasticsearch after each listing.
-    # agave_listing_indexer.delay(listing)
+            '_links': {'self': {'href': f.url}},
+        })
+
     agave_listing_indexer.delay(listing)
     return {'listing': listing, 'reachedEnd': len(listing) < int(limit)}
 
