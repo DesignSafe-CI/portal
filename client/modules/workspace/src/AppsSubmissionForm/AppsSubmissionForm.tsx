@@ -253,10 +253,27 @@ export const AppsSubmissionForm: React.FC = () => {
   // require literals instead of string or string[]
   const fieldValues = getValues();
   type FieldNameUnion = keyof typeof fieldValues;
+  // console.log('***');
+  // console.log(parameterSet.fields);
 
   const getSteps = (): TStep => {
     const formSteps: TStep = {};
 
+    if ('TACC Reservation' in parameterSet.fields.schedulerOptions) {
+      //add this field to the configuration fields.
+      configuration.fields['TACC Reservation'] =
+        parameterSet.fields.schedulerOptions['TACC Reservation'];
+      configuration.fields['TACC Reservation']['key'] =
+        'configuration.TACC Reservation';
+      configuration.fields['TACC Reservation']['name'] =
+        'configuration.TACC Reservation';
+      configuration.fields['TACC Reservation']['required'] = true;
+      delete parameterSet.fields.schedulerOptions['TACC Reservation'];
+      // console.log('configuration.fields:');
+      // console.log(configuration.fields);
+      // console.log('parameterSet.fields:');
+      // console.log(parameterSet.fields);
+    }
     if (configuration.fields && Object.keys(configuration.fields).length) {
       formSteps.configuration = getConfigurationStep(configuration.fields);
     }
@@ -299,9 +316,13 @@ export const AppsSubmissionForm: React.FC = () => {
     configuration: configuration.fields,
     outputs: outputs.fields,
   });
+  console.log('fields');
+  console.log(fields);
 
   const initialSteps = useMemo(() => {
     const steps = getSteps();
+    // console.log('initialSteps');
+    // console.log(steps);
     return Object.keys(steps).length > 0 ? steps : {};
   }, [
     fileInputs.fields,
@@ -323,6 +344,8 @@ export const AppsSubmissionForm: React.FC = () => {
   useEffect(() => {
     reset(initialValues);
     const newSteps = getSteps();
+    // console.log('newSteps');
+    // console.log(newSteps);
     setSteps(newSteps);
     setCurrent(getInitialCurrentStep(newSteps));
   }, [initialValues, reset]);
@@ -503,6 +526,7 @@ export const AppsSubmissionForm: React.FC = () => {
       'configuration.nodeCount',
       'configuration.maxMinutes',
       'configuration.coresPerNode',
+      'configuration.',
     ]);
   }, [schema, methods]);
 
@@ -520,10 +544,14 @@ export const AppsSubmissionForm: React.FC = () => {
   // in future if the fields shape is same between
   // Step and Submission Detail View (mostly related to env vars)
   useEffect(() => {
+    console.log('fields.configuration:');
+    console.log(fields.configuration);
     if (configuration.fields && Object.keys(configuration.fields).length) {
       const updatedConfigurationStep = getConfigurationStep(
         fields.configuration as { [key: string]: TField }
       );
+      console.log('updatedConfigurationStep');
+      console.log(updatedConfigurationStep);
 
       const updatedSteps: TStep = {
         ...steps,
@@ -532,7 +560,8 @@ export const AppsSubmissionForm: React.FC = () => {
           ...updatedConfigurationStep,
         },
       };
-
+      console.log('updatedSteps');
+      console.log(updatedSteps);
       setSteps(updatedSteps);
     }
   }, [fields]);

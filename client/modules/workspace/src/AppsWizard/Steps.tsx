@@ -23,6 +23,8 @@ export const getParametersStep = (fields: {
     <>
       {Object.values(fields).map((parameterValue) => {
         return Object.values(parameterValue).map((field) => {
+          // console.log('???');
+          // console.log(field);
           return <FormField {...field} />;
         });
       })}
@@ -37,8 +39,13 @@ export const getConfigurationStep = (fields: { [key: string]: TField }) => ({
       {fieldDisplayOrder['configuration'].map((key) => {
         const field = fields[key];
         if (!field) {
+          // console.warn(`Field not found for key: ${key}`);
           return null;
         }
+        // console.log('!!!');
+        // console.log(field);
+        // console.log('key:', key, 'field:', field);
+
         return <FormField {...field} />;
       })}
     </>
