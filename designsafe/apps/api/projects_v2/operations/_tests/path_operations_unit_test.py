@@ -54,7 +54,7 @@ def test_fileobj_path_mapping_sim():
 def test_path_mappings_added_to_graph_sim():
     pub_graph = nx.node_link_graph(PUBLISHED_SIM_FIXTURE)
     graph_with_basepaths = construct_entity_filepaths(pub_graph, dataset_root="/test")
-    updated_graph = update_path_mappings(graph_with_basepaths)
+    updated_graph, _ = update_path_mappings(graph_with_basepaths)
 
     # Assert that path mappings are applied to node metadata
     assert any(
@@ -108,7 +108,9 @@ def test_base_paths_other_version():
     graph_with_basepaths = construct_entity_filepaths(
         pub_graph, dataset_root="/test", strip_legacy_versions=True
     )
-    updated_graph = update_path_mappings(graph_with_basepaths)
+    updated_graph, _ = update_path_mappings(
+        graph_with_basepaths, legacy_other_pubs=True
+    )
     prj_title_slug = "Project--should-severe-weather-graphics-wear-a-uniform-implications-of-inconsistent-visual-displays-on-end-user-uncertainty-risk-perception-and-behavioral-intentions"
     assert (
         updated_graph.nodes["NODE_d1a7e2e6-692f-4c24-b836-ce0c7abfe8b2"]["basePath"]

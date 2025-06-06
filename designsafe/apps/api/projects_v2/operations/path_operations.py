@@ -102,7 +102,7 @@ def construct_published_path_mappings(
     return path_mappings
 
 
-def update_path_mappings(pub_graph: nx.DiGraph):
+def update_path_mappings(pub_graph: nx.DiGraph, legacy_other_pubs=False):
     """update fileObjs and fileTags to point to published paths."""
     _pub_graph = copy.deepcopy(pub_graph)
     pub_mapping = construct_published_path_mappings(_pub_graph)
@@ -150,27 +150,29 @@ def update_path_mappings(pub_graph: nx.DiGraph):
         node_data["value"]["fileTags"] = updated_tags
 
     # update file tags for Other/old FR pubs that don't have fileObjs
-    for node in _pub_graph:
-        node_data = _pub_graph.nodes[node]
-        if node_data.get("value", {}).get("projectType", None) in [
-            "other",
-            "field_reconnaissance",
-        ]:
-            tags = node_data["value"].get("fileTags", [])
-            updated_tags = []
-            version = node_data.get("version", 1)
-            base_data_path = f"{node_data['basePath']}/data"
-            tag_path_prefix = f'/{node_data["value"]["projectId"]}'
-            if version:
-                tag_path_prefix = f'/{node_data["value"]["projectId"]}v{version}'
-            for tag in tags:
-                updated_tags.append(
-                    {
-                        **tag,
-                        "path": tag["path"].replace(tag_path_prefix, base_data_path),
-                    }
-                )
-            print(updated_tags)
-            node_data["value"]["fileTags"] = updated_tags
+    if legacy_other_pubs:
+        for node in _pub_graph:
+            node_data = _pub_graph.nodes[node]
+            if node_data.get("value", {}).get("projectType", None) in [
+                "other",
+                "field_reconnaissance",
+            ]:
+                tags = node_data["value"].get("fileTags", [])
+                updated_tags = []
+                version = node_data.get("version", 1)
+                base_data_path = f"{node_data['basePath']}/data"
+                tag_path_prefix = f'/{node_data["value"]["projectId"]}'
+                if version:
+                    tag_path_prefix = f'/{node_data["value"]["projectId"]}v{version}'
+                for tag in tags:
+                    updated_tags.append(
+                        {
+                            **tag,
+                            "path": tag["path"].replace(
+                                tag_path_prefix, base_data_path
+                            ),
+                        }
+                    )
+                node_data["value"]["fileTags"] = updated_tags
 
-    return _pub_graph
+    return _pub_graph, pub_mapping

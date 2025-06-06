@@ -9,5 +9,12 @@ def symlink_mapping_integration_test():
     and some basic invariants are satisfied."""
 
     for pub in Publication.objects.all():
+        max_len = 0
         print(pub.project_id)
-        construct_symlink_mapping(pub.project_id)
+        mapping = construct_symlink_mapping(pub.project_id)
+        for value in mapping.values():
+            for path in value:
+                if len(path) > max_len:
+                    max_len = len(path)
+
+    print(max_len)
