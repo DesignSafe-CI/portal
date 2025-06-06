@@ -1,11 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Alert, Button, Modal, Spin } from 'antd';
 import DatafilesModal from '../../DatafilesModal/DatafilesModal';
-import {
-  useFileDetail,
-  usePublicationDetail,
-  usePublicationVersions,
-} from '@client/hooks';
+import { useFileDetail, usePublicationDetail } from '@client/hooks';
 import { toBytes } from '@client/common-components';
 
 const gnuGeneralLicenseInfo = (
@@ -222,18 +218,19 @@ export const DownloadDatasetModal: React.FC<{
     setIsModalOpen(false);
   };
 
-  const { selectedVersion } = usePublicationVersions(projectId);
+  //const { selectedVersion } = usePublicationVersions(projectId);
   const { data: publicationData } = usePublicationDetail(projectId);
   const doiString = publicationData?.tree.children
     .map((c) => c.value.dois?.[0])
     .filter((doi) => !!doi)
     .join(',');
 
-  const archivePath =
-    selectedVersion > 1
-      ? `/archives/${projectId}v${selectedVersion}_archive.zip`
-      : `/archives/${projectId}_archive.zip`;
+  //const archivePath =
+  //  selectedVersion > 1
+  //    ? `/archives/${projectId}v${selectedVersion}_archive.zip`
+  //    : `/archives/${projectId}_archive.zip`;
 
+  const archivePath = `/published-data/${projectId}`;
   const { data, isError, isLoading } = useFileDetail(
     'tapis',
     'designsafe.storage.published',
@@ -241,6 +238,7 @@ export const DownloadDatasetModal: React.FC<{
     archivePath,
     isModalOpen
   );
+  console.log(data);
   const FILE_SIZE_LIMIT = 2147483648;
   const exceedsLimit = useMemo(
     () => (data?.length ?? 0) > FILE_SIZE_LIMIT,
@@ -320,7 +318,20 @@ export const DownloadDatasetModal: React.FC<{
                 api="tapis"
                 system="designsafe.storage.published"
                 scheme="public"
-                selectedFiles={[{ ...data, doi: doiString }]}
+                selectedFiles={[
+                  {
+                    system: 'designsafe.storage.published',
+                    format: 'folder',
+                    type: 'dir',
+                    mimeType: '',
+                    lastModified: '',
+                    length: 0,
+                    permissions: '',
+                    name: projectId,
+                    path: `/published-data/${projectId}`,
+                    doi: doiString,
+                  },
+                ]}
               >
                 {({ onClick }) => (
                   <Button
