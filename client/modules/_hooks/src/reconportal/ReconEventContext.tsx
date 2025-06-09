@@ -9,8 +9,9 @@ type ReconEventContextType = {
   setFilteredReconPortalEvents: (events: ReconPortalEvents[]) => void;
 };
 
-const ReconEventContext = createContext<ReconEventContextType | undefined>(undefined)
-
+const ReconEventContext = createContext<ReconEventContextType | undefined>(
+  undefined
+);
 
 /**
  * Converts a ReconPortalEvent into a normalized, URL-safe identifier string.
@@ -26,11 +27,15 @@ export const ReconEventProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [filteredReconPortalEvents, setFilteredReconPortalEvents] = useState<ReconPortalEvents[]>([]);
+  const [filteredReconPortalEvents, setFilteredReconPortalEvents] = useState<
+    ReconPortalEvents[]
+  >([]);
 
   const selectedReconPortalEventIdentfier = searchParams.get('eventId');
 
-  const setSelectedReconPortalEventIdentifier = (eventIdentifier: string | null) => {
+  const setSelectedReconPortalEventIdentifier = (
+    eventIdentifier: string | null
+  ) => {
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
       if (eventIdentifier) {
@@ -56,11 +61,10 @@ export const ReconEventProvider: React.FC<{
   );
 };
 
-
 /**
  * Hook to access and update the selected Recon Portal event identifier
  * and the filtered event list (which is managed in context).
- * 
+ *
  * Must be used within a `ReconEventProvider`.
  *
  * @throws If used outside the provider

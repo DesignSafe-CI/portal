@@ -50,7 +50,6 @@ const markerIconUrls = {
     'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
 };
 
-
 export const ReconSidePanel: React.FC<LayoutProps> = ({
   children,
   ...props
@@ -63,7 +62,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     selectedReconPortalEventIdentfier,
     setSelectedReconPortalEventIdentifier,
     filteredReconPortalEvents,
-    setFilteredReconPortalEvents
+    setFilteredReconPortalEvents,
   } = useReconEventContext();
 
   const [selectedEventType, setSelectedEventType] = useState<string | null>(
