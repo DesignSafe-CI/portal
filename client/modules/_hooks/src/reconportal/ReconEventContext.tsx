@@ -2,15 +2,19 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { type ReconPortalEvents } from '@client/hooks';
 
-type SelectedReconPortalEventContextType = {
+type ReconEventContextType = {
   selectedReconPortalEventIdentfier: string | null;
   setSelectedReconPortalEventIdentifier: (title: string | null) => void;
+  filteredReconPortalEvents: ReconPortalEvents[];
+  setFilteredReconPortalEvents: (events: ReconPortalEvents[]) => void;
 };
 
-const SelectedReconPortalEventContext = createContext<
-  SelectedReconPortalEventContextType | undefined
->(undefined);
+const ReconEventContext = createContext<ReconEventContextType | undefined>(undefined)
 
+
+/**
+ * Converts a ReconPortalEvent into a normalized, URL-safe identifier string.
+ */
 export const getReconPortalEventIdentifier = (
   event: ReconPortalEvents
 ): string => {
@@ -18,10 +22,11 @@ export const getReconPortalEventIdentifier = (
   return `${title}`.toLowerCase().replace(/[^a-z0-9]/g, '-');
 };
 
-export const SelectedReconPortalEventProvider: React.FC<{
+export const ReconEventProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [filteredReconPortalEvents, setFilteredReconPortalEvents] = useState<ReconPortalEvents[]>([]);
 
   const selectedReconPortalEventIdentfier = searchParams.get('eventId');
 
@@ -38,22 +43,33 @@ export const SelectedReconPortalEventProvider: React.FC<{
   };
 
   return (
-    <SelectedReconPortalEventContext.Provider
+    <ReconEventContext.Provider
       value={{
         selectedReconPortalEventIdentfier,
         setSelectedReconPortalEventIdentifier,
+        filteredReconPortalEvents,
+        setFilteredReconPortalEvents,
       }}
     >
       {children}
-    </SelectedReconPortalEventContext.Provider>
+    </ReconEventContext.Provider>
   );
 };
 
-export const useSelectedReconPortalEvent = (): SelectedReconPortalEventContextType => {
-  const context = useContext(SelectedReconPortalEventContext);
+
+/**
+ * Hook to access and update the selected Recon Portal event identifier
+ * and the filtered event list (which is managed in context).
+ * 
+ * Must be used within a `ReconEventProvider`.
+ *
+ * @throws If used outside the provider
+ */
+export const useReconEventContext = (): ReconEventContextType => {
+  const context = useContext(ReconEventContext);
   if (!context) {
     throw new Error(
-      'useSelectedReconPortalEvent must be used within a SelectedReconPortalEventProvider'
+      'useReconEventContext must be used within a ReconEventProvider'
     );
   }
   return context;

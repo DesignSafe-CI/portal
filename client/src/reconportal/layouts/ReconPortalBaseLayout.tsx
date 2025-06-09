@@ -1,13 +1,13 @@
 import React from 'react';
 import { Layout, Flex } from 'antd';
 import { ReconPortal, ReconSidePanel } from '@client/reconportal';
-import { SelectedReconPortalEventProvider } from '@client/hooks';
+import { ReconEventProvider } from '@client/hooks';
 
 const { Sider, Content } = Layout;
 
 const ReconPortalRoot: React.FC = () => {
   return (
-    <SelectedReconPortalEventProvider>
+    <ReconEventProvider>
       <Flex
         vertical
         style={{
@@ -31,7 +31,7 @@ const ReconPortalRoot: React.FC = () => {
           </Content>
         </Layout>
       </Flex>
-    </SelectedReconPortalEventProvider>
+    </ReconEventProvider>
   );
 };
 

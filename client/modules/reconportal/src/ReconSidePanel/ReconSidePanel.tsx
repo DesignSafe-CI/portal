@@ -19,7 +19,7 @@ import {
   useGetReconPortalEvents,
   type ReconPortalEvents,
   type EventTypeResponse,
-  useSelectedReconPortalEvent,
+  useReconEventContext,
   getReconPortalEventIdentifier,
 } from '@client/hooks';
 import { formatDate } from '@client/workspace';
@@ -62,21 +62,22 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   const {
     selectedReconPortalEventIdentfier,
     setSelectedReconPortalEventIdentifier,
-  } = useSelectedReconPortalEvent();
+    filteredReconPortalEvents,
+    setFilteredReconPortalEvents
+  } = useReconEventContext();
 
   const [selectedEventType, setSelectedEventType] = useState<string | null>(
     null
   );
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [searchText, setSearchText] = useState<string>('');
-  const [filteredEvents, setFilteredEvents] = useState<ReconPortalEvents[]>([]);
 
   const { data: eventTypes = [] } = useGetReconPortalEventTypes();
   const { data: events = [] } = useGetReconPortalEvents();
 
   useEffect(() => {
     if (events.length > 0) {
-      setFilteredEvents(events);
+      setFilteredReconPortalEvents(events);
     }
   }, [events]);
 
@@ -124,7 +125,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
       });
     }
 
-    setFilteredEvents(filtered);
+    setFilteredReconPortalEvents(filtered);
   };
 
   const handleEventClick = (event: ReconPortalEvents) => {
@@ -346,7 +347,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               </div>
 
               <List
-                dataSource={filteredEvents}
+                dataSource={filteredReconPortalEvents}
                 renderItem={renderEventCard}
                 locale={{ emptyText: 'No events match your selected filters' }}
                 className={styles.eventList}
