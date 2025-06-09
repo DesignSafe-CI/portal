@@ -8,7 +8,7 @@ import {
   getDefaultExecSystem,
   getExecSystemsFromApp,
   getSystemDisplayName,
-} from '@client/workspace';
+} from '../../utils/apps';
 import styles from './SystemStatusModal.module.css';
 
 interface SystemStatusModalProps {
