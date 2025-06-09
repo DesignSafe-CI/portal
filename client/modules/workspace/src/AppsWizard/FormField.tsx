@@ -206,9 +206,7 @@ export const FormField: React.FC<{
               {...props}
               name={name}
               value={getValues(name)}
-              style={
-                   { textAlign: 'left', maxWidth: 150, width: '20%' }
-              }
+              style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
             />
           )
         ) : (
@@ -224,7 +222,11 @@ export const FormField: React.FC<{
               {...props}
               type={type}
               value={getValues(name)}
-              style={name.startsWith('outputs') ? { marginRight: '8px', width: '100%' } : { marginRight: '8px', maxWidth: 150, width: '20%' }}
+              style={
+                name.startsWith('outputs')
+                  ? { marginRight: '8px', width: '100%' }
+                  : { marginRight: '8px', maxWidth: 150, width: '20%' }
+              }
             />
             <Button
               type="link"
