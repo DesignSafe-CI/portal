@@ -536,9 +536,8 @@ const FormSchema = (
   }) as TTapisSystemQueue;
 
   if (definition.jobType === 'BATCH') {
-    if (definition.notes.dynamicExecSystems) {
-      appFields.configuration.defaults['execSystemId'] = defaultExecSystem.id;
-    }
+    appFields.configuration.defaults['execSystemId'] = defaultExecSystem.id;
+    
     appFields.configuration.defaults['execSystemLogicalQueue'] = isAppTypeBATCH(
       definition
     )
@@ -552,9 +551,6 @@ const FormSchema = (
         ? allocations[0]
         : ''
       : '';
-
-    appFields.configuration.defaults['execSystemId'] =
-      definition.jobAttributes.execSystemId;
   }
 
   if (!definition.notes.hideMaxMinutes) {
