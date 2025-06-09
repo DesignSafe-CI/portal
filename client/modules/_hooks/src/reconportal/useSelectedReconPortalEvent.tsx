@@ -28,7 +28,7 @@ export const SelectedReconPortalEventProvider: React.FC<{
   ] = useState<string | null>(null);
 
   useEffect(() => {
-    const event = searchParams.get('event');
+    const event = searchParams.get('eventId');
     setSelectedReconPortalEventIdentifier(event);
   }, [searchParams]);
 
