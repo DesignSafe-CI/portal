@@ -50,6 +50,7 @@ const markerIconUrls = {
     'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
 };
 
+
 export const ReconSidePanel: React.FC<LayoutProps> = ({
   children,
   ...props
