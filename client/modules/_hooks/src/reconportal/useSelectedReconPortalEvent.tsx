@@ -22,34 +22,19 @@ export const SelectedReconPortalEventProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [
-    selectedReconPortalEventIdentfier,
-    setSelectedReconPortalEventIdentifierState,
-  ] = useState<string | null>(null);
 
-  useEffect(() => {
-    const event = searchParams.get('eventId');
-    setSelectedReconPortalEventIdentifier(event);
-  }, [searchParams]);
+  const selectedReconPortalEventIdentfier = searchParams.get('eventId');
 
-  const setSelectedReconPortalEventIdentifier = (
-    eventIdentifier: string | null
-  ) => {
-    if (eventIdentifier) {
-      setSearchParams((prev) => {
-        const newParams = new URLSearchParams(prev);
+  const setSelectedReconPortalEventIdentifier = (eventIdentifier: string | null) => {
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      if (eventIdentifier) {
         newParams.set('eventId', eventIdentifier);
-        return newParams;
-      });
-      setSelectedReconPortalEventIdentifierState(eventIdentifier);
-    } else {
-      setSearchParams((prev) => {
-        const newParams = new URLSearchParams(prev);
+      } else {
         newParams.delete('eventId');
-        return newParams;
-      });
-      setSelectedReconPortalEventIdentifierState(null);
-    }
+      }
+      return newParams;
+    });
   };
 
   return (
@@ -64,11 +49,12 @@ export const SelectedReconPortalEventProvider: React.FC<{
   );
 };
 
-export const useSelectedReconPortalEvent = () => {
+export const useSelectedReconPortalEvent = (): SelectedReconPortalEventContextType => {
   const context = useContext(SelectedReconPortalEventContext);
-  if (!context)
+  if (!context) {
     throw new Error(
-      'useReconPortalSelectedEvent must be used within SelectedReconPortalEventProvider'
+      'useSelectedReconPortalEvent must be used within a SelectedReconPortalEventProvider'
     );
+  }
   return context;
 };
