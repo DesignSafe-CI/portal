@@ -7,6 +7,11 @@ import {
   GeoJSON,
   Marker,
 } from 'react-leaflet';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faMap } from '@fortawesome/free-solid-svg-icons';
+
+import { renderToStaticMarkup } from 'react-dom/server';
 
 import { useGetOpenTopo } from '@client/hooks';
 
@@ -15,6 +20,31 @@ import 'leaflet/dist/leaflet.css';
 */
 
 import styles from './LeafletMap.module.css';
+import { LatLng } from 'leaflet';
+
+/**
+ * Create a Leaflet divIcon using any Font Awesome icon with dynamic color and size.
+ */
+
+export function createSvgMarkerIcon({
+  color = 'black',
+  size = '2x',
+  icon,
+}: {
+  color?: string;
+  size?: 'xs' | 'sm' | 'lg' | '1x' | '2x' | '3x';
+  icon: IconDefinition;
+}): L.DivIcon {
+  const html = renderToStaticMarkup(
+    <FontAwesomeIcon icon={icon} color={color} size={size} />
+  );
+
+  return L.divIcon({
+    className: '',
+    html,
+    iconAnchor: [12, 24],
+  });
+}
 
 export const mapConfig = {
   startingCenter: [40, -80] as L.LatLngTuple,
@@ -26,6 +56,27 @@ export const mapConfig = {
   ] as L.LatLngBoundsExpression,
 } as const;
 
+// TODO docstr and move to better spot and add types
+// and add return type to make clear the order
+function getFirstCoordinate(geojson) {
+  const coords = geojson.geometry?.coordinates || geojson.coordinates;
+
+  function findFirstCoord(arr) {
+    if (typeof arr[0] === 'number' && typeof arr[1] === 'number') {
+      return arr;
+    }
+    return findFirstCoord(arr[0]);
+  }
+
+  return findFirstCoord(coords);
+}
+
+function getOpenTopoColor(dataset: OpenTopoDataset): string {
+  // TODO: derive color from hazard type (once UI design finalized)
+  //
+  return 'black';
+}
+
 /**
  * Leaflet Map
  */
@@ -33,7 +84,6 @@ export const LeafletMap: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
 
   const openTopoMapFeatures = useMemo(() => {
-    debugger;
     const datasets = openTopoData?.Datasets ?? [];
 
     // Features for open topo (possibly just polygon and multipolygons)
@@ -42,6 +92,7 @@ export const LeafletMap: React.FC = () => {
     // Markers for open topo things that aren't points
     const openTopoMarkers: React.ReactNode[] = [];
 
+    // Fill openTopoGeojsonFeatures with everything
     datasets.forEach(({ Dataset: dataset }) => {
       const { geojson } = dataset.spatialCoverage.geo;
 
@@ -50,15 +101,37 @@ export const LeafletMap: React.FC = () => {
         <GeoJSON
           key={`geojson-${dataset.identifier.value}`}
           data={geojson}
-          /* todo: style */
+          style={() => ({
+            color: getOpenTopoColor(dataset),
+            weight: 2,
+            fillOpacity: 0.3,
+          })}
           /* todo: popups/events */
         />
       );
 
+      // TODO for only show when zoomed in and something selected
+    });
 
-      // Optional marker for non-Point geometries (e.g., Polygon or LineString)
-      // TODO
+    // Fill openTopoMarkers with a point for each dataset
+    datasets.forEach(({ Dataset: dataset }) => {
+      const { geojson } = dataset.spatialCoverage.geo;
 
+      const lngLatArray = getFirstCoordinate(geojson.features[0]);
+      const latlng = L.latLng(lngLatArray[1], lngLatArray[0]);
+
+      const icon = createSvgMarkerIcon({
+        color: getOpenTopoColor(dataset),
+        icon: faMap,
+      });
+
+      openTopoMarkers.push(
+        <Marker
+          key={`marker-${dataset.identifier.value}`}
+          position={latlng}
+          icon={icon} //{createSvgMarkerIcon({icon: faMapMarkerAlt, color: getOpenTopoColor(dataset)})}
+        ></Marker>
+      );
 
       // TODO for only show when zoomed in and something selected
     });
