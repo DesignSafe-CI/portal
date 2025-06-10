@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Modal, Spin, Alert } from 'antd';
-import { useQuery } from '@tanstack/react-query';
 import { SystemQueueTable } from './SystemQueueTable';
-import { useSystemOverview, useGetApps } from '@client/hooks';
+import { useSystemOverview, useGetApps, useGetSystems } from '@client/hooks';
 import {
   useGetAppParams,
   getDefaultExecSystem,
@@ -16,31 +15,25 @@ interface SystemStatusModalProps {
   onClose: () => void;
 }
 
-export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
+const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
   isModalVisible,
   onClose,
 }) => {
   //suspense keeps giving errors, so using useGetApps instead
   const { appId, appVersion } = useGetAppParams();
   const { data: app } = useGetApps({ appId: appId || '', appVersion });
-  console.log(app?.definition.jobAttributes.execSystemId);
-  const { data: systemsData } = useQuery({
-    queryKey: ['workspace', 'getSystems'],
-    queryFn: async () => {
-      const response = await fetch('/api/workspace/systems');
-      const data = await response.json();
-      return data.response;
-    },
-    staleTime: 1000 * 60 * 5,
-  });
+  
+  const {
+    data: { executionSystems },
+  } = useGetSystems();
 
   const [activeSystem, setActiveSystem] = useState('Frontera');
 
   useEffect(() => {
-    if (app && appId && systemsData?.executionSystems) {
+    if (app && appId && executionSystems) {
       const appExecSystems = getExecSystemsFromApp(
         app.definition,
-        systemsData.executionSystems
+        executionSystems
       );
       const defaultExecSystem = getDefaultExecSystem(
         app.definition,
@@ -51,7 +44,7 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
         setActiveSystem(getSystemDisplayName(defaultExecSystem.id));
       }
     }
-  }, [app, appId, systemsData]);
+  }, [app, appId, executionSystems]);
 
   const { data: systems, isLoading, error } = useSystemOverview();
   const selectedSystem = systems?.find(
@@ -124,5 +117,13 @@ export const SystemStatusModal: React.FC<SystemStatusModalProps> = ({
         </div>
       </div>
     </Modal>
+  );
+};
+
+export const SystemStatusModal: React.FC<SystemStatusModalProps> = (props) => {
+  return (
+    <Suspense fallback={<Spin />}>
+      <SystemStatusContent {...props} />
+    </Suspense>
   );
 };

@@ -185,8 +185,7 @@ export const FormField: React.FC<{
               suffixIcon={readOnly ? null : undefined}
               style={{
                 backgroundColor: readOnly ? '#F4F4F4' : undefined,
-                maxWidth: 150,
-                width: '20%',
+                width: '200px',
               }}
               after={SystemStatus}
             />
@@ -195,7 +194,7 @@ export const FormField: React.FC<{
               {...props}
               name={name}
               value={getValues(name)}
-              style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
+              style={{ textAlign: 'left', width: '200px' }}
               onChange={(value: string) => {
                 setValue('configuration.execSystemLogicalQueue', value);
               }}
@@ -206,7 +205,7 @@ export const FormField: React.FC<{
               {...props}
               name={name}
               value={getValues(name)}
-              style={{ textAlign: 'left', maxWidth: 150, width: '20%' }}
+              style={{ textAlign: 'left', width: '100%' }}
             />
           )
         ) : (
@@ -222,11 +221,7 @@ export const FormField: React.FC<{
               {...props}
               type={type}
               value={getValues(name)}
-              style={
-                name.startsWith('outputs')
-                  ? { marginRight: '8px', width: '100%' }
-                  : { marginRight: '8px', maxWidth: 150, width: '20%' }
-              }
+              style={{ marginRight: '8px', width: '100%' }}
             />
             <Button
               type="link"
