@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import ReactDOM from 'react-dom/client';
 import {
   MapContainer,
   ZoomControl,
@@ -6,8 +7,10 @@ import {
   LayersControl,
   GeoJSON,
   Marker,
+  Popup,
 } from 'react-leaflet';
 import { faMap } from '@fortawesome/free-solid-svg-icons';
+import { OpenTopoPopup } from './OpenTopoPopup';
 import { createSvgMarkerIcon, getOpenTopoColor } from './leafletUtil';
 import { getFirstLatLng } from './utils';
 import { useGetOpenTopo } from '@client/hooks';
@@ -44,20 +47,30 @@ export const LeafletMap: React.FC = () => {
     const openTopoMarkers: React.ReactNode[] = [];
 
     // Fill openTopoGeojsonFeatures with everything
-    datasets.forEach(({ Dataset: dataset }) => {
+    datasets.map(({ Dataset: dataset }, index) => {
       const { geojson } = dataset.spatialCoverage.geo;
 
       // Main GeoJSON rendering
       openTopoGeojsonFeatures.push(
         <GeoJSON
-          key={`geojson-${dataset.identifier.value}`}
+          /* Duplicate datasets exist so need an extra index to make unqiue.  Background: OpenTopo seems to have \
+          a duplicate entry for some with multiple types of data e.g. "Point Clouds, Raster" */
+          key={`geojson-${dataset.identifier.value}-${index}`}
           data={geojson}
           style={() => ({
             color: getOpenTopoColor(dataset),
             weight: 2,
             fillOpacity: 0.3,
           })}
-          /* todo: popups/events */
+          onEachFeature={(feature, layer) => {
+            setTimeout(() => {
+              const container = document.createElement('div');
+              ReactDOM.createRoot(container).render(
+                <OpenTopoPopup dataset={dataset} />
+              );
+              layer.bindPopup(container);
+            }, 0);
+          }}
         />
       );
 
@@ -65,7 +78,7 @@ export const LeafletMap: React.FC = () => {
     });
 
     // Fill openTopoMarkers with a point for each dataset
-    datasets.forEach(({ Dataset: dataset }) => {
+    datasets.map(({ Dataset: dataset }, index) => {
       const { geojson } = dataset.spatialCoverage.geo;
 
       const latlngPosition = getFirstLatLng(geojson);
@@ -77,10 +90,16 @@ export const LeafletMap: React.FC = () => {
 
       openTopoMarkers.push(
         <Marker
-          key={`marker-${dataset.identifier.value}`}
+          /* Duplicate datasets exist so need an extra index to make unqiue.  Background: OpenTopo seems to have \
+          a duplicate entry for some with multiple types of data e.g. "Point Clouds, Raster" */
+          key={`marker-${dataset.identifier.value}-${index}`}
           position={latlngPosition}
-          icon={icon} //{createSvgMarkerIcon({icon: faMapMarkerAlt, color: getOpenTopoColor(dataset)})}
-        ></Marker>
+          icon={icon}
+        >
+          <Popup>
+            <OpenTopoPopup dataset={dataset} />
+          </Popup>
+        </Marker>
       );
 
       // TODO for only show when zoomed in and something selected

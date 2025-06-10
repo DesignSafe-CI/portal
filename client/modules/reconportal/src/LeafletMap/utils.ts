@@ -5,13 +5,6 @@ import L, { LatLng } from 'leaflet';
 /**
  * Extract the first coordinate from a GeoJSON FeatureCollection
  * and convert it to a Leaflet LatLng ([lat, lng]).
- *
- * This handles nested coordinates, assumes the geometry is not a GeometryCollection,
- * and always returns a Leaflet-friendly format.
- *
- * @param geojson - A GeoJSON FeatureCollection
- * @returns Leaflet LatLng (lat, lng)
- * @throws If no usable geometry is found
  */
 export function getFirstLatLng(geojson: FeatureCollection): LatLng {
   const firstFeature = geojson.features[0];

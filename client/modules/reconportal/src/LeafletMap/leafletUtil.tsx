@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { OpenTopoDataset } from '@client/hooks';
+import L from 'leaflet';
 
 /**
  * Create a Leaflet divIcon using any Font Awesome icon with dynamic color and size.
