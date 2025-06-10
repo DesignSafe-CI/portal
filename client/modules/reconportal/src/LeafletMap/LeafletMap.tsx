@@ -7,12 +7,9 @@ import {
   GeoJSON,
   Marker,
 } from 'react-leaflet';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faMap } from '@fortawesome/free-solid-svg-icons';
-
-import { renderToStaticMarkup } from 'react-dom/server';
-
+import { createSvgMarkerIcon, getOpenTopoColor} from './leafletUtil';
+import { getFirstCoordinate } from './utils';
 import { useGetOpenTopo } from '@client/hooks';
 
 /* no need to import leaflet css as already in base index
@@ -22,29 +19,6 @@ import 'leaflet/dist/leaflet.css';
 import styles from './LeafletMap.module.css';
 import { LatLng } from 'leaflet';
 
-/**
- * Create a Leaflet divIcon using any Font Awesome icon with dynamic color and size.
- */
-
-export function createSvgMarkerIcon({
-  color = 'black',
-  size = '2x',
-  icon,
-}: {
-  color?: string;
-  size?: 'xs' | 'sm' | 'lg' | '1x' | '2x' | '3x';
-  icon: IconDefinition;
-}): L.DivIcon {
-  const html = renderToStaticMarkup(
-    <FontAwesomeIcon icon={icon} color={color} size={size} />
-  );
-
-  return L.divIcon({
-    className: '',
-    html,
-    iconAnchor: [12, 24],
-  });
-}
 
 export const mapConfig = {
   startingCenter: [40, -80] as L.LatLngTuple,
@@ -55,27 +29,6 @@ export const mapConfig = {
     [90, 180], // Northeast coordinates
   ] as L.LatLngBoundsExpression,
 } as const;
-
-// TODO docstr and move to better spot and add types
-// and add return type to make clear the order
-function getFirstCoordinate(geojson) {
-  const coords = geojson.geometry?.coordinates || geojson.coordinates;
-
-  function findFirstCoord(arr) {
-    if (typeof arr[0] === 'number' && typeof arr[1] === 'number') {
-      return arr;
-    }
-    return findFirstCoord(arr[0]);
-  }
-
-  return findFirstCoord(coords);
-}
-
-function getOpenTopoColor(dataset: OpenTopoDataset): string {
-  // TODO: derive color from hazard type (once UI design finalized)
-  //
-  return 'black';
-}
 
 /**
  * Leaflet Map
@@ -117,7 +70,7 @@ export const LeafletMap: React.FC = () => {
     datasets.forEach(({ Dataset: dataset }) => {
       const { geojson } = dataset.spatialCoverage.geo;
 
-      const lngLatArray = getFirstCoordinate(geojson.features[0]);
+      const lngLatArray = getFirstCoordinate(geojson);
       const latlng = L.latLng(lngLatArray[1], lngLatArray[0]);
 
       const icon = createSvgMarkerIcon({
