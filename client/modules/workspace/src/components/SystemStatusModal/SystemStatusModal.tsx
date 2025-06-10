@@ -14,7 +14,7 @@ interface SystemStatusModalProps {
   isModalVisible: boolean;
   onClose: () => void;
 }
-r;
+
 const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
   isModalVisible,
   onClose,
