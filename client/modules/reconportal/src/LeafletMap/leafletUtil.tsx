@@ -30,7 +30,7 @@ export function createSvgMarkerIcon({
  * Get color for OpenTopo dataset
  */
 export function getOpenTopoColor(dataset: OpenTopoDataset): string {
-  // TODO: derive color from hazard type 
+  // TODO: derive color from hazard type
   //  Confirm we can do this for some and if not what is our fall
   // back color
   return 'black';

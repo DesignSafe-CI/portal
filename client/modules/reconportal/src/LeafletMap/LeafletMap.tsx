@@ -8,8 +8,8 @@ import {
   Marker,
 } from 'react-leaflet';
 import { faMap } from '@fortawesome/free-solid-svg-icons';
-import { createSvgMarkerIcon, getOpenTopoColor} from './leafletUtil';
-import { getFirstCoordinate } from './utils';
+import { createSvgMarkerIcon, getOpenTopoColor } from './leafletUtil';
+import { getFirstLatLng } from './utils';
 import { useGetOpenTopo } from '@client/hooks';
 
 /* no need to import leaflet css as already in base index
@@ -17,8 +17,6 @@ import 'leaflet/dist/leaflet.css';
 */
 
 import styles from './LeafletMap.module.css';
-import { LatLng } from 'leaflet';
-
 
 export const mapConfig = {
   startingCenter: [40, -80] as L.LatLngTuple,
@@ -70,8 +68,7 @@ export const LeafletMap: React.FC = () => {
     datasets.forEach(({ Dataset: dataset }) => {
       const { geojson } = dataset.spatialCoverage.geo;
 
-      const lngLatArray = getFirstCoordinate(geojson);
-      const latlng = L.latLng(lngLatArray[1], lngLatArray[0]);
+      const latlngPosition = getFirstLatLng(geojson);
 
       const icon = createSvgMarkerIcon({
         color: getOpenTopoColor(dataset),
@@ -81,7 +78,7 @@ export const LeafletMap: React.FC = () => {
       openTopoMarkers.push(
         <Marker
           key={`marker-${dataset.identifier.value}`}
-          position={latlng}
+          position={latlngPosition}
           icon={icon} //{createSvgMarkerIcon({icon: faMapMarkerAlt, color: getOpenTopoColor(dataset)})}
         ></Marker>
       );
