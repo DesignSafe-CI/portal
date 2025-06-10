@@ -128,6 +128,14 @@ def manage_applications(request):
     return render(request, 'designsafe/apps/accounts/manage_applications.html', context)
 
 
+@login_required
+def data_trail(request):
+    context = {
+        'title': 'Data Trail',
+    }
+    return render(request, 'designsafe/apps/accounts/data_trail.html', context)
+
+
 def nees_migration(request, step=None):
 
     if step == 0 or step is None:

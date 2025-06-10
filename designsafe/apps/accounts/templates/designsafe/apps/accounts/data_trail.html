@@ -1,0 +1,38 @@
+{% extends "designsafe/apps/accounts/base.html" %}z {% block title %}Audit Data Trail{% endblock %} {% block panel_content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h2>Audit Data Trail</h2>
+
+        <div class="row" style="margin-top: 20px; margin-bottom: 20px;">
+            <div class="col-md-12">
+                <div class="radio-inline">
+                    <label>
+                        <input type="radio" name="trail_type">
+                        File History
+                    </label>
+                </div>
+                <div class="radio-inline" style="margin-left: 20px;">
+                    <label>
+                        <input type="radio" name="trail_type">
+                        User Activity
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px">
+            <div class="col-md-8">
+                <input type="text" class="form-control" placeholder="Search by file/username">
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+        <div class="panel panel-default" style="min-height: 300px;">
+            <div class="panel-body">
+                <!-- RESULTS HERE  -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
