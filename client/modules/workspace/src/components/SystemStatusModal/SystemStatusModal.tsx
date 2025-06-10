@@ -14,7 +14,7 @@ interface SystemStatusModalProps {
   isModalVisible: boolean;
   onClose: () => void;
 }
-
+r;
 const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
   isModalVisible,
   onClose,
@@ -22,7 +22,7 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
   //suspense keeps giving errors, so using useGetApps instead
   const { appId, appVersion } = useGetAppParams();
   const { data: app } = useGetApps({ appId: appId || '', appVersion });
-  
+
   const {
     data: { executionSystems },
   } = useGetSystems();
