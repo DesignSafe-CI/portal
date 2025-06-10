@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   MapContainer,
   ZoomControl,
   TileLayer,
   LayersControl,
+  GeoJSON,
+  Marker,
 } from 'react-leaflet';
+
+import { useGetOpenTopo } from '@client/hooks';
 
 /* no need to import leaflet css as already in base index
 import 'leaflet/dist/leaflet.css';
@@ -26,6 +30,42 @@ export const mapConfig = {
  * Leaflet Map
  */
 export const LeafletMap: React.FC = () => {
+  const { data: openTopoData } = useGetOpenTopo();
+
+  const openTopoMapFeatures = useMemo(() => {
+    debugger;
+    const datasets = openTopoData?.Datasets ?? [];
+
+    // Features for open topo (possibly just polygon and multipolygons)
+    const openTopoGeojsonFeatures: React.ReactNode[] = [];
+
+    // Markers for open topo things that aren't points
+    const openTopoMarkers: React.ReactNode[] = [];
+
+    datasets.forEach(({ Dataset: dataset }) => {
+      const { geojson } = dataset.spatialCoverage.geo;
+
+      // Main GeoJSON rendering
+      openTopoGeojsonFeatures.push(
+        <GeoJSON
+          key={`geojson-${dataset.identifier.value}`}
+          data={geojson}
+          /* todo: style */
+          /* todo: popups/events */
+        />
+      );
+
+
+      // Optional marker for non-Point geometries (e.g., Polygon or LineString)
+      // TODO
+
+
+      // TODO for only show when zoomed in and something selected
+    });
+
+    return [...openTopoGeojsonFeatures, ...openTopoMarkers];
+  }, [openTopoData]);
+
   return (
     <>
       <MapContainer
@@ -57,6 +97,9 @@ export const LeafletMap: React.FC = () => {
             />
           </LayersControl.BaseLayer>
         </LayersControl>
+
+        {/* Open Topo features  */}
+        {openTopoMapFeatures}
 
         {/* Zoom control */}
         <ZoomControl position="topright" />
