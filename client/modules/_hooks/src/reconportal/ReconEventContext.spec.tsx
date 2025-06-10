@@ -1,21 +1,14 @@
 import { renderHook, act } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
-import {
-  useReconEventContext,
-  ReconEventProvider,
-} from '@client/hooks';
+import { useReconEventContext, ReconEventProvider } from '@client/hooks';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MemoryRouter initialEntries={['/test?eventId=test-event']}>
     <Routes>
       <Route
         path="/test"
-        element={
-          <ReconEventProvider>
-            {children}
-          </ReconEventProvider>
-        }
+        element={<ReconEventProvider>{children}</ReconEventProvider>}
       />
     </Routes>
   </MemoryRouter>
