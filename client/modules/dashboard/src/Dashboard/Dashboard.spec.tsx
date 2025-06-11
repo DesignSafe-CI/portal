@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import Dashboard from './dashboard';
+import Dashboard from './Dashboard';
 
 describe('Dashboard', () => {
   it('should render successfully', () => {

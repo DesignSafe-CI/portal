@@ -1,4 +1,4 @@
-import styles from './dashboard.module.css';
+import styles from './Dashboard.module.css';
 
 /* eslint-disable-next-line */
 export interface DashboardProps {}
