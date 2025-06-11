@@ -1,4 +1,3 @@
-import { OpenTopoDataset } from '@client/hooks';
 import { FeatureCollection, Position } from 'geojson';
 import L, { LatLng } from 'leaflet';
 
