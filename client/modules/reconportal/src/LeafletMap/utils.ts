@@ -22,11 +22,10 @@ export function getFirstLatLng(geojson: FeatureCollection): LatLng {
 
   const coords = geometry.coordinates;
 
-  function findFirstCoord(arr: any): Position {
-    if (typeof arr[0] === 'number' && typeof arr[1] === 'number') {
-      return arr as Position;
-    }
-    return findFirstCoord(arr[0]);
+  function findFirstCoord(arr: unknown): Position {
+    if (Array.isArray(arr) && typeof arr[0] === 'number') return arr as Position;
+    if (Array.isArray(arr)) return findFirstCoord(arr[0]);
+    throw new Error('Invalid coordinates');
   }
 
   // lng lat form in geojson
