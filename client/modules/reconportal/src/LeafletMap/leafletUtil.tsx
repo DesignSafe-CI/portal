@@ -39,7 +39,6 @@ export function getOpenTopoColor(dataset: OpenTopoDataset): string {
   return 'black';
 }
 
-
 /**
  * A React-Leaflet wrapper that conditionally renders its children (e.g. markers, GeoJSON, etc.)
  * based on the current zoom level of the map.

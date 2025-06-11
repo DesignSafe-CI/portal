@@ -11,7 +11,11 @@ import {
 } from 'react-leaflet';
 import { faMap } from '@fortawesome/free-solid-svg-icons';
 import { OpenTopoPopup } from './OpenTopoPopup';
-import { createSvgMarkerIcon, getOpenTopoColor, ZoomConditionalLayerGroup } from './leafletUtil';
+import {
+  createSvgMarkerIcon,
+  getOpenTopoColor,
+  ZoomConditionalLayerGroup,
+} from './leafletUtil';
 import { getFirstLatLng } from './utils';
 import { useGetOpenTopo } from '@client/hooks';
 
