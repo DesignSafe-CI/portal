@@ -5,9 +5,7 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { OpenTopoDataset } from '@client/hooks';
 import { Typography, Space } from 'antd';
 
-
 const { Title, Text, Link } = Typography;
-
 
 interface OpenTopoPopupProps {
   dataset: OpenTopoDataset;
@@ -56,7 +54,7 @@ export const OpenTopoPopup: React.FC<OpenTopoPopupProps> = ({ dataset }) => {
           <Link href={doiUrl} target="_blank" rel="noopener noreferrer">
             {doiUrl}
             <span style={{ marginLeft: 4 }}>
-                <FontAwesomeIcon icon={faExternalLinkAlt} size="sm" />
+              <FontAwesomeIcon icon={faExternalLinkAlt} size="sm" />
             </span>
           </Link>
         </div>
