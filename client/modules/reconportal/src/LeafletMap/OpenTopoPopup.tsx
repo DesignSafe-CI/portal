@@ -55,7 +55,9 @@ export const OpenTopoPopup: React.FC<OpenTopoPopupProps> = ({ dataset }) => {
           <br />
           <Link href={doiUrl} target="_blank" rel="noopener noreferrer">
             {doiUrl}
-            <FontAwesomeIcon icon={faExternalLinkAlt} size="sm" />
+            <span style={{ marginLeft: 4 }}>
+                <FontAwesomeIcon icon={faExternalLinkAlt} size="sm" />
+            </span>
           </Link>
         </div>
       </Space>
