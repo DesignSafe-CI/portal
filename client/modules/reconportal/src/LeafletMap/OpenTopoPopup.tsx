@@ -24,7 +24,7 @@ export const OpenTopoPopup: React.FC<OpenTopoPopupProps> = ({ dataset }) => {
   const doiUrl = dataset.url;
   const product = dataset.fileFormat;
   return (
-    <Typography style={{ fontSize: '0.9rem', lineHeight: 1.4 }}>
+    <Typography>
       <Title level={5} style={{ marginBottom: 6 }}>
         {title}
       </Title>
