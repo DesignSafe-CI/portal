@@ -26,7 +26,7 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
     data: { executionSystems },
   } = useGetSystems();
 
-  const [activeSystem, setActiveSystem] = useState('Frontera');
+  const [activeSystem, setActiveSystem] = useState('Vista');
 
   useEffect(() => {
     if (app && appId && executionSystems) {
