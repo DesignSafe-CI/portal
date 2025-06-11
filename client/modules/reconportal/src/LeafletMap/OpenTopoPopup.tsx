@@ -31,33 +31,33 @@ export const OpenTopoPopup: React.FC<OpenTopoPopupProps> = ({ dataset }) => {
 
       <Space direction="vertical" size={6}>
         <div>
-          <Text strong>Date of Survey</Text>
+          <Text>Date of Survey</Text>
           <br />
-          <Text>
+          <Text strong>
             {startDate} – {endDate}
           </Text>
         </div>
 
         <div>
-          <Text strong>Data Source</Text>
+          <Text>Data Source</Text>
           <br />
-          <Text>OpenTopography</Text>
+          <Text strong>OpenTopography</Text>
         </div>
 
         <div>
-          <Text strong>Products Available</Text>
+          <Text>Products Available</Text>
           <br />
-          <Text>{product}</Text>
+          <Text strong>{product}</Text>
         </div>
 
         <div>
-          <Text strong>DOI</Text>
+          <Text>DOI</Text>
           <br />
           <Link href={doiUrl} target="_blank" rel="noopener noreferrer">
             {doiUrl}
-            <span style={{ marginLeft: 4 }}>
+            <Text style={{ marginLeft: 4 }} strong>
                 <FontAwesomeIcon icon={faExternalLinkAlt} size="sm" />
-            </span>
+            </Text>
           </Link>
         </div>
       </Space>
