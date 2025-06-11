@@ -99,7 +99,7 @@ if (dashboardElement) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
-          <Dashboard/>
+          <Dashboard />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
