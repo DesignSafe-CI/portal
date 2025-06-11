@@ -11,7 +11,7 @@ import {
 } from 'react-leaflet';
 import { faMap } from '@fortawesome/free-solid-svg-icons';
 import { OpenTopoPopup } from './OpenTopoPopup';
-import { createSvgMarkerIcon, getOpenTopoColor } from './leafletUtil';
+import { createSvgMarkerIcon, getOpenTopoColor, ZoomConditionalLayerGroup } from './leafletUtil';
 import { getFirstLatLng } from './utils';
 import { useGetOpenTopo } from '@client/hooks';
 
@@ -40,7 +40,7 @@ export const LeafletMap: React.FC = () => {
   const openTopoMapFeatures = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
 
-    // Features for open topo (possibly just polygon and multipolygons)
+    // Features for open topo (just polygon and multipolygons)
     const openTopoGeojsonFeatures: React.ReactNode[] = [];
 
     // Markers for open topo things that aren't points
@@ -63,18 +63,25 @@ export const LeafletMap: React.FC = () => {
             fillOpacity: 0.3,
           })}
           onEachFeature={(feature, layer) => {
-            setTimeout(() => {
-              const container = document.createElement('div');
+            const container = document.createElement('div');
+            layer.bindPopup(container);
+
+            layer.on('popupopen', () => {
+              if (container.hasChildNodes()) return;
+
               ReactDOM.createRoot(container).render(
                 <OpenTopoPopup dataset={dataset} />
               );
-              layer.bindPopup(container);
-            }, 0);
+
+              // Force Leaflet to recalculate popup size
+              // otherwise issue on first popup
+              setTimeout(() => {
+                layer.getPopup()?.update();
+              }, 0);
+            });
           }}
         />
       );
-
-      // TODO for only show when zoomed in and something selected
     });
 
     // Fill openTopoMarkers with a point for each dataset
@@ -101,8 +108,6 @@ export const LeafletMap: React.FC = () => {
           </Popup>
         </Marker>
       );
-
-      // TODO for only show when zoomed in and something selected
     });
 
     return [...openTopoGeojsonFeatures, ...openTopoMarkers];
@@ -140,8 +145,10 @@ export const LeafletMap: React.FC = () => {
           </LayersControl.BaseLayer>
         </LayersControl>
 
-        {/* Open Topo features  */}
-        {openTopoMapFeatures}
+        {/* Open Topo features, only visible when zoomed in and DS event selected*/}
+        <ZoomConditionalLayerGroup minZoom={10}>
+          {openTopoMapFeatures}
+        </ZoomConditionalLayerGroup>
 
         {/* Zoom control */}
         <ZoomControl position="topright" />
