@@ -352,9 +352,9 @@ export const PipelinePublishModal: React.FC<{
               aria-describedby="msg-open-new-window"
             >
               Best Practices
-            </a>.{' '}
-            I grant the Data Depot Repository (DDR) all required permissions and
-            licenses to make the work I publish in the DDR available for
+            </a>
+            . I grant the Data Depot Repository (DDR) all required permissions
+            and licenses to make the work I publish in the DDR available for
             archiving and continued access. These permissions include allowing
             DesignSafe to:
           </p>
