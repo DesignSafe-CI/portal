@@ -71,8 +71,7 @@ export const PipelinePublishModal: React.FC<{
   const [publishingAgreement, setPublishingAgreement] = useState(false);
 
   const canPublish =
-    publishingAgreement &&
-    (operation === 'version' ? !!versionInfo : true);
+    publishingAgreement && (operation === 'version' ? !!versionInfo : true);
 
   return (
     <>
