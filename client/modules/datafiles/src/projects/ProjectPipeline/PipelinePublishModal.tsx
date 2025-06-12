@@ -141,7 +141,10 @@ export const PipelinePublishModal: React.FC<{
                   onChange={(e) => setPublishingAgreement(e.target.checked)}
                 />
                 <label htmlFor="publication-agreement-checkbox">
-                  &nbsp;I agree
+                  &nbsp;
+                  {['field_recon', 'other'].includes(projectType)
+                    ? 'I agree, and the data I am publishing adheres to the procedures listed above'
+                    : 'I agree'}
                 </label>
               </span>
               <Button
@@ -316,19 +319,7 @@ export const PipelinePublishModal: React.FC<{
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}
-            >
-              <span>
-                <Checkbox
-                  id="publication-protected-checkbox"
-                  checked={protectedDataAgreement}
-                  onChange={(e) => setProtectedDataAgreement(e.target.checked)}
-                />
-                <label htmlFor="publication-protected-checkbox">
-                  &nbsp;The data I am publishing adheres to the procedures
-                  listed above
-                </label>
-              </span>
-            </div>
+            ></div>
           </div>
         )}
 
