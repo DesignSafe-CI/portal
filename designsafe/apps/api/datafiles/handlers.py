@@ -41,7 +41,7 @@ def datafiles_get_handler(api, client, scheme, system, path, operation, username
     try:
         return op(client, system, path, username=username, tapis_tracking_id=tapis_tracking_id, **kwargs)
     except (InternalServerError, UnauthorizedError):
-        system_needs_keys = test_system_needs_keys(client, username, system)
+        system_needs_keys = test_system_needs_keys(client, username, system, path)
         if system_needs_keys:
             logger.error(
                 f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"

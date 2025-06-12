@@ -30,6 +30,12 @@ const getContents = (step: TOnboardingStep) => {
   if ('customStatus' in step) {
     return <Tag color={color}>{step.customStatus}</Tag>;
   }
+
+  if (
+    step.events?.[0]?.message === 'Portal access request has not been approved.'
+  ) {
+    return <Tag color="red">Denied</Tag>;
+  }
   switch (step.state) {
     case 'pending':
       return <Tag color={color}>Preparing</Tag>;
@@ -64,5 +70,6 @@ export const OnboardingStatus = ({ step }: { step: TOnboardingStep }) => {
   if (!contents) {
     return null;
   }
+
   return <span className={styles.root}>{getContents(step)}</span>;
 };
