@@ -215,7 +215,7 @@ export const PipelinePublishModal: React.FC<{
             <div className="overview-heading">Storing Protected Data</div>
             <p>
               DesignSafe My Data and My Projects are secure spaces to store raw
-              protected data as long as it is not under HIPPA, FERPA or FISMA
+              protected data as long as it is not under HIPPA, FERPA, or FISMA
               regulations. If data needs to comply with these regulations,
               researchers must contact DesignSafe through a
               <a
@@ -292,7 +292,7 @@ export const PipelinePublishModal: React.FC<{
               discuss the conditions for its reuse.
             </p>
             <p>
-              5. Please contact DesignSafe through a
+              5. Please contact DesignSafe through a{' '}
               <a
                 href="/help/new-ticket/"
                 target="_blank"
@@ -300,14 +300,14 @@ export const PipelinePublishModal: React.FC<{
               >
                 help ticket
               </a>{' '}
-              or join
+              or join{' '}
               <a
                 href="/facilities/virtual-office-hours/"
                 target="_blank"
                 aria-describedby="msg-open-new-window"
               >
                 curation office hours
-              </a>
+              </a>{' '}
               prior to preparing this type of data publication.
             </p>
             <div
@@ -343,16 +343,16 @@ export const PipelinePublishModal: React.FC<{
               target="_blank"
               aria-describedby="msg-open-new-window"
             >
-              Policies
+              Policies{' '}
             </a>
-            and
+            and{' '}
             <a
               href="user-guide/curating/bestpractices/"
               target="_blank"
               aria-describedby="msg-open-new-window"
             >
               Best Practices
-            </a>
+            </a>.{' '}
             I grant the Data Depot Repository (DDR) all required permissions and
             licenses to make the work I publish in the DDR available for
             archiving and continued access. These permissions include allowing
@@ -368,8 +368,8 @@ export const PipelinePublishModal: React.FC<{
                 aria-describedby="msg-open-new-window"
               >
                 Policies
-              </a>
-              and
+              </a>{' '}
+              and{' '}
               <a
                 href="/user-guide/curating/bestpractices/"
                 target="_blank"
