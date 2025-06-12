@@ -68,12 +68,10 @@ export const PipelinePublishModal: React.FC<{
     publish: 'Request DOI & Publish',
   };
 
-  const [protectedDataAgreement, setProtectedDataAgreement] = useState(false);
   const [publishingAgreement, setPublishingAgreement] = useState(false);
 
   const canPublish =
     publishingAgreement &&
-    (projectType === 'field_recon' ? protectedDataAgreement : true) &&
     (operation === 'version' ? !!versionInfo : true);
 
   return (
