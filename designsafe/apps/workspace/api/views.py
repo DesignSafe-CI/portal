@@ -13,7 +13,7 @@ from django.db.models import F, Count
 from django.db.models.lookups import GreaterThan
 from django.urls import reverse
 from tapipy.tapis import TapisResult
-from tapipy.errors import InternalServerError, UnauthorizedError
+from tapipy.errors import InternalServerError, UnauthorizedError, BaseTapyException
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.users.utils import get_user_data
 from designsafe.apps.api.views import AuthenticatedApiView
@@ -27,10 +27,7 @@ from designsafe.apps.workspace.models.app_entries import (
 )
 from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
-from designsafe.apps.onboarding.steps.system_access_v3 import (
-    create_system_credentials,
-    create_system_credentials_with_keys,
-)
+from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
 
 
 logger = logging.getLogger(__name__)
@@ -117,7 +114,27 @@ def _get_app(app_id, app_version, user):
     return data
 
 
-def test_system_needs_keys(tapis, username, system_id):
+def test_system_access_ok(
+    tapis: object, username: str, system_id: str, path: str = "/"
+) -> bool:
+    """
+    Test system access by attempting to list files in a given path.
+    """
+    try:
+        tapis.files.listFiles(systemId=system_id, path=path, limit=1)
+        return True
+    except UnauthorizedError:
+        return False
+    except BaseTapyException:
+        logger.exception(
+            "System access check failed for user: %s on system: %s", username, system_id
+        )
+        raise
+
+
+def test_system_needs_keys(
+    tapis: object, username: str, system_id: str, path: str = "/"
+) -> bool:
     """Tests a Tapis system by making a file listing call.
 
     If the system is TMS_KEYS-based, it attempts to create credentials before listing files.
@@ -128,24 +145,37 @@ def test_system_needs_keys(tapis, username, system_id):
         system_id (str): The ID of the Tapis system to test.
 
     Returns:
-        SystemDef: The system definition if an error occurs.
+        bool
     """
-    system_def = tapis.systems.getSystem(systemId=system_id)
     try:
-        tapis.files.listFiles(systemId=system_id, path="/")
-        return None
-    except (InternalServerError, UnauthorizedError):
+        tapis.systems.checkUserCredential(systemId=system_id, userName=username)
+        return False
+    except (InternalServerError, UnauthorizedError) as exc:
+        system_def = tapis.systems.getSystem(systemId=system_id)
+
         # Check if the system uses TMS_KEYS and create credentials if necessary
         if system_def.get("defaultAuthnMethod") == "TMS_KEYS":
             try:
                 create_system_credentials(
                     tapis, username, system_id, createTmsKeys=True
                 )
-                tapis.files.listFiles(systemId=system_id, path="/")
-                return None
+                return False
             except (InternalServerError, UnauthorizedError):
-                logger.warning(f"Authentication still failing for system: {system_id}")
-        return system_def
+                logger.exception(
+                    f"TMS_KEYS credential generation failed for system: {system_id}, user: {username}"
+                )
+                raise
+
+        # If the system uses PKI_KEYS, check if the user has access
+        if (
+            system_def.get("effectiveUserId") == username
+            and system_def.get("defaultAuthnMethod") == "PKI_KEYS"
+        ):
+            return test_system_access_ok(tapis, username, system_id, path)
+
+        raise ApiException(
+            f"User {username} does not have system credentials and cannot push keys or create credentials for system {system_id}."
+        ) from exc
 
 
 class SystemListingView(AuthenticatedApiView):
@@ -223,19 +253,6 @@ class AppsView(AuthenticatedApiView):
 
         except ObjectDoesNotExist:
             data = _get_app(app_id, app_version, request.user)
-
-        # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
-        # Check if default storage system needs keys pushed
-        # if settings.AGAVE_STORAGE_SYSTEM:
-        #     tapis = request.user.tapis_oauth.client
-        #     system_needs_keys = test_system_needs_keys(
-        #         tapis, settings.AGAVE_STORAGE_SYSTEM
-        #     )
-        #     if system_needs_keys:
-        #         logger.info(
-        #             f"Keys for user {request.user.username} must be manually pushed to system: {system_needs_keys.id}"
-        #         )
-        #         data["defaultSystemNeedsKeys"] = system_needs_keys
 
         return JsonResponse(
             {
@@ -341,6 +358,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "priority",
             "short_label",
             "version",
         ]
@@ -357,6 +375,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "priority",
             "short_label",
             "version",
         ]
@@ -422,8 +441,8 @@ class AppsTrayView(AuthenticatedApiView):
 
             # Add html apps to html_definitions
             for html_app in html_apps:
+                html_app["userGuideLink"] = html_app.get("bundle_user_guide_link", "")
                 html_definitions[html_app["app_id"]] = html_app
-
                 category_result["apps"].append(html_app)
 
             category_result["apps"] = sorted(

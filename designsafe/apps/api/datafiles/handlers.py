@@ -1,4 +1,7 @@
 import logging
+from django.core.exceptions import PermissionDenied
+from django.urls import reverse
+from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedError
 from designsafe.apps.api.datafiles.notifications import notify
 from designsafe.apps.api.datafiles.operations import tapis_operations
 from designsafe.apps.api.datafiles.operations import googledrive_operations
@@ -6,9 +9,8 @@ from designsafe.apps.api.datafiles.operations import dropbox_operations
 from designsafe.apps.api.datafiles.operations import box_operations
 from designsafe.apps.api.datafiles.operations import shared_operations
 from designsafe.apps.api.exceptions import ApiException
-from django.core.exceptions import PermissionDenied
-from tapipy.errors import BaseTapyException
-from django.urls import reverse
+from designsafe.libs.common.decorators import retry
+from designsafe.apps.workspace.api.views import test_system_needs_keys
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,7 @@ operations_mapping = {
 }
 
 
+@retry(UnauthorizedError, tries=3, max_time=15)
 def datafiles_get_handler(api, client, scheme, system, path, operation, username=None, tapis_tracking_id=None, **kwargs):
     if operation not in allowed_actions[scheme]:
         raise PermissionDenied
@@ -37,6 +40,13 @@ def datafiles_get_handler(api, client, scheme, system, path, operation, username
 
     try:
         return op(client, system, path, username=username, tapis_tracking_id=tapis_tracking_id, **kwargs)
+    except (InternalServerError, UnauthorizedError):
+        system_needs_keys = test_system_needs_keys(client, username, system, path)
+        if system_needs_keys:
+            logger.error(
+                f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
+            )
+        raise
     except BaseTapyException as exc:
         raise ApiException(message=exc.message, status=500) from exc
 
