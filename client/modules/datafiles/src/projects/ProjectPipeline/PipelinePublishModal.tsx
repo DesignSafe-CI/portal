@@ -157,7 +157,7 @@ export const PipelinePublishModal: React.FC<{
         )}
         onCancel={handleCancel}
       >
-        {projectType === 'field_recon' && (
+        {['field_recon', 'other'].includes(projectType) && (
           <div className="pad-content">
             <h3>
               Guidelines Regarding the Storage and Publication of Protected Data
