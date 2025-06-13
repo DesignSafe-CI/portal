@@ -5290,6 +5290,9 @@ fieldset[disabled] .navbar-inverse .btn-link:hover,
 fieldset[disabled] .navbar-inverse .btn-link:focus {
   color: #444444;
 }
+.popover.search-tips-popover {
+  margin-top: -30px !important;
+}
 .breadcrumb {
   padding: 8px 15px;
   margin-bottom: 20px;
