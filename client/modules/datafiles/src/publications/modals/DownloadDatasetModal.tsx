@@ -287,7 +287,7 @@ export const DownloadDatasetModal: React.FC<{
                 </a>{' '}
                 and follow the
                 <a
-                  href="/user-guide/managingdata/#data-transfer-guides"
+                  href="/user-guide/managingdata/datatransfer/"
                   target="_blank"
                   aria-describedby="msg-open-new-window"
                 >
