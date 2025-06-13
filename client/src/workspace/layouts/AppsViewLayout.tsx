@@ -47,16 +47,18 @@ export const AppsViewLayout: React.FC = () => {
                   app.definition.notes.label ||
                   app.definition.id}
               </div>
-              {userGuideLink && (
-                <a
-                  href={userGuideLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ marginRight: 10 }}
-                >
-                  View User Guide
-                </a>
-              )}
+              <div>
+                {userGuideLink && (
+                  <a
+                    href={userGuideLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ marginLeft: '20px' }}
+                  >
+                    View User Guide
+                  </a>
+                )}
+              </div>
             </Flex>
           </Header>
           {htmlApp ? (
