@@ -1,6 +1,7 @@
-from django.urls import re_path as url
+from django.urls import path
 from designsafe.apps.audit import views
 
 urlpatterns = [
-    url(r'^$', views.audit_trail, name='audit_trail'),
+    path('', views.audit_trail, name='audit_trail'),
+    path('api/user/<str:username>/last-session/', views.get_audit_user_last_session, name='get_audit_user_last_session'),
 ] 

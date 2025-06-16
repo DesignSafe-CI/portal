@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
-import AuditTrail from './audit/AuditTrail';
+import auditRouter from './audit/auditRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
 
 const queryClient = new QueryClient();
@@ -98,7 +98,7 @@ if (auditTrailElement) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
-          <AuditTrail />
+          <RouterProvider router={auditRouter} />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>

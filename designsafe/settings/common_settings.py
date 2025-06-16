@@ -218,6 +218,14 @@ if os.environ.get('DATABASE_HOST'):
             'USER': os.environ.get('DATABASE_USER'),
             'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
         },
+        'audit': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('AUDIT_DB_NAME'),
+            'HOST': os.environ.get('AUDIT_DB_HOST'),
+            'PORT': os.environ.get('AUDIT_DB_PORT'),
+            'USER': os.environ.get('AUDIT_DB_USER'),
+            'PASSWORD': os.environ.get('AUDIT_DB_PASSWORD'),
+        }
     }
 else:
     DATABASES = {
