@@ -44,7 +44,7 @@ const RecentProjects: React.FC = () => {
 
         setProjects(sortedRecent);
       } catch (error) {
-        console.error('Failed to fetch recent projects:', error);
+        console.error('Failed to fetch recent projects!', error);
       }
     };
 
