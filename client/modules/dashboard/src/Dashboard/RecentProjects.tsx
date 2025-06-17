@@ -33,13 +33,13 @@ const RecentProjects: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('/api/projects/v2/?offset=0&limit=100');
+        const response = await axios.get(
+          '/api/projects/v2/?offset=0&limit=100'
+        );
         const rawProjects: RawProject[] = response.data.result;
 
         const mapped: Project[] = rawProjects.map((proj: RawProject) => {
-          const piUser = proj.value.users?.find(
-            (user) => user.role === 'pi'
-          );
+          const piUser = proj.value.users?.find((user) => user.role === 'pi');
 
           return {
             uuid: proj.uuid,

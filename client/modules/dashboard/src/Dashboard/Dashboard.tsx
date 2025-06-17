@@ -1,5 +1,5 @@
 //import styles from './Dashboard.module.css';
-import QuickLinksNavbar from './QuickLinksNavbar'; 
+import QuickLinksNavbar from './QuickLinksNavbar';
 import RecentlyAccessed from './RecentlyAccessed';
 import RecentProjects from './RecentProjects';
 import { TicketList } from './TicketList';
