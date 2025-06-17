@@ -3,6 +3,25 @@ import { Menu, MenuProps } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
+//my code
+interface RecentTool {
+  label: string;
+  path: string;
+}
+
+const handleToolClick = (toolName: string, toolPath: string) => {
+  const correctedPath = toolPath.startsWith('/workspace/')
+    ? toolPath
+    : `/workspace/${toolPath.replace(/^\//, '')}`;
+
+  const existing: { label: string; path: string }[] = JSON.parse(localStorage.getItem('recentTools') || '[]');
+  const updated = [{ label: toolName, path: correctedPath }, ...existing.filter(t => t.path !== correctedPath)].slice(0, 5);
+  localStorage.setItem('recentTools', JSON.stringify(updated));
+};
+
+
+// my code
+
 
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
@@ -40,48 +59,63 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         if (bundles[bundleKey]) {
           bundles[bundleKey].apps.push(
             getItem(
-              <NavLink
-                to={
-                  `${app.app_id}` +
-                  (app.version ? `?appVersion=${app.version}` : '')
-                }
-              >
-                {app.shortLabel || app.label || app.bundle_label}
-              </NavLink>,
+<NavLink
+  to={`/workspace/${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`}
+  onClick={() =>
+    handleToolClick(
+      app.shortLabel || app.label || app.bundle_label,
+      `/workspace/${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`
+    )
+  }
+>
+  {app.shortLabel || app.label || app.bundle_label}
+</NavLink>
+
+,
               `${app.app_id}${app.version}${app.bundle_id}`,
               app.priority
             )
           );
         } else {
-          bundles[bundleKey] = {
-            apps: [
-              getItem(
-                <NavLink
-                  to={
-                    `${app.app_id}` +
-                    (app.version ? `?appVersion=${app.version}` : '')
-                  }
-                >
-                  {app.shortLabel || app.label || app.bundle_label}
-                </NavLink>,
-                `${app.app_id}${app.version}${app.bundle_id}`,
-                app.priority
-              ),
-            ],
-            label: app.bundle_label,
-          };
+            bundles[bundleKey] = {
+              apps: [
+                getItem(
+<NavLink
+  to={`/workspace/${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`}
+  onClick={() =>
+    handleToolClick(
+      app.shortLabel || app.label || app.bundle_label,
+      `/workspace/${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`
+    )
+  }
+>
+  {app.shortLabel || app.label || app.bundle_label}
+</NavLink>
+
+,
+                  `${app.app_id}${app.version}${app.bundle_id}`,
+                  app.priority
+                )
+              ],
+              label: app.bundle_label,
+            };
         }
       } else {
         categoryItems.push(
           getItem(
-            <NavLink
-              to={
-                `${app.app_id}` +
-                (app.version ? `?appVersion=${app.version}` : '')
-              }
-            >
-              {app.shortLabel || app.label || app.bundle_label}
-            </NavLink>,
+<NavLink
+  to={`/workspace/${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`}
+  onClick={() =>
+    handleToolClick(
+      app.shortLabel || app.label || app.bundle_label,
+      `/workspace/${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`
+    )
+  }
+>
+  {app.shortLabel || app.label || app.bundle_label}
+</NavLink>
+
+,
             `${app.app_id}${app.version}${app.bundle_id}`,
             app.priority
           )

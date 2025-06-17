@@ -1,7 +1,7 @@
 import './styles.css';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
+import { BrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
@@ -99,7 +99,9 @@ if (dashboardElement) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
+          <BrowserRouter>
           <Dashboard />
+          </BrowserRouter>
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>

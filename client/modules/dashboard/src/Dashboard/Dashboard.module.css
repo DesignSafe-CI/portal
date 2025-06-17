@@ -1,7 +1,171 @@
-/*
- * Replace this with your own classes
- *
- * e.g.
- * .container {
- * }
-*/
+.sidebar {
+  background-color: #F5F7FA;
+  color: #333;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 260px;
+  min-height: calc(100vh - 80px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+.sidebarTitle {
+  font-size: 1.55rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  color: #2C3E50;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.4rem;
+}
+.sidebarLink {
+  display: block;
+  margin: 0.75rem 0;
+  color: #1F2D3D;
+  font-size: 1.50rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.sidebarLink:hover {
+  color: #007BFF;
+  text-decoration: underline;
+  padding-left: 5px;
+}
+.sidebar {
+  position: sticky;
+  top: 80px; /* after navbar */
+}
+.sidebarIcon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+
+.recentContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  font-size: 1.5rem;
+}
+
+.recentHeading {
+  margin-top: 0;
+}
+
+.recentList {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.recentItem {
+  margin-bottom: 6px;
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.recentItem:hover {
+  color: #0056b3;
+}
+
+
+.recentProjectsContainer {
+  position: absolute;
+  top: 500px;
+  right: 20px;
+  width: 300px;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  background-color: #fff;
+  font-size: 1.5rem;
+}
+
+.recentProjectsTitle {
+  margin-top: 0;
+  border-bottom: 1px solid #e6e6e6;
+  padding-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.recentProjectsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.recentProjectsTable thead tr {
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+}
+
+.recentProjectsTable th,
+.recentProjectsTable td {
+  padding: 6px 8px;
+}
+
+.recentProjectsTable tbody tr {
+  border-top: 1px solid #eee;
+  line-height: 1.5;
+}
+
+.projectLink {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.projectLink:hover {
+  color: #0056b3;
+}
+
+.projectId {
+  font-family: monospace;
+  color: #444;
+}
+
+
+.ticketListContainer {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 900px;
+  max-height: 190px;
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 999;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.ticketListHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.ticketListControls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.ticketListTableWrapper {
+  overflow-y: auto;
+  flex-grow: 1;
+}
