@@ -48,7 +48,9 @@ export const TicketList: React.FC = () => {
           show_resolved: true,
         },
       });
-      const normalized = res.data.map((ticket: RawTicket) => normalizeTicket(ticket));
+      const normalized = res.data.map((ticket: RawTicket) =>
+        normalizeTicket(ticket)
+      );
       setTickets(normalized);
     } catch (e) {
       setError('Failed to load tickets.');
@@ -73,16 +75,18 @@ export const TicketList: React.FC = () => {
     return s === 'resolved' || s === 'closed';
   };
 
-  const filteredTickets = tickets.filter(ticket => {
+  const filteredTickets = tickets.filter((ticket) => {
     const matchesFilter =
       ticket.subject.toLowerCase().includes(filter.toLowerCase()) ||
       ticket.id.toString().includes(filter);
 
-    return matchesFilter && (showResolved === isResolved(ticket.status));
+    return matchesFilter && showResolved === isResolved(ticket.status);
   });
 
   const handleClose = async (ticketId: number) => {
-    const confirmClose = window.confirm('Are you sure you want to close this ticket?');
+    const confirmClose = window.confirm(
+      'Are you sure you want to close this ticket?'
+    );
     if (!confirmClose) return;
 
     try {
@@ -105,7 +109,7 @@ export const TicketList: React.FC = () => {
       <div className={styles.ticketListControls}>
         <button
           className="btn btn-secondary btn-sm"
-          onClick={() => setShowResolved(prev => !prev)}
+          onClick={() => setShowResolved((prev) => !prev)}
         >
           {showResolved ? 'Show only open' : 'Show resolved'}
         </button>
@@ -116,7 +120,7 @@ export const TicketList: React.FC = () => {
           style={{ maxWidth: '200px' }}
           placeholder="Search tickets"
           value={filter}
-          onChange={e => setFilter(e.target.value)}
+          onChange={(e) => setFilter(e.target.value)}
         />
       </div>
 
@@ -140,7 +144,7 @@ export const TicketList: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredTickets.map(ticket => {
+              {filteredTickets.map((ticket) => {
                 const isClosed = isResolved(ticket.status);
 
                 return (
@@ -151,7 +155,9 @@ export const TicketList: React.FC = () => {
                         {ticket.id} / {ticket.subject}
                       </a>
                     </td>
-                    <td>{formatDate(ticket.updated_at ?? ticket.created_at)}</td>
+                    <td>
+                      {formatDate(ticket.updated_at ?? ticket.created_at)}
+                    </td>
                     <td>
                       <div className="btn-group btn-group-sm">
                         <a

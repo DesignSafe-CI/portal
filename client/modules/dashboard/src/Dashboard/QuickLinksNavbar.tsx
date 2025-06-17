@@ -1,10 +1,10 @@
 import React from 'react';
 import styles from './Dashboard.module.css'; // ✅ Match case with filename
 
-import { MdManageAccounts, MdCastForEducation } from "react-icons/md";
-import { TbDatabaseShare } from "react-icons/tb";
-import { IoIosApps } from "react-icons/io";
-import { FaMapMarkedAlt } from "react-icons/fa";
+import { MdManageAccounts, MdCastForEducation } from 'react-icons/md';
+import { TbDatabaseShare } from 'react-icons/tb';
+import { IoIosApps } from 'react-icons/io';
+import { FaMapMarkedAlt } from 'react-icons/fa';
 
 const QuickLinksNavbar = () => {
   return (

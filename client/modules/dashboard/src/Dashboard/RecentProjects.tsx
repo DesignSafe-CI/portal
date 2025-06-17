@@ -16,11 +16,15 @@ const RecentProjects: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('/api/projects/v2/?offset=0&limit=100');
+        const response = await axios.get(
+          '/api/projects/v2/?offset=0&limit=100'
+        );
         const rawProjects = response.data.result;
 
         const mapped: Project[] = rawProjects.map((proj: any) => {
-          const piUser = proj.value.users?.find((user: any) => user.role === 'pi');
+          const piUser = proj.value.users?.find(
+            (user: any) => user.role === 'pi'
+          );
           return {
             uuid: proj.uuid,
             title: proj.value.title,
@@ -31,7 +35,11 @@ const RecentProjects: React.FC = () => {
         });
 
         const sortedRecent = mapped
-          .sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())
+          .sort(
+            (a, b) =>
+              new Date(b.lastUpdated).getTime() -
+              new Date(a.lastUpdated).getTime()
+          )
           .slice(0, 3);
 
         setProjects(sortedRecent);

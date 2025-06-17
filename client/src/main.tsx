@@ -100,7 +100,7 @@ if (dashboardElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <BrowserRouter>
-          <Dashboard />
+            <Dashboard />
           </BrowserRouter>
         </ConfigProvider>
       </QueryClientProvider>

@@ -10,7 +10,6 @@ export interface DashboardProps {}
 export function Dashboard(props: DashboardProps) {
   return (
     <div>
-      
       <QuickLinksNavbar />
       <div style={{ marginLeft: '200px', padding: '10px' }}>
         <TicketList />

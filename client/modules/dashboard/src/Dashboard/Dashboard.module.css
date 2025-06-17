@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: #F5F7FA;
+  background-color: #f5f7fa;
   color: #333;
   padding: 1.5rem;
   border-radius: 8px;
@@ -11,21 +11,21 @@
   font-size: 1.55rem;
   font-weight: 600;
   margin-bottom: 1.2rem;
-  color: #2C3E50;
+  color: #2c3e50;
   border-bottom: 1px solid #ddd;
   padding-bottom: 0.4rem;
 }
 .sidebarLink {
   display: block;
   margin: 0.75rem 0;
-  color: #1F2D3D;
-  font-size: 1.50rem;
+  color: #1f2d3d;
+  font-size: 1.5rem;
   font-weight: 500;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 .sidebarLink:hover {
-  color: #007BFF;
+  color: #007bff;
   text-decoration: underline;
   padding-left: 5px;
 }
@@ -37,7 +37,6 @@
   margin-right: 8px;
   vertical-align: middle;
 }
-
 
 .recentContainer {
   position: fixed;
@@ -74,7 +73,6 @@
   color: #0056b3;
 }
 
-
 .recentProjectsContainer {
   position: absolute;
   top: 500px;
@@ -83,7 +81,7 @@
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   background-color: #fff;
   font-size: 1.5rem;
 }
@@ -131,7 +129,6 @@
   font-family: monospace;
   color: #444;
 }
-
 
 .ticketListContainer {
   position: fixed;
