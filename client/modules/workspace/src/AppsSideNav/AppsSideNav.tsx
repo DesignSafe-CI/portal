@@ -4,10 +4,6 @@ import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
 
-interface RecentTool {
-  label: string;
-  path: string;
-}
 
 const handleToolClick = (toolName: string, toolPath: string) => {
   const correctedPath = toolPath.startsWith('/workspace/')

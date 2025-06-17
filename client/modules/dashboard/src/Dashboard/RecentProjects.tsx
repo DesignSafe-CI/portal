@@ -10,21 +10,37 @@ type Project = {
   pi: string;
 };
 
+// Define the structure of the API response
+interface RawUser {
+  role: string;
+  fname: string;
+  lname: string;
+}
+
+interface RawProject {
+  uuid: string;
+  lastUpdated: string;
+  value: {
+    title: string;
+    projectId: string;
+    users?: RawUser[];
+  };
+}
+
 const RecentProjects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(
-          '/api/projects/v2/?offset=0&limit=100'
-        );
-        const rawProjects = response.data.result;
+        const response = await axios.get('/api/projects/v2/?offset=0&limit=100');
+        const rawProjects: RawProject[] = response.data.result;
 
-        const mapped: Project[] = rawProjects.map((proj: any) => {
+        const mapped: Project[] = rawProjects.map((proj: RawProject) => {
           const piUser = proj.value.users?.find(
-            (user: any) => user.role === 'pi'
+            (user) => user.role === 'pi'
           );
+
           return {
             uuid: proj.uuid,
             title: proj.value.title,
