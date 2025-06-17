@@ -7,7 +7,7 @@
 */
 
 .sidebar {
-  background-color: #f5f7fa; 
+  background-color: #f5f7fa;
   color: #333;
   padding: 1.5rem;
   border-radius: 8px;
@@ -29,7 +29,7 @@
   display: block;
   margin: 0.75rem 0;
   color: #1f2d3d;
-  font-size: 1.50rem;
+  font-size: 1.5rem;
   font-weight: 500;
   text-decoration: none;
   transition: all 0.2s ease;

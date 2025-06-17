@@ -30,7 +30,7 @@ const JobStatus: React.FC = () => {
       <div className={styles.jobsTableWrapper}>
         <JobsListingWrapper onViewDetails={handleViewDetails} />
       </div>
-      
+
       <JobDetailModalWrapper
         uuid={selectedJobUuid}
         isOpen={isModalOpen}

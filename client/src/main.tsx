@@ -93,19 +93,18 @@ if (onboardingElement) {
   );
 }
 
-
 const dashboardElement = document.getElementById('dashboard-root');
 if (dashboardElement) {
   const dashboardRoot = ReactDOM.createRoot(dashboardElement as HTMLElement);
   dashboardRoot.render(
     <StrictMode>
-      <BrowserRouter> 
+      <BrowserRouter>
         <QueryClientProvider client={queryClient}>
           <ConfigProvider theme={themeConfig}>
             <Dashboard />
           </ConfigProvider>
         </QueryClientProvider>
-      </BrowserRouter> 
+      </BrowserRouter>
     </StrictMode>
   );
 }

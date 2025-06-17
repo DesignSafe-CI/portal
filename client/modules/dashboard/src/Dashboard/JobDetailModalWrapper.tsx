@@ -15,7 +15,9 @@ export const JobDetailModalWrapper: React.FC<JobDetailModalWrapperProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { data: jobData, isLoading } = useGetJobs('select', { uuid: uuid || '' }) as {
+  const { data: jobData, isLoading } = useGetJobs('select', {
+    uuid: uuid || '',
+  }) as {
     data: TTapisJob;
     isLoading: boolean;
   };
