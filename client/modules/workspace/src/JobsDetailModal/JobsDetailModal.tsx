@@ -43,6 +43,7 @@ export const JobsDetailModalBody: React.FC<{
     appData
   ) as TJobDisplayInfo;
 
+
   const outputLocation = getOutputPath(jobData);
   const created = formatDateTimeFromValue(new Date(jobData.created));
   const lastUpdated = formatDateTimeFromValue(new Date(jobData.lastUpdated));

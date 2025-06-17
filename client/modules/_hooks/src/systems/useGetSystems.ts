@@ -10,7 +10,7 @@ export type TSystemsResponse = {
   executionSystems: TTapisSystem[];
   storageSystems: TTapisSystem[];
   defaultStorageSystem: TTapisSystem;
-};
+}
 
 export type TGetSystemsResponse = {
   response: TSystemsResponse;
