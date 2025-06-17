@@ -24,8 +24,6 @@ const handleToolClick = (toolName: string, toolPath: string) => {
   localStorage.setItem('recentTools', JSON.stringify(updated));
 };
 
-
-
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
