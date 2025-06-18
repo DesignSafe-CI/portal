@@ -12,6 +12,8 @@ import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 
 console.log(Dashboard);
 
+console.log(Dashboard);
+
 const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
   token: {
