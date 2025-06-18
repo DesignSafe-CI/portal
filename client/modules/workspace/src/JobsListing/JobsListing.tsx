@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { TableProps, Row, Flex, Button as AntButton } from 'antd';
+import { TableProps, Tag, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
@@ -30,6 +30,7 @@ import {
 } from '../utils';
 import styles from './JobsListing.module.css';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
+import { CustomStatusBadge } from '../../../datafiles/src/projects/forms/_common';
 import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
 
 export const JobActionButton: React.FC<{
@@ -194,22 +195,19 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
       },
       {
         width: '10%',
-        title: 'Application',
-        dataIndex: 'appId',
-        render: (appId, job) => {
-          const appNotes = JSON.parse(job.notes);
-
-          return (
-            appNotes.label ||
-            `${appId.charAt(0).toUpperCase()}${appId.slice(1)}`
-          );
-        },
-      },
-      {
-        width: '10%',
         title: 'Job Status',
         dataIndex: 'status',
-        render: (status) => <>{getStatusText(status)}</>,
+
+        render: (status) => {
+          const text = getStatusText(status);
+          if (status === 'FINISHED') {
+            return <CustomStatusBadge type="green">{text}</CustomStatusBadge>;
+          }
+          if (status === 'FAILURE') {
+            return <CustomStatusBadge type="red">{text}</CustomStatusBadge>;
+          }
+          return <CustomStatusBadge type="yellow">{text}</CustomStatusBadge>;
+        },
       },
       { width: '10%', title: 'Nodes', dataIndex: 'nodeCount' },
       { width: '10%', title: 'Cores', dataIndex: 'coresPerNode' },
