@@ -5,6 +5,7 @@ export { usePublicationDetail } from './usePublicationDetail';
 export { usePublicationVersions } from './usePublicationVersions';
 export { useDataciteEvents } from './useDataciteEvents';
 export { useDataciteMetrics } from './useDataciteMetrics';
+export { useClarivateMetrics } from './useClarivateMetrics';
 export { usePublishProject } from './usePublishProject';
 export { useVersionProject } from './useVersionProject';
 export { useAmendProject } from './useAmendProject';

@@ -14,7 +14,7 @@ import { UseFormSetValue } from 'react-hook-form';
 import { getSystemName } from '../utils';
 
 export const TARGET_PATH_FIELD_PREFIX = '_TargetPath_';
-export const DEFAULT_JOB_MAX_MINUTES = 60 * 24;
+export const DEFAULT_JOB_MAX_MINUTES = 60 * 24 * 2; // 2 days
 
 /**
  * Get the execution system object for a given id of the execution system.
@@ -471,7 +471,7 @@ export const getExecSystemLogicalQueueValidation = (
  */
 export const getAllocationList = (
   definition: TTapisApp,
-  execSystem: TTapisSystem[],
+  execSystems: TTapisSystem[],
   allocations: TTasAllocations,
   allocationToExecSysMap: Map<string, string[]>
 ) => {
@@ -484,8 +484,8 @@ export const getAllocationList = (
 
   const matchingExecutionHost = Object.keys(allocations.hosts).find(
     (host) =>
-      execSystem.length > 0 &&
-      (execSystem[0].host === host || execSystem[0].host.endsWith(`.${host}`))
+      execSystems.length > 0 &&
+      (execSystems[0].host === host || execSystems[0].host.endsWith(`.${host}`))
   );
 
   return matchingExecutionHost ? allocations.hosts[matchingExecutionHost] : [];

@@ -94,21 +94,32 @@ export const AppsSubmissionForm: React.FC = () => {
     (s) => defaultStorageHost?.endsWith(s)
   );
 
+  const noStorageAllocationRequired =
+    defaultStorageSystem.notes?.noAllocationRequired;
+
   // Check if user has default allocation if defaultStorageHost is not corral
-  const hasDefaultAllocation =
-    hasCorral || allAllocations.hosts[defaultStorageHost];
-  const allocationToExecSysMap = buildMapOfAllocationsToExecSystems(
-    executionSystems,
-    allAllocations
-  );
+  const hasDefaultStorageAllocation =
+    hasCorral ||
+    noStorageAllocationRequired ||
+    allAllocations.hosts[defaultStorageHost];
 
   const hasStorageSystems = !!storageSystems.length;
-  const [appExecSystems, setAppExecSystems] = useState<TTapisSystem[]>([]);
+  const [appExecSystems, setAppExecSystems] =
+    useState<TTapisSystem[]>(executionSystems);
+  const [filteredExecSystems, setFilteredExecSystems] = useState<
+    TTapisSystem[]
+  >([]);
   const [defaultExecSystem, setDefaultExecSystem] =
     useState<TTapisSystem | null>(
       appExecSystems && appExecSystems.length > 0 ? appExecSystems[0] : null
     );
 
+  const allocationToExecSysMap = buildMapOfAllocationsToExecSystems(
+    appExecSystems,
+    allAllocations
+  );
+
+  // Update available exec systems for app based on app's dynamicExecSystems filter
   useEffect(() => {
     const computedExecSystems = getExecSystemsFromApp(
       definition,
@@ -120,16 +131,30 @@ export const AppsSubmissionForm: React.FC = () => {
     ) as TTapisSystem;
     if (!areArraysEqual(appExecSystems, computedExecSystems)) {
       setAppExecSystems(computedExecSystems);
+      setFilteredExecSystems(computedExecSystems);
       setDefaultExecSystem(computedDefaultExecSystem);
     }
   }, [definition, executionSystems]);
 
+<<<<<<< HEAD
   const isSystemUnreachable = !!(systemStatus ?? []).find(
     (s) => s.id === defaultExecSystem?.id
   );
 
   const [allocations, setAllocations] = useState<string[]>([]);
+=======
+  const [allocations, setAllocations] = useState<string[]>(
+    getAllocationList(
+      definition,
+      appExecSystems,
+      allAllocations,
+      allocationToExecSysMap
+    )
+  );
+>>>>>>> origin
   const [portalAlloc, setPortalAlloc] = useState<string | undefined>(undefined);
+  const [noExecAllocationRequired, setNoExecAllocationRequired] =
+    useState<boolean>(true);
 
   // adjust the allocation list based on what exec systemss
   // are in the app definition and the host list.
@@ -199,10 +224,14 @@ export const AppsSubmissionForm: React.FC = () => {
     string | undefined
   >(undefined);
   useEffect(() => {
-    if (!hasDefaultAllocation && hasStorageSystems) {
+    if (!hasDefaultStorageAllocation && hasStorageSystems) {
       // User does not have default storage allocation
       setMissingAllocation(getSystemName(defaultStorageHost));
-    } else if (isAppTypeBATCH(definition) && !allocations.length) {
+    } else if (
+      isAppTypeBATCH(definition) &&
+      !allocations.length &&
+      !noExecAllocationRequired
+    ) {
       // User does not have allocation on execution system for a batch type app
       setMissingAllocation(getSystemName(defaultExecSystem?.host ?? ''));
     } else {
@@ -326,7 +355,7 @@ export const AppsSubmissionForm: React.FC = () => {
       : allocationExecSystemIds[0];
 
     const allocationExecSystems = allocationExecSystemIds.map((e) =>
-      (app.execSystems ?? []).find((es) => es.id === e)
+      appExecSystems.find((es) => es.id === e)
     );
     return { allocationExecSystems, defaultExecSystemId };
   }
@@ -364,9 +393,10 @@ export const AppsSubmissionForm: React.FC = () => {
         updatedExecSystems = (allocationExecSystems ?? []).filter(
           (sys): sys is TTapisSystem => sys !== undefined
         );
+
         setValue('configuration.execSystemId', defaultExecSystemId || '');
-        if (!areArraysEqual(appExecSystems, updatedExecSystems)) {
-          setAppExecSystems(updatedExecSystems);
+        if (!areArraysEqual(filteredExecSystems, updatedExecSystems)) {
+          setFilteredExecSystems(updatedExecSystems);
         }
       }
     }
@@ -413,13 +443,18 @@ export const AppsSubmissionForm: React.FC = () => {
     previousValues.current = { queueValue, allocationValue, execSystemValue };
   }, [queueValue, allocationValue, execSystemValue]);
 
+  // Update schema and fields based on new exec system or queue
   useEffect(() => {
     const currentExecSystem = getExecSystemFromId(
-      appExecSystems,
+      filteredExecSystems,
       execSystemValue ?? definition.jobAttributes.execSystemId
     );
 
     if (currentExecSystem) {
+      setNoExecAllocationRequired(
+        !!currentExecSystem.notes?.noAllocationRequired
+      );
+
       const defaultQueue = getQueueValueForExecSystem({
         exec_sys: currentExecSystem,
         queue_name: queueValue,
@@ -430,7 +465,7 @@ export const AppsSubmissionForm: React.FC = () => {
         const updatedSchema = getConfigurationSchema(
           definition,
           allocations,
-          appExecSystems,
+          filteredExecSystems,
           currentExecSystem,
           defaultQueue
         );
@@ -446,7 +481,7 @@ export const AppsSubmissionForm: React.FC = () => {
         const updatedFields = getConfigurationFields(
           definition,
           allocations,
-          appExecSystems,
+          filteredExecSystems,
           currentExecSystem,
           defaultQueue
         );
@@ -459,7 +494,13 @@ export const AppsSubmissionForm: React.FC = () => {
         );
       }
     }
-  }, [allocations, execSystemValue, queueValue, definition, appExecSystems]);
+  }, [
+    allocations,
+    execSystemValue,
+    queueValue,
+    definition,
+    filteredExecSystems,
+  ]);
 
   // TODO: DES-2916: Use Zod's superRefine feature instead of manually updating schema and tracking schema changes.
   useEffect(() => {
@@ -539,7 +580,11 @@ export const AppsSubmissionForm: React.FC = () => {
 
   useEffect(() => {
     if (submitResult?.execSys) {
-      setPushKeysSystem(submitResult.execSys);
+      setPushKeysSystem(
+        pushKeysSystem?.defaultAuthnMethod === 'TMS_KEYS'
+          ? undefined
+          : submitResult.execSys
+      );
     } else if (isSuccess) {
       reset(initialValues);
       if (definition.notes.isInteractive) {
@@ -656,10 +701,24 @@ export const AppsSubmissionForm: React.FC = () => {
       delete jobData.job.allocation;
     }
 
+    const schedOpts = definition.jobAttributes.parameterSet?.schedulerOptions;
+    if (schedOpts) {
+      schedOpts.forEach((opt) => {
+        if (opt.notes?.isReservation) {
+          const reservation = jobData.job.parameterSet.schedulerOptions.find(
+            (option) => option.name === 'TACC Reservation'
+          );
+          if (reservation) {
+            reservation.arg = `--reservation=${reservation.arg}`;
+          }
+        }
+      });
+    }
+
     // Before job submission, ensure the memory limit is not above queue limit.
     if (definition.jobType === 'BATCH') {
       const queue = getExecSystemFromId(
-        appExecSystems,
+        executionSystems,
         jobData.job.execSystemId ?? definition.jobAttributes.execSystemId
       )?.batchLogicalQueues.find(
         (q) => q.name === jobData.job.execSystemLogicalQueue
@@ -672,33 +731,33 @@ export const AppsSubmissionForm: React.FC = () => {
     submitJob(jobData);
   };
 
-  const defaultSystemNeedsKeysMessage = defaultStorageSystem.notes
-    ?.keyservice ? (
-    <span>
-      For help,{' '}
-      <a
-        rel="noopener noreferrer"
-        target="_blank"
-        className="wb-link"
-        href="https://www.designsafe-ci.org/help/submit-ticket/"
-      >
-        submit a ticket.
-      </a>
-    </span>
-  ) : (
-    <span>
-      If this is your first time logging in, you may need to&nbsp;
-      <a
-        className="data-files-nav-link"
-        type="button"
-        href="#"
-        onClick={() => setPushKeysSystem(defaultStorageSystem)}
-      >
-        push your keys
-      </a>
-      .
-    </span>
-  );
+  const defaultSystemNeedsKeysMessage =
+    defaultStorageSystem.defaultAuthnMethod === 'TMS_Keys' ? (
+      <span>
+        For help,{' '}
+        <a
+          rel="noopener noreferrer"
+          target="_blank"
+          className="wb-link"
+          href="https://www.designsafe-ci.org/help/submit-ticket/"
+        >
+          submit a ticket.
+        </a>
+      </span>
+    ) : (
+      <span>
+        If this is your first time logging in, you may need to&nbsp;
+        <a
+          className="data-files-nav-link"
+          type="button"
+          href="#"
+          onClick={() => setPushKeysSystem(defaultStorageSystem)}
+        >
+          push your keys
+        </a>
+        .
+      </span>
+    );
 
   return (
     <>
@@ -714,6 +773,23 @@ export const AppsSubmissionForm: React.FC = () => {
             }
             type="success"
             closable
+            showIcon
+            style={{ marginBottom: '1rem' }}
+          />
+        )}
+      {submitResult &&
+        submitResult.execSys &&
+        submitResult.execSys?.defaultAuthnMethod === 'TMS_Keys' && (
+          <Alert
+            message={
+              <>
+                There was a problem with file system access. Please submit a{' '}
+                <a href="/help/new-ticket/" target="_blank">
+                  ticket.
+                </a>
+              </>
+            }
+            type="warning"
             showIcon
             style={{ marginBottom: '1rem' }}
           />

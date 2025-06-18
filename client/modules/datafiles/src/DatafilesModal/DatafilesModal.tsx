@@ -7,6 +7,7 @@ import { UploadFileModal } from './UploadFileModal';
 import { UploadFolderModal } from './UploadFolderModal';
 import { MoveModal } from './MoveModal';
 import { DownloadModal } from './DownloadModal';
+import { MicrosurveyModal } from './MicrosurveyModal';
 
 export type TModalChildren = (props: {
   onClick: React.MouseEventHandler<HTMLElement>;
@@ -22,5 +23,6 @@ DatafilesModal.UploadFile = UploadFileModal;
 DatafilesModal.UploadFolder = UploadFolderModal;
 DatafilesModal.Move = MoveModal;
 DatafilesModal.Download = DownloadModal;
+DatafilesModal.Microsurvey = MicrosurveyModal;
 
 export default DatafilesModal;

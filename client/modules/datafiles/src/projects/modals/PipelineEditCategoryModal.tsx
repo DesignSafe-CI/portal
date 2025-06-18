@@ -59,7 +59,6 @@ export const PipelineEditCategoryModal: React.FC<{
                 name: string;
                 value: Record<string, unknown>;
               }) => {
-                console.log(v);
                 patchEntityMeta(
                   { entityUuid, patchMetadata: v.value },
                   { onSuccess: onSuccess }

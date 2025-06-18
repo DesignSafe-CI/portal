@@ -38,7 +38,6 @@ export const PipelineOtherSelectFiles: React.FC<{
   }, [searchParams]);
 
   const onSaveSelections = () => {
-    console.log(selectedFiles);
     if (selectedFiles.length > 0 && !!data) {
       mutate(
         { fileObjs: selectedFiles, entityUuid: data.baseProject.uuid },

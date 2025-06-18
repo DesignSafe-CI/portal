@@ -27,7 +27,11 @@ from designsafe.apps.workspace.models.app_entries import (
 )
 from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
+<<<<<<< HEAD
 import requests
+=======
+from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
+>>>>>>> origin
 
 
 logger = logging.getLogger(__name__)
@@ -94,6 +98,7 @@ def _get_systems(
     )
 
 
+<<<<<<< HEAD
 def _get_exec_systems(user, systems):
     """List of all enabled execution systems available for the user."""
     tapis = user.tapis_oauth.client
@@ -113,6 +118,8 @@ def _get_system_status():
     return systems
 
 
+=======
+>>>>>>> origin
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
 
@@ -123,12 +130,6 @@ def _get_app(app_id, app_version, user):
         app_def = tapis.apps.getAppLatestVersion(appId=app_id)
 
     data = {"definition": app_def}
-    exec_systems = getattr(app_def.notes, 'dynamicExecSystems', [])
-    if len(exec_systems) > 0:
-        data['execSystems'] = _get_exec_systems(user, exec_systems)
-    else:
-        # Get Execution System Info to process sytem specific data, example: queue information
-        data['execSystems'] = [tapis.systems.getSystem(systemId=app_def.jobAttributes.execSystemId)]
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}
@@ -154,18 +155,35 @@ class SystemStatus:
         r = json.dumps(self.__dict__)
         return json.loads(r)
 
-def test_system_needs_keys(tapis, system_id):
+def test_system_needs_keys(tapis, username, system_id):
     """Tests a Tapis system by making a file listing call.
 
-    returns: SystemDef
-    """
+    If the system is TMS_KEYS-based, it attempts to create credentials before listing files.
 
+    Args:
+        tapis (Tapis): An instance of the Tapis client.
+        username (str)): The user to create credentials.
+        system_id (str): The ID of the Tapis system to test.
+
+    Returns:
+        bool
+    """
     try:
-        tapis.files.listFiles(systemId=system_id, path="/")
+        tapis.systems.checkUserCredential(systemId=system_id, userName=username)
+        return False
     except (InternalServerError, UnauthorizedError):
+        # Check if the system uses TMS_KEYS and create credentials if necessary
         system_def = tapis.systems.getSystem(systemId=system_id)
-        return system_def
-    return False
+        if system_def.get("defaultAuthnMethod") == "TMS_KEYS":
+            try:
+                create_system_credentials(
+                    tapis, username, system_id, createTmsKeys=True
+                )
+                return False
+            except (InternalServerError, UnauthorizedError):
+                logger.error(f"TMS_KEYS credential generation failed for system: {system_id}, user: {username}")
+                raise
+        return True
 
 
 class SystemListingView(AuthenticatedApiView):
@@ -244,6 +262,7 @@ class AppsView(AuthenticatedApiView):
         except ObjectDoesNotExist:
             data = _get_app(app_id, app_version, request.user)
 
+<<<<<<< HEAD
         data['systemStatus'] = _get_system_status()
 
         # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
@@ -259,6 +278,8 @@ class AppsView(AuthenticatedApiView):
         #         )
         #         data["defaultSystemNeedsKeys"] = system_needs_keys
 
+=======
+>>>>>>> origin
         return JsonResponse(
             {
                 "status": 200,
@@ -277,7 +298,7 @@ class AppsTrayView(AuthenticatedApiView):
         valid_tapis_apps = []
         for portal_app in portal_apps:
             portal_app_id = (
-                f"{portal_app['app_id']}-{portal_app['version']}"
+                (portal_app["app_id"], portal_app["version"])
                 if portal_app["version"]
                 else portal_app["app_id"]
             )
@@ -287,7 +308,7 @@ class AppsTrayView(AuthenticatedApiView):
                 (
                     x
                     for x in sorted(tapis_apps, key=lambda y: y.version)
-                    if portal_app_id in [x.id, f"{x.id}-{x.version}"]
+                    if portal_app_id in [x.id, (x.id, x.version)]
                 ),
                 None,
             )
@@ -309,7 +330,7 @@ class AppsTrayView(AuthenticatedApiView):
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(enabled.eq.true)~(version.like.*)",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
             listType="MINE",
             limit=-1,
         )
@@ -340,7 +361,7 @@ class AppsTrayView(AuthenticatedApiView):
         tapis = user.tapis_oauth.client
         apps_listing = tapis.apps.getApps(
             select="version,id,notes",
-            search="(enabled.eq.true)~(version.like.*)",
+            search="(versionEnabled.eq.true)~(enabled.eq.true)~(version.like.*)",
             listType="SHARED_PUBLIC",
             limit=-1,
         )
@@ -363,6 +384,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "priority",
             "short_label",
             "version",
         ]
@@ -379,6 +401,7 @@ class AppsTrayView(AuthenticatedApiView):
             "icon",
             "is_bundled",
             "label",
+            "priority",
             "short_label",
             "version",
         ]
@@ -409,7 +432,8 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
                     bundle_user_guide_link=F("bundle__user_guide_link"),
-                ).values(*values)
+                )
+                .values(*values)
             )
 
             html_apps = list(
@@ -444,8 +468,8 @@ class AppsTrayView(AuthenticatedApiView):
 
             # Add html apps to html_definitions
             for html_app in html_apps:
+                html_app["userGuideLink"] = html_app.get("bundle_user_guide_link", "")
                 html_definitions[html_app["app_id"]] = html_app
-
                 category_result["apps"].append(html_app)
 
             category_result["apps"] = sorted(
@@ -744,7 +768,7 @@ class JobsView(AuthenticatedApiView):
         for system_id in list(
             set([job_post["archiveSystemId"], job_post["execSystemId"]])
         ):
-            system_needs_keys = test_system_needs_keys(tapis, system_id)
+            system_needs_keys = test_system_needs_keys(tapis, username, system_id)
             if system_needs_keys:
                 logger.info(
                     f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
@@ -811,7 +835,9 @@ class JobsView(AuthenticatedApiView):
                         "X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"
                     },
                 )
-            job_post["parameterSet"]["envVariables"].append({"key": "_TAS_DIR", "value": tasdir})
+            job_post["parameterSet"]["envVariables"].append(
+                {"key": "_TAS_DIR", "value": tasdir}
+            )
 
         # Add webhook subscription for job status updates
         job_post["subscriptions"] = job_post.get("subscriptions", []) + [
