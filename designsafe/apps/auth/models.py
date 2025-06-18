@@ -3,11 +3,9 @@
 
 import logging
 import time
-import json
 import requests
 from django.db import models
 from django.conf import settings
-import requests.auth
 from tapipy.tapis import Tapis
 from tapipy.errors import BaseTapyException
 
