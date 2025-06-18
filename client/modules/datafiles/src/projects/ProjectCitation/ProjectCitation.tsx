@@ -185,7 +185,7 @@ export const DownloadCitation: React.FC<{
               <Popover
                 overlayStyle={{ maxWidth: '400px' }}
                 title="Unique Investigations"
-                content="User sessions in which any project or publications metadata is viewed,
+                content="User sessions in which any project or publication metadata is viewed,
                           or one or more files is downloaded or previewed"
               >
                 {dataciteMetrics?.data.attributes.viewCount ?? '--'} Unique
