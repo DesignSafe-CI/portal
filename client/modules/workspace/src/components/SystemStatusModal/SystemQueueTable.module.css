@@ -1,0 +1,64 @@
+.queueTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0;
+}
+
+.queueTable th {
+  padding-left: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 50px;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  border-bottom: 1px solid #707070;
+}
+
+.queueTable td {
+  padding-left: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 50px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.queueTable tbody tr:nth-child(even) {
+  background-color: #f4f4f4;
+}
+
+.queueTable tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  font-size: 11px;
+  border-radius: 4px;
+  color: white;
+  text-align: center;
+}
+
+.open {
+  background-color: #48a69c;
+}
+
+.closed {
+  background-color: #eb6e6e;
+}
+
+.queueTable th {
+  border-bottom: 1px solid #707070;
+}
+
+.queueTable td {
+  border-bottom: 1px solid rgba(112, 112, 112, 0.25);
+}
+
+.queueUnavailable {
+  padding-top: 20px;
+  text-align: center;
+}
