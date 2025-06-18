@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export type TaccSystemLive = {
@@ -17,7 +17,6 @@ type TaccStatusResponse = {
 };
 
 const fetchSystemStatus = async (): Promise<TaccSystemLive[]> => {
-  // TODO: Replace with backend proxy (/api/system/live-status) for production
   const proxyUrl = 'https://corsproxy.io/?';
   const targetUrl = 'https://tap.tacc.utexas.edu/status/';
   const fullUrl = `${proxyUrl}${encodeURIComponent(targetUrl)}`;
@@ -26,10 +25,30 @@ const fetchSystemStatus = async (): Promise<TaccSystemLive[]> => {
   return Object.values(res.data);
 };
 
+// ✅ Replaces useQuery with useEffect + useState
 export const useGetLiveSystemStatus = () => {
-  return useQuery({
-    queryKey: ['tacc', 'liveSystemStatus'],
-    queryFn: fetchSystemStatus,
-    staleTime: 60_000, // 60 seconds
-  });
+  const [data, setData] = useState<TaccSystemLive[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<unknown>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await fetchSystemStatus();
+        setData(result);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // Optional: auto-refresh every 60 seconds
+    const interval = setInterval(fetchData, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return { data, isLoading, error };
 };
