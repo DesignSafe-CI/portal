@@ -8,6 +8,9 @@ import datafilesRouter from './datafiles/datafilesRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
+import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
+
+console.log(Dashboard);
 
 console.log(Dashboard);
 
@@ -97,11 +100,13 @@ if (dashboardElement) {
   const dashboardRoot = ReactDOM.createRoot(dashboardElement as HTMLElement);
   dashboardRoot.render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <Dashboard />
-        </ConfigProvider>
-      </QueryClientProvider>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <ConfigProvider theme={themeConfig}>
+            <Dashboard />
+          </ConfigProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
     </StrictMode>
   );
 }
