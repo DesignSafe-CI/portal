@@ -43,6 +43,7 @@ export const PublicationSearchToolbar: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showTips, setShowTips] = useState(false);
   const searchBarRef = useRef<HTMLDivElement>(null);
+  const searchHelpRef = useRef<HTMLDivElement>(null);
 
   // Sync recentSearches across tabs
   const recentSearches = useSyncExternalStore(subscribe, getRecentSearches);
@@ -94,65 +95,77 @@ export const PublicationSearchToolbar: React.FC = () => {
             placeholder="Author, Title, Keyword, Description, Natural Hazard Event, or Project ID"
             style={{ flex: 1 }}
             onFocus={() => setShowTips(true)}
+            onBlur={(evt) => {
+              if (evt.relatedTarget !== searchHelpRef.current) {
+                setShowTips(false);
+              }
+            }}
             autoComplete="off"
           />
         </Form.Item>
       </Form>
 
       {showTips && (
-        <Collapse
-          bordered={false}
-          defaultActiveKey={['1', '2']}
-          expandIconPosition="end"
-          style={{ width: '100%' }}
-        >
-          <Panel
-            header={<strong>Search Tips</strong>}
-            key="1"
-            showArrow={false}
+        <div style={{ width: '100%' }} tabIndex={0} ref={searchHelpRef}>
+          <Collapse
+            bordered={false}
+            defaultActiveKey={['1', '2']}
+            expandIconPosition="end"
+            collapsible="icon"
+            style={{ width: '100%' }}
           >
-            <p>
-              <strong>"exact phrase"</strong> - Use quotes to search for exact
-              phrases.
-            </p>
-            <p>
-              <strong>word1 OR word2</strong> - Find results containing either
-              word.
-            </p>
-            <p>
-              <strong>word1 AND word2, word3 word4</strong> - Use AND, commas,
-              and spaces to find results containing each word.
-            </p>
-          </Panel>
-          <Panel
-            header={<strong>Recent Searches</strong>}
-            key="2"
-            showArrow={false}
-          >
-            {recentSearches.length ? (
-              recentSearches.map((term, idx) => (
-                <div
-                  key={idx}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                >
-                  <i
-                    role="none"
-                    className="fa fa-search"
-                    style={{ color: '#337ab7' }}
-                  />
-                  <p
-                    style={{ cursor: 'pointer', color: '#337ab7', margin: 0 }}
-                    onClick={() => setSearchParam('q', term)}
+            <Panel
+              header={<strong>Search Tips</strong>}
+              key="1"
+              showArrow={false}
+            >
+              <p>
+                <strong>"exact phrase"</strong> - Use quotes to search for exact
+                phrases.
+              </p>
+              <p>
+                <strong>word1 OR word2</strong> - Find results containing either
+                word.
+              </p>
+              <p>
+                <strong>word1 AND word2, word3 word4</strong> - Use AND, commas,
+                and spaces to find results containing each word.
+              </p>
+            </Panel>
+            <Panel
+              header={<strong>Recent Searches</strong>}
+              key="2"
+              showArrow={false}
+            >
+              {recentSearches.length ? (
+                recentSearches.map((term, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
                   >
-                    {term}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No recent searches</p>
-            )}
-          </Panel>
-        </Collapse>
+                    <i
+                      role="none"
+                      className="fa fa-search"
+                      style={{ color: '#337ab7' }}
+                    />
+                    <p
+                      style={{ cursor: 'pointer', color: '#337ab7', margin: 0 }}
+                      onClick={() => setSearchParam('q', term)}
+                    >
+                      {term}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p>No recent searches</p>
+              )}
+            </Panel>
+          </Collapse>
+        </div>
       )}
     </div>
   );
