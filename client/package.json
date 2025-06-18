@@ -14,7 +14,6 @@
     "@tanstack/react-query": "^5.15.0",
     "antd": "^5.16.4",
     "axios": "^1.6.3",
-    "bootstrap": "^5.3.6",
     "dayjs": "^1.11.0",
     "html-react-parser": "^5.1.10",
     "react": "18.2.0",
@@ -22,7 +21,6 @@
     "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.51.3",
     "react-hook-form-antd": "^1.1.0",
-    "react-icons": "^5.5.0",
     "react-router-dom": "^6.21.1",
     "react-use-websocket": "^4.8.1",
     "tslib": "^2.3.0",
@@ -38,7 +36,7 @@
     "@nx/js": "17.2.7",
     "@nx/playwright": "17.2.7",
     "@nx/react": "17.2.7",
-    "@nx/vite": "^18.3.5",
+    "@nx/vite": "17.2.7",
     "@nx/workspace": "17.2.7",
     "@playwright/test": "^1.36.0",
     "@swc-node/register": "~1.6.7",
@@ -52,8 +50,8 @@
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
     "@vitejs/plugin-react": "^4.2.0",
-    "@vitest/coverage-v8": "^1.6.1",
-    "@vitest/ui": "^3.2.3",
+    "@vitest/coverage-v8": "~0.34.6",
+    "@vitest/ui": "~0.34.6",
     "eslint": "~8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "2.27.5",
@@ -66,7 +64,7 @@
     "nx": "17.2.7",
     "prettier": "^2.6.2",
     "typescript": "~5.2.2",
-    "vite": "^6.3.5",
-    "vitest": "^3.2.3"
+    "vite": "^5.0.0",
+    "vitest": "~0.34.6"
   }
 }
