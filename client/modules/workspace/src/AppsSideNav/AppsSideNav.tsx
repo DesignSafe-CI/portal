@@ -4,6 +4,21 @@ import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
 
+const handleToolClick = (toolName: string, toolPath: string) => {
+  const correctedPath = toolPath.startsWith('/workspace/')
+    ? toolPath
+    : `/workspace/${toolPath.replace(/^\//, '')}`;
+
+  const existing: { label: string; path: string }[] = JSON.parse(
+    localStorage.getItem('recentTools') || '[]'
+  );
+  const updated = [
+    { label: toolName, path: correctedPath },
+    ...existing.filter((t) => t.path !== correctedPath),
+  ].slice(0, 5);
+  localStorage.setItem('recentTools', JSON.stringify(updated));
+};
+
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
@@ -41,13 +56,21 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           bundles[bundleKey].apps.push(
             getItem(
               <NavLink
-                to={
-                  `${app.app_id}` +
-                  (app.version ? `?appVersion=${app.version}` : '')
+                to={`/workspace/${app.app_id}${
+                  app.version ? `?appVersion=${app.version}` : ''
+                }`}
+                onClick={() =>
+                  handleToolClick(
+                    app.shortLabel || app.label || app.bundle_label,
+                    `/workspace/${app.app_id}${
+                      app.version ? `?appVersion=${app.version}` : ''
+                    }`
+                  )
                 }
               >
                 {app.shortLabel || app.label || app.bundle_label}
               </NavLink>,
+
               `${app.app_id}${app.version}${app.bundle_id}`,
               app.priority
             )
@@ -57,13 +80,21 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
             apps: [
               getItem(
                 <NavLink
-                  to={
-                    `${app.app_id}` +
-                    (app.version ? `?appVersion=${app.version}` : '')
+                  to={`/workspace/${app.app_id}${
+                    app.version ? `?appVersion=${app.version}` : ''
+                  }`}
+                  onClick={() =>
+                    handleToolClick(
+                      app.shortLabel || app.label || app.bundle_label,
+                      `/workspace/${app.app_id}${
+                        app.version ? `?appVersion=${app.version}` : ''
+                      }`
+                    )
                   }
                 >
                   {app.shortLabel || app.label || app.bundle_label}
                 </NavLink>,
+
                 `${app.app_id}${app.version}${app.bundle_id}`,
                 app.priority
               ),
@@ -75,13 +106,21 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         categoryItems.push(
           getItem(
             <NavLink
-              to={
-                `${app.app_id}` +
-                (app.version ? `?appVersion=${app.version}` : '')
+              to={`/workspace/${app.app_id}${
+                app.version ? `?appVersion=${app.version}` : ''
+              }`}
+              onClick={() =>
+                handleToolClick(
+                  app.shortLabel || app.label || app.bundle_label,
+                  `/workspace/${app.app_id}${
+                    app.version ? `?appVersion=${app.version}` : ''
+                  }`
+                )
               }
             >
               {app.shortLabel || app.label || app.bundle_label}
             </NavLink>,
+
             `${app.app_id}${app.version}${app.bundle_id}`,
             app.priority
           )
