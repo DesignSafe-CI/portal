@@ -22,12 +22,6 @@ const RecentlyAccessed: React.FC = () => {
     }
   }, []);
 
-  const normalizePath = (path: string) => {
-    return path.startsWith('/workspace/')
-      ? path
-      : `/workspace/${path.replace(/^\//, '')}`;
-  };
-
   if (recentTools.length === 0) return null;
 
   return (
@@ -39,8 +33,7 @@ const RecentlyAccessed: React.FC = () => {
             key={index}
             className={styles.recentItem}
             onClick={() => {
-              const fullPath = normalizePath(tool.path);
-              window.location.href = fullPath; // Full page reload
+              window.location.href = tool.path;
             }}
           >
             {tool.label}

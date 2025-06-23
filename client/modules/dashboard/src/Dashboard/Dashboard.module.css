@@ -166,3 +166,57 @@
   overflow-y: auto;
   flex-grow: 1;
 }
+
+
+/* Dashboard.module.css */
+
+.favoriteToggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  color: gold;
+  cursor: pointer;
+  z-index: 999;
+}
+
+.favoritePanel {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 12px;
+  width: 250px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  border-radius: 8px;
+}
+
+.favoriteList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.favoriteItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0;
+}
+
+.starIcon {
+  font-size: 18px;
+  color: gold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.starIcon:hover {
+  transform: scale(1.2);
+  color: darkorange;
+}
+
