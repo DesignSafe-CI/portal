@@ -4,7 +4,7 @@ import Quicklinks from './Quicklinks';
 import JobStatus from './Jobstatus';
 import { Table, Tag } from 'antd';
 import { useGetLiveSystemStatus } from '../../../_hooks/src/systems/useGetLiveSystemStatus';
-
+import SUAllocationsCard from './SUAllocationsCard';
 export interface DashboardProps {}
 
 export function Dashboard(props: DashboardProps) {
@@ -51,6 +51,7 @@ export function Dashboard(props: DashboardProps) {
       <div style={{ flex: 2 }}>
         <h1>DASHBOARD</h1>
         <JobStatus />
+        <SUAllocationsCard/>
       </div>
       {/* Vertical separator */}
       <div
