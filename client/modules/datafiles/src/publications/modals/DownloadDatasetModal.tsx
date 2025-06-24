@@ -294,8 +294,8 @@ export const DownloadDatasetModal: React.FC<{
                   {' '}
                   Data Transfer Guide
                 </a>
-                . Alternatively, download subsets of files individually by selecting the
-                file and using the download button in the toolbar.
+                . Alternatively, download subsets of files or individually by
+                selecting the file and using the download button in the toolbar.
               </p>
             ) : (
               <p>
