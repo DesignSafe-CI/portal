@@ -275,7 +275,7 @@ export const DownloadDatasetModal: React.FC<{
             {exceedsLimit ? (
               <p>
                 This project zipped is <strong>{toBytes(data.length)}</strong>,
-                exceeding the <strong>2 GB</strong> download limit. To download,
+                exceeding the <strong>5 GB</strong> download limit. To download,
                 <a
                   href="https://accounts.tacc.utexas.edu/register"
                   target="_blank"
@@ -294,7 +294,7 @@ export const DownloadDatasetModal: React.FC<{
                   {' '}
                   Data Transfer Guide
                 </a>
-                . Alternatively, download files individually by selecting the
+                . Alternatively, download subsets of files individually by selecting the
                 file and using the download button in the toolbar.
               </p>
             ) : (
