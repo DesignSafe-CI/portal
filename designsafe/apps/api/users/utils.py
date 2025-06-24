@@ -11,6 +11,54 @@ from designsafe.apps.workspace.models.allocations import UserAllocations
 
 
 logger = logging.getLogger(__name__)
+def get_detailed_tas_allocations(username):
+    import logging
+    logger = logging.getLogger(__name__)
+
+    tas_client = TASClient(
+        baseURL=settings.TAS_URL,
+        credentials={
+            "username": settings.TAS_CLIENT_KEY,
+            "password": settings.TAS_CLIENT_SECRET,
+        },
+    )
+    tas_projects = tas_client.projects_for_user(username)
+
+    with open("designsafe/apps/api/users/tas_to_tacc_resources.json", encoding="utf-8") as file:
+        tas_to_tacc_resources = json.load(file)
+
+    allocation_table = []
+
+    for proj in tas_projects:
+        charge_code = proj.get("chargeCode", "N/A")
+        for alloc in proj.get("allocations", []):
+            resource_name = alloc.get("resource", "UNKNOWN")
+            status = alloc.get("status", "UNKNOWN")
+
+            logger.warning(f"Checking: {resource_name} / {status} / {charge_code}")
+
+            # Proceed anyway regardless of status or missing mapping
+            resource_info = tas_to_tacc_resources.get(resource_name, {"host": "unknown"})
+
+            awarded = alloc.get("computeAllocated", 0)
+            used = alloc.get("computeUsed", 0.0)
+            remaining = round(awarded - used, 3)
+
+            allocation_table.append({
+                "system": resource_name,
+                "host": resource_info["host"],
+                "project_code": charge_code,
+                "awarded": awarded,
+                "remaining": remaining,
+                "expiration": alloc.get("end", "N/A")[:10]
+            })
+
+    logger.warning(f"Final allocation_table: {allocation_table}")
+    return {"detailed_allocations": allocation_table}
+
+
+
+
 
 
 def get_user_data(username):
@@ -104,7 +152,7 @@ def _get_latest_allocations(username):
     Creates or updates allocations cache for a given user and returns new allocations
     """
     user = get_user_model().objects.get(username=username)
-    allocations = _get_tas_allocations(username)
+    allocations = get_detailed_tas_allocations(username)
     UserAllocations.objects.update_or_create(user=user, defaults={"value": allocations})
     return allocations
 
