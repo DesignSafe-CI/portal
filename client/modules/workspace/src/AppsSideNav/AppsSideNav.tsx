@@ -171,7 +171,9 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         selectedKeys={[selectedKey]}
         items={items}
         inlineIndent={10}
-        style={{ height: '100%' }}
+        style={{
+          height: '100%',
+        }}
       />
     </>
   );
