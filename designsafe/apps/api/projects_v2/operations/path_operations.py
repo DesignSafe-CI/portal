@@ -119,6 +119,7 @@ def update_path_mappings(pub_graph: nx.DiGraph, legacy_other_pubs=False):
             {
                 **file_obj,
                 "path": path_mapping[file_obj["path"]],
+                "legacyPath": file_obj["path"],
                 "system": "designsafe.storage.published",
             }
             for file_obj in node_data["value"].get("fileObjs", [])

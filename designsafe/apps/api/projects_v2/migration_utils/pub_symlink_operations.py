@@ -132,9 +132,9 @@ def create_symlink_db_records(project_id):
     # Add database records for symlinks so their types can be recovered
     for node in updated_tree.nodes:
         file_objs = updated_tree.nodes[node].get("value", {}).get("fileObjs", [])
-        for fo in file_objs:
-            accessor = f"tapis://{settings.PUBLISHED_SYSTEM}/{fo['path'].lstrip('/')}"
-            _type = fo["type"]
+        for fobj in file_objs:
+            accessor = f"tapis://{settings.PUBLISHED_SYSTEM}/{fobj['path'].lstrip('/')}"
+            _type = fobj["type"]
             PublicationSymlink.objects.update_or_create(
                 tapis_accessor=accessor, type=_type
             )
