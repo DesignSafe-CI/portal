@@ -1,142 +1,167 @@
-import React from 'react';
-import { Menu, MenuProps } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Menu, MenuProps, Switch } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
+import {
+  getUserFavorites,
+  addFavorite,
+  removeFavorite,
+} from '../../../dashboard/src/api/favouritesApi';
 
-// Add your recent tools feature here:
-const handleToolClick = (toolName: string, toolPath: string) => {
-  // Add /workspace/ prefix only if missing
-  const correctedPath = toolPath.startsWith('/workspace/')
-    ? toolPath
-    : `/workspace/${toolPath.replace(/^\//, '')}`;
+export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({ categories }) => {
+  const [favoriteToolIds, setFavoriteToolIds] = useState<string[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(true);
+  const [updatingToolIds, setUpdatingToolIds] = useState<Set<string>>(new Set());
 
-  // Get existing recent tools from localStorage
-  const existing: { label: string; path: string }[] = JSON.parse(
-    localStorage.getItem('recentTools') || '[]'
-  );
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const favs = await getUserFavorites();
+        const toolIds = (favs || []).map((fav: { tool_id: string; version?: string }) =>
+          fav.tool_id + (fav.version || '')
+        );
+        setFavoriteToolIds(toolIds);
+      } catch (err) {
+        console.error('Failed to load favorites', err);
+      } finally {
+        setLoadingFavorites(false);
+      }
+    };
+    fetchFavorites();
+  }, []);
 
-  // Add new tool at front, remove duplicates, keep max 5
-  const updated = [
-    { label: toolName, path: correctedPath },
-    ...existing.filter((t) => t.path !== correctedPath),
-  ].slice(0, 5);
+  const handleStarClick = async (toolId: string) => {
+    const isCurrentlyFavorite = favoriteToolIds.includes(toolId);
+    const prevFavorites = [...favoriteToolIds];
+    const updatedFavorites = isCurrentlyFavorite
+      ? favoriteToolIds.filter((id) => id !== toolId)
+      : [...favoriteToolIds, toolId];
 
-  localStorage.setItem('recentTools', JSON.stringify(updated));
-};
+    setFavoriteToolIds(updatedFavorites);
+    setUpdatingToolIds((prev) => new Set(prev).add(toolId));
 
-export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
-  categories,
-}) => {
+    try {
+      if (isCurrentlyFavorite) {
+        await removeFavorite(toolId);
+      } else {
+        await addFavorite(toolId);
+      }
+    } catch (err) {
+      console.error('Failed to update favorites', err);
+      setFavoriteToolIds(prevFavorites);
+    } finally {
+      setUpdatingToolIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(toolId);
+        return newSet;
+      });
+    }
+  };
+
   type MenuItem = Required<MenuProps>['items'][number] & { priority: number };
 
-  function getItem(
+  const getItem = (
     label: React.ReactNode,
     key: string,
     priority: number,
     children?: MenuItem[],
     type?: 'group'
-  ): MenuItem {
-    return {
-      label,
-      key,
-      priority,
-      children,
-      type,
-    } as MenuItem;
-  }
+  ): MenuItem => ({
+    label,
+    key,
+    priority,
+    children,
+    ...(type === 'group' ? { type } : {}),
+  });
 
   const getCategoryApps = (category: TAppCategory) => {
-    const bundles: {
-      [dynamic: string]: {
-        apps: MenuItem[];
-        label: string;
-      };
-    } = {};
+    const bundles: Record<string, { apps: MenuItem[]; label: string }> = {};
     const categoryItems: MenuItem[] = [];
 
     category.apps.forEach((app) => {
-      // Construct NavLink 'to' path as original (no /workspace prefix)
+      const toolId = app.app_id + (app.version || '');
       const linkPath = `${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`;
       const linkLabel = app.shortLabel || app.label || app.bundle_label;
+      const isFavorite = favoriteToolIds.includes(toolId);
+
+      const switchControl = (
+        <span
+          onClick={(e) => e.stopPropagation()}
+          style={{ marginLeft: 6, display: 'inline-block' }}
+        >
+          <Switch
+            checked={isFavorite}
+            loading={updatingToolIds.has(toolId)}
+            size="small"
+            onChange={() => handleStarClick(toolId)}
+            checkedChildren="★"
+            unCheckedChildren="☆"
+          />
+        </span>
+      );
+      const labelContent = (
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <NavLink
+            to={linkPath}
+            onClick={() => handleToolClick(linkLabel, linkPath)}
+            style={{
+              flexGrow: 1,
+              textDecoration: 'none',
+              color: 'inherit',
+              outline: 'none',
+            }}
+          >
+            {linkLabel}
+          </NavLink>
+          {switchControl}
+        </span>
+      );
+
+      const item = getItem(labelContent, toolId, app.priority);
 
       if (app.is_bundled) {
         const bundleKey = `${app.bundle_label}${app.bundle_id}`;
         if (bundles[bundleKey]) {
-          bundles[bundleKey].apps.push(
-            getItem(
-              <NavLink
-                to={linkPath}
-                onClick={() => handleToolClick(linkLabel, linkPath)}
-              >
-                {linkLabel}
-              </NavLink>,
-              `${app.app_id}${app.version || ''}${app.bundle_id}`,
-              app.priority
-            )
-          );
+          bundles[bundleKey].apps.push(item);
         } else {
           bundles[bundleKey] = {
-            apps: [
-              getItem(
-                <NavLink
-                  to={linkPath}
-                  onClick={() => handleToolClick(linkLabel, linkPath)}
-                >
-                  {linkLabel}
-                </NavLink>,
-                `${app.app_id}${app.version || ''}${app.bundle_id}`,
-                app.priority
-              ),
-            ],
+            apps: [item],
             label: app.bundle_label,
           };
         }
       } else {
-        categoryItems.push(
-          getItem(
-            <NavLink
-              to={linkPath}
-              onClick={() => handleToolClick(linkLabel, linkPath)}
-            >
-              {linkLabel}
-            </NavLink>,
-            `${app.app_id}${app.version || ''}${app.bundle_id}`,
-            app.priority
-          )
-        );
+        categoryItems.push(item);
       }
     });
 
-    const bundleItems = Object.entries(bundles).map(
-      ([bundleKey, bundle], index) =>
-        getItem(
-          `${bundle.label} [${bundle.apps.length}]`,
-          bundleKey,
-          index,
-          bundle.apps.sort((a, b) => a.priority - b.priority)
-        )
+    const bundleItems = Object.entries(bundles).map(([bundleKey, bundle], index) =>
+      getItem(
+        `${bundle.label} [${bundle.apps.length}]`,
+        bundleKey,
+        index,
+        bundle.apps.sort((a, b) => a.priority - b.priority)
+      )
     );
 
-    return categoryItems
-      .concat(bundleItems)
-      .sort((a, b) => (a?.key as string).localeCompare(b?.key as string));
+    return [...categoryItems.sort((a, b) => a.priority - b.priority), ...bundleItems];
   };
 
-  const items: MenuItem[] = categories.map((category) => {
-    return getItem(
-      `${category.title} [${category.apps.length}]`,
-      category.title,
-      category.priority,
-      getCategoryApps(category)
-    );
-  });
+  const items: MenuItem[] = categories
+    .map((category) =>
+      getItem(
+        `${category.title} [${category.apps.length}]`,
+        category.title,
+        category.priority,
+        getCategoryApps(category)
+      )
+    )
+    .sort((a, b) => a.priority - b.priority);
 
   const { appId, appVersion } = useGetAppParams();
 
   const currentApp = categories
-    .map((cat) => cat.apps)
-    .flat()
+    .flatMap((cat) => cat.apps)
     .find((app) => app.app_id === appId && app.version === (appVersion || ''));
 
   const currentCategory = categories.find((cat) =>
@@ -147,7 +172,9 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     ? `${currentApp.bundle_label}${currentApp.bundle_id}`
     : '';
 
-  const selectedKey = `${appId}${appVersion || ''}${currentApp?.bundle_id}`;
+  const selectedKey = `${appId}${appVersion || ''}${currentApp?.bundle_id ?? ''}`;
+
+  if (loadingFavorites) return <div style={{ padding: 16 }}>Loading tools...</div>;
 
   return (
     <>
@@ -177,4 +204,21 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
       />
     </>
   );
+};
+
+const handleToolClick = (toolName: string, toolPath: string) => {
+  const correctedPath = toolPath.startsWith('/workspace/')
+    ? toolPath
+    : `/workspace/${toolPath.replace(/^\//, '')}`;
+
+  const existing: { label: string; path: string }[] = JSON.parse(
+    localStorage.getItem('recentTools') || '[]'
+  );
+
+  const updated = [
+    { label: toolName, path: correctedPath },
+    ...existing.filter((t) => t.path !== correctedPath),
+  ].slice(0, 5);
+
+  localStorage.setItem('recentTools', JSON.stringify(updated));
 };
