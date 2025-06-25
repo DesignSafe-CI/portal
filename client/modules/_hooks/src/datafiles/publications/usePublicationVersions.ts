@@ -2,7 +2,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { usePublicationDetail } from './usePublicationDetail';
 import { useMemo } from 'react';
 
-const pathRegex = /\/PRJ-[0-9]+v?([0-9]*)/;
+const pathRegex = /--V([0-9]*)/;
 export function usePublicationVersions(projectId: string) {
   const { data } = usePublicationDetail(projectId);
   const { path } = useParams();

@@ -25,8 +25,10 @@ export const PublishedEntityListingLayout: React.FC = () => {
             api="tapis"
             system="designsafe.storage.published"
             path={encodeURIComponent(
-              data.tree.children.find((c) => c.version === selectedVersion)
-                ?.basePath ?? ''
+              `${
+                data.tree.children.find((c) => c.version === selectedVersion)
+                  ?.basePath ?? ''
+              }/data`
             )}
             baseRoute="."
             fileTags={data.fileTags}

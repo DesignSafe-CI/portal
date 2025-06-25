@@ -2,16 +2,16 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FileListing } from '@client/datafiles';
 import { DatafilesBreadcrumb } from '@client/common-components';
-import { usePublicationDetail, usePublicationVersions } from '@client/hooks';
+import { usePublicationDetail } from '@client/hooks';
 
 export const PublishedFileListingLayout: React.FC = () => {
   const { projectId, path } = useParams();
   const { data } = usePublicationDetail(projectId ?? '');
-  const { selectedVersion } = usePublicationVersions(projectId ?? '');
-  const systemRoot =
-    selectedVersion && selectedVersion > 1
-      ? `/${projectId}v${selectedVersion}`
-      : `/${projectId}`;
+  //const systemRoot =
+  //  selectedVersion && selectedVersion > 1
+  //    ? `/${projectId}v${selectedVersion}`
+  //    : `/${projectId}`;
+  const systemRoot = `/published-data/${projectId}`;
   if (!projectId) return null;
   return (
     <>

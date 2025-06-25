@@ -30,28 +30,30 @@ def test_publication_subtree(project_with_associations):
     subtree, path_mapping = get_publication_subtree("PRJ-1234", exp_uuid)
     assert len(subtree) == 3
 
-    mc_data = next(
-        subtree.nodes[node]
+    mc_node = next(
+        node
         for node in subtree
         if subtree.nodes[node]["name"] == constants.EXPERIMENT_MODEL_CONFIG
     )
 
+    mc_data = subtree.nodes[mc_node]
+
     entity_file_paths = [f["path"] for f in mc_data["value"]["fileObjs"]]
-    expected_file_name = "/PRJ-1234/path/to/file1"
-    expected_dupe_file_name = "/PRJ-1234/path/to/other/file1"
+    expected_file_name = "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1"
+    expected_dupe_file_name = "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1(1)"
 
     assert expected_file_name in entity_file_paths
     assert expected_dupe_file_name in entity_file_paths
 
     entity_tag_paths = [f["path"] for f in mc_data["value"]["fileTags"]]
-    expected_tag_path_1 = "/PRJ-1234/path/to/file1"
-    expected_tag_path_2 = "/PRJ-1234/path/to/dir1/nested/file"
+    expected_tag_path_1 = "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1"
+    expected_tag_path_2 = "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/dir1/nested/file"
     assert expected_tag_path_1 in entity_tag_paths
     assert expected_tag_path_2 in entity_tag_paths
-    assert path_mapping == {
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/file1": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/file1",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/other/file1": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/other/file1",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/dir1": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/dir1",
+    assert path_mapping[mc_node] == {
+        f"/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1",
+        f"/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1(1)",
+        f"/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/dir1",
     }
 
 
@@ -63,29 +65,31 @@ def test_publication_subtree_with_version(project_with_associations):
     subtree, path_mapping = get_publication_subtree("PRJ-1234", exp_uuid, version=2)
     assert len(subtree) == 3
 
-    mc_data = next(
-        subtree.nodes[node]
+    mc_node = next(
+        node
         for node in subtree
         if subtree.nodes[node]["name"] == constants.EXPERIMENT_MODEL_CONFIG
     )
 
+    mc_data = subtree.nodes[mc_node]
+
     entity_file_paths = [f["path"] for f in mc_data["value"]["fileObjs"]]
-    expected_file_name = "/PRJ-1234v2/path/to/file1"
-    expected_dupe_file_name = "/PRJ-1234v2/path/to/other/file1"
+    expected_file_name = "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1"
+    expected_dupe_file_name = "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1(1)"
 
     assert expected_file_name in entity_file_paths
     assert expected_dupe_file_name in entity_file_paths
 
     entity_tag_paths = [f["path"] for f in mc_data["value"]["fileTags"]]
-    expected_tag_path_1 = "/PRJ-1234v2/path/to/file1"
-    expected_tag_path_2 = "/PRJ-1234v2/path/to/dir1/nested/file"
+    expected_tag_path_1 = "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1"
+    expected_tag_path_2 = "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/dir1/nested/file"
     assert expected_tag_path_1 in entity_tag_paths
     assert expected_tag_path_2 in entity_tag_paths
 
-    assert path_mapping == {
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/file1": "/corral-repl/tacc/NHERI/published/PRJ-1234v2/path/to/file1",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/other/file1": "/corral-repl/tacc/NHERI/published/PRJ-1234v2/path/to/other/file1",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/dir1": "/corral-repl/tacc/NHERI/published/PRJ-1234v2/path/to/dir1",
+    assert path_mapping[mc_node] == {
+        f"/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1",
+        f"/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1(1)",
+        f"/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/dir1",
     }
 
 
@@ -138,11 +142,26 @@ def test_tree_multiple_experiments(project_with_associations):
 
     assert len(full_tree) == 5
 
-    assert full_path_mapping == {
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/file1": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/file1",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/other/file1": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/other/file1",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/dir1": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/dir1",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/file3": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/file3",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/other/file3": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/other/file3",
-        f"/corral-repl/tacc/NHERI/projects/{project_uuid}/path/to/dir2": "/corral-repl/tacc/NHERI/published/PRJ-1234/path/to/dir2",
+    mc_node_1 = next(
+        node
+        for node in full_tree
+        if full_tree.nodes[node]["value"]["title"] == "Test Entity"
+    )
+
+    mc_node_2 = next(
+        node
+        for node in full_tree
+        if full_tree.nodes[node]["value"]["title"] == "Test Entity 2"
+    )
+
+    assert full_path_mapping[mc_node_1] == {
+        f"/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1",
+        f"/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1(1)",
+        f"/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/dir1",
+    }
+
+    assert full_path_mapping[mc_node_2] == {
+        f"/path/to/file3": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/file3",
+        f"/path/to/other/file3": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/file3(1)",
+        f"/path/to/dir2": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/dir2",
     }
