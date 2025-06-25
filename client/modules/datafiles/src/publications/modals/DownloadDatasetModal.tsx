@@ -238,8 +238,7 @@ export const DownloadDatasetModal: React.FC<{
     archivePath,
     isModalOpen
   );
-  console.log(data);
-  const FILE_SIZE_LIMIT = 2147483648;
+  const FILE_SIZE_LIMIT = 5368709120; // 5 GB
   const exceedsLimit = useMemo(
     () => (data?.length ?? 0) > FILE_SIZE_LIMIT,
     [data?.length]
