@@ -5,7 +5,7 @@ import { useUploadFile } from '@client/hooks';
 import type { TModalChildren } from '../DatafilesModal';
 
 const MAX_FILES = 25;
-const MAX_TOTAL_SIZE = 2 * 1024 ** 3; // 2 GiB in bytes
+const MAX_TOTAL_SIZE = 2 * 1024 ** 3; // 2 GB in bytes
 
 export const UploadFileModalBody: React.FC<{
   isOpen: boolean;
@@ -84,13 +84,11 @@ export const UploadFileModalBody: React.FC<{
       <Upload {...uploadProps}>
         <div>
           Uploading to&nbsp;
-          <span className="fa fa-folder">
-            &nbsp;{newPath || '/'}
-          </span>
+          <span className="fa fa-folder">&nbsp;{newPath || '/'}</span>
         </div>
         <div>
           <b>
-            Select files (for more than 2 GiB or {MAX_FILES} files, please use
+            Select files (for more than 2 GB or {MAX_FILES} files, please use
             Globus)
           </b>
         </div>
@@ -99,7 +97,7 @@ export const UploadFileModalBody: React.FC<{
 
       <div style={{ marginTop: 12 }}>
         {fileList.length} file{fileList.length !== 1 && 's'} staged, total{' '}
-        {(totalBytes / 1024 ** 3).toFixed(2)} GiB
+        {(totalBytes / 1024 ** 3).toFixed(2)} GB
         {overCount && (
           <div style={{ color: 'red', marginTop: 4 }}>
             ⚠ You have selected more than {MAX_FILES} files.
@@ -107,7 +105,7 @@ export const UploadFileModalBody: React.FC<{
         )}
         {overSize && (
           <div style={{ color: 'red', marginTop: 4 }}>
-            ⚠ Total size exceeds 2 GiB limit.
+            ⚠ Total size exceeds 2 GB limit.
           </div>
         )}
       </div>

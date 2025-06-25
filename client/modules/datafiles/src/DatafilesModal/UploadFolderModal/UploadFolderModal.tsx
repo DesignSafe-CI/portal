@@ -12,7 +12,7 @@ interface CustomUploadFile<T = unknown> extends UploadFile<T> {
 }
 
 const MAX_FILES = 25;
-const MAX_BYTES = 2 * 1024 * 1024 * 1024; // 2 GiB
+const MAX_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB
 
 export const UploadFolderModalBody: React.FC<{
   isOpen: boolean;
@@ -44,10 +44,7 @@ export const UploadFolderModalBody: React.FC<{
         const formData = new FormData();
         formData.append('uploaded_file', f as FileType);
         formData.append('file_name', f.name);
-        formData.append(
-          'webkit_relative_path',
-          f.webkitRelativePath || f.name
-        );
+        formData.append('webkit_relative_path', f.webkitRelativePath || f.name);
         await mutate({
           api,
           system,
@@ -66,7 +63,7 @@ export const UploadFolderModalBody: React.FC<{
   };
 
   const beforeUpload: UploadProps['beforeUpload'] = (file) => {
-    setFileList(prev => [...prev, file as CustomUploadFile]);
+    setFileList((prev) => [...prev, file as CustomUploadFile]);
     return false;
   };
 
@@ -74,12 +71,12 @@ export const UploadFolderModalBody: React.FC<{
     directory: true,
     fileList,
     onRemove: (file) =>
-      setFileList(prev => prev.filter(f => f.uid !== file.uid)),
+      setFileList((prev) => prev.filter((f) => f.uid !== file.uid)),
     beforeUpload,
   };
 
-  const fmtGiB = (bytes: number) =>
-    `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GiB`;
+  const fmtGB = (bytes: number) =>
+    `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 
   const displayPath = path.replace(/%2F/g, '/').replace(/^\/?/, ' ');
 
@@ -103,17 +100,14 @@ export const UploadFolderModalBody: React.FC<{
         </div>
         <div>
           <b>
-            Select folder (for more than 2 GiB or 25 files, please use Globus)
+            Select folder (for more than 2 GB or 25 files, please use Globus)
           </b>
         </div>
-        <Button
-          icon={<UploadOutlined />}
-          disabled={overFileLimit || uploading}
-        >
+        <Button icon={<UploadOutlined />} disabled={overFileLimit || uploading}>
           Choose Folder
         </Button>
         <div>
-          {fileCount} file{fileCount !== 1 && 's'} staged — {fmtGiB(totalSize)}
+          {fileCount} file{fileCount !== 1 && 's'} staged — {fmtGB(totalSize)}
         </div>
       </Upload>
 
@@ -124,7 +118,7 @@ export const UploadFolderModalBody: React.FC<{
       )}
       {overSizeLimit && (
         <div style={{ color: 'red', marginTop: 4 }}>
-          ⚠ Total size exceeds 2 GiB limit ({fmtGiB(totalSize)}).
+          ⚠ Total size exceeds 2 GB limit ({fmtGB(totalSize)}).
         </div>
       )}
 
@@ -142,10 +136,7 @@ export const UploadFolderModalBody: React.FC<{
           type="primary"
           onClick={handleUpload}
           disabled={
-            fileCount === 0 ||
-            uploading ||
-            overFileLimit ||
-            overSizeLimit
+            fileCount === 0 || uploading || overFileLimit || overSizeLimit
           }
           loading={uploading}
           className={styles.marginTop16}
