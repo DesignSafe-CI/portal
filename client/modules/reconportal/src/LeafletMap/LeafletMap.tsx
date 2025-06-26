@@ -41,7 +41,6 @@ export const mapConfig = {
   minZoom: 2, // 2 typically prevents zooming out too far to see multiple earths
   maxZoom: 24, // Maximum possible detail
   maxFitBoundsSelectedFeatureZoom: 18,
-  maxPointSelectedFeatureZoom: 15,
   maxBounds: [
     [-90, -180], // Southwest coordinates
     [90, 180], // Northeast coordinates
