@@ -1,6 +1,5 @@
-import React, { useMemo, useCallback} from 'react';
+import React, { useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
-import { useNavigate, useParams } from 'react-router-dom';
 import {
   MapContainer,
   ZoomControl,
@@ -18,13 +17,15 @@ import {
   getReconEventColor,
   ZoomConditionalLayerGroup,
   createClusterIcon,
+  ZoomOnEventSelection,
 } from './leafletUtil';
 import { getFirstLatLng } from './utils';
-import {  } from '@client/hooks';
 import {
-  useGetReconPortalEvents,   type ReconPortalEvents,
-  useGetOpenTopo, useReconEventContext, getReconPortalEventIdentifier
-
+  useGetReconPortalEvents,
+  type ReconPortalEvents,
+  useGetOpenTopo,
+  useReconEventContext,
+  getReconPortalEventIdentifier,
 } from '@client/hooks';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 
@@ -33,7 +34,6 @@ import 'leaflet/dist/leaflet.css';
 */
 
 import styles from './LeafletMap.module.css';
-import { LatLng } from 'leaflet';
 import { ReconPortalPopup } from './ReconPortalPopUp';
 
 export const mapConfig = {
@@ -54,12 +54,12 @@ export const mapConfig = {
  */
 export const LeafletMap: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
-    const {
-      selectedReconPortalEventIdentfier,
-      setSelectedReconPortalEventIdentifier,
-      filteredReconPortalEvents,
-      setFilteredReconPortalEvents,
-    } = useReconEventContext();
+  const {
+    selectedReconPortalEventIdentfier,
+    setSelectedReconPortalEventIdentifier,
+    filteredReconPortalEvents,
+    setFilteredReconPortalEvents,
+  } = useReconEventContext();
 
   const openTopoMapFeatures = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
@@ -137,13 +137,13 @@ export const LeafletMap: React.FC = () => {
     return [...openTopoGeojsonFeatures, ...openTopoMarkers];
   }, [openTopoData]);
 
-    const { data: reconData } = useGetReconPortalEvents();
+  const { data: reconData } = useGetReconPortalEvents();
 
-    const handleFeatureClick = (reconEvent: ReconPortalEvents, e: any) => {
-      setSelectedReconPortalEventIdentifier(getReconPortalEventIdentifier(reconEvent));
-      e.target.openPopup();
-    };
-    
+  const handleFeatureClick = (reconEvent: ReconPortalEvents) => {
+    setSelectedReconPortalEventIdentifier(
+      getReconPortalEventIdentifier(reconEvent)
+    );
+  };
 
   const ReconPortalEvents = useMemo(() => {
     const datasets = reconData ?? [];
@@ -159,19 +159,19 @@ export const LeafletMap: React.FC = () => {
         <Marker
           key={`${reconEvent.title}-index`}
           icon={icon}
-          position={[reconEvent.location["lat"], reconEvent.location["lon"]]}
+          position={[reconEvent.location.lat, reconEvent.location.lon]}
           eventHandlers={{
-            click: (e) => handleFeatureClick(reconEvent, e),
-            contextmenu: (e) => handleFeatureClick(reconEvent, e),
+            click: (e) => handleFeatureClick(reconEvent),
             mouseover: (e) => {
               e.target.openPopup();
-              },
+            },
             mouseout: (e) => {
               setTimeout(() => {
                 e.target.closePopup();
               }, 1000);
-            }
-            }}>
+            },
+          }}
+        >
           <Popup>
             <ReconPortalPopup dataset={reconEvent} />
           </Popup>
@@ -180,8 +180,6 @@ export const LeafletMap: React.FC = () => {
     });
     return [...reconPortalMarkers];
   }, [reconData]);
-
-  
 
   return (
     <>
@@ -219,7 +217,8 @@ export const LeafletMap: React.FC = () => {
         <ZoomConditionalLayerGroup minZoom={10}>
           {openTopoMapFeatures}
         </ZoomConditionalLayerGroup>
-
+        {/* Recon Portal features, only zoomed in when DS event selected*/}
+        <ZoomOnEventSelection zoomLevel={13}></ZoomOnEventSelection>
         {/* Marker Features with Clustering (also includes point cloud markers) */}
         <MarkerClusterGroup
           zIndexOffset={1}
@@ -234,7 +233,7 @@ export const LeafletMap: React.FC = () => {
           zoomToBoundsOnClick={true}
         >
           {ReconPortalEvents}
-        </MarkerClusterGroup>  
+        </MarkerClusterGroup>
         {/* Zoom control */}
         <ZoomControl position="topright" />
       </MapContainer>

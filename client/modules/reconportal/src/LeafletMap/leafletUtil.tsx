@@ -1,7 +1,12 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { OpenTopoDataset, ReconPortalEvents } from '@client/hooks';
+import {
+  OpenTopoDataset,
+  ReconPortalEvents,
+  useReconEventContext,
+  getReconPortalEventIdentifier,
+} from '@client/hooks';
 import { LayerGroup, useMap } from 'react-leaflet';
 import { useEffect, useState } from 'react';
 import L, { MarkerCluster } from 'leaflet';
@@ -70,8 +75,11 @@ export const EVENT_TYPE_COLORS = {
   tornado: ' #FF5722',
 };
 
-export function getReconEventColor(dataset: ReconPortalEvents): string {
-  switch (dataset.event_type) {
+export function getReconEventColor(
+  dataset: ReconPortalEvents | undefined | null
+): string {
+  if (!dataset) return '#666666'; // Default gray color
+  switch (dataset?.event_type) {
     case 'earthquake':
       return EVENT_TYPE_COLORS.earthquake;
     case 'flood':
@@ -89,7 +97,6 @@ export function getReconEventColor(dataset: ReconPortalEvents): string {
   }
 }
 
-
 /**
  * A React-Leaflet wrapper that conditionally renders its children (e.g. markers, GeoJSON, etc.)
  * based on the current zoom level of the map.
@@ -99,19 +106,63 @@ export const ZoomConditionalLayerGroup: React.FC<{
   children: React.ReactNode;
 }> = ({ minZoom, children }) => {
   const map = useMap();
+  const { selectedReconPortalEventIdentfier } = useReconEventContext();
   const [visible, setVisible] = useState(map.getZoom() >= minZoom);
 
   useEffect(() => {
     const updateVisibility = () => {
-      // TODO also include when DS event is selected
-      // See https://github.com/DesignSafe-CI/portal/pull/1558 and https://tacc-main.atlassian.net/browse/WG-500
-      setVisible(map.getZoom() >= minZoom);
+      setVisible(
+        !!selectedReconPortalEventIdentfier && map.getZoom() >= minZoom
+      );
     };
     map.on('zoomend', updateVisibility);
     return () => {
       map.off('zoomend', updateVisibility);
     };
-  }, [map, minZoom]);
+  }, [map, minZoom, selectedReconPortalEventIdentfier]);
 
   return visible ? <LayerGroup>{children}</LayerGroup> : null;
+};
+
+/**
+ * A React-Leaflet wrapper that conditionally zooms on the selected event
+ */
+export const ZoomOnEventSelection: React.FC<{
+  zoomLevel: number;
+}> = ({ zoomLevel }) => {
+  const map = useMap();
+  const { selectedReconPortalEventIdentfier, filteredReconPortalEvents } =
+    useReconEventContext();
+
+  useEffect(() => {
+    if (selectedReconPortalEventIdentfier) {
+      /**
+       * Finds the selected event and gets the point to zoom to
+       */
+      const selectedEvent = filteredReconPortalEvents.find(
+        (event) =>
+          selectedReconPortalEventIdentfier ===
+          getReconPortalEventIdentifier(event)
+      );
+      if (selectedEvent) {
+        const point = L.latLng(
+          selectedEvent.location.lat,
+          selectedEvent.location.lon
+        );
+        map.setView(point, zoomLevel, {
+          animate: false,
+        });
+      }
+    } else {
+      map.setView(L.latLng(40, -80), 3);
+    }
+
+    [
+      map,
+      selectedReconPortalEventIdentfier,
+      filteredReconPortalEvents,
+      zoomLevel,
+    ];
+  });
+  return null;
 };

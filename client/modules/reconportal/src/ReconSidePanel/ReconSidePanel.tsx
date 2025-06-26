@@ -25,23 +25,12 @@ import {
 import { formatDate } from '@client/workspace';
 import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
-import { EVENT_TYPE_COLORS } from '../LeafletMap/leafletUtil';
-
-
-const markerIconUrls = {
-  earthquake:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
-  flood:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-  tsunami:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-  landslide:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-  hurricane:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-  tornado:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-};
+import {
+  EVENT_TYPE_COLORS,
+  getReconEventColor,
+} from '../LeafletMap/leafletUtil';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
 export const ReconSidePanel: React.FC<LayoutProps> = ({
   children,
@@ -180,10 +169,11 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
         <Card className={styles.eventDetailCard}>
           <Flex className={styles.eventDetailTitleRow}>
             <span>
-              <img
-                src={markerIconUrls[eventType as keyof typeof markerIconUrls]}
-                alt={eventType}
-                style={{ width: '24px', height: '36px', marginRight: '8px' }}
+              <FontAwesomeIcon
+                icon={faLocationDot}
+                size="2x"
+                color={getReconEventColor(selectedEvent)}
+                style={{ marginRight: '8px' }}
               />
               {title}
             </span>
