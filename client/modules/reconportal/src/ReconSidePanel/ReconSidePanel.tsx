@@ -25,10 +25,7 @@ import {
 import { formatDate } from '@client/workspace';
 import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
-import {
-  EVENT_TYPE_COLORS,
-  getReconEventColor,
-} from '../LeafletMap/leafletUtil';
+import { getReconEventColor } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
@@ -138,9 +135,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               {formatDate(new Date(date))}
             </Text>
             <Tag
-              color={
-                EVENT_TYPE_COLORS[eventType as keyof typeof EVENT_TYPE_COLORS]
-              }
+              color={getReconEventColor(selectedEvent)}
               style={{
                 fontWeight: 600,
                 fontSize: 14,
@@ -161,8 +156,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
       event.location_description || event.properties?.description || '';
     const date = event.event_date || event.properties?.dateCreated || '';
     const eventType = event.event_type || event.properties?.host || '';
-    const eventTypeColor =
-      EVENT_TYPE_COLORS[eventType as keyof typeof EVENT_TYPE_COLORS] || '#ccc';
+    const eventTypeColor = getReconEventColor(event);
     const datasets = event.datasets || [];
     return (
       <div className={styles.eventDetail}>

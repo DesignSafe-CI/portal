@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { ReconPortalEvents, useGetReconPortalEventTypes } from '@client/hooks';
 import { Tag, Typography, Space } from 'antd';
 import styles from './LeafletMap.module.css';
-import { getReconEventColor } from './leafletUtil';
+import { getReconEventColor } from '../utils';
 
 const { Title, Text } = Typography;
 

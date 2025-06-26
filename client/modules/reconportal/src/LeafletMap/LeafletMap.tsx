@@ -13,12 +13,11 @@ import { faMap, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { OpenTopoPopup } from './OpenTopoPopup';
 import {
   createSvgMarkerIcon,
-  getOpenTopoColor,
-  getReconEventColor,
   ZoomConditionalLayerGroup,
   createClusterIcon,
   ZoomOnEventSelection,
 } from './leafletUtil';
+import { getOpenTopoColor, getReconEventColor } from '../utils';
 import { getFirstLatLng } from './utils';
 import {
   useGetReconPortalEvents,
@@ -54,9 +53,7 @@ export const mapConfig = {
  */
 export const LeafletMap: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
-  const {
-    setSelectedReconPortalEventIdentifier,
-  } = useReconEventContext();
+  const { setSelectedReconPortalEventIdentifier } = useReconEventContext();
 
   const openTopoMapFeatures = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
