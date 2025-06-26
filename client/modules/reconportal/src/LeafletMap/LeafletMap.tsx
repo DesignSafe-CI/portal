@@ -40,7 +40,6 @@ export const mapConfig = {
   startingCenter: [40, -80] as L.LatLngTuple,
   minZoom: 2, // 2 typically prevents zooming out too far to see multiple earths
   maxZoom: 24, // Maximum possible detail
-  maxFitBoundsInitialZoom: 18,
   maxFitBoundsSelectedFeatureZoom: 18,
   maxPointSelectedFeatureZoom: 15,
   maxBounds: [
