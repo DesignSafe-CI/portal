@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback} from 'react';
 import ReactDOM from 'react-dom/client';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   MapContainer,
   ZoomControl,
@@ -9,26 +10,39 @@ import {
   Marker,
   Popup,
 } from 'react-leaflet';
-import { faMap } from '@fortawesome/free-solid-svg-icons';
+import { faMap, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { OpenTopoPopup } from './OpenTopoPopup';
 import {
   createSvgMarkerIcon,
   getOpenTopoColor,
+  getReconEventColor,
   ZoomConditionalLayerGroup,
+  createClusterIcon,
 } from './leafletUtil';
 import { getFirstLatLng } from './utils';
-import { useGetOpenTopo } from '@client/hooks';
+import {  } from '@client/hooks';
+import {
+  useGetReconPortalEvents,   type ReconPortalEvents,
+  useGetOpenTopo, useReconEventContext, getReconPortalEventIdentifier
+
+} from '@client/hooks';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 /* no need to import leaflet css as already in base index
 import 'leaflet/dist/leaflet.css';
 */
 
 import styles from './LeafletMap.module.css';
+import { LatLng } from 'leaflet';
+import { ReconPortalPopup } from './ReconPortalPopUp';
 
 export const mapConfig = {
   startingCenter: [40, -80] as L.LatLngTuple,
   minZoom: 2, // 2 typically prevents zooming out too far to see multiple earths
   maxZoom: 24, // Maximum possible detail
+  maxFitBoundsInitialZoom: 18,
+  maxFitBoundsSelectedFeatureZoom: 18,
+  maxPointSelectedFeatureZoom: 15,
   maxBounds: [
     [-90, -180], // Southwest coordinates
     [90, 180], // Northeast coordinates
@@ -40,6 +54,12 @@ export const mapConfig = {
  */
 export const LeafletMap: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
+    const {
+      selectedReconPortalEventIdentfier,
+      setSelectedReconPortalEventIdentifier,
+      filteredReconPortalEvents,
+      setFilteredReconPortalEvents,
+    } = useReconEventContext();
 
   const openTopoMapFeatures = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
@@ -117,6 +137,52 @@ export const LeafletMap: React.FC = () => {
     return [...openTopoGeojsonFeatures, ...openTopoMarkers];
   }, [openTopoData]);
 
+    const { data: reconData } = useGetReconPortalEvents();
+
+    const handleFeatureClick = (reconEvent: ReconPortalEvents, e: any) => {
+      setSelectedReconPortalEventIdentifier(getReconPortalEventIdentifier(reconEvent));
+      e.target.openPopup();
+    };
+    
+
+  const ReconPortalEvents = useMemo(() => {
+    const datasets = reconData ?? [];
+    const reconPortalGeoJsonFeatures: React.ReactNode[] = [];
+    const reconPortalMarkers: React.ReactNode[] = [];
+
+    datasets.map((reconEvent, index) => {
+      const icon = createSvgMarkerIcon({
+        color: getReconEventColor(reconEvent),
+        icon: faLocationDot,
+      });
+      reconPortalMarkers.push(
+        <Marker
+          key={`${reconEvent.title}-index`}
+          icon={icon}
+          position={[reconEvent.location["lat"], reconEvent.location["lon"]]}
+          eventHandlers={{
+            click: (e) => handleFeatureClick(reconEvent, e),
+            contextmenu: (e) => handleFeatureClick(reconEvent, e),
+            mouseover: (e) => {
+              e.target.openPopup();
+              },
+            mouseout: (e) => {
+              setTimeout(() => {
+                e.target.closePopup();
+              }, 1000);
+            }
+            }}>
+          <Popup>
+            <ReconPortalPopup dataset={reconEvent} />
+          </Popup>
+        </Marker>
+      );
+    });
+    return [...reconPortalMarkers];
+  }, [reconData]);
+
+  
+
   return (
     <>
       <MapContainer
@@ -154,6 +220,21 @@ export const LeafletMap: React.FC = () => {
           {openTopoMapFeatures}
         </ZoomConditionalLayerGroup>
 
+        {/* Marker Features with Clustering (also includes point cloud markers) */}
+        <MarkerClusterGroup
+          zIndexOffset={1}
+          iconCreateFunction={createClusterIcon}
+          chunkedLoading={true}
+          showCoverageOnHover={false}
+          animate={true}
+          maxFitBoundsSelectedFeatureZoom={15}
+          spiderifyOnHover={true}
+          spiderfyOnMaxZoom={true}
+          spiderfyOnZoom={15}
+          zoomToBoundsOnClick={true}
+        >
+          {ReconPortalEvents}
+        </MarkerClusterGroup>  
         {/* Zoom control */}
         <ZoomControl position="topright" />
       </MapContainer>

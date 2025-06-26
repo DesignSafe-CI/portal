@@ -1,10 +1,11 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { OpenTopoDataset } from '@client/hooks';
+import { OpenTopoDataset, ReconPortalEvents } from '@client/hooks';
 import { LayerGroup, useMap } from 'react-leaflet';
 import { useEffect, useState } from 'react';
-import L from 'leaflet';
+import L, { MarkerCluster } from 'leaflet';
+import styles from './LeafletMap.module.css';
 
 /**
  * Create a Leaflet divIcon using any Font Awesome icon with dynamic color and size.
@@ -30,14 +31,64 @@ export function createSvgMarkerIcon({
 }
 
 /**
+ * Create a cluster icon and declare defaults
+ */
+const defaultClusterConfig = {
+  clusterSize: 36,
+  clusterBorderWidth: 3,
+  clusterFontSize: 14,
+};
+
+export const createClusterIcon = (cluster: MarkerCluster) => {
+  return L.divIcon({
+    html: `<span>${cluster.getChildCount()}</span>`,
+    className: styles.markerCluster,
+    iconSize: L.point(
+      defaultClusterConfig.clusterSize,
+      defaultClusterConfig.clusterSize,
+      true
+    ),
+  });
+};
+
+/**
  * Get color for OpenTopo dataset
  */
 export function getOpenTopoColor(dataset: OpenTopoDataset): string {
-  // TODO: derive color from hazard type https://tacc-main.atlassian.net/browse/WG-510
-  //  Confirm we can do this for some and if not what is our fall
-  // back color
   return 'black';
 }
+
+/**
+ * Declare and get color for Recon Portal dataset
+ */
+export const EVENT_TYPE_COLORS = {
+  earthquake: ' #D34141',
+  flood: ' #5D1393',
+  tsunami: ' #CCC526',
+  landslide: ' #57D657',
+  hurricane: ' #47A59D',
+  tornado: ' #FF5722',
+};
+
+export function getReconEventColor(dataset: ReconPortalEvents): string {
+  switch (dataset.event_type) {
+    case 'earthquake':
+      return EVENT_TYPE_COLORS.earthquake;
+    case 'flood':
+      return EVENT_TYPE_COLORS.flood;
+    case 'tsunami':
+      return EVENT_TYPE_COLORS.tsunami;
+    case 'landslide':
+      return EVENT_TYPE_COLORS.landslide;
+    case 'hurricane':
+      return EVENT_TYPE_COLORS.hurricane;
+    case 'tornado':
+      return EVENT_TYPE_COLORS.tornado;
+    default:
+      return '#666666'; // Default gray color
+  }
+}
+
 
 /**
  * A React-Leaflet wrapper that conditionally renders its children (e.g. markers, GeoJSON, etc.)

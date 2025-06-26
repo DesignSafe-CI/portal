@@ -25,15 +25,8 @@ import {
 import { formatDate } from '@client/workspace';
 import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
+import { EVENT_TYPE_COLORS } from '../LeafletMap/leafletUtil';
 
-const EVENT_TYPE_COLORS = {
-  earthquake: '#e46e28',
-  flood: '#4285F4',
-  tsunami: '#a765fe',
-  landslide: '#62a241',
-  hurricane: '#d34141',
-  tornado: '#9100ff',
-};
 
 const markerIconUrls = {
   earthquake:

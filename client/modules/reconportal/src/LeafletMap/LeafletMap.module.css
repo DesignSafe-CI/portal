@@ -22,3 +22,51 @@
   width: 100%;
   height: 100%;
 }
+.markerCluster {
+  /* Size and shape */
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+
+  /* Colors and borders */
+  color: #ffffff;
+  background: #136AC9; /* From CMD */
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  /* Centering container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Text styling */
+  font-family: var(--global-font-family--sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+}
+
+/* Style for the span containing the number */
+.markerCluster span {
+  /* Additional centering for the text itself */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  /* Offset slightly to account for border */
+  margin-top: -1px;
+}
+
+.marker {
+  border-radius: 50%;
+}
+
+.markerContainer {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}

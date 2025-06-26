@@ -21,7 +21,7 @@ const ReconPortalRoot: React.FC = () => {
             gap: '0px',
           }}
         >
-          <Sider width="20%" breakpoint="md" collapsedWidth={0}>
+          <Sider width="25%" breakpoint="md" collapsedWidth={0}>
             <Flex vertical justify="left" style={{ height: '100%' }}>
               <ReconSidePanel />
             </Flex>
