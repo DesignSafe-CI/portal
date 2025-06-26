@@ -132,3 +132,101 @@
 .header-details dd {
   margin: 0;
 }
+/* Userguide css */
+.userGuidesWrapper {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.userGuidesHeading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 1.2rem;
+  justify-items: center;
+}
+
+.videoCard,
+.videoCardSingle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.videoCardSingle {
+  grid-column: span 2;
+  margin-top: 1rem;
+}
+
+.videoThumbnail {
+  width: 100%;
+  max-width: 200px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.videoThumbnail:hover {
+  transform: scale(1.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.videoTitle {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #0070c9;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.videoTitle:hover {
+  text-decoration: underline;
+}
+.youtubeIcon {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-right: 6px;
+  display: inline-block;
+  transform: translateY(-1px);
+}
+.headingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.userGuidesHeading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+
+.moreVideosLink {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0070c9;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.moreVideosLink:hover {
+  text-decoration: underline;
+  color: #004a99;
+}
+

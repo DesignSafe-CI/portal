@@ -35,7 +35,7 @@ def get_detailed_tas_allocations(username):
             resource_name = alloc.get("resource", "UNKNOWN")
             status = alloc.get("status", "UNKNOWN")
 
-            logger.warning(f"Checking: {resource_name} / {status} / {charge_code}")
+            
 
             # Proceed anyway regardless of status or missing mapping
             resource_info = tas_to_tacc_resources.get(resource_name, {"host": "unknown"})
@@ -53,7 +53,7 @@ def get_detailed_tas_allocations(username):
                 "expiration": alloc.get("end", "N/A")[:10]
             })
 
-    logger.warning(f"Final allocation_table: {allocation_table}")
+    
     return {"detailed_allocations": allocation_table}
 
 

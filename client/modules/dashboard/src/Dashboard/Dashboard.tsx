@@ -5,6 +5,8 @@ import JobStatus from './Jobstatus';
 import { Table, Tag } from 'antd';
 import { useGetLiveSystemStatus } from '../../../_hooks/src/systems/useGetLiveSystemStatus';
 import SUAllocationsCard from './SUAllocationsCard';
+import UserGuides from './UserGuides'; // ⬅️ import the new component here
+
 export interface DashboardProps {}
 
 export function Dashboard(props: DashboardProps) {
@@ -51,8 +53,9 @@ export function Dashboard(props: DashboardProps) {
       <div style={{ flex: 2 }}>
         <h1>DASHBOARD</h1>
         <JobStatus />
-        <SUAllocationsCard/>
+        <SUAllocationsCard />
       </div>
+
       {/* Vertical separator */}
       <div
         style={{
@@ -65,7 +68,7 @@ export function Dashboard(props: DashboardProps) {
         }}
       ></div>
 
-      {/* System Status on the right */}
+      {/* Right side panel: System Status + Videos */}
       <div style={{ flex: 1.3, paddingRight: '1.5rem' }}>
         <div
           style={{
@@ -74,6 +77,7 @@ export function Dashboard(props: DashboardProps) {
             borderRadius: '8px',
             border: '1px solid #e0e0e0',
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+            marginBottom: '1.5rem',
           }}
         >
           <h3 style={{ marginBottom: '1rem' }}>System Status</h3>
@@ -88,6 +92,9 @@ export function Dashboard(props: DashboardProps) {
             pagination={false}
           />
         </div>
+
+        {/* ⬇️ New YouTube Section Below System Status */}
+        <UserGuides />
       </div>
     </div>
   );
