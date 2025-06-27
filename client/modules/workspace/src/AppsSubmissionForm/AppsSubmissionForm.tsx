@@ -87,7 +87,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const [, setInteractiveModalDetails] =
     useInteractiveModalContext() as TInteractiveModalContext;
 
-  const { definition, license, defaultSystemNeedsKeys, systemStatus } = app;
+  const { definition, license, defaultSystemNeedsKeys, ureachableSystems } = app;
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -136,13 +136,10 @@ export const AppsSubmissionForm: React.FC = () => {
     }
   }, [definition, executionSystems]);
 
-<<<<<<< HEAD
-  const isSystemUnreachable = !!(systemStatus ?? []).find(
+  const isSystemUnreachable = !!(ureachableSystems ?? []).find(
     (s) => s.id === defaultExecSystem?.id
   );
 
-  const [allocations, setAllocations] = useState<string[]>([]);
-=======
   const [allocations, setAllocations] = useState<string[]>(
     getAllocationList(
       definition,
@@ -151,7 +148,6 @@ export const AppsSubmissionForm: React.FC = () => {
       allocationToExecSysMap
     )
   );
->>>>>>> origin
   const [portalAlloc, setPortalAlloc] = useState<string | undefined>(undefined);
   const [noExecAllocationRequired, setNoExecAllocationRequired] =
     useState<boolean>(true);

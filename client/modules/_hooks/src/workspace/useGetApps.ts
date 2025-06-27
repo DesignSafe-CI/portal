@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 import apiClient from '../apiClient';
 import { TTapisApp } from './types';
-import { TTapisSystem, TTapisSystemStatus } from '../systems/types';
+import { TTapisSystem, TTapisUreachableSystem } from '../systems/types';
 
 export type TAppParamsType = {
   appId: string;
@@ -20,11 +20,8 @@ export type TAppResponse = {
     enabled?: boolean;
   };
   defaultSystemNeedsKeys?: TTapisSystem;
-<<<<<<< HEAD
   execSystems?: TTapisSystem[];
-  systemStatus?: TTapisSystemStatus[];
-=======
->>>>>>> origin
+  ureachableSystems?: TTapisUreachableSystem[];
 };
 
 export type TGetAppsResponse = {

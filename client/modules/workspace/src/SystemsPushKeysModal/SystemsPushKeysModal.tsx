@@ -75,8 +75,8 @@ export const SystemsPushKeysModalBody: React.FC<{
           message={
             <>
               <p>
-                The system {execSystem} is undergoing maintenance. Please check
-                back later for availability.
+                We are currently experiencing a service outage affecting {execSystem}.
+                Please check back later for availability.
               </p>
               <p>Thank you for your patience.</p>
             </>

@@ -27,11 +27,8 @@ from designsafe.apps.workspace.models.app_entries import (
 )
 from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
-<<<<<<< HEAD
 import requests
-=======
 from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
->>>>>>> origin
 
 
 logger = logging.getLogger(__name__)
@@ -98,7 +95,6 @@ def _get_systems(
     )
 
 
-<<<<<<< HEAD
 def _get_exec_systems(user, systems):
     """List of all enabled execution systems available for the user."""
     tapis = user.tapis_oauth.client
@@ -108,7 +104,7 @@ def _get_exec_systems(user, systems):
         search_string = f"(id.in.{system_id_search})~{search_string}"
     return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
 
-def _get_system_status():
+def get_ureachable_systems():
     status_json = requests.get('https://tap.tacc.utexas.edu/status/').json()
     systems = []
     for systemStatus in status_json:
@@ -117,9 +113,6 @@ def _get_system_status():
             systems.append(system)
     return systems
 
-
-=======
->>>>>>> origin
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
 
@@ -295,24 +288,8 @@ class AppsView(AuthenticatedApiView):
         except ObjectDoesNotExist:
             data = _get_app(app_id, app_version, request.user)
 
-<<<<<<< HEAD
-        data['systemStatus'] = _get_system_status()
+        data['ureachableSystems'] = get_ureachable_systems()
 
-        # NOTE: DesignSafe default storage system can be assumed to not need keys pushed, as is using key service
-        # Check if default storage system needs keys pushed
-        # if settings.AGAVE_STORAGE_SYSTEM:
-        #     tapis = request.user.tapis_oauth.client
-        #     system_needs_keys = test_system_needs_keys(
-        #         tapis, settings.AGAVE_STORAGE_SYSTEM
-        #     )
-        #     if system_needs_keys:
-        #         logger.info(
-        #             f"Keys for user {request.user.username} must be manually pushed to system: {system_needs_keys.id}"
-        #         )
-        #         data["defaultSystemNeedsKeys"] = system_needs_keys
-
-=======
->>>>>>> origin
         return JsonResponse(
             {
                 "status": 200,
