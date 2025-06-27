@@ -119,5 +119,5 @@ export const ZoomOnEventSelection: React.FC<{
     filteredReconPortalEvents,
     zoomLevel,
   ]);
-  return null
+  return null;
 };
