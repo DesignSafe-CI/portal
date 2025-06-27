@@ -23,7 +23,7 @@ export function useFileListingRouteParams() {
   return {
     api,
     scheme,
-    system: system ?? '',
+    system: system ?? (api === 'tapis' ? '' : api),
     path: path ?? '',
   };
 }

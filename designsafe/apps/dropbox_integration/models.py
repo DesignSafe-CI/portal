@@ -1,17 +1,20 @@
-from dropbox import DropboxOAuth2Flow, Dropbox
+from dropbox import Dropbox
 from django.conf import settings
-from django.urls import reverse
 from django.db import models
-import json
 
 
 class DropboxUserToken(models.Model):
     """
     Represents an OAuth Token for a dropbox.com user
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='dropbox_user_token', on_delete=models.CASCADE)
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="dropbox_user_token",
+        on_delete=models.CASCADE,
+    )
     dropbox_user_id = models.CharField(max_length=48)
-    access_token = models.CharField(max_length=255)
+    access_token = models.CharField(max_length=2048)
     account_id = models.CharField(max_length=255)
 
     def update_tokens(self, access_token):
@@ -26,19 +29,9 @@ class DropboxUserToken(models.Model):
             None
         """
         self.access_token = access_token
-        # self.refresh_token = refresh_token
         self.save()
-
-    # def get_token(self):
-    #     """
-    #     Convenience method to get current token.
-
-    #     Returns:
-    #         (access_token, refresh_token)
-
-    #     """
-    #     return self.access_token, self.refresh_token
 
     @property
     def client(self):
+        """Returns a Dropbox client instance using the stored access token."""
         return Dropbox(self.access_token)

@@ -32,7 +32,8 @@ export function getToolbarRules(
   isReadOnly: boolean,
   isAuthenticated: boolean,
   system: string,
-  USER_WORK_SYSTEM: string
+  USER_WORK_SYSTEM: string,
+  api: string
 ): ToolbarRules {
   const notContainingHazmapperFile = selectedFiles.every(
     (file) => !file.path.endsWith('.hazmapper')
@@ -41,6 +42,7 @@ export function getToolbarRules(
   return {
     canPreview: selectedFiles.length === 1 && selectedFiles[0].type === 'file',
     canRename:
+      api === 'tapis' &&
       isAuthenticated &&
       selectedFiles.length === 1 &&
       !isReadOnly &&
@@ -50,20 +52,26 @@ export function getToolbarRules(
       selectedFiles.length >= 1 &&
       notContainingHazmapperFile,
     canMove:
+      api === 'tapis' &&
       isAuthenticated &&
       selectedFiles.length >= 1 &&
       !isReadOnly &&
       notContainingHazmapperFile,
     canTrash:
+      api === 'tapis' &&
       isAuthenticated &&
       selectedFiles.length >= 1 &&
       !isReadOnly &&
       system !== USER_WORK_SYSTEM &&
       notContainingHazmapperFile,
     canDownload:
-      selectedFiles.length >= 1 &&
-      system !== USER_WORK_SYSTEM &&
-      notContainingHazmapperFile,
+      (api === 'tapis' &&
+        selectedFiles.length >= 1 &&
+        system !== USER_WORK_SYSTEM &&
+        notContainingHazmapperFile) ||
+      (api === 'dropbox' &&
+        selectedFiles.length === 1 &&
+        selectedFiles[0].type === 'file'),
   };
 }
 
@@ -121,8 +129,8 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
     path = `/${neesid}`;
   }
 
-  /* 
-  Project landing pages have multiple selectable listings, so use the 
+  /*
+  Project landing pages have multiple selectable listings, so use the
   useSelectedFilesForSystem hook to capture every selection on the page.
   */
   const { selectedFiles: listingSelectedFiles } = useSelectedFiles(
@@ -142,7 +150,8 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
         isReadOnly,
         !!user,
         system,
-        USER_WORK_SYSTEM
+        USER_WORK_SYSTEM,
+        api
       ),
     [selectedFiles, isReadOnly, user, system]
   );
@@ -202,6 +211,7 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           api={api}
           system={system}
           path={path}
+          scheme={scheme}
           selectedFiles={selectedFiles}
         >
           {({ onClick }) => (
@@ -228,6 +238,7 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
         <DatafilesModal.Download
           api={api}
           system={system}
+          scheme={scheme}
           selectedFiles={selectedFiles}
         >
           {({ onClick }) => (

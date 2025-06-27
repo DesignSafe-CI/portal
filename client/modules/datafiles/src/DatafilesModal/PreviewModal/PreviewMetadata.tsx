@@ -1,7 +1,7 @@
 import { Collapse, Table, TableProps } from 'antd';
 import React from 'react';
 import styles from './PreviewModal.module.css';
-import { TFileListing, useFileDetail } from '@client/hooks';
+import { TFileListing, useFileDetail, useFileListingRouteParams } from '@client/hooks';
 import { toBytes } from '../../FileListing/FileListing';
 
 const tableColumns: TableProps['columns'] = [
@@ -12,11 +12,13 @@ const tableColumns: TableProps['columns'] = [
 export const PreviewMetadata: React.FC<{
   selectedFile: TFileListing;
   fileMeta: Record<string, string>;
-}> = ({ selectedFile, fileMeta }) => {
+  api: string;
+  scheme?: string;
+}> = ({ selectedFile, fileMeta, api, scheme = 'private' }) => {
   const { data: fileListingMeta } = useFileDetail(
-    'tapis',
+    api,
     selectedFile.system,
-    'private',
+    scheme,
     selectedFile.path
   );
 

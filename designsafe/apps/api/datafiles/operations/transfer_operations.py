@@ -18,7 +18,7 @@ api_mapping = {
     },
     'dropbox': {
         'upload': dropbox_operations.upload,
-        'download': dropbox_operations.download_bytes,
+        'download': dropbox_operations.download,
         'iterate_listing': dropbox_operations.iterate_listing,
         'mkdir': dropbox_operations.mkdir
     },
@@ -55,4 +55,4 @@ def transfer_folder(src_client, dest_client, src_api, dest_api, src_system, dest
         else:
             file_bytes = _download(src_client, src_system, f['path'])
             file_upload = _upload(dest_client, dest_system, newdir['path'], file_bytes)
-            
+
