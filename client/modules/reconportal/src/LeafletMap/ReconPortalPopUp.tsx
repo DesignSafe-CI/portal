@@ -14,7 +14,6 @@ interface ReconPortalPopuprops {
 export const ReconPortalPopup: React.FC<ReconPortalPopuprops> = ({
   dataset,
 }) => {
-  const eventType = useGetReconPortalEventTypes();
   const title = dataset.title;
   const eventDate = dayjs(dataset.event_date.split('/')[0]).format(
     'MM/DD/YYYY'
