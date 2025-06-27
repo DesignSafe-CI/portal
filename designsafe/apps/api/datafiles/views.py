@@ -16,6 +16,15 @@ from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.api.utils import get_client_ip
 
+import json
+from django.views import View
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import UserFavorite
+
+
+
+
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
 
@@ -204,3 +213,45 @@ class MicrosurveyView(BaseApiView):
         counter.count += 1
         counter.save()
         return JsonResponse({'show': (counter.count % 7 == 0)})
+
+class UserFavoriteList(LoginRequiredMixin, View):
+    def get(self, request):
+        favorites = UserFavorite.objects.filter(user=request.user)
+        data = [{
+            'id': fav.id,
+            'tool_id': fav.tool_id,
+            'added_on': fav.added_on.isoformat()
+        } for fav in favorites]
+        return JsonResponse(data, safe=False)
+
+class AddFavoriteTool(LoginRequiredMixin, View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            tool_id = data.get('tool_id')
+            if not tool_id:
+                return HttpResponseBadRequest("Missing tool_id")
+            favorite, created = UserFavorite.objects.get_or_create(user=request.user, tool_id=tool_id)
+            return JsonResponse({'success': True, 'created': created})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+class RemoveFavoriteTool(LoginRequiredMixin, View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            tool_id = data.get('tool_id')
+            if not tool_id:
+                return HttpResponseBadRequest("Missing tool_id")
+            UserFavorite.objects.filter(user=request.user, tool_id=tool_id).delete()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+
+
+
+
+
+
+

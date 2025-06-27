@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.contrib.auth.models import User
 
 class DataFilesSurveyResult(models.Model):
     project_id = models.CharField(max_length=255)
@@ -11,3 +12,12 @@ class DataFilesSurveyResult(models.Model):
 
 class DataFilesSurveyCounter(models.Model):
     count = models.IntegerField()
+
+
+class UserFavorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    tool_id = models.CharField(max_length=100)  # or use UUIDField if tool IDs are UUIDs
+    added_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'tool_id')  # Prevent duplicates

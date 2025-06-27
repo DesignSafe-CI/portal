@@ -88,6 +88,10 @@ urlpatterns = [
             name="django.contrib.sitemaps.views.sitemap",
         ),
 
+        #URL for Favourites
+        path('api/datafiles/', include('designsafe.apps.api.datafiles.urls')),
+
+
         # terms-and-conditions
         url(r'^terms/', include('termsandconditions.urls')),
 
