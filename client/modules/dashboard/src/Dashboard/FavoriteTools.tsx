@@ -78,12 +78,12 @@ const FavoriteTools = () => {
       };
     })
     .filter(Boolean) as {
-      key: string;
-      id: string;
-      version?: string;
-      label: string;
-      href: string;
-    }[];
+    key: string;
+    id: string;
+    version?: string;
+    label: string;
+    href: string;
+  }[];
 
   useEffect(() => {
     async function fetchFavorites() {

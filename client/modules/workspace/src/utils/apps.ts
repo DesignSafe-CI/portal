@@ -47,7 +47,6 @@ export const getDefaultExecSystem = (
 ): TTapisSystem | null => {
   if (!definition || !execSystems || execSystems.length === 0) return null;
 
-
   const execSystemId = definition.jobAttributes?.execSystemId;
 
   if (!isAppUsingDynamicExecSystem(definition)) {
@@ -88,10 +87,10 @@ export const getExecSystemIdValidation = (
 ) => {
   return definition.jobType === 'BATCH' && !!definition.notes.dynamicExecSystems
     ? z
-      .string()
-      .refine((value) => executionSystems?.some((e) => e.id === value), {
-        message: 'A system is required to run this application.',
-      })
+        .string()
+        .refine((value) => executionSystems?.some((e) => e.id === value), {
+          message: 'A system is required to run this application.',
+        })
     : z.string().optional();
 };
 
@@ -255,22 +254,20 @@ export const getAppQueueValues = (
   definition: TTapisApp,
   queues: TTapisSystemQueue[]
 ) => {
-  return (
-    (queues ?? [])
-      .filter(
-        (q) =>
-          !definition.notes.hideNodeCountAndCoresPerNode ||
-          (definition.jobAttributes.nodeCount >= q.minNodeCount &&
-            definition.jobAttributes.nodeCount <= q.maxNodeCount)
-      )
-      .map((q) => q.name)
-      .filter(
-        (queueName) =>
-          !definition.notes.queueFilter ||
-          definition.notes.queueFilter.includes(queueName)
-      )
-      .sort()
-  );
+  return (queues ?? [])
+    .filter(
+      (q) =>
+        !definition.notes.hideNodeCountAndCoresPerNode ||
+        (definition.jobAttributes.nodeCount >= q.minNodeCount &&
+          definition.jobAttributes.nodeCount <= q.maxNodeCount)
+    )
+    .map((q) => q.name)
+    .filter(
+      (queueName) =>
+        !definition.notes.queueFilter ||
+        definition.notes.queueFilter.includes(queueName)
+    )
+    .sort();
 };
 
 export const getTargetPathFieldName = (inputFieldName: string) => {
@@ -432,9 +429,9 @@ export const getAppRuntimeLabel = (
 
   return titleCase
     ? label
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
     : label;
 };
 

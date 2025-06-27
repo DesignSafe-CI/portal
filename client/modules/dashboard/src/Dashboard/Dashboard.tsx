@@ -7,7 +7,7 @@ import FavoriteTools from './FavoriteTools';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 /* eslint-disable-next-line */
-export interface DashboardProps { }
+export interface DashboardProps {}
 
 const queryClient = new QueryClient();
 
