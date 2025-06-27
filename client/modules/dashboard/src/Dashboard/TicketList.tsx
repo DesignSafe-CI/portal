@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import styles from './Dashboard.module.css';
 
@@ -37,7 +37,8 @@ export const TicketList: React.FC = () => {
     updated_at: ticket.updated_at || ticket.LastUpdated,
   });
 
-  const fetchTickets = async () => {
+  // Memoize fetchTickets so useEffect dependencies are stable
+  const fetchTickets = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -57,11 +58,13 @@ export const TicketList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // no dependencies because normalizeTicket is stable (function inside component but doesn't use state)
 
   useEffect(() => {
     fetchTickets();
-  }, []);
+  }, [fetchTickets]); // add fetchTickets here
+
+  // ... rest of your code unchanged ...
 
   const formatDate = (input?: string) => {
     if (!input) return 'N/A';

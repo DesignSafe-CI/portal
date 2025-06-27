@@ -167,7 +167,6 @@
   flex-grow: 1;
 }
 
-
 /* Dashboard.module.css */
 
 .favoriteToggle {
@@ -219,4 +218,3 @@
   transform: scale(1.2);
   color: darkorange;
 }
-

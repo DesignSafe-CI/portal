@@ -3,24 +3,23 @@ import { Menu, MenuProps, Switch } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
-import {
-  getUserFavorites,
-  addFavorite,
-  removeFavorite,
-} from '../../../dashboard/src/api/favouritesApi';
+import { getUserFavorites, addFavorite, removeFavorite } from '@client/common-components';
 
-export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({ categories }) => {
+
+export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
+  categories,
+}) => {
   const [favoriteToolIds, setFavoriteToolIds] = useState<string[]>([]);
   const [loadingFavorites, setLoadingFavorites] = useState(true);
   const [updatingToolIds, setUpdatingToolIds] = useState<Set<string>>(new Set());
+  const { appId, appVersion } = useGetAppParams();
 
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
         const favs = await getUserFavorites();
-        const toolIds = (favs || []).map((fav: { tool_id: string; version?: string }) =>
-          fav.tool_id + (fav.version || '')
-        );
+        const toolIds = (favs || []).map((fav: { tool_id: string }) => fav.tool_id);
+        console.log(':white_check_mark: Loaded favorite tool IDs:', toolIds);
         setFavoriteToolIds(toolIds);
       } catch (err) {
         console.error('Failed to load favorites', err);
@@ -32,17 +31,14 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({ categori
   }, []);
 
   const handleStarClick = async (toolId: string) => {
-    const isCurrentlyFavorite = favoriteToolIds.includes(toolId);
+    const isFavorite = favoriteToolIds.includes(toolId);
     const prevFavorites = [...favoriteToolIds];
-    const updatedFavorites = isCurrentlyFavorite
-      ? favoriteToolIds.filter((id) => id !== toolId)
-      : [...favoriteToolIds, toolId];
-
-    setFavoriteToolIds(updatedFavorites);
+    setFavoriteToolIds((prev) =>
+      isFavorite ? prev.filter((id) => id !== toolId) : [...prev, toolId]
+    );
     setUpdatingToolIds((prev) => new Set(prev).add(toolId));
-
     try {
-      if (isCurrentlyFavorite) {
+      if (isFavorite) {
         await removeFavorite(toolId);
       } else {
         await addFavorite(toolId);
@@ -75,21 +71,19 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({ categori
     ...(type === 'group' ? { type } : {}),
   });
 
-  const getCategoryApps = (category: TAppCategory) => {
+  const getCategoryApps = (category: TAppCategory): MenuItem[] => {
     const bundles: Record<string, { apps: MenuItem[]; label: string }> = {};
     const categoryItems: MenuItem[] = [];
-
     category.apps.forEach((app) => {
-      const toolId = app.app_id + (app.version || '');
+      const toolId = app.version ? `${app.app_id}-${app.version}` : app.app_id;
+      const isFavorite = favoriteToolIds.includes(toolId);
+      console.log(
+        `:jigsaw: App: ${app.app_id}, Version: ${app.version}, ToolID: ${toolId}, IsFavorite: ${isFavorite}`
+      );
       const linkPath = `${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`;
       const linkLabel = app.shortLabel || app.label || app.bundle_label;
-      const isFavorite = favoriteToolIds.includes(toolId);
-
       const switchControl = (
-        <span
-          onClick={(e) => e.stopPropagation()}
-          style={{ marginLeft: 6, display: 'inline-block' }}
-        >
+        <span onClick={(e) => e.stopPropagation()} style={{ marginLeft: 6 }}>
           <Switch
             checked={isFavorite}
             loading={updatingToolIds.has(toolId)}
@@ -101,7 +95,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({ categori
         </span>
       );
       const labelContent = (
-        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <NavLink
             to={linkPath}
             onClick={() => handleToolClick(linkLabel, linkPath)}
@@ -117,33 +111,25 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({ categori
           {switchControl}
         </span>
       );
-
       const item = getItem(labelContent, toolId, app.priority);
-
       if (app.is_bundled) {
         const bundleKey = `${app.bundle_label}${app.bundle_id}`;
-        if (bundles[bundleKey]) {
-          bundles[bundleKey].apps.push(item);
-        } else {
-          bundles[bundleKey] = {
-            apps: [item],
-            label: app.bundle_label,
-          };
+        if (!bundles[bundleKey]) {
+          bundles[bundleKey] = { apps: [], label: app.bundle_label };
         }
+        bundles[bundleKey].apps.push(item);
       } else {
         categoryItems.push(item);
       }
     });
-
-    const bundleItems = Object.entries(bundles).map(([bundleKey, bundle], index) =>
+    const bundleItems = Object.entries(bundles).map(([bundleKey, bundle], idx) =>
       getItem(
         `${bundle.label} [${bundle.apps.length}]`,
         bundleKey,
-        index,
+        idx,
         bundle.apps.sort((a, b) => a.priority - b.priority)
       )
     );
-
     return [...categoryItems.sort((a, b) => a.priority - b.priority), ...bundleItems];
   };
 
@@ -158,8 +144,6 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({ categori
     )
     .sort((a, b) => a.priority - b.priority);
 
-  const { appId, appVersion } = useGetAppParams();
-
   const currentApp = categories
     .flatMap((cat) => cat.apps)
     .find((app) => app.app_id === appId && app.version === (appVersion || ''));
@@ -172,36 +156,34 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({ categori
     ? `${currentApp.bundle_label}${currentApp.bundle_id}`
     : '';
 
-  const selectedKey = `${appId}${appVersion || ''}${currentApp?.bundle_id ?? ''}`;
+  const selectedKey = appVersion ? `${appId}-${appVersion}` : appId;
 
-  if (loadingFavorites) return <div style={{ padding: 16 }}>Loading tools...</div>;
-
+  // ALWAYS render "Applications:" immediately, only render Menu after favorites loaded
   return (
     <>
-      <div
-        style={{
-          display: 'grid',
-          justifyContent: 'center',
-          padding: 10,
-          fontWeight: 700,
-          borderRight: '1px solid var(--global-color-primary--normal)',
-        }}
-      >
-        Applications:
+      <div style={{ width: 280 }}>
+        <div
+          style={{
+            display: 'grid',
+            justifyContent: 'center',
+            padding: 10,
+            fontWeight: 700,
+            borderRight: '1px solid var(--global-color-primary--normal)',
+          }}
+        >
+          Applications:
+        </div>
+        {!loadingFavorites && (
+          <Menu
+            mode="inline"
+            defaultOpenKeys={[currentCategory?.title || '', currentSubMenu || '']}
+            selectedKeys={[selectedKey]}
+            items={items}
+            inlineIndent={10}
+            style={{ height: '100%', fontSize: '10px' }}
+          />
+        )}
       </div>
-      <Menu
-        mode="inline"
-        defaultOpenKeys={[
-          (currentCategory as TAppCategory)?.title,
-          currentSubMenu,
-        ]}
-        selectedKeys={[selectedKey]}
-        items={items}
-        inlineIndent={10}
-        style={{
-          height: '100%',
-        }}
-      />
     </>
   );
 };
@@ -210,15 +192,12 @@ const handleToolClick = (toolName: string, toolPath: string) => {
   const correctedPath = toolPath.startsWith('/workspace/')
     ? toolPath
     : `/workspace/${toolPath.replace(/^\//, '')}`;
-
   const existing: { label: string; path: string }[] = JSON.parse(
     localStorage.getItem('recentTools') || '[]'
   );
-
   const updated = [
     { label: toolName, path: correctedPath },
     ...existing.filter((t) => t.path !== correctedPath),
   ].slice(0, 5);
-
   localStorage.setItem('recentTools', JSON.stringify(updated));
 };
