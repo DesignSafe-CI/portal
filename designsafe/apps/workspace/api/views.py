@@ -451,6 +451,7 @@ class AppsTrayView(AuthenticatedApiView):
             categories.append(category_result)
 
         return categories, html_definitions
+    
 
     def get(self, request, *args, **kwargs):
         """
