@@ -46,9 +46,16 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
   }, [app, appId, executionSystems]);
 
   const { data: systems, isLoading, error } = useSystemOverview();
+  const availableSystems = systems?.map((sys) => sys.display_name) || [];
   const selectedSystem = systems?.find(
     (sys) => sys.display_name === activeSystem
   );
+
+  useEffect(() => {
+    if (systems && !availableSystems.includes(activeSystem)) {
+      setActiveSystem('Vista');
+    }
+  }, [systems, activeSystem]);
 
   return (
     <Modal
@@ -111,7 +118,7 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
               </div>
             </>
           ) : (
-            <div>No data found for {activeSystem}</div>
+            <div>No data found</div>
           )}
         </div>
       </div>
