@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.exceptions import PermissionDenied
 from django.utils.decorators import method_decorator
+from django.conf import settings
 from requests.exceptions import HTTPError
 from .exceptions import ApiException
 import logging
@@ -10,6 +11,7 @@ from logging import getLevelName
 import json
 from designsafe.apps.api.decorators import tapis_jwt_login
 from tapipy.errors import BaseTapyException
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -155,3 +157,55 @@ class LoggerApi(BaseApiView):
             },
         )
         return HttpResponse("OK", status=202)
+    
+
+
+class SystemQueueProxyApi(BaseApiView):
+    """"
+    Proxy API for fetching system queue data from TAP. 
+    """
+
+    def get(self, request, hostname):
+        url = f"{settings.TAP_API_STATUS}/{hostname}"
+        
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return JsonResponse({
+                "response": response.json(),
+                "status": "success"
+            })
+        except requests.exceptions.RequestException as e:
+            logger.exception("Proxy API Error:", str(e)) 
+            return JsonResponse({
+                "response": None,
+                "status": "error",
+                "error": str(e)
+            }, status=500)
+
+            
+
+class SystemOverviewProxyApi(BaseApiView):
+    """
+    Proxy API for fetching system monitor overview data from TAP. (Load%, Running, Waiting Jobs)
+    """
+    def get(self, request):
+        url = settings.TAP_API_STATUS
+
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return JsonResponse({
+                "response": response.json(),
+                "status": "success"
+            }, status=200)
+             
+        except requests.exceptions.RequestException as e:
+            logger.exception("Proxy API Error:", str(e)) 
+            return JsonResponse({
+                "response": None,
+                "status": "error",
+                "error": str(e)
+            }, status=500)
+        
+

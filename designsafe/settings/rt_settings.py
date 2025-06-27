@@ -12,6 +12,7 @@ TICKET_CATEGORIES = (
     ('DATA_CURATION_PUBLICATION', 'Data Curation & Publication'),
     ('DATA_DEPOT', 'Data Depot'),
     ('TOOLS_APPS', 'Tools & Applications'),
+    ('ALLOCATIONS', 'Allocations'),
     ('LOGIN', 'Login/Registration'),
     ('OTHER', 'Other'),
 )
