@@ -205,11 +205,11 @@ export const LeafletMap: React.FC = () => {
         </LayersControl>
 
         {/* Open Topo features, only visible when zoomed in and DS event selected*/}
-        <ZoomConditionalLayerGroup minZoom={10}>
+        <ZoomConditionalLayerGroup minZoom={9}>
           {openTopoMapFeatures}
         </ZoomConditionalLayerGroup>
         {/* Recon Portal features, only zoomed in when DS event selected*/}
-        <ZoomOnEventSelection zoomLevel={13}></ZoomOnEventSelection>
+        <ZoomOnEventSelection zoomLevel={11}></ZoomOnEventSelection>
         {/* Marker Features with Clustering (also includes point cloud markers) */}
         <MarkerClusterGroup
           zIndexOffset={1}
