@@ -11,7 +11,6 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("datafiles", "0002_userfavorite"),
     ]
-
     operations = [
         migrations.AddField(
             model_name="userfavorite",
