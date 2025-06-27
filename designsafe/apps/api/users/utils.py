@@ -12,7 +12,7 @@ from designsafe.apps.workspace.models.allocations import UserAllocations
 
 logger = logging.getLogger(__name__)
 def get_detailed_tas_allocations(username):
-    import logging
+    
     logger = logging.getLogger(__name__)
 
     tas_client = TASClient(

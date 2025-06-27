@@ -1,6 +1,6 @@
 import React from 'react';
-import { useGetSUAllocations } from '../../../_hooks/src/workspace/useSUAllocations';
-import { useAuthenticatedUser } from '@client/hooks';
+import { useGetSUAllocations, useAuthenticatedUser } from '@client/hooks';
+
 
 const HOST_LABELS: Record<string, string> = {
   'ls6.tacc.utexas.edu': 'Lonestar6 (HPC)',

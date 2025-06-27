@@ -3,14 +3,14 @@ import styles from './Dashboard.module.css';
 import Quicklinks from './Quicklinks';
 import JobStatus from './Jobstatus';
 import { Table, Tag } from 'antd';
-import { useGetLiveSystemStatus } from '../../../_hooks/src/systems/useGetLiveSystemStatus';
+import { useSystemOverview } from '@client/hooks';
 import SUAllocationsCard from './SUAllocationsCard';
-import UserGuides from './UserGuides'; // ⬅️ import the new component here
+import UserGuides from './UserGuides';
 
 export interface DashboardProps {}
 
 export function Dashboard(props: DashboardProps) {
-  const { data: liveSystems, isLoading } = useGetLiveSystemStatus();
+  const { data: liveSystems, isLoading } = useSystemOverview();
 
   const columns = [
     {
@@ -20,17 +20,19 @@ export function Dashboard(props: DashboardProps) {
     },
     {
       title: 'Status',
-      dataIndex: 'online',
+      dataIndex: 'is_operational',
       key: 'status',
-      render: (online: boolean) => (
-        <Tag color={online ? 'green' : 'red'}>{online ? 'UP' : 'DOWN'}</Tag>
+      render: (isOperational: boolean) => (
+        <Tag color={isOperational ? 'green' : 'red'}>
+          {isOperational ? 'UP' : 'DOWN'}
+        </Tag>
       ),
     },
     {
       title: 'Load',
-      dataIndex: 'load',
+      dataIndex: 'load_percentage',
       key: 'load',
-      render: (load: number) => `${Math.round(load * 100)}%`,
+      render: (load: number) => `${load}%`,
     },
     {
       title: 'Running Jobs',
@@ -93,7 +95,7 @@ export function Dashboard(props: DashboardProps) {
           />
         </div>
 
-        {/* ⬇️ New YouTube Section Below System Status */}
+        {/* YouTube Section */}
         <UserGuides />
       </div>
     </div>
