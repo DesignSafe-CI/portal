@@ -264,7 +264,36 @@ export const DownloadDatasetModal: React.FC<{
         <>
           <p />
 
-          <p>This download is a ZIP file of the complete project dataset.</p>
+          <p>
+            This download is a ZIP file of the complete project dataset. To
+            download the metadata only,&nbsp;
+            <DatafilesModal.Download
+              api="tapis"
+              system="designsafe.storage.published"
+              scheme="public"
+              selectedFiles={[
+                {
+                  system: 'designsafe.storage.published',
+                  format: 'folder',
+                  type: 'dir',
+                  mimeType: '',
+                  lastModified: '',
+                  length: 0,
+                  permissions: '',
+                  name: projectId,
+                  path: `/published-data/${projectId}/${projectId}_metadata.json`,
+                  doi: doiString,
+                },
+              ]}
+            >
+              {({ onClick }) => (
+                <Button type="link" onClick={onClick}>
+                  click here
+                </Button>
+              )}
+            </DatafilesModal.Download>
+            .
+          </p>
 
           <hr />
           <p>The files are licensed by the following:</p>
