@@ -36,7 +36,7 @@ export const getExecSystemsFromApp = (
   execSystems: TTapisSystem[] | undefined
 ): TTapisSystem[] => {
   if (!definition || !execSystems) return [];
-  
+
   if (isAppUsingDynamicExecSystem(definition)) {
     const dynamics = definition.notes.dynamicExecSystems;
     if (dynamics?.length === 1 && dynamics[0] === 'ALL') return execSystems;

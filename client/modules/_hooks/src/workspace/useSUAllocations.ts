@@ -20,7 +20,8 @@ const getSUAllocations = async ({ signal }: { signal: AbortSignal }) => {
 
 const suAllocationsQuery = () => ({
   queryKey: ['dashboard', 'getSUAllocations'],
-  queryFn: ({ signal }: { signal: AbortSignal }) => getSUAllocations({ signal }),
+  queryFn: ({ signal }: { signal: AbortSignal }) =>
+    getSUAllocations({ signal }),
   staleTime: 5000,
 });
 

@@ -62,11 +62,7 @@ const UserGuides = () => {
       </div>
 
       <div className={styles.videoCardSingle}>
-        <a
-          href={videos[2].url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={videos[2].url} target="_blank" rel="noopener noreferrer">
           <img
             src={`https://img.youtube.com/vi/${videos[2].id}/0.jpg`}
             alt={videos[2].title}
