@@ -46,14 +46,14 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
   }, [app, appId, executionSystems]);
 
   const { data: systems, isLoading, error } = useSystemOverview();
-  const availableSystems = systems?.map((sys) => sys.display_name) || [];
+  const availableSystems = systems?.map((sys) => sys.display_name)?.sort() || [];
   const selectedSystem = systems?.find(
     (sys) => sys.display_name === activeSystem
   );
 
   useEffect(() => {
     if (systems && !availableSystems.includes(activeSystem)) {
-      setActiveSystem('Vista');
+      setActiveSystem(availableSystems[0] || 'Frontera');
     }
   }, [systems, activeSystem]);
 
@@ -68,15 +68,15 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
     >
       <div className={styles.modal}>
         <div className={styles.tabs}>
-          {systems?.map((sys) => (
+          {availableSystems.map((systemName) => (
             <button
-              key={sys.display_name}
+              key={systemName}
               className={`${styles.tabButton} ${
-                activeSystem === sys.display_name ? styles.activeTab : ''
+                activeSystem === systemName ? styles.activeTab : ''
               }`}
-              onClick={() => setActiveSystem(sys.display_name)}
+              onClick={() => setActiveSystem(systemName)}
             >
-              {sys.display_name}
+              {systemName}
             </button>
           ))}
         </div>
