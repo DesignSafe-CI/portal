@@ -46,7 +46,8 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
   }, [app, appId, executionSystems]);
 
   const { data: systems, isLoading, error } = useSystemOverview();
-  const availableSystems = systems?.map((sys) => sys.display_name)?.sort() || [];
+  const availableSystems =
+    systems?.map((sys) => sys.display_name)?.sort() || [];
   const selectedSystem = systems?.find(
     (sys) => sys.display_name === activeSystem
   );
