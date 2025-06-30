@@ -55,8 +55,8 @@ def get_google_scholar_context(project_id):
         datacite_json_list.append(get_datacite_json(pub_tree, 
                                                     ent_meta["uuid"], 
                                                     latest_version))
-
-    return scholar_meta, datacite_json_list
+    pub_title = pub.value["title"]
+    return scholar_meta, datacite_json_list, pub_title
 
 
      
@@ -235,9 +235,10 @@ class DataDepotPublishedView(TemplateView):
         """
         context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
         try:
-            scholar_context, datacite_context = get_google_scholar_context(kwargs['project_id'])
+            scholar_context, datacite_context, title = get_google_scholar_context(kwargs['project_id'])
             context['dc_context'] = datacite_context
             context['scholar_context'] = scholar_context
+            context['citation_title'] = f"{kwargs['project_id']} | {title}"
         except Exception:
             # If we can't generate DataCite JSON, render the page without meta tags.
             pass

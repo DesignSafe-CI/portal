@@ -106,7 +106,7 @@ export const PublishedDetailLayout: React.FC = () => {
   if (searchParams.get('q') && !path) {
     return (
       <Navigate
-        to={`/public/designsafe.storage.published/${projectId}/%2F${projectId}?q=${searchParams.get(
+        to={`/public/designsafe.storage.published/${projectId}/%2Fpublished-data%2F${projectId}?q=${searchParams.get(
           'q'
         )}`}
         replace

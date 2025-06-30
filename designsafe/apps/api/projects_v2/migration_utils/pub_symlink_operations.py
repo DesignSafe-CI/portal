@@ -1,10 +1,12 @@
 """Utilities for symlinking publication files to curation-informed paths"""
 
 import os
+import subprocess
 from pathlib import Path
 import networkx as nx
 from django.conf import settings
 from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.operations.path_operations import (
     construct_entity_filepaths,
     construct_published_path_mappings,
@@ -84,6 +86,11 @@ def generate_symlinks_from_mapping(mapping):
                 try:
                     os.makedirs(parent_path, exist_ok=True)
                     os.symlink(source, dest)
+                    # Update timestamps on symlink to match the original file/dir.
+                    absolute_src = os.path.join(os.path.dirname(dest), source)
+                    subprocess.run(
+                        ["touch", "-h", "-r", absolute_src, dest], check=False
+                    )
                 except FileExistsError:
                     # Continue here so that this method is idempotent.
                     continue
@@ -112,6 +119,23 @@ def migrate_publication_metadata(project_id):
     )
     updated_tree, _ = update_path_mappings(basepath_tree, legacy_other_pubs=True)
 
+    latest_version = max(
+        pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
+    )
+    if not latest_version:
+        latest_version = 1
+
+    base_meta_node = next(
+        (
+            node
+            for node in pub_tree.nodes
+            if pub_tree.nodes[node]["name"] == constants.PROJECT
+            and pub_tree.nodes[node].get("version", latest_version) == latest_version
+        )
+    )
+    base_meta_value = pub_tree.nodes[base_meta_node]["value"]
+    pub.value = base_meta_value
+
     pub.tree = nx.node_link_data(updated_tree)
     pub.save()
 
@@ -138,3 +162,18 @@ def create_symlink_db_records(project_id):
             PublicationSymlink.objects.update_or_create(
                 tapis_accessor=accessor, type=_type
             )
+
+
+def migrate_all_symlinks():
+    """iterate over publications and create symlinks for published files"""
+    for pub in Publication.objects.filter(is_published=True):
+        print(pub.project_id)
+        migrate_publication_symlinks(pub.project_id)
+
+
+def migrate_all_meta():
+    """iterate over publications and update database records"""
+    for pub in Publication.objects.filter(is_published=True):
+        print(pub.project_id)
+        create_symlink_db_records(pub.project_id)
+        migrate_publication_metadata(pub.project_id)

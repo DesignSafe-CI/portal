@@ -177,7 +177,15 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     search = IndexedFile.search()
     search = search.query(ngram_query | match_query)
     if path != '/':
-        search = search.filter('term', **{'path._comps': path})
+        path_comp_filter = Q('term', **{'path._comps': path})
+        # check old publication files
+        # stopgap until all /published-data paths are indexed
+        if system == "designsafe.storage.published" and path.startswith("/published-data"):
+            legacy_pub_path = path.lstrip("/published-data")
+            legacy_path_filter  = Q('term', **{'path._comps': legacy_pub_path})
+            path_comp_filter = path_comp_filter | legacy_path_filter
+
+        search = search.filter(path_comp_filter)
     search = search.filter('term', **{'system._exact': system})
     search = search.extra(from_=int(offset), size=int(limit))
     res = search.execute()

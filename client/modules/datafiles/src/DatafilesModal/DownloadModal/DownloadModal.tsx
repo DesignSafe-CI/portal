@@ -18,6 +18,11 @@ export const DownloadModal: React.FC<{
 
   const doiString = doiArray.join(',');
 
+  let fileName: string | undefined = undefined;
+  if (selectedFiles.length === 1 && selectedFiles[0].format === 'folder') {
+    fileName = selectedFiles[0].name;
+  }
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -40,7 +45,12 @@ export const DownloadModal: React.FC<{
       .then((resp) => {
         const link = document.createElement('a');
         link.style.display = 'none';
-        link.setAttribute('href', resp.data.href);
+        link.setAttribute(
+          'href',
+          fileName
+            ? `${resp.data.href}?filename=${fileName}.zip`
+            : resp.data.href
+        );
         link.setAttribute('download', 'null');
         document.body.appendChild(link);
         link.click();
@@ -70,7 +80,7 @@ export const DownloadModal: React.FC<{
       >
         <p>
           The data set that you are attempting to download is too large for a
-          direct download. Direct downloads are supported for up to 2 gigabytes
+          direct download. Direct downloads are supported for up to 5 gigabytes
           of data at a time. Alternative approaches for transferring large
           amounts of data are provided in the Large Data Transfer Methods
           section of the Data Transfer Guide (
