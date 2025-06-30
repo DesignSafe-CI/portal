@@ -318,18 +318,31 @@ def generate_manifest_other(project_id, version=1):
     fido_client = Fido()
     pub = Publication.objects.get(project_id=project_id)
     uuid = pub.tree["nodes"][0]["uuid"]
-    file_tags = pub.value.get("fileTags", [])
+
+    pub_tree = nx.node_link_graph(pub.tree)
+    version_node = next(
+        (
+            node
+            for node in pub_tree.successors("NODE_ROOT")
+            if pub_tree.nodes[node]["version"] == version
+        )
+    )
+
+    version_meta = pub_tree.nodes[version_node]
+    base_path = version_meta["basePath"]
+
+    file_tags = version_meta["value"].get("fileTags", [])
 
     if version and version > 1:
         project_id = f"{project_id}v{str(version)}"
     manifest = []
-    archive_path = PUBLICATIONS_MOUNT_ROOT
-
+    archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, base_path.lstrip("/"))
     for path in get_child_paths(archive_path):
         tags = [
             tag
             for tag in file_tags
-            if tag["path"].strip("/") == os.path.relpath(path, archive_path).strip("/")
+            if tag["path"].strip("/")
+            == os.path.relpath(path, PUBLICATIONS_MOUNT_ROOT).strip("/")
         ]
 
         manifest.append(

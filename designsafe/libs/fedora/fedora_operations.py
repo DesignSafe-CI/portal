@@ -686,7 +686,7 @@ def get_sha1_hash(file_path):
 
 
 def get_child_paths(dir_path):
-    for root, _, files in os.walk(dir_path):
+    for root, _, files in os.walk(dir_path, followlinks=True):
         for file in files:
             yield os.path.join(root, file)
 
