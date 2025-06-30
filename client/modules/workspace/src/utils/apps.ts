@@ -58,7 +58,7 @@ export const getDefaultExecSystem = (
 ): TTapisSystem | null => {
   if (!definition || !execSystems || execSystems.length === 0) return null;
 
-  const dynamic = definition.notes.dynamicExecSystems;
+  
   const execSystemId = definition.jobAttributes?.execSystemId;
 
   if (!isAppUsingDynamicExecSystem(definition)) {
