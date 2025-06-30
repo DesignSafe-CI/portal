@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { getUserFavorites, removeFavorite } from '@client/common-components';
+import React, { useState, useRef, useEffect } from 'react';
+import { useFavorites, useRemoveFavorite } from '@client/hooks';
 import { useAppsListing } from '@client/hooks';
 import styles from './Dashboard.module.css';
 
@@ -23,20 +23,47 @@ const makeToolKey = (tool_id: string, version?: string) =>
   version ? `${tool_id}-${version}` : tool_id;
 
 const parseToolId = (toolId: string): FavoriteTool => {
-  const versionMatch = toolId.match(/(native|s|ds)?\d+(\.\d+)+$/);
-  if (!versionMatch) return { tool_id: toolId };
-  const version = versionMatch[0];
-  const tool_id = toolId.slice(0, -version.length).replace(/-$/, '');
-  return { tool_id, version };
+  const parts = toolId.split('-');
+  if (parts.length > 1) {
+    const versionPart = parts[parts.length - 1];
+    if (/^\d+(\.\d+)*$/.test(versionPart)) {
+      return {
+        tool_id: parts.slice(0, -1).join('-'),
+        version: versionPart,
+      };
+    }
+  }
+  return { tool_id: toolId };
 };
 
 const FavoriteTools = () => {
-  const [favorites, setFavorites] = useState<FavoriteTool[]>([]);
-  const [showPanel, setShowPanel] = useState(false);
-  const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
-  const [favoritesError, setFavoritesError] = useState<string | null>(null);
+  const { data: favoritesData, isLoading: isLoadingFavorites, isError: isFavoritesError } = useFavorites();
+  const removeFavoriteMutation = useRemoveFavorite();
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
+  const [showPanel, setShowPanel] = useState(false);
   const { data, isLoading, isError } = useAppsListing();
+
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+        setShowPanel(false);
+      }
+    };
+
+    if (showPanel) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showPanel]);
+
+  const favorites = (favoritesData ?? []).map((fav) => parseToolId(fav.tool_id));
 
   const allApps: AppData[] =
     data?.categories?.flatMap((cat) =>
@@ -64,7 +91,6 @@ const FavoriteTools = () => {
       const label =
         matchedApp.definition?.notes?.label || matchedApp.definition.id;
 
-      // 🚨 use `/workspace/` instead of `/apps/`
       const href = matchedApp.version
         ? `/workspace/${matchedApp.definition.id}?appVersion=${matchedApp.version}`
         : `/workspace/${matchedApp.definition.id}`;
@@ -85,34 +111,11 @@ const FavoriteTools = () => {
     href: string;
   }[];
 
-  useEffect(() => {
-    async function fetchFavorites() {
-      setIsLoadingFavorites(true);
-      setFavoritesError(null);
-      try {
-        const data = await getUserFavorites();
-        const parsedFavorites = data.map((fav) => parseToolId(fav.tool_id));
-        setFavorites(parsedFavorites);
-      } catch (err) {
-        console.error('Failed to load favorites:', err);
-        setFavoritesError('Failed to load favorites.');
-      } finally {
-        setIsLoadingFavorites(false);
-      }
-    }
-    fetchFavorites();
-  }, []);
-
   const handleRemove = async (toolKey: string) => {
     if (removingIds.has(toolKey)) return;
     setRemovingIds((prev) => new Set(prev).add(toolKey));
     try {
-      await removeFavorite(toolKey);
-      setFavorites((prev) =>
-        prev.filter(
-          (tool) => makeToolKey(tool.tool_id, tool.version) !== toolKey
-        )
-      );
+      await removeFavoriteMutation.mutateAsync(toolKey);
     } catch (err) {
       console.error('Failed to remove favorite:', err);
     } finally {
@@ -124,10 +127,22 @@ const FavoriteTools = () => {
     }
   };
 
-  if (isLoadingFavorites) return <div>Loading favorite tools...</div>;
-  if (favoritesError) return <div>{favoritesError}</div>;
-  if (isLoading) return <div>Loading apps data...</div>;
-  if (isError) return <div>Failed to load apps data.</div>;
+  const handleToolClick = (toolName: string, toolPath: string) => {
+    const correctedPath = toolPath.startsWith('/workspace/')
+      ? toolPath
+      : `/workspace/${toolPath.replace(/^\//, '')}`;
+    const existing: { label: string; path: string }[] = JSON.parse(
+      localStorage.getItem('recentTools') || '[]'
+    );
+    const updated = [
+      { label: toolName, path: correctedPath },
+      ...existing.filter((t) => t.path !== correctedPath),
+    ].slice(0, 5);
+    localStorage.setItem('recentTools', JSON.stringify(updated));
+  };
+
+  if (isLoadingFavorites || isLoading) return <div>Loading favorite tools...</div>;
+  if (isFavoritesError || isError) return <div>Failed to load data.</div>;
 
   return (
     <>
@@ -135,12 +150,14 @@ const FavoriteTools = () => {
         className={styles.favoriteToggle}
         onClick={() => setShowPanel(!showPanel)}
         aria-label="Toggle Favorites Panel"
+        aria-pressed={showPanel}
         title="Toggle Favorites Panel"
+        type="button"
       >
         ★
       </button>
       {showPanel && (
-        <div className={styles.favoritePanel}>
+        <div ref={panelRef} className={styles.favoritePanel}>
           <h4>Your Favorite Tools</h4>
           {resolvedFavorites.length === 0 ? (
             <p>No favorite tools yet.</p>
@@ -148,7 +165,13 @@ const FavoriteTools = () => {
             <ul className={styles.favoriteList}>
               {resolvedFavorites.map((tool) => (
                 <li key={tool.key} className={styles.favoriteItem}>
-                  <a href={tool.href} target="_blank" rel="noreferrer">
+                  <a
+                    href={tool.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => handleToolClick(tool.label, tool.href)}
+                    style={{ flexGrow: 1, textDecoration: 'none', color: '#007bff' }}
+                  >
                     {tool.label}
                   </a>
                   <button
