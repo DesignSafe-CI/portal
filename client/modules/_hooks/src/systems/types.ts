@@ -73,7 +73,7 @@ export type TTapisSystem = {
   updated: string;
 };
 
-export type TTapisUreachableSystem = {
+export type TTapisInactiveSystem = {
   id: string;
-  reachable: boolean;
+  operational: boolean;
 };

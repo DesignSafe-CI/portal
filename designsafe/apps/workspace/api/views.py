@@ -104,12 +104,12 @@ def _get_exec_systems(user, systems):
         search_string = f"(id.in.{system_id_search})~{search_string}"
     return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
 
-def get_ureachable_systems():
+def get_inactive_systems():
     status_json = requests.get('https://tap.tacc.utexas.edu/status/').json()
     systems = []
     for systemStatus in status_json:
         system = SystemStatus(status_json[systemStatus]).to_dict()
-        if system.get('reachable') == False:
+        if system.get('operational') == False:
             systems.append(system)
     return systems
 
@@ -141,9 +141,11 @@ class SystemStatus:
             else:
                 self.id = system_dict.get('tas_name').lower()
             self.reachable = system_dict.get('reachable')
+            self.online = system_dict.get('online')
+            self.operational = self.online and self.reachable
         except Exception as exc:
             logger.error(exc)
-
+        
     def to_dict(self):
         r = json.dumps(self.__dict__)
         return json.loads(r)
@@ -288,7 +290,7 @@ class AppsView(AuthenticatedApiView):
         except ObjectDoesNotExist:
             data = _get_app(app_id, app_version, request.user)
 
-        data['ureachableSystems'] = get_ureachable_systems()
+        data['inactiveSystems'] = get_inactive_systems()
 
         return JsonResponse(
             {
