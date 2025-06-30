@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import { Alert, Button, Modal, Spin } from 'antd';
+import React, { useState } from 'react';
+import { Button, Modal } from 'antd';
 import DatafilesModal from '../../DatafilesModal/DatafilesModal';
-import { useFileDetail, usePublicationDetail } from '@client/hooks';
-import { toBytes } from '@client/common-components';
+import { usePublicationDetail } from '@client/hooks';
 
 const gnuGeneralLicenseInfo = (
   <>
@@ -230,7 +229,7 @@ export const DownloadDatasetModal: React.FC<{
   //    ? `/archives/${projectId}v${selectedVersion}_archive.zip`
   //    : `/archives/${projectId}_archive.zip`;
 
-  const archivePath = `/published-data/${projectId}`;
+  // const archivePath = `/published-data/${projectId}`;
 
   /*
   const { data, isError, isLoading } = useFileDetail(
