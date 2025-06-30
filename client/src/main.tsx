@@ -10,6 +10,8 @@ import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { BrowserRouter } from 'react-router-dom';
 
+/**removed unrequired imports */
+
 console.log(Dashboard);
 
 console.log(Dashboard);
