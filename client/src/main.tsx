@@ -8,7 +8,7 @@ import datafilesRouter from './datafiles/datafilesRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
-import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 
 console.log(Dashboard);
 
