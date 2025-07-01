@@ -3,25 +3,25 @@ import { Menu, MenuProps, Switch } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
-import {
-  getUserFavorites,
-  addFavorite,
-  removeFavorite,
-} from '@client/hooks';
+import { getUserFavorites, addFavorite, removeFavorite } from '@client/hooks';
 
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
   const [favoriteToolIds, setFavoriteToolIds] = useState<string[]>([]);
   const [loadingFavorites, setLoadingFavorites] = useState(true);
-  const [updatingToolIds, setUpdatingToolIds] = useState<Set<string>>(new Set());
+  const [updatingToolIds, setUpdatingToolIds] = useState<Set<string>>(
+    new Set()
+  );
   const { appId, appVersion } = useGetAppParams();
 
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
         const favs = await getUserFavorites();
-        const toolIds = (favs || []).map((fav: { tool_id: string }) => fav.tool_id);
+        const toolIds = (favs || []).map(
+          (fav: { tool_id: string }) => fav.tool_id
+        );
         console.log(':white_check_mark: Loaded favorite tool IDs:', toolIds);
         setFavoriteToolIds(toolIds);
       } catch (err) {
@@ -80,8 +80,12 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     category.apps.forEach((app) => {
       const toolId = app.version ? `${app.app_id}-${app.version}` : app.app_id;
       const isFavorite = favoriteToolIds.includes(toolId);
-      console.log(`:jigsaw: App: ${app.app_id}, Version: ${app.version}, ToolID: ${toolId}, IsFavorite: ${isFavorite}`);
-      const linkPath = `${app.app_id}${app.version ? `?appVersion=${app.version}` : ''}`;
+      console.log(
+        `:jigsaw: App: ${app.app_id}, Version: ${app.version}, ToolID: ${toolId}, IsFavorite: ${isFavorite}`
+      );
+      const linkPath = `${app.app_id}${
+        app.version ? `?appVersion=${app.version}` : ''
+      }`;
       const linkLabel = app.shortLabel || app.label || app.bundle_label;
       const switchControl = (
         <span onClick={(e) => e.stopPropagation()} style={{ marginLeft: 6 }}>
@@ -123,13 +127,14 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         categoryItems.push(item);
       }
     });
-    const bundleItems = Object.entries(bundles).map(([bundleKey, bundle], idx) =>
-      getItem(
-        `${bundle.label} [${bundle.apps.length}]`,
-        bundleKey,
-        idx,
-        bundle.apps.sort((a, b) => a.priority - b.priority)
-      )
+    const bundleItems = Object.entries(bundles).map(
+      ([bundleKey, bundle], idx) =>
+        getItem(
+          `${bundle.label} [${bundle.apps.length}]`,
+          bundleKey,
+          idx,
+          bundle.apps.sort((a, b) => a.priority - b.priority)
+        )
     );
     return [
       ...categoryItems.sort((a, b) => a.priority - b.priority),
@@ -168,34 +173,30 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
 
   return (
     <>
-<div style={{ width: 280 }}>
-  <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 8,
-      justifyContent: 'center',
-      padding: 10,
-      fontWeight: 700,
-      borderRight: '1px solid var(--global-color-primary--normal)',
-    }}
-  >
-    <i className="fa fa-th-large" aria-hidden="true" />
-    <span>Applications</span>
-  </div>
-  <Menu
-    mode="inline"
-    defaultOpenKeys={[
-      currentCategory?.title || '',
-      currentSubMenu || '',
-    ]}
-    selectedKeys={[selectedKey]}
-    items={items}
-    inlineIndent={10}
-    style={{ height: '100%', fontSize: '10px' }}
-  />
-</div>
-
+      <div style={{ width: 280 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            justifyContent: 'center',
+            padding: 10,
+            fontWeight: 700,
+            borderRight: '1px solid var(--global-color-primary--normal)',
+          }}
+        >
+          <i className="fa fa-th-large" aria-hidden="true" />
+          <span>Applications:</span>
+        </div>
+        <Menu
+          mode="inline"
+          defaultOpenKeys={[currentCategory?.title || '', currentSubMenu || '']}
+          selectedKeys={[selectedKey]}
+          items={items}
+          inlineIndent={10}
+          style={{ height: '100%', fontSize: '10px' }}
+        />
+      </div>
     </>
   );
 };

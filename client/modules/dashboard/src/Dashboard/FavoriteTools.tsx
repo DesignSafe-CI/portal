@@ -37,7 +37,11 @@ const parseToolId = (toolId: string): FavoriteTool => {
 };
 
 const FavoriteTools = () => {
-  const { data: favoritesData, isLoading: isLoadingFavorites, isError: isFavoritesError } = useFavorites();
+  const {
+    data: favoritesData,
+    isLoading: isLoadingFavorites,
+    isError: isFavoritesError,
+  } = useFavorites();
   const removeFavoriteMutation = useRemoveFavorite();
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
   const [showPanel, setShowPanel] = useState(false);
@@ -47,7 +51,10 @@ const FavoriteTools = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+      if (
+        panelRef.current &&
+        !panelRef.current.contains(event.target as Node)
+      ) {
         setShowPanel(false);
       }
     };
@@ -63,7 +70,9 @@ const FavoriteTools = () => {
     };
   }, [showPanel]);
 
-  const favorites = (favoritesData ?? []).map((fav) => parseToolId(fav.tool_id));
+  const favorites = (favoritesData ?? []).map((fav) =>
+    parseToolId(fav.tool_id)
+  );
 
   const allApps: AppData[] =
     data?.categories?.flatMap((cat) =>
@@ -141,7 +150,8 @@ const FavoriteTools = () => {
     localStorage.setItem('recentTools', JSON.stringify(updated));
   };
 
-  if (isLoadingFavorites || isLoading) return <div>Loading favorite tools...</div>;
+  if (isLoadingFavorites || isLoading)
+    return <div>Loading favorite tools...</div>;
   if (isFavoritesError || isError) return <div>Failed to load data.</div>;
 
   return (
@@ -170,7 +180,11 @@ const FavoriteTools = () => {
                     target="_blank"
                     rel="noreferrer"
                     onClick={() => handleToolClick(tool.label, tool.href)}
-                    style={{ flexGrow: 1, textDecoration: 'none', color: '#007bff' }}
+                    style={{
+                      flexGrow: 1,
+                      textDecoration: 'none',
+                      color: '#007bff',
+                    }}
                   >
                     {tool.label}
                   </a>
