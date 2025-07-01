@@ -154,7 +154,7 @@ MIDDLEWARE = (
     'cms.middleware.toolbar.ToolbarMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
     'designsafe.middleware.DesignSafeTermsMiddleware',
-    #'designsafe.middleware.DesignsafeProfileUpdateMiddleware',
+    'designsafe.middleware.DesignsafeProfileUpdateMiddleware',
     'designsafe.middleware.SiteMessageMiddleware',
     'designsafe.middleware.MaintenanceMiddleware'
 )
@@ -758,3 +758,6 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         },
     },
 ]
+
+# TAP Status URL
+TAP_STATUS_URL = os.environ.get('TAP_STATUS_URL', 'https://tap.tacc.utexas.edu/status/')

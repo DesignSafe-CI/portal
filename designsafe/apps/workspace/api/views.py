@@ -105,7 +105,7 @@ def _get_exec_systems(user, systems):
     return tapis.systems.getSystems(listType="ALL", select="allAttributes", search=search_string)
 
 def get_inactive_systems():
-    status_json = requests.get('https://tap.tacc.utexas.edu/status/').json()
+    status_json = requests.get(settings.SYSTEM_MONITOR_URL).json()
     systems = []
     for systemStatus in status_json:
         system = SystemStatus(status_json[systemStatus]).to_dict()
