@@ -1,12 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import { Alert, Button, Modal, Spin } from 'antd';
+import React, { useState } from 'react';
+import { Button, Modal } from 'antd';
 import DatafilesModal from '../../DatafilesModal/DatafilesModal';
-import {
-  useFileDetail,
-  usePublicationDetail,
-  usePublicationVersions,
-} from '@client/hooks';
-import { toBytes } from '@client/common-components';
+import { usePublicationDetail } from '@client/hooks';
 
 const gnuGeneralLicenseInfo = (
   <>
@@ -222,18 +217,21 @@ export const DownloadDatasetModal: React.FC<{
     setIsModalOpen(false);
   };
 
-  const { selectedVersion } = usePublicationVersions(projectId);
+  //const { selectedVersion } = usePublicationVersions(projectId);
   const { data: publicationData } = usePublicationDetail(projectId);
   const doiString = publicationData?.tree.children
     .map((c) => c.value.dois?.[0])
     .filter((doi) => !!doi)
     .join(',');
 
-  const archivePath =
-    selectedVersion > 1
-      ? `/archives/${projectId}v${selectedVersion}_archive.zip`
-      : `/archives/${projectId}_archive.zip`;
+  //const archivePath =
+  //  selectedVersion > 1
+  //    ? `/archives/${projectId}v${selectedVersion}_archive.zip`
+  //    : `/archives/${projectId}_archive.zip`;
 
+  // const archivePath = `/published-data/${projectId}`;
+
+  /*
   const { data, isError, isLoading } = useFileDetail(
     'tapis',
     'designsafe.storage.published',
@@ -246,6 +244,7 @@ export const DownloadDatasetModal: React.FC<{
     () => (data?.length ?? 0) > FILE_SIZE_LIMIT,
     [data?.length]
   );
+  */
 
   return (
     <>
@@ -261,84 +260,87 @@ export const DownloadDatasetModal: React.FC<{
         title={<h2>Download Dataset</h2>}
         footer={null}
       >
-        {isLoading && <Spin style={{ marginLeft: '50%' }} />}
-        {isError && (
-          <Alert
-            type="error"
-            showIcon
-            description="The selected dataset could not be retrieved."
-          />
-        )}
-        {data && (
-          <>
-            <p />
-            {exceedsLimit ? (
-              <p>
-                This project zipped is <strong>{toBytes(data.length)}</strong>,
-                exceeding the <strong>5 GB</strong> download limit. To download,
-                <a
-                  href="https://accounts.tacc.utexas.edu/register"
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-describedby="msg-open-new-window"
+        <>
+          <p />
+
+          <p>
+            This download is a ZIP file of the complete project dataset. To
+            download the metadata only,&nbsp;
+            <DatafilesModal.Download
+              api="tapis"
+              system="designsafe.storage.published"
+              scheme="public"
+              selectedFiles={[
+                {
+                  system: 'designsafe.storage.published',
+                  format: 'folder',
+                  type: 'dir',
+                  mimeType: '',
+                  lastModified: '',
+                  length: 0,
+                  permissions: '',
+                  name: projectId,
+                  path: `/published-data/${projectId}/${projectId}_metadata.json`,
+                  doi: doiString,
+                },
+              ]}
+            >
+              {({ onClick }) => (
+                <Button type="link" onClick={onClick}>
+                  click here
+                </Button>
+              )}
+            </DatafilesModal.Download>
+            .
+          </p>
+
+          <hr />
+          <p>The files are licensed by the following:</p>
+          {license && LICENSE_INFO_MAP[license]}
+          <p>
+            <a
+              href="/user-guide/curating/policies/#data-publication-and-usage"
+              target="_blank"
+              aria-describedby="msg-open-new-window"
+            >
+              Data Usage Agreement
+            </a>
+          </p>
+          <div style={{ float: 'right' }}>
+            <DatafilesModal.Download
+              api="tapis"
+              system="designsafe.storage.published"
+              scheme="public"
+              selectedFiles={[
+                {
+                  system: 'designsafe.storage.published',
+                  format: 'folder',
+                  type: 'dir',
+                  mimeType: '',
+                  lastModified: '',
+                  length: 0,
+                  permissions: '',
+                  name: projectId,
+                  path: `/published-data/${projectId}`,
+                  doi: doiString,
+                },
+              ]}
+            >
+              {({ onClick }) => (
+                <Button
+                  type="primary"
+                  className="success-button"
+                  onClick={onClick}
                 >
-                  {' '}
-                  create an account
-                </a>{' '}
-                and follow the
-                <a
-                  href="/user-guide/managingdata/datatransfer/"
-                  target="_blank"
-                  aria-describedby="msg-open-new-window"
-                >
-                  {' '}
-                  Data Transfer Guide
-                </a>
-                . Alternatively, download subsets of files or individually by
-                selecting the file and using the download button in the toolbar.
-              </p>
-            ) : (
-              <p>
-                This download is a ZIP file of the complete project dataset. The
-                size of the ZIP file is <strong>{toBytes(data.length)}</strong>.
-              </p>
-            )}
-            <hr />
-            <p>The files are licensed by the following:</p>
-            {license && LICENSE_INFO_MAP[license]}
-            <p>
-              <a
-                href="/user-guide/curating/policies/#data-publication-and-usage"
-                target="_blank"
-                aria-describedby="msg-open-new-window"
-              >
-                Data Usage Agreement
-              </a>
-            </p>
-            <div style={{ float: 'right' }}>
-              <DatafilesModal.Download
-                api="tapis"
-                system="designsafe.storage.published"
-                scheme="public"
-                selectedFiles={[{ ...data, doi: doiString }]}
-              >
-                {({ onClick }) => (
-                  <Button
-                    type="primary"
-                    className="success-button"
-                    disabled={exceedsLimit}
-                    onClick={onClick}
-                  >
-                    <span>
-                      <i className="curation-download" />
-                      &nbsp;&nbsp;Download Dataset
-                    </span>
-                  </Button>
-                )}
-              </DatafilesModal.Download>
-            </div>
-          </>
-        )}
+                  <span>
+                    <i className="curation-download" />
+                    &nbsp;&nbsp;Download Dataset
+                  </span>
+                </Button>
+              )}
+            </DatafilesModal.Download>
+          </div>
+        </>
       </Modal>
     </>
   );
