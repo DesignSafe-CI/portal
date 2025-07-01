@@ -26,6 +26,7 @@ import {
   useReconEventContext,
   getReconPortalEventIdentifier,
 } from '@client/hooks';
+import 'leaflet.markercluster';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 /* no need to import leaflet css as already in base index
