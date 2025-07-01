@@ -54,6 +54,7 @@ def get_dropbox_auth_flow(request):
         redirect_uri=request.build_absolute_uri(redirect_uri),
         session=request.session["dropbox"],
         csrf_token_session_key="state",
+        token_access_type="offline",
     )
 
 
@@ -79,6 +80,7 @@ def oauth2_callback(request):
             access_token=oauth.access_token,
             account_id=oauth.account_id,
             dropbox_user_id=oauth.user_id,
+            refresh_token=oauth.refresh_token,
         )
         token.save()
 
