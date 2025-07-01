@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Menu, MenuProps, Switch, Spin } from 'antd';
+import { Menu, MenuProps, Switch } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { TAppCategory, TPortalApp } from '@client/hooks';
 import { useGetAppParams } from '../utils';
@@ -9,7 +9,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
   const [favoriteToolIds, setFavoriteToolIds] = useState<string[]>([]);
-  const [loadingFavorites, setLoadingFavorites] = useState(false); // CHANGED: false instead of true
+  const [, setLoadingFavorites] = useState(false);
   const [updatingToolIds, setUpdatingToolIds] = useState<Set<string>>(
     new Set()
   );
