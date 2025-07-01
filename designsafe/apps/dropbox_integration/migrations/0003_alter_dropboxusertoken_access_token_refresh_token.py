@@ -4,11 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("dropbox_integration", "0003_alter_dropboxusertoken_access_token"),
-        ("dropbox_integration", "0004_dropboxusertoken_refresh_token"),
-    ]
-
     dependencies = [
         ("dropbox_integration", "0002_auto_20170202_1714"),
     ]
