@@ -1,7 +1,7 @@
 import { Collapse, Table, TableProps } from 'antd';
 import React from 'react';
 import styles from './PreviewModal.module.css';
-import { TFileListing, useFileDetail, useFileListingRouteParams } from '@client/hooks';
+import { TFileListing, useFileDetail } from '@client/hooks';
 import { toBytes } from '../../FileListing/FileListing';
 
 const tableColumns: TableProps['columns'] = [
