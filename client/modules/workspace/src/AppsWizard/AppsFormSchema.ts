@@ -302,6 +302,15 @@ export const getConfigurationFields = (
     };
   }
 
+  configurationFields['TACC Reservation'] = {
+    description: 'Reservation input string',
+    label: 'TACC Reservation',
+    name: 'parameters.schedulerOptions.TACC Reservation',
+    key: 'configuration["TACC Reservation"]',
+    required: false,
+    type: 'text',
+  };
+
   return configurationFields;
 };
 
