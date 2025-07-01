@@ -25,30 +25,9 @@ import {
 import { formatDate } from '@client/workspace';
 import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
-
-const EVENT_TYPE_COLORS = {
-  earthquake: '#e46e28',
-  flood: '#4285F4',
-  tsunami: '#a765fe',
-  landslide: '#62a241',
-  hurricane: '#d34141',
-  tornado: '#9100ff',
-};
-
-const markerIconUrls = {
-  earthquake:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
-  flood:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-  tsunami:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-  landslide:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-  hurricane:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-  tornado:
-    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-};
+import { getReconEventColor } from '../utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
 export const ReconSidePanel: React.FC<LayoutProps> = ({
   children,
@@ -156,9 +135,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               {formatDate(new Date(date))}
             </Text>
             <Tag
-              color={
-                EVENT_TYPE_COLORS[eventType as keyof typeof EVENT_TYPE_COLORS]
-              }
+              color={getReconEventColor(selectedEvent)}
               style={{
                 fontWeight: 600,
                 fontSize: 14,
@@ -179,18 +156,18 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
       event.location_description || event.properties?.description || '';
     const date = event.event_date || event.properties?.dateCreated || '';
     const eventType = event.event_type || event.properties?.host || '';
-    const eventTypeColor =
-      EVENT_TYPE_COLORS[eventType as keyof typeof EVENT_TYPE_COLORS] || '#ccc';
+    const eventTypeColor = getReconEventColor(event);
     const datasets = event.datasets || [];
     return (
       <div className={styles.eventDetail}>
         <Card className={styles.eventDetailCard}>
           <Flex className={styles.eventDetailTitleRow}>
             <span>
-              <img
-                src={markerIconUrls[eventType as keyof typeof markerIconUrls]}
-                alt={eventType}
-                style={{ width: '24px', height: '36px', marginRight: '8px' }}
+              <FontAwesomeIcon
+                icon={faLocationDot}
+                size="2x"
+                color={getReconEventColor(selectedEvent)}
+                style={{ marginRight: '8px' }}
               />
               {title}
             </span>
