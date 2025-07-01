@@ -211,7 +211,6 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
           api={api}
           system={system}
           path={path}
-          scheme={scheme}
           selectedFiles={selectedFiles}
         >
           {({ onClick }) => (
