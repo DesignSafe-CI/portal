@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import styles from './AuditTrails.module.css'
 
 interface AuditEntry {
   session_id: string;
@@ -20,6 +21,49 @@ const AuditTrail: React.FC = () => {
   const [data, setData] = useState<AuditApiResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [allUsernames, setAllUsernames] = useState<string[]>([]);
+  const [filteredUsernames, setFilteredUsernames] = useState<string[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<string>('');
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  //getting arr of all usernames one time when first mounted
+  useEffect(() => {
+    fetch('/audit/api/usernames/portals')
+      .then(res => res.json())
+      .then(data => setAllUsernames(data.usernames || []));
+  }, [])
+  console.log("All usernames", allUsernames);
+
+  //updating filtered arr everytime user changes their input
+  useEffect(() => {
+    if (username.length > 0) {
+      setFilteredUsernames(
+        allUsernames
+          .filter(name => name.toLowerCase().includes(username.toLowerCase()))
+          .slice(0, 20)
+      );
+    } else {
+      setFilteredUsernames([]);
+    }
+  }, [username]);
+  console.log("Filtered Usernames:", filteredUsernames)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,23 +86,73 @@ const AuditTrail: React.FC = () => {
     setLoading(false);
   };
 
+  function truncate(str: string, n: number) {
+    return str.length > n ? str.slice(0, n) + '…' : str;
+  }
+
+  const modal = modalOpen && (
+    <div
+      className={styles.modalOverlay}
+      onClick={() => setModalOpen(false)}
+    >
+      <div
+        className={styles.modalContent}
+        onClick={e => e.stopPropagation()}
+      >
+        <button
+          style={{ float: 'right', fontSize: 18, border: 'none', background: 'none', cursor: 'pointer' }}
+          onClick={() => setModalOpen(false)}
+        >
+          X
+        </button>
+        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+          {modalContent}
+        </pre>
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ padding: 16 }}>
+      {modal}
       <h2>Audit Trail Test</h2>
       <form onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
+        <div ref={containerRef} style={{ position: 'relative', display: 'inline-block'}}>
         <input
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            setShowDropdown(true);
+          }}
+          onFocus={() => setShowDropdown(true)}
           placeholder="Enter username"
           style={{ marginRight: 8 }}
         />
+        {showDropdown && filteredUsernames.length > 0 && (
+          <ul className={styles.dropdownList}>
+            {filteredUsernames.map(name => (
+              <li
+                key={name}
+                onClick={() => setUsername(name)}
+                style={{
+                  padding: '8px', 
+                  cursor: 'pointer',
+                  borderBottom: '1px solid'               
+                }}
+                >
+                  {name}
+                </li>
+            ))}
+          </ul>
+        )}
+        </div>
         <select
           value={source}
           onChange={(e) => setSource(e.target.value)}
           style={{ marginRight: 8 }}
         >
-          <option value="portal">Portal Audit - most recent session</option>
-          <option value="tapis">Tapis Files Audit</option>
+          <option value="portal">Most Recent User Session Data</option>
+          <option value="tapis">File Search Data</option>
         </select>
         <button type="submit" disabled={loading || !username}>
           {loading ? 'Loading…' : 'Submit'}
@@ -82,7 +176,7 @@ const AuditTrail: React.FC = () => {
                 'Portal',
                 'Action',
                 'Tracking ID',
-                'Data',
+                'Details',
               ].map((h) => (
                 <th
                   key={h}
@@ -90,7 +184,7 @@ const AuditTrail: React.FC = () => {
                     border: '1px solid #ccc',
                     padding: '8px',
                     textAlign: 'left',
-                    background: '#f5f5f5',
+                    background: '#afafaf',
                   }}
                 >
                   {h}
@@ -133,22 +227,28 @@ const AuditTrail: React.FC = () => {
                       border: '1px solid #ccc',
                       padding: '8px',
                       verticalAlign: 'top',
+                      maxWidth: 200, 
+                      wordBreak: 'break-all',
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
                     }}
-                  >
-                    <div
-                      style={{
-                        maxHeight: '200px',
-                        overflowY: 'auto',
-                        background: '#fafafa',
-                        padding: '8px',
-                        fontFamily: 'monospace',
-                        fontSize: '0.9em',
-                      }}
-                    >
-                      <pre style={{ margin: 0 }}>
-                        {entry.data ? JSON.stringify(entry.data, null, 2) : ''}
-                      </pre>
-                    </div>
+                    onClick={() => {
+                      let content = '';
+                      if (entry.data) {
+                        try {
+                          const obj = typeof entry.data === 'string' ? JSON.parse(entry.data) : entry.data;
+                          content = JSON.stringify(obj, null, 2);
+                        } catch {
+                          content = entry.data;
+                        }
+                      }
+                      setModalContent(content);
+                      setModalOpen(true);
+                    }}
+                    title="Click to view full data"
+                  > 
+                    {truncate(entry.data ? JSON.stringify(entry.data) : '', 40)}
+
                   </td>
                 </tr>
               );
@@ -161,7 +261,6 @@ const AuditTrail: React.FC = () => {
 };
 
 export default AuditTrail;
-
 //joyce_cywu
 //jr93
 //nathanf
@@ -193,3 +292,9 @@ export default AuditTrail;
 /* have the timestamp be more readable, maybe split into 2 columns CHECK CHECK CHECK 
 /* add tracking_id as another column option show on UI    CHECK CHECK CHECK
 */
+
+
+
+/* change up query to use jake recommendation 
+/* add clickable data section for popup, have it as pretty print */
+

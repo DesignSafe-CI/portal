@@ -36,7 +36,6 @@ def get_audit_user_last_session(request, username):
         cursor.close()
         print("Query successful.")
 
-
         return JsonResponse({'data': results})
     
     except Exception as e:
@@ -44,6 +43,28 @@ def get_audit_user_last_session(request, username):
 
         return JsonResponse({'error': str(e)}, status=500)
 
+def get_usernames_portals(request):
+    """
+    Updating array with usernames
+    """
+    try:
+        audit_db = connections['audit']
+        cursor = audit_db.cursor()
+
+        query = """
+        SELECT DISTINCT username 
+        FROM public.portal_audit
+        ORDER BY username;
+        """
+
+        cursor.execute(query)
+        usernames = [row[0] for row in cursor.fetchall()]
+        
+        return JsonResponse({'usernames': usernames})
+    
+    except Exception as e:
+        print("Error in update_usernames_autocomplete:", str(e))
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 
