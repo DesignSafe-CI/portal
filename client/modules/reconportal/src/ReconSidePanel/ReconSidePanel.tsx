@@ -213,7 +213,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
             datasets.map((ds: { title: string; url: string }, idx: number) => (
               <a
                 key={idx}
-                href={ds.url}
+                href={ds.url.replace(/([^:]\/)\/+/g, '$1')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.reconDataLink}
