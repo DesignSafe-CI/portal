@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "modules/onboarding/src",
   "projectType": "library",
-  "tags": [],
+  "tags": ["scope:onboarding"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
