@@ -376,29 +376,25 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
-name = "boxsdk"
-version = "2.14.0"
-description = "Official Box Python SDK"
+name = "box-sdk-gen"
+version = "1.15.0"
+description = "Official Box Python Generated SDK"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "boxsdk-2.14.0-py2.py3-none-any.whl", hash = "sha256:6b01bf2f1951f89e4b1d6d974f0bf7d39fb1c0e734a15933a576b1a0de727934"},
-    {file = "boxsdk-2.14.0.tar.gz", hash = "sha256:9bcb4324399778bb00a770efe01e63f131ccdd392350d1e51cafdaa868bca3d3"},
+    {file = "box_sdk_gen-1.15.0-py3-none-any.whl", hash = "sha256:905c507f08ba05d3350b100d509c6a4381d579a735cf3637ab22f211680f3e7c"},
+    {file = "box_sdk_gen-1.15.0.tar.gz", hash = "sha256:8ff9539d65daa0c689e7d5c0f79db8af3610790af3195cabb9b02b6dabb32d8b"},
 ]
 
 [package.dependencies]
-attrs = ">=17.3.0"
-requests = ">=2.4.3"
-requests-toolbelt = ">=0.4.0,<1.0.0"
-six = ">=1.9.0"
-wrapt = ">=1.10.1"
+requests = "*"
+requests-toolbelt = "*"
 
 [package.extras]
-all = ["cryptography (>=3,<3.5.0)", "pyjwt (>=1.3.0)", "redis (>=2.10.3)"]
-jwt = ["cryptography (>=3,<3.5.0)", "pyjwt (>=1.3.0)"]
-redis = ["redis (>=2.10.3)"]
-test = ["bottle", "coverage (<5.0)", "jsonpatch", "mock (>=2.0.0,<4.0.0)", "pycodestyle", "pylint", "pytest (>=2.8.3,<4.0.0)", "pytest-cov", "pytest-xdist (<1.28.0)", "python-coveralls", "pytz", "sqlalchemy (<1.4.0)", "tox"]
+dev = ["tox"]
+jwt = ["cryptography (>=3)", "pyjwt (>=1.7.0)"]
+test = ["cryptography (>=3)", "pyjwt (>=1.7.0)", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-timeout"]
 
 [[package]]
 name = "cachetools"
@@ -4588,7 +4584,7 @@ version = "1.17.2"
 description = "Module for decorators, wrappers and monkey patching."
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "dev"]
+groups = ["dev"]
 files = [
     {file = "wrapt-1.17.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:3d57c572081fed831ad2d26fd430d565b76aa277ed1d30ff4d40670b1c0dd984"},
     {file = "wrapt-1.17.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:b5e251054542ae57ac7f3fba5d10bfff615b6c2fb09abeb37d2f1463f841ae22"},
@@ -4729,4 +4725,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11, <4.0.0"
-content-hash = "00bcb310a746761f7da7fc90b868c8bd889eab36fcf7dadbcf35e9d036953676"
+content-hash = "27df1b6c308f960300f93c97d8f2583f83f77caeb365c25b72872b464d450ae4"

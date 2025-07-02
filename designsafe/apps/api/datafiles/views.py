@@ -1,7 +1,7 @@
 import json
 import logging
 from hashlib import sha256
-from boxsdk.exception import BoxOAuthException
+from box_sdk_gen import BoxSDKError
 from django.http import JsonResponse
 from django.conf import settings
 from dropbox.exceptions import AuthError as DropboxAuthError
@@ -77,7 +77,7 @@ class DataFilesView(BaseApiView):
             response = datafiles_get_handler(
                 api, client, scheme, system, path, operation, tapis_tracking_id=f"portals.{session_key_hash}", username=request.user.username, **request.GET.dict())
             return JsonResponse(response)
-        except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
+        except (BoxSDKError, DropboxAuthError, GoogleAuthError):
             raise resource_expired_handler(api)
         except HTTPError as e:
             return JsonResponse({'message': str(e)}, status=e.response.status_code)

@@ -63,6 +63,13 @@ export const DatafilesSideNav: React.FC = () => {
             Dropbox.com
           </DataFilesNavLink>
 
+          <DataFilesNavLink
+            to="/box"
+            tooltip="Access to my Box files for copying"
+          >
+            Box.com
+          </DataFilesNavLink>
+
           <hr style={{ margin: '0' }} />
         </>
       )}
