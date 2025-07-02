@@ -25,7 +25,7 @@ import {
 import { formatDate } from '@client/workspace';
 import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
-import { getReconEventColor } from '../utils';
+import { getReconEventColor, EVENT_TYPE_COLORS } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
@@ -135,7 +135,13 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               {formatDate(new Date(date))}
             </Text>
             <Tag
-              color={getReconEventColor(selectedEvent)}
+              color={
+                selectedEvent
+                  ? getReconEventColor(selectedEvent)
+                  : EVENT_TYPE_COLORS[
+                      eventType as keyof typeof EVENT_TYPE_COLORS
+                    ]
+              }
               style={{
                 fontWeight: 600,
                 fontSize: 14,
