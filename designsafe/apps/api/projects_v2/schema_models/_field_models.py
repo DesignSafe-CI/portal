@@ -156,6 +156,7 @@ class FileObj(MetadataModel):
     system: str
     name: str
     path: str
+    legacy_path: Optional[str] = None
     type: Literal["file", "dir"]
     length: Optional[int] = None
     last_modified: Optional[str] = None
