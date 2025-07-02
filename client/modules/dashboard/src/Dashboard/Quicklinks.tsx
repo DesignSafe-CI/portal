@@ -16,7 +16,6 @@ const Quicklinks = () => {
       </a>
       <a href="/recon-portal" className={styles.sidebarLink}>
         Recon Portal
-        
       </a>
       <a href="/learning-center/overview" className={styles.sidebarLink}>
         Training
