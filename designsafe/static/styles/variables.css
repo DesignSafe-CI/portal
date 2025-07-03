@@ -13,9 +13,9 @@
     --global-color-primary--xx-dark: #222222;
 
     /* Red/Green/Yellow from DS */
-    --global-color-green: #48a59c;
-    --global-color-red: #eb6e6e;
-    --global-color-yellow: #ece4bf;
+    --ds-success-color: #48a59c;
+    --ds-error-color: #eb6e6e;
+    --ds-warning-color: #ece4bf;
 
     /* Space */
     --global-space--above-breadcrumbs: 35px;

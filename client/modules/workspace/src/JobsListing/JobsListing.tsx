@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { TableProps, Tag, Row, Flex, Button as AntButton } from 'antd';
+import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
@@ -30,7 +30,7 @@ import {
 } from '../utils';
 import styles from './JobsListing.module.css';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
-import { CustomStatusBadge } from '../../../datafiles/src/projects/forms/_common';
+import { StatusTag } from '../_common';
 import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
 
 export const JobActionButton: React.FC<{
@@ -201,12 +201,12 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
         render: (status) => {
           const text = getStatusText(status);
           if (status === 'FINISHED') {
-            return <CustomStatusBadge type="green">{text}</CustomStatusBadge>;
+            return <StatusTag type="success">{text}</StatusTag>;
           }
           if (status === 'FAILURE') {
-            return <CustomStatusBadge type="red">{text}</CustomStatusBadge>;
+            return <StatusTag type="error">{text}</StatusTag>;
           }
-          return <CustomStatusBadge type="yellow">{text}</CustomStatusBadge>;
+          return <StatusTag type="warning">{text}</StatusTag>;
         },
       },
       { width: '10%', title: 'Nodes', dataIndex: 'nodeCount' },
