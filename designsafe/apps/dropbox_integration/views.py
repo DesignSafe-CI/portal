@@ -25,8 +25,9 @@ def index(request):
         dropbox_token = DropboxUserToken.objects.get(user=request.user)
         context["dropbox_enabled"] = True
         try:
-            dropbox = Dropbox(dropbox_token.access_token)
-            dropbox_user = dropbox.users_get_account(dropbox_token.account_id)
+            dropbox_user = dropbox_token.client.users_get_account(
+                dropbox_token.account_id
+            )
             context["dropbox_connection"] = dropbox_user
         except (AuthError, BadRequestException):
             logger.warning(
@@ -72,9 +73,7 @@ def initialize_token(request):
 def oauth2_callback(request):
     """Handles the OAuth2 callback from Dropbox."""
     try:
-        logger.debug(f"request.GET: {request.GET}")
         oauth = get_dropbox_auth_flow(request).finish(request.GET.dict())
-        logger.debug(f"oauth: {oauth}")
         token = DropboxUserToken(
             user=request.user,
             access_token=oauth.access_token,
@@ -104,11 +103,8 @@ def disconnect(request):
     if request.method == "POST":
         logger.info("Disconnect Dropbox.com requested by user...")
         try:
-            dropbox_token = DropboxUserToken.objects.get(user=request.user)
-            dropbox = Dropbox(dropbox_token.access_token)
-            dropbox.auth_token_revoke()
-
             dropbox_user_token = request.user.dropbox_user_token
+            dropbox_user_token.client.auth_token_revoke()
             dropbox_user_token.delete()
         except AuthError:
             dropbox_user_token = request.user.dropbox_user_token
