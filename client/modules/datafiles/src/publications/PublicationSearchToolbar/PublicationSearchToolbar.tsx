@@ -1,7 +1,9 @@
-import { Button, Form, Input, Collapse } from 'antd';
+import { Button, Form, Input, Collapse, Select } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
+import * as dropdownOptions from '../../projects/forms/ProjectFormDropdowns';
+import styles from './PublicationSearchToolbar.module.css'
 
 const { Panel } = Collapse;
 
@@ -71,8 +73,16 @@ export const PublicationSearchToolbar: React.FC = () => {
     setSearchParams(params);
   };
 
+  const currentYear = new Date(Date.now()).getUTCFullYear();
+  //Show events going back to 2015
+  const datesInRange = [];
+  for (let i = currentYear; i >= 2015; i--) {
+    datesInRange.push(i);
+  }
+  const yearOptions = [...datesInRange.map((y) => ({ label: y, value: y }))];
+
   return (
-    <div
+    <div 
       ref={searchBarRef}
       style={{
         display: 'flex',
@@ -167,6 +177,48 @@ export const PublicationSearchToolbar: React.FC = () => {
           </Collapse>
         </div>
       )}
+      <div>
+        <label htmlFor="nh-type-select" style={{ margin: 0 }}>
+          Natural Hazard Type
+        </label>
+        &nbsp;
+        <Select
+          style={{ width: '150px' }}
+          virtual={false}
+          allowClear
+          id="nh-type-select"
+          placeholder="All Types"
+          options={[
+            { label: 'All Types', value: null },
+            ...dropdownOptions.nhTypeOptions,
+          ]}
+          popupMatchSelectWidth={false}
+          value={searchParams.get('nh-type')}
+          onChange={(v) => setSearchParam('nh-type', v)}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="publication-year-select" style={{ margin: 0 }}>
+          Year Published
+        </label>
+        &nbsp;
+        <Select
+          style={{ width: '150px' }}
+          id="publication-year-select"
+          options={[{ label: 'All Years', value: null }, ...yearOptions]}
+          allowClear
+          placeholder="All Years"
+          popupMatchSelectWidth={false}
+          virtual={false}
+          value={searchParams.get('pub-year')}
+          onChange={(v) => setSearchParam('pub-year', v)}
+        />
+      </div>
+
+      <Button type="link" onClick={() => setSearchParams(undefined)}>
+        Clear Filters
+      </Button>
     </div>
   );
 };
