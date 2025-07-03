@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { JobsListing } from '../../../workspace/src/JobsListing/JobsListing';
+// import { JobsListing } from '@client/workspace';
 import styles from './Dashboard.module.css';
 import { JobsListingWrapper } from './JobsListingWrapper';
 import { JobDetailModalWrapper } from './JobDetailModalWrapper';
