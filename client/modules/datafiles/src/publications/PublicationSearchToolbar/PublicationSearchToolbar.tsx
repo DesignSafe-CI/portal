@@ -1,6 +1,6 @@
 import { Button, Form, Input, Collapse, Select } from 'antd';
 import React, { useRef, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import * as dropdownOptions from '../../projects/forms/ProjectFormDropdowns';
 import styles from './PublicationSearchToolbar.module.css';
