@@ -50,11 +50,13 @@ def index(request):
 @csrf_exempt
 @login_required
 def initialize_token(request):
-    redirect_uri = reverse('googledrive_integration:oauth2_callback')
+    redirect_uri = f"https://{request.get_host()}{reverse('googledrive_integration:oauth2_callback')}"
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         CLIENT_CONFIG,
         scopes=['https://www.googleapis.com/auth/drive',])
-    flow.redirect_uri = request.build_absolute_uri(redirect_uri)
+
+
+    flow.redirect_uri = redirect_uri
 
     logger.debug(request.build_absolute_uri(redirect_uri))
 
@@ -80,16 +82,18 @@ def oauth2_callback(request):
         return HttpResponseBadRequest('Request expired')
 
     try:
-        redirect_uri = reverse('googledrive_integration:oauth2_callback')
+
+        redirect_uri = f"https://{request.get_host()}{reverse('googledrive_integration:oauth2_callback')}"
         flow = google_auth_oauthlib.flow.Flow.from_client_config(
             CLIENT_CONFIG,
             scopes=['https://www.googleapis.com/auth/drive',],
             state=state)
-        flow.redirect_uri = request.build_absolute_uri(redirect_uri)
+
+        flow.redirect_uri = redirect_uri
 
         # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-        authorization_response = request.build_absolute_uri()
-        logger.debug(authorization_response)
+        authorization_response = f"https://{request.get_host()}" + request.get_full_path()
+
         flow.fetch_token(authorization_response=authorization_response)
 
         credentials = flow.credentials

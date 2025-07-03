@@ -38,7 +38,7 @@ export const UploadFileModalBody: React.FC<{
 
         await mutateAsync({
           api,
-          system,
+          system: system || '-',
           scheme: 'private', // Optional
           path,
           uploaded_file: formData,
