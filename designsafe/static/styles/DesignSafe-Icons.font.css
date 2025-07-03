@@ -27,65 +27,8 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.ds-icon-Contract:before {
-    content: '\e91d';
-}
-.ds-icon-Expand:before {
-    content: '\e923';
-}
-.ds-icon-Job-Status:before {
-    content: '\e929';
-}
-.ds-icon-All-Hazards:before {
-    content: '\e908';
-}
-.ds-icon-New-Tab:before {
-    content: '\ea7e';
-}
-.ds-icon-NGL-without-text:before {
-    content: '\e903';
-}
-.ds-icon-Potree:before {
-    content: '\e906';
-}
-.ds-icon-Generic-Vis:before {
-    content: '\e907';
-}
-.ds-icon-HVSR:before {
-    content: '\e90d';
-}
-.ds-icon-MPM:before {
-    content: '\e90e';
-}
-.ds-icon-Generic-App:before {
-    content: '\e960';
-}
-.ds-icon-GiD:before {
-    content: '\e90f';
-}
-.ds-icon-Earth:before {
-    content: '\e910';
-}
-.ds-icon-Water:before {
-    content: '\e912';
-}
-.ds-icon-Wind:before {
-    content: '\e915';
-}
-.ds-icon-rWHALE:before {
-    content: '\e905';
-}
-.ds-icon-Extract:before {
-    content: '\e959';
-}
-.ds-icon-Hazmapper:before {
-    content: '\e904';
-}
-.ds-icon-Compress:before {
-    content: '\e958';
-}
-.ds-icon-STKO:before {
-    content: '\e91c';
+.ds-icon-System-Status:before {
+    content: '\e909';
 }
 .ds-icon-OpenFOAM:before {
     content: '\e900';
@@ -96,14 +39,50 @@
 .ds-icon-MATLAB:before {
     content: '\e902';
 }
+.ds-icon-NGL-without-text:before {
+    content: '\e903';
+}
+.ds-icon-Hazmapper:before {
+    content: '\e904';
+}
+.ds-icon-rWhale:before {
+    content: '\e905';
+}
+.ds-icon-Potree:before {
+    content: '\e906';
+}
+.ds-icon-Generic-Vis:before {
+    content: '\e907';
+}
+.ds-icon-All-Hazards:before {
+    content: '\e908';
+}
+.ds-icon-HVSR:before {
+    content: '\e90d';
+}
+.ds-icon-MPM:before {
+    content: '\e90e';
+}
+.ds-icon-GiD:before {
+    content: '\e90f';
+}
+.ds-icon-Earth:before {
+    content: '\e910';
+}
 .ds-icon-Paraview:before {
     content: '\e911';
+}
+.ds-icon-Water:before {
+    content: '\e912';
 }
 .ds-icon-Jupyter:before {
     content: '\e913';
 }
 .ds-icon-QGIS:before {
     content: '\e914';
+}
+.ds-icon-Wind:before {
+    content: '\e915';
 }
 .ds-icon-OpenSees:before {
     content: '\e916';
@@ -122,4 +101,28 @@
 }
 .ds-icon-SWBatch:before {
     content: '\e91b';
+}
+.ds-icon-STKO:before {
+    content: '\e91c';
+}
+.ds-icon-Contract:before {
+    content: '\e91d';
+}
+.ds-icon-Expand:before {
+    content: '\e923';
+}
+.ds-icon-Job-Status:before {
+    content: '\e929';
+}
+.ds-icon-Compress:before {
+    content: '\e958';
+}
+.ds-icon-Extract:before {
+    content: '\e959';
+}
+.ds-icon-Generic-App:before {
+    content: '\e960';
+}
+.ds-icon-New-Tab:before {
+    content: '\ea7e';
 }

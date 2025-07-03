@@ -4,6 +4,7 @@ import { Flex, Layout } from 'antd';
 import {
   AppsSideNav,
   JobStatusNav,
+  SystemStatusNav,
   useGetAppParams,
   AppsBreadcrumb,
   Toast,
@@ -18,6 +19,7 @@ import {
   InteractiveModalContext,
   useAuthenticatedUser,
 } from '@client/hooks';
+import { SystemStatusModal } from '@client/workspace';
 import styles from './layout.module.css';
 
 const { Sider, Header } = Layout;
@@ -36,6 +38,9 @@ const WorkspaceRoot: React.FC = () => {
   const [interactiveModalDetails, setInteractiveModalDetails] = useState({
     show: false,
   });
+
+  const [isSystemStatusModalVisible, setSystemStatusModalVisible] =
+    useState(false);
 
   if (!data || isLoading)
     return (
@@ -78,6 +83,9 @@ const WorkspaceRoot: React.FC = () => {
             className={styles['overflow']}
           >
             <JobStatusNav />
+            <SystemStatusNav
+              onOpenModal={() => setSystemStatusModalVisible(true)}
+            />
             <AppsSideNav categories={data.categories} />
           </Sider>
           <Outlet />
@@ -85,6 +93,10 @@ const WorkspaceRoot: React.FC = () => {
       </Flex>
       <Toast />
       <InteractiveSessionModal />
+      <SystemStatusModal
+        isModalVisible={isSystemStatusModalVisible}
+        onClose={() => setSystemStatusModalVisible(false)}
+      />
     </InteractiveModalContext.Provider>
   );
 };

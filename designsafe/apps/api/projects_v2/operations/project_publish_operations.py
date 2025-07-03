@@ -28,6 +28,10 @@ from designsafe.apps.api.projects_v2.operations.project_archive_operations impor
 from designsafe.apps.api.projects_v2.operations.project_email_operations import (
     send_project_permissions_alert,
 )
+from designsafe.apps.api.projects_v2.operations.path_operations import (
+    construct_entity_filepaths,
+    update_path_mappings,
+)
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
@@ -217,7 +221,7 @@ def add_values_to_tree(project_id: str) -> nx.DiGraph:
     return publication_tree
 
 
-def update_path_mappings(pub_graph: nx.DiGraph, project_uuid: str):
+def _update_path_mappings(pub_graph: nx.DiGraph, project_uuid: str):
     """update fileObjs and fileTags to point to published paths."""
     path_mapping = {}
     for node in pub_graph:
@@ -305,7 +309,6 @@ def get_publication_subtree(
             datetime.UTC
         ).isoformat()
         subtree.nodes[pub_root]["versionInfo"] = version_info or ""
-        base_pub_path += f"v{version}"
 
     subtree.add_node(
         "NODE_ROOT", basePath=base_pub_path, **tree_with_values.nodes["NODE_ROOT"]
@@ -320,7 +323,11 @@ def get_publication_subtree(
 
     for node in subtree.nodes:
         subtree.nodes[node]["basePath"] = base_pub_path
-    subtree, path_mapping = update_path_mappings(subtree, project_uuid)
+    subtree_with_basepaths = construct_entity_filepaths(
+        subtree, dataset_root=settings.PUBLISHED_DATASET_PATH
+    )
+    subtree, path_mapping = update_path_mappings(subtree_with_basepaths)
+
     return subtree, path_mapping
 
 
@@ -383,7 +390,11 @@ class PublicationDirectoryAlreadyExists(Exception):
 
 
 def copy_publication_files(
-    path_mapping: dict, project_id: str, version: Optional[int] = None
+    path_mapping: dict,
+    project_id: str,
+    project_uuid: str,
+    dirs_to_lock: Optional[list[str]] = None,
+    version: Optional[int] = None,
 ):
     """
     Copy files from My Projects to the published area on Corral.
@@ -392,48 +403,50 @@ def copy_publication_files(
     """
     os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
     try:
-        pub_dirname = project_id
-        if version and version > 1:
-            pub_dirname = f"{project_id}v{version}"
 
-        pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
+        # pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
 
-        # Prevent multiple attempts to publish the same project files.
-        if os.path.isdir(pub_root_dir):
-            raise PublicationDirectoryAlreadyExists(
-                f"Directory already exists: {pub_root_dir}"
-            )
+        for node_id in path_mapping:
+            for src_path in path_mapping[node_id]:
 
-        os.makedirs(pub_root_dir, exist_ok=True)
-
-        for src_path in path_mapping:
-            src_path_obj = Path(src_path)
-            if not src_path_obj.exists():
-                raise ProjectFileNotFound(f"File not found: {src_path}")
-
-            dest_path_obj = Path(path_mapping[src_path])
-            os.makedirs(dest_path_obj.parent, exist_ok=True)
-
-            if src_path_obj.is_dir():
-                shutil.copytree(
-                    src_path,
-                    path_mapping[src_path],
-                    dirs_exist_ok=True,
-                    copy_function=shutil.copy,
+                # Convert root path from Tapis system root to Corral mount root
+                src_path_obj = (
+                    Path(settings.DESIGNSAFE_PROJECTS_PATH)
+                    / Path(project_uuid)
+                    / Path(src_path.lstrip("/"))
                 )
-            else:
-                shutil.copy(src_path, path_mapping[src_path])
+                if not src_path_obj.exists():
+                    raise ProjectFileNotFound(f"File not found: {src_path}")
 
+                dest_path_obj = Path(settings.DESIGNSAFE_PUBLISHED_PATH) / Path(
+                    path_mapping[node_id][src_path].lstrip("/")
+                )
+                os.makedirs(dest_path_obj.parent, exist_ok=True)
+
+                if src_path_obj.is_dir():
+                    shutil.copytree(
+                        str(src_path_obj),
+                        str(dest_path_obj),
+                        dirs_exist_ok=True,
+                        copy_function=shutil.copy,
+                    )
+                else:
+                    shutil.copy(str(src_path_obj), str(dest_path_obj))
         # Lock the publication directory so that non-root users can only read files and list directories
-        subprocess.run(["chmod", "-R", "a-x,a=rX", pub_root_dir], check=True)
-        agave_indexer.apply_async(
-            kwargs={
-                "systemId": "designsafe.storage.published",
-                "filePath": pub_dirname,
-                "recurse": True,
-            },
-            queue="indexing",
-        )
+        if dirs_to_lock:
+            for data_dir in dirs_to_lock:
+                lock_full_path = str(
+                    Path(settings.DESIGNSAFE_PUBLISHED_PATH) / data_dir.lstrip("/")
+                )
+                subprocess.run(["chmod", "-R", "a-x,a=rX", lock_full_path], check=True)
+                agave_indexer.apply_async(
+                    kwargs={
+                        "systemId": "designsafe.storage.published",
+                        "filePath": data_dir,
+                        "recurse": True,
+                    },
+                    queue="indexing",
+                )
 
     except PermissionError as exc:
         logger.error(exc)
@@ -469,13 +482,25 @@ def publish_project(
     if dry_run:
         return pub_tree, path_mapping
 
+    pub_data_dirs = [
+        f"{pub_tree.nodes[node]['basePath']}/data"
+        for node in pub_tree.successors("NODE_ROOT")
+    ]
+
     # If we don't explicitly close the db connection, it will remain open during the
     # entire data-copying step, which can cause operations to fail.
     close_old_connections()
 
     if not settings.DEBUG:
+        project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
         # Copy files first so if it fails we don't create orphan metadata/datacite entries.
-        copy_publication_files(path_mapping, project_id, version=version)
+        copy_publication_files(
+            path_mapping,
+            project_id,
+            project_uuid=project_uuid,
+            version=version,
+            dirs_to_lock=pub_data_dirs,
+        )
 
     new_dois = []
 
