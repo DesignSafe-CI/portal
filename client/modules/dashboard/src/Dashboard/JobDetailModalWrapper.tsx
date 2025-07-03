@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Button, Layout } from 'antd';
 import { useGetApps, useGetJobs, TAppResponse, TTapisJob } from '@client/hooks';
 import { Spinner } from '@client/common-components';
-import { JobsDetailModalBody } from '@client/workspace/JobsDetailModal/JobsDetailModal';
+import { JobsDetailModalBody } from '@client/workspace';
 import styles from './Dashboard.module.css';
 interface JobDetailModalWrapperProps {
   uuid: string | null;

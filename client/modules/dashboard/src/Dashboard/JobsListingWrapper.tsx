@@ -1,14 +1,11 @@
 import React, { useMemo } from 'react';
 import { Row, Flex, Button } from 'antd';
-import {
-  JobsListingTable,
-  TJobsListingColumns,
-} from '@client/workspace/JobsListing/JobsListingTable/JobsListingTable';
+import { JobsListingTable, TJobsListingColumns } from '@client/workspace';
 import { getStatusText, truncateMiddle } from '@client/workspace';
-import { formatDateTimeFromValue } from '@client/workspace/utils/timeFormat';
+import { formatDateTimeFromValue } from '@client/workspace';
 import styles from '@client/workspace/JobsListing/JobsListing.module.css';
 import type { TTapisJob } from '@client/hooks';
-import { JobActionButton } from '@client/workspace/JobsListing/JobsListing';
+import { JobActionButton } from '@client/workspace';
 import { isTerminalState } from '@client/workspace';
 
 interface JobsListingWrapperProps {

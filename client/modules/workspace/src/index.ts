@@ -12,3 +12,4 @@ export * from './utils';
 export * from './constants';
 export * from './InteractiveSessionModal';
 export * from './components/SystemStatusModal/SystemStatusModal';
+export * from './JobsListing/JobsListingTable/JobsListingTable';
