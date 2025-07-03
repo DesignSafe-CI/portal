@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Dashboard.module.css';
+// import styles from './Dashboard.module.css';
 import Quicklinks from './Quicklinks';
 import JobStatus from './Jobstatus';
 import { Table, Tag } from 'antd';

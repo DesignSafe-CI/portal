@@ -3,13 +3,13 @@ import { Row, Flex, Button } from 'antd';
 import {
   JobsListingTable,
   TJobsListingColumns,
-} from '../../../workspace/src/JobsListing/JobsListingTable/JobsListingTable';
-import { getStatusText, truncateMiddle } from '../../../workspace/src/utils';
-import { formatDateTimeFromValue } from '../../../workspace/src/utils/timeFormat';
-import styles from '../../../workspace/src/JobsListing/JobsListing.module.css';
+} from '@client/workspace/JobsListing/JobsListingTable/JobsListingTable';
+import { getStatusText, truncateMiddle } from '@client/workspace';
+import { formatDateTimeFromValue } from '@client/workspace/utils/timeFormat';
+import styles from '@client/workspace/JobsListing/JobsListing.module.css';
 import type { TTapisJob } from '@client/hooks';
-import { JobActionButton } from '../../../workspace/src/JobsListing/JobsListing';
-import { isTerminalState } from '../../../workspace/src/utils';
+import { JobActionButton } from '@client/workspace/JobsListing/JobsListing';
+import { isTerminalState } from '@client/workspace';
 
 interface JobsListingWrapperProps {
   onViewDetails?: (uuid: string) => void;
