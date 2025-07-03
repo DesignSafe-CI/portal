@@ -80,6 +80,24 @@ export const PublicationSearchToolbar: React.FC = () => {
     setShowTips(false);
   };
 
+  // Hide tips when clicking outside the panel
+  React.useEffect(() => {
+    const handleClick = (event: Event) => {
+      if (
+        searchBarRef.current &&
+        !searchBarRef.current.contains(event.target as Node)
+      ) {
+        setShowTips(false);
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+
+    return () => {
+      document.removeEventListener('click', handleClick);
+    };
+  }, [searchBarRef, setShowTips]);
+
   const currentYear = new Date(Date.now()).getUTCFullYear();
   //Show events going back to 2015
   const datesInRange = [];
