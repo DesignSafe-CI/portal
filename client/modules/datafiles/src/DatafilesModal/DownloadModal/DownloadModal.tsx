@@ -29,9 +29,10 @@ export const DownloadModal: React.FC<{
 
   let downloadUrl = '';
   if (api === 'dropbox') {
-    downloadUrl = `/api/datafiles/${api}/${
-      scheme ?? 'public'
-    }/preview/${system}/${selectedFiles[0]?.path}/`;
+    const selectedFile = selectedFiles[0];
+    downloadUrl = `/api/datafiles/${api}/${scheme ?? 'public'}/preview/${
+      selectedFile?.system
+    }/${selectedFile?.path}/`;
   } else {
     downloadUrl = `/api/datafiles/${api}/${
       scheme ?? 'public'
