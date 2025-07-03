@@ -23,12 +23,10 @@ class MockIntersectionObserver {
   readonly rootMargin: string = '';
   readonly thresholds: ReadonlyArray<number> = [];
 
-  
-
   observe = vi.fn();
   unobserve = vi.fn();
   disconnect = vi.fn();
   takeRecords = vi.fn();
 }
-globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
-
+globalThis.IntersectionObserver =
+  MockIntersectionObserver as unknown as typeof IntersectionObserver;
