@@ -22,7 +22,7 @@ export const JobsListingWrapper: React.FC<JobsListingWrapperProps> = ({
         dataIndex: 'name' as keyof TTapisJob,
         ellipsis: true,
         width: '30%',
-        render: (_: any, job: TTapisJob) => (
+        render: (_: unknown, job: TTapisJob) => (
           <Flex vertical>
             {truncateMiddle(job.name, 35)}
             <Row className={styles.jobActions}>
@@ -76,7 +76,7 @@ export const JobsListingWrapper: React.FC<JobsListingWrapperProps> = ({
         title: 'Time Submitted - Finished',
         dataIndex: 'created' as keyof TTapisJob,
         width: '30%',
-        render: (_: any, job: TTapisJob) => {
+        render: (_: unknown, job: TTapisJob) => {
           const start = formatDateTimeFromValue(job.created);
           const end = formatDateTimeFromValue(job.ended);
           return (

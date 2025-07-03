@@ -15,7 +15,7 @@ Object.defineProperty(globalThis, 'matchMedia', {
 });
 
 globalThis.getComputedStyle = vi.fn().mockImplementation(() => ({
-  getPropertyValue: () => '',
+  getPropertyValue: (_prop: string): string => '',
 }));
 
 class MockIntersectionObserver {
@@ -23,15 +23,12 @@ class MockIntersectionObserver {
   readonly rootMargin: string = '';
   readonly thresholds: ReadonlyArray<number> = [];
 
-  constructor(
-    _callback: IntersectionObserverCallback,
-    _options?: IntersectionObserverInit
-  ) {}
+  
 
   observe = vi.fn();
   unobserve = vi.fn();
   disconnect = vi.fn();
   takeRecords = vi.fn();
 }
+globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
-globalThis.IntersectionObserver = MockIntersectionObserver as any;
