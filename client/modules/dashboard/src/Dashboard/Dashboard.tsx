@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 // import styles from './Dashboard.module.css';
 import Quicklinks from './Quicklinks';
 import JobStatus from './Jobstatus';
 import { Table, Tag } from 'antd';
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { useSystemOverview } from '@client/hooks';
 import SUAllocationsCard from './SUAllocationsCard';
 import UserGuides from './UserGuides';
@@ -11,6 +12,9 @@ export interface DashboardProps {}
 
 export function Dashboard(props: DashboardProps) {
   const { data: liveSystems, isLoading } = useSystemOverview();
+
+  const [showJobs, setShowJobs] = useState(true);
+  const [showAllocations, setShowAllocations] = useState(true);
 
   const columns = [
     {
@@ -54,8 +58,40 @@ export function Dashboard(props: DashboardProps) {
       {/* Middle section */}
       <div style={{ flex: 2 }}>
         <h1>DASHBOARD</h1>
-        <JobStatus />
-        <SUAllocationsCard />
+
+        {/* Recent Jobs Collapsible Section */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h3
+            onClick={() => setShowJobs(!showJobs)}
+            style={{
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              userSelect: 'none',
+            }}
+          >
+            {showJobs ? <DownOutlined /> : <RightOutlined />} Recent Jobs
+          </h3>
+          {showJobs && <JobStatus />}
+        </div>
+
+        {/* Allocations Collapsible Section */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h3
+            onClick={() => setShowAllocations(!showAllocations)}
+            style={{
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              userSelect: 'none',
+            }}
+          >
+            {showAllocations ? <DownOutlined /> : <RightOutlined />} Allocations
+          </h3>
+          {showAllocations && <SUAllocationsCard />}
+        </div>
       </div>
 
       {/* Vertical separator */}
