@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import * as dropdownOptions from '../../projects/forms/ProjectFormDropdowns';
-import styles from './PublicationSearchToolbar.module.css'
+import styles from './PublicationSearchToolbar.module.css';
 
 const { Panel } = Collapse;
 
@@ -43,6 +43,7 @@ const getRecentSearches = (): string[] => {
 
 export const PublicationSearchToolbar: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [form] = Form.useForm();
   const [showTips, setShowTips] = useState(false);
   const searchBarRef = useRef<HTMLDivElement>(null);
   const searchHelpRef = useRef<HTMLDivElement>(null);
@@ -73,6 +74,30 @@ export const PublicationSearchToolbar: React.FC = () => {
     setSearchParams(params);
   };
 
+  const handleClearFilters = () => {
+    setSearchParams({});
+    form.resetFields();
+    setShowTips(false);
+  };
+
+  // Hide tips when clicking outside the panel
+  React.useEffect(() => {
+    const handleClick = (event: Event) => {
+      if (
+        searchBarRef.current &&
+        !searchBarRef.current.contains(event.target as Node)
+      ) {
+        setShowTips(false);
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+
+    return () => {
+      document.removeEventListener('click', handleClick);
+    };
+  }, [searchBarRef, setShowTips]);
+
   const currentYear = new Date(Date.now()).getUTCFullYear();
   //Show events going back to 2015
   const datesInRange = [];
@@ -82,108 +107,95 @@ export const PublicationSearchToolbar: React.FC = () => {
   const yearOptions = [...datesInRange.map((y) => ({ label: y, value: y }))];
 
   return (
-    <div 
-      ref={searchBarRef}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-      }}
-    >
-      <Form
-        onFinish={({ query }) => setSearchParam('q', query)}
-        style={{ display: 'inline-flex', flex: 1, minWidth: '250px' }}
-      >
-        <Button htmlType="submit" type="primary" className="success-button">
-          <i className="fa fa-search" />
-          &nbsp;Search
-        </Button>
-        <Form.Item name="query" style={{ marginBottom: 0, flex: 1 }}>
-          <Input
-            placeholder="Author, Title, Keyword, Description, Natural Hazard Event, or Project ID"
-            style={{ flex: 1 }}
-            onFocus={() => setShowTips(true)}
-            onBlur={(evt) => {
-              if (evt.relatedTarget !== searchHelpRef.current) {
-                setShowTips(false);
-              }
-            }}
-            autoComplete="off"
-          />
-        </Form.Item>
-      </Form>
+    <div ref={searchBarRef} className={styles.toolbar}>
+      <div className={styles.searchWrapper}>
+        <Form
+          form={form}
+          onFinish={({ query }) => setSearchParam('q', query)}
+          className={styles.searchForm}
+        >
+          <Button htmlType="submit" type="primary" className="success-button">
+            <i className="fa fa-search" />
+            &nbsp;Search
+          </Button>
+          <Form.Item name="query" className={styles.searchInputItem}>
+            <Input
+              placeholder="Author, Title, Keyword, Description, Natural Hazard Event, or Project ID"
+              className={styles.searchInput}
+              onFocus={() => setShowTips(true)}
+              onBlur={(evt) => {
+                if (evt.relatedTarget !== searchHelpRef.current) {
+                  setShowTips(false);
+                }
+              }}
+              autoComplete="off"
+            />
+          </Form.Item>
+        </Form>
 
-      {showTips && (
-        <div style={{ width: '100%' }} tabIndex={0} ref={searchHelpRef}>
-          <Collapse
-            bordered={false}
-            defaultActiveKey={['1', '2']}
-            expandIconPosition="end"
-            collapsible="icon"
-            style={{ width: '100%' }}
-          >
-            <Panel
-              header={<strong>Search Tips</strong>}
-              key="1"
-              showArrow={false}
+        {showTips && (
+          <div ref={searchHelpRef} tabIndex={0} className={styles.searchTips}>
+            <Collapse
+              bordered={false}
+              defaultActiveKey={['1', '2']}
+              expandIconPosition="end"
+              collapsible="icon"
+              className={styles.collapsePanel}
             >
-              <p>
-                <strong>"exact phrase"</strong> - Use quotes to search for exact
-                phrases.
-              </p>
-              <p>
-                <strong>word1 OR word2</strong> - Find results containing either
-                word.
-              </p>
-              <p>
-                <strong>word1 AND word2, word3 word4</strong> - Use AND, commas,
-                and spaces to find results containing each word.
-              </p>
-            </Panel>
-            <Panel
-              header={<strong>Recent Searches</strong>}
-              key="2"
-              showArrow={false}
-            >
-              {recentSearches.length ? (
-                recentSearches.map((term, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                    }}
-                  >
-                    <i
-                      role="none"
-                      className="fa fa-search"
-                      style={{ color: '#337ab7' }}
-                    />
-                    <p
-                      style={{ cursor: 'pointer', color: '#337ab7', margin: 0 }}
-                      onClick={() => setSearchParam('q', term)}
-                    >
-                      {term}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p>No recent searches</p>
-              )}
-            </Panel>
-          </Collapse>
-        </div>
-      )}
+              <Panel
+                header={<strong>Search Tips</strong>}
+                key="1"
+                showArrow={false}
+              >
+                <p>
+                  <strong>"exact phrase"</strong> - Use quotes to search for
+                  exact phrases.
+                </p>
+                <p>
+                  <strong>word1 OR word2</strong> - Find results containing
+                  either word.
+                </p>
+                <p>
+                  <strong>word1 AND word2, word3 word4</strong> - Use AND,
+                  commas, and spaces to find results containing each word.
+                </p>
+              </Panel>
+              <Panel
+                header={<strong>Recent Searches</strong>}
+                key="2"
+                showArrow={false}
+              >
+                {recentSearches.length ? (
+                  recentSearches.map((term, idx) => (
+                    <div key={idx} className={styles.recentItem}>
+                      <i className={`fa fa-search ${styles.recentIcon}`} />
+                      <p
+                        className={styles.recentText}
+                        onClick={() => {
+                          setSearchParam('q', term);
+                          form.setFieldsValue({ query: term });
+                          form.submit();
+                        }}
+                      >
+                        {term}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No recent searches</p>
+                )}
+              </Panel>
+            </Collapse>
+          </div>
+        )}
+      </div>
       <div>
-        <label htmlFor="nh-type-select" style={{ margin: 0 }}>
+        <label htmlFor="nh-type-select" className={styles.filterLabel}>
           Natural Hazard Type
         </label>
         &nbsp;
         <Select
-          style={{ width: '150px' }}
+          className={styles.filterSelect}
           virtual={false}
           allowClear
           id="nh-type-select"
@@ -199,12 +211,12 @@ export const PublicationSearchToolbar: React.FC = () => {
       </div>
 
       <div>
-        <label htmlFor="publication-year-select" style={{ margin: 0 }}>
+        <label htmlFor="publication-year-select" className={styles.filterLabel}>
           Year Published
         </label>
         &nbsp;
         <Select
-          style={{ width: '150px' }}
+          className={styles.filterSelect}
           id="publication-year-select"
           options={[{ label: 'All Years', value: null }, ...yearOptions]}
           allowClear
@@ -216,7 +228,7 @@ export const PublicationSearchToolbar: React.FC = () => {
         />
       </div>
 
-      <Button type="link" onClick={() => setSearchParams(undefined)}>
+      <Button type="link" onClick={handleClearFilters}>
         Clear Filters
       </Button>
     </div>
