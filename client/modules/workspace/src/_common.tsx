@@ -14,10 +14,7 @@ const colorVarMap: Record<StatusType, string> = {
   warning: 'var(--ds-warning-color)',
 };
 
-export const StatusTag: React.FC<StatusTagProps> = ({
-  type,
-  children,
-}) => (
+export const StatusTag: React.FC<StatusTagProps> = ({ type, children }) => (
   <Tag
     style={{
       backgroundColor: colorVarMap[type],
