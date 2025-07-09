@@ -50,6 +50,9 @@ export const getExecSystemsFromApp = (
     );
   }
 
+  const execSystemId = definition.jobAttributes?.execSystemId;
+  if (!execSystemId) return [];
+
   const sys = execSystems.find(
     (s) => s.id === definition.jobAttributes.execSystemId
   );
@@ -68,7 +71,7 @@ export const getDefaultExecSystem = (
   if (!isAppUsingDynamicExecSystem(definition)) {
     return getExecSystemFromId(
       execSystems,
-      definition.jobAttributes.execSystemId
+      definition.jobAttributes?.execSystemId
     );
   }
 
