@@ -1,0 +1,3 @@
+requests==2.31.0
+geojson>=3.0.1,<4.0.0
+shapely>=2.0.1,<3
