@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
-import styles from './AuditTrails.module.css'
+import styles from './AuditTrails.module.css';
+import { Modal } from 'antd';
 
+//hodling entire json response
+interface AuditApiResponse {
+  data: AuditEntry[];
+}
+
+//for each row or object in AuditApiResponse
 interface AuditEntry {
   session_id: string;
   timestamp: string;
@@ -9,10 +16,6 @@ interface AuditEntry {
   action: string;
   tracking_id: string;
   data: any;
-}
-
-interface AuditApiResponse {
-  data: AuditEntry[];
 }
 
 const AuditTrail: React.FC = () => {
@@ -27,6 +30,7 @@ const AuditTrail: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<string>('');
+  const [clickedEntry, setClickedEntry] = useState<AuditEntry | null>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -46,24 +50,24 @@ const AuditTrail: React.FC = () => {
   //getting arr of all usernames one time when first mounted
   useEffect(() => {
     fetch('/audit/api/usernames/portals')
-      .then(res => res.json())
-      .then(data => setAllUsernames(data.usernames || []));
-  }, [])
-  console.log("All usernames", allUsernames);
+      .then((res) => res.json())
+      .then((data) => setAllUsernames(data.usernames || []));
+  }, []);
+  //console.log('All usernames', allUsernames);
 
   //updating filtered arr everytime user changes their input
   useEffect(() => {
     if (username.length > 0) {
       setFilteredUsernames(
         allUsernames
-          .filter(name => name.toLowerCase().includes(username.toLowerCase()))
+          .filter((name) => name.toLowerCase().includes(username.toLowerCase()))
           .slice(0, 20)
       );
     } else {
       setFilteredUsernames([]);
     }
   }, [username]);
-  console.log("Filtered Usernames:", filteredUsernames)
+  //console.log('Filtered Usernames:', filteredUsernames);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,72 +83,82 @@ const AuditTrail: React.FC = () => {
         throw new Error(`API error: ${res.status} ${errText}`);
       }
       const result = await res.json();
+      console.log("APO RESPOSNE:", result)
       setData(result);
     } catch (err: any) {
       setError(err.message || 'Unknown error');
     }
     setLoading(false);
+    console.log(data)
   };
 
   function truncate(str: string, n: number) {
     return str.length > n ? str.slice(0, n) + '…' : str;
   }
 
-  const modal = modalOpen && (
-    <div
-      className={styles.modalOverlay}
-      onClick={() => setModalOpen(false)}
-    >
-      <div
-        className={styles.modalContent}
-        onClick={e => e.stopPropagation()}
+  return (
+    <div>
+      <Modal
+        title="Details"
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        footer={
+          clickedEntry && (
+            <div
+              style={{
+                marginTop: '-30px',
+                marginBottom: '10px',
+                textAlign: 'center'
+              }}
+            >
+              {clickedEntry.username} | {clickedEntry.timestamp} |{' '}
+              {clickedEntry.portal} | {clickedEntry.action}
+            </div>
+          )
+        }
+        width={550}
+        style={{
+          maxHeight: '70vh',
+          overflow: 'auto',
+        }}
       >
-        <button
-          style={{ float: 'right', fontSize: 18, border: 'none', background: 'none', cursor: 'pointer' }}
-          onClick={() => setModalOpen(false)}
-        >
-          X
-        </button>
         <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
           {modalContent}
         </pre>
-      </div>
-    </div>
-  );
-
-  return (
-    <div style={{ padding: 16 }}>
-      {modal}
-      <h2>Audit Trail Test</h2>
+      </Modal>
+      {/*<h2>Audit Trail Test</h2>*/}
       <form onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
-        <div ref={containerRef} style={{ position: 'relative', display: 'inline-block'}}>
-        <input
-          value={username}
-          onChange={(e) => {
-            setUsername(e.target.value);
-            setShowDropdown(true);
-          }}
-          onFocus={() => setShowDropdown(true)}
-          placeholder="Enter username"
-          style={{ marginRight: 8 }}
-        />
-        {showDropdown && filteredUsernames.length > 0 && (
-          <ul className={styles.dropdownList}>
-            {filteredUsernames.map(name => (
-              <li
-                key={name}
-                onClick={() => setUsername(name)}
-                style={{
-                  padding: '8px', 
-                  cursor: 'pointer',
-                  borderBottom: '1px solid'               
-                }}
+        <div
+          ref={containerRef}
+          style={{ position: 'relative', display: 'inline-block' }}
+        >
+          <input
+            value={username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              setShowDropdown(true);
+            }}
+            onFocus={() => setShowDropdown(true)}
+            placeholder="Enter username"
+            style={{ marginRight: 8 }}
+          />
+          {showDropdown && filteredUsernames.length > 0 && (
+            <ul className={styles.dropdownList}>
+              {filteredUsernames.map((name) => (
+                <li
+                  key={name}
+                  onClick={() => setUsername(name)}
+                  style={{
+                    padding: '8px',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid',
+                  }}
                 >
                   {name}
                 </li>
-            ))}
-          </ul>
-        )}
+              ))}
+            </ul>
+          )}
         </div>
         <select
           value={source}
@@ -181,10 +195,10 @@ const AuditTrail: React.FC = () => {
                 <th
                   key={h}
                   style={{
-                    border: '1px solid #ccc',
-                    padding: '8px',
-                    textAlign: 'left',
-                    background: '#afafaf',
+                    border: '1px solid var(--global-color-primary--dark)',
+                    padding: '10px',
+                    textAlign: 'center',
+                    background: 'var(--global-color-primary--normal)',
                   }}
                 >
                   {h}
@@ -203,7 +217,7 @@ const AuditTrail: React.FC = () => {
               }
 
               return (
-                <tr key={idx}>
+                <tr key={idx}> {/* Could probably make a loop for this, also name css class */}
                   <td style={{ border: '1px solid #ccc', padding: '8px' }}>
                     {entry.username || '-'}
                   </td>
@@ -226,29 +240,30 @@ const AuditTrail: React.FC = () => {
                     style={{
                       border: '1px solid #ccc',
                       padding: '8px',
-                      verticalAlign: 'top',
-                      maxWidth: 200, 
+                      maxWidth: 200,
                       wordBreak: 'break-all',
                       cursor: 'pointer',
-                      textDecoration: 'underline'
+                      textDecoration: 'underline',
                     }}
                     onClick={() => {
                       let content = '';
                       if (entry.data) {
                         try {
-                          const obj = typeof entry.data === 'string' ? JSON.parse(entry.data) : entry.data;
+                          const obj =
+                            typeof entry.data === 'string'
+                              ? JSON.parse(entry.data)
+                              : entry.data;
                           content = JSON.stringify(obj, null, 2);
                         } catch {
                           content = entry.data;
                         }
                       }
                       setModalContent(content);
+                      setClickedEntry(entry);
                       setModalOpen(true);
                     }}
-                    title="Click to view full data"
-                  > 
-                    {truncate(entry.data ? JSON.stringify(entry.data) : '', 40)}
-
+                  >
+                    {truncate(entry.data ? JSON.stringify(entry.data) : '', 50)}
                   </td>
                 </tr>
               );
@@ -259,7 +274,7 @@ const AuditTrail: React.FC = () => {
     </div>
   );
 };
-
+//git commit -m "Added pop-up modal functionality for data column (now named Details), Changed names on dropdown menu for type of search, implemented username auto-search dropdown menu capability for easier selection, added css file for AuditTrials.tsx"
 export default AuditTrail;
 //joyce_cywu
 //jr93
@@ -293,8 +308,5 @@ export default AuditTrail;
 /* add tracking_id as another column option show on UI    CHECK CHECK CHECK
 */
 
-
-
 /* change up query to use jake recommendation 
 /* add clickable data section for popup, have it as pretty print */
-

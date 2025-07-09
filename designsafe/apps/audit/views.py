@@ -19,8 +19,7 @@ def get_audit_user_last_session(request, username):
         cursor = audit_db.cursor()
 
         
-
-
+        #for joyce_cywu search(many results)
         query = f"""
         SELECT session_id, timestamp, portal, username, action, tracking_id, data
         FROM {table}
@@ -28,6 +27,21 @@ def get_audit_user_last_session(request, username):
         AND username = %s
         ORDER BY timestamp ASC;
         """
+
+        #for REAL most recent session
+        # query = f"""
+        # SELECT session_id, timestamp, portal, username, action, tracking_id, data
+        # FROM {table}
+        # WHERE session_id = (
+        #     SELECT session_id
+        #     FROM public.portal_audit
+        #     WHERE username = %s
+        #     ORDER BY timestamp DESC
+        #     LIMIT 1
+        # )
+        # ORDER BY timestamp ASC;
+        
+        # """
         
     
         cursor.execute(query, [username])
@@ -35,13 +49,18 @@ def get_audit_user_last_session(request, username):
         results = [dict(zip(columns, row)) for row in cursor.fetchall()]
         cursor.close()
         print("Query successful.")
-
         return JsonResponse({'data': results})
     
     except Exception as e:
         print("Error in get_audit_user_last_session:", str(e))
 
         return JsonResponse({'error': str(e)}, status=500)
+
+
+
+
+
+
 
 def get_usernames_portals(request):
     """
