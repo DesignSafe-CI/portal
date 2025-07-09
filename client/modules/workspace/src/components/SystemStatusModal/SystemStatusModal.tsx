@@ -39,7 +39,7 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
         appExecSystems
       );
 
-      if (defaultExecSystem?.id) {
+      if (defaultExecSystem && defaultExecSystem?.id) {
         setActiveSystem(getSystemDisplayName(defaultExecSystem.id));
       }
     }
