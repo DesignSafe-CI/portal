@@ -27,9 +27,17 @@ export const DownloadModal: React.FC<{
     setIsModalOpen(true);
   };
 
-  const zipUrl = `/api/datafiles/${api}/${
-    scheme ?? 'public'
-  }/download/${system}/?doi=${doiString}`;
+  let downloadUrl = '';
+  if (api === 'dropbox') {
+    const selectedFile = selectedFiles[0];
+    downloadUrl = `/api/datafiles/${api}/${scheme ?? 'public'}/preview/${
+      selectedFile?.system
+    }/${selectedFile?.path}/`;
+  } else {
+    downloadUrl = `/api/datafiles/${api}/${
+      scheme ?? 'public'
+    }/download/${system}/?doi=${doiString}`;
+  }
 
   const handleDownload = () => {
     if (system === 'designsafe.storage.published') {
@@ -40,8 +48,11 @@ export const DownloadModal: React.FC<{
       });
     }
 
+    const putBody =
+      api === 'tapis' ? { paths: selectedFiles.map((f) => f.path) } : {};
+
     apiClient
-      .put(zipUrl, { paths: selectedFiles.map((f) => f.path) })
+      .put(downloadUrl.toString(), putBody)
       .then((resp) => {
         const link = document.createElement('a');
         link.style.display = 'none';
