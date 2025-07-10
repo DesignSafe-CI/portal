@@ -23,9 +23,9 @@ export const PreviewModalBody: React.FC<{
   selectedFile: TFileListing;
   handleCancel: () => void;
 }> = ({ isOpen, api, scheme, selectedFile, handleCancel }) => {
-  /* 
+  /*
   Typically modals are rendered in the same component as the button that manages the
-  open/closed state. The modal body is exported separately for file previews, since 
+  open/closed state. The modal body is exported separately for file previews, since
   the modal might be rendered hundreds of times in a listing and impact performance.
    */
   const queryClient = useQueryClient();
@@ -69,6 +69,8 @@ export const PreviewModalBody: React.FC<{
       <PreviewMetadata
         selectedFile={selectedFile}
         fileMeta={data?.fileMeta ?? {}}
+        api={api}
+        scheme={scheme}
       />
       <div
         style={{
@@ -115,6 +117,7 @@ export const PreviewModalBody: React.FC<{
             <DownloadModal
               api={api}
               system={selectedFile.system}
+              scheme={scheme}
               selectedFiles={[selectedFile]}
             >
               {({ onClick }) => (

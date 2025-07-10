@@ -10,7 +10,7 @@ api_mapping = {
         'iterate_listing': googledrive_operations.iterate_listing,
         'mkdir': googledrive_operations.mkdir
     },
-    'agave': {
+    'tapis': {
         'upload': tapis_operations.upload,
         'download': tapis_operations.download_bytes,
         'iterate_listing': tapis_operations.iterate_listing,
@@ -18,7 +18,7 @@ api_mapping = {
     },
     'dropbox': {
         'upload': dropbox_operations.upload,
-        'download': dropbox_operations.download_bytes,
+        'download': dropbox_operations.download,
         'iterate_listing': dropbox_operations.iterate_listing,
         'mkdir': dropbox_operations.mkdir
     },
@@ -37,7 +37,7 @@ def transfer(src_client, dest_client, src_api, dest_api, src_system, dest_system
     _upload = api_mapping[dest_api]['upload']
 
     file_bytes = _download(src_client, src_system, src_path)
-    file_upload = _upload(dest_client, dest_system, dest_path, file_bytes)
+    _upload(dest_client, dest_system, dest_path, file_bytes)
 
     return
 
@@ -54,5 +54,5 @@ def transfer_folder(src_client, dest_client, src_api, dest_api, src_system, dest
             transfer_folder(src_client, dest_client, src_api, dest_api, src_system, dest_system, f['path'], newdir['path'], f['name'])
         else:
             file_bytes = _download(src_client, src_system, f['path'])
-            file_upload = _upload(dest_client, dest_system, newdir['path'], file_bytes)
-            
+            _upload(dest_client, dest_system, newdir['path'], file_bytes)
+
