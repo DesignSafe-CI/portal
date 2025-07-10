@@ -203,7 +203,7 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
           if (status === 'FINISHED') {
             return <StatusTag type="success">{text}</StatusTag>;
           }
-          if (status === 'FAILURE') {
+          if (status === 'FAILED') {
             return <StatusTag type="error">{text}</StatusTag>;
           }
           return <StatusTag type="warning">{text}</StatusTag>;

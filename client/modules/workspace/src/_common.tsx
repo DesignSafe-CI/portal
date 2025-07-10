@@ -23,7 +23,6 @@ export const StatusTag: React.FC<StatusTagProps> = ({ type, children }) => (
       lineHeight: 1,
       paddingInline: 0,
       padding: '0.2em 0.4em 0.3em',
-      fontSize: '75%',
       border: 'none',
     }}
   >
