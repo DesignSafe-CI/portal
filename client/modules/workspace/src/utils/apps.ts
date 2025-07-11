@@ -20,11 +20,14 @@ export const DEFAULT_JOB_MAX_MINUTES = 60 * 24 * 2; // 2 days
  * Get the execution system object for a given id of the execution system.
  */
 export const getExecSystemFromId = (
-  execSystems: TTapisSystem[] | undefined,
-  execSystemId: string | undefined
-): TTapisSystem | null => {
-  if (!execSystems?.length || !execSystemId) return null;
-  return execSystems.find((exec_sys) => exec_sys.id === execSystemId) || null;
+  execSystems: TTapisSystem[],
+  execSystemId: string
+) => {
+  if (execSystems?.length) {
+    return execSystems.find((exec_sys) => exec_sys.id === execSystemId);
+  }
+
+  return null;
 };
 
 /**
@@ -32,27 +35,27 @@ export const getExecSystemFromId = (
  * Otherwise, return all available systems.
  */
 export const getExecSystemsFromApp = (
-  definition: TTapisApp | undefined,
-  execSystems: TTapisSystem[] | undefined
-): TTapisSystem[] => {
-  if (!definition || !execSystems) return [];
-
+  definition: TTapisApp,
+  execSystems: TTapisSystem[]
+) => {
   if (isAppUsingDynamicExecSystem(definition)) {
-    const dynamics = definition.notes.dynamicExecSystems;
-    if (dynamics?.length === 1 && dynamics[0] === 'ALL') return execSystems;
-    return execSystems.filter((s) => dynamics?.includes(s.id));
+    if (
+      definition.notes.dynamicExecSystems?.length === 1 &&
+      definition.notes.dynamicExecSystems[0] === 'ALL'
+    )
+      return execSystems;
+
+    return execSystems.filter((s) =>
+      definition.notes.dynamicExecSystems?.includes(s.id)
+    );
   }
 
   const execSystemId = definition.jobAttributes?.execSystemId;
-<<<<<<< HEAD
-  const sys = execSystems.find((s) => s.id === execSystemId);
-=======
   if (!execSystemId) return [];
 
   const sys = execSystems.find(
     (s) => s.id === definition.jobAttributes.execSystemId
   );
->>>>>>> feat/react-dashboard
   return sys ? [sys] : [];
 };
 
@@ -61,28 +64,29 @@ export const getExecSystemsFromApp = (
  * Otherwise, get the first entry.
  */
 export const getDefaultExecSystem = (
-  definition: TTapisApp | undefined,
-  execSystems: TTapisSystem[] | undefined
-): TTapisSystem | null => {
-  if (!definition || !execSystems || execSystems.length === 0) return null;
-
-  const execSystemId = definition.jobAttributes?.execSystemId;
-
+  definition: TTapisApp,
+  execSystems: TTapisSystem[]
+) => {
+  // If dynamic exec system is not setup, use from job attributes.
   if (!isAppUsingDynamicExecSystem(definition)) {
-<<<<<<< HEAD
-    return getExecSystemFromId(execSystems, execSystemId);
-=======
     return getExecSystemFromId(
       execSystems,
       definition.jobAttributes?.execSystemId
     );
->>>>>>> feat/react-dashboard
   }
 
-  return (
-    getExecSystemFromId(execSystems, execSystemId) ||
-    getExecSystemFromId(execSystems, execSystems[0].id)
-  );
+  if (execSystems?.length) {
+    const execSystemId = definition.jobAttributes.execSystemId;
+
+    // Check if the app's default execSystemId is in provided list
+    // If not found, return the first execSystem from the provided list
+    return (
+      getExecSystemFromId(execSystems, execSystemId) ||
+      getExecSystemFromId(execSystems, execSystems[0].id)
+    );
+  }
+
+  return null;
 };
 
 export const getQueueMaxMinutes = (
