@@ -96,6 +96,10 @@ export const LeafletMap: React.FC = () => {
                 layer.getPopup()?.update();
               }, 0);
             });
+            layer.on('mouseover', () => {
+              const thisPopup = layer.getPopup();
+              thisPopup?.togglePopup();
+            });
           }}
         />
       );
@@ -119,6 +123,11 @@ export const LeafletMap: React.FC = () => {
           key={`marker-${dataset.identifier.value}-${index}`}
           position={latlngPosition}
           icon={icon}
+          eventHandlers={{
+            mouseover: (e) => {
+              e.target.togglePopup();
+            },
+          }}
         >
           <Popup>
             <OpenTopoPopup dataset={dataset} />
