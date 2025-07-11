@@ -8,7 +8,7 @@ function copyFn(src: TCopyParam, dest: TCopyParam, doi?: string) {
     `/api/datafiles/${src.api}/private/copy/${src.system}/${src.path}/${
       doi ? `?doi=${doi}` : ''
     }`,
-    { dest_system: dest.system, dest_path: dest.path }
+    { dest_system: dest.system, dest_path: dest.path, dest_api: dest.api }
   );
 }
 

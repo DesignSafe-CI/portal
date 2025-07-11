@@ -44,7 +44,15 @@ export const getExecSystemsFromApp = (
   }
 
   const execSystemId = definition.jobAttributes?.execSystemId;
+<<<<<<< HEAD
   const sys = execSystems.find((s) => s.id === execSystemId);
+=======
+  if (!execSystemId) return [];
+
+  const sys = execSystems.find(
+    (s) => s.id === definition.jobAttributes.execSystemId
+  );
+>>>>>>> feat/react-dashboard
   return sys ? [sys] : [];
 };
 
@@ -61,7 +69,14 @@ export const getDefaultExecSystem = (
   const execSystemId = definition.jobAttributes?.execSystemId;
 
   if (!isAppUsingDynamicExecSystem(definition)) {
+<<<<<<< HEAD
     return getExecSystemFromId(execSystems, execSystemId);
+=======
+    return getExecSystemFromId(
+      execSystems,
+      definition.jobAttributes?.execSystemId
+    );
+>>>>>>> feat/react-dashboard
   }
 
   return (

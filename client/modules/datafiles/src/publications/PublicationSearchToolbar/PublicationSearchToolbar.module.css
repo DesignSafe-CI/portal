@@ -1,0 +1,79 @@
+/* Toolbar container */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+
+/* Search wrapper holds the form and tips panel */
+.searchWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+}
+
+/* The search form itself */
+.searchForm {
+  display: flex;
+  flex: 1;
+  min-width: 250px;
+}
+
+/* Form.Item wrapper for the input */
+.searchInputItem {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+/* The search input */
+.searchInput {
+  flex: 1;
+}
+
+/* Tips panel (absolutely positioned) */
+.searchTips {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+}
+
+/* Collapse panel full width */
+.collapsePanel {
+  width: 100%;
+}
+
+/* Each recent search row */
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Icon in recent search */
+.recentIcon {
+  color: #337ab7;
+}
+
+/* Text in recent search */
+.recentText {
+  cursor: pointer;
+  color: #337ab7;
+  margin: 0;
+}
+
+/* Label for filters */
+.filterLabel {
+  margin: 0;
+}
+
+/* Select controls for filters */
+.filterSelect {
+  width: 150px;
+}
