@@ -31,13 +31,23 @@ export const getExecSystemsFromApp = (
   if (!definition || !execSystems) return [];
 
   if (isAppUsingDynamicExecSystem(definition)) {
-    const dynamics = definition.notes.dynamicExecSystems;
-    if (dynamics?.length === 1 && dynamics[0] === 'ALL') return execSystems;
-    return execSystems.filter((s) => dynamics?.includes(s.id));
+    if (
+      definition.notes.dynamicExecSystems?.length === 1 &&
+      definition.notes.dynamicExecSystems[0] === 'ALL'
+    )
+      return execSystems;
+
+    return execSystems.filter((s) =>
+      definition.notes.dynamicExecSystems?.includes(s.id)
+    );
   }
 
   const execSystemId = definition.jobAttributes?.execSystemId;
-  const sys = execSystems.find((s) => s.id === execSystemId);
+  if (!execSystemId) return [];
+
+  const sys = execSystems.find(
+    (s) => s.id === definition.jobAttributes.execSystemId
+  );
   return sys ? [sys] : [];
 };
 
@@ -242,7 +252,7 @@ export const getQueueValueForExecSystem = ({
 }) => {
   const queueName =
     queue_name ??
-    definition?.jobAttributes.execSystemLogicalQueue ??
+    definition?.jobAttributes?.execSystemLogicalQueue ??
     exec_sys?.batchDefaultLogicalQueue;
   return (
     exec_sys?.batchLogicalQueues.find((q) => q.name === queueName) ||
@@ -291,7 +301,7 @@ export const isTargetPathEmpty = (targetPathFieldValue?: string) => {
 
   targetPathFieldValue = targetPathFieldValue.trim();
 
-  if (targetPathFieldValue.trim() === '') {
+  if (targetPathFieldValue === '') {
     return true;
   }
 
@@ -318,7 +328,7 @@ export const getAllocationValidation = (
     return z.string().optional();
   }
   return z.enum(allocations as [string, ...string[]], {
-    errorMap: (issue, ctx) => ({
+    errorMap: () => ({
       message: 'Please select an allocation from the dropdown.',
     }),
   });
