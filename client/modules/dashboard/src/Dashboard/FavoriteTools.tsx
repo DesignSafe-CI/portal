@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useFavorites, useRemoveFavorite } from '@client/hooks';
-import { useAppsListing } from '@client/hooks';
+import { useFavorites, useRemoveFavorite, useAppsListing } from '@client/hooks';
 import styles from './Dashboard.module.css';
 
 interface FavoriteTool {
@@ -157,44 +156,38 @@ const FavoriteTools = () => {
   return (
     <>
       <button
-        className={styles.favoriteToggle}
         onClick={() => setShowPanel(!showPanel)}
-        aria-label="Toggle Favorites Panel"
-        aria-pressed={showPanel}
-        title="Toggle Favorites Panel"
         type="button"
+        className={styles.favoriteToggle}
       >
-        ★
+        Favorites
       </button>
+
       {showPanel && (
         <div ref={panelRef} className={styles.favoritePanel}>
-          <h4>Your Favorite Tools</h4>
+          <h4>Your Favorite Tools </h4>
+
           {resolvedFavorites.length === 0 ? (
-            <p>No favorite tools yet.</p>
+            <div className={styles.emptyFavorites}>No favorite tools yet.</div>
           ) : (
             <ul className={styles.favoriteList}>
               {resolvedFavorites.map((tool) => (
-                <li key={tool.key} className={styles.favoriteItem}>
+                <li className={styles.favoriteItem} key={tool.key}>
                   <a
                     href={tool.href}
                     target="_blank"
                     rel="noreferrer"
                     onClick={() => handleToolClick(tool.label, tool.href)}
-                    style={{
-                      flexGrow: 1,
-                      textDecoration: 'none',
-                      color: '#007bff',
-                    }}
+                    className={styles.projectLink}
                   >
                     {tool.label}
                   </a>
                   <button
-                    className={styles.starIcon}
                     onClick={() => handleRemove(tool.key)}
                     disabled={removingIds.has(tool.key)}
-                    aria-label={`Remove ${tool.label} from favorites`}
-                    title={`Remove ${tool.label}`}
                     type="button"
+                    className={styles.starIcon}
+                    aria-label={`Remove favorite ${tool.label}`}
                   >
                     ★
                   </button>
