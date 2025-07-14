@@ -92,6 +92,8 @@ export const AppsSubmissionDetails: React.FC<{
         // console.log('fieldDisplayOrder');
         // console.log(displayOrder);
       }
+      let addedSchedulerOptions = false;
+
       entries.forEach(([k, v], childIndex) => {
         if (
           definition.notes.hideQueue &&
@@ -107,6 +109,41 @@ export const AppsSubmissionDetails: React.FC<{
         ) {
           return; // Hide the allocation, if that field is true
         }
+        if (
+          definition.jobAttributes.parameterSet.schedulerOptions.some(
+            (opt) => opt.name === 'TACC Reservation'
+          ) &&
+          key === 'configuration' &&
+          !addedSchedulerOptions
+        ) {
+          addedSchedulerOptions = true;
+          const schedulerOpt =
+            definition.jobAttributes.parameterSet.schedulerOptions.find(
+              (opt) => opt.name === 'TACC Reservation'
+            );
+
+          items.push({
+            key: 'schedulerOptions',
+            label: <span>{'TACC Reservation'} </span>,
+            children: <span>{schedulerOpt?.value ?? ''}</span>,
+            style: {
+              padding: '8px',
+              backgroundColor: childIndex % 2 === 0 ? '#fff' : '#f4f4f4',
+              borderBottom: '1px solid #DBDBDB',
+            },
+          });
+        }
+        if (
+          key === 'parameters' &&
+          k === 'schedulerOptions' &&
+          definition.jobAttributes.parameterSet.schedulerOptions.some(
+            (opt) => opt.name === 'TACC Reservation'
+          )
+        ) {
+          // Skip showing schedulerOptions in parameters if it includes TACC Reservation
+          return;
+        }
+
         if (v instanceof Object) {
           Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
             const nestedFieldSchema = parent?.shape?.[k]?.shape?.[kk];
