@@ -35,7 +35,8 @@ export const UploadFileModalBody: React.FC<{
     try {
       for (const file of fileList) {
         const formData = new FormData();
-        formData.append('uploaded_file', file.originFileObj!);
+        const blob = file as unknown as Blob;
+        formData.append('uploaded_file', blob, file.name);
         formData.append('file_name', file.name);
         formData.append('webkit_relative_path', '');
 
