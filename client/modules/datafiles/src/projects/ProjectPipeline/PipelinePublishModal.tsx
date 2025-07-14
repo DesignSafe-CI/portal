@@ -89,7 +89,36 @@ export const PipelinePublishModal: React.FC<{
         width="60%"
         open={isModalOpen}
         footer={() => (
-          <div>
+          <div style={{ textAlign: 'start' }}>
+            <span>
+              <Checkbox
+                id="publication-agreement-checkbox"
+                checked={publishingAgreement}
+                onChange={(e) => setPublishingAgreement(e.target.checked)}
+              />
+              <label
+                htmlFor="publication-agreement-checkbox"
+                style={{ display: 'inline-flex', alignItems: 'center' }}
+              >
+                &nbsp;
+                {['field_recon', 'other'].includes(projectType)
+                  ? 'I agree to the Publishing Agreement and affirm that this dataset follows the Protected Data guidelines.'
+                  : 'I agree to the Publishing Agreement'}
+                &nbsp;
+                <Tag
+                  color="#d9534f"
+                  style={{
+                    borderRadius: '2.7px',
+                    lineHeight: 1,
+                    paddingInline: 0,
+                    padding: '0.2em 0.4em 0.3em',
+                    fontSize: '75%',
+                  }}
+                >
+                  Required
+                </Tag>
+              </label>
+            </span>
             {operation === 'version' && (
               <div style={{ textAlign: 'start', margin: '10px 0px' }}>
                 {' '}
@@ -124,26 +153,7 @@ export const PipelinePublishModal: React.FC<{
                 />
               </div>
             )}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <span>
-                <Checkbox
-                  id="publication-agreement-checkbox"
-                  checked={publishingAgreement}
-                  onChange={(e) => setPublishingAgreement(e.target.checked)}
-                />
-                <label htmlFor="publication-agreement-checkbox">
-                  &nbsp;
-                  {['field_recon', 'other'].includes(projectType)
-                    ? 'I agree, and the data I am publishing adheres to the procedures listed above'
-                    : 'I agree'}
-                </label>
-              </span>
+            <div style={{ textAlign: 'end' }}>
               <Button
                 disabled={!canPublish}
                 onClick={doPublish}
