@@ -485,6 +485,7 @@ PROJECT_ADMIN_USERS = ["test_prjadmin"]
 PROJECT_ADMIN_GROUP = "Project Admin"
 
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
+PUBLISHED_DATASET_PATH = '/published-data-test'
 
 # RECAPTCHA SETTINGS FOR LESS SPAMMO
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
@@ -778,6 +779,7 @@ TICKET_CATEGORIES = (
     ('DATA_CURATION_PUBLICATION', 'Data Curation & Publication'),
     ('DATA_DEPOT', 'Data Depot'),
     ('DISCOVERY_WORKSPACE', 'Discovery Workspace'),
+    ('ALLOCATIONS', 'Allocations'),
     ('LOGIN', 'Login/Registration'),
     ('OTHER', 'Other'),
 )

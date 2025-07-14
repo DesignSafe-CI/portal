@@ -1,0 +1,122 @@
+.modal {
+  background: white;
+  width: 100%;
+  color: rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  justify-content: left;
+  border-bottom: 1px solid #ffffff;
+  background: #ffffff;
+  margin-bottom: 20px;
+}
+
+.tabButton {
+  padding: 12px 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #797979;
+  position: relative;
+}
+
+.tabButton:hover {
+  color: black;
+}
+
+.activeTab {
+  color: black;
+  font-weight: 500;
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 2px;
+  right: 2px;
+  height: 2px;
+  background-color: #136ac9;
+  width: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-left: 0px;
+  margin-bottom: 15px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+}
+
+.statusHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.statusHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.statusTitleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.statusTitle {
+  font-weight: 500;
+  margin: 5px;
+}
+
+.tableContainer {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  font-size: 11px;
+  border-radius: 4px;
+  color: white;
+  text-align: center;
+}
+
+.open {
+  background-color: #48a69c;
+}
+
+.closed {
+  background-color: #eb6e6e;
+}
+
+:global(.ant-modal-content) {
+  padding: 0 !important;
+}
+
+:global(.ant-modal-header) {
+  background-color: #f4f4f4 !important;
+  border-bottom: none !important;
+  padding: 16px 24px !important;
+}
+
+:global(.ant-modal-body) {
+  padding: 0px 24px 24px 24px !important;
+}

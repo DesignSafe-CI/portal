@@ -574,6 +574,9 @@ TAPIS_CLIENT_KEY = os.environ.get('TAPIS_CLIENT_KEY')
 TAPIS_ADMIN_JWT = os.environ.get('TAPIS_ADMIN_JWT')
 TAPIS_TG458981_JWT = os.environ.get('TAPIS_TG458981_JWT')
 
+# Tap API Configuration
+TAP_API_STATUS = os.environ.get("TAP_API_STATUS", "https://tap.tacc.utexas.edu/status/")
+
 KEY_SERVICE_TOKEN = os.environ.get('KEY_SERVICE_TOKEN')
 
 PORTAL_NAMESPACE = 'DESIGNSAFE'
@@ -612,6 +615,7 @@ PROJECT_STORAGE_SYSTEM_TEMPLATE = {
 PROJECT_STORAGE_SYSTEM_CREDENTIALS = json.loads(os.environ.get('PROJECT_SYSTEM_STORAGE_CREDENTIALS', '{}'))
 
 PUBLISHED_SYSTEM = 'designsafe.storage.published'
+PUBLISHED_DATASET_PATH = os.environ.get('PUBLISHED_DATASET_PATH', '/published-data')
 COMMUNITY_SYSTEM = 'designsafe.storage.community'
 NEES_PUBLIC_SYSTEM = 'nees.public'
 

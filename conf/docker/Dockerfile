@@ -1,4 +1,4 @@
-FROM node:16 as node_build
+FROM node:16 AS node_build
 COPY package.json package-lock.json /designsafe/
 WORKDIR /designsafe
 RUN npm ci
@@ -6,7 +6,7 @@ RUN npm ci
 COPY . /designsafe/
 RUN npm run build
 
-FROM node:20 as node_nx_build
+FROM node:20 AS node_nx_build
 COPY client/package.json client/package-lock.json /designsafe/
 WORKDIR /designsafe/client
 RUN npm ci
@@ -14,7 +14,7 @@ RUN npm ci
 COPY client/ /designsafe/client/
 RUN npm run build
 
-FROM python:3.11-bullseye as python-base
+FROM python:3.11-bookworm AS python-base
 
 LABEL maintainer="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
 
@@ -34,49 +34,43 @@ ENV LC_ALL en_US.utf-8
 ENV LANG en_US.utf-8
 
 # https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=1.8.2 \
-    POETRY_HOME="/opt/poetry" \
+ENV POETRY_VERSION=2.1.3 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv"
+    VENV_PATH="/opt/pysetup/.venv" \
+    PIPX_ROOT_PATH="/root/.local/bin"
 
-# Prepend venv and poetry to path
-ENV PATH="$VENV_PATH/bin:$POETRY_HOME/bin:$PATH"
+# Install pipx and poetry
+RUN python3 -m pip install --user pipx && python3 -m pipx ensurepath
+ENV PATH="${PIPX_ROOT_PATH}:${VENV_PATH}/bin:$PATH"
+RUN pipx install poetry~=${POETRY_VERSION}
 
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 
-# Install poetry version $POETRY_VERSION to $POETRY_HOME
-RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel \
-    && python3 -m venv "$POETRY_HOME" \
-    && "$POETRY_HOME/bin/pip" install --no-cache-dir poetry=="$POETRY_VERSION"
-
 # Copy project requirement files here to ensure they will be cached.
 WORKDIR $PYSETUP_PATH
-COPY poetry.lock pyproject.toml ./
+COPY pyproject.toml poetry.lock ./
 
 ##############
 # `development` image target is used for local development
-FROM python-base as development
+FROM python-base AS development
 
-RUN "$POETRY_HOME/bin/poetry" install
+RUN poetry sync
 
 # Copy in base project directory without built client assets for local development
 COPY --chown=tg458981:G-816877 . /srv/www/designsafe
 
 USER tg458981
 
-# Install dev dependencies
-RUN "$POETRY_HOME/bin/poetry" install --with dev
-
 WORKDIR /srv/www/designsafe
 
 ##############
 # `production` image target is used for deployed runtime environments
-FROM python-base as production
+FROM python-base AS production
 
 # Install runtime dependencies
-RUN "$POETRY_HOME/bin/poetry" install --without dev
+RUN poetry sync --without=dev
 
 # Copy in built client assets
 COPY --from=node_build --chown=tg458981:G-816877 /designsafe/ /srv/www/designsafe
