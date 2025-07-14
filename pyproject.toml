@@ -37,7 +37,7 @@ dependencies = [
     "ipdb >= 0.13.13",
     "elasticsearch (>= 7.5.1, < 8.0.0)",
     "elasticsearch-dsl (>= 7.1.0, <8.0.0)",
-    "dropbox == 10.6.0",
+    "dropbox (>=12.0.2,<13.0.0)",
     "django-recaptcha == 3.0.0",
     "django-recaptcha2",
     "djangocms-snippet == 3.0.0",
@@ -63,7 +63,7 @@ dependencies = [
     "django-select2 == 6.3.1",
     "djangocms-admin-style == 3.2.6",
     "pydantic (>= 2.5.0, <3.0.0)",
-    "networkx (>= 3.2.1, <4.0.0)",
+    "networkx == 3.2.1",
     "tapipy (>= 1.8.1, <2.0.0)",
     "pycryptodome (>= 3.20.0, <4.0.0)",
     "paramiko (>= 3.4.0, <4.0.0)"

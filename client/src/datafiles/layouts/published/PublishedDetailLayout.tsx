@@ -51,8 +51,8 @@ export const PublishedDetailLayout: React.FC = () => {
   const { allVersions } = usePublicationVersions(projectId ?? '');
   const version = (projectId ?? '').split('v')[1];
 
-  // match /PRJ-XXXXvY and capture the version, Y
-  const pathRegex = /\/PRJ-[0-9]+v?([0-9]*)/;
+  // match /PRJ-XXXX--VY and capture the version, Y
+  const pathRegex = /--V([0-9]*)/;
   const versionFromPath = (path ?? '').match(pathRegex)?.[1] || '1';
 
   const selectedVersion =
@@ -106,7 +106,7 @@ export const PublishedDetailLayout: React.FC = () => {
   if (searchParams.get('q') && !path) {
     return (
       <Navigate
-        to={`/public/designsafe.storage.published/${projectId}/%2F${projectId}?q=${searchParams.get(
+        to={`/public/designsafe.storage.published/${projectId}/%2Fpublished-data%2F${projectId}?q=${searchParams.get(
           'q'
         )}`}
         replace
