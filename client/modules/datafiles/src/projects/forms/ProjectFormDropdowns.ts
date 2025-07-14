@@ -145,7 +145,7 @@ export const dataTypeOptions = [
     value: 'research experience for undergraduates',
     label: 'Research Experience for Undergraduates',
   },
-  { value: "code", label: "Research Software"},
+  { value: 'code', label: 'Research Software' },
   { value: 'simcenter testbed', label: 'SimCenter Testbed' },
   { value: 'social sciences', label: 'Social Sciences' },
   { value: 'survey instrument', label: 'Survey Instrument' },
