@@ -2,12 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import styles from './AuditTrails.module.css';
 import { Modal } from 'antd';
 
-//holding entire json response
 type PortalAuditApiResponse = {
   data: PortalAuditEntry[];
 };
 
-//for each row or object in AuditApiResponse
 type PortalAuditEntry = {
   session_id: string;
   timestamp: string;
@@ -66,15 +64,12 @@ const AuditTrail: React.FC = () => {
     };
   }, []);
 
-  //getting arr of all usernames one time when page loaded in
   useEffect(() => {
     fetch('/audit/api/usernames/portal')
       .then((res) => res.json())
       .then((data) => setAllUsernames(data.usernames || []));
   }, []);
-  //console.log('All usernames', allUsernames);
 
-  //updating filtered arr everytime user changes their input
   useEffect(() => {
     if (username.length > 0) {
       setFilteredUsernames(
@@ -94,7 +89,6 @@ const AuditTrail: React.FC = () => {
       setShowDropdown(false);
     }
   }, [username]);
-  //console.log('Filtered Usernames:', filteredUsernames);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,7 +125,7 @@ const AuditTrail: React.FC = () => {
     try {
       const action = entry.action?.toLowerCase();
       const parsedData =
-        typeof entry.data == 'string' ? JSON.parse(entry.data) : entry.data; //if data is string, we turn it to js object to use it directly
+        typeof entry.data == 'string' ? JSON.parse(entry.data) : entry.data;
       switch (action) {
         case 'submitjob':
           return extractDataField(parsedData, 'body.job.name') || '-';
@@ -360,58 +354,4 @@ const AuditTrail: React.FC = () => {
     </div>
   );
 };
-//git commit -m "Added pop-up modal functionality for data column (now named Details), Changed names on dropdown menu for type of search, implemented username auto-search dropdown menu capability for easier selection, added css file for AuditTrials.tsx"
 export default AuditTrail;
-//joyce_cywu
-//jr93
-//nathanf
-//droueche
-//thbrown
-//uwrapid
-//rjn5308
-//haan
-
-/*  OG Query for most recent portal session
-    query = f"""
-       SELECT session_id, timestamp, portal, username, action, data
-       FROM {table}
-       WHERE session_id = (
-           SELECT session_id
-           FROM public.portal_audit
-           WHERE username = %s
-           ORDER BY timestamp DESC
-           LIMIT 1
-       )
-       ORDER BY timestamp ASC;
-      
-       """
-*/
-
-/*
-/* no file tracing, just work on portal audit stuff for right now 
-/* expandable option on data column if too long, not too sure what design for that yet 
-/* have the timestamp be more readable, maybe split into 2 columns CHECK CHECK CHECK 
-/* add tracking_id as another column option show on UI    CHECK CHECK CHECK
-*/
-
-/* change up query to use jake recommendation 
-/* add clickable data section for popup, have it as pretty print */
-
-/*
-const myComponent = () => {
-  useEffect(() => {
-
-  }
-  )
-}
-
-useEffect(() => {
-  const num;
-})
-
-
-
-
-
-
-*/

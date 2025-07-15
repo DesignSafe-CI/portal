@@ -15,12 +15,10 @@
   padding: 10px;
   text-align: center;
   background: var(--global-color-primary--normal);
-  /*white-space: nowrap;*/
 }
 
 .cell {
   border: 1px solid #ccc;
   padding: 8px;
   overflow: hidden;
-  /*text-overflow: ellipsis;*/
 }

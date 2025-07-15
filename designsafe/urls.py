@@ -127,7 +127,7 @@ urlpatterns = [
         url(r'^register/$', RedirectView.as_view(
             pattern_name='designsafe_accounts:register', permanent=True), name='register'),
 
-        # audit trail - separate from accounts - added ###################################################
+        # audit-trail 
         url(r'^audit/', include(('designsafe.apps.audit.urls', 'designsafe.apps.audit'),
             namespace='designsafe_audit')),
 
