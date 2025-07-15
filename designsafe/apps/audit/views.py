@@ -1,3 +1,4 @@
+"""Views for the audit app."""
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db import connections
@@ -9,7 +10,7 @@ def audit_trail(request):
     Audit trail view - renders React component for audit functionality
     """
     context = {'title': 'Audit Trail'}
-    return render(request, 'designsafe/apps/audit/audit_trail.html', context) 
+    return render(request, 'designsafe/apps/audit/audit_trail.html', context)
 
 def get_portal_audit_search(request, username):
     """
@@ -20,18 +21,21 @@ def get_portal_audit_search(request, username):
         cursor = audit_db.cursor()
 
         #for "joyce_cywu" search(many results) -- TEST -- won't work for other usernames
-        query = f"""
-        SELECT session_id, timestamp, portal, username, action, tracking_id, data
-        FROM public.portal_audit
-        WHERE session_id = 'np0qhb1qf1p0vyphzpv1u6aosafszidk'
-        AND username = %s
-        ORDER BY timestamp ASC;
-        """
+        query = (
+            """
+            SELECT session_id, timestamp, portal, username, action, tracking_id, data
+            FROM public.portal_audit
+            WHERE session_id = 'np0qhb1qf1p0vyphzpv1u6aosafszidk'
+            AND username = %s
+            ORDER BY timestamp ASC;
+            """
+        )
 
         #for REAL most recent session -- real use
-        # query = f"""
+        # query = (
+        # """
         # SELECT session_id, timestamp, portal, username, action, tracking_id, data
-        # FROM {table}
+        # FROM public.portal_audit
         # WHERE session_id = (
         #     SELECT session_id
         #     FROM public.portal_audit
@@ -40,8 +44,8 @@ def get_portal_audit_search(request, username):
         #     LIMIT 1
         # )
         # ORDER BY timestamp ASC;
-        
         # """
+        # )
         
         cursor.execute(query, [username])
         columns = [col[0] for col in cursor.description]
@@ -49,12 +53,9 @@ def get_portal_audit_search(request, username):
         cursor.close()
         print("Query successful.")
         return JsonResponse({'data': results})
-    
-    except Exception as e:
-        print("Error in get_audit_search:", str(e))
-
-        return JsonResponse({'error': str(e)}, status=500)
-    
+    except Exception as exc:
+        print("Error in get_audit_search:", str(exc))
+        return JsonResponse({'error': str(exc)}, status=500)
 
 # Used as test for now
 def get_tapis_files_audit_search(request, filename):
@@ -94,7 +95,6 @@ def get_tapis_files_audit_search(request, filename):
     }
     return JsonResponse(test_data)
 
-
 def get_usernames_portal(request):
     """
     Updating array with usernames for search
@@ -103,21 +103,18 @@ def get_usernames_portal(request):
         audit_db = connections['audit']
         cursor = audit_db.cursor()
 
-        query = """
-        SELECT DISTINCT username 
-        FROM public.portal_audit
-        ORDER BY username;
-        """
+        query = (
+            """
+            SELECT DISTINCT username 
+            FROM public.portal_audit
+            ORDER BY username;
+            """
+        )
 
         cursor.execute(query)
         usernames = [row[0] for row in cursor.fetchall()]
         
         return JsonResponse({'usernames': usernames})
-    
-    except Exception as e:
-        print("Error in update_usernames_autocomplete:", str(e))
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-
-
+    except Exception as exc:
+        print("Error in update_usernames_autocomplete:", str(exc))
+        return JsonResponse({'error': str(exc)}, status=500)

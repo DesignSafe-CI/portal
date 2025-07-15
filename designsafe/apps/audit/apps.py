@@ -1,3 +1,4 @@
+"""AppConfig for the audit app."""
 from django.apps import AppConfig
 
 class AuditConfig(AppConfig):
@@ -5,3 +6,4 @@ class AuditConfig(AppConfig):
     name = 'designsafe.apps.audit'
     label = 'designsafe_audit'
     verbose_name = 'DesignSafe Audit Trail' 
+    

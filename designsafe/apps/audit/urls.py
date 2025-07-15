@@ -1,3 +1,4 @@
+"""URL configuration for the audit app."""
 from django.urls import path
 from designsafe.apps.audit import views
 
