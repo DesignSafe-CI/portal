@@ -3,6 +3,7 @@ from designsafe.apps.audit import views
 
 urlpatterns = [
     path('', views.audit_trail, name='audit_trail'),
-    path('api/user/<str:username>/last-session/', views.get_audit_user_last_session, name='get_audit_user_last_session'),
-    path('api/usernames/portals/', views.get_usernames_portals, name='get_usernames_portals'),
+    path('api/user/<str:username>/portal/', views.get_portal_audit_search, name='get_portal_audit_search'),
+    path('api/user/<str:filename>/tapis/', views.get_tapis_files_audit_search, name='get_tapis_files_audit_search'),
+    path('api/usernames/portal/', views.get_usernames_portal, name='get_usernames_portal'),
 ] 

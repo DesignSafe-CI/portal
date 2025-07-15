@@ -2,13 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import styles from './AuditTrails.module.css';
 import { Modal } from 'antd';
 
-//hodling entire json response
-interface AuditApiResponse {
-  data: AuditEntry[];
-}
+//holding entire json response
+type PortalAuditApiResponse = {
+  data: PortalAuditEntry[];
+};
 
 //for each row or object in AuditApiResponse
-interface AuditEntry {
+type PortalAuditEntry = {
   session_id: string;
   timestamp: string;
   portal: string;
@@ -16,21 +16,40 @@ interface AuditEntry {
   action: string;
   tracking_id: string;
   data: any;
-}
+};
+
+/* Not being used */
+type TapisFilesAuditApiResponse = {
+  data: TapisFilesAuditEntry[];
+};
+
+/* Will change depending on requirements for tapis file audit UI / not being used */
+type TapisFilesAuditEntry = {
+  writer_logtime: string;
+  action: string;
+  jwt_tenant: string;
+  jwt_user: string;
+  target_system_id: string;
+  target_path: string;
+  source_path: string;
+  tracking_id: string;
+  parent_tracking_id: string;
+  data: string;
+};
 
 const AuditTrail: React.FC = () => {
   const [username, setUsername] = useState('');
   const [source, setSource] = useState('portal');
-  const [data, setData] = useState<AuditApiResponse | null>(null);
+  const [data, setData] = useState<PortalAuditApiResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [allUsernames, setAllUsernames] = useState<string[]>([]);
   const [filteredUsernames, setFilteredUsernames] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null); //dropdown closing on exit click
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<string>('');
-  const [clickedEntry, setClickedEntry] = useState<AuditEntry | null>(null);
+  const [footerEntry, setFooterEntry] = useState<PortalAuditEntry | null>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -47,9 +66,9 @@ const AuditTrail: React.FC = () => {
     };
   }, []);
 
-  //getting arr of all usernames one time when first mounted
+  //getting arr of all usernames one time when page loaded in
   useEffect(() => {
-    fetch('/audit/api/usernames/portals')
+    fetch('/audit/api/usernames/portal')
       .then((res) => res.json())
       .then((data) => setAllUsernames(data.usernames || []));
   }, []);
@@ -63,8 +82,16 @@ const AuditTrail: React.FC = () => {
           .filter((name) => name.toLowerCase().includes(username.toLowerCase()))
           .slice(0, 20)
       );
+      if (
+        allUsernames.some(
+          (name) => name.toLowerCase() === username.toLowerCase()
+        )
+      ) {
+        setShowDropdown(false);
+      }
     } else {
       setFilteredUsernames([]);
+      setShowDropdown(false);
     }
   }, [username]);
   //console.log('Filtered Usernames:', filteredUsernames);
@@ -75,26 +102,74 @@ const AuditTrail: React.FC = () => {
     setData(null);
     setLoading(true);
     try {
-      const res = await fetch(
-        `/audit/api/user/${username}/last-session/?source=${source}`
-      );
+      const endpoint = source === 'portal' ? 'portal' : 'tapis';
+      const res = await fetch(`/audit/api/user/${username}/${endpoint}/`);
+      console.log('username:', username);
+      console.log('source:', endpoint);
+
       if (!res.ok) {
         const errText = await res.text();
         throw new Error(`API error: ${res.status} ${errText}`);
       }
       const result = await res.json();
-      console.log("APO RESPOSNE:", result)
+      console.log('APO RESPOSNE:', result);
       setData(result);
     } catch (err: any) {
       setError(err.message || 'Unknown error');
     }
     setLoading(false);
-    console.log(data)
+    console.log(data);
   };
 
   function truncate(str: string, n: number) {
     return str.length > n ? str.slice(0, n) + '…' : str;
   }
+
+  const extractActionData = (entry: PortalAuditEntry): string => {
+    if (!entry.data) return '-';
+
+    try {
+      const action = entry.action?.toLowerCase();
+      const parsedData =
+        typeof entry.data == 'string' ? JSON.parse(entry.data) : entry.data; //if data is string, we turn it to js object to use it directly
+      switch (action) {
+        case 'submitjob':
+          return extractDataField(parsedData, 'body.job.name') || '-';
+
+        case 'getapp':
+          return extractDataField(parsedData, 'query.appId') || '-';
+
+        case 'trash':
+          return extractDataField(parsedData, 'path') || '-';
+
+        case 'upload':
+          return extractDataField(parsedData, 'path') || '-';
+
+        case 'download':
+          return extractDataField(parsedData, 'filePath') || '-';
+      }
+    } catch {
+      return '-';
+    }
+    return '-';
+  };
+
+  const extractDataField = (data: any, path: string): string => {
+    if (!data) return '-';
+    const fields = path.split('.');
+    let value = data;
+    for (let i = 0; i < fields.length; i++) {
+      if (value && typeof value === 'object' && fields[i] in value) {
+        value = value[fields[i]];
+      } else {
+        return '-';
+      }
+    }
+    if (value === undefined || value == null || value === '') {
+      return '-';
+    }
+    return String(value);
+  };
 
   return (
     <div>
@@ -103,16 +178,16 @@ const AuditTrail: React.FC = () => {
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={
-          clickedEntry && (
+          footerEntry && (
             <div
               style={{
                 marginTop: '-30px',
                 marginBottom: '10px',
-                textAlign: 'center'
+                textAlign: 'center',
               }}
             >
-              {clickedEntry.username} | {clickedEntry.timestamp} |{' '}
-              {clickedEntry.portal} | {clickedEntry.action}
+              {footerEntry.username} | {footerEntry.timestamp} |{' '}
+              {footerEntry.portal} | {footerEntry.action}
             </div>
           )
         }
@@ -120,6 +195,7 @@ const AuditTrail: React.FC = () => {
         style={{
           maxHeight: '70vh',
           overflow: 'auto',
+          top: '200px',
         }}
       >
         <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
@@ -128,49 +204,62 @@ const AuditTrail: React.FC = () => {
       </Modal>
       {/*<h2>Audit Trail Test</h2>*/}
       <form onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
-        <div
-          ref={containerRef}
-          style={{ position: 'relative', display: 'inline-block' }}
-        >
-          <input
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              setShowDropdown(true);
-            }}
-            onFocus={() => setShowDropdown(true)}
-            placeholder="Enter username"
+        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <select
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
             style={{ marginRight: 8 }}
-          />
-          {showDropdown && filteredUsernames.length > 0 && (
-            <ul className={styles.dropdownList}>
-              {filteredUsernames.map((name) => (
-                <li
-                  key={name}
-                  onClick={() => setUsername(name)}
-                  style={{
-                    padding: '8px',
-                    cursor: 'pointer',
-                    borderBottom: '1px solid',
-                  }}
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
-          )}
+          >
+            <option value="portal">Most Recent User Session Data</option>
+            <option value="tapis">File Search Data</option>
+          </select>
+          <div
+            ref={containerRef}
+            style={{ position: 'relative', display: 'inline-block' }}
+          >
+            <input
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setShowDropdown(source === 'portal');
+              }}
+              onFocus={() => {
+                setShowDropdown(source === 'portal');
+              }}
+              placeholder="Username/File Name:"
+              style={{ marginRight: 8, width: '100%' }}
+            />
+            {showDropdown &&
+              source === 'portal' &&
+              filteredUsernames.length > 0 && (
+                <ul className={styles.dropdownList}>
+                  {filteredUsernames.map((name) => (
+                    <li
+                      key={name}
+                      onClick={() => {
+                        setUsername(name);
+                        setShowDropdown(false);
+                      }}
+                      style={{
+                        padding: '8px',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid',
+                      }}
+                    >
+                      {name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+          </div>
+          <button
+            type="submit"
+            disabled={loading || !username}
+            style={{ marginLeft: '8px' }}
+          >
+            {loading ? 'Loading…' : 'Submit'}
+          </button>
         </div>
-        <select
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          style={{ marginRight: 8 }}
-        >
-          <option value="portal">Most Recent User Session Data</option>
-          <option value="tapis">File Search Data</option>
-        </select>
-        <button type="submit" disabled={loading || !username}>
-          {loading ? 'Loading…' : 'Submit'}
-        </button>
       </form>
 
       {error && <div style={{ color: 'red' }}>Error: {error}</div>}
@@ -180,30 +269,36 @@ const AuditTrail: React.FC = () => {
       )}
 
       {data?.data && data.data.length > 0 && (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            tableLayout: 'fixed',
+          }}
+        >
           <thead>
             <tr>
-              {[
-                'Username',
-                'Date',
-                'Time',
-                'Portal',
-                'Action',
-                'Tracking ID',
-                'Details',
-              ].map((h) => (
-                <th
-                  key={h}
-                  style={{
-                    border: '1px solid var(--global-color-primary--dark)',
-                    padding: '10px',
-                    textAlign: 'center',
-                    background: 'var(--global-color-primary--normal)',
-                  }}
-                >
-                  {h}
-                </th>
-              ))}
+              <th className={styles.headerCell} style={{ width: '50px' }}>
+                User
+              </th>
+              <th className={styles.headerCell} style={{ width: '50px' }}>
+                Date
+              </th>
+              <th className={styles.headerCell} style={{ width: '50px' }}>
+                Time
+              </th>
+              <th className={styles.headerCell} style={{ width: '100px' }}>
+                Portal
+              </th>
+              <th className={styles.headerCell} style={{ width: '200px' }}>
+                Action
+              </th>
+              <th className={styles.headerCell} style={{ width: '200px' }}>
+                Tracking ID
+              </th>
+              <th className={styles.headerCell} style={{ width: '100px' }}>
+                Details
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -215,32 +310,23 @@ const AuditTrail: React.FC = () => {
                 dateStr = date.toLocaleDateString();
                 timeStr = date.toLocaleTimeString();
               }
+              const actionDetails = extractActionData(entry);
 
               return (
-                <tr key={idx}> {/* Could probably make a loop for this, also name css class */}
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-                    {entry.username || '-'}
-                  </td>
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-                    {dateStr}
-                  </td>
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-                    {timeStr}
-                  </td>
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-                    {entry.portal || '-'}
-                  </td>
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>
+                <tr key={idx}>
+                  <td className={styles.cell}>{entry.username || '-'}</td>
+                  <td className={styles.cell}>{dateStr}</td>
+                  <td className={styles.cell}>{timeStr}</td>
+                  <td className={styles.cell}>{entry.portal || '-'}</td>
+                  <td className={styles.cell}>
                     {entry.action || '-'}
+                    {actionDetails !== '-' &&
+                      `: ${truncate(actionDetails, 50)}`}
                   </td>
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>
-                    {entry.tracking_id || '-'}
-                  </td>
+                  <td className={styles.cell}>{entry.tracking_id || '-'}</td>
                   <td
+                    className={styles.cell}
                     style={{
-                      border: '1px solid #ccc',
-                      padding: '8px',
-                      maxWidth: 200,
                       wordBreak: 'break-all',
                       cursor: 'pointer',
                       textDecoration: 'underline',
@@ -259,11 +345,11 @@ const AuditTrail: React.FC = () => {
                         }
                       }
                       setModalContent(content);
-                      setClickedEntry(entry);
+                      setFooterEntry(entry);
                       setModalOpen(true);
                     }}
                   >
-                    {truncate(entry.data ? JSON.stringify(entry.data) : '', 50)}
+                    View Logs
                   </td>
                 </tr>
               );
@@ -310,3 +396,22 @@ export default AuditTrail;
 
 /* change up query to use jake recommendation 
 /* add clickable data section for popup, have it as pretty print */
+
+/*
+const myComponent = () => {
+  useEffect(() => {
+
+  }
+  )
+}
+
+useEffect(() => {
+  const num;
+})
+
+
+
+
+
+
+*/
