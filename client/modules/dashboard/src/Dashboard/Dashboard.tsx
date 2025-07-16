@@ -15,6 +15,14 @@ export function Dashboard(props: DashboardProps) {
 
   const [showJobs, setShowJobs] = useState(false);
   const [showAllocations, setShowAllocations] = useState(false);
+  interface HPCSystem {
+    display_name: string;
+    hostname: string;
+    load_percentage: number;
+    is_operational: boolean;
+    running: number;
+    waiting: number;
+  }
 
   const columns = [
     {
@@ -36,7 +44,7 @@ export function Dashboard(props: DashboardProps) {
       title: 'Load',
       dataIndex: 'load_percentage',
       key: 'load',
-      render: (load: number, record: any) =>
+      render: (load: number, record: HPCSystem) =>
         record.is_operational ? (
           `${load}%`
         ) : (
@@ -47,7 +55,7 @@ export function Dashboard(props: DashboardProps) {
       title: 'Running Jobs',
       dataIndex: 'running',
       key: 'running',
-      render: (value: number, record: any) =>
+      render: (value: number, record: HPCSystem) =>
         record.is_operational ? (
           value
         ) : (
@@ -58,7 +66,7 @@ export function Dashboard(props: DashboardProps) {
       title: 'Waiting Jobs',
       dataIndex: 'waiting',
       key: 'waiting',
-      render: (value: number, record: any) =>
+      render: (value: number, record: HPCSystem) =>
         record.is_operational ? (
           value
         ) : (
