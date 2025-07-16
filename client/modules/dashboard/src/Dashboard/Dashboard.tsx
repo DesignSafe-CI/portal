@@ -13,8 +13,8 @@ export interface DashboardProps {}
 export function Dashboard(props: DashboardProps) {
   const { data: liveSystems, isLoading } = useSystemOverview();
 
-  const [showJobs, setShowJobs] = useState(true);
-  const [showAllocations, setShowAllocations] = useState(true);
+  const [showJobs, setShowJobs] = useState(false);
+  const [showAllocations, setShowAllocations] = useState(false);
 
   const columns = [
     {
@@ -36,17 +36,34 @@ export function Dashboard(props: DashboardProps) {
       title: 'Load',
       dataIndex: 'load_percentage',
       key: 'load',
-      render: (load: number) => `${load}%`,
+      render: (load: number, record: any) =>
+        record.is_operational ? (
+          `${load}%`
+        ) : (
+          <span style={{ color: '#999' }}>(N/A)</span>
+        ),
     },
     {
       title: 'Running Jobs',
       dataIndex: 'running',
       key: 'running',
+      render: (value: number, record: any) =>
+        record.is_operational ? (
+          value
+        ) : (
+          <span style={{ color: '#999' }}>(N/A)</span>
+        ),
     },
     {
       title: 'Waiting Jobs',
       dataIndex: 'waiting',
       key: 'waiting',
+      render: (value: number, record: any) =>
+        record.is_operational ? (
+          value
+        ) : (
+          <span style={{ color: '#999' }}>(N/A)</span>
+        ),
     },
   ];
 

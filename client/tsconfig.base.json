@@ -21,8 +21,7 @@
       "@client/hooks": ["modules/_hooks/src/index.ts"],
       "@client/onboarding": ["modules/onboarding/src/index.ts"],
       "@client/test-fixtures": ["modules/_test-fixtures/src/index.ts"],
-      "@client/workspace": ["modules/workspace/src/index.ts"],
-      "@client/workspace/*": ["modules/workspace/src/*"]
+      "@client/workspace": ["modules/workspace/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -19,5 +19,4 @@ urlpatterns = [
     re_path(r"^jobs/(?P<operation>\w+)/?$", views.JobsView.as_view()),
     path("jobs", views.JobsView.as_view()),
     path("allocations", views.AllocationsView.as_view()),
-    
 ]

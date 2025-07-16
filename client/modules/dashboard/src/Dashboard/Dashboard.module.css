@@ -229,3 +229,15 @@
   text-decoration: underline;
   color: #004a99;
 }
+/* jolistingwrapper.css*/
+
+.jobActions {
+  padding-top: 15px;
+}
+.jobActions :is(a, button) + :is(a, button) {
+  margin-left: 15px;
+}
+
+.link:hover {
+  color: var(--global-color-accent--normal);
+}
