@@ -9,20 +9,19 @@ import SUAllocationsCard from './SUAllocationsCard';
 import UserGuides from './UserGuides';
 
 export interface DashboardProps {}
-
+interface HPCSystem {
+  display_name: string;
+  hostname: string;
+  load_percentage: number;
+  is_operational: boolean;
+  running: number;
+  waiting: number;
+}
 export function Dashboard(props: DashboardProps) {
   const { data: liveSystems, isLoading } = useSystemOverview();
 
   const [showJobs, setShowJobs] = useState(false);
   const [showAllocations, setShowAllocations] = useState(false);
-  interface HPCSystem {
-    display_name: string;
-    hostname: string;
-    load_percentage: number;
-    is_operational: boolean;
-    running: number;
-    waiting: number;
-  }
 
   const columns = [
     {
