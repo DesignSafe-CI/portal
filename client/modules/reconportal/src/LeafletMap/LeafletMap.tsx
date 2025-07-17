@@ -94,7 +94,7 @@ export const LeafletMap: React.FC = () => {
                 popupRendered = true;
 
                 // Force Leaflet to recalculate popup size
-                -(
+                (
                   // otherwise issue on first popup
                   setTimeout(() => {
                     layer.getPopup()?.update();
