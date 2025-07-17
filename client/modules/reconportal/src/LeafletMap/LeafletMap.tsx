@@ -20,7 +20,6 @@ import {
 import { getOpenTopoColor, getReconEventColor } from '../utils';
 import { getFirstLatLng } from './utils';
 import {
-  useGetReconPortalEvents,
   type ReconPortalEvents,
   useGetOpenTopo,
   useReconEventContext,
@@ -52,7 +51,8 @@ export const mapConfig = {
  */
 export const LeafletMap: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
-  const { setSelectedReconPortalEventIdentifier } = useReconEventContext();
+  const { setSelectedReconPortalEventIdentifier, filteredReconPortalEvents } =
+    useReconEventContext();
 
   const openTopoMapFeatures = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
@@ -130,8 +130,6 @@ export const LeafletMap: React.FC = () => {
     return [...openTopoGeojsonFeatures, ...openTopoMarkers];
   }, [openTopoData]);
 
-  const { data: reconData } = useGetReconPortalEvents();
-
   const handleFeatureClick = (reconEvent: ReconPortalEvents) => {
     setSelectedReconPortalEventIdentifier(
       getReconPortalEventIdentifier(reconEvent)
@@ -139,7 +137,7 @@ export const LeafletMap: React.FC = () => {
   };
 
   const ReconPortalEvents = useMemo(() => {
-    const datasets = reconData ?? [];
+    const datasets = filteredReconPortalEvents ?? [];
     const reconPortalMarkers: React.ReactNode[] = [];
 
     datasets.map((reconEvent, index) => {
@@ -171,7 +169,7 @@ export const LeafletMap: React.FC = () => {
       );
     });
     return [...reconPortalMarkers];
-  }, [reconData]);
+  }, [filteredReconPortalEvents]);
 
   return (
     <>
