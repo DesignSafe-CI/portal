@@ -14,8 +14,20 @@
 .highlighted-row:focus {
   background-color: #cbdded;
   text-decoration: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .highlighted-row:hover {
   cursor: unset;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 15px 0px;
+  font-size: 14px;
+  border-right: 1px solid var(--global-color-primary--normal);
+  background: transparent;
+  color: black;
 }

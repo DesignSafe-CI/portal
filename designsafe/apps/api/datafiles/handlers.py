@@ -78,7 +78,7 @@ def datafiles_put_handler(api, username, client, scheme, system,
     operation in notify_actions and notify(username, operation, '{} operation has started.'.format(operation.capitalize()), 'INFO', {})
 
     try:
-        result = op(client, system, path, tapis_tracking_id=tapis_tracking_id, **body)
+        result = op(client, system, path, username=username, tapis_tracking_id=tapis_tracking_id, **body)
         if operation == 'copy' and system != body.get('dest_system', None):
             notify(username, operation, 'Your file transfer request has been received and will be processed shortly.'.format(operation.capitalize()), 'SUCCESS', result)
         else:

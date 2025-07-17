@@ -197,7 +197,7 @@ export const CopyModal: React.FC<{
     (dPath: string) => {
       selectedFiles.forEach((f) =>
         mutate({
-          src: { api, system, path: encodeURIComponent(f.path) },
+          src: { api, system: f.system, path: encodeURIComponent(f.path) },
           dest: { api: destApi, system: destSystem, path: dPath },
           doi: f.doi,
         })
