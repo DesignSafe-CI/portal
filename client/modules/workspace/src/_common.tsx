@@ -24,6 +24,7 @@ export const StatusTag: React.FC<StatusTagProps> = ({ type, children }) => (
       paddingInline: 0,
       padding: '0.2em 0.4em 0.3em',
       border: 'none',
+      fontSize: '1em',
     }}
   >
     {children}
