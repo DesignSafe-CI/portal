@@ -15,6 +15,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
 }) => {
   const { data: favoritesData = [], isLoading: isLoadingFavorites } =
     useFavorites();
+
   const addFavoriteMutation = useAddFavorite();
   const removeFavoriteMutation = useRemoveFavorite();
 
@@ -22,6 +23,10 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     new Set()
   );
   const { appId, appVersion } = useGetAppParams();
+
+  if (isLoadingFavorites) {
+    return <div>Loading favorites...</div>;
+  }
 
   const favoriteToolIds = favoritesData.map((fav) => fav.tool_id);
 
