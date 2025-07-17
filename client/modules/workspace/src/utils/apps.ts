@@ -224,21 +224,6 @@ export const getCoresPerNodeValidation = (
 };
 
 /**
- * Get validator for reservation
- * @param {definition} app definition
- * @returns {z.string()} reservation validation if it is enabled for app
- */
-export const getReservationValidation = (
-  definition: TTapisApp
-) => {
-  const hasReservation =
-    !!definition.jobAttributes.parameterSet?.schedulerOptions?.['TACC Reservation'];
-
-  // Always optional, even if defined
-  return z.string().optional();
-};
-
-/**
  * Get corrected values for a new queue
  *
  * Check values and if any do not work with the current queue, then fix those
