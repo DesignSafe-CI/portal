@@ -52,7 +52,8 @@ export const mapConfig = {
  */
 export const LeafletMap: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
-  const { setSelectedReconPortalEventIdentifier, filteredReconPortalEvents } = useReconEventContext();
+  const { setSelectedReconPortalEventIdentifier, filteredReconPortalEvents } =
+    useReconEventContext();
 
   const openTopoMapFeatures = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
