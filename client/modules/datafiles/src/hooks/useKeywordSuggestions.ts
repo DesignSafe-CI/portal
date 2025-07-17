@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { KeywordSuggestionResponse } from '../types/keywords';
+// import axios from 'axios';
+// import { KeywordSuggestionResponse } from '../types/keywords';
 import { mockKeywordSuggestions } from '../types/keywords';
 
 export function useKeywordSuggestions(title: string, description: string) {
