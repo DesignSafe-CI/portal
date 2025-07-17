@@ -299,6 +299,8 @@ export const AppsSubmissionForm: React.FC = () => {
     configuration: configuration.fields,
     outputs: outputs.fields,
   });
+  // console.log('fields');
+  // console.log(fields);
 
   const initialSteps = useMemo(() => {
     const steps = getSteps();
@@ -520,10 +522,14 @@ export const AppsSubmissionForm: React.FC = () => {
   // in future if the fields shape is same between
   // Step and Submission Detail View (mostly related to env vars)
   useEffect(() => {
+    // console.log('fields.configuration:');
+    // console.log(fields.configuration);
     if (configuration.fields && Object.keys(configuration.fields).length) {
       const updatedConfigurationStep = getConfigurationStep(
         fields.configuration as { [key: string]: TField }
       );
+      // console.log('updatedConfigurationStep');
+      // console.log(updatedConfigurationStep);
 
       const updatedSteps: TStep = {
         ...steps,
@@ -532,7 +538,8 @@ export const AppsSubmissionForm: React.FC = () => {
           ...updatedConfigurationStep,
         },
       };
-
+      // console.log('updatedSteps');
+      // console.log(updatedSteps);
       setSteps(updatedSteps);
     }
   }, [fields]);
