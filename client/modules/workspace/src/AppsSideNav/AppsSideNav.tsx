@@ -25,7 +25,22 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   const { appId, appVersion } = useGetAppParams();
 
   if (isLoadingFavorites) {
-    return <div>Loading favorites...</div>;
+    return (
+      <div style={{ width: 220 }}>
+        <div
+          style={{
+            display: 'grid',
+            justifyContent: 'center',
+            padding: 10,
+            fontWeight: 700,
+            borderRight: '1px solid var(--global-color-primary--normal)',
+          }}
+        >
+          Applications:
+        </div>
+        <div>Loading favorites...</div>
+      </div>
+    );
   }
 
   const favoriteToolIds = favoritesData.map((fav) => fav.tool_id);
@@ -77,7 +92,8 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
       const linkPath = `${app.app_id}${
         app.version ? `?appVersion=${app.version}` : ''
       }`;
-      const linkLabel = app.shortLabel || app.label || app.bundle_label;
+      const linkLabel =
+        app.shortLabel || app.label || app.bundle_label || 'Unknown';
 
       const switchControl = (
         <span onClick={(e) => e.stopPropagation()} style={{ marginLeft: 6 }}>
@@ -128,7 +144,10 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
       if (app.is_bundled) {
         const bundleKey = `${app.bundle_label}${app.bundle_id}`;
         if (!bundles[bundleKey]) {
-          bundles[bundleKey] = { apps: [], label: app.bundle_label };
+          bundles[bundleKey] = {
+            apps: [],
+            label: app.bundle_label || 'Bundle',
+          };
         }
         bundles[bundleKey].apps.push(item);
       } else {
