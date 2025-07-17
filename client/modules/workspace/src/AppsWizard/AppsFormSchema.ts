@@ -28,7 +28,6 @@ import {
   getExecSystemIdValidation,
   getAppExecSystems,
   preprocessStringToNumber,
-  getReservationValidation,
 } from '../utils';
 
 export type TDynamicString = { [dynamic: string]: string | number };
@@ -43,7 +42,6 @@ export type TFieldOptions = {
   value?: string;
   hidden?: boolean;
   disabled?: boolean;
-  isReservation?: string;
 };
 
 export type TFormValues = {
@@ -108,7 +106,7 @@ export const fieldDisplayOrder: Record<string, string[]> = {
     'allocation',
     'execSystemId',
     'execSystemLogicalQueue',
-    'TACC Reservation',
+    'reservation',
     'maxMinutes',
     'nodeCount',
     'coresPerNode',
@@ -157,6 +155,10 @@ export const getConfigurationSchema = (
         execSystems
       );
     }
+
+    if (!definition.notes.hideReservation) {
+      configurationSchema['reservation'] = z.string().optional();
+    }
   }
 
   if (!definition.notes.hideMaxMinutes) {
@@ -178,14 +180,6 @@ export const getConfigurationSchema = (
     );
   }
 
-  if (
-    definition.jobAttributes.parameterSet?.schedulerOptions?.some(
-      (opt) => opt.name === 'TACC Reservation'
-    )
-  ) {
-    configurationSchema['TACC Reservation'] =
-      getReservationValidation(definition);
-  }
   return configurationSchema;
 };
 
@@ -262,6 +256,18 @@ export const getConfigurationFields = (
     };
   }
 
+  if (definition.jobType === 'BATCH' && !definition.notes.hideReservation) {
+    configurationFields['reservation'] = {
+      description:
+        'If you have a TACC reservation, enter the reservation string here.',
+      label: 'TACC Reservation',
+      name: 'configuration.reservation',
+      key: 'configuration.reservation',
+      required: false,
+      type: 'text',
+    };
+  }
+
   if (!definition.notes.hideMaxMinutes) {
     configurationFields['maxMinutes'] = {
       description: `The maximum number of minutes you expect this ${getAppRuntimeLabel(
@@ -303,15 +309,6 @@ export const getConfigurationFields = (
       type: 'number',
     };
   }
-
-  configurationFields['TACC Reservation'] = {
-    description: 'Reservation input string',
-    label: 'TACC Reservation',
-    name: 'parameters.schedulerOptions.TACC Reservation',
-    key: 'configuration["TACC Reservation"]',
-    required: false,
-    type: 'text',
-  };
 
   return configurationFields;
 };
@@ -572,6 +569,10 @@ const FormSchema = (
         ? allocations[0]
         : ''
       : '';
+
+    if (!definition.notes.hideReservation) {
+      appFields.configuration.defaults['reservation'] = '';
+    }
   }
 
   if (!definition.notes.hideMaxMinutes) {
