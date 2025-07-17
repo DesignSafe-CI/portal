@@ -3,9 +3,9 @@ export interface KeywordSuggestionResponse {
 }
 
 export const mockKeywordSuggestions = [
-  "storm surge",
-  "coastal flooding",
-  "numerical simulation",
-  "wind load",
-  "LiDAR analysis"
+  'storm surge',
+  'coastal flooding',
+  'numerical simulation',
+  'wind load',
+  'LiDAR analysis',
 ];

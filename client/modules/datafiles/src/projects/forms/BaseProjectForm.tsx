@@ -149,15 +149,14 @@ export const BaseProjectForm: React.FC<{
     watchedDescription
   );
   const availableSuggestions = suggestedKeywords.filter(
-  (kw) => !watchedSelected.includes(kw)
-);
+    (kw) => !watchedSelected.includes(kw)
+  );
 
   useEffect(() => {
-      console.log('Project Title:', watchedTitle);
-      console.log('Project Description:', watchedDescription);
-      console.log('Suggested Keywords:', suggestedKeywords);
-    }, [watchedTitle, watchedDescription, suggestedKeywords]);
-
+    console.log('Project Title:', watchedTitle);
+    console.log('Project Description:', watchedDescription);
+    console.log('Suggested Keywords:', suggestedKeywords);
+  }, [watchedTitle, watchedDescription, suggestedKeywords]);
 
   const { user } = useAuthenticatedUser();
   const [showConfirm, setShowConfirm] = useState(false);

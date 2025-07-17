@@ -29,4 +29,3 @@ export function useKeywordSuggestions(title: string, description: string) {
 //     enabled: !!title.trim() && !!description.trim(),
 //   });
 // }
-
