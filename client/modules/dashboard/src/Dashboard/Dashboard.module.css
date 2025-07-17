@@ -1,3 +1,13 @@
+/* Global Link Reset */
+a {
+  text-decoration: none !important;
+}
+
+a:hover {
+  text-decoration: none !important;
+}
+
+/* Sidebar */
 .sidebar {
   background-color: #f5f7fa;
   color: #333;
@@ -31,15 +41,16 @@
 
 .sidebarLink:hover {
   color: #007bff;
-  text-decoration: none;
   padding-left: 5px;
 }
 
+/* Sidebar Icon */
 .sidebarIcon {
   margin-right: 8px;
   vertical-align: middle;
 }
 
+/* Recent Items */
 .recentContainer {
   width: 100%;
   background-color: #fff;
@@ -66,12 +77,15 @@
   color: #007bff;
   cursor: pointer;
   transition: color 0.2s ease;
+  text-decoration: none !important;
 }
 
 .recentItem:hover {
   color: #0056b3;
+  text-decoration: none !important;
 }
 
+/* Recent Projects */
 .recentProjectsContainer {
   width: 100%;
   padding: 0.75rem;
@@ -114,14 +128,14 @@
 
 .projectLink {
   color: #007bff;
-  text-decoration: none;
-  transition: color 0.2s ease;
   cursor: pointer;
+  text-decoration: none !important;
+  transition: color 0.2s ease;
 }
 
 .projectLink:hover {
   color: #0056b3;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 .projectId {
@@ -129,6 +143,7 @@
   color: #444;
 }
 
+/* Ticket List */
 .ticketListContainer {
   width: 100%;
   max-height: 190px;
@@ -155,11 +170,11 @@
   flex-grow: 1;
 }
 
-/* Favorites Section */
+/* Favorites */
 .favoriteToggle {
   background-color: #007bff;
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.5rem;
   padding: 0.5rem 1.25rem;
   border: none;
   border-radius: 8px;
@@ -178,7 +193,7 @@
 
 .favoriteToggle:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 2px 5px rgba(21, 126, 237, 0.4);
 }
 
 .favoriteToggle:focus {
@@ -200,10 +215,10 @@
 .favoritePanel h4 {
   margin: 0 0 12px;
   color: #333;
-  font-weight: 600;
+  font-weight: 700;
   border-bottom: 1px solid #eee;
   padding-bottom: 8px;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
 }
@@ -225,24 +240,23 @@
   justify-content: space-between;
   align-items: center;
   margin: 8px 0;
-  font-size: 1rem;
+  font-size: 1.5rem;
   padding: 6px 8px;
   border-radius: 4px;
   transition: background-color 0.2s ease;
 }
 
 .favoriteItem:hover {
-  background-color: #f8f9fa;
+  background-color: #4195e8;
 }
 
 .favoriteItem a {
   color: #007bff;
-  text-decoration: none !important;
-  transition: color 0.2s ease;
   display: flex;
   align-items: center;
   flex-grow: 1;
   cursor: pointer;
+  text-decoration: none !important;
 }
 
 .favoriteItem a:hover {
@@ -284,7 +298,7 @@
   color: #666;
   font-style: italic;
   padding: 20px;
-  font-size: 1rem;
+  font-size: 1.5rem;
 }
 
 /* Collapsible Styles */
@@ -311,7 +325,7 @@
 }
 
 .arrow {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   margin-left: 0.5rem;
   user-select: none;
   transition: transform 0.2s ease;

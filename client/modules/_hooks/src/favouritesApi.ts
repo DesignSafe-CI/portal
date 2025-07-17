@@ -41,22 +41,43 @@ const postRemoveFavorite = async (toolId: string): Promise<void> => {
   );
 };
 
-export const getUserFavorites = fetchFavorites;
-export const addFavorite = postAddFavorite;
-export const removeFavorite = postRemoveFavorite;
-
 export const useFavorites = () => {
   return useQuery<FavoriteTool[]>({
     queryKey: ['favorites'],
     queryFn: fetchFavorites,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 };
 
 export const useAddFavorite = () => {
   const queryClient = useQueryClient();
-  return useMutation<void, unknown, string>({
+
+  return useMutation<
+    void,
+    unknown,
+    string,
+    { previousFavorites?: FavoriteTool[] }
+  >({
     mutationFn: postAddFavorite,
+    onMutate: async (toolId) => {
+      await queryClient.cancelQueries({ queryKey: ['favorites'] });
+
+      const previousFavorites = queryClient.getQueryData<FavoriteTool[]>([
+        'favorites',
+      ]);
+
+      queryClient.setQueryData<FavoriteTool[]>(['favorites'], (old = []) => [
+        ...old,
+        { tool_id: toolId },
+      ]);
+
+      return { previousFavorites };
+    },
+    onError: (_err, _toolId, context) => {
+      if (context?.previousFavorites) {
+        queryClient.setQueryData(['favorites'], context.previousFavorites);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
     },
@@ -65,8 +86,32 @@ export const useAddFavorite = () => {
 
 export const useRemoveFavorite = () => {
   const queryClient = useQueryClient();
-  return useMutation<void, unknown, string>({
+
+  return useMutation<
+    void,
+    unknown,
+    string,
+    { previousFavorites?: FavoriteTool[] }
+  >({
     mutationFn: postRemoveFavorite,
+    onMutate: async (toolId) => {
+      await queryClient.cancelQueries({ queryKey: ['favorites'] });
+
+      const previousFavorites = queryClient.getQueryData<FavoriteTool[]>([
+        'favorites',
+      ]);
+
+      queryClient.setQueryData<FavoriteTool[]>(['favorites'], (old = []) =>
+        old.filter((fav) => fav.tool_id !== toolId)
+      );
+
+      return { previousFavorites };
+    },
+    onError: (_err, _toolId, context) => {
+      if (context?.previousFavorites) {
+        queryClient.setQueryData(['favorites'], context.previousFavorites);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
     },

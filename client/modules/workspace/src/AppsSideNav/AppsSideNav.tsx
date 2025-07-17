@@ -1,54 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Menu, MenuProps, Switch } from 'antd';
 import { NavLink } from 'react-router-dom';
-import { TAppCategory, TPortalApp } from '@client/hooks';
+import {
+  TAppCategory,
+  TPortalApp,
+  useFavorites,
+  useAddFavorite,
+  useRemoveFavorite,
+} from '@client/hooks';
 import { useGetAppParams } from '../utils';
-import { getUserFavorites, addFavorite, removeFavorite } from '@client/hooks';
 
 export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   categories,
 }) => {
-  const [favoriteToolIds, setFavoriteToolIds] = useState<string[]>([]);
-  const [, setLoadingFavorites] = useState(false);
+  const { data: favoritesData = [], isLoading: isLoadingFavorites } =
+    useFavorites();
+  const addFavoriteMutation = useAddFavorite();
+  const removeFavoriteMutation = useRemoveFavorite();
+
   const [updatingToolIds, setUpdatingToolIds] = useState<Set<string>>(
     new Set()
   );
   const { appId, appVersion } = useGetAppParams();
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const favs = await getUserFavorites();
-        const toolIds = (favs || []).map(
-          (fav: { tool_id: string }) => fav.tool_id
-        );
-        console.log(':white_check_mark: Loaded favorite tool IDs:', toolIds);
-        setFavoriteToolIds(toolIds);
-      } catch (err) {
-        console.error('Failed to load favorites', err);
-      } finally {
-        setLoadingFavorites(false);
-      }
-    };
-    fetchFavorites();
-  }, []);
+  const favoriteToolIds = favoritesData.map((fav) => fav.tool_id);
 
   const handleStarClick = async (toolId: string) => {
     const isFavorite = favoriteToolIds.includes(toolId);
-    const prevFavorites = [...favoriteToolIds];
-    setFavoriteToolIds((prev) =>
-      isFavorite ? prev.filter((id) => id !== toolId) : [...prev, toolId]
-    );
     setUpdatingToolIds((prev) => new Set(prev).add(toolId));
+
     try {
       if (isFavorite) {
-        await removeFavorite(toolId);
+        await removeFavoriteMutation.mutateAsync(toolId);
       } else {
-        await addFavorite(toolId);
+        await addFavoriteMutation.mutateAsync(toolId);
       }
     } catch (err) {
       console.error('Failed to update favorites', err);
-      setFavoriteToolIds(prevFavorites);
     } finally {
       setUpdatingToolIds((prev) => {
         const newSet = new Set(prev);
@@ -77,16 +65,15 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   const getCategoryApps = (category: TAppCategory): MenuItem[] => {
     const bundles: Record<string, { apps: MenuItem[]; label: string }> = {};
     const categoryItems: MenuItem[] = [];
+
     category.apps.forEach((app) => {
       const toolId = app.version ? `${app.app_id}-${app.version}` : app.app_id;
       const isFavorite = favoriteToolIds.includes(toolId);
-      console.log(
-        `:jigsaw: App: ${app.app_id}, Version: ${app.version}, ToolID: ${toolId}, IsFavorite: ${isFavorite}`
-      );
       const linkPath = `${app.app_id}${
         app.version ? `?appVersion=${app.version}` : ''
       }`;
       const linkLabel = app.shortLabel || app.label || app.bundle_label;
+
       const switchControl = (
         <span onClick={(e) => e.stopPropagation()} style={{ marginLeft: 6 }}>
           <Switch
@@ -99,24 +86,40 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           />
         </span>
       );
+
       const labelContent = (
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            gap: 8,
+            paddingTop: 2,
+            paddingBottom: 2,
+            lineHeight: 1.2,
+          }}
+        >
           <NavLink
             to={linkPath}
             onClick={() => handleToolClick(linkLabel, linkPath)}
             style={{
-              flexGrow: 1,
-              textDecoration: 'none',
+              flex: 1,
+              whiteSpace: 'normal',
+              overflowWrap: 'break-word',
+              wordBreak: 'break-word',
               color: 'inherit',
-              outline: 'none',
+              textDecoration: 'none',
             }}
           >
             {linkLabel}
           </NavLink>
           {switchControl}
-        </span>
+        </div>
       );
+
       const item = getItem(labelContent, toolId, app.priority);
+
       if (app.is_bundled) {
         const bundleKey = `${app.bundle_label}${app.bundle_id}`;
         if (!bundles[bundleKey]) {
@@ -127,6 +130,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
         categoryItems.push(item);
       }
     });
+
     const bundleItems = Object.entries(bundles).map(
       ([bundleKey, bundle], idx) =>
         getItem(
@@ -136,6 +140,7 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
           bundle.apps.sort((a, b) => a.priority - b.priority)
         )
     );
+
     return [
       ...categoryItems.sort((a, b) => a.priority - b.priority),
       ...bundleItems,
@@ -168,29 +173,27 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
   const selectedKey = appVersion ? `${appId}-${appVersion}` : appId;
 
   return (
-    <>
-      <div style={{ width: 280 }}>
-        <div
-          style={{
-            display: 'grid',
-            justifyContent: 'center',
-            padding: 10,
-            fontWeight: 700,
-            borderRight: '1px solid var(--global-color-primary--normal)',
-          }}
-        >
-          Applications:
-        </div>
-        <Menu
-          mode="inline"
-          defaultOpenKeys={[currentCategory?.title || '', currentSubMenu || '']}
-          selectedKeys={[selectedKey]}
-          items={items}
-          inlineIndent={10}
-          style={{ height: '100%', fontSize: '10px' }}
-        />
+    <div style={{ width: 220 }}>
+      <div
+        style={{
+          display: 'grid',
+          justifyContent: 'center',
+          padding: 10,
+          fontWeight: 700,
+          borderRight: '1px solid var(--global-color-primary--normal)',
+        }}
+      >
+        Applications:
       </div>
-    </>
+      <Menu
+        mode="inline"
+        defaultOpenKeys={[currentCategory?.title || '', currentSubMenu || '']}
+        selectedKeys={[selectedKey]}
+        items={items}
+        inlineIndent={10}
+        style={{ height: '100%', fontSize: '14px' }}
+      />
+    </div>
   );
 };
 

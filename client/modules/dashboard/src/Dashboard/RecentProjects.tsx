@@ -10,7 +10,6 @@ type Project = {
   pi: string;
 };
 
-// Define the structure of the API response
 interface RawUser {
   role: string;
   fname: string;
@@ -71,7 +70,6 @@ const RecentProjects: React.FC = () => {
 
   return (
     <div className={styles.recentProjectsContainer}>
-      <h2 className={styles.recentProjectsTitle}>Recent Projects</h2>
       <table className={styles.recentProjectsTable}>
         <thead>
           <tr>

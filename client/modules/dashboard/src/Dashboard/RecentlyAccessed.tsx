@@ -26,7 +26,6 @@ const RecentlyAccessed: React.FC = () => {
 
   return (
     <div className={styles.recentContainer}>
-      <h4 className={styles.recentHeading}>Recently Accessed Tools</h4>
       <ul className={styles.recentList}>
         {recentTools.map((tool, index) => (
           <li

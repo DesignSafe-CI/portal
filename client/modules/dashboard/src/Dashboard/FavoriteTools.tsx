@@ -165,7 +165,7 @@ const FavoriteTools = () => {
 
       {showPanel && (
         <div ref={panelRef} className={styles.favoritePanel}>
-          <h4>Your Favorite Tools </h4>
+          <h4>Your Favorite Tools</h4>
 
           {resolvedFavorites.length === 0 ? (
             <div className={styles.emptyFavorites}>No favorite tools yet.</div>
@@ -173,15 +173,24 @@ const FavoriteTools = () => {
             <ul className={styles.favoriteList}>
               {resolvedFavorites.map((tool) => (
                 <li className={styles.favoriteItem} key={tool.key}>
-                  <a
-                    href={tool.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={() => handleToolClick(tool.label, tool.href)}
+                  <span
+                    role="link"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToolClick(tool.label, tool.href);
+                      window.open(tool.href, '_blank', 'noopener,noreferrer');
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleToolClick(tool.label, tool.href);
+                        window.open(tool.href, '_blank', 'noopener,noreferrer');
+                      }
+                    }}
                     className={styles.projectLink}
                   >
                     {tool.label}
-                  </a>
+                  </span>
                   <button
                     onClick={() => handleRemove(tool.key)}
                     disabled={removingIds.has(tool.key)}

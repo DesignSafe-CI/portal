@@ -37,7 +37,6 @@ export const TicketList: React.FC = () => {
     updated_at: ticket.updated_at || ticket.LastUpdated,
   });
 
-  // Memoize fetchTickets so useEffect dependencies are stable
   const fetchTickets = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -58,13 +57,11 @@ export const TicketList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []); // no dependencies because normalizeTicket is stable (function inside component but doesn't use state)
+  }, []);
 
   useEffect(() => {
     fetchTickets();
-  }, [fetchTickets]); // add fetchTickets here
-
-  // ... rest of your code unchanged ...
+  }, [fetchTickets]);
 
   const formatDate = (input?: string) => {
     if (!input) return 'N/A';
@@ -103,7 +100,6 @@ export const TicketList: React.FC = () => {
   return (
     <div className={styles.ticketListContainer}>
       <div className={styles.ticketListHeader}>
-        <h4>My Tickets</h4>
         <a href="/help/new-ticket" className="btn btn-primary btn-sm">
           + New Ticket
         </a>
