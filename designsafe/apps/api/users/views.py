@@ -192,3 +192,19 @@ class PublicView(View):
 
         res_dict = {"userData": res_list}
         return JsonResponse(res_dict)
+
+
+class SUAllocationsView(SecureMixin, View):
+    """API View for fetching SU allocations for the authenticated user"""
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({"message": "Unauthorized"}, status=401)
+
+        try:
+            username = request.user.username
+            allocations = users_utils.get_allocations(request.user, force=True)
+            return JsonResponse({"allocations": allocations.get("detailed_allocations", [])})
+        except Exception as e:
+            logger.exception(f"Error fetching SU allocations: {str(e)}")
+            return JsonResponse({"error": "Failed to fetch SU allocations."}, status=500)
