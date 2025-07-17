@@ -73,6 +73,193 @@ export const AppsSubmissionDetails: React.FC<{
     formState: { defaultValues, isValid },
   } = useFormContext();
   const formState = useWatch({ control, defaultValue: defaultValues });
+  // const getChildren = (
+  //   key: string,
+  //   value: string | object,
+  //   parent: z.AnyZodObject,
+  //   index: number
+  // ) => {
+  //   if (typeof value === 'object') {
+  //     if (!Object.keys(value).length) return <span>-</span>;
+  //     const items: DescriptionsProps['items'] = [];
+  //     const entries = Object.entries(value);
+  //     console.dir(entries);
+  //     if (key in fieldDisplayOrder) {
+  //       const displayOrder =
+  //         fieldDisplayOrder[key as keyof typeof fieldDisplayOrder];
+  //       entries.sort(
+  //         (a, b) => displayOrder.indexOf(a[0]) - displayOrder.indexOf(b[0])
+  //       );
+  //       // console.log('displayOrder');
+  //       // console.log(displayOrder);
+  //     }
+  //     // let addedSchedulerOptions = false;
+
+  //     entries.forEach(([k, v], childIndex) => {
+  //       // console.log('key');
+  //       // console.log(key);
+  //       // console.log('value');
+  //       // console.dir(value);
+  //       // console.log('parent');
+  //       // console.log(parent.shape);
+  //       // console.log('index');
+  //       // console.log(index);
+  //       // console.log('entries');
+  //       // console.log(entries);
+  //       // console.log('k');
+  //       // console.log(k);
+  //       // console.log('v');
+  //       // console.log(v);
+  //       // console.log('childIndex');
+  //       // console.log(childIndex);
+  //       if (
+  //         definition.notes.hideQueue &&
+  //         key === 'configuration' &&
+  //         k === 'execSystemLogicalQueue'
+  //       ) {
+  //         return; // Hide the queue, if the app definition requires it
+  //       }
+  //       if (
+  //         definition.notes.hideAllocation &&
+  //         key === 'configuration' &&
+  //         k === 'allocation'
+  //       ) {
+  //         return; // Hide the allocation, if that field is true
+  //       }
+  //       // if (
+  //       //   definition.jobAttributes.parameterSet.schedulerOptions.some(
+  //       //     (opt) => opt.name === 'TACC Reservation'
+  //       //   ) &&
+  //       //   key === 'configuration' &&
+  //       //   !addedSchedulerOptions
+  //       // ) {
+  //       //   addedSchedulerOptions = true;
+  //       //   const schedulerOpt =
+  //       //     definition.jobAttributes.parameterSet.schedulerOptions.find(
+  //       //       (opt) => opt.name === 'TACC Reservation'
+  //       //     );
+
+  //       //   items.push({
+  //       //     key: 'TACC Reservation',
+  //       //     label: <span>{'TACC Reservation'} </span>,
+  //       //     children: <span>{schedulerOpt?.arg ?? ''}</span>,
+  //       //     style: {
+  //       //       padding: '8px',
+  //       //       backgroundColor: childIndex % 2 === 0 ? '#fff' : '#f4f4f4',
+  //       //       borderBottom: '1px solid #DBDBDB',
+  //       //     },
+  //       //   });
+  //       // }
+  //       if (
+  //         key === 'parameters' &&
+  //         k === 'schedulerOptions' &&
+  //         definition.jobAttributes.parameterSet.schedulerOptions.some(
+  //           (opt) => opt.name === 'TACC Reservation'
+  //         )
+  //       ) {
+  //         // Skip showing schedulerOptions in parameters if it includes TACC Reservation
+  //         return;
+  //       }
+
+  //       if (v instanceof Object) {
+  //         Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
+  //           const nestedFieldSchema = parent?.shape?.[k]?.shape?.[kk];
+  //           const isRequired = isFieldRequired(nestedFieldSchema, vv);
+  //           // console.log('nestedFieldSchema');
+  //           // console.log(nestedFieldSchema);
+  //           // console.log('parent');
+  //           // console.dir(parent);
+  //           // console.log('???');
+  //           // console.dir(items);
+  //           items.push({
+  //             key: kk,
+  //             label: (
+  //               <span>
+  //                 {String(fields[key]?.[kk]?.label || kk)}{' '}
+  //                 {isRequired && (
+  //                   <ConfigProvider theme={tagTheme}>
+  //                     <Tag className="required" style={{ marginLeft: 10 }}>
+  //                       Required
+  //                     </Tag>
+  //                   </ConfigProvider>
+  //                 )}
+  //               </span>
+  //             ),
+  //             children: getChildren(
+  //               `${key}.${kk}`,
+  //               vv,
+  //               parent?.shape?.[kk],
+  //               zchildIndex
+  //             ),
+  //             style: {
+  //               padding: '8px',
+  //               backgroundColor: zchildIndex % 2 === 0 ? '#fff' : '#f4f4f4',
+  //               borderBottom: '1px solid #DBDBDB',
+  //             },
+  //           });
+  //           // console.log('???');
+  //           // console.dir(items);
+  //         });
+  //       } else {
+  //         const fieldSchema = parent?.shape?.[k];
+  //         // console.log('fieldSchema');
+  //         // console.log(fieldSchema.shape);
+  //         const isRequired = isFieldRequired(fieldSchema, v);
+  //         // console.log('???');
+  //         // console.dir(items);
+  //         // console.log('^^^^^^');
+  //         // console.log([k]);
+  //         items.push({
+  //           key: k,
+  //           label: (
+  //             <span>
+  //               {String(fields[key]?.[k]?.label || k)}{' '}
+  //               {isRequired && (
+  //                 <ConfigProvider theme={tagTheme}>
+  //                   <Tag className="required" style={{ marginLeft: 10 }}>
+  //                     Required
+  //                   </Tag>
+  //                 </ConfigProvider>
+  //               )}
+  //             </span>
+  //           ),
+  //           children: getChildren(
+  //             `${key}.${k}`,
+  //             v,
+  //             parent?.shape?.[k],
+  //             childIndex
+  //           ),
+  //           style: {
+  //             padding: '8px',
+  //             backgroundColor: childIndex % 2 === 0 ? '#fff' : '#f4f4f4',
+  //             borderBottom: '1px solid #DBDBDB',
+  //           },
+  //         });
+  //         // console.log('items');
+  //         // console.log(items);
+  //       }
+  //     });
+  //     return (
+  //       <Descriptions
+  //         bordered={false}
+  //         colon={false}
+  //         column={1}
+  //         items={items}
+  //         labelStyle={{
+  //           textAlign: 'left',
+  //           maxWidth: '240px',
+  //           minWidth: '220px',
+  //           color: 'rgba(0, 0, 0, 0.88)',
+  //           font: 'normal normal 14px Helvetica Neue',
+  //           alignItems: 'center',
+  //         }}
+  //         contentStyle={{ color: '#484848', fontWeight: 'bold', border: '0' }}
+  //       />
+  //     );
+  //   } else {
+  //     return <span>{`${value}`}</span>;
+  //   }
+  // };
   const getChildren = (
     key: string,
     value: string | object,
@@ -81,8 +268,10 @@ export const AppsSubmissionDetails: React.FC<{
   ) => {
     if (typeof value === 'object') {
       if (!Object.keys(value).length) return <span>-</span>;
+
       const items: DescriptionsProps['items'] = [];
       const entries = Object.entries(value);
+
       if (key in fieldDisplayOrder) {
         const displayOrder =
           fieldDisplayOrder[key as keyof typeof fieldDisplayOrder];
@@ -92,99 +281,62 @@ export const AppsSubmissionDetails: React.FC<{
         // console.log('fieldDisplayOrder');
         // console.log(displayOrder);
       }
+
+      const visibleItems: DescriptionsProps['items'] = [];
       let addedSchedulerOptions = false;
 
       entries.forEach(([k, v], childIndex) => {
+        // Skip certain fields
         if (
           definition.notes.hideQueue &&
           key === 'configuration' &&
           k === 'execSystemLogicalQueue'
-        ) {
-          return; // Hide the queue, if the app definition requires it
-        }
+        )
+          return;
+
         if (
           definition.notes.hideAllocation &&
           key === 'configuration' &&
           k === 'allocation'
-        ) {
-          return; // Hide the allocation, if that field is true
-        }
-        if (
-          definition.jobAttributes.parameterSet.schedulerOptions.some(
-            (opt) => opt.name === 'TACC Reservation'
-          ) &&
-          key === 'configuration' &&
-          !addedSchedulerOptions
-        ) {
-          addedSchedulerOptions = true;
-          const schedulerOpt =
-            definition.jobAttributes.parameterSet.schedulerOptions.find(
-              (opt) => opt.name === 'TACC Reservation'
-            );
+        )
+          return;
 
-          items.push({
-            key: 'schedulerOptions',
-            label: <span>{'TACC Reservation'} </span>,
-            children: <span>{schedulerOpt?.value ?? ''}</span>,
-            style: {
-              padding: '8px',
-              backgroundColor: childIndex % 2 === 0 ? '#fff' : '#f4f4f4',
-              borderBottom: '1px solid #DBDBDB',
-            },
-          });
-        }
         if (
           key === 'parameters' &&
           k === 'schedulerOptions' &&
           definition.jobAttributes.parameterSet.schedulerOptions.some(
             (opt) => opt.name === 'TACC Reservation'
           )
-        ) {
-          // Skip showing schedulerOptions in parameters if it includes TACC Reservation
+        )
           return;
-        }
+
+        // Add the regular field
+        const pushItem = (
+          itemKey: string,
+          itemLabel: React.ReactNode,
+          itemChildren: React.ReactNode,
+          bgIndex: number
+        ) => {
+          visibleItems.push({
+            key: itemKey,
+            label: itemLabel,
+            children: itemChildren,
+            style: {
+              padding: '8px',
+              backgroundColor: bgIndex % 2 === 0 ? '#fff' : '#f4f4f4',
+              borderBottom: '1px solid #DBDBDB',
+            },
+          });
+        };
 
         if (v instanceof Object) {
-          Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
+          Object.entries(v as object).forEach(([kk, vv]) => {
             const nestedFieldSchema = parent?.shape?.[k]?.shape?.[kk];
             const isRequired = isFieldRequired(nestedFieldSchema, vv);
-            items.push({
-              key: kk,
-              label: (
-                <span>
-                  {String(fields[key]?.[kk]?.label || kk)}{' '}
-                  {isRequired && (
-                    <ConfigProvider theme={tagTheme}>
-                      <Tag className="required" style={{ marginLeft: 10 }}>
-                        Required
-                      </Tag>
-                    </ConfigProvider>
-                  )}
-                </span>
-              ),
-              children: getChildren(
-                `${key}.${kk}`,
-                vv,
-                parent?.shape?.[kk],
-                zchildIndex
-              ),
-              style: {
-                padding: '8px',
-                backgroundColor: zchildIndex % 2 === 0 ? '#fff' : '#f4f4f4',
-                borderBottom: '1px solid #DBDBDB',
-              },
-            });
-          });
-        } else {
-          const fieldSchema = parent?.shape?.[k];
-          // console.log('fieldSchema');
-          // console.log(fieldSchema);
-          const isRequired = isFieldRequired(fieldSchema, v);
-          items.push({
-            key: k,
-            label: (
+
+            const label = (
               <span>
-                {String(fields[key]?.[k]?.label || k)}{' '}
+                {String(fields[key]?.[kk]?.label || kk)}{' '}
                 {isRequired && (
                   <ConfigProvider theme={tagTheme}>
                     <Tag className="required" style={{ marginLeft: 10 }}>
@@ -193,27 +345,74 @@ export const AppsSubmissionDetails: React.FC<{
                   </ConfigProvider>
                 )}
               </span>
-            ),
-            children: getChildren(
-              `${key}.${k}`,
-              v,
-              parent?.shape?.[k],
-              childIndex
-            ),
-            style: {
-              padding: '8px',
-              backgroundColor: childIndex % 2 === 0 ? '#fff' : '#f4f4f4',
-              borderBottom: '1px solid #DBDBDB',
-            },
+            );
+
+            const children = getChildren(
+              `${key}.${kk}`,
+              vv,
+              parent?.shape?.[kk],
+              visibleItems.length
+            );
+            pushItem(kk, label, children, visibleItems.length);
           });
+        } else {
+          const fieldSchema = parent?.shape?.[k];
+          // console.log('fieldSchema');
+          // console.log(fieldSchema);
+          const isRequired = isFieldRequired(fieldSchema, v);
+
+          const label = (
+            <span>
+              {String(fields[key]?.[k]?.label || k)}{' '}
+              {isRequired && (
+                <ConfigProvider theme={tagTheme}>
+                  <Tag className="required" style={{ marginLeft: 10 }}>
+                    Required
+                  </Tag>
+                </ConfigProvider>
+              )}
+            </span>
+          );
+
+          const children = getChildren(
+            `${key}.${k}`,
+            v,
+            parent?.shape?.[k],
+            visibleItems.length
+          );
+          pushItem(k, label, children, visibleItems.length);
+
+          // Insert TACC Reservation after execSystemLogicalQueue
+          if (
+            definition.jobAttributes.parameterSet.schedulerOptions.some(
+              (opt) => opt.name === 'TACC Reservation'
+            ) &&
+            key === 'configuration' &&
+            k === 'execSystemLogicalQueue' &&
+            !addedSchedulerOptions
+          ) {
+            addedSchedulerOptions = true;
+            const schedulerOpt =
+              definition.jobAttributes.parameterSet.schedulerOptions.find(
+                (opt) => opt.name === 'TACC Reservation'
+              );
+
+            pushItem(
+              'schedulerOptions',
+              <span>{'TACC Reservation'}</span>,
+              <span>{schedulerOpt?.arg ?? ''}</span>,
+              visibleItems.length
+            );
+          }
         }
       });
+
       return (
         <Descriptions
           bordered={false}
           colon={false}
           column={1}
-          items={items}
+          items={visibleItems}
           labelStyle={{
             textAlign: 'left',
             maxWidth: '240px',

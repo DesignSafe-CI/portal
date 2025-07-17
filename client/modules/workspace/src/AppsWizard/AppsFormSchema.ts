@@ -28,6 +28,7 @@ import {
   getExecSystemIdValidation,
   getAppExecSystems,
   preprocessStringToNumber,
+  getReservationValidation,
 } from '../utils';
 
 export type TDynamicString = { [dynamic: string]: string | number };
@@ -177,12 +178,12 @@ export const getConfigurationSchema = (
   }
 
   if (
-    definition.jobAttributes.parameterSet?.schedulerOptions['TACC Reservation']
+    definition.jobAttributes.parameterSet?.schedulerOptions?.some(
+      (opt) => opt.name === 'TACC Reservation'
+    )
   ) {
     configurationSchema['TACC Reservation'] =
-      definition.jobAttributes.parameterSet?.schedulerOptions[
-        'TACC Reservation'
-      ];
+      getReservationValidation(definition);
   }
   return configurationSchema;
 };
@@ -196,8 +197,7 @@ export const getConfigurationFields = (
   allocations: string[],
   execSystems: TTapisSystem[],
   selectedExecSystem: TTapisSystem,
-  queue: TTapisSystemQueue,
-  reservation?: string[]
+  queue: TTapisSystemQueue
 ) => {
   const configurationFields: TDynamicField = {};
 

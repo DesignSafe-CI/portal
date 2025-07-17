@@ -526,7 +526,7 @@ export const AppsSubmissionForm: React.FC = () => {
       'configuration.nodeCount',
       'configuration.maxMinutes',
       'configuration.coresPerNode',
-      'configuration.',
+      // 'configuration.',
     ]);
   }, [schema, methods]);
 

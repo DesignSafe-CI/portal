@@ -45,7 +45,6 @@ export const getConfigurationStep = (fields: { [key: string]: TField }) => ({
         // console.log('!!!');
         // console.log(field);
         // console.log('key:', key, 'field:', field);
-
         return <FormField {...field} />;
       })}
     </>
