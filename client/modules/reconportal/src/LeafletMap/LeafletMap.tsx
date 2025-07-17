@@ -20,7 +20,6 @@ import {
 import { getOpenTopoColor, getReconEventColor } from '../utils';
 import { getFirstLatLng } from './utils';
 import {
-  useGetReconPortalEvents,
   type ReconPortalEvents,
   useGetOpenTopo,
   useReconEventContext,
