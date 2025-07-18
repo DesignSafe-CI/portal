@@ -23,7 +23,6 @@ import {
   useAvailableEventYears,
 } from '@client/hooks';
 import { formatDate } from '@client/workspace';
-import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
 import { getReconEventColor, EVENT_TYPE_COLORS } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
