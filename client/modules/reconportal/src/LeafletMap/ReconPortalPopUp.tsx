@@ -36,7 +36,7 @@ export const ReconPortalPopup: React.FC<ReconPortalPopuprops> = ({
             textTransform: 'capitalize',
           }}
         >
-          {dataset.event_type || dataset.properties?.host || ''}
+          {dataset.event_type}
         </Tag>
 
         <div>
