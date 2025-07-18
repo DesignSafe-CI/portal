@@ -52,6 +52,7 @@ def get_datacite_json(
     author_attr = []
     institutions = []
     entity_meta = pub_graph.nodes[entity_node]["value"]
+    print(entity_meta)
     authors = entity_meta.get("authors", [])
     datacite_authors = [
         author for author in authors if not author.get("authorship") is False
@@ -62,6 +63,14 @@ def get_datacite_json(
                 "name": f"{author.get('lname', '')}, {author.get('fname', '')}",
                 "givenName": author.get("fname", ""),
                 "familyName": author.get("lname", ""),
+                "affiliation": [
+                    {
+                        "name": author.get("inst",""),
+                        "schemeUri": None,
+                        "affiliationIdentifier": None,
+                        "affiliationIdentifierScheme": None,
+                    }
+                ],
             }
         )
         institutions.append(author.get("inst", ""))
@@ -80,7 +89,7 @@ def get_datacite_json(
     ]
     if not is_other:
         datacite_json["titles"].append(
-            {"title": f"in {base_meta['title']}", "titleType": "Subtitle"}
+            {"title": f"in {base_meta['title']}"}
         )
     datacite_json["publisher"] = "Designsafe-CI"
 
@@ -119,6 +128,10 @@ def get_datacite_json(
     datacite_json["subjects"] = [
         {"subject": keyword} for keyword in base_meta.get("keywords", [])
     ]
+    if not is_other:
+        datacite_json["subjects"].append(
+            {"subject": keyword} for keyword in entity_meta.get("keywords", [])
+        )
 
     facilities = entity_meta.get("facilities", [])
     if exp_facility := entity_meta.get("facility", None):
@@ -181,8 +194,22 @@ def get_datacite_json(
     if version and version > 1:
         datacite_url += f"/?version={version}"
 
+    #todo: fill this out with license info
+    datacite_json["rightsList"] = [
+        {
+            "lang": "en",
+            "rights": base_meta["license"],
+            "rightsUri": None,
+            "schemeUri": None,
+            "rightsIdentifier": None,
+            "rightsIdentifierScheme": None,
+        }
+    ]
+
     datacite_json["url"] = datacite_url
     datacite_json["prefix"] = settings.DATACITE_SHOULDER
+
+    print(datacite_json)
 
     return datacite_json
 
