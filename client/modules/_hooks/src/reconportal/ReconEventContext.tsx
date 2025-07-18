@@ -19,7 +19,7 @@ const ReconEventContext = createContext<ReconEventContextType | undefined>(
 export const getReconPortalEventIdentifier = (
   event: ReconPortalEvents
 ): string => {
-  const title = event.title || event.properties?.name || '';
+  const title = event.title;
   return `${title}`.toLowerCase().replace(/[^a-z0-9]/g, '-');
 };
 

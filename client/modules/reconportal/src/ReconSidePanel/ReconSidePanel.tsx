@@ -25,7 +25,7 @@ import {
 import { formatDate } from '@client/workspace';
 import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
-import { getReconEventColor, EVENT_TYPE_COLORS } from '../utils';
+import { getReconEventColor } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
@@ -115,11 +115,10 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   };
 
   const renderEventCard = (event: ReconPortalEvents) => {
-    const title = event.title || event.properties?.name || '';
-    const description =
-      event.location_description || event.properties?.description || '';
-    const date = event.event_date || event.properties?.dateCreated || '';
-    const eventType = event.event_type || event.properties?.host || '';
+    const title = event.title;
+    const description = event.location_description;
+    const date = event.event_date;
+    const eventType = event.event_type;
 
     return (
       <div className={styles.eventContainer}>
@@ -135,13 +134,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               {formatDate(new Date(date))}
             </Text>
             <Tag
-              color={
-                selectedEvent
-                  ? getReconEventColor(selectedEvent)
-                  : EVENT_TYPE_COLORS[
-                      eventType as keyof typeof EVENT_TYPE_COLORS
-                    ]
-              }
+              color={getReconEventColor(event)}
               style={{
                 fontWeight: 600,
                 fontSize: 14,
@@ -157,11 +150,10 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   };
 
   const renderEventDetail = (event: ReconPortalEvents) => {
-    const title = event.title || event.properties?.name || '';
-    const description =
-      event.location_description || event.properties?.description || '';
-    const date = event.event_date || event.properties?.dateCreated || '';
-    const eventType = event.event_type || event.properties?.host || '';
+    const title = event.title;
+    const description = event.location_description;
+    const date = event.event_date;
+    const eventType = event.event_type;
     const eventTypeColor = getReconEventColor(event);
     const datasets = event.datasets || [];
     return (
@@ -172,7 +164,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               <FontAwesomeIcon
                 icon={faLocationDot}
                 size="2x"
-                color={getReconEventColor(selectedEvent)}
+                color={eventTypeColor}
                 style={{ marginRight: '8px' }}
               />
               {title}
