@@ -406,7 +406,7 @@ const HybridSimFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Simulation Description" required>
+      <Form.Item label="Hybrid Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
         characters in length.
@@ -702,7 +702,7 @@ const DocumentFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Mission Description" required>
+      <Form.Item label="Document Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
         characters in length.
