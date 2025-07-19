@@ -27,6 +27,10 @@ from designsafe.apps.workspace.models.app_entries import (
 from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
 from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
+from django.views import View
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.contrib.auth.mixins import LoginRequiredMixin
+from designsafe.apps.workspace.models.user_favorites import UserFavorite
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
@@ -902,3 +906,41 @@ class AllocationsView(AuthenticatedApiView):
                 "response": data,
             }
         )
+
+
+class UserFavoriteList(LoginRequiredMixin, View):
+    def get(self, request):
+        favorites = UserFavorite.objects.filter(user=request.user)
+        data = [
+            {"id": fav.id, "tool_id": fav.tool_id, "added_on": fav.added_on.isoformat()}
+            for fav in favorites
+        ]
+        return JsonResponse(data, safe=False)
+
+
+class AddFavoriteTool(LoginRequiredMixin, View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            tool_id = data.get("tool_id")
+            if not tool_id:
+                return HttpResponseBadRequest("Missing tool_id")
+            favorite, created = UserFavorite.objects.get_or_create(
+                user=request.user, tool_id=tool_id
+            )
+            return JsonResponse({"success": True, "created": created})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+
+class RemoveFavoriteTool(LoginRequiredMixin, View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            tool_id = data.get("tool_id")
+            if not tool_id:
+                return HttpResponseBadRequest("Missing tool_id")
+            UserFavorite.objects.filter(user=request.user, tool_id=tool_id).delete()
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
