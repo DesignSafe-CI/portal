@@ -60,7 +60,7 @@ export const LeafletMap: React.FC = () => {
 
   const [showSelectedPopup, setShowSelectedPopup] = useState(false);
 
-  // Handle delayed popup showing
+  // Delay popup display to prevent incorrect initial sizing during zoom
   useEffect(() => {
     setShowSelectedPopup(false);
 
