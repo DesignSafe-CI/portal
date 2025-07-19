@@ -27,20 +27,20 @@ export const ReconPortalPopup: React.FC<ReconPortalPopuprops> = ({
         {title}
       </Title>
 
-    {showDetails && (
-      <Space direction="vertical" size={6}>
-        <div>
-          <Text>{eventDate}</Text>
-        </div>
-        <Tag
-          color={getReconEventColor(dataset)}
-          className={styles.eventDetailTag}
-        >
-          {dataset.event_type}
-        </Tag>
+      {showDetails && (
+        <Space direction="vertical" size={6}>
+          <div>
+            <Text>{eventDate}</Text>
+          </div>
+          <Tag
+            color={getReconEventColor(dataset)}
+            className={styles.eventDetailTag}
+          >
+            {dataset.event_type}
+          </Tag>
 
-        <div>
-          <Text>{location}</Text>
+          <div>
+            <Text>{location}</Text>
           </div>
         </Space>
       )}
