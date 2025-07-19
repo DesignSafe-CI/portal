@@ -22,30 +22,46 @@ export function createSvgMarkerIcon({
   icon: IconDefinition;
   withConstrastBackgrounIcon?: IconDefinition;
 }): L.DivIcon {
-  const outlineSize = 28; // slightly larger
-  const iconSize = 24;    // actual icon
-
   const html = renderToStaticMarkup(
-  <span
-    style={{
-      position: 'relative',
-      width: '24px',
-      height: '28px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'white',
-      borderRadius: '50%',
-    }}
-  >
-    <FontAwesomeIcon icon={icon} color={color} style={{ fontSize: '24px' }} />
-  </span>
-);
+    <span
+      style={{
+        position: 'relative',
+        display: 'inline-block',
+        width: '36px',
+        height: '36px',
+      }}
+    >
+      {withConstrastBackgrounIcon && (
+        <FontAwesomeIcon
+          icon={withConstrastBackgrounIcon}
+          color="white"
+          style={{
+            fontSize: '36px',
+            position: 'absolute',
+            top: 0,
+            left: 1,
+            zIndex: 0,
+          }}
+        />
+      )}
+      <FontAwesomeIcon
+        icon={icon}
+        color={color}
+        style={{
+          fontSize: '30px',
+          position: 'absolute',
+          top: '3px',
+          left: '3px',
+          zIndex: 1,
+        }}
+      />
+    </span>
+  );
 
   return L.divIcon({
     className: '',
     html,
-    iconAnchor: [outlineSize / 2, outlineSize], // bottom center
+    iconAnchor: [18, 36], // center bottom
   });
 }
 
