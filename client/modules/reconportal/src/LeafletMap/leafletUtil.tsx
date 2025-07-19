@@ -15,23 +15,59 @@ import styles from './LeafletMap.module.css';
  */
 export function createSvgMarkerIcon({
   color = 'black',
-  size = '2x',
   icon,
+  withConstrastBackgrounIcon,
 }: {
   color?: string;
-  size?: 'xs' | 'sm' | 'lg' | '1x' | '2x' | '3x';
   icon: IconDefinition;
+  withConstrastBackgrounIcon?: IconDefinition;
 }): L.DivIcon {
+  const outlineSize = 28; // slightly larger
+  const iconSize = 24;    // actual icon
+
   const html = renderToStaticMarkup(
-    <FontAwesomeIcon icon={icon} color={color} size={size} />
+    <span
+      style={{
+        position: 'relative',
+        display: 'inline-block',
+        width: `${outlineSize}px`,
+        height: `${outlineSize}px`,
+      }}
+    >
+      {withConstrastBackgrounIcon && (
+        <FontAwesomeIcon
+          icon={withConstrastBackgrounIcon}
+          color="white"
+          style={{
+            fontSize: `${outlineSize}px`,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 0,
+          }}
+        />
+      )}
+      <FontAwesomeIcon
+        icon={icon}
+        color={color}
+        style={{
+          fontSize: `${iconSize}px`,
+          position: 'absolute',
+          top: `${(outlineSize - iconSize) / 2}px`,
+          left: `${(outlineSize - iconSize) / 2}px`,
+          zIndex: 1,
+        }}
+      />
+    </span>
   );
 
   return L.divIcon({
     className: '',
     html,
-    iconAnchor: [12, 24],
+    iconAnchor: [outlineSize / 2, outlineSize], // bottom center
   });
 }
+
 
 /**
  * Create a cluster icon and declare defaults
