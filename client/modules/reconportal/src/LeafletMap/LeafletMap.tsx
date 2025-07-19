@@ -9,7 +9,7 @@ import {
   Marker,
   Popup,
 } from 'react-leaflet';
-import { faMap, faLocationDot, faLocationPin } from '@fortawesome/free-solid-svg-icons';
+import { faMap, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { OpenTopoPopup } from './OpenTopoPopup';
 import {
   createSvgMarkerIcon,
@@ -201,7 +201,6 @@ export const LeafletMap: React.FC = () => {
       const icon = createSvgMarkerIcon({
         color: getReconEventColor(reconEvent),
         icon: faLocationDot,
-        withConstrastBackgrounIcon: faLocationPin
       });
       reconPortalMarkers.push(
         <Marker

@@ -1,5 +1,4 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   useReconEventContext,
@@ -14,57 +13,40 @@ import styles from './LeafletMap.module.css';
  * Create a Leaflet divIcon using any Font Awesome icon with dynamic color and size.
  */
 export function createSvgMarkerIcon({
-  color = 'black',
   icon,
-  withConstrastBackgrounIcon,
+  color = 'black',
+  withOutline = true,
 }: {
-  color?: string;
   icon: IconDefinition;
-  withConstrastBackgrounIcon?: IconDefinition;
+  color?: string;
+  withOutline?: boolean;
 }): L.DivIcon {
+  const [width, height, , , svgPath] = icon.icon;
+
+  const d = Array.isArray(svgPath) ? svgPath.join(' ') : svgPath;
+
   const html = renderToStaticMarkup(
-    <span
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="36"
+      height="36"
+      viewBox={`0 0 ${width} ${height}`}
       style={{
-        position: 'relative',
-        display: 'inline-block',
-        width: '36px',
-        height: '36px',
+        filter: withOutline
+          ? 'drop-shadow(0 0 1px white) drop-shadow(0 0 2px white) drop-shadow(0 0 3px white)'
+          : undefined,
       }}
     >
-      {withConstrastBackgrounIcon && (
-        <FontAwesomeIcon
-          icon={withConstrastBackgrounIcon}
-          color="white"
-          style={{
-            fontSize: '36px',
-            position: 'absolute',
-            top: 0,
-            left: 1,
-            zIndex: 0,
-          }}
-        />
-      )}
-      <FontAwesomeIcon
-        icon={icon}
-        color={color}
-        style={{
-          fontSize: '30px',
-          position: 'absolute',
-          top: '3px',
-          left: '3px',
-          zIndex: 1,
-        }}
-      />
-    </span>
+      <path d={d} fill={color} />
+    </svg>
   );
 
   return L.divIcon({
     className: '',
     html,
-    iconAnchor: [18, 36], // center bottom
+    iconAnchor: [18, 36],
   });
 }
-
 
 /**
  * Create a cluster icon and declare defaults
