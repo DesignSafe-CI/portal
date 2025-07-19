@@ -4,10 +4,8 @@ import FavoriteTools from './FavoriteTools';
 const Quicklinks = () => {
   return (
     <div className={styles.sidebar}>
-      <a>
-        <FavoriteTools />
-      </a>
       <div className={styles.sidebarTitle}>Quick Links</div>
+      <FavoriteTools />
       <a href="/account" className={styles.sidebarLink}>
         Manage Account
       </a>

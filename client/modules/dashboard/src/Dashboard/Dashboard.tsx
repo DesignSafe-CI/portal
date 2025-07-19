@@ -28,13 +28,11 @@ export function Dashboard(props: DashboardProps) {
   const { data: liveSystems, isLoading } = useSystemOverview();
 
   const [expandedSections, setExpandedSections] = useState({
+    recentJobs: false,
     recentProjects: false,
-    recentlyAccessed: false,
     ticketList: false,
+    allocations: false,
   });
-
-  const [showJobs, setShowJobs] = useState(false);
-  const [showAllocations, setShowAllocations] = useState(false);
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({
@@ -92,7 +90,7 @@ export function Dashboard(props: DashboardProps) {
 
           <div style={{ marginBottom: '1.5rem' }}>
             <h3
-              onClick={() => setShowJobs(!showJobs)}
+              onClick={() => toggleSection('recentJobs')}
               style={{
                 cursor: 'pointer',
                 display: 'flex',
@@ -101,55 +99,57 @@ export function Dashboard(props: DashboardProps) {
                 userSelect: 'none',
               }}
             >
-              {showJobs ? <DownOutlined /> : <RightOutlined />} Recent Jobs
+              {expandedSections.recentJobs ? <DownOutlined /> : <RightOutlined />} Recent Jobs
             </h3>
-            {showJobs && <JobStatus />}
-          </div>
-
-          <div style={{ marginBottom: '1.5rem' }}>
-            <h3
-              onClick={() => setShowAllocations(!showAllocations)}
-              style={{
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                userSelect: 'none',
-              }}
-            >
-              {showAllocations ? <DownOutlined /> : <RightOutlined />} Allocations
-            </h3>
-            {showAllocations && <SUAllocationsCard />}
+            {expandedSections.recentJobs && <JobStatus />}
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
             <h3
               onClick={() => toggleSection('recentProjects')}
-              style={{ cursor: 'pointer' }}
+              style={{
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                userSelect: 'none',
+              }}
             >
-              {expandedSections.recentProjects ? '▼' : '▶'} Recent Projects
+              {expandedSections.recentProjects ? <DownOutlined /> : <RightOutlined />} Recent Projects
             </h3>
             {expandedSections.recentProjects && <RecentProjects />}
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
             <h3
-              onClick={() => toggleSection('recentlyAccessed')}
-              style={{ cursor: 'pointer' }}
+              onClick={() => toggleSection('ticketList')}
+              style={{
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                userSelect: 'none',
+              }}
             >
-              {expandedSections.recentlyAccessed ? '▼' : '▶'} Recently Accessed Tools
+              {expandedSections.ticketList ? <DownOutlined /> : <RightOutlined />} My Tickets
             </h3>
-            {expandedSections.recentlyAccessed && <RecentlyAccessed />}
+            {expandedSections.ticketList && <TicketList />}
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
             <h3
-              onClick={() => toggleSection('ticketList')}
-              style={{ cursor: 'pointer' }}
+              onClick={() => toggleSection('allocations')}
+              style={{
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                userSelect: 'none',
+              }}
             >
-              {expandedSections.ticketList ? '▼' : '▶'} My Tickets
+              {expandedSections.allocations ? <DownOutlined /> : <RightOutlined />} Allocations
             </h3>
-            {expandedSections.ticketList && <TicketList />}
+            {expandedSections.allocations && <SUAllocationsCard />}
           </div>
         </div>
 
@@ -182,6 +182,20 @@ export function Dashboard(props: DashboardProps) {
               size="small"
               pagination={false}
             />
+          </div>
+
+          <div
+            style={{
+              backgroundColor: '#fff',
+              padding: '1.5rem',
+              borderRadius: '8px',
+              border: '1px solid #E0E0E0',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+              marginBottom: '1.5rem',
+            }}
+          >
+            <h3 style={{ marginBottom: '1rem' }}>Recently Accessed Tools</h3>
+            <RecentlyAccessed />
           </div>
 
           <UserGuides />

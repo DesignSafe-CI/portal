@@ -165,7 +165,7 @@ const FavoriteTools = () => {
 
       {showPanel && (
         <div ref={panelRef} className={styles.favoritePanel}>
-          <h4>Your Favorite Tools</h4>
+        
 
           {resolvedFavorites.length === 0 ? (
             <div className={styles.emptyFavorites}>No favorite tools yet.</div>
