@@ -328,6 +328,7 @@ export const LeafletMap: React.FC = () => {
             offset={[0, -10]}
             closeButton={false}
             closeOnClick={false}
+            autoClose={false}
           >
             <ReconPortalPopup dataset={selectedEvent} showDetails={false} />
           </Popup>
