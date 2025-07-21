@@ -6,7 +6,6 @@ import {
   Image,
   Input,
   Select,
-  DatePicker,
   Typography,
   List,
   Card,
@@ -21,9 +20,9 @@ import {
   type EventTypeResponse,
   useReconEventContext,
   getReconPortalEventIdentifier,
+  useAvailableEventYears,
 } from '@client/hooks';
 import { formatDate } from '@client/workspace';
-import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
 import { getReconEventColor } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -53,6 +52,16 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   const { data: eventTypes = [] } = useGetReconPortalEventTypes();
   const { data: events = [] } = useGetReconPortalEvents();
 
+  const availableYears = useAvailableEventYears(events, selectedEventType);
+
+  // When event type changes, ensure selected year is still valid; reset if not
+  useEffect(() => {
+    if (selectedYear && !availableYears.includes(selectedYear)) {
+      // clear selected year as no longer makes sense
+      setSelectedYear(null);
+    }
+  }, [selectedEventType, availableYears]);
+
   useEffect(() => {
     if (events.length > 0) {
       setFilteredReconPortalEvents(events);
@@ -69,8 +78,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     filterEvents(searchText, value, selectedYear);
   };
 
-  const handleYearChange = (date: dayjs.Dayjs | null) => {
-    const year = date ? date.format('YYYY') : null;
+  const handleYearChange = (year: string | null) => {
     setSelectedYear(year);
     filterEvents(searchText, selectedEventType, year);
   };
@@ -309,14 +317,19 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                     ))}
                   </Select>
 
-                  <DatePicker
-                    picker="year"
+                  <Select
                     placeholder="Select Year"
                     style={{ flex: 1 }}
                     onChange={handleYearChange}
-                    value={selectedYear ? dayjs(selectedYear) : null}
+                    value={selectedYear}
                     allowClear
-                  />
+                  >
+                    {availableYears.map((year) => (
+                      <Select.Option key={year} value={year}>
+                        {year}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </Flex>
               </div>
 
