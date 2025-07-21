@@ -2,7 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { ReconPortalEvents } from '@client/hooks';
 import { Tag, Typography, Space } from 'antd';
-import styles from './LeafletMap.module.css';
+import styles from './ReconPortalPopUp.module.css';
 import { getReconEventColor } from '../utils';
 
 const { Title, Text } = Typography;
