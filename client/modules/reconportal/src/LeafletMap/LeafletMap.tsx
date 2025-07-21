@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import {
   MapContainer,
@@ -52,8 +52,26 @@ export const mapConfig = {
  */
 export const LeafletMap: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
-  const { setSelectedReconPortalEventIdentifier, filteredReconPortalEvents } =
-    useReconEventContext();
+  const {
+    setSelectedReconPortalEventIdentifier,
+    filteredReconPortalEvents,
+    selectedReconPortalEventIdentfier,
+  } = useReconEventContext();
+
+  const [showSelectedPopup, setShowSelectedPopup] = useState(false);
+
+  // Delay popup display to prevent incorrect initial sizing during zoom
+  useEffect(() => {
+    setShowSelectedPopup(false);
+
+    if (!selectedReconPortalEventIdentfier) return;
+
+    const timer = setTimeout(() => {
+      setShowSelectedPopup(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [selectedReconPortalEventIdentfier]);
 
   const openTopoMapFeatures = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
@@ -191,6 +209,15 @@ export const LeafletMap: React.FC = () => {
     );
   };
 
+  // Find the selected event for the banner
+  const selectedEvent = selectedReconPortalEventIdentfier
+    ? filteredReconPortalEvents?.find(
+        (event) =>
+          getReconPortalEventIdentifier(event) ===
+          selectedReconPortalEventIdentfier
+      )
+    : null;
+
   const ReconPortalEvents = useMemo(() => {
     const datasets = filteredReconPortalEvents ?? [];
     const reconPortalMarkers: React.ReactNode[] = [];
@@ -208,12 +235,24 @@ export const LeafletMap: React.FC = () => {
           eventHandlers={{
             click: (e) => handleFeatureClick(reconEvent),
             mouseover: (e) => {
-              e.target.openPopup();
+              // Only show hover popup if this marker is not currently selected
+              if (
+                getReconPortalEventIdentifier(reconEvent) !==
+                selectedReconPortalEventIdentfier
+              ) {
+                e.target.openPopup();
+              }
             },
             mouseout: (e) => {
-              setTimeout(() => {
-                e.target.closePopup();
-              }, 1000);
+              // Only close hover popup if this marker is not currently selected
+              if (
+                getReconPortalEventIdentifier(reconEvent) !==
+                selectedReconPortalEventIdentfier
+              ) {
+                setTimeout(() => {
+                  e.target.closePopup();
+                }, 1000);
+              }
             },
           }}
         >
@@ -224,7 +263,7 @@ export const LeafletMap: React.FC = () => {
       );
     });
     return [...reconPortalMarkers];
-  }, [filteredReconPortalEvents]);
+  }, [filteredReconPortalEvents, selectedReconPortalEventIdentfier]);
 
   return (
     <>
@@ -281,6 +320,18 @@ export const LeafletMap: React.FC = () => {
         </MarkerClusterGroup>
         {/* Zoom control */}
         <ZoomControl position="topright" />
+
+        {/* Selected event banner popup */}
+        {selectedEvent && showSelectedPopup && (
+          <Popup
+            position={[selectedEvent.location.lat, selectedEvent.location.lon]}
+            offset={[0, -10]}
+            closeButton={false}
+            closeOnClick={false}
+          >
+            <ReconPortalPopup dataset={selectedEvent} showDetails={false} />
+          </Popup>
+        )}
       </MapContainer>
     </>
   );
