@@ -1,5 +1,4 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   useReconEventContext,
@@ -14,22 +13,38 @@ import styles from './LeafletMap.module.css';
  * Create a Leaflet divIcon using any Font Awesome icon with dynamic color and size.
  */
 export function createSvgMarkerIcon({
-  color = 'black',
-  size = '2x',
   icon,
+  color = 'black',
+  withOutline = true,
 }: {
-  color?: string;
-  size?: 'xs' | 'sm' | 'lg' | '1x' | '2x' | '3x';
   icon: IconDefinition;
+  color?: string;
+  withOutline?: boolean;
 }): L.DivIcon {
+  const [width, height, , , svgPath] = icon.icon;
+
+  const d = Array.isArray(svgPath) ? svgPath.join(' ') : svgPath;
+
   const html = renderToStaticMarkup(
-    <FontAwesomeIcon icon={icon} color={color} size={size} />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="36"
+      height="36"
+      viewBox={`0 0 ${width} ${height}`}
+      style={{
+        filter: withOutline
+          ? 'drop-shadow(0 0 1px white) drop-shadow(0 0 2px white) drop-shadow(0 0 3px white)'
+          : undefined,
+      }}
+    >
+      <path d={d} fill={color} />
+    </svg>
   );
 
   return L.divIcon({
     className: '',
     html,
-    iconAnchor: [12, 24],
+    iconAnchor: [18, 36],
   });
 }
 
