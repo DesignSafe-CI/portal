@@ -160,7 +160,7 @@ const FavoriteTools = () => {
         type="button"
         className={styles.favoriteToggle}
       >
-        Favorites
+        Favorite Apps
       </button>
 
       {showPanel && (
