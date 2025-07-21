@@ -6,7 +6,6 @@ import {
   Image,
   Input,
   Select,
-  DatePicker,
   Typography,
   List,
   Card,
@@ -21,11 +20,11 @@ import {
   type EventTypeResponse,
   useReconEventContext,
   getReconPortalEventIdentifier,
+  useAvailableEventYears,
 } from '@client/hooks';
 import { formatDate } from '@client/workspace';
-import dayjs from 'dayjs';
 import { CloseOutlined } from '@ant-design/icons';
-import { getReconEventColor, EVENT_TYPE_COLORS } from '../utils';
+import { getReconEventColor } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
@@ -53,6 +52,16 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   const { data: eventTypes = [] } = useGetReconPortalEventTypes();
   const { data: events = [] } = useGetReconPortalEvents();
 
+  const availableYears = useAvailableEventYears(events, selectedEventType);
+
+  // When event type changes, ensure selected year is still valid; reset if not
+  useEffect(() => {
+    if (selectedYear && !availableYears.includes(selectedYear)) {
+      // clear selected year as no longer makes sense
+      setSelectedYear(null);
+    }
+  }, [selectedEventType, availableYears]);
+
   useEffect(() => {
     if (events.length > 0) {
       setFilteredReconPortalEvents(events);
@@ -69,8 +78,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     filterEvents(searchText, value, selectedYear);
   };
 
-  const handleYearChange = (date: dayjs.Dayjs | null) => {
-    const year = date ? date.format('YYYY') : null;
+  const handleYearChange = (year: string | null) => {
     setSelectedYear(year);
     filterEvents(searchText, selectedEventType, year);
   };
@@ -115,11 +123,10 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   };
 
   const renderEventCard = (event: ReconPortalEvents) => {
-    const title = event.title || event.properties?.name || '';
-    const description =
-      event.location_description || event.properties?.description || '';
-    const date = event.event_date || event.properties?.dateCreated || '';
-    const eventType = event.event_type || event.properties?.host || '';
+    const title = event.title;
+    const description = event.location_description;
+    const date = event.event_date;
+    const eventType = event.event_type;
 
     return (
       <div className={styles.eventContainer}>
@@ -135,13 +142,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               {formatDate(new Date(date))}
             </Text>
             <Tag
-              color={
-                selectedEvent
-                  ? getReconEventColor(selectedEvent)
-                  : EVENT_TYPE_COLORS[
-                      eventType as keyof typeof EVENT_TYPE_COLORS
-                    ]
-              }
+              color={getReconEventColor(event)}
               style={{
                 fontWeight: 600,
                 fontSize: 14,
@@ -157,11 +158,10 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   };
 
   const renderEventDetail = (event: ReconPortalEvents) => {
-    const title = event.title || event.properties?.name || '';
-    const description =
-      event.location_description || event.properties?.description || '';
-    const date = event.event_date || event.properties?.dateCreated || '';
-    const eventType = event.event_type || event.properties?.host || '';
+    const title = event.title;
+    const description = event.location_description;
+    const date = event.event_date;
+    const eventType = event.event_type;
     const eventTypeColor = getReconEventColor(event);
     const datasets = event.datasets || [];
     return (
@@ -172,7 +172,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               <FontAwesomeIcon
                 icon={faLocationDot}
                 size="2x"
-                color={getReconEventColor(selectedEvent)}
+                color={eventTypeColor}
                 style={{ marginRight: '8px' }}
               />
               {title}
@@ -317,14 +317,19 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                     ))}
                   </Select>
 
-                  <DatePicker
-                    picker="year"
+                  <Select
                     placeholder="Select Year"
                     style={{ flex: 1 }}
                     onChange={handleYearChange}
-                    value={selectedYear ? dayjs(selectedYear) : null}
+                    value={selectedYear}
                     allowClear
-                  />
+                  >
+                    {availableYears.map((year) => (
+                      <Select.Option key={year} value={year}>
+                        {year}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </Flex>
               </div>
 
