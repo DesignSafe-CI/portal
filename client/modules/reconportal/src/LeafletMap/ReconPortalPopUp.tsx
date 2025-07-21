@@ -2,6 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { ReconPortalEvents } from '@client/hooks';
 import { Tag, Typography, Space } from 'antd';
+import styles from './LeafletMap.module.css';
 import { getReconEventColor } from '../utils';
 
 const { Title, Text } = Typography;
@@ -30,11 +31,7 @@ export const ReconPortalPopup: React.FC<ReconPortalPopuprops> = ({
         </div>
         <Tag
           color={getReconEventColor(dataset)}
-          style={{
-            fontWeight: 600,
-            fontSize: 14,
-            textTransform: 'capitalize',
-          }}
+          className={styles.eventDetailTag}
         >
           {dataset.event_type}
         </Tag>

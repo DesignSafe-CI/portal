@@ -58,3 +58,11 @@
   /* Offset slightly to account for border */
   margin-top: -1px;
 }
+
+/* Same as Recon Portal side panel eventDetailTag */
+.eventDetailTag {
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: capitalize;
+  margin: 2px 0;
+}
