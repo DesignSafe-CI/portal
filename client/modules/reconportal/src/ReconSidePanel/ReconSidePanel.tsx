@@ -168,15 +168,15 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
       <div className={styles.eventDetail}>
         <Card className={styles.eventDetailCard}>
           <Flex className={styles.eventDetailTitleRow}>
-            <span>
+            <div>
               <FontAwesomeIcon
                 icon={faLocationDot}
                 size="2x"
                 color={eventTypeColor}
                 style={{ marginRight: '8px' }}
               />
-              {title}
-            </span>
+            </div>
+            <div>{title}</div>
             <Button
               shape="circle"
               icon={<CloseOutlined />}
