@@ -239,7 +239,7 @@ export const LeafletMap: React.FC = () => {
         preferCanvas={true}
       >
         {/* Base layers */}
-        <LayersControl position="topright">
+        <LayersControl position="topright" collapsed={false}>
           <LayersControl.BaseLayer checked name="View Borders">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
