@@ -20,7 +20,6 @@ import {
 import { getOpenTopoColor, getReconEventColor } from '../utils';
 import { getFirstLatLng } from './utils';
 import {
-  useGetReconPortalEvents,
   type ReconPortalEvents,
   useGetOpenTopo,
   useReconEventContext,
@@ -35,6 +34,7 @@ import 'leaflet/dist/leaflet.css';
 
 import styles from './LeafletMap.module.css';
 import { ReconPortalPopup } from './ReconPortalPopUp';
+import { LeafletMouseEvent } from 'leaflet';
 
 export const mapConfig = {
   startingCenter: [40, -80] as L.LatLngTuple,
@@ -52,7 +52,8 @@ export const mapConfig = {
  */
 export const LeafletMap: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
-  const { setSelectedReconPortalEventIdentifier } = useReconEventContext();
+  const { setSelectedReconPortalEventIdentifier, filteredReconPortalEvents } =
+    useReconEventContext();
 
   const openTopoMapFeatures = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
@@ -83,18 +84,67 @@ export const LeafletMap: React.FC = () => {
             const container = document.createElement('div');
             layer.bindPopup(container);
 
+            let popupRendered = false;
+
+            const renderPopup = () => {
+              if (!popupRendered) {
+                ReactDOM.createRoot(container).render(
+                  <OpenTopoPopup dataset={dataset} />
+                );
+                popupRendered = true;
+
+                // Force Leaflet to recalculate popup size
+                // otherwise issue on first popup
+                setTimeout(() => {
+                  layer.getPopup()?.update();
+                }, 0);
+              }
+            };
+
+            const openPopupAtEventLocation = (e: LeafletMouseEvent) => {
+              renderPopup();
+              layer.openPopup(e.latlng);
+            };
+
+            // keep track of closing as when we move into popup that is a situation
+            // where we don't want to close it
+            let closeTimeout: ReturnType<typeof setTimeout> | null = null;
+
+            layer.on('click', (e) => {
+              openPopupAtEventLocation(e);
+            });
+
+            layer.on('mouseover', (e) => {
+              openPopupAtEventLocation(e);
+            });
+
+            layer.on('mouseout', () => {
+              closeTimeout = setTimeout(() => {
+                layer.closePopup();
+              }, 300);
+            });
+
+            /**
+             * Keeps the popup open when the user moves the mouse from the feature into the popup.
+             * Cancels the close timeout on mouseenter and restarts it on mouseleave.
+             * This prevents the popup from closing prematurely while the user interacts with links or content.
+             */
             layer.on('popupopen', () => {
-              if (container.hasChildNodes()) return;
+              const popupEl = layer.getPopup()?.getElement();
+              if (!popupEl) return;
 
-              ReactDOM.createRoot(container).render(
-                <OpenTopoPopup dataset={dataset} />
-              );
+              popupEl.addEventListener('mouseenter', () => {
+                if (closeTimeout) {
+                  clearTimeout(closeTimeout);
+                  closeTimeout = null;
+                }
+              });
 
-              // Force Leaflet to recalculate popup size
-              // otherwise issue on first popup
-              setTimeout(() => {
-                layer.getPopup()?.update();
-              }, 0);
+              popupEl.addEventListener('mouseleave', () => {
+                closeTimeout = setTimeout(() => {
+                  layer.closePopup();
+                }, 300);
+              });
             });
           }}
         />
@@ -119,6 +169,11 @@ export const LeafletMap: React.FC = () => {
           key={`marker-${dataset.identifier.value}-${index}`}
           position={latlngPosition}
           icon={icon}
+          eventHandlers={{
+            mouseover: (e) => {
+              e.target.togglePopup();
+            },
+          }}
         >
           <Popup>
             <OpenTopoPopup dataset={dataset} />
@@ -130,8 +185,6 @@ export const LeafletMap: React.FC = () => {
     return [...openTopoGeojsonFeatures, ...openTopoMarkers];
   }, [openTopoData]);
 
-  const { data: reconData } = useGetReconPortalEvents();
-
   const handleFeatureClick = (reconEvent: ReconPortalEvents) => {
     setSelectedReconPortalEventIdentifier(
       getReconPortalEventIdentifier(reconEvent)
@@ -139,7 +192,7 @@ export const LeafletMap: React.FC = () => {
   };
 
   const ReconPortalEvents = useMemo(() => {
-    const datasets = reconData ?? [];
+    const datasets = filteredReconPortalEvents ?? [];
     const reconPortalMarkers: React.ReactNode[] = [];
 
     datasets.map((reconEvent, index) => {
@@ -171,7 +224,7 @@ export const LeafletMap: React.FC = () => {
       );
     });
     return [...reconPortalMarkers];
-  }, [reconData]);
+  }, [filteredReconPortalEvents]);
 
   return (
     <>
