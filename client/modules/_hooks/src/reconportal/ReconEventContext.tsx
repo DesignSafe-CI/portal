@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { type ReconPortalEvents } from '@client/hooks';
+import { type ReconPortalEvent } from '@client/hooks';
 
 type ReconEventContextType = {
-  selectedReconPortalEventIdentfier: string | null;
+  selectedReconPortalEventIdentifier: string | null;
   setSelectedReconPortalEventIdentifier: (title: string | null) => void;
-  filteredReconPortalEvents: ReconPortalEvents[];
-  setFilteredReconPortalEvents: (events: ReconPortalEvents[]) => void;
+  filteredReconPortalEvents: ReconPortalEvent[];
+  setFilteredReconPortalEvents: (events: ReconPortalEvent[]) => void;
 };
 
 const ReconEventContext = createContext<ReconEventContextType | undefined>(
@@ -17,7 +17,7 @@ const ReconEventContext = createContext<ReconEventContextType | undefined>(
  * Converts a ReconPortalEvent into a normalized, URL-safe identifier string.
  */
 export const getReconPortalEventIdentifier = (
-  event: ReconPortalEvents
+  event: ReconPortalEvent
 ): string => {
   const title = event.title;
   return `${title}`.toLowerCase().replace(/[^a-z0-9]/g, '-');
@@ -28,10 +28,10 @@ export const ReconEventProvider: React.FC<{
 }> = ({ children }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filteredReconPortalEvents, setFilteredReconPortalEvents] = useState<
-    ReconPortalEvents[]
+    ReconPortalEvent[]
   >([]);
 
-  const selectedReconPortalEventIdentfier = searchParams.get('eventId');
+  const selectedReconPortalEventIdentifier = searchParams.get('eventId');
 
   const setSelectedReconPortalEventIdentifier = (
     eventIdentifier: string | null
@@ -50,7 +50,7 @@ export const ReconEventProvider: React.FC<{
   return (
     <ReconEventContext.Provider
       value={{
-        selectedReconPortalEventIdentfier,
+        selectedReconPortalEventIdentifier,
         setSelectedReconPortalEventIdentifier,
         filteredReconPortalEvents,
         setFilteredReconPortalEvents,

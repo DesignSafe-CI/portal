@@ -19,13 +19,13 @@ test('hook reads and updates eventId', () => {
     wrapper,
   });
 
-  expect(result.current.selectedReconPortalEventIdentfier).toBe('test-event');
+  expect(result.current.selectedReconPortalEventIdentifier).toBe('test-event');
 
   act(() => {
     result.current.setSelectedReconPortalEventIdentifier('updated-event');
   });
 
-  expect(result.current.selectedReconPortalEventIdentfier).toBe(
+  expect(result.current.selectedReconPortalEventIdentifier).toBe(
     'updated-event'
   );
 
@@ -33,5 +33,5 @@ test('hook reads and updates eventId', () => {
     result.current.setSelectedReconPortalEventIdentifier(null);
   });
 
-  expect(result.current.selectedReconPortalEventIdentfier).toBe(null);
+  expect(result.current.selectedReconPortalEventIdentifier).toBe(null);
 });

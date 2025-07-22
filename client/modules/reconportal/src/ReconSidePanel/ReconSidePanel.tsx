@@ -16,7 +16,7 @@ import styles from './ReconSidePanel.module.css';
 import {
   useGetReconPortalEventTypes,
   useGetReconPortalEvents,
-  type ReconPortalEvents,
+  type ReconPortalEvent,
   type EventTypeResponse,
   useReconEventContext,
   getReconPortalEventIdentifier,
@@ -37,7 +37,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   const { Text, Link } = Typography;
 
   const {
-    selectedReconPortalEventIdentfier,
+    selectedReconPortalEventIdentifier,
     setSelectedReconPortalEventIdentifier,
     filteredReconPortalEvents,
     setFilteredReconPortalEvents,
@@ -229,11 +229,11 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     );
   };
 
-  const selectedEvent = selectedReconPortalEventIdentfier
+  const selectedEvent = selectedReconPortalEventIdentifier
     ? events.find(
         (event) =>
           getReconPortalEventIdentifier(event) ===
-          selectedReconPortalEventIdentfier
+          selectedReconPortalEventIdentifier
       )
     : null;
 

@@ -8,7 +8,7 @@ export type ReconPortalDataset = {
   id: string;
 };
 
-export type ReconPortalEvents = {
+export type ReconPortalEvent = {
   location_description: string;
   location: {
     lat: number;
@@ -22,7 +22,7 @@ export type ReconPortalEvents = {
 };
 
 async function getEvents() {
-  const res = await apiClient.get<ReconPortalEvents[]>('/recon-portal/events');
+  const res = await apiClient.get<ReconPortalEvent[]>('/recon-portal/events');
   return res.data;
 }
 
@@ -32,8 +32,8 @@ export const getEventsQuery = () => ({
   staleTime: 1000 * 60 * 5, // 5 minute stale time
 });
 
-export function useGetReconPortalEvents(): UseQueryResult<ReconPortalEvents[]> {
-  return useQuery<ReconPortalEvents[]>(getEventsQuery());
+export function useGetReconPortalEvents(): UseQueryResult<ReconPortalEvent[]> {
+  return useQuery<ReconPortalEvent[]>(getEventsQuery());
 }
 
 export default useGetReconPortalEvents;

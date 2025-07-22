@@ -63,20 +63,20 @@ export const ZoomConditionalLayerGroup: React.FC<{
   children: React.ReactNode;
 }> = ({ minZoom, children }) => {
   const map = useMap();
-  const { selectedReconPortalEventIdentfier } = useReconEventContext();
+  const { selectedReconPortalEventIdentifier } = useReconEventContext();
   const [visible, setVisible] = useState(map.getZoom() >= minZoom);
 
   useEffect(() => {
     const updateVisibility = () => {
       setVisible(
-        !!selectedReconPortalEventIdentfier && map.getZoom() >= minZoom
+        !!selectedReconPortalEventIdentifier && map.getZoom() >= minZoom
       );
     };
     map.on('zoomend', updateVisibility);
     return () => {
       map.off('zoomend', updateVisibility);
     };
-  }, [map, minZoom, selectedReconPortalEventIdentfier]);
+  }, [map, minZoom, selectedReconPortalEventIdentifier]);
 
   return visible ? <LayerGroup>{children}</LayerGroup> : null;
 };
@@ -88,17 +88,17 @@ export const ZoomOnEventSelection: React.FC<{
   zoomLevel: number;
 }> = ({ zoomLevel }) => {
   const map = useMap();
-  const { selectedReconPortalEventIdentfier, filteredReconPortalEvents } =
+  const { selectedReconPortalEventIdentifier, filteredReconPortalEvents } =
     useReconEventContext();
 
   useEffect(() => {
-    if (selectedReconPortalEventIdentfier) {
+    if (selectedReconPortalEventIdentifier) {
       /**
        * Finds the selected event and gets the point to zoom to
        */
       const selectedEvent = filteredReconPortalEvents.find(
         (event) =>
-          selectedReconPortalEventIdentfier ===
+          selectedReconPortalEventIdentifier ===
           getReconPortalEventIdentifier(event)
       );
       if (selectedEvent) {
@@ -115,7 +115,7 @@ export const ZoomOnEventSelection: React.FC<{
     }
   }, [
     map,
-    selectedReconPortalEventIdentfier,
+    selectedReconPortalEventIdentifier,
     filteredReconPortalEvents,
     zoomLevel,
   ]);

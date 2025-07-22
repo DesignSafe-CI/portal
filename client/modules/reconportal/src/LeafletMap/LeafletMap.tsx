@@ -20,7 +20,7 @@ import {
 import { getOpenTopoColor, getReconEventColor } from '../utils';
 import { getFirstLatLng } from './utils';
 import {
-  type ReconPortalEvents,
+  type ReconPortalEvent,
   useGetOpenTopo,
   useReconEventContext,
   getReconPortalEventIdentifier,
@@ -170,7 +170,7 @@ export const LeafletMap: React.FC = () => {
     });
 
     // Fill openTopoMarkers with a point for each dataset
-    datasets.map(({ Dataset: dataset }, index) => {
+    datasets.forEach(({ Dataset: dataset }, index) => {
       const { geojson } = dataset.spatialCoverage.geo;
 
       const latlngPosition = getFirstLatLng(geojson);
@@ -210,11 +210,11 @@ export const LeafletMap: React.FC = () => {
   };
 
   // Find the selected event for the banner
-  const selectedEvent = selectedReconPortalEventIdentfier
+  const selectedEvent = selectedReconPortalEventIdentifier
     ? filteredReconPortalEvents?.find(
         (event) =>
           getReconPortalEventIdentifier(event) ===
-          selectedReconPortalEventIdentfier
+          selectedReconPortalEventIdentifier
       )
     : null;
 
@@ -222,7 +222,7 @@ export const LeafletMap: React.FC = () => {
     const datasets = filteredReconPortalEvents ?? [];
     const reconPortalMarkers: React.ReactNode[] = [];
 
-    datasets.map((reconEvent, index) => {
+    datasets.forEach((reconEvent, index) => {
       const icon = createSvgMarkerIcon({
         color: getReconEventColor(reconEvent),
         icon: faLocationDot,
@@ -263,7 +263,7 @@ export const LeafletMap: React.FC = () => {
       );
     });
     return [...reconPortalMarkers];
-  }, [filteredReconPortalEvents, selectedReconPortalEventIdentfier]);
+  }, [filteredReconPortalEvents, selectedReconPortalEventIdentifier]);
 
   return (
     <>
