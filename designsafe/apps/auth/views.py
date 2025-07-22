@@ -8,7 +8,8 @@ import secrets
 import requests
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import LogoutView as DjangoLogoutView
 from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
@@ -19,11 +20,6 @@ from .models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
-
-
-def logged_out(request):
-    """Render logged out page upon logout"""
-    return render(request, "designsafe/apps/auth/logged_out.html")
 
 
 def _get_auth_state():
@@ -161,3 +157,22 @@ def tapis_oauth_callback(request):
         return HttpResponseRedirect(next_uri)
 
     return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
+
+
+def logged_out(request):
+    """Render logged out page upon logout"""
+    return render(request, "designsafe/apps/auth/logged_out.html")
+
+
+class LogoutView(DjangoLogoutView):
+    def dispatch(self, request, *args, **kwargs):
+        token = request.user.tapis_oauth.access_token
+        logger.info('Attempting logout via Tapis with token "%s"' % token[:8].ljust(len(token), '-'))
+        logger.info('***'*999)
+        logger.info(request.scheme)
+        logout_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url={request.build_absolute_uri(settings.LOGOUT_REDIRECT_URL)}"
+
+        logout(request)
+
+        response = HttpResponseRedirect(logout_endpoint)
+        return response
