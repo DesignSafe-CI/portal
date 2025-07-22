@@ -256,7 +256,7 @@ export const LeafletMap: React.FC = () => {
             },
           }}
         >
-          <Popup>
+          <Popup closeButton={false}>
             <ReconPortalPopup dataset={reconEvent} />
           </Popup>
         </Marker>
@@ -324,10 +324,12 @@ export const LeafletMap: React.FC = () => {
         {/* Selected event banner popup */}
         {selectedEvent && showSelectedPopup && (
           <Popup
+            className={styles.selectedEventPopup}
             position={[selectedEvent.location.lat, selectedEvent.location.lon]}
             offset={[0, -10]}
             closeButton={false}
             closeOnClick={false}
+            autoClose={false}
           >
             <ReconPortalPopup dataset={selectedEvent} showDetails={false} />
           </Popup>
