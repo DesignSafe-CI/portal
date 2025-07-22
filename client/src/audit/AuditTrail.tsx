@@ -1,118 +1,50 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styles from './AuditTrails.module.css';
-import { Modal } from 'antd';
-
-type PortalAuditApiResponse = {
-  data: PortalAuditEntry[];
-};
-
-type PortalAuditEntry = {
-  session_id: string;
-  timestamp: string;
-  portal: string;
-  username: string;
-  action: string;
-  tracking_id: string;
-  data: any;
-};
-
-/* Not being used */
-type TapisFilesAuditApiResponse = {
-  data: TapisFilesAuditEntry[];
-};
-
-/* Will change depending on requirements for tapis file audit UI / not being used */
-type TapisFilesAuditEntry = {
-  writer_logtime: string;
-  action: string;
-  jwt_tenant: string;
-  jwt_user: string;
-  target_system_id: string;
-  target_path: string;
-  source_path: string;
-  tracking_id: string;
-  parent_tracking_id: string;
-  data: string;
-};
+import { Modal, AutoComplete } from 'antd';
+import {
+  useGetRecentSession,
+  useGetFileHistory,
+  useGetUsernames,
+  PortalAuditEntry,
+} from '@client/hooks';
 
 const AuditTrail: React.FC = () => {
   const [username, setUsername] = useState('');
-  const [source, setSource] = useState('portal');
-  const [data, setData] = useState<PortalAuditApiResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [allUsernames, setAllUsernames] = useState<string[]>([]);
-  const [filteredUsernames, setFilteredUsernames] = useState<string[]>([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null); //dropdown closing on exit click
+  const [source, setSource] = useState<'portal' | 'tapis'>('portal');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<string>('');
   const [footerEntry, setFooterEntry] = useState<PortalAuditEntry | null>(null);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setShowDropdown(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const { data: allUsernames } = useGetUsernames();
+  const {
+    data: portalData,
+    error: portalError,
+    isLoading: portalLoading,
+    refetch: refetchPortal,
+  } = useGetRecentSession(username, false);
 
-  useEffect(() => {
-    fetch('/audit/api/usernames/portal')
-      .then((res) => res.json())
-      .then((data) => setAllUsernames(data.usernames || []));
-  }, []);
+  const {
+    data: fileData,
+    error: fileError,
+    isLoading: fileLoading,
+    refetch: refetchFile,
+  } = useGetFileHistory(username, false);
 
-  useEffect(() => {
-    if (username.length > 0) {
-      setFilteredUsernames(
-        allUsernames
+  const filteredUsernames =
+    username.length > 0 && allUsernames
+      ? allUsernames
           .filter((name) => name.toLowerCase().includes(username.toLowerCase()))
           .slice(0, 20)
-      );
-      if (
-        allUsernames.some(
-          (name) => name.toLowerCase() === username.toLowerCase()
-        )
-      ) {
-        setShowDropdown(false);
-      }
-    } else {
-      setFilteredUsernames([]);
-      setShowDropdown(false);
-    }
-  }, [username]);
+      : [];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const auditData = source === 'portal' ? portalData : fileData;
+  const auditError = source === 'portal' ? portalError : fileError;
+  const auditLoading = source === 'portal' ? portalLoading : fileLoading;
+  const auditRefetch = source === 'portal' ? refetchPortal : refetchFile;
+
+  const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setData(null);
-    setLoading(true);
-    try {
-      const endpoint = source === 'portal' ? 'portal' : 'tapis';
-      const res = await fetch(`/audit/api/user/${username}/${endpoint}/`);
-      console.log('username:', username);
-      console.log('source:', endpoint);
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`API error: ${res.status} ${errText}`);
-      }
-      const result = await res.json();
-      console.log('APO RESPOSNE:', result);
-      setData(result);
-    } catch (err: any) {
-      setError(err.message || 'Unknown error');
-    }
-    setLoading(false);
-    console.log(data);
+    auditRefetch();
   };
 
   function truncate(str: string, n: number) {
@@ -197,72 +129,54 @@ const AuditTrail: React.FC = () => {
         </pre>
       </Modal>
       {/*<h2>Audit Trail Test</h2>*/}
-      <form onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
+      <form onSubmit={onSearch} style={{ marginBottom: 16 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
           <select
             value={source}
-            onChange={(e) => setSource(e.target.value)}
+            onChange={(e) => setSource(e.target.value as 'portal' | 'tapis')}
             style={{ marginRight: 8 }}
           >
             <option value="portal">Most Recent User Session Data</option>
             <option value="tapis">File Search Data</option>
           </select>
-          <div
-            ref={containerRef}
-            style={{ position: 'relative', display: 'inline-block' }}
-          >
-            <input
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                setShowDropdown(source === 'portal');
-              }}
-              onFocus={() => {
-                setShowDropdown(source === 'portal');
-              }}
-              placeholder="Username/File Name:"
-              style={{ marginRight: 8, width: '100%' }}
-            />
-            {showDropdown &&
-              source === 'portal' &&
-              filteredUsernames.length > 0 && (
-                <ul className={styles.dropdownList}>
-                  {filteredUsernames.map((name) => (
-                    <li
-                      key={name}
-                      onClick={() => {
-                        setUsername(name);
-                        setShowDropdown(false);
-                      }}
-                      style={{
-                        padding: '8px',
-                        cursor: 'pointer',
-                        borderBottom: '1px solid',
-                      }}
-                    >
-                      {name}
-                    </li>
-                  ))}
-                </ul>
-              )}
-          </div>
+          <AutoComplete
+            value={username}
+            style={{ marginRight: 8, width: '200px' }}
+            options={
+              source === 'portal'
+                ? filteredUsernames.map((name) => ({
+                    value: name,
+                    label: name,
+                  }))
+                : []
+            }
+            onSelect={(value) => {
+              setUsername(value);
+            }}
+            onSearch={(searchText) => {
+              setUsername(searchText);
+            }}
+            placeholder="Username/File Name:"
+          />
           <button
             type="submit"
-            disabled={loading || !username}
+            disabled={auditLoading || !username}
             style={{ marginLeft: '8px' }}
           >
-            {loading ? 'Loading…' : 'Submit'}
+            {auditLoading ? 'Loading…' : 'Submit'}
           </button>
         </div>
       </form>
 
-      {error && <div style={{ color: 'red' }}>Error: {error}</div>}
-
-      {data?.data && data.data.length === 0 && (
-        <div>No audit records found.</div>
+      {auditError && (
+        <div style={{ color: 'red' }}>Error: {auditError.message}</div>
       )}
 
-      {data?.data && data.data.length > 0 && (
+      {auditData?.data && auditData.data.length === 0 && (
+        <div>No records found.</div>
+      )}
+
+      {auditData?.data && auditData.data.length > 0 && (
         <table
           style={{
             width: '100%',
@@ -296,7 +210,8 @@ const AuditTrail: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {data.data.map((entry, idx) => {
+            {(auditData.data as PortalAuditEntry[]).map((entry, idx) => {
+              //need to change once type for filesearch decided upon
               let dateStr = '-';
               let timeStr = '-';
               if (entry.timestamp) {
@@ -335,7 +250,7 @@ const AuditTrail: React.FC = () => {
                               : entry.data;
                           content = JSON.stringify(obj, null, 2);
                         } catch {
-                          content = entry.data;
+                          content = JSON.stringify(entry.data, null, 2);
                         }
                       }
                       setModalContent(content);

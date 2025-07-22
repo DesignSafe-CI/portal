@@ -122,12 +122,12 @@ urlpatterns = [
 
 
         # auth
-        url(r'^account/', include(('designsafe.apps.accounts.urls', 'designsafe.apps.accounts'),  
+        url(r'^account/', include(('designsafe.apps.accounts.urls', 'designsafe.apps.accounts'),
             namespace='designsafe_accounts')),
         url(r'^register/$', RedirectView.as_view(
             pattern_name='designsafe_accounts:register', permanent=True), name='register'),
 
-        # audit-trail 
+        # audit-trail
         url(r'^audit/', include(('designsafe.apps.audit.urls', 'designsafe.apps.audit'),
             namespace='designsafe_audit')),
 

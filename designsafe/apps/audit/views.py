@@ -118,3 +118,4 @@ def get_usernames_portal(request):
     except Exception as exc:
         print("Error in update_usernames_autocomplete:", str(exc))
         return JsonResponse({'error': str(exc)}, status=500)
+    
