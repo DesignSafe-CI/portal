@@ -55,7 +55,7 @@ export const LeafletMap: React.FC = () => {
   const {
     setSelectedReconPortalEventIdentifier,
     filteredReconPortalEvents,
-    selectedReconPortalEventIdentfier,
+    selectedReconPortalEventIdentifier,
   } = useReconEventContext();
 
   const [showSelectedPopup, setShowSelectedPopup] = useState(false);
