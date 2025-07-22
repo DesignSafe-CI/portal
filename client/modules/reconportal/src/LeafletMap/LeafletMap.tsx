@@ -128,11 +128,11 @@ export const LeafletMap: React.FC = () => {
             // where we don't want to close it
             let closeTimeout: ReturnType<typeof setTimeout> | null = null;
 
-            layer.on('click', (e) => {
-              openPopupAtEventLocation(e);
-            });
-
             layer.on('mouseover', (e) => {
+              if (closeTimeout) {
+                clearTimeout(closeTimeout);
+                closeTimeout = null;
+              }
               openPopupAtEventLocation(e);
             });
 
