@@ -1,14 +1,14 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { ReconPortalEvents } from '@client/hooks';
+import { ReconPortalEvent } from '@client/hooks';
 import { Tag, Typography, Space } from 'antd';
-import styles from './ReconPortalPopUp.module.css';
+import styles from './ReconPortalPopUpContent.module.css';
 import { getReconEventColor } from '../utils';
 
 const { Title, Text } = Typography;
 
 interface ReconPortalPopuprops {
-  dataset: ReconPortalEvents;
+  dataset: ReconPortalEvent;
   showDetails?: boolean;
 }
 

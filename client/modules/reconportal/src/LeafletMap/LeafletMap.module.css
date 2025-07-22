@@ -58,8 +58,3 @@
   /* Offset slightly to account for border */
   margin-top: -1px;
 }
-
-/* Remove triangle for selected event */
-.selectedEventPopup :global(.leaflet-popup-tip-container) {
-  display: none;
-}
