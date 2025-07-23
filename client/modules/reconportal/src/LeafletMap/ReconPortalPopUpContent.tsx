@@ -8,19 +8,17 @@ import { getReconEventColor } from '../utils';
 const { Title, Text } = Typography;
 
 interface ReconPortalPopuprops {
-  dataset: ReconPortalEvent;
+  event: ReconPortalEvent;
   showDetails?: boolean;
 }
 
-export const ReconPortalPopup: React.FC<ReconPortalPopuprops> = ({
-  dataset,
+export const ReconPortalPopupContent: React.FC<ReconPortalPopuprops> = ({
+  event,
   showDetails = true,
 }) => {
-  const title = dataset.title;
-  const eventDate = dayjs(dataset.event_date.split('/')[0]).format(
-    'MM/DD/YYYY'
-  );
-  const location = dataset.location_description;
+  const title = event.title;
+  const eventDate = dayjs(event.event_date.split('/')[0]).format('MM/DD/YYYY');
+  const location = event.location_description;
   return (
     <Typography>
       <Title level={5} style={{ marginBottom: 6 }}>
@@ -33,10 +31,10 @@ export const ReconPortalPopup: React.FC<ReconPortalPopuprops> = ({
             <Text>{eventDate}</Text>
           </div>
           <Tag
-            color={getReconEventColor(dataset)}
+            color={getReconEventColor(event)}
             className={styles.eventDetailTag}
           >
-            {dataset.event_type}
+            {event.event_type}
           </Tag>
 
           <div>

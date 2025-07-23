@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Popup } from 'react-leaflet';
 import L from 'leaflet';
 import styles from './ReconPortalSelectedPopUp.module.css';
-import { ReconPortalPopup } from './ReconPortalPopUpContent';
+import { ReconPortalPopupContent } from './ReconPortalPopUpContent';
 import type { ReconPortalEvent } from '@client/hooks';
 
 interface Props {
@@ -43,7 +43,7 @@ export const ReconPortalSelectedPopup: React.FC<Props> = ({
       closeOnClick={false}
       autoClose={false}
     >
-      <ReconPortalPopup dataset={selectedEvent} showDetails={false} />
+      <ReconPortalPopupContent event={selectedEvent} showDetails={false} />
     </Popup>
   );
 };

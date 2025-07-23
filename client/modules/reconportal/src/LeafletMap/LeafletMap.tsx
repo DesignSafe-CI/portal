@@ -29,7 +29,7 @@ import 'leaflet/dist/leaflet.css';
 */
 
 import styles from './LeafletMap.module.css';
-import { ReconPortalPopup } from './ReconPortalPopUpContent';
+import { ReconPortalPopupContent } from './ReconPortalPopUpContent';
 import { ReconPortalSelectedPopup } from './ReconPortalSelectedPopUp';
 
 export const mapConfig = {
@@ -133,7 +133,7 @@ export const LeafletMap: React.FC = () => {
           }}
         >
           <Popup closeButton={false}>
-            <ReconPortalPopup dataset={reconEvent} />
+            <ReconPortalPopupContent event={reconEvent} />
           </Popup>
         </Marker>
       );
