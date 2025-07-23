@@ -7,11 +7,11 @@ import { Typography, Space } from 'antd';
 
 const { Title, Text, Link } = Typography;
 
-interface OpenTopoPopupProps {
+interface OpenTopoPopupContentProps {
   dataset: OpenTopoDataset;
 }
 
-export const OpenTopoPopup: React.FC<OpenTopoPopupProps> = ({ dataset }) => {
+export const OpenTopoPopupContent: React.FC<OpenTopoPopupContentProps> = ({ dataset }) => {
   const title = dataset.name;
   const startDate = dayjs(dataset.temporalCoverage.split('/')[0]).format(
     'MM/DD/YYYY'

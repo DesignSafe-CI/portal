@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
 import { GeoJSON, Marker, Popup } from 'react-leaflet';
 import { faMap } from '@fortawesome/free-solid-svg-icons';
-import { OpenTopoPopup } from './OpenTopoPopup';
+import { OpenTopoPopupContent } from './OpenTopoPopupContent';
 import { createSvgMarkerIcon } from './leafletUtil';
 import { getOpenTopoColor } from '../utils';
 import { getFirstLatLng } from './utils';
@@ -47,7 +47,7 @@ export const OpenTopoLayer: React.FC = () => {
             const renderPopup = () => {
               if (!popupRendered) {
                 ReactDOM.createRoot(container).render(
-                  <OpenTopoPopup dataset={dataset} />
+                  <OpenTopoPopupContent dataset={dataset} />
                 );
                 popupRendered = true;
 
@@ -134,7 +134,7 @@ export const OpenTopoLayer: React.FC = () => {
           }}
         >
           <Popup>
-            <OpenTopoPopup dataset={dataset} />
+            <OpenTopoPopupContent dataset={dataset} />
           </Popup>
         </Marker>
       );
