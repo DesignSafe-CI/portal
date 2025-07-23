@@ -42,7 +42,7 @@ export const ReconPortalSelectedPopup: React.FC<Props> = ({
       }}
       className={styles.selectedEventPopup}
       position={[selectedEvent.location.lat, selectedEvent.location.lon]}
-      offset={[0, -10]}
+      offset={[0, -30]} // Move popup above marker
       closeButton={false}
       closeOnClick={false}
       autoClose={false}
