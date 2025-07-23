@@ -69,11 +69,11 @@ export const LeafletMap: React.FC = () => {
     : null;
 
   const ReconPortalEvents = useMemo(() => {
-    const datasets = filteredReconPortalEvents ?? [];
+    const reconPortalEvents = filteredReconPortalEvents ?? [];
     const reconPortalMarkers: React.ReactNode[] = [];
     let closeTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    datasets.forEach((reconEvent, index) => {
+    reconPortalEvents.forEach((reconEvent, index) => {
       const icon = createSvgMarkerIcon({
         color: getReconEventColor(reconEvent),
         icon: faLocationDot,
