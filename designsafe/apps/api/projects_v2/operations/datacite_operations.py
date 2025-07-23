@@ -83,13 +83,16 @@ def get_datacite_json(
         for institution in list(set(institutions))
     ]
     datacite_json["creators"] = author_attr
-    datacite_json["titles"] = [
+
+    if not is_other:
+
+        datacite_json["titles"] = [
+            {"title": f"{title} in {base_meta['title']}"} for title in set([entity_meta["title"]])
+        ]
+    else:
+        datacite_json["titles"] = [
         {"title": title} for title in set([entity_meta["title"]])
     ]
-    if not is_other:
-        datacite_json["titles"].append(
-            {"title": f"in {base_meta['title']}"}
-        )
     datacite_json["publisher"] = "Designsafe-CI"
 
     if version == 1 or not version:
