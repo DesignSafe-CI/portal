@@ -200,8 +200,6 @@ export const LeafletMap: React.FC = () => {
         {/* Selected event banner popup */}
         {selectedEvent && (
           <ReconPortalSelectedPopup selectedEvent={selectedEvent} />
-            className={styles.selectedEventPopup}
-            autoClose={false}
         )}
       </MapContainer>
     </>
