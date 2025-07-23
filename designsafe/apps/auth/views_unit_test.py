@@ -144,7 +144,7 @@ def test_logout_redirects_correctly_and_logs_out(mock_logout, mock_user, factory
 
     response = LogoutView().dispatch(request)
 
-    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url={settings.VANITY_BASE_URL}/{settings.LOGOUT_REDIRECT_URL}"
+    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://{request.get_host()}/{settings.LOGOUT_REDIRECT_URL}"
 
     assert isinstance(response, HttpResponseRedirect)
     assert response.status_code == 302
