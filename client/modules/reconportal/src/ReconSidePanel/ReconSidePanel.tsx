@@ -114,7 +114,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     setFilteredReconPortalEvents(filtered);
   };
 
-  const handleEventClick = (event: ReconPortalEvents) => {
+  const handleEventClick = (event: ReconPortalEvent) => {
     setSelectedReconPortalEventIdentifier(getReconPortalEventIdentifier(event));
   };
 
@@ -122,7 +122,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     setSelectedReconPortalEventIdentifier(null);
   };
 
-  const renderEventCard = (event: ReconPortalEvents) => {
+  const renderEventCard = (event: ReconPortalEvent) => {
     const title = event.title;
     const description = event.location_description;
     const date = event.event_date;
@@ -157,7 +157,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     );
   };
 
-  const renderEventDetail = (event: ReconPortalEvents) => {
+  const renderEventDetail = (event: ReconPortalEvent) => {
     const title = event.title;
     const description = event.location_description;
     const date = event.event_date;
