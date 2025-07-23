@@ -9,6 +9,9 @@ interface Props {
   selectedEvent: ReconPortalEvent;
 }
 
+/**
+ * Leaflet popup for displaying details about the currently selected Recon
+ */
 export const ReconPortalSelectedPopup: React.FC<Props> = ({
   selectedEvent,
 }) => {
@@ -24,7 +27,8 @@ export const ReconPortalSelectedPopup: React.FC<Props> = ({
   useEffect(() => {
     if (!popupInstanceReady) return;
 
-    // Once the popup ref is available, trigger the update
+    // Once the popup ref is available, force Leaflet to recalculate
+    // popup size otherwise issue on first popup
     popupRef.current?.update();
   }, [popupInstanceReady]);
 

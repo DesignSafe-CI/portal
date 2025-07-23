@@ -10,13 +10,20 @@ import { useGetOpenTopo } from '@client/hooks';
 
 import { LeafletMouseEvent } from 'leaflet';
 
+/**
+ * Renders OpenTopography datasets as Leaflet layers:
+ * - Fetches open topo data
+ * - Draws polygons with styled borders
+ * - Adds additional marker for each dataset (put at first lat/long pair we find)
+ * - Attaches interactive popups with hover‑safe behavior
+ */
 export const OpenTopoLayer: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
 
   const features = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
 
-    // Features for open topo (just polygon and multipolygons)
+    // Features for open topo (currently just polygon and multipolygons)
     const openTopoGeojsonFeatures: React.ReactNode[] = [];
 
     // Markers for open topo things that aren't points

@@ -11,7 +11,9 @@ interface OpenTopoPopupContentProps {
   dataset: OpenTopoDataset;
 }
 
-export const OpenTopoPopupContent: React.FC<OpenTopoPopupContentProps> = ({ dataset }) => {
+export const OpenTopoPopupContent: React.FC<OpenTopoPopupContentProps> = ({
+  dataset,
+}) => {
   const title = dataset.name;
   const startDate = dayjs(dataset.temporalCoverage.split('/')[0]).format(
     'MM/DD/YYYY'
