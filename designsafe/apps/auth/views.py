@@ -168,9 +168,8 @@ class LogoutView(DjangoLogoutView):
     def dispatch(self, request, *args, **kwargs):
         token = request.user.tapis_oauth.access_token
         logger.info('Attempting logout via Tapis with token "%s"' % token[:8].ljust(len(token), '-'))
-        logger.info('***'*999)
-        logger.info(request.scheme)
-        logout_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url={request.build_absolute_uri(settings.LOGOUT_REDIRECT_URL)}"
+
+        logout_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://{settings.SESSION_COOKIE_DOMAIN}/{settings.LOGOUT_REDIRECT_URL}"
 
         logout(request)
 

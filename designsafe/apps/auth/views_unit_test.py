@@ -1,9 +1,12 @@
 """DesignSafe Auth Tapis OAuth flow view tests"""
 
 import pytest
+from unittest import mock
+from django.test import RequestFactory
 from django.conf import settings
 from django.urls import reverse
-from designsafe.apps.auth.views import launch_setup_checks
+from django.http import HttpResponseRedirect
+from designsafe.apps.auth.views import launch_setup_checks, LogoutView
 
 
 TEST_STATE = "ABCDEFG123456"
@@ -85,10 +88,10 @@ def test_launch_setup_checks(regular_user, mocker):
     mock_cache_allocations = mocker.patch(
         "designsafe.apps.auth.views.cache_allocations"
     )
-    
+
     # Run the function under test
     launch_setup_checks(regular_user)
-    
+
     # Assert mocks were called with the expected arguments
     mock_new_user_setup_check.assert_called_with(regular_user)
     mock_cache_allocations.apply_async.assert_called_with(
@@ -111,3 +114,39 @@ def test_launch_setup_checks_already_onboarded(regular_user, mocker):
     launch_setup_checks(regular_user)
     mock_cache_allocations.apply_async.assert_called_with(args=(regular_user.username,))
     mock_execute_setup_steps.apply_async.assert_not_called()
+
+
+@pytest.fixture
+def mock_user():
+    class MockAccessToken:
+        access_token = 'fake_token'
+
+    class MockUser:
+        tapis_oauth = MockAccessToken()
+        username = 'mockuser'
+
+    return MockUser()
+
+
+@pytest.fixture
+def factory():
+    return RequestFactory()
+
+
+@pytest.mark.django_db
+@mock.patch('designsafe.apps.auth.views.logout')
+def test_logout_redirects_correctly_and_logs_out(mock_logout, mock_user, factory, settings):
+    settings.TAPIS_TENANT_BASEURL = 'https://tapis.io'
+    settings.LOGOUT_REDIRECT_URL = 'https://example.com/logout-success'
+
+    request = factory.get('/logout')
+    request.user = mock_user
+
+    response = LogoutView().dispatch(request)
+
+    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url={settings.VANITY_BASE_URL}/{settings.LOGOUT_REDIRECT_URL}"
+
+    assert isinstance(response, HttpResponseRedirect)
+    assert response.status_code == 302
+    assert response.url == expected_url
+    mock_logout.assert_called_once_with(request)
