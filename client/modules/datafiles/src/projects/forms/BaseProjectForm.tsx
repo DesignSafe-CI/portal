@@ -19,12 +19,12 @@ import { TProjectUser } from './_fields/UserSelect';
 import {
   TBaseProjectValue,
   useAuthenticatedUser,
+  useKeywordSuggestions,
   useProjectDetail,
 } from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { AuthorSelect } from './_fields/AuthorSelect';
 import { ProjectTypeRadioSelect } from '../modals/ProjectTypeRadioSelect';
-import { useKeywordSuggestions } from '../../hooks/useKeywordSuggestions';
 
 export const ProjectTypeInput: React.FC<{
   projectType: TBaseProjectValue['projectType'];
