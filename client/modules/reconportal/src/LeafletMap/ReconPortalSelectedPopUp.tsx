@@ -36,7 +36,7 @@ export const ReconPortalSelectedPopup: React.FC<Props> = ({
     <Popup
       ref={(ref) => {
         if (ref && 'getPopup' in ref) {
-          popupRef.current = (ref as any)._popup as L.Popup;
+          popupRef.current = (ref as unknown as { _popup: L.Popup })._popup;
           setPopupInstanceReady(true);
         }
       }}
