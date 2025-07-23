@@ -52,7 +52,6 @@ def get_datacite_json(
     author_attr = []
     institutions = []
     entity_meta = pub_graph.nodes[entity_node]["value"]
-    print(entity_meta)
     authors = entity_meta.get("authors", [])
     datacite_authors = [
         author for author in authors if not author.get("authorship") is False
@@ -125,13 +124,25 @@ def get_datacite_json(
         for desc in set([base_meta["description"], entity_meta["description"]])
     ]
 
-    datacite_json["subjects"] = [
-        {"subject": keyword} for keyword in base_meta.get("keywords", [])
-    ]
+    # datacite_json["subjects"] = [
+    #     {"subject": keyword} for keyword in base_meta.get("keywords", [])
+    # ]
+    # if not is_other:
+    #     entity_keywords = []
+    #     for keyword in entity_meta.get("keywords",[]):
+    #         entity_keywords.append({"subject": keyword})
+    #     all_keywords = datacite_json["subjects"] + entity_keywords
+    #     datacite_json["subjects"] = all_keywords
+
     if not is_other:
-        datacite_json["subjects"].append(
-            {"subject": keyword} for keyword in entity_meta.get("keywords", [])
-        )
+        all_keywords = base_meta.get("keywords", []) + entity_meta["keywords"]
+        datacite_json["subjects"] = [
+            {"subject": keyword} for keyword in all_keywords
+        ]
+    else:
+        datacite_json["subjects"] = [
+            {"subject": keyword} for keyword in base_meta.get("keywords", [])
+        ]
 
     facilities = entity_meta.get("facilities", [])
     if exp_facility := entity_meta.get("facility", None):
