@@ -1,0 +1,9 @@
+/* Remove triangle for selected event */
+.selectedEventPopup :global(.leaflet-popup-tip-container) {
+  display: none;
+}
+
+/* Hidden (used as might not be ready to get a proper size/layout */
+.hidden {
+  visibility: hidden;
+}
