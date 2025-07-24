@@ -127,18 +127,8 @@ def get_datacite_json(
         for desc in set([base_meta["description"], entity_meta["description"]])
     ]
 
-    # datacite_json["subjects"] = [
-    #     {"subject": keyword} for keyword in base_meta.get("keywords", [])
-    # ]
-    # if not is_other:
-    #     entity_keywords = []
-    #     for keyword in entity_meta.get("keywords",[]):
-    #         entity_keywords.append({"subject": keyword})
-    #     all_keywords = datacite_json["subjects"] + entity_keywords
-    #     datacite_json["subjects"] = all_keywords
-
     if not is_other:
-        all_keywords = base_meta.get("keywords", []) + entity_meta["keywords"]
+        all_keywords = base_meta.get("keywords", []) + entity_meta.get("keywords",[])
         datacite_json["subjects"] = [
             {"subject": keyword} for keyword in all_keywords
         ]
@@ -208,7 +198,6 @@ def get_datacite_json(
     if version and version > 1:
         datacite_url += f"/?version={version}"
 
-    #todo: fill this out with license info
     datacite_json["rightsList"] = [
         {
             "lang": "en",
@@ -222,8 +211,6 @@ def get_datacite_json(
 
     datacite_json["url"] = datacite_url
     datacite_json["prefix"] = settings.DATACITE_SHOULDER
-
-    print(datacite_json)
 
     return datacite_json
 
