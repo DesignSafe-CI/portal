@@ -16,7 +16,7 @@ import styles from './ReconSidePanel.module.css';
 import {
   useGetReconPortalEventTypes,
   useGetReconPortalEvents,
-  type ReconPortalEvents,
+  type ReconPortalEvent,
   type EventTypeResponse,
   useReconEventContext,
   getReconPortalEventIdentifier,
@@ -37,7 +37,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
   const { Text, Link } = Typography;
 
   const {
-    selectedReconPortalEventIdentfier,
+    selectedReconPortalEventIdentifier,
     setSelectedReconPortalEventIdentifier,
     filteredReconPortalEvents,
     setFilteredReconPortalEvents,
@@ -114,7 +114,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     setFilteredReconPortalEvents(filtered);
   };
 
-  const handleEventClick = (event: ReconPortalEvents) => {
+  const handleEventClick = (event: ReconPortalEvent) => {
     setSelectedReconPortalEventIdentifier(getReconPortalEventIdentifier(event));
   };
 
@@ -122,7 +122,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     setSelectedReconPortalEventIdentifier(null);
   };
 
-  const renderEventCard = (event: ReconPortalEvents) => {
+  const renderEventCard = (event: ReconPortalEvent) => {
     const title = event.title;
     const description = event.location_description;
     const date = event.event_date;
@@ -157,7 +157,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     );
   };
 
-  const renderEventDetail = (event: ReconPortalEvents) => {
+  const renderEventDetail = (event: ReconPortalEvent) => {
     const title = event.title;
     const description = event.location_description;
     const date = event.event_date;
@@ -229,11 +229,11 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     );
   };
 
-  const selectedEvent = selectedReconPortalEventIdentfier
+  const selectedEvent = selectedReconPortalEventIdentifier
     ? events.find(
         (event) =>
           getReconPortalEventIdentifier(event) ===
-          selectedReconPortalEventIdentfier
+          selectedReconPortalEventIdentifier
       )
     : null;
 

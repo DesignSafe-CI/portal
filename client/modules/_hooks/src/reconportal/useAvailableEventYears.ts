@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import type { ReconPortalEvents } from '@client/hooks';
+import type { ReconPortalEvent } from '@client/hooks';
 
 /**
  * Returns a list of available years from events, filtered by event type if provided.
  */
 export function useAvailableEventYears(
-  events: ReconPortalEvents[],
+  events: ReconPortalEvent[],
   selectedEventType: string | null
 ): string[] {
   return useMemo(() => {

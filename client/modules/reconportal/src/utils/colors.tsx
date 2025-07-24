@@ -1,4 +1,4 @@
-import { OpenTopoDataset, ReconPortalEvents } from '@client/hooks';
+import { OpenTopoDataset, ReconPortalEvent } from '@client/hooks';
 
 /**
  * Get color for OpenTopo dataset
@@ -20,7 +20,7 @@ export const EVENT_TYPE_COLORS = {
 };
 
 export function getReconEventColor(
-  dataset: ReconPortalEvents | undefined | null
+  dataset: ReconPortalEvent | undefined | null
 ): string {
   if (!dataset) return '#666666'; // Default gray color
   switch (dataset?.event_type) {
