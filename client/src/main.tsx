@@ -8,7 +8,6 @@ import datafilesRouter from './datafiles/datafilesRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
-import { BrowserRouter } from 'react-router-dom';
 
 /**removed unrequired imports */
 
@@ -100,13 +99,11 @@ if (dashboardElement) {
   const dashboardRoot = ReactDOM.createRoot(dashboardElement as HTMLElement);
   dashboardRoot.render(
     <StrictMode>
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <ConfigProvider theme={themeConfig}>
-            <Dashboard />
-          </ConfigProvider>
-        </QueryClientProvider>
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <Dashboard />
+        </ConfigProvider>
+      </QueryClientProvider>
     </StrictMode>
   );
 }
