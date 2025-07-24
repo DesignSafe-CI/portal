@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGetSUAllocations, useAuthenticatedUser } from '@client/hooks';
-
+import styles from './Dashboard.module.css';
 const HOST_LABELS: Record<string, string> = {
   'ls6.tacc.utexas.edu': 'Lonestar6 (HPC)',
   'frontera.tacc.utexas.edu': 'Frontera (HPC)',
@@ -31,42 +31,33 @@ const SUAllocationsCard = () => {
   );
 
   return (
-    <div
-      style={{
-        border: '1px solid #ccc',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 16,
-      }}
-    >
-      <h3 style={{ marginBottom: 12 }}>
+    <div className={styles.suCard}>
+      <h3 className={styles.suTitle}>
         Allocations of{' '}
-        <span style={{ color: '#2b6cb0' }}>{user?.username || 'User'}</span>
+        <span className={styles.suUsername}>{user?.username || 'User'}</span>
       </h3>
       {Object.entries(grouped).map(([description, hosts]) => (
-        <div key={description} style={{ marginBottom: 12 }}>
-          <h4 style={{ marginBottom: 2 }}>{description}</h4>
+        <div key={description} className={styles.suSection}>
+          <h4>{description}</h4>
           {Object.entries(hosts).map(([host, allocations]) => (
-            <div key={host} style={{ marginBottom: 8 }}>
-              <div style={{ fontWeight: 'bold', marginBottom: 4 }}>
-                Host: {host}
-              </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div key={host}>
+              <div className={styles.suHost}>Host: {host}</div>
+              <table className={styles.suTable}>
                 <thead>
-                  <tr style={{ background: '#f5f5f5' }}>
-                    <th style={thStyle}>Project Code</th>
-                    <th style={thStyle}>Awarded</th>
-                    <th style={thStyle}>Remaining</th>
-                    <th style={thStyle}>Expiration</th>
+                  <tr className={styles.suTheadRow}>
+                    <th className={styles.suTh}>Project Code</th>
+                    <th className={styles.suTh}>Awarded</th>
+                    <th className={styles.suTh}>Remaining</th>
+                    <th className={styles.suTh}>Expiration</th>
                   </tr>
                 </thead>
                 <tbody>
                   {allocations.map((alloc, i) => (
                     <tr key={i}>
-                      <td style={tdStyle}>{alloc.project_code}</td>
-                      <td style={tdStyle}>{alloc.awarded}</td>
-                      <td style={tdStyle}>{alloc.remaining}</td>
-                      <td style={tdStyle}>{alloc.expiration}</td>
+                      <td className={styles.suTd}>{alloc.project_code}</td>
+                      <td className={styles.suTd}>{alloc.awarded}</td>
+                      <td className={styles.suTd}>{alloc.remaining}</td>
+                      <td className={styles.suTd}>{alloc.expiration}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -77,17 +68,6 @@ const SUAllocationsCard = () => {
       ))}
     </div>
   );
-};
-
-const thStyle: React.CSSProperties = {
-  padding: '6px 8px',
-  borderBottom: '1px solid #ddd',
-  textAlign: 'left',
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: '6px 8px',
-  borderBottom: '1px solid #eee',
 };
 
 export default SUAllocationsCard;

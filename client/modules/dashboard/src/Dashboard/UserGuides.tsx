@@ -3,17 +3,14 @@ import styles from './Dashboard.module.css';
 
 const videos = [
   {
-    url: 'https://www.youtube.com/watch?v=w0lhfz03QIk',
     id: 'w0lhfz03QIk',
     title: 'Checking Allocation Balance',
   },
   {
-    url: 'https://www.youtube.com/watch?v=_wDIKMwqej8',
     id: '_wDIKMwqej8',
     title: 'Adding users to allocation',
   },
   {
-    url: 'https://www.youtube.com/watch?v=X4mb6PJ9GD0',
     id: 'X4mb6PJ9GD0',
     title: 'Opening a help ticket',
   },
@@ -37,7 +34,11 @@ const UserGuides = () => {
       <div className={styles.videoGrid}>
         {videos.slice(0, 2).map((video) => (
           <div key={video.id} className={styles.videoCard}>
-            <a href={video.url} target="_blank" rel="noopener noreferrer">
+            <a
+              href={`https://www.youtube.com/watch?v=${video.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img
                 src={`https://img.youtube.com/vi/${video.id}/0.jpg`}
                 alt={video.title}
@@ -45,7 +46,7 @@ const UserGuides = () => {
               />
             </a>
             <a
-              href={video.url}
+              href={`https://www.youtube.com/watch?v=${video.id}`}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.videoTitle}
@@ -62,7 +63,11 @@ const UserGuides = () => {
       </div>
 
       <div className={styles.videoCardSingle}>
-        <a href={videos[2].url} target="_blank" rel="noopener noreferrer">
+        <a
+          href={`https://www.youtube.com/watch?v=${videos[2].id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <img
             src={`https://img.youtube.com/vi/${videos[2].id}/0.jpg`}
             alt={videos[2].title}
@@ -70,7 +75,7 @@ const UserGuides = () => {
           />
         </a>
         <a
-          href={videos[2].url}
+          href={`https://www.youtube.com/watch?v=${videos[2].id}`}
           target="_blank"
           rel="noopener noreferrer"
           className={styles.videoTitle}

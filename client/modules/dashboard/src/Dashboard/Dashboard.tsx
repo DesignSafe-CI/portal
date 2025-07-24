@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import styles from './Dashboard.module.css';
+import styles from './Dashboard.module.css';
 import Quicklinks from './Quicklinks';
 import JobStatus from './Jobstatus';
 import { Table, Tag } from 'antd';
@@ -17,9 +17,9 @@ interface HPCSystem {
   running: number;
   waiting: number;
 }
+
 export function Dashboard(props: DashboardProps) {
   const { data: liveSystems, isLoading } = useSystemOverview();
-
   const [showJobs, setShowJobs] = useState(false);
   const [showAllocations, setShowAllocations] = useState(false);
 
@@ -47,7 +47,7 @@ export function Dashboard(props: DashboardProps) {
         record.is_operational ? (
           `${load}%`
         ) : (
-          <span style={{ color: '#999' }}>(N/A)</span>
+          <span className={styles.naText}>(N/A)</span>
         ),
     },
     {
@@ -58,7 +58,7 @@ export function Dashboard(props: DashboardProps) {
         record.is_operational ? (
           value
         ) : (
-          <span style={{ color: '#999' }}>(N/A)</span>
+          <span className={styles.naText}>(N/A)</span>
         ),
     },
     {
@@ -69,48 +69,34 @@ export function Dashboard(props: DashboardProps) {
         record.is_operational ? (
           value
         ) : (
-          <span style={{ color: '#999' }}>(N/A)</span>
+          <span className={styles.naText}>(N/A)</span>
         ),
     },
   ];
 
   return (
-    <div style={{ display: 'flex', gap: '2rem' }}>
-      {/* Sidebar on the left */}
+    <div className={styles.dashboardContainer}>
       <Quicklinks />
 
-      {/* Middle section */}
-      <div style={{ flex: 2 }}>
+      <div className={styles.middleSection}>
         <h1>DASHBOARD</h1>
 
-        {/* Recent Jobs Collapsible Section */}
-        <div style={{ marginBottom: '1.5rem' }}>
+        {/* Recent Jobs */}
+        <div className={styles.section}>
           <h3
+            className={styles.sectionHeader}
             onClick={() => setShowJobs(!showJobs)}
-            style={{
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              userSelect: 'none',
-            }}
           >
             {showJobs ? <DownOutlined /> : <RightOutlined />} Recent Jobs
           </h3>
           {showJobs && <JobStatus />}
         </div>
 
-        {/* Allocations Collapsible Section */}
-        <div style={{ marginBottom: '1.5rem' }}>
+        {/* Allocations */}
+        <div className={styles.section}>
           <h3
+            className={styles.sectionHeader}
             onClick={() => setShowAllocations(!showAllocations)}
-            style={{
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              userSelect: 'none',
-            }}
           >
             {showAllocations ? <DownOutlined /> : <RightOutlined />} Allocations
           </h3>
@@ -118,31 +104,11 @@ export function Dashboard(props: DashboardProps) {
         </div>
       </div>
 
-      {/* Vertical separator */}
-      <div
-        style={{
-          width: '1px',
-          backgroundColor: '#ccc',
-          marginTop: '2.5rem',
-          marginBottom: '2rem',
-          height: 'auto',
-          minHeight: '300px',
-        }}
-      ></div>
+      <div className={styles.verticalSeparator}></div>
 
-      {/* Right side panel: System Status + Videos */}
-      <div style={{ flex: 1.3, paddingRight: '1.5rem' }}>
-        <div
-          style={{
-            backgroundColor: '#fff',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            border: '1px solid #e0e0e0',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-            marginBottom: '1.5rem',
-          }}
-        >
-          <h3 style={{ marginBottom: '1rem' }}>System Status</h3>
+      <div className={styles.rightPanel}>
+        <div className={styles.statusCard}>
+          <h3 className={styles.statusTitle}>System Status</h3>
           <Table
             columns={columns}
             dataSource={liveSystems?.map((sys) => ({
@@ -154,8 +120,6 @@ export function Dashboard(props: DashboardProps) {
             pagination={false}
           />
         </div>
-
-        {/* YouTube Section */}
         <UserGuides />
       </div>
     </div>
