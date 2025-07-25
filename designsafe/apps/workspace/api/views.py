@@ -933,8 +933,6 @@ class UserFavoriteList(LoginRequiredMixin, View):
         ]
         return JsonResponse(data, safe=False)
 
-
-class AddFavoriteTool(LoginRequiredMixin, View):
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -947,6 +945,7 @@ class AddFavoriteTool(LoginRequiredMixin, View):
             return JsonResponse({"success": True, "created": created})
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
+
 
 
 class RemoveFavoriteTool(LoginRequiredMixin, View):

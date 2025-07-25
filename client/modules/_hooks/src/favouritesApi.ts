@@ -1,85 +1,70 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-
-const getCSRFToken = (): string => {
-  const match = document.cookie.match(/(^| )csrftoken=([^;]+)/);
-  return match ? match[2] : '';
-};
-
-const axiosInstance = axios.create({
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import apiClient from './apiClient';
 
 export interface FavoriteTool {
   tool_id: string;
   version?: string;
 }
 
-const fetchFavorites = async (): Promise<FavoriteTool[]> => {
-  const response = await axiosInstance.get('/api/workspace/user-favorites/');
-  return response.data;
+const fetchFavorites = async ({
+  signal,
+}: {
+  signal: AbortSignal;
+}): Promise<FavoriteTool[]> => {
+  const res = await apiClient.get('/api/workspace/user-favorites/', { signal });
+  return res.data;
 };
 
-const postAddFavorite = async (toolId: string): Promise<void> => {
-  const csrfToken = getCSRFToken();
-  await axiosInstance.post(
-    '/api/workspace/user-favorites/add/',
-    { tool_id: toolId },
-    { headers: { 'X-CSRFToken': csrfToken } }
-  );
+const addFavorite = async (toolId: string): Promise<void> => {
+  await apiClient.post('/api/workspace/user-favorites/', { tool_id: toolId });
 };
 
-const postRemoveFavorite = async (toolId: string): Promise<void> => {
-  const csrfToken = getCSRFToken();
-  await axiosInstance.post(
-    '/api/workspace/user-favorites/remove/',
-    { tool_id: toolId },
-    { headers: { 'X-CSRFToken': csrfToken } }
-  );
+const removeFavorite = async (toolId: string): Promise<void> => {
+  await apiClient.post('/api/workspace/user-favorites/remove/', {
+    tool_id: toolId,
+  });
 };
 
 export const useFavorites = () => {
-  return useQuery<FavoriteTool[]>({
-    queryKey: ['favorites'],
+  return useQuery({
+    queryKey: ['workspace', 'favorites'],
     queryFn: fetchFavorites,
     staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 };
 
 export const useAddFavorite = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    void,
-    unknown,
-    string,
-    { previousFavorites?: FavoriteTool[] }
-  >({
-    mutationFn: postAddFavorite,
+  return useMutation({
+    mutationFn: addFavorite,
     onMutate: async (toolId) => {
-      await queryClient.cancelQueries({ queryKey: ['favorites'] });
+      await queryClient.cancelQueries({ queryKey: ['workspace', 'favorites'] });
 
       const previousFavorites = queryClient.getQueryData<FavoriteTool[]>([
+        'workspace',
         'favorites',
       ]);
 
-      queryClient.setQueryData<FavoriteTool[]>(['favorites'], (old = []) => [
-        ...old,
-        { tool_id: toolId },
-      ]);
+      queryClient.setQueryData<FavoriteTool[]>(
+        ['workspace', 'favorites'],
+        (old = []) => [...old, { tool_id: toolId }]
+      );
 
       return { previousFavorites };
     },
     onError: (_err, _toolId, context) => {
       if (context?.previousFavorites) {
-        queryClient.setQueryData(['favorites'], context.previousFavorites);
+        queryClient.setQueryData(
+          ['workspace', 'favorites'],
+          context.previousFavorites
+        );
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['workspace', 'favorites'] });
     },
   });
 };
@@ -87,33 +72,33 @@ export const useAddFavorite = () => {
 export const useRemoveFavorite = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    void,
-    unknown,
-    string,
-    { previousFavorites?: FavoriteTool[] }
-  >({
-    mutationFn: postRemoveFavorite,
+  return useMutation({
+    mutationFn: removeFavorite,
     onMutate: async (toolId) => {
-      await queryClient.cancelQueries({ queryKey: ['favorites'] });
+      await queryClient.cancelQueries({ queryKey: ['workspace', 'favorites'] });
 
       const previousFavorites = queryClient.getQueryData<FavoriteTool[]>([
+        'workspace',
         'favorites',
       ]);
 
-      queryClient.setQueryData<FavoriteTool[]>(['favorites'], (old = []) =>
-        old.filter((fav) => fav.tool_id !== toolId)
+      queryClient.setQueryData<FavoriteTool[]>(
+        ['workspace', 'favorites'],
+        (old = []) => old.filter((fav) => fav.tool_id !== toolId)
       );
 
       return { previousFavorites };
     },
     onError: (_err, _toolId, context) => {
       if (context?.previousFavorites) {
-        queryClient.setQueryData(['favorites'], context.previousFavorites);
+        queryClient.setQueryData(
+          ['workspace', 'favorites'],
+          context.previousFavorites
+        );
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['workspace', 'favorites'] });
     },
   });
 };

@@ -22,9 +22,6 @@ urlpatterns = [
         "user-favorites/", views.UserFavoriteList.as_view(), name="user_favorite_list"
     ),
     path(
-        "user-favorites/add/", views.AddFavoriteTool.as_view(), name="add_favorite_tool"
-    ),
-    path(
         "user-favorites/remove/",
         views.RemoveFavoriteTool.as_view(),
         name="remove_favorite_tool",

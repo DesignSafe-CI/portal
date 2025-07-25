@@ -1,213 +1,158 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Typography, List, Button } from 'antd';
 import { useFavorites, useRemoveFavorite, useAppsListing } from '@client/hooks';
-import styles from './Dashboard.module.css';
+import type { TPortalApp } from '@client/hooks';
 
-interface FavoriteTool {
-  tool_id: string;
-  version?: string;
-}
+const { Link, Text } = Typography;
 
-interface AppData {
+interface Favorite {
   app_id: string;
-  version: string;
-  definition: {
-    id: string;
-    notes?: {
-      label?: string;
-    };
-  };
+  version?: string;
+  id: string;
 }
 
-const makeToolKey = (tool_id: string, version?: string) =>
-  version ? `${tool_id}-${version}` : tool_id;
+interface RecentTool {
+  label: string;
+  path: string;
+}
 
-const parseToolId = (toolId: string): FavoriteTool => {
-  const parts = toolId.split('-');
-  if (parts.length > 1) {
-    const versionPart = parts[parts.length - 1];
-    if (/^\d+(\.\d+)*$/.test(versionPart)) {
-      return {
-        tool_id: parts.slice(0, -1).join('-'),
-        version: versionPart,
-      };
-    }
+const parseToolId = (tool_id: string): { app_id: string; version?: string } => {
+  const parts = tool_id.split('-');
+  if (parts.length > 1 && /^\d+(\.\d+)*$/.test(parts[parts.length - 1])) {
+    return {
+      app_id: parts.slice(0, -1).join('-'),
+      version: parts[parts.length - 1],
+    };
   }
-  return { tool_id: toolId };
+  return { app_id: tool_id };
 };
 
-const FavoriteTools = () => {
-  const {
-    data: favoritesData,
-    isLoading: isLoadingFavorites,
-    isError: isFavoritesError,
-  } = useFavorites();
+const makeFavoriteKey = (fav: Favorite) =>
+  fav.version ? `${fav.app_id}-${fav.version}` : fav.app_id;
+
+const QuickLinksMenu: React.FC = () => {
+  const [showFavorites, setShowFavorites] = useState(false);
+  const { data: favoritesData, isLoading: loadingFavs } = useFavorites();
+  const { data: appsData, isLoading: loadingApps } = useAppsListing();
   const removeFavoriteMutation = useRemoveFavorite();
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
-  const [showPanel, setShowPanel] = useState(false);
-  const { data, isLoading, isError } = useAppsListing();
 
-  const panelRef = useRef<HTMLDivElement>(null);
+  if (loadingFavs || loadingApps) return <div>Loading favorites...</div>;
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(event.target as Node)
-      ) {
-        setShowPanel(false);
-      }
-    };
+  const allApps: TPortalApp[] =
+    appsData?.categories.flatMap((cat) => cat.apps) ?? [];
 
-    if (showPanel) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showPanel]);
-
-  const favorites = (favoritesData ?? []).map((fav) =>
-    parseToolId(fav.tool_id)
-  );
-
-  const allApps: AppData[] =
-    data?.categories?.flatMap((cat) =>
-      cat.apps.map((app) => ({
-        app_id: app.app_id,
-        version: app.version || '',
-        definition: {
-          id: app.app_id,
-          notes: {
-            label: app.label,
-          },
-        },
-      }))
-    ) ?? [];
+  const favorites: Favorite[] = (favoritesData ?? []).map((fav) => {
+    const { app_id, version } = parseToolId(fav.tool_id);
+    return { app_id, version, id: fav.tool_id };
+  });
 
   const resolvedFavorites = favorites
     .map((fav) => {
       const matchedApp = allApps.find(
         (app) =>
-          app.app_id === fav.tool_id &&
+          app.app_id === fav.app_id &&
           (!fav.version || app.version === fav.version)
       );
       if (!matchedApp) return null;
-
-      const label =
-        matchedApp.definition?.notes?.label || matchedApp.definition.id;
-
-      const href = matchedApp.version
-        ? `/workspace/${matchedApp.definition.id}?appVersion=${matchedApp.version}`
-        : `/workspace/${matchedApp.definition.id}`;
-
       return {
-        key: makeToolKey(fav.tool_id, fav.version),
-        id: fav.tool_id,
-        version: fav.version,
-        label,
-        href,
+        key: makeFavoriteKey(fav),
+        app: matchedApp,
+        id: fav.id,
       };
     })
-    .filter(Boolean) as {
-    key: string;
-    id: string;
-    version?: string;
-    label: string;
-    href: string;
-  }[];
+    .filter(Boolean) as { key: string; app: TPortalApp; id: string }[];
 
-  const handleRemove = async (toolKey: string) => {
-    if (removingIds.has(toolKey)) return;
-    setRemovingIds((prev) => new Set(prev).add(toolKey));
+  const handleRemove = async (key: string) => {
+    if (removingIds.has(key)) return;
+
+    setRemovingIds((prev) => new Set(prev).add(key));
+
     try {
-      await removeFavoriteMutation.mutateAsync(toolKey);
-    } catch (err) {
-      console.error('Failed to remove favorite:', err);
+      await removeFavoriteMutation.mutateAsync(key);
+    } catch (error) {
+      console.error('Failed to remove favorite:', error);
     } finally {
       setRemovingIds((prev) => {
         const newSet = new Set(prev);
-        newSet.delete(toolKey);
+        newSet.delete(key);
         return newSet;
       });
     }
   };
 
-  const handleToolClick = (toolName: string, toolPath: string) => {
-    const correctedPath = toolPath.startsWith('/workspace/')
-      ? toolPath
-      : `/workspace/${toolPath.replace(/^\//, '')}`;
-    const existing: { label: string; path: string }[] = JSON.parse(
-      localStorage.getItem('recentTools') || '[]'
+  const handleToolClick = (app: TPortalApp) => {
+    const href = app.version
+      ? `/workspace/${app.app_id}?appVersion=${app.version}`
+      : `/workspace/${app.app_id}`;
+
+    const recent: RecentTool[] = JSON.parse(
+      localStorage.getItem('recentTools') ?? '[]'
     );
     const updated = [
-      { label: toolName, path: correctedPath },
-      ...existing.filter((t) => t.path !== correctedPath),
+      { label: app.label, path: href },
+      ...recent.filter((r) => r.path !== href),
     ].slice(0, 5);
     localStorage.setItem('recentTools', JSON.stringify(updated));
+
+    window.open(href, '_blank', 'noopener,noreferrer');
   };
 
-  if (isLoadingFavorites || isLoading)
-    return <div>Loading favorite tools...</div>;
-  if (isFavoritesError || isError) return <div>Failed to load data.</div>;
-
   return (
-    <>
-      <button
-        onClick={() => setShowPanel(!showPanel)}
-        type="button"
-        className={styles.favoriteToggle}
-      >
-        Favorites
-      </button>
+    <nav>
+      <div style={{ marginBottom: 8 }}>
+        <Link
+          onClick={() => setShowFavorites((v) => !v)}
+          style={{ fontWeight: 'bold', cursor: 'pointer' }}
+          aria-expanded={showFavorites}
+          aria-controls="favorite-apps-list"
+        >
+          Favorite Apps
+        </Link>
+      </div>
 
-      {showPanel && (
-        <div ref={panelRef} className={styles.favoritePanel}>
-          <h4>Your Favorite Tools</h4>
-
+      {showFavorites && (
+        <div id="favorite-apps-list" style={{ marginBottom: 16 }}>
           {resolvedFavorites.length === 0 ? (
-            <div className={styles.emptyFavorites}>No favorite tools yet.</div>
+            <Text type="secondary">No favorite tools yet.</Text>
           ) : (
-            <ul className={styles.favoriteList}>
-              {resolvedFavorites.map((tool) => (
-                <li className={styles.favoriteItem} key={tool.key}>
-                  <span
-                    role="link"
+            <List
+              size="small"
+              dataSource={resolvedFavorites}
+              bordered
+              style={{ background: '#fff' }}
+              renderItem={({ app, key }) => (
+                <List.Item
+                  key={key}
+                  actions={[
+                    <Button
+                      type="text"
+                      loading={removingIds.has(key)}
+                      onClick={() => handleRemove(key)}
+                      aria-label={`Remove favorite ${app.label}`}
+                      style={{ color: '#FAAD14' }}
+                    >
+                      ★
+                    </Button>,
+                  ]}
+                >
+                  <Link
+                    onClick={() => handleToolClick(app)}
                     tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToolClick(tool.label, tool.href);
-                      window.open(tool.href, '_blank', 'noopener,noreferrer');
-                    }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleToolClick(tool.label, tool.href);
-                        window.open(tool.href, '_blank', 'noopener,noreferrer');
-                      }
+                      if (e.key === 'Enter') handleToolClick(app);
                     }}
-                    className={styles.projectLink}
                   >
-                    {tool.label}
-                  </span>
-                  <button
-                    onClick={() => handleRemove(tool.key)}
-                    disabled={removingIds.has(tool.key)}
-                    type="button"
-                    className={styles.starIcon}
-                    aria-label={`Remove favorite ${tool.label}`}
-                  >
-                    ★
-                  </button>
-                </li>
-              ))}
-            </ul>
+                    {app.label}
+                  </Link>
+                </List.Item>
+              )}
+            />
           )}
         </div>
       )}
-    </>
+    </nav>
   );
 };
 
-export default FavoriteTools;
+export default QuickLinksMenu;

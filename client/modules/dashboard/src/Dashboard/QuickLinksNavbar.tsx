@@ -1,22 +1,24 @@
-import styles from './Dashboard.module.css';
+import { Typography, Space } from 'antd';
 import FavoriteTools from './FavoriteTools';
+
+const { Title, Link } = Typography;
+
 const Quicklinks = () => {
   return (
-    <div className={styles.sidebar}>
-      <a>
+    <div style={{ padding: '16px' }}>
+      <Title level={4}>Quick Links</Title>
+      <Space
+        direction="vertical"
+        size="middle"
+        style={{ display: 'flex', marginTop: 16 }}
+      >
         <FavoriteTools />
-      </a>
-      <div className={styles.sidebarTitle}>Quick Links</div>
-      <a href="/account" className={styles.sidebarLink}>
-        Manage Account
-      </a>
-      <a href="/workspace" className={styles.sidebarLink}>
-        Tools & Applications
-      </a>
-      <a href="/learning-center/overview" className={styles.sidebarLink}>
-        Training
-      </a>
+        <Link href="/account">Manage Account</Link>
+        <Link href="/workspace">Tools & Applications</Link>
+        <Link href="/learning-center/overview">Training</Link>
+      </Space>
     </div>
   );
 };
+
 export default Quicklinks;

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Table, Typography } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import styles from './Dashboard.module.css';
 
 type Project = {
@@ -26,18 +28,22 @@ interface RawProject {
   };
 }
 
+const { Link, Text } = Typography;
+
 const RecentProjects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
           '/api/projects/v2/?offset=0&limit=100'
         );
         const rawProjects: RawProject[] = response.data.result;
 
-        const mapped: Project[] = rawProjects.map((proj: RawProject) => {
+        const mapped: Project[] = rawProjects.map((proj) => {
           const piUser = proj.value.users?.find((user) => user.role === 'pi');
 
           return {
@@ -60,6 +66,8 @@ const RecentProjects: React.FC = () => {
         setProjects(sortedRecent);
       } catch (error) {
         console.error('Failed to fetch recent projects!', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -68,33 +76,45 @@ const RecentProjects: React.FC = () => {
 
   if (projects.length === 0) return null;
 
+  const columns: ColumnsType<Project> = [
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+      render: (text: string, record: Project) => (
+        <Link
+          href={`/data/browser/projects/${record.projectId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {text || record.projectId}
+        </Link>
+      ),
+    },
+    {
+      title: 'PI',
+      dataIndex: 'pi',
+      key: 'pi',
+    },
+    {
+      title: 'ID',
+      dataIndex: 'projectId',
+      key: 'projectId',
+      className: styles.projectId,
+      render: (text: string) => <Text code>{text}</Text>,
+    },
+  ];
+
   return (
     <div className={styles.recentProjectsContainer}>
-      <table className={styles.recentProjectsTable}>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>PI</th>
-            <th>ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map((proj) => (
-            <tr key={proj.uuid}>
-              <td>
-                <a
-                  href={`/data/browser/projects/${proj.projectId}`}
-                  className={styles.projectLink}
-                >
-                  {proj.title || proj.projectId}
-                </a>
-              </td>
-              <td>{proj.pi}</td>
-              <td className={styles.projectId}>{proj.projectId}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table
+        dataSource={projects}
+        columns={columns}
+        rowKey="uuid"
+        pagination={false}
+        loading={loading}
+        size="middle"
+      />
     </div>
   );
 };

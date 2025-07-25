@@ -1,23 +1,27 @@
-/* Global Link Reset */
-a {
-  text-decoration: none !important;
+.dashboardContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: #fafafa;
+  overflow: hidden;
 }
 
-a:hover {
-  text-decoration: none !important;
-}
-
-/* Sidebar */
 .sidebar {
-  background-color: #f5f7fa;
-  color: #333;
-  padding: 1.5rem;
-  border-radius: 8px;
   width: 260px;
-  min-height: calc(100vh - 80px);
+  background-color: #f5f7fa;
+  padding: 1.5rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 80px;
+  border-radius: 8px;
+  min-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.sidebarMargin {
+  flex: 1;
+  padding: 1rem 2rem;
+  overflow-y: auto;
+  min-height: calc(100vh - 80px);
 }
 
 .sidebarTitle {
@@ -35,298 +39,17 @@ a:hover {
   color: #1f2d3d;
   font-size: 1.5rem;
   font-weight: 500;
-  text-decoration: none;
   transition: all 0.2s ease;
+  text-decoration: none;
 }
 
 .sidebarLink:hover {
   color: #007bff;
+  text-decoration: underline;
   padding-left: 5px;
 }
 
-/* Sidebar Icon */
 .sidebarIcon {
   margin-right: 8px;
   vertical-align: middle;
-}
-
-/* Recent Items */
-.recentContainer {
-  width: 100%;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.recentHeading {
-  margin-top: 0;
-}
-
-.recentList {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-.recentItem {
-  margin-bottom: 6px;
-  color: #007bff;
-  cursor: pointer;
-  transition: color 0.2s ease;
-  text-decoration: none !important;
-}
-
-.recentItem:hover {
-  color: #0056b3;
-  text-decoration: none !important;
-}
-
-/* Recent Projects */
-.recentProjectsContainer {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  background-color: #fff;
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.recentProjectsTitle {
-  margin-top: 0;
-  border-bottom: 1px solid #e6e6e6;
-  padding-bottom: 0.5rem;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.recentProjectsTable {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.recentProjectsTable thead tr {
-  text-align: left;
-  font-weight: 600;
-  color: #555;
-}
-
-.recentProjectsTable th,
-.recentProjectsTable td {
-  padding: 6px 8px;
-}
-
-.recentProjectsTable tbody tr {
-  border-top: 1px solid #eee;
-  line-height: 1.5;
-}
-
-.projectLink {
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: none !important;
-  transition: color 0.2s ease;
-}
-
-.projectLink:hover {
-  color: #0056b3;
-  text-decoration: none !important;
-}
-
-.projectId {
-  font-family: monospace;
-  color: #444;
-}
-
-/* Ticket List */
-.ticketListContainer {
-  width: 100%;
-  max-height: 190px;
-  background-color: #fff;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.ticketListHeader,
-.ticketListControls {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.ticketListTableWrapper {
-  overflow-y: auto;
-  flex-grow: 1;
-}
-
-/* Favorites */
-.favoriteToggle {
-  background-color: #007bff;
-  color: #fff;
-  font-size: 1.5rem;
-  padding: 0.5rem 1.25rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.25s ease, transform 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-
-.favoriteToggle:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
-}
-
-.favoriteToggle:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 5px rgba(21, 126, 237, 0.4);
-}
-
-.favoriteToggle:focus {
-  outline: 2px solid #80bdff;
-  outline-offset: 2px;
-}
-
-.favoritePanel {
-  width: 100%;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  font-size: 1.5rem;
-  margin: 1rem 0 1.5rem 0;
-}
-
-.favoritePanel h4 {
-  margin: 0 0 12px;
-  color: #333;
-  font-weight: 700;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-}
-
-.favoritePanel h4 .starIcon {
-  margin-left: 8px;
-  color: gold;
-  font-size: 18px;
-}
-
-.favoriteList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.favoriteItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 8px 0;
-  font-size: 1.5rem;
-  padding: 6px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.favoriteItem:hover {
-  background-color: #4195e8;
-}
-
-.favoriteItem a {
-  color: #007bff;
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  cursor: pointer;
-  text-decoration: none !important;
-}
-
-.favoriteItem a:hover {
-  color: #0056b3;
-  text-decoration: none !important;
-}
-
-.favoriteItem .favoriteItemIcon {
-  margin-right: 8px;
-  color: gold;
-  font-size: 14px;
-}
-
-.favoriteItem .starIcon {
-  font-size: 16px;
-  color: gold;
-  cursor: pointer;
-  background-color: transparent;
-  border: none;
-  padding: 4px;
-  border-radius: 50%;
-  user-select: none;
-  transition: all 0.2s ease;
-}
-
-.favoriteItem .starIcon:hover:not(:disabled) {
-  transform: scale(1.3);
-  color: darkorange;
-  background-color: rgba(255, 215, 0, 0.1);
-}
-
-.favoriteItem .starIcon:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.emptyFavorites {
-  text-align: center;
-  color: #666;
-  font-style: italic;
-  padding: 20px;
-  font-size: 1.5rem;
-}
-
-/* Collapsible Styles */
-.collapsibleSection {
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 0.75rem;
-}
-
-.collapsibleHeader {
-  font-size: 1.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #2c3e50;
-  transition: color 0.2s ease;
-}
-
-.collapsibleHeader:hover {
-  color: #007bff;
-}
-
-.arrow {
-  font-size: 1.5rem;
-  margin-left: 0.5rem;
-  user-select: none;
-  transition: transform 0.2s ease;
 }

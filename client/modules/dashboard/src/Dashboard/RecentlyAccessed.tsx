@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { List, Typography } from 'antd';
 import styles from './Dashboard.module.css';
 
 type RecentTool = {
@@ -26,19 +27,21 @@ const RecentlyAccessed: React.FC = () => {
 
   return (
     <div className={styles.recentContainer}>
-      <ul className={styles.recentList}>
-        {recentTools.map((tool, index) => (
-          <li
-            key={index}
-            className={styles.recentItem}
+      <List
+        size="small"
+        bordered
+        dataSource={recentTools}
+        renderItem={(tool) => (
+          <List.Item
+            style={{ cursor: 'pointer' }}
             onClick={() => {
               window.location.href = tool.path;
             }}
           >
-            {tool.label}
-          </li>
-        ))}
-      </ul>
+            <Typography.Link>{tool.label}</Typography.Link>
+          </List.Item>
+        )}
+      />
     </div>
   );
 };

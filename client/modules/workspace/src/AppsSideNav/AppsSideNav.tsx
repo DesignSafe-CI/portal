@@ -43,7 +43,9 @@ export const AppsSideNav: React.FC<{ categories: TAppCategory[] }> = ({
     );
   }
 
-  const favoriteToolIds = favoritesData.map((fav) => fav.tool_id);
+  const favoriteToolIds = Array.isArray(favoritesData)
+    ? favoritesData.map((fav) => fav.tool_id)
+    : [];
 
   const handleStarClick = async (toolId: string) => {
     const isFavorite = favoriteToolIds.includes(toolId);

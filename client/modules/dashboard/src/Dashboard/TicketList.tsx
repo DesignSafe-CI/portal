@@ -1,5 +1,20 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
+import {
+  Table,
+  Button,
+  Input,
+  Alert,
+  Space,
+  Typography,
+  Spin,
+  Modal,
+} from 'antd';
+import {
+  CloseOutlined,
+  CommentOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import styles from './Dashboard.module.css';
 
 interface RawTicket {
@@ -29,13 +44,24 @@ export const TicketList: React.FC = () => {
   const [filter, setFilter] = useState('');
   const [showResolved, setShowResolved] = useState(false);
 
-  const normalizeTicket = (ticket: RawTicket): NormalizedTicket => ({
-    id: ticket.id,
-    subject: ticket.subject || ticket.Subject || 'No Subject',
-    status: ticket.status || ticket.Status || 'unknown',
-    created_at: ticket.created_at || ticket.Created || '',
-    updated_at: ticket.updated_at || ticket.LastUpdated,
-  });
+  // Normalize status: replace unknown or unexpected values with 'new'
+  const normalizeStatus = (status?: string) => {
+    if (!status) return 'unknown';
+    const s = status.toLowerCase().trim();
+    const allowedStatuses = ['new', 'open', 'pending', 'resolved', 'closed'];
+    return allowedStatuses.includes(s) ? s : 'new';
+  };
+
+  const normalizeTicket = useCallback(
+    (ticket: RawTicket): NormalizedTicket => ({
+      id: ticket.id,
+      subject: ticket.subject || ticket.Subject || 'No Subject',
+      status: normalizeStatus(ticket.status || ticket.Status),
+      created_at: ticket.created_at || ticket.Created || '',
+      updated_at: ticket.updated_at || ticket.LastUpdated,
+    }),
+    []
+  );
 
   const fetchTickets = useCallback(async () => {
     setLoading(true);
@@ -57,7 +83,7 @@ export const TicketList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [normalizeTicket]);
 
   useEffect(() => {
     fetchTickets();
@@ -83,106 +109,144 @@ export const TicketList: React.FC = () => {
     return matchesFilter && showResolved === isResolved(ticket.status);
   });
 
-  const handleClose = async (ticketId: number) => {
-    const confirmClose = window.confirm(
-      'Are you sure you want to close this ticket?'
-    );
-    if (!confirmClose) return;
-
-    try {
-      await axios.post(`/help/tickets/${ticketId}/close/`);
-      fetchTickets();
-    } catch {
-      alert('Failed to close ticket.');
-    }
+  const handleClose = (ticketId: number) => {
+    Modal.confirm({
+      title: 'Confirm Close',
+      content: 'Are you sure you want to close this ticket?',
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: async () => {
+        try {
+          await axios.post(`/help/tickets/${ticketId}/close/`);
+          fetchTickets();
+        } catch {
+          Modal.error({
+            title: 'Error',
+            content: 'Failed to close ticket.',
+          });
+        }
+      },
+    });
   };
+
+  const columns = [
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      width: 120,
+      render: (status: string) => (
+        <Typography.Text
+          type={isResolved(status) ? 'secondary' : 'success'}
+          strong={!isResolved(status)}
+        >
+          {status}
+        </Typography.Text>
+      ),
+    },
+    {
+      title: 'Ticket ID / Subject',
+      dataIndex: 'subject',
+      key: 'subject',
+      render: (_: unknown, record: NormalizedTicket) => (
+        <a href={`/help/tickets/${record.id}`}>
+          {record.id} / {record.subject}
+        </a>
+      ),
+    },
+    {
+      title: 'Last Updated',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
+      width: 180,
+      render: (date: string | undefined, record: NormalizedTicket) =>
+        formatDate(date ?? record.created_at),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      width: 160,
+      render: (_: unknown, record: NormalizedTicket) => {
+        const resolved = isResolved(record.status);
+        return (
+          <Space>
+            <Button
+              type="default"
+              icon={<CommentOutlined />}
+              href={`/help/tickets/${record.id}/reply`}
+              size="small"
+            >
+              Reply
+            </Button>
+            {!resolved && (
+              <Button
+                danger
+                icon={<CloseOutlined />}
+                size="small"
+                onClick={() => handleClose(record.id)}
+              >
+                Close
+              </Button>
+            )}
+          </Space>
+        );
+      },
+    },
+  ];
 
   return (
     <div className={styles.ticketListContainer}>
-      <div className={styles.ticketListHeader}>
-        <a href="/help/new-ticket" className="btn btn-primary btn-sm">
-          + New Ticket
-        </a>
+      <div className={styles.ticketListHeader} style={{ marginBottom: 16 }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          href="/help/new-ticket"
+          size="middle"
+        >
+          New Ticket
+        </Button>
       </div>
 
-      <div className={styles.ticketListControls}>
-        <button
-          className="btn btn-secondary btn-sm"
-          onClick={() => setShowResolved((prev) => !prev)}
-        >
+      <div
+        className={styles.ticketListControls}
+        style={{
+          marginBottom: 16,
+          display: 'flex',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '8px',
+        }}
+      >
+        <Button onClick={() => setShowResolved((prev) => !prev)}>
           {showResolved ? 'Show only open' : 'Show resolved'}
-        </button>
+        </Button>
 
-        <input
-          type="text"
-          className="form-control"
-          style={{ maxWidth: '200px' }}
+        <Input.Search
           placeholder="Search tickets"
+          allowClear
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
+          style={{ maxWidth: 300 }}
         />
       </div>
 
       {loading ? (
-        <div className="text-center">
-          <i className="fa fa-spinner fa-pulse fa-2x fa-fw" />
+        <div style={{ textAlign: 'center', padding: 40 }}>
+          <Spin size="large" />
         </div>
       ) : error ? (
-        <div className="alert alert-danger">{error}</div>
+        <Alert message={error} type="error" showIcon />
       ) : filteredTickets.length === 0 ? (
-        <div className="alert alert-info">No tickets found.</div>
+        <Alert message="No tickets found." type="info" showIcon />
       ) : (
         <div className={styles.ticketListTableWrapper}>
-          <table className="table table-bordered table-sm">
-            <thead className="table-light">
-              <tr>
-                <th>Status</th>
-                <th>Ticket ID / Subject</th>
-                <th>Last Updated</th>
-                <th style={{ minWidth: '100px' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTickets.map((ticket) => {
-                const isClosed = isResolved(ticket.status);
-
-                return (
-                  <tr key={ticket.id}>
-                    <td>{ticket.status}</td>
-                    <td>
-                      <a href={`/help/tickets/${ticket.id}`}>
-                        {ticket.id} / {ticket.subject}
-                      </a>
-                    </td>
-                    <td>
-                      {formatDate(ticket.updated_at ?? ticket.created_at)}
-                    </td>
-                    <td>
-                      <div className="btn-group btn-group-sm">
-                        <a
-                          className="btn btn-info"
-                          href={`/help/tickets/${ticket.id}/reply`}
-                          title="Reply to this ticket"
-                        >
-                          <i className="fa fa-reply" /> Reply
-                        </a>
-                        {!isClosed && (
-                          <button
-                            type="button"
-                            className="btn btn-danger"
-                            title="Close this ticket"
-                            onClick={() => handleClose(ticket.id)}
-                          >
-                            <i className="fa fa-times" /> Close
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <Table
+            dataSource={filteredTickets}
+            columns={columns}
+            rowKey="id"
+            pagination={false}
+            size="middle"
+          />
         </div>
       )}
     </div>
