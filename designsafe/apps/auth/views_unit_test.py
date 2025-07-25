@@ -1,8 +1,7 @@
 """DesignSafe Auth Tapis OAuth flow view tests"""
 
 import pytest
-from unittest import mock
-from django.test import RequestFactory
+from django.contrib.auth import get_user
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -116,31 +115,9 @@ def test_launch_setup_checks_already_onboarded(regular_user, mocker):
     mock_execute_setup_steps.apply_async.assert_not_called()
 
 
-@pytest.fixture
-def mock_user():
-    class MockAccessToken:
-        access_token = 'fake_token'
-
-    class MockUser:
-        tapis_oauth = MockAccessToken()
-        username = 'mockuser'
-
-    return MockUser()
-
-
-@pytest.fixture
-def factory():
-    return RequestFactory()
-
-
 @pytest.mark.django_db
-@mock.patch('designsafe.apps.auth.views.logout')
-def test_logout_redirects_correctly_and_logs_out(mock_logout, mock_user, factory, settings):
-    settings.TAPIS_TENANT_BASEURL = 'https://tapis.io'
-    settings.LOGOUT_REDIRECT_URL = 'https://example.com/logout-success'
-
-    request = factory.get('/logout')
-    request.user = mock_user
+def test_logout_redirects_correctly_and_logs_out(client, settings):
+    request = client.get('/logout')
 
     response = LogoutView().dispatch(request)
 
@@ -149,4 +126,4 @@ def test_logout_redirects_correctly_and_logs_out(mock_logout, mock_user, factory
     assert isinstance(response, HttpResponseRedirect)
     assert response.status_code == 302
     assert response.url == expected_url
-    mock_logout.assert_called_once_with(request)
+    assert not get_user(client).is_authenticated
