@@ -5,7 +5,7 @@ from django.contrib.auth import get_user
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from designsafe.apps.auth.views import launch_setup_checks, LogoutView
+from designsafe.apps.auth.views import launch_setup_checks
 
 
 TEST_STATE = "ABCDEFG123456"
@@ -117,9 +117,7 @@ def test_launch_setup_checks_already_onboarded(regular_user, mocker):
 
 @pytest.mark.django_db
 def test_logout_redirects_correctly_and_logs_out(client, settings):
-    request = client.get('/logout')
-
-    response = LogoutView().dispatch(request)
+    response = client.get('/logout')
 
     expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://{request.get_host()}/{settings.LOGOUT_REDIRECT_URL}"
 
