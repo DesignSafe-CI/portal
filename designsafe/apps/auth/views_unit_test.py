@@ -119,7 +119,7 @@ def test_launch_setup_checks_already_onboarded(regular_user, mocker):
 def test_logout_redirects_correctly_and_logs_out(client, settings):
     response = client.get('/logout')
 
-    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://{request.get_host()}/{settings.LOGOUT_REDIRECT_URL}"
+    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://testserver/{settings.LOGOUT_REDIRECT_URL}"
 
     assert isinstance(response, HttpResponseRedirect)
     assert response.status_code == 302
