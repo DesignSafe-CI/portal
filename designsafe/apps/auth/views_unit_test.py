@@ -116,7 +116,7 @@ def test_launch_setup_checks_already_onboarded(regular_user, mocker):
 
 
 @pytest.mark.django_db
-def test_logout_redirects_correctly_and_logs_out(client, settings):
+def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, settings):
     response = client.get('/logout')
 
     expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://testserver/{settings.LOGOUT_REDIRECT_URL}"
