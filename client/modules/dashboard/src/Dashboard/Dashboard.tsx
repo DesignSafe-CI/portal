@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Collapse, Typography, Table, Tag } from 'antd';
+import { Typography, Table, Tag } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 
-import Quicklinks from './QuickLinksNavbar'; // Use one version only
+import Quicklinks from './QuickLinksNavbar';
 import RecentlyAccessed from './RecentlyAccessed';
 import RecentProjects from './RecentProjects';
 import { TicketList } from './TicketList';
@@ -15,8 +15,6 @@ import UserGuides from './UserGuides';
 import styles from './Dashboard.module.css';
 
 const { Text } = Typography;
-const { Panel } = Collapse;
-
 const queryClient = new QueryClient();
 
 interface HPCSystem {
@@ -31,6 +29,8 @@ interface HPCSystem {
 export function Dashboard() {
   const { data: liveSystems, isLoading } = useSystemOverview();
   const [showJobs, setShowJobs] = useState(false);
+  const [showProjects, setShowProjects] = useState(false);
+  const [showTickets, setShowTickets] = useState(false);
   const [showAllocations, setShowAllocations] = useState(false);
 
   const columns = [
@@ -54,65 +54,111 @@ export function Dashboard() {
       dataIndex: 'load_percentage',
       key: 'load',
       render: (load: number, record: HPCSystem) =>
-        record.is_operational ? `${load}%` : <span className={styles.naText}>(N/A)</span>,
+        record.is_operational ? (
+          `${load}%`
+        ) : (
+          <span className={styles.naText}>(N/A)</span>
+        ),
     },
     {
       title: 'Running Jobs',
       dataIndex: 'running',
       key: 'running',
       render: (value: number, record: HPCSystem) =>
-        record.is_operational ? value : <span className={styles.naText}>(N/A)</span>,
+        record.is_operational ? (
+          value
+        ) : (
+          <span className={styles.naText}>(N/A)</span>
+        ),
     },
     {
       title: 'Waiting Jobs',
       dataIndex: 'waiting',
       key: 'waiting',
       render: (value: number, record: HPCSystem) =>
-        record.is_operational ? value : <span className={styles.naText}>(N/A)</span>,
+        record.is_operational ? (
+          value
+        ) : (
+          <span className={styles.naText}>(N/A)</span>
+        ),
     },
   ];
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className={styles.dashboardContainer}>
+        {/* Sidebar */}
         <div className={styles.sidebar}>
           <Quicklinks />
         </div>
 
+        {/* Middle Section */}
         <div className={styles.middleSection}>
           <h1>DASHBOARD</h1>
 
-          <Collapse ghost expandIconPosition="end" className={styles.collapsibleSection}>
-            <Panel header={<Text strong>Recent Projects</Text>} key="projects">
-              <RecentProjects />
-            </Panel>
-            <Panel header={<Text strong>Recently Accessed Tools</Text>} key="recentlyAccessed">
-              <RecentlyAccessed />
-            </Panel>
-            <Panel header={<Text strong>My Tickets</Text>} key="tickets">
-              <TicketList />
-            </Panel>
-          </Collapse>
-
           {/* Recent Jobs */}
           <div className={styles.section}>
-            <h3 className={styles.sectionHeader} onClick={() => setShowJobs(!showJobs)}>
+            <h3
+              className={styles.sectionHeader}
+              onClick={() => setShowJobs(!showJobs)}
+            >
               {showJobs ? <DownOutlined /> : <RightOutlined />} Recent Jobs
             </h3>
-            {showJobs && <JobStatus />}
+            {showJobs && (
+              <div className={styles.statusCard}>
+                <JobStatus />
+              </div>
+            )}
+          </div>
+
+          {/* Recent Projects */}
+          <div className={styles.section}>
+            <h3
+              className={styles.sectionHeader}
+              onClick={() => setShowProjects(!showProjects)}
+            >
+              {showProjects ? <DownOutlined /> : <RightOutlined />} Recent
+              Projects
+            </h3>
+            {showProjects && (
+              <div className={styles.statusCard}>
+                <RecentProjects />
+              </div>
+            )}
+          </div>
+
+          {/* My Tickets */}
+          <div className={styles.section}>
+            <h3
+              className={styles.sectionHeader}
+              onClick={() => setShowTickets(!showTickets)}
+            >
+              {showTickets ? <DownOutlined /> : <RightOutlined />} My Tickets
+            </h3>
+            {showTickets && (
+              <div className={styles.statusCard}>
+                <TicketList />
+              </div>
+            )}
           </div>
 
           {/* Allocations */}
           <div className={styles.section}>
-            <h3 className={styles.sectionHeader} onClick={() => setShowAllocations(!showAllocations)}>
-              {showAllocations ? <DownOutlined /> : <RightOutlined />} Allocations
+            <h3
+              className={styles.sectionHeader}
+              onClick={() => setShowAllocations(!showAllocations)}
+            >
+              {showAllocations ? <DownOutlined /> : <RightOutlined />}{' '}
+              Allocations
             </h3>
             {showAllocations && <SUAllocationsCard />}
           </div>
         </div>
 
+        {/* Vertical Divider */}
         <div className={styles.verticalSeparator}></div>
 
+        {/* Right Panel */}
         <div className={styles.rightPanel}>
           <div className={styles.statusCard}>
             <h3 className={styles.statusTitle}>System Status</h3>
@@ -127,6 +173,12 @@ export function Dashboard() {
               pagination={false}
             />
           </div>
+
+          <div className={styles.statusCard}>
+            <h3 className={styles.statusTitle}>Recently Accessed Tools</h3>
+            <RecentlyAccessed />
+          </div>
+
           <UserGuides />
         </div>
       </div>
