@@ -24,6 +24,5 @@ export default defineConfig({
       reportsDirectory: '../../coverage/modules/dashboard',
       provider: 'v8',
     },
-    setupFiles: ['./src/Dashboard/setupTests.ts'],
   },
 });
