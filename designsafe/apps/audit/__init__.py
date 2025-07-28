@@ -1,1 +1,1 @@
-# Audit Trail Django App 
+# Audit Trail Django App

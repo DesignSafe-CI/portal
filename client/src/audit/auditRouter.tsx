@@ -1,14 +1,7 @@
 import React from 'react';
 import AuditTrail from './AuditTrail';
 
-import {
-  createBrowserRouter,
-  Navigate,
-  useParams,
-  NavigateProps,
-  generatePath,
-  useLocation,
-} from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 
 const auditRouter = createBrowserRouter([
   {

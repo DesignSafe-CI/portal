@@ -17,7 +17,7 @@ export interface PortalAuditEntry {
 async function fetchPortalAudit(
   username: string
 ): Promise<PortalAuditResponse> {
-  const response = await fetch(`/audit/api/user/${username}/portal`); //??
+  const response = await fetch(`/audit/api/user/${username}/portal`);
   if (!response.ok) {
     throw new Error(
       `API request failed: ${response.status} ${response.statusText}`

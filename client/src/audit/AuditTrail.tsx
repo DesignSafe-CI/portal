@@ -81,6 +81,7 @@ const AuditTrail: React.FC = () => {
   };
 
   const extractDataField = (data: any, path: string): string => {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!data) return '-';
     const fields = path.split('.');
     let value = data;
@@ -128,7 +129,6 @@ const AuditTrail: React.FC = () => {
           {modalContent}
         </pre>
       </Modal>
-      {/*<h2>Audit Trail Test</h2>*/}
       <form onSubmit={onSearch} style={{ marginBottom: 16 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
           <select
@@ -186,27 +186,23 @@ const AuditTrail: React.FC = () => {
         >
           <thead>
             <tr>
-              <th className={styles.headerCell} style={{ width: '50px' }}>
-                User
-              </th>
-              <th className={styles.headerCell} style={{ width: '50px' }}>
-                Date
-              </th>
-              <th className={styles.headerCell} style={{ width: '50px' }}>
-                Time
-              </th>
-              <th className={styles.headerCell} style={{ width: '100px' }}>
-                Portal
-              </th>
-              <th className={styles.headerCell} style={{ width: '200px' }}>
-                Action
-              </th>
-              <th className={styles.headerCell} style={{ width: '200px' }}>
-                Tracking ID
-              </th>
-              <th className={styles.headerCell} style={{ width: '100px' }}>
-                Details
-              </th>
+              {[
+                { label: 'User', width: '50px' },
+                { label: 'Date', width: '50px' },
+                { label: 'Time', width: '50px' },
+                { label: 'Portal', width: '100px' },
+                { label: 'Action', width: '200px' },
+                { label: 'Tracking ID', width: '200px' },
+                { label: 'Details', width: '100px' },
+              ].map((col) => (
+                <th
+                  key={col.label}
+                  className={styles.headerCell}
+                  style={{ width: col.width }}
+                >
+                  {col.label}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
