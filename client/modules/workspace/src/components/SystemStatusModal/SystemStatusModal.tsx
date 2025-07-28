@@ -65,7 +65,7 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
       onCancel={onClose}
       footer={null}
       width={800}
-      style={{ top: '230px' }}
+      className={styles.modalContainer}
     >
       <div className={styles.modal}>
         <div className={styles.tabs}>
