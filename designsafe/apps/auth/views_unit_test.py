@@ -116,7 +116,7 @@ def test_launch_setup_checks_already_onboarded(regular_user, mocker):
 
 
 @pytest.mark.django_db
-def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, settings):
+def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, mock_tapis_client, settings):
     response = client.get('/logout')
 
     expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://testserver/{settings.LOGOUT_REDIRECT_URL}"
@@ -124,4 +124,4 @@ def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, set
     assert isinstance(response, HttpResponseRedirect)
     assert response.status_code == 302
     assert response.url == expected_url
-    assert not get_user(client).is_authenticated
+    mock_tapis_client.authenticator.revoke_token.assert_called_once_with(token=authenticated_user.tapis_oauth.access_token)
