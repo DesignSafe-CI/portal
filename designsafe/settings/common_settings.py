@@ -57,7 +57,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
-
+    'designsafe.apps.storageanalyzer', #Storage analyser
     'cmsplugin_cascade',
     'cmsplugin_cascade.extra_fields',
 

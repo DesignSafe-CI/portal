@@ -88,10 +88,9 @@ export function Dashboard() {
     <QueryClientProvider client={queryClient}>
       <div className={styles.dashboardContainer}>
         {/* Sidebar */}
-        <div className={styles.sidebar}>
+       
           <Quicklinks />
-        </div>
-
+        
         {/* Middle Section */}
         <div className={styles.middleSection}>
           <h1>DASHBOARD</h1>

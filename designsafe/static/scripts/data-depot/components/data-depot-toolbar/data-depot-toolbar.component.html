@@ -12,6 +12,14 @@
                 <button class="btn btn-default" style="clear: right;"> <i class="fa fa-search" role="none"></i><span class="sr-only">Search</span></button>
             </form>
             <div class="btn-toolbar-right">
+                                    <div class="btn-group-data-depot-toolbar btn-group">
+                    <button class="btn btn-sm btn-warning" title="Analyze Storage"
+                            ng-click="$ctrl.triggerAnalyzeStorage()"
+                            style="text-align: center;"
+                            ng-hide="$ctrl.$state.current.name === 'publishedData' || $ctrl.$state.current.name === 'publicDataLegacy'">
+                        <i class="fa fa-database" role="none"></i>
+                        <span style="display:block;">Analyze Storage</span>
+                    </button>
                 <div class="btn-group-data-depot-toolbar btn-group">
                     <button class="btn btn-sm btn-default" title="Rename" ng-click="$ctrl.rename()" style="text-align: center;"
                             ng-hide="$ctrl.$state.current.name === 'publishedData' || $ctrl.$state.current.name === 'publicDataLegacy'"
@@ -45,6 +53,8 @@
                     <!-- <button class="btn btn-sm btn-default" title="Preview Citation" ng-if="$ctrl.browser.listing.system.startsWith('nees')" ng-click="$ctrl.showCitation()" ng-disabled="!$ctrl.browser.tests.canViewCitation || $ctrl.browser.selected[0].name.includes('NEES')">
                         <i role="none" class="fa fa-book" style="color:#5bc0de;"></i><span style="display:block;">Citation</span>
                     </button> -->
+                    <!-- Analyze Storage Button -->
+                    </div>
                 </div>
                 <div class="btn-group-data-depot-toolbar btn-group">
                     <button class="btn btn-sm btn-default" title="Download" ng-click="$ctrl.download()" style="text-align: center;"
