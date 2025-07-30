@@ -1,5 +1,4 @@
-"""Workpace API Urls
-"""
+"""Workpace API Urls"""
 
 from django.urls import path, re_path
 from designsafe.apps.workspace.api import views
@@ -19,4 +18,12 @@ urlpatterns = [
     re_path(r"^jobs/(?P<operation>\w+)/?$", views.JobsView.as_view()),
     path("jobs", views.JobsView.as_view()),
     path("allocations", views.AllocationsView.as_view()),
+    path(
+        "user-favorites/", views.UserFavoriteList.as_view(), name="user_favorite_list"
+    ),
+    path(
+        "user-favorites/remove/",
+        views.RemoveFavoriteTool.as_view(),
+        name="remove_favorite_tool",
+    ),
 ]
