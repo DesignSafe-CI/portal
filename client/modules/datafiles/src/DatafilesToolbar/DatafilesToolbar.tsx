@@ -251,28 +251,27 @@ export const DatafilesToolbar: React.FC<{ searchInput?: React.ReactNode }> = ({
             </ToolbarButton>
           )}
         </DatafilesModal.Download>
-          <ToolbarButton
-    onClick={() => {
-      fetch('/api/storage/analyze/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log('Analyze results:', data);
-          alert('Analyze complete. Check console for results.');
-        })
-        .catch((err) => {
-          console.error('Analyze error:', err);
-          alert('Analyze failed. See console.');
-        });
-    }}
-    className={styles.toolbarButton}
-  >
-    <i role="none" className="fa fa-chart-bar" />
-    <span>Analyze Storage</span>
-  </ToolbarButton>
-
+        <ToolbarButton
+          onClick={() => {
+            fetch('/api/storage/analyze/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                console.log('Analyze results:', data);
+                alert('Analyze complete. Check console for results.');
+              })
+              .catch((err) => {
+                console.error('Analyze error:', err);
+                alert('Analyze failed. See console.');
+              });
+          }}
+          className={styles.toolbarButton}
+        >
+          <i role="none" className="fa fa-chart-bar" />
+          <span>Analyze Storage</span>
+        </ToolbarButton>
       </div>
     </div>
   );
