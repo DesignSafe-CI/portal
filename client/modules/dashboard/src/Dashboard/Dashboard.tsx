@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Typography, Table, Tag } from 'antd';
+import { Table, Tag } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 
 import Quicklinks from './QuickLinksNavbar';
