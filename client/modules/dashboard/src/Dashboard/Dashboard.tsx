@@ -14,7 +14,6 @@ import UserGuides from './UserGuides';
 
 import styles from './Dashboard.module.css';
 
-const { Text } = Typography;
 const queryClient = new QueryClient();
 
 interface HPCSystem {
