@@ -95,10 +95,8 @@ class DataDepotToolbarCtrl {
             'query_string': this.search.queryString,
         });
     }
-    triggerAnalyzeStorage() {
-    window.dispatchEvent(new CustomEvent('analyzeStorageRequested'));
 }
-}
+
 
 
 export const DataDepotToolbarComponent = {
