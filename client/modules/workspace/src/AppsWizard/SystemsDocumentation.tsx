@@ -23,7 +23,7 @@ export const SystemsDocumentation: React.FC<{ execSystemId: string }> = ({
   return (
     <div style={{ lineHeight: '20px', textAlign: 'left', marginBottom: 16 }}>
       <a href={url} target="_blank">
-        {capitalizeFirstLetter(execSystemId)} { }
+        {capitalizeFirstLetter(execSystemId)} {}
         detailed queue information
       </a>
       .
@@ -31,5 +31,5 @@ export const SystemsDocumentation: React.FC<{ execSystemId: string }> = ({
   );
 };
 function capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

@@ -343,16 +343,15 @@ export const getQueueValueForExecSystem = ({
  */
 export const getAppQueueValues = (
   definition: TTapisApp,
-  system: TTapisSystem,
+  system: TTapisSystem
 ) => {
   return (
     (system?.batchLogicalQueues ?? [])
-    /*
+      /*
     Hide queues not present in the Design Safe system's queue list
     */
-    .filter(
-    (q) => QUEUE_LIST[system.id].hasOwnProperty(q.name))
-    /*
+      .filter((q) => QUEUE_LIST[system.id].hasOwnProperty(q.name))
+      /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
     while hideNodeCountAndCoresPerNode is true
     */
@@ -369,10 +368,11 @@ export const getAppQueueValues = (
           !definition.notes.queueFilter ||
           definition.notes.queueFilter.includes(queueName)
       )
-      .map((q) => ({ value: q, label: (QUEUE_LIST[system.id][q]?.valueOf() || q) }))
-      .sort((a, b) =>
-        a.label.localeCompare(b.label)
-      )
+      .map((q) => ({
+        value: q,
+        label: QUEUE_LIST[system.id][q]?.valueOf() || q,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label))
   );
 };
 

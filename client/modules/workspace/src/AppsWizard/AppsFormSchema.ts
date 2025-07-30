@@ -223,10 +223,10 @@ export const getConfigurationFields = (
       key: 'configuration.execSystemLogicalQueue',
       required: true,
       type: 'select',
-      options: getAppQueueValues(
-        definition,
-        selectedExecSystem
-      ).map((q) => ({ value: q.value, label: q.label })),
+      options: getAppQueueValues(definition, selectedExecSystem).map((q) => ({
+        value: q.value,
+        label: q.label,
+      })),
     };
   }
 
