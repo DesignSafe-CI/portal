@@ -350,7 +350,9 @@ export const getAppQueueValues = (
       /*
     Hide queues not present in the Design Safe system's queue list
     */
-      .filter((q) => QUEUE_LIST[system.id].hasOwnProperty(q.name))
+      .filter((q) =>
+        Object.prototype.hasOwnProperty.call(QUEUE_LIST[system.id], q.name)
+      )
       /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
     while hideNodeCountAndCoresPerNode is true
