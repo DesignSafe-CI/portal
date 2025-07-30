@@ -13,15 +13,9 @@ from django.contrib.auth.models import Group
 @pytest.fixture
 def mock_tapis_client(mocker):
     """Tapis client fixture"""
-    mock_client = mocker.Mock()
-
-    # Patch where token stores the client
-    mocker.patch("designsafe.apps.auth.models.TapisOAuthToken.client", mock_client)
-
-    # Patch constructor in backends.py
-    mocker.patch("designsafe.apps.auth.backends.Tapis", return_value=mock_client)
-
-    return mock_client
+    yield mocker.patch(
+        "designsafe.apps.auth.models.TapisOAuthToken.client", autospec=True
+    )
 
 
 @pytest.fixture

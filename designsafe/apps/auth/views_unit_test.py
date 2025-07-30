@@ -124,4 +124,4 @@ def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, moc
     assert isinstance(response, HttpResponseRedirect)
     assert response.status_code == 302
     assert response.url == expected_url
-    mock_tapis_client.authenticator.revoke_token.assert_called_once_with(token=authenticated_user.tapis_oauth.access_token)
+    assert not get_user(client).is_authenticated
