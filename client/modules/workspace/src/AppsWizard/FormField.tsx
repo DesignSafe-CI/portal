@@ -10,6 +10,7 @@ import {
 import { getSystemDisplayName } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
+import { SystemsDocumentation } from './SystemsDocumentation';
 import { useSystemOverview, useSystemQueue } from '@client/hooks';
 import systemStatusStyles from '../components/SystemStatusModal/SystemStatusModal.module.css';
 import queueStyles from '../components/SystemStatusModal/SystemQueueTable.module.css';
@@ -245,6 +246,9 @@ export const FormField: React.FC<{
         >
           {description}
         </small>
+      )}
+      {name === 'configuration.execSystemLogicalQueue' && (
+        <SystemsDocumentation execSystemId={getValues('configuration.execSystemId')} />
       )}
       {/* Select Modal has Form and input which cause state sharing with above FormItem
           So, SelectModal is outside FormItem.

@@ -225,8 +225,8 @@ export const getConfigurationFields = (
       type: 'select',
       options: getAppQueueValues(
         definition,
-        selectedExecSystem.batchLogicalQueues
-      ).map((q) => ({ value: q, label: q })),
+        selectedExecSystem
+      ).map((q) => ({ value: q.value, label: q.label })),
     };
   }
 
