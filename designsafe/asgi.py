@@ -15,11 +15,15 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 from django.urls import re_path
 from designsafe.apps.signals.websocket_consumers import DesignsafeWebsocketConsumer
+from designsafe.apps.api.publications_v2.websocket_consumers import (
+    PublicationsRAGWebsocketConsumer,
+)
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "designsafe.settings")
 websocket_urlpatterns = [
-    re_path(r'ws/websockets/*$', DesignsafeWebsocketConsumer.as_asgi()),
+    re_path(r"ws/websockets/*$", DesignsafeWebsocketConsumer.as_asgi()),
+    re_path(r"ws/publications/*$", PublicationsRAGWebsocketConsumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter(
