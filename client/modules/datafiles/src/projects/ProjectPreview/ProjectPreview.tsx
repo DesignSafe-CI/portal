@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   apiClient,
   DoiContextProvider,
@@ -11,7 +17,7 @@ import {
   usePublicationVersions,
   useSelectedFiles,
 } from '@client/hooks';
-import { Alert, Button, Collapse, Tag } from 'antd';
+import { Alert, Button, Collapse, Select, Tag } from 'antd';
 import styles from './ProjectPreview.module.css';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
@@ -25,7 +31,12 @@ import {
   FileTypeIcon,
   TFileListingColumns,
 } from '@client/common-components';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
@@ -196,10 +207,37 @@ function RecursiveTree({
   );
 }
 
+const EntityVersionSelector: React.FC<{ uuid: string; versions: number[] }> = ({
+  uuid,
+  versions,
+}) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const paramName = `version-${uuid}`;
+  const selectedVersion = parseFloat(searchParams.get(paramName) ?? '1');
+  const onSelect = useCallback(
+    (version: number) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(paramName, version.toString());
+    },
+    [searchParams, setSearchParams, uuid]
+  );
+
+  const options = useMemo(
+    () => versions.map((v) => ({ label: `Version ${v}`, value: v })),
+    [versions]
+  );
+
+  return (
+    <Select options={options} onChange={onSelect} value={selectedVersion} />
+  );
+};
+
 export const PublishedEntityDisplay: React.FC<{
   projectId: string;
   preview?: boolean;
   license?: string;
+  versions?: number[];
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   defaultOpenChildren?: boolean;
@@ -209,6 +247,7 @@ export const PublishedEntityDisplay: React.FC<{
   preview,
   treeData,
   license,
+  versions = [1],
   defaultOpen = false,
   defaultOpenChildren = false,
   showEditCategories = false,
@@ -262,7 +301,11 @@ export const PublishedEntityDisplay: React.FC<{
       >
         <span>
           {DISPLAY_NAMES[treeData.name]} |{' '}
-          <strong>{treeData.value.title}</strong>
+          <strong>{treeData.value.title}</strong> &nbsp;
+          <Select
+            options={versions.map((v) => ({ label: `Version ${v}`, value: v }))}
+            value={1}
+          />
         </span>
         {preview &&
           ((treeData.value.dois?.length ?? 0) > 0 ? (
@@ -414,6 +457,15 @@ export const PublicationView: React.FC<{
   const { hash } = useLocation();
   const openUuid = hash.split('#detail-').slice(-1)[0];
 
+  const versionsPerUuid: Record<string, number[]> = {};
+  children?.forEach((child) => {
+    versionsPerUuid[child.uuid] = [
+      ...(versionsPerUuid[child.uuid] ?? []),
+      child.version ?? 1,
+    ].sort();
+  });
+  console.log(versionsPerUuid);
+
   const sortedChildren = useMemo(
     () => [...(children ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [children]
@@ -434,6 +486,7 @@ export const PublicationView: React.FC<{
               license={data.baseProject.license}
               projectId={projectId}
               treeData={child}
+              versions={versionsPerUuid[child.uuid]}
               defaultOpen={
                 (idx === 0 && sortedChildren.length === 1) ||
                 child.uuid === openUuid

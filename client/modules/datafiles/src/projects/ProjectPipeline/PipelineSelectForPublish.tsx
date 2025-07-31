@@ -97,7 +97,7 @@ export const PipelineSelectForPublish: React.FC<{
   );
 
   useEffect(() => {
-    if (operation !== 'publish') {
+    if (operation === 'amend') {
       const publishableChildren = sortedChildren.filter((child) =>
         data?.entities.some(
           (ent) => ent.uuid === child.uuid && (ent.value.dois?.length ?? 0) > 0
@@ -195,7 +195,7 @@ export const PipelineSelectForPublish: React.FC<{
         {sortedChildren.map((child) => (
           <section key={child.id}>
             <Button
-              disabled={operation !== 'publish'}
+              disabled={operation === 'amend'}
               type="link"
               onClick={() => toggleEntitySelection(child.uuid)}
             >

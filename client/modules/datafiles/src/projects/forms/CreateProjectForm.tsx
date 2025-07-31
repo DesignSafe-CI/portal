@@ -1,5 +1,5 @@
 import { Button, Form, Input } from 'antd';
-import React, { useEffect, useMemo } from 'react';
+import React, { ReactNode, useEffect, useMemo } from 'react';
 
 import { UserSelect, GuestMembersInput } from './_fields';
 import { TProjectUser } from './_fields/UserSelect';
@@ -132,30 +132,41 @@ export const BaseProjectCreateForm: React.FC<{
         <GuestMembersInput name="guestMembers" />
       </Form.Item>
 
-      <Form.Item label="Project Description" required>
-        What is this project about? How can data in this project be reused? How
-        is this project unique? Who is the audience? Description must be between
-        50 and 5000 characters in length.
-        <Form.Item
-          name="description"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a description',
-            },
-            {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
-            },
-            {
-              max: 5000,
-              message: 'Description cannot be longer than 5000 characters',
-            },
-          ]}
-          className="inner-form-item"
-        >
-          <Input.TextArea autoSize={{ minRows: 4 }} />
-        </Form.Item>
+      <Form.Item
+        noStyle
+        shouldUpdate={(prev, curr) => prev.description !== curr.description}
+      >
+        {({ getFieldValue }) => (
+          <Form.Item label="Project Description" required >
+            What is this project about? How can data in this project be reused?
+            How is this project unique? Who is the audience? Description must be
+            between 200 and 300 words in length. ({ (getFieldValue('description') ?? '').split(' ').length} / 200 words)
+            <Form.Item
+              name="description"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter a description',
+                },
+                {
+                  min: 200,
+                  type: 'array',
+                  transform: v => v.split(' '),
+                  message: 'Description must be at least 200 words long',
+                },
+                {
+                  max: 300,
+                  type: 'array',
+                  transform: v => v.split(' '),
+                  message: 'Description cannot be longer than 300 words',
+                },
+              ]}
+              className="inner-form-item"
+            >
+              <Input.TextArea autoSize={{ minRows: 12 }} />
+            </Form.Item>
+          </Form.Item>
+        )}
       </Form.Item>
 
       <Form.Item>
