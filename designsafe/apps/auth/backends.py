@@ -20,15 +20,6 @@ from pytas.http import TASClient
 logger = logging.getLogger(__name__)
 
 
-@receiver(user_logged_out)
-def on_user_logged_out(sender, request, user, **kwargs):
-    "Signal processor for user_logged_out"
-
-    if user is not None and hasattr(user, "tapis_oauth"):
-        backend = TapisOAuthBackend()
-        TapisOAuthBackend.revoke(backend, user.tapis_oauth.access_token)
-
-
 class TASBackend(ModelBackend):
 
     def __init__(self):
@@ -165,16 +156,3 @@ class TapisOAuthBackend(ModelBackend):
             logger.info('Login successful for user "%s"', username)
 
         return user
-
-    def revoke(self, token):
-        logger.info(
-            "Attempting to revoke Tapis token %s"
-            % TapisOAuthToken().get_masked_token(token)
-        )
-
-        try:
-            client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL, access_token=token)
-            response = client.authenticator.revoke_token(token=token)
-            logger.info("revoke response is %s" % response)
-        except BaseTapyException as e:
-            logger.error("Error revoking token: %s", e.message)
