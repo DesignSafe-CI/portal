@@ -120,6 +120,7 @@ export type TEntityValue = {
   dois?: string[];
   referencedData: TReferencedWork[];
   relatedWork: TAssociatedProject[];
+  keywords?: string[];
 
   experimentType?: TDropdownValue;
   equipmentType?: TDropdownValue;
