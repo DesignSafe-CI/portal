@@ -68,6 +68,9 @@ export const AppsSubmissionDetails: React.FC<{
   setCurrent: CallableFunction;
   definition: TTapisApp;
 }> = ({ schema, fields, isSubmitting, current, setCurrent, definition }) => {
+  // console.log('%%%%%%%%%%%%%%%%%%');
+  // console.dir(schema.shape, { depth: null });
+
   const {
     control,
     formState: { defaultValues, isValid },
@@ -104,6 +107,13 @@ export const AppsSubmissionDetails: React.FC<{
           k === 'allocation'
         ) {
           return; // Hide the allocation, if that field is true
+        }
+        if (
+          definition.notes.hideReservation &&
+          key === 'configuration' &&
+          k === 'reservation'
+        ) {
+          return; // Hide the reservation, if the app definition requires it
         }
         if (v instanceof Object) {
           Object.entries(v as object).forEach(([kk, vv], zchildIndex) => {
