@@ -64,7 +64,7 @@ def get_datacite_json(
                 "familyName": author.get("lname", ""),
                 "affiliation": [
                     {
-                        "name": author.get("inst",""),
+                        "name": author.get("inst", ""),
                         "schemeUri": None,
                         "affiliationIdentifier": None,
                         "affiliationIdentifierScheme": None,
@@ -87,12 +87,13 @@ def get_datacite_json(
     if not is_other:
 
         datacite_json["titles"] = [
-            {"title": f"{title} in {base_meta['title']}"} for title in set([entity_meta["title"]])
+            {"title": f"{title}, in {base_meta['title']}"}
+            for title in set([entity_meta["title"]])
         ]
     else:
         datacite_json["titles"] = [
-        {"title": title} for title in set([entity_meta["title"]])
-    ]
+            {"title": title} for title in set([entity_meta["title"]])
+        ]
     datacite_json["publisher"] = "Designsafe-CI"
 
     if version == 1 or not version:
@@ -128,10 +129,8 @@ def get_datacite_json(
     ]
 
     if not is_other:
-        all_keywords = base_meta.get("keywords", []) + entity_meta.get("keywords",[])
-        datacite_json["subjects"] = [
-            {"subject": keyword} for keyword in all_keywords
-        ]
+        all_keywords = base_meta.get("keywords", []) + entity_meta.get("keywords", [])
+        datacite_json["subjects"] = [{"subject": keyword} for keyword in all_keywords]
     else:
         datacite_json["subjects"] = [
             {"subject": keyword} for keyword in base_meta.get("keywords", [])
