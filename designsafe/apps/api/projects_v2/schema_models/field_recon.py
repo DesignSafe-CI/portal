@@ -100,6 +100,8 @@ class FieldReconReport(MetadataModel):
     ] = []
     related_work: list[AssociatedProject] = []
 
+    keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
+
     file_tags: list[FileTag] = []
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = (
         Field(default=[], validation_alias=AliasChoices("authors", "dataCollectors"))
