@@ -68,9 +68,6 @@ export const AppsSubmissionDetails: React.FC<{
   setCurrent: CallableFunction;
   definition: TTapisApp;
 }> = ({ schema, fields, isSubmitting, current, setCurrent, definition }) => {
-  // console.log('%%%%%%%%%%%%%%%%%%');
-  // console.dir(schema.shape, { depth: null });
-
   const {
     control,
     formState: { defaultValues, isValid },
