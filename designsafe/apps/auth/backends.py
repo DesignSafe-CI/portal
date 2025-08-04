@@ -10,10 +10,7 @@ from tapipy.errors import BaseTapyException
 from designsafe.apps.accounts.models import DesignSafeProfile, NotificationPreferences
 from designsafe.apps.api.users.utils import get_user_data
 from designsafe.apps.auth.models import TapisOAuthToken
-from django.contrib.auth.signals import user_logged_out
-from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.dispatch import receiver
 from designsafe.apps.auth.tasks import update_institution_from_tas
 from pytas.http import TASClient
 
