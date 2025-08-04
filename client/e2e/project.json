@@ -3,6 +3,7 @@
   "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "e2e/src",
+  "implicitDependencies": ["client"],
   "targets": {
     "e2e": {
       "executor": "@nx/playwright:playwright",
@@ -12,9 +13,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "executor": "@nx/eslint:lint"
     }
-  },
-  "implicitDependencies": ["client"]
+  }
 }
