@@ -1,6 +1,7 @@
 services:
   redis:
     image: redis:7
+    platform: "linux/amd64"
     volumes:
       - redis_data_v3:/data
     ports:
@@ -9,7 +10,7 @@ services:
     hostname: des_redis
 
   rabbitmq:
-    image: rabbitmq:3.6.10-management
+    image: arm64v8/rabbitmq:3.6.14-management
     volumes:
       - rabbitmq_data_v3:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
     env_file: ../env_files/rabbitmq.env
@@ -20,11 +21,13 @@ services:
 
   memcached:
     image: memcached:latest
+    platform: "linux/amd64"
     container_name: des_memcached
     hostname: des_memcached
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    platform: "linux/amd64"
     ulimits:
       memlock: -1
     environment:
@@ -54,6 +57,7 @@ services:
 
   nginx:
     image: nginx
+    platform: "linux/amd64"
     volumes:
       - ../nginx/nginx.debug.conf:/etc/nginx/nginx.conf
       - ../nginx/gzip.conf:/etc/nginx/gzip.conf
