@@ -1,5 +1,4 @@
 import { useParams, useLocation } from 'react-router-dom';
-import { QUEUE_LIST } from '../constants';
 import { z } from 'zod';
 import {
   TAppCategories,
@@ -345,13 +344,14 @@ export const getAppQueueValues = (
   definition: TTapisApp,
   system: TTapisSystem
 ) => {
+  const queueList: Record<string, string> = (system.notes as any)?.["DESIGNSAFE"];
   return (
     (system?.batchLogicalQueues ?? [])
       /*
-    Hide queues not present in the Design Safe system's queue list
+    Apply DESIGNSAFE filter when it's set
     */
       .filter((q) =>
-        Object.prototype.hasOwnProperty.call(QUEUE_LIST[system.id], q.name)
+        queueList ? Object.prototype.hasOwnProperty.call(queueList, q.name) : true
       )
       /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
@@ -372,7 +372,7 @@ export const getAppQueueValues = (
       )
       .map((q) => ({
         value: q,
-        label: QUEUE_LIST[system.id][q]?.valueOf() || q,
+        label: queueList ? queueList[q]?.valueOf() || q : q,
       }))
       .sort((a, b) => a.label.localeCompare(b.label))
   );
