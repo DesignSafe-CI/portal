@@ -345,19 +345,13 @@ export const getAppQueueValues = (
   system: TTapisSystem
 ) => {
   /* eslint-disable-next-line */
-  const queueList: Record<string, string> = (system.notes as any)?.[
-    'DESIGNSAFE'
-  ];
+  const queueList: string[] = (system.notes as any)?.['DESIGNSAFE'];
   return (
     (system?.batchLogicalQueues ?? [])
       /*
     Apply DESIGNSAFE filter when it's set
     */
-      .filter((q) =>
-        queueList
-          ? Object.prototype.hasOwnProperty.call(queueList, q.name)
-          : true
-      )
+      .filter((q) => !queueList || queueList.includes(q.name))
       /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
     while hideNodeCountAndCoresPerNode is true
@@ -368,16 +362,15 @@ export const getAppQueueValues = (
           (definition.jobAttributes.nodeCount >= q.minNodeCount &&
             definition.jobAttributes.nodeCount <= q.maxNodeCount)
       )
-      .map((q) => q.name)
       // Hide queues when app includes a queueFilter and queue is not present in queueFilter
       .filter(
-        (queueName) =>
+        (q) =>
           !definition.notes.queueFilter ||
-          definition.notes.queueFilter.includes(queueName)
+          definition.notes.queueFilter.includes(q.name)
       )
       .map((q) => ({
-        value: q,
-        label: queueList ? queueList[q]?.valueOf() || q : q,
+        value: q.name,
+        label: q.hpcQueueName,
       }))
       .sort((a, b) => a.label.localeCompare(b.label))
   );
