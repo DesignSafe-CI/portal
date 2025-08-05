@@ -344,6 +344,7 @@ export const getAppQueueValues = (
   definition: TTapisApp,
   system: TTapisSystem
 ) => {
+  /* eslint-disable-next-line */
   const queueList: Record<string, string> = (system.notes as any)?.[
     'DESIGNSAFE'
   ];
