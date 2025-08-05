@@ -345,13 +345,13 @@ export const getAppQueueValues = (
   system: TTapisSystem
 ) => {
   /* eslint-disable-next-line */
-  const queueList: string[] = (system.notes as any)?.['DESIGNSAFE'];
+  const queueFilter: string[] = (system.notes as any)?.['queueFilter'];
   return (
     (system?.batchLogicalQueues ?? [])
       /*
-    Apply DESIGNSAFE filter when it's set
+    Apply queueFilter when it's set
     */
-      .filter((q) => !queueList || queueList.includes(q.name))
+      .filter((q) => !queueFilter || queueFilter.includes(q.name))
       /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
     while hideNodeCountAndCoresPerNode is true
