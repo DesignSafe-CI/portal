@@ -17,4 +17,3 @@ export const STATUS_TEXT_MAP: Record<string, string> = {
 };
 
 export const TERMINAL_STATES = [`FINISHED`, `CANCELLED`, `FAILED`];
-

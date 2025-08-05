@@ -344,14 +344,18 @@ export const getAppQueueValues = (
   definition: TTapisApp,
   system: TTapisSystem
 ) => {
-  const queueList: Record<string, string> = (system.notes as any)?.["DESIGNSAFE"];
+  const queueList: Record<string, string> = (system.notes as any)?.[
+    'DESIGNSAFE'
+  ];
   return (
     (system?.batchLogicalQueues ?? [])
       /*
     Apply DESIGNSAFE filter when it's set
     */
       .filter((q) =>
-        queueList ? Object.prototype.hasOwnProperty.call(queueList, q.name) : true
+        queueList
+          ? Object.prototype.hasOwnProperty.call(queueList, q.name)
+          : true
       )
       /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
