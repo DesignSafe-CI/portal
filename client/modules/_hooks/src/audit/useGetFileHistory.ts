@@ -1,21 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 
-/* Will change depending on requirements for tapis file audit UI /// not being used */
-export interface TapisFilesAuditEntry {
-  writer_logtime: string;
-  action: string;
-  jwt_tenant: string;
-  jwt_user: string;
-  target_system_id: string;
-  target_path: string;
-  source_path: string;
-  tracking_id: string;
-  parent_tracking_id: string;
-  data: object;
-}
-
 interface TapisFileAuditResponse {
   data: TapisFilesAuditEntry[];
+}
+
+export interface TapisFilesAuditEntry {
+  writer_logtime: string;
+  jwt_user: string;
+  action: string;
+  target_path: string;
 }
 
 async function fetchFileHistory(

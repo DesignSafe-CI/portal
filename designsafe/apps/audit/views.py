@@ -22,30 +22,27 @@ def get_portal_audit_search(request, username):
         audit_db = connections["audit"]
         cursor = audit_db.cursor()
 
-        # for "joyce_cywu" search(many results) -- TEST -- won't work for other usernames
-        query = """
-            SELECT session_id, timestamp, portal, username, action, tracking_id, data
-            FROM public.portal_audit
-            WHERE session_id = 'np0qhb1qf1p0vyphzpv1u6aosafszidk'
-            AND username = %s
-            ORDER BY timestamp ASC;
-            """
-
-        # for REAL most recent session -- real use
-        # query = (
-        # """
-        # SELECT session_id, timestamp, portal, username, action, tracking_id, data
-        # FROM public.portal_audit
-        # WHERE session_id = (
-        #     SELECT session_id
+        # TEST - "joyce_cywu"
+        # query = """
+        #     SELECT session_id, timestamp, portal, username, action, tracking_id, data
         #     FROM public.portal_audit
-        #     WHERE username = %s
-        #     ORDER BY timestamp DESC
-        #     LIMIT 1
-        # )
-        # ORDER BY timestamp ASC;
-        # """
-        # )
+        #     WHERE session_id = 'np0qhb1qf1p0vyphzpv1u6aosafszidk'
+        #     AND username = %s
+        #     ORDER BY timestamp ASC;
+        #     """
+
+        query = """
+        SELECT session_id, timestamp, portal, username, action, tracking_id, data
+        FROM public.portal_audit
+        WHERE session_id = (
+            SELECT session_id
+            FROM public.portal_audit
+            WHERE username = %s
+            ORDER BY timestamp DESC
+            LIMIT 1
+        )
+        ORDER BY timestamp ASC;
+        """
 
         cursor.execute(query, [username])
         columns = [col[0] for col in cursor.description]
@@ -58,43 +55,12 @@ def get_portal_audit_search(request, username):
         return JsonResponse({"error": str(exc)}, status=500)
 
 
-# Used as test for now
 def get_tapis_files_audit_search(request, filename):
     """
     Fetches audit records given filename from tapis files audit database
     """
-    # Test output to verify the function is being called correctly
-    test_data = {
-        "data": [
-            {
-                "session_id": "test_session_123",
-                "timestamp": "2024-01-15T10:30:00Z",
-                "portal": "tapis",
-                "filename": filename,
-                "action": "file_upload",
-                "tracking_id": "track_456",
-                "data": {
-                    "search_term": "test_file.txt",
-                    "results_count": 5,
-                    "search_path": "/home/user/documents",
-                },
-            },
-            {
-                "session_id": "test_session_123",
-                "timestamp": "2024-01-15T10:35:00Z",
-                "portal": "tapis",
-                "filename": filename,
-                "action": "file_download",
-                "tracking_id": "track_457",
-                "data": {
-                    "file_path": "/home/user/documents/test_file",
-                    "file_size": "1024",
-                    "download_success": True,
-                },
-            },
-        ]
-    }
-    return JsonResponse(test_data)
+    # TODO: Implement database query for file tracking
+    return JsonResponse({"data": []})
 
 
 def get_usernames_portal(request):

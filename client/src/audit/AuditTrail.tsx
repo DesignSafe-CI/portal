@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import styles from './AuditTrails.module.css';
-import { Modal, AutoComplete } from 'antd';
+import { AutoComplete } from 'antd';
 import {
   useGetRecentSession,
   useGetFileHistory,
   useGetUsernames,
   PortalAuditEntry,
 } from '@client/hooks';
+import AuditTrailTable from './AuditTrailTable';
 
 const AuditTrail: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -47,88 +47,24 @@ const AuditTrail: React.FC = () => {
     auditRefetch();
   };
 
-  function truncate(str: string, n: number) {
-    return str.length > n ? str.slice(0, n) + '…' : str;
-  }
-
-  const extractActionData = (entry: PortalAuditEntry): string => {
-    if (!entry.data) return '-';
-
-    try {
-      const action = entry.action?.toLowerCase();
-      const parsedData =
-        typeof entry.data == 'string' ? JSON.parse(entry.data) : entry.data;
-      switch (action) {
-        case 'submitjob':
-          return extractDataField(parsedData, 'body.job.name') || '-';
-
-        case 'getapp':
-          return extractDataField(parsedData, 'query.appId') || '-';
-
-        case 'trash':
-          return extractDataField(parsedData, 'path') || '-';
-
-        case 'upload':
-          return extractDataField(parsedData, 'path') || '-';
-
-        case 'download':
-          return extractDataField(parsedData, 'filePath') || '-';
-      }
-    } catch {
-      return '-';
-    }
-    return '-';
-  };
-
-  const extractDataField = (data: any, path: string): string => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
-    if (!data) return '-';
-    const fields = path.split('.');
-    let value = data;
-    for (let i = 0; i < fields.length; i++) {
-      if (value && typeof value === 'object' && fields[i] in value) {
-        value = value[fields[i]];
-      } else {
-        return '-';
+  const handleViewLogs = (entry: PortalAuditEntry) => {
+    let content = '';
+    if (entry.data) {
+      try {
+        const obj =
+          typeof entry.data === 'string' ? JSON.parse(entry.data) : entry.data;
+        content = JSON.stringify(obj, null, 2);
+      } catch {
+        content = JSON.stringify(entry.data, null, 2);
       }
     }
-    if (value === undefined || value == null || value === '') {
-      return '-';
-    }
-    return String(value);
+    setModalContent(content);
+    setFooterEntry(entry);
+    setModalOpen(true);
   };
 
   return (
     <div>
-      <Modal
-        title="Details"
-        open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        footer={
-          footerEntry && (
-            <div
-              style={{
-                marginTop: '-30px',
-                marginBottom: '10px',
-                textAlign: 'center',
-              }}
-            >
-              {footerEntry.username} | {footerEntry.timestamp} |{' '}
-              {footerEntry.portal} | {footerEntry.action}
-            </div>
-          )
-        }
-        width={550}
-        style={{
-          maxHeight: '70vh',
-          overflow: 'auto',
-          top: '200px',
-        }}
-      >
-        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-          {modalContent}
-        </pre>
-      </Modal>
       <form onSubmit={onSearch} style={{ marginBottom: 16 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
           <select
@@ -168,101 +104,19 @@ const AuditTrail: React.FC = () => {
         </div>
       </form>
 
-      {auditError && (
-        <div style={{ color: 'red' }}>Error: {auditError.message}</div>
-      )}
-
-      {auditData?.data && auditData.data.length === 0 && (
-        <div>No records found.</div>
-      )}
-
-      {auditData?.data && auditData.data.length > 0 && (
-        <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            tableLayout: 'fixed',
-          }}
-        >
-          <thead>
-            <tr>
-              {[
-                { label: 'User', width: '50px' },
-                { label: 'Date', width: '50px' },
-                { label: 'Time', width: '50px' },
-                { label: 'Portal', width: '100px' },
-                { label: 'Action', width: '200px' },
-                { label: 'Tracking ID', width: '200px' },
-                { label: 'Details', width: '100px' },
-              ].map((col) => (
-                <th
-                  key={col.label}
-                  className={styles.headerCell}
-                  style={{ width: col.width }}
-                >
-                  {col.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {(auditData.data as PortalAuditEntry[]).map((entry, idx) => {
-              //need to change once type for filesearch decided upon
-              let dateStr = '-';
-              let timeStr = '-';
-              if (entry.timestamp) {
-                const date = new Date(entry.timestamp);
-                dateStr = date.toLocaleDateString();
-                timeStr = date.toLocaleTimeString();
-              }
-              const actionDetails = extractActionData(entry);
-
-              return (
-                <tr key={idx}>
-                  <td className={styles.cell}>{entry.username || '-'}</td>
-                  <td className={styles.cell}>{dateStr}</td>
-                  <td className={styles.cell}>{timeStr}</td>
-                  <td className={styles.cell}>{entry.portal || '-'}</td>
-                  <td className={styles.cell}>
-                    {entry.action || '-'}
-                    {actionDetails !== '-' &&
-                      `: ${truncate(actionDetails, 50)}`}
-                  </td>
-                  <td className={styles.cell}>{entry.tracking_id || '-'}</td>
-                  <td
-                    className={styles.cell}
-                    style={{
-                      wordBreak: 'break-all',
-                      cursor: 'pointer',
-                      textDecoration: 'underline',
-                    }}
-                    onClick={() => {
-                      let content = '';
-                      if (entry.data) {
-                        try {
-                          const obj =
-                            typeof entry.data === 'string'
-                              ? JSON.parse(entry.data)
-                              : entry.data;
-                          content = JSON.stringify(obj, null, 2);
-                        } catch {
-                          content = JSON.stringify(entry.data, null, 2);
-                        }
-                      }
-                      setModalContent(content);
-                      setFooterEntry(entry);
-                      setModalOpen(true);
-                    }}
-                  >
-                    View Logs
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      )}
+      <AuditTrailTable
+        auditData={auditData}
+        auditError={auditError}
+        auditLoading={auditLoading}
+        modalOpen={modalOpen}
+        modalContent={modalContent}
+        footerEntry={footerEntry}
+        onModalClose={() => setModalOpen(false)}
+        onViewLogs={handleViewLogs}
+        source={source}
+      />
     </div>
   );
 };
+
 export default AuditTrail;
