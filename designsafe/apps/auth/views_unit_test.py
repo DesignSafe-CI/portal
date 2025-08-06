@@ -119,7 +119,7 @@ def test_launch_setup_checks_already_onboarded(regular_user, mocker):
 def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, mock_tapis_client, settings):
     response = client.get('/logout')
 
-    # Trailing slash here after "testserver" is removed to match the production environment 
+    # No trailing slash here after "testserver" to match the construction in the LogoutView class.
     expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://testserver{settings.LOGOUT_REDIRECT_URL}"
 
     assert isinstance(response, HttpResponseRedirect)

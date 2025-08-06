@@ -167,10 +167,12 @@ def logged_out(request):
 class LogoutView(DjangoLogoutView):
     def dispatch(self, request):
         token = request.user.tapis_oauth.access_token
+        username = request.user.username
+
         logout(request)
 
-        logger.info('The user %s is attempting to logout via Tapis with token "%s"' % (request.user.username, token[:8].ljust(len(token), '-')))
-        # Trailing slash here after "get_host()" is removed because the function appends one automatically.
+        logger.info('The user %s is attempting to logout via Tapis with token "%s"' % (username, token[:8].ljust(len(token), '-')))
+        # No trailing slash here after "get_host()" because the function appends one automatically.
         logout_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://{request.get_host()}{settings.LOGOUT_REDIRECT_URL}"
 
         response = HttpResponseRedirect(logout_endpoint)
