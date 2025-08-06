@@ -35,9 +35,7 @@ import {
 import styles from './SelectModal.module.css';
 import { SelectModalProjectListing } from './SelectModalProjectListing';
 
-import {
-  truncateMiddle,
-} from '../utils';
+import { truncateMiddle } from '../utils';
 
 const api = 'tapis';
 const portalName = 'DesignSafe';
@@ -220,9 +218,7 @@ function getFilesColumns(
                 className={iconClassName}
                 style={{ color: '#333333', marginRight: '8px' }}
               ></i>
-              <Tooltip title={data}>
-                {truncateMiddle(data, 35)}
-              </Tooltip>
+              <Tooltip title={data}>{truncateMiddle(data, 35)}</Tooltip>
             </Button>
           );
         }
@@ -234,9 +230,7 @@ function getFilesColumns(
               className={iconClassName}
               style={{ color: '#333333', marginRight: '8px' }}
             ></i>
-            <Tooltip title={data}>
-              {truncateMiddle(data, 35)}
-            </Tooltip>
+            <Tooltip title={data}>{truncateMiddle(data, 35)}</Tooltip>
           </span>
         );
       },
