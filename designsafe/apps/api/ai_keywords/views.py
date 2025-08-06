@@ -44,7 +44,7 @@ class Rag:
     API_ENDPOINT = settings.SN_API_ENDPOINT
 
     chroma_client = chromadb.HttpClient(
-        host="https://wma-chromadb-01.tacc.utexas.edu", port=443
+        host=settings.CHROMA_ENDPOINT, port=443
     )
 
     embedding_function = HuggingFaceEmbeddings(
