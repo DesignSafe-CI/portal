@@ -218,7 +218,7 @@ function getFilesColumns(
                 className={iconClassName}
                 style={{ color: '#333333', marginRight: '8px' }}
               ></i>
-              <Tooltip title={data}>{truncateMiddle(data, 35)}</Tooltip>
+              <Tooltip title={data}>{truncateMiddle(data, 45)}</Tooltip>
             </Button>
           );
         }
@@ -230,7 +230,7 @@ function getFilesColumns(
               className={iconClassName}
               style={{ color: '#333333', marginRight: '8px' }}
             ></i>
-            <Tooltip title={data}>{truncateMiddle(data, 35)}</Tooltip>
+            <Tooltip title={data}>{truncateMiddle(data, 45)}</Tooltip>
           </span>
         );
       },
