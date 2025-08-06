@@ -7,6 +7,7 @@ import {
   Form,
   ConfigProvider,
   ThemeConfig,
+  Tooltip,
 } from 'antd';
 import {
   CaretDownOutlined,
@@ -33,6 +34,7 @@ import {
 } from '@client/common-components';
 import styles from './SelectModal.module.css';
 import { SelectModalProjectListing } from './SelectModalProjectListing';
+import { truncateMiddle } from '../utils';
 
 const api = 'tapis';
 const portalName = 'DesignSafe';
@@ -215,7 +217,7 @@ function getFilesColumns(
                 className={iconClassName}
                 style={{ color: '#333333', marginRight: '8px' }}
               ></i>
-              {data}
+              <Tooltip title={data}>{truncateMiddle(data, 45)}</Tooltip>
             </Button>
           );
         }
@@ -227,10 +229,11 @@ function getFilesColumns(
               className={iconClassName}
               style={{ color: '#333333', marginRight: '8px' }}
             ></i>
-            {data}
+            <Tooltip title={data}>{truncateMiddle(data, 45)}</Tooltip>
           </span>
         );
       },
+      width: '70%',
     },
     {
       dataIndex: 'path',
@@ -457,7 +460,7 @@ export const SelectModal: React.FC<{
     <Modal
       open={isModalOpen}
       onCancel={handleClose}
-      width="40%"
+      width="50%"
       footer={null}
       styles={modalStyles}
       title={<span className={styles.modalTitle}>Select</span>}
