@@ -1,21 +1,26 @@
 :root {
-  --ds-accent-color: #47a59d;
-  --ds-accent-color--dark: #37817B;
-  --ds-active-color: #337AB7;
+    --ds-accent-color: #47a59d;
+    --ds-accent-color--dark: #37817b;
+    --ds-active-color: #337ab7;
 
-  /* Primary (Text, Layout) */
-  --global-color-primary--xx-light: #ffffff;
-  --global-color-primary--x-light: #f4f4f4;
-  --global-color-primary--light: #c6c6c6;
-  --global-color-primary--normal: #afafaf;
-  --global-color-primary--dark: #707070;
-  --global-color-primary--x-dark: #484848;
-  --global-color-primary--xx-dark: #222222;
+    /* Primary (Text, Layout) */
+    --global-color-primary--xx-light: #ffffff;
+    --global-color-primary--x-light: #f4f4f4;
+    --global-color-primary--light: #c6c6c6;
+    --global-color-primary--normal: #afafaf;
+    --global-color-primary--dark: #707070;
+    --global-color-primary--x-dark: #484848;
+    --global-color-primary--xx-dark: #222222;
 
-  /* Space */
-  --global-space--above-breadcrumbs: 35px;
-  --global-space--under-breadcrumbs: 20px;
+    /* Red/Green/Yellow from DS */
+    --ds-success-color: #48a59c;
+    --ds-error-color: #eb6e6e;
+    --ds-warning-color: #ece4bf;
 
-  /* Common */
-  --global-color-background--app: var(--global-color-primary--xx-light);
+    /* Space */
+    --global-space--above-breadcrumbs: 35px;
+    --global-space--under-breadcrumbs: 20px;
+
+    /* Common */
+    --global-color-background--app: var(--global-color-primary--xx-light);
 }

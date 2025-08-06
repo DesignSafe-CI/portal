@@ -68,13 +68,10 @@ export const PipelinePublishModal: React.FC<{
     publish: 'Request DOI & Publish',
   };
 
-  const [protectedDataAgreement, setProtectedDataAgreement] = useState(false);
   const [publishingAgreement, setPublishingAgreement] = useState(false);
 
   const canPublish =
-    publishingAgreement &&
-    (projectType === 'field_recon' ? protectedDataAgreement : true) &&
-    (operation === 'version' ? !!versionInfo : true);
+    publishingAgreement && (operation === 'version' ? !!versionInfo : true);
 
   return (
     <>
@@ -92,7 +89,36 @@ export const PipelinePublishModal: React.FC<{
         width="60%"
         open={isModalOpen}
         footer={() => (
-          <div>
+          <div style={{ textAlign: 'start' }}>
+            <span>
+              <Checkbox
+                id="publication-agreement-checkbox"
+                checked={publishingAgreement}
+                onChange={(e) => setPublishingAgreement(e.target.checked)}
+              />
+              <label
+                htmlFor="publication-agreement-checkbox"
+                style={{ display: 'inline-flex', alignItems: 'center' }}
+              >
+                &nbsp;
+                {['field_recon', 'other'].includes(projectType)
+                  ? 'I agree to the Publishing Agreement and affirm that this dataset follows the Protected Data guidelines.'
+                  : 'I agree to the Publishing Agreement'}
+                &nbsp;
+                <Tag
+                  color="#d9534f"
+                  style={{
+                    borderRadius: '2.7px',
+                    lineHeight: 1,
+                    paddingInline: 0,
+                    padding: '0.2em 0.4em 0.3em',
+                    fontSize: '75%',
+                  }}
+                >
+                  Required
+                </Tag>
+              </label>
+            </span>
             {operation === 'version' && (
               <div style={{ textAlign: 'start', margin: '10px 0px' }}>
                 {' '}
@@ -127,23 +153,7 @@ export const PipelinePublishModal: React.FC<{
                 />
               </div>
             )}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <span>
-                <Checkbox
-                  id="publication-agreement-checkbox"
-                  checked={publishingAgreement}
-                  onChange={(e) => setPublishingAgreement(e.target.checked)}
-                />
-                <label htmlFor="publication-agreement-checkbox">
-                  &nbsp;I agree
-                </label>
-              </span>
+            <div style={{ textAlign: 'end' }}>
               <Button
                 disabled={!canPublish}
                 onClick={doPublish}
@@ -157,7 +167,7 @@ export const PipelinePublishModal: React.FC<{
         )}
         onCancel={handleCancel}
       >
-        {projectType === 'field_recon' && (
+        {['field_recon', 'other'].includes(projectType) && (
           <div className="pad-content">
             <h3>
               Guidelines Regarding the Storage and Publication of Protected Data
@@ -215,7 +225,7 @@ export const PipelinePublishModal: React.FC<{
             <div className="overview-heading">Storing Protected Data</div>
             <p>
               DesignSafe My Data and My Projects are secure spaces to store raw
-              protected data as long as it is not under HIPPA, FERPA or FISMA
+              protected data as long as it is not under HIPPA, FERPA, or FISMA
               regulations. If data needs to comply with these regulations,
               researchers must contact DesignSafe through a
               <a
@@ -292,7 +302,7 @@ export const PipelinePublishModal: React.FC<{
               discuss the conditions for its reuse.
             </p>
             <p>
-              5. Please contact DesignSafe through a
+              5. Please contact DesignSafe through a{' '}
               <a
                 href="/help/new-ticket/"
                 target="_blank"
@@ -300,14 +310,14 @@ export const PipelinePublishModal: React.FC<{
               >
                 help ticket
               </a>{' '}
-              or join
+              or join{' '}
               <a
                 href="/facilities/virtual-office-hours/"
                 target="_blank"
                 aria-describedby="msg-open-new-window"
               >
                 curation office hours
-              </a>
+              </a>{' '}
               prior to preparing this type of data publication.
             </p>
             <div
@@ -316,19 +326,7 @@ export const PipelinePublishModal: React.FC<{
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}
-            >
-              <span>
-                <Checkbox
-                  id="publication-protected-checkbox"
-                  checked={protectedDataAgreement}
-                  onChange={(e) => setProtectedDataAgreement(e.target.checked)}
-                />
-                <label htmlFor="publication-protected-checkbox">
-                  &nbsp;The data I am publishing adheres to the procedures
-                  listed above
-                </label>
-              </span>
-            </div>
+            ></div>
           </div>
         )}
 
@@ -343,9 +341,9 @@ export const PipelinePublishModal: React.FC<{
               target="_blank"
               aria-describedby="msg-open-new-window"
             >
-              Policies
+              Policies{' '}
             </a>
-            and
+            and{' '}
             <a
               href="user-guide/curating/bestpractices/"
               target="_blank"
@@ -353,8 +351,8 @@ export const PipelinePublishModal: React.FC<{
             >
               Best Practices
             </a>
-            I grant the Data Depot Repository (DDR) all required permissions and
-            licenses to make the work I publish in the DDR available for
+            . I grant the Data Depot Repository (DDR) all required permissions
+            and licenses to make the work I publish in the DDR available for
             archiving and continued access. These permissions include allowing
             DesignSafe to:
           </p>
@@ -368,8 +366,8 @@ export const PipelinePublishModal: React.FC<{
                 aria-describedby="msg-open-new-window"
               >
                 Policies
-              </a>
-              and
+              </a>{' '}
+              and{' '}
               <a
                 href="/user-guide/curating/bestpractices/"
                 target="_blank"
