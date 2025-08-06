@@ -172,7 +172,6 @@ class LogoutView(DjangoLogoutView):
         logout(request)
 
         logger.info('The user %s is attempting to logout via Tapis with token "%s"' % (username, token[:8].ljust(len(token), '-')))
-        # No trailing slash here after "get_host()" because the function appends one automatically.
         logout_endpoint = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://{request.get_host()}{settings.LOGOUT_REDIRECT_URL}"
 
         response = HttpResponseRedirect(logout_endpoint)
