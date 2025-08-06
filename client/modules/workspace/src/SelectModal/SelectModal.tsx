@@ -34,7 +34,6 @@ import {
 } from '@client/common-components';
 import styles from './SelectModal.module.css';
 import { SelectModalProjectListing } from './SelectModalProjectListing';
-
 import { truncateMiddle } from '../utils';
 
 const api = 'tapis';
