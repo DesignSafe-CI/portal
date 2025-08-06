@@ -125,7 +125,7 @@ export type TTapisApp = {
     hideAllocation?: boolean;
     hideMaxMinutes?: boolean;
     jobLaunchDescription?: string;
-    hideReservation?: boolean;
+    showReservation?: boolean;
   };
   uuid: string;
   deleted: boolean;

@@ -156,7 +156,7 @@ export const getConfigurationSchema = (
       );
     }
 
-    if (!definition.notes.hideReservation) {
+    if (definition.notes.showReservation) {
       configurationSchema['reservation'] = z.string().optional();
     }
   }
@@ -256,7 +256,7 @@ export const getConfigurationFields = (
     };
   }
 
-  if (definition.jobType === 'BATCH' && !definition.notes.hideReservation) {
+  if (definition.jobType === 'BATCH' && definition.notes.showReservation) {
     configurationFields['reservation'] = {
       description:
         'If you have a TACC reservation, enter the reservation string here.',
@@ -570,7 +570,7 @@ const FormSchema = (
         : ''
       : '';
 
-    if (!definition.notes.hideReservation) {
+    if (definition.notes.showReservation) {
       appFields.configuration.defaults['reservation'] = '';
     }
   }
