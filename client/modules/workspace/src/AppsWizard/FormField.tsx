@@ -75,10 +75,14 @@ const QueueStatus: React.FC<{
   const { getValues } = useFormContext();
   const selectedSystemId = getValues('configuration.execSystemId');
   const displayName = getSystemDisplayName(selectedSystemId);
-  const { data: queueData } = useSystemQueue(displayName);
+  const { data: systems } = useSystemOverview();
+  const selectedSystem = systems?.find(
+    (sys) => sys.display_name === displayName
+  );
+  const { data: queueData } = useSystemQueue(selectedSystem?.hostname || '');
   const selectedQueue = queueData?.find((q) => q.name === value);
 
-  if (!value) return null;
+  if (!value || !selectedSystem) return null;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
