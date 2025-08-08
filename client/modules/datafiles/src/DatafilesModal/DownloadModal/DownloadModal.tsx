@@ -100,7 +100,7 @@ export const DownloadModal: React.FC<{
           </a>
           ).
         </p>
-        <div hidden={!(system == 'designsafe.storage.published')}>
+        <div hidden={!(system === 'designsafe.storage.published')}>
           <p>
             This data directory is accessible on{' '}
             <strong>data.tacc.utexas.edu</strong> at the following path:
