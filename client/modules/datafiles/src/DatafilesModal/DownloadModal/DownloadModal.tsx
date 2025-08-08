@@ -100,6 +100,15 @@ export const DownloadModal: React.FC<{
           </a>
           ).
         </p>
+        <div hidden={!(system === 'designsafe.storage.published')}>
+          <p>
+            This data directory is accessible on{' '}
+            <strong>data.tacc.utexas.edu</strong> at the following path:
+          </p>
+          <p>
+            <code>{`/corral/projects/NHERI/published/published-data/${selectedFiles[0]?.name}`}</code>
+          </p>
+        </div>
       </Modal>
       <MicrosurveyModal
         isModalOpen={isMicrosurveyOpen}
