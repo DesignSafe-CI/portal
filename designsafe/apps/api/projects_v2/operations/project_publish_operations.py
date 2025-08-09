@@ -487,12 +487,13 @@ def publish_project(
         for node in pub_tree.successors("NODE_ROOT")
     ]
 
+    project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
+
     # If we don't explicitly close the db connection, it will remain open during the
     # entire data-copying step, which can cause operations to fail.
     close_old_connections()
 
     if not settings.DEBUG:
-        project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
         # Copy files first so if it fails we don't create orphan metadata/datacite entries.
         copy_publication_files(
             path_mapping,
