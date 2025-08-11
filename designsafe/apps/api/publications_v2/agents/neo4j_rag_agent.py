@@ -31,7 +31,7 @@ async def get_embedding(client, text, embedding_model):
 def get_driver_async() -> neo4j.AsyncDriver:
     """Instantiate an async neo4j client."""
     return neo4j.AsyncGraphDatabase.driver(
-        "neo4j://wma-chromadb-01.tacc.utexas.edu:7687",
+        settings.NEO4J_URL,
         auth=("neo4j", settings.NEO4J_PASS),
     )
 
