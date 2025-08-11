@@ -109,7 +109,7 @@ export const EntityFileListingTable: React.FC<{
         scheme="public"
         columns={columns}
         scroll={{ x: 500, y: 500 }}
-        dataSource={treeData.value.fileObjs}
+        dataSource={treeData.value.fileObjs as TFileListing[]}
         noSelection={preview}
         disabled
       />

@@ -30,7 +30,7 @@ export const FileListing: React.FC<
     baseRoute?: string;
     fileTags?: TFileTag[];
     emptyListingDisplay?: React.ReactNode;
-  } & Omit<TableProps, 'columns'>
+  } & Omit<TableProps<TFileListing>, 'columns'>
 > = ({
   api,
   system,

@@ -15,6 +15,7 @@ import {
   TGetNotificationsResponse,
   useInteractiveModalContext,
   TInteractiveModalContext,
+  TTapisJob,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -92,7 +93,7 @@ const InteractiveSessionButtons: React.FC<{
   );
 };
 
-export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
+export const JobsListing: React.FC<Omit<TableProps<TTapisJob>, 'columns'>> = ({
   ...tableProps
 }) => {
   const queryClient = useQueryClient();

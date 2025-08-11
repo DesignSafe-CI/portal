@@ -23,7 +23,7 @@ export const JobsListingTable: React.FC<
     columns: TJobsListingColumns;
     filterFn?: (listing: TTapisJob[]) => TTapisJob[];
     className?: string;
-  } & Omit<TableProps, 'columns' | 'className'>
+  } & Omit<TableProps<TTapisJob>, 'columns' | 'className'>
 > = ({ filterFn, columns, className, ...props }) => {
   const { lastMessage } = useWebSocket(
     `wss://${window.location.host}/ws/websockets/`

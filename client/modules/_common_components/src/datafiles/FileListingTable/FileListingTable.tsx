@@ -33,7 +33,7 @@ export const FileListingTable: React.FC<
     noSelection?: boolean;
     searchTerm?: string | null;
     currentDisplayPath?: TFileListing | undefined;
-  } & Omit<TableProps, 'columns' | 'className'>
+  } & Omit<TableProps<TFileListing>, 'columns' | 'className'>
 > = ({
   api,
   system,
