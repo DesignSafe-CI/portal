@@ -1,10 +1,11 @@
 """Websocket consumers"""
 
 import json
-import asyncio
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
+
+from designsafe.apps.api.publications_v2.agents.neo4j_rag_agent import neo4j_agent
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,19 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         """Handle receipt of a chat message."""
-        await asyncio.sleep(3)
-        message = json.dumps({"type": "chat.response", "payload": event["payload"]})
-        await self.send(message)
+
+        # await self.send(
+        #             json.dumps({"type": "chat.response", "payload": "received message"})
+        #         )
+        # stream_response =  neo4j_agent.run_stream(event["payload"])
+        # async with stream_response as result:
+        #     async for text in result.stream(debounce_by=1):
+        #         logger.debug(text)
+        #         await self.send(
+        #             json.dumps({"type": "chat.response", "payload": text})
+        #         )
+
+        response = await neo4j_agent.run(event["payload"])
+        await self.send(
+            json.dumps({"type": "chat.response", "payload": response.output})
+        )
