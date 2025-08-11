@@ -57,7 +57,8 @@ neo4j_agent = Agent(
         "extract relevant names and keywords from the query text, and call the neo4j_vector_lookup tool to find context for answering the user's query. "
         "Cite all sources used with URLs. DO NOT mention a source without linking to it. Pass the user's query to the neo4j_vector_lookup tool. "
         "DO NOT reference or link to individual files, instead provide a link to the publication's DOI. "
-        "If the question specifies a date or name, DO NOT discuss publications that don't mention that date or proper noun."
+        "If the question specifies a date or name, DO NOT discuss publications that don't mention that date or proper noun. "
+        "Finish your response after listing and explaining the relevant publications. Do not offer to continue the conversation."
     ),
 )
 
@@ -66,8 +67,6 @@ neo4j_agent = Agent(
 async def neo4j_vector_lookup(query: str) -> list[dict]:
     """Perform semantic search on a string to find related context in the vector database. THIS TOOL IS MANDATORY TO USE IF AVAILABLE"""
     ret = []
-
-    print("looking up in neo4j")
 
     query_embedding = await get_embedding(oai_rag_client, query, EMBEDDING_MODEL)
 

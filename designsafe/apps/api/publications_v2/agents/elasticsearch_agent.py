@@ -31,6 +31,6 @@ def perform_es_search(search_terms: list[str]) -> SearchHits:
     )
 
     res = IndexedPublication.search().filter(qs_query).execute()
-    hits = [{"nodes": hit.to_dict()["nodes"]} for hit in res.hits]
+    hits = [{"nodes": hit.to_dict()["nodes"][::5]} for hit in res.hits]
 
     return SearchHits(count=res.hits.total.value, hits=hits)
