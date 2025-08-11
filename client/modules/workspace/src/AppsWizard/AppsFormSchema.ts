@@ -106,6 +106,7 @@ export const fieldDisplayOrder: Record<string, string[]> = {
     'allocation',
     'execSystemId',
     'execSystemLogicalQueue',
+    'reservation',
     'maxMinutes',
     'nodeCount',
     'coresPerNode',
@@ -154,6 +155,10 @@ export const getConfigurationSchema = (
         execSystems
       );
     }
+
+    if (definition.notes.showReservation) {
+      configurationSchema['reservation'] = z.string().optional();
+    }
   }
 
   if (!definition.notes.hideMaxMinutes) {
@@ -174,6 +179,7 @@ export const getConfigurationSchema = (
       queue
     );
   }
+
   return configurationSchema;
 };
 
@@ -247,6 +253,18 @@ export const getConfigurationFields = (
           label: projectId,
         })),
       ],
+    };
+  }
+
+  if (definition.jobType === 'BATCH' && definition.notes.showReservation) {
+    configurationFields['reservation'] = {
+      description:
+        'If you have a TACC reservation, enter the reservation string here.',
+      label: 'TACC Reservation',
+      name: 'configuration.reservation',
+      key: 'configuration.reservation',
+      required: false,
+      type: 'text',
     };
   }
 
@@ -551,6 +569,10 @@ const FormSchema = (
         ? allocations[0]
         : ''
       : '';
+
+    if (definition.notes.showReservation) {
+      appFields.configuration.defaults['reservation'] = '';
+    }
   }
 
   if (!definition.notes.hideMaxMinutes) {
