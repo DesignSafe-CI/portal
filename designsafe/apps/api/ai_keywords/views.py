@@ -1,7 +1,8 @@
 from designsafe.apps.api.views import BaseApiView, ApiException
 from django.http import HttpRequest, JsonResponse
-
+import logging
 import chromadb
+import json
 from typing_extensions import List, TypedDict
 from langchain_core.documents import Document
 from langgraph.graph import START, StateGraph
@@ -10,6 +11,9 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from django.conf import settings
+
+
+logger = logging.Logger(__name__)
 
 
 class KeywordsView(BaseApiView):
@@ -28,8 +32,16 @@ class KeywordsView(BaseApiView):
         resp = graph.invoke(
             {"question": f"project title: {title}, description: {description}"}
         )
+        logger.debug(resp)
+        try:
+            answer = json.loads(resp["answer"])
+        except Exception:
+            logger.exception("Error decoding answer")
+            answer = []
 
-        return JsonResponse({"response": resp})
+        resp_list = answer if type(answer) is list else []
+
+        return JsonResponse({"response": resp_list})
 
 
 class State(TypedDict):
