@@ -370,7 +370,7 @@ export const getAppQueueValues = (
       )
       .map((q) => ({
         value: q.name,
-        label: q.hpcQueueName,
+        label: q.description || q.name,
       }))
       .sort((a, b) => a.label.localeCompare(b.label))
   );

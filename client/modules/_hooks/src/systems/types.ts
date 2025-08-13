@@ -1,6 +1,7 @@
 export type TTapisSystemQueue = {
   name: string;
   hpcQueueName: string;
+  description: string;
   maxJobs: number;
   maxJobsPerUser: number;
   minNodeCount: number;
