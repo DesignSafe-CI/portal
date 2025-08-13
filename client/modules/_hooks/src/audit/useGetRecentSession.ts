@@ -5,7 +5,6 @@ interface PortalAuditResponse {
 }
 
 export interface PortalAuditEntry {
-  session_id: string;
   timestamp: string;
   portal: string;
   username: string;
@@ -17,7 +16,8 @@ export interface PortalAuditEntry {
 async function fetchPortalAudit(
   username: string
 ): Promise<PortalAuditResponse> {
-  const response = await fetch(`/audit/api/user/${username}/portal`);
+  const encoded = encodeURIComponent(username);
+  const response = await fetch(`/audit/api/user/${encoded}/portal/`);
   if (!response.ok) {
     throw new Error(
       `API request failed: ${response.status} ${response.statusText}`

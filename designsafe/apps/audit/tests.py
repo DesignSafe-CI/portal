@@ -108,3 +108,8 @@ def test_portal_search_handles_database_error(authenticated_client):
         assert response.status_code == 500
         data = response.json()
         assert "error" in data
+
+
+
+
+#NEED TO REDO ALL OF THIS, UPDATED VIEWS AND URLS FILES IN NEXT COMMIT
