@@ -1,8 +1,10 @@
 """DesignSafe Auth Tapis OAuth flow view tests"""
 
 import pytest
+from django.contrib.auth import get_user
 from django.conf import settings
 from django.urls import reverse
+from django.http import HttpResponseRedirect
 from designsafe.apps.auth.views import launch_setup_checks
 
 
@@ -85,10 +87,10 @@ def test_launch_setup_checks(regular_user, mocker):
     mock_cache_allocations = mocker.patch(
         "designsafe.apps.auth.views.cache_allocations"
     )
-    
+
     # Run the function under test
     launch_setup_checks(regular_user)
-    
+
     # Assert mocks were called with the expected arguments
     mock_new_user_setup_check.assert_called_with(regular_user)
     mock_cache_allocations.apply_async.assert_called_with(
@@ -111,3 +113,15 @@ def test_launch_setup_checks_already_onboarded(regular_user, mocker):
     launch_setup_checks(regular_user)
     mock_cache_allocations.apply_async.assert_called_with(args=(regular_user.username,))
     mock_execute_setup_steps.apply_async.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_logout_redirects_correctly_and_logs_out(client, authenticated_user, mock_tapis_client, settings):
+    response = client.get('/logout/')
+
+    expected_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/oauth2/logout?redirect_url=https://testserver{settings.LOGOUT_REDIRECT_URL}"
+
+    assert isinstance(response, HttpResponseRedirect)
+    assert response.status_code == 302
+    assert response.url == expected_url
+    assert not get_user(client).is_authenticated
