@@ -345,7 +345,10 @@ export const getAppQueueValues = (
   system: TTapisSystem
 ) => {
   /* eslint-disable-next-line */
-  const queueFilter: string[] = (system.notes as any)?.['queueFilter'];
+  const queueFilter: string[] = (system.notes as any)?.['queueFilter']?.find(
+    (qf: any) => qf.portalName === 'DESIGNSAFE'
+  )?.queues;
+
   return (
     (system?.batchLogicalQueues ?? [])
       /*
