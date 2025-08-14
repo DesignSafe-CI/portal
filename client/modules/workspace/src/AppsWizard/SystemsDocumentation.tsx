@@ -22,7 +22,7 @@ export const SystemsDocumentation: React.FC<{ execSystemId: string }> = ({
   }
   return (
     <div style={{ lineHeight: '20px', textAlign: 'left', marginBottom: 16 }}>
-      <a href={url} target="_blank">
+      <a href={url} target="_blank" rel="noreferrer">
         {capitalizeFirstLetter(execSystemId)} {}
         detailed queue information
       </a>

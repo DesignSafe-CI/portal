@@ -14,6 +14,11 @@ export type TTapisSystemQueue = {
   maxMinutes: number;
 };
 
+export type TTapisSystemQueueFilter = {
+  portalName: string;
+  queues: [];
+};
+
 export type TTapisSystem = {
   isPublic: boolean;
   isDynamicEffectiveUser: boolean;
@@ -62,6 +67,7 @@ export type TTapisSystem = {
     label?: string;
     isMyData?: boolean;
     hasWork?: boolean;
+    queueFilter?: TTapisSystemQueueFilter[];
     portalNames: string[];
     noAllocationRequired?: boolean;
   };
