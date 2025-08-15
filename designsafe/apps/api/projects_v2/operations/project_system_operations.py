@@ -8,6 +8,7 @@ from tapipy.tapis import Tapis
 from django.conf import settings
 from designsafe.apps.api.agave import service_account
 from designsafe.libs.common.context_managers import AsyncTaskContext
+from tapipy.errors import BaseTapyException
 
 
 logger = logging.getLogger(__name__)
@@ -99,7 +100,7 @@ def create_workspace_dir(project_uuid: str) -> str:
     return path
 
 
-def create_workspace_system(client, project_uuid: str) -> str:
+def create_workspace_system(client, project_uuid: str, project_id: str = None) -> str:
     system_id = f"project-{project_uuid}"
     system_args = {
         "id": system_id,
@@ -115,6 +116,9 @@ def create_workspace_system(client, project_uuid: str) -> str:
             "publicKey": settings.PROJECT_STORAGE_SYSTEM_CREDENTIALS["username"],
         },
     }
+
+    if project_id:
+        system_args["notes"] = {"projectId": project_id}
 
     client.systems.createSystem(**system_args)
     return system_id
@@ -140,7 +144,9 @@ def increment_workspace_count(force=None) -> int:
 ##########################################
 
 
-def setup_project_file_system(project_uuid: str, users: list[str]):
+def setup_project_file_system(
+    project_uuid: str, users: list[str], project_id: str = None
+):
     """
     Create a workspace system owned by user whose client is passed.
     """
@@ -150,7 +156,7 @@ def setup_project_file_system(project_uuid: str, users: list[str]):
     create_workspace_dir(project_uuid)
 
     # User creates the system and adds their credential
-    resp = create_workspace_system(service_client, project_uuid)
+    resp = create_workspace_system(service_client, project_uuid, project_id=project_id)
 
     # Add tg458981 to ensure it can read externally transferred data
     acl_users = ["tg458981", *users]
@@ -222,15 +228,19 @@ def remove_users_from_project(project_uuid: str, usernames: list[str]):
 ##########################################
 
 
-@shared_task(bind=True)
+@shared_task(
+    bind=True, autoretry_for=(BaseTapyException), retry_kwargs={"max_retries": 3}
+)
 def add_users_to_project_async(self, project_uuid: str, usernames: list[str]):
     """Async wrapper around add_user_to_project"""
     with AsyncTaskContext():
         add_users_to_project(project_uuid, usernames)
 
 
-@shared_task(bind=True)
-def remove_users_from_project_async(self, project_uuid: str, usernames: str):
+@shared_task(
+    bind=True, autoretry_for=(BaseTapyException), retry_kwargs={"max_retries": 3}
+)
+def remove_users_from_project_async(self, project_uuid: str, usernames: list[str]):
     """Async wrapper around remove_user_from_project"""
     with AsyncTaskContext():
         remove_users_from_project(project_uuid, usernames)
