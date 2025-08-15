@@ -532,7 +532,6 @@ export const AppsSubmissionForm: React.FC = () => {
           ...updatedConfigurationStep,
         },
       };
-
       setSteps(updatedSteps);
     }
   }, [fields]);
@@ -680,12 +679,13 @@ export const AppsSubmissionForm: React.FC = () => {
         getOnDemandEnvVariables(definition);
     }
 
+    if (!jobData.job.parameterSet.schedulerOptions) {
+      jobData.job.parameterSet.schedulerOptions = [];
+    }
+
     // Add allocation scheduler option
     if (jobData.job.allocation) {
-      if (!jobData.job.parameterSet!.schedulerOptions) {
-        jobData.job.parameterSet!.schedulerOptions = [];
-      }
-      jobData.job.parameterSet!.schedulerOptions.push({
+      jobData.job.parameterSet.schedulerOptions.push({
         name: 'TACC Allocation',
         description: 'The TACC allocation associated with this job execution',
         arg: `-A ${jobData.job.allocation}`,
@@ -693,18 +693,17 @@ export const AppsSubmissionForm: React.FC = () => {
       delete jobData.job.allocation;
     }
 
-    const schedOpts = definition.jobAttributes.parameterSet?.schedulerOptions;
-    if (schedOpts) {
-      schedOpts.forEach((opt) => {
-        if (opt.notes?.isReservation) {
-          const reservation = jobData.job.parameterSet.schedulerOptions.find(
-            (option) => option.name === 'TACC Reservation'
-          );
-          if (reservation) {
-            reservation.arg = `--reservation=${reservation.arg}`;
-          }
-        }
+    // Add reservation scheduler option
+    if (jobData.job.reservation) {
+      jobData.job.parameterSet.schedulerOptions.push({
+        name: 'TACC Reservation',
+        description: 'The TACC reservation associated with this job execution',
+        arg: `--reservation=${jobData.job.reservation}`,
+        notes: {
+          isReservation: true,
+        },
       });
+      delete jobData.job.reservation;
     }
 
     // Before job submission, ensure the memory limit is not above queue limit.
