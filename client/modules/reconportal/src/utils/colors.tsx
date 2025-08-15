@@ -3,7 +3,10 @@ import { OpenTopoDataset, ReconPortalEvent } from '@client/hooks';
 /**
  * Get color for OpenTopo dataset
  */
-export function getOpenTopoColor(dataset: OpenTopoDataset, isSelected?: boolean): string {
+export function getOpenTopoColor(
+  dataset: OpenTopoDataset,
+  isSelected?: boolean
+): string {
   if (isSelected) {
     return '#FFD230';
   }
