@@ -16,7 +16,9 @@ import { LeafletMouseEvent } from 'leaflet';
  */
 export const OpenTopoLayer: React.FC = () => {
   const { data: openTopoData } = useGetOpenTopo();
-  const [selectedOpenTopoDataset, setSelectedOpenTopoDataset] = useState<string | null>(null);
+  const [selectedOpenTopoDataset, setSelectedOpenTopoDataset] = useState<
+    string | null
+  >(null);
 
   const features = useMemo(() => {
     const datasets = openTopoData?.Datasets ?? [];
@@ -36,7 +38,8 @@ export const OpenTopoLayer: React.FC = () => {
           key={`geojson-${dataset.identifier.value}-${index}`}
           data={geojson}
           style={() => {
-            const isSelected = selectedOpenTopoDataset === dataset.identifier.value;
+            const isSelected =
+              selectedOpenTopoDataset === dataset.identifier.value;
             return {
               color: getOpenTopoColor(dataset, isSelected),
               weight: isSelected ? 4 : 2,
@@ -78,7 +81,6 @@ export const OpenTopoLayer: React.FC = () => {
             layer.on('popupclose', () => {
               setSelectedOpenTopoDataset(null);
             });
-
           }}
         />
       );
