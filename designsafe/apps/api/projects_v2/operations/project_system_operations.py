@@ -229,7 +229,7 @@ def remove_users_from_project(project_uuid: str, usernames: list[str]):
 
 
 @shared_task(
-    bind=True, autoretry_for=(BaseTapyException), retry_kwargs={"max_retries": 3}
+    bind=True, autoretry_for=(BaseTapyException,), retry_kwargs={"max_retries": 3}
 )
 def add_users_to_project_async(self, project_uuid: str, usernames: list[str]):
     """Async wrapper around add_user_to_project"""
@@ -238,7 +238,7 @@ def add_users_to_project_async(self, project_uuid: str, usernames: list[str]):
 
 
 @shared_task(
-    bind=True, autoretry_for=(BaseTapyException), retry_kwargs={"max_retries": 3}
+    bind=True, autoretry_for=(BaseTapyException,), retry_kwargs={"max_retries": 3}
 )
 def remove_users_from_project_async(self, project_uuid: str, usernames: list[str]):
     """Async wrapper around remove_user_from_project"""
