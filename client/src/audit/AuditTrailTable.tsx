@@ -116,6 +116,16 @@ const AuditTrailTable: React.FC<AuditTrailTableProps> = ({
       return pathVal !== '-' ? pathVal.split('/').pop() || '-' : '-';
     }
 
+    if (action === 'submitjob') {
+      const body = parsed?.body as any;
+      if (body?.job?.fileInputs?.[0]?.sourceUrl) {
+        const sourceUrl = body.job.fileInputs[0].sourceUrl;
+        const filename = sourceUrl.split('/').pop() || '';
+        return filename;
+      }
+      return '-';
+    }
+
     // fallback: try path last segment
     const fallbackPath = extractDataField(parsed, 'path');
     return fallbackPath !== '-' ? fallbackPath.split('/').pop() || '-' : '-';
@@ -148,6 +158,11 @@ const AuditTrailTable: React.FC<AuditTrailTableProps> = ({
       case 'trash':
         source = extractDataField(parsed, 'body.path');
         dest = extractDataField(parsed, 'body.trash_path');
+        break;
+
+      case 'submitjob':
+        source = 'nan';
+        dest = extractDataField(parsed, 'body.job.fileInputs.0.sourceUrl');
         break;
 
       default:
@@ -223,6 +238,7 @@ const AuditTrailTable: React.FC<AuditTrailTableProps> = ({
 
       {auditError && (
         <div style={{ color: 'red' }}>Error: {auditError.message}</div>
+        // change to "Unable to load" later for simplicity
       )}
 
       {auditLoading && <Spinner />}

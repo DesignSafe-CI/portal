@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.db import Error as DatabaseError
 from unittest.mock import patch
 import pytest
-
+import json
 
 pytestmark = pytest.mark.django_db
 
@@ -108,7 +108,6 @@ def test_portal_search_handles_database_error(authenticated_client):
         assert response.status_code == 500
         data = response.json()
         assert "error" in data
-
 
 
 

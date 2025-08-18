@@ -18,9 +18,7 @@ def audit_trail(request):
 
 
 def trace_file_portal_search(rows, filename):
-    """Return only rows that touch the searched file, tracking renames/moves."""
-
-    def as_dict(v):
+    def return_as_dict(v):
         if isinstance(v, dict):
             return v
         if isinstance(v, str):
@@ -28,93 +26,77 @@ def trace_file_portal_search(rows, filename):
                 return json.loads(v)
             except Exception:
                 return {}
-        return {}
+    #normalize input: accept {"data": [...]} or the list itself
+    if isinstance(rows, dict) and "data" in rows:
+        rows = rows.get("data") or []
+    if not isinstance(rows, list):
+        return []
 
-    # examples
-    def bn(p):
-        return p.rstrip("/").split("/")[-1] if p else ""
-
-    def looks_like_file(name: str) -> bool:
-        return bool(name) and "." in name
-
-    seed = (filename or "").strip()
-    aliases = {seed.lower()} if seed else set()
-    seed_lc = seed.lower()
-
+    seed = (filename or "").strip().lower()
+    aliases = {seed} if seed else set()
     kept = []
+
+    def get_basename_from_path(p):
+        return (p or "").rstrip("/").split("/")[-1].lower()
 
     for r in rows:
         action = (r.get("action") or "").lower()
-        raw_data = r.get("data")
-        data = as_dict(raw_data)
+        data = return_as_dict(r.get("data"))
+
+        #skip if it can't be parsed
+        if not isinstance(data, dict):
+            continue
+
         body = data.get("body", {}) if isinstance(data, dict) else {}
 
-        path = str(data.get("path") or "")
-        file_path = str(data.get("filePath") or "")
-        src_path = str(body.get("path") or path or "")
-        dest_path = str(body.get("dest_path") or body.get("trash_path") or path or "")
-        file_name = str(body.get("file_name") or "")
-        new_name = str(body.get("new_name") or "")
-
-        # getting display and location, already in front-end so idk
         if action == "upload":
-            display = file_name or bn(path)
-            source, dest = "—", (path or "-")
+            fname = (body.get("file_name") or "").strip().lower()
+            if fname and fname in aliases:
+                kept.append(r)
+
         elif action == "rename":
-            display = new_name or bn(path)
-            source, dest = "—", (path or "-")
+            base = get_basename_from_path(data.get("path"))
+            if base and base in aliases:
+                new_name = (body.get("new_name") or "").strip().lower()
+                if new_name:
+                    aliases.add(new_name)
+                kept.append(r)
+
         elif action == "move":
-            display = bn(path) or bn(src_path) or bn(dest_path)
-            source, dest = (src_path or "—"), (dest_path or "-")
+            base = get_basename_from_path(data.get("path"))
+            if base and base in aliases:
+                kept.append(r)
+
         elif action == "trash":
-            display = bn(src_path) or bn(path)
-            source, dest = (src_path or "—"), (body.get("trash_path") or "-")
-        elif action == "download":
-            display = bn(file_path) or bn(path)
-            source, dest = "—", (path or "-")
-        else:
-            display = bn(path) or bn(file_path) or file_name or new_name
-            source, dest = "—", (path or "-")
+            base = get_basename_from_path(data.get("path"))
+            if not base:
+                base = get_basename_from_path(body.get("path"))
+            if base and base in aliases:
+                kept.append(r)
 
-        # candidate names (only keeping file-like)
-        candidates_raw = [
-            file_name,
-            new_name,
-            bn(path),
-            bn(file_path),
-            bn(src_path),
-            bn(dest_path),
-            display,
-        ]
-        file_candidates = [
-            c.lower() for c in candidates_raw if c and looks_like_file(c)
-        ]
+        elif action == "submitjob":
+            job = body.get("job", {}) if isinstance(body, dict) else {}
+            file_inputs = job.get("fileInputs") or []
 
-        relevant = any(c in aliases for c in file_candidates)
-
-        if relevant:
-            item = dict(r)
-            item["filename"] = display or "-"
-            item["location"] = f"{'—' if source == 'nan' else source} → {dest}"
-            kept.append(item)
-
-            aliases.update(file_candidates)
-
-        else:
-            if action == "upload" and looks_like_file(display):
-                try:
-                    raw_str = (
-                        raw_data
-                        if isinstance(raw_data, str)
-                        else json.dumps(raw_data or "")
-                    )
-                except Exception:
-                    raw_str = str(raw_data or "")
-                if seed_lc and seed_lc in raw_str.lower():
-                    aliases.add(display.lower())
-
+            for fi in file_inputs:
+                if isinstance(fi, dict):
+                    source_url = fi.get("sourceUrl")
+                    if source_url:
+                        base = get_basename_from_path(source_url)
+                        if base and base in aliases:
+                            kept.append(r)
+                            break
     return kept
 
+def trace_file_tapis_search(rows, filename):
+    # TODO: once DB is back up and running need to implement search for tapis file
+    # getting rows via action upload, ACTION_UPLOAD, ACTION_MOVE, ACTION_DELETE
+    # set aliases to filename
+    # rows upload & ACTION_UPLOAD -> check base of target_path -> if matching in aliases, add to kept
+    # rows ACTION_MOVE -> either a rename or move ->
+    #       check for rename
+    #          if base in source_path in aliases
+    pass
 
 def get_portal_session_audit_search(request, username):
     """
@@ -124,7 +106,7 @@ def get_portal_session_audit_search(request, username):
         audit_db = connections["audit"]
         cursor = audit_db.cursor()
 
-        # TEST - "joyce_cywu"
+        # region TEST - "joyce_cywu"
         # query = """
         # SELECT session_id, timestamp, portal, username, action, tracking_id, data
         # FROM public.portal_audit
@@ -132,6 +114,7 @@ def get_portal_session_audit_search(request, username):
         # AND username = %s
         # ORDER BY timestamp ASC;
         #     """
+        # endregion
 
         query = """
         SELECT timestamp, portal, username, action, tracking_id, data
@@ -148,7 +131,7 @@ def get_portal_session_audit_search(request, username):
 
         cursor.execute(query, [username])
         columns = [col[0] for col in cursor.description]
-        results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        results = [dict(zip(columns, row)) for row in cursor.fetchall()] #getting to json
         cursor.close()
         print("Portal recent session query successful.", flush=True)
         return JsonResponse({"data": results})
@@ -165,30 +148,111 @@ def get_portal_file_audit_search(request, filename):
         audit_db = connections["audit"]
         cursor = audit_db.cursor()
 
+        # region - test queries
+        # query = """
+        # SELECT timestamp, portal, username, action, tracking_id, data
+        # FROM public.portal_audit
+        # WHERE tracking_id = (
+        #     SELECT tracking_id
+        #     FROM public.portal_audit
+        #     WHERE action = 'upload'
+        #     AND data::text ILIKE %s
+        #     LIMIT 1
+        # )
+        # AND tracking_id IS NOT NULL
+        # AND action IN ('upload', 'rename', 'move', 'trash', 'download')
+        # ORDER BY "timestamp" ASC;
+        # """
+
+        # test query which basically gets the all the tracking_ids from all rows that
+        #have the filename in its data field. From there goes through every single tracking_id, looks at all its rows,
+        #and selects the ones that have either upload, rename, move, trash, download, or submitJob as its actions.
+        #From there it creates a giant JSON file with every possible row that i need to check against
+        #created because tracking_id is not as viable as originally thought, same file uploads were spread across multiple tracking_ids
+
+        #-- e.g. "%MPAKCE.tcl%"
+        # query = """
+        # WITH hits AS (
+        # SELECT DISTINCT tracking_id
+        # FROM public.portal_audit
+        # WHERE data::text ILIKE %s
+        # ),
+        # events AS (
+        # SELECT pa.session_id, pa.timestamp, pa.portal, pa.username,
+        #         pa.action, pa.tracking_id, pa.data
+        # FROM public.portal_audit pa
+        # JOIN hits h ON h.tracking_id = pa.tracking_id
+        # WHERE lower(pa.action) IN ('upload','rename','move','trash','download','submitjob')
+        # )
+        # SELECT json_build_object(
+        # 'data',
+        # COALESCE(
+        #     json_agg(
+        #     json_build_object(
+        #         'timestamp',   e.timestamp,
+        #         'portal',      e.portal,
+        #         'username',    e.username,
+        #         'action',      e.action,
+        #         'tracking_id', e.tracking_id,
+        #         'data',        e.data::json
+        #     )
+        #     ORDER BY e.timestamp, e.tracking_id, e.action
+        #     ),
+        #     '[]'::json
+        # )
+        # ) AS payload
+        # FROM events e;
+        # """
+
+        # query = """
+        # SELECT timestamp, portal, username, action, tracking_id, data
+        # FROM public.portal_audit
+        # WHERE tracking_id = (
+        # SELECT tracking_id
+        # FROM public.portal_audit
+        # WHERE (lower(action) = 'upload' OR lower(action) = 'submitjob')
+        #     AND data::text ILIKE %s
+        # ORDER BY timestamp DESC
+        # LIMIT 1
+        # )
+        # AND action IN ('upload','rename','move','trash','download','submitJob')
+        # ORDER BY timestamp ASC;
+        # """
+
+
+        # endregion
+
         query = """
-        SELECT timestamp, portal, username, action, tracking_id, data
+        WITH hits AS (
+        SELECT DISTINCT tracking_id
         FROM public.portal_audit
-        WHERE tracking_id = (
-            SELECT tracking_id
-            FROM public.portal_audit
-            WHERE action = 'upload'
-            AND data::text ILIKE %s
-            LIMIT 1
+        WHERE data::text ILIKE %s
+        ),
+        events AS (
+        SELECT pa.session_id, pa.timestamp, pa.portal, pa.username,
+                pa.action, pa.tracking_id, pa.data
+        FROM public.portal_audit pa
+        JOIN hits h ON h.tracking_id = pa.tracking_id
+        WHERE lower(pa.action) IN ('upload','rename','move','trash','submitjob')
         )
-        AND tracking_id IS NOT NULL
-        AND action IN ('upload', 'rename', 'move', 'trash', 'download')
-        ORDER BY "timestamp" ASC;
+        SELECT e.timestamp, e.portal, e.username, e.action, e.tracking_id, e.data
+        FROM events e
+        ORDER BY e.timestamp, e.tracking_id, e.action;
         """
+        #order changed from timestamp first, then tracking id, then action -- change more convinient as it will now group together tracking_ids  or idk need feedback on that, no nvm bad idea
+
+
 
         pattern = f"%{filename}%"
         cursor.execute(query, [pattern])
+        print(cursor.description)
         columns = [col[0] for col in cursor.description]
         results = [dict(zip(columns, row)) for row in cursor.fetchall()]
         cursor.close()
         print("Portal file search query successful.", flush=True)
         filteredRows = trace_file_portal_search(results, filename)
-        print(filteredRows, flush=True)
-        return JsonResponse({"data": filteredRows})
+        #print(results, flush=True)
+        return JsonResponse({"data": filteredRows}, json_dumps_params={"indent": 2, "ensure_ascii": False})
     except DatabaseError as exc:
         print("Error in get_portal_file_audit_search:", str(exc))
         return JsonResponse({"error": str(exc)}, status=500)
@@ -224,3 +288,7 @@ def get_usernames_portal(request):
     except DatabaseError as exc:
         print("Error in update_usernames_autocomplete:", str(exc))
         return JsonResponse({"error": str(exc)}, status=500)
+
+
+
+#need to work on UI API 500 errro response when page is not loading ==== MUST
