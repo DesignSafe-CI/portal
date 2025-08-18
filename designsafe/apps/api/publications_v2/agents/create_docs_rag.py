@@ -44,7 +44,7 @@ class DesignSafeRAG:
     def __init__(
         self,
         base_url: str = "https://www.designsafe-ci.org/user-guide/",
-        chroma_path: str = "srv/www/designsafe/chroma_db/chroma",
+        chroma_path: str = "/srv/www/designsafe/chroma_db/chroma",
         collection_name: str = "designsafe_docs",
     ):
         """
