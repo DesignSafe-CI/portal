@@ -33,12 +33,14 @@ class PublicationRagResult(BaseModel):
     text: str
 
 
-OPENAI_MODEL = "gpt-4.1-mini"
+OPENAI_MODEL = "gpt-4o-mini"
 # OPENAI_MODEL="o4-mini"
 # OPENAI_MODEL="gpt-4.1-nano"
 
 
 class AgentDeps(BaseModel):
+    """Dependencies for the OpenAI RAG agent"""
+
     query: str
     response_callback: Callable
 
@@ -55,6 +57,7 @@ agent = Agent(
         "You are an research assistant tasked with helping users explore natural hazards publications in the DesignSafe cyberinfrastructure.",
         "Cite all sources used with URLs. Pass the user's query VERBATIM to the vector_lookup tool. Call the vector_lookup tool EXACTLY once.",
         "ONLY discuss publications that directly relate to the user's query. ",
+        "Include a 'Link' bullet point in each listed publication with a link to its URL. ",
         # "ALWAYS explain in detail why each referenced publication was chosen. ",
         "DO NOT use the legacyPath attribute on files to construct URLs.",
         "If the question relates to attributes of a publication, DO NOT discuss publications that aren't relevant to those attributes."
@@ -77,6 +80,7 @@ def relevance_instruction(ctx: RunContext[AgentDeps]) -> str:
 
 class SearchParams(BaseModel):
     """Base class for search parameters extracted from a user query."""
+
     keywords: list[str]
     author_names: list[str]
     dates: list[str]

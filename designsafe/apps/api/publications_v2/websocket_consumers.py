@@ -6,6 +6,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 # from designsafe.apps.api.publications_v2.agents.neo4j_rag_agent import neo4j_agent
 from designsafe.apps.api.publications_v2.agents.openai_rag_agent import agent, AgentDeps
+from designsafe.apps.api.publications_v2.agents.intent_agent import intent_agent
+from designsafe.apps.api.publications_v2.agents.create_docs_rag import (
+    async_query_docs_rag,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +53,29 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                     }
                 )
             )
+
+        intent_result = await intent_agent.run(event["payload"])
+        if intent_result.output == "documentation":
+            await self.send(
+                json.dumps(
+                    {
+                        "type": "chat.status",
+                        "payload": "Your query has been routed to the documentation subsystem. Generating a response now...",
+                    }
+                )
+            )
+
+            response = await async_query_docs_rag(event["payload"])
+            await self.send(
+                json.dumps(
+                    {
+                        "type": "chat.response",
+                        "key": f"response-{event["key"]}",
+                        "payload": response,
+                    }
+                )
+            )
+            return
 
         try:
             stream_response = agent.run_stream(

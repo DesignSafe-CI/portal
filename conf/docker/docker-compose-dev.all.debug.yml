@@ -86,6 +86,7 @@ services:
       - ../../.:/srv/www/designsafe
       - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+      - des_chroma_data:/srv/www/designsafe/chroma_db
     ports:
       - 127.0.0.1:5678:5678
     dns:
@@ -105,6 +106,7 @@ services:
       - ../../.:/srv/www/designsafe
       - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
+      - des_chroma_data:/srv/www/designsafe/chroma_db
     container_name: des_websockets
     command: python manage.py runserver 0.0.0.0:9000
 
@@ -148,3 +150,4 @@ volumes:
   des_postgres_data:
   des_es_data:
   des_rabbitmq_data:
+  des_chroma_data:
