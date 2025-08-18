@@ -5,7 +5,6 @@ import { Layout } from 'antd';
 import useWebSocket from 'react-use-websocket';
 import parse from 'html-react-parser';
 import markdownit from 'markdown-it';
-import { uuid } from 'uuidv4';
 
 const { Content, Footer } = Layout;
 
@@ -117,7 +116,7 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
         setLoading(false);
       } else if (wsMessage?.type === 'chat.status') {
         const aiResponse: Message = {
-          key: uuid(),
+          key: `chat-${Date.now()}`,
           content: wsMessage.payload,
           role: 'assistant',
           timestamp: Date.now(),
@@ -142,7 +141,7 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
 
   const handleSendMessage = (content: string) => {
     if (!content.trim()) return;
-    const messageKey = uuid();
+    const messageKey = `chat-${Date.now()}`;
     const userMessage: Message = {
       key: messageKey,
       content: content,
