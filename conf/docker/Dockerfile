@@ -6,7 +6,7 @@ RUN npm ci
 COPY . /designsafe/
 RUN npm run build
 
-FROM node:20 AS node_nx_build
+FROM node:22 AS node_nx_build
 COPY client/package.json client/package-lock.json /designsafe/
 WORKDIR /designsafe/client
 RUN npm ci
@@ -14,7 +14,7 @@ RUN npm ci
 COPY client/ /designsafe/client/
 RUN npm run build
 
-FROM python:3.11-bookworm AS python-base
+FROM python:3.12-bookworm AS python-base
 
 LABEL maintainer="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
 
