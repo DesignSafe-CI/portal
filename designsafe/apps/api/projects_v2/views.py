@@ -168,7 +168,11 @@ class ProjectsView(BaseApiView):
         initialize_project_graph(project_meta.project_id)
         project_users = [user.username for user in project_meta.users.all()]
         # create project system
-        setup_project_file_system(project_uuid=project_meta.uuid, users=project_users)
+        setup_project_file_system(
+            project_uuid=project_meta.uuid,
+            users=project_users,
+            project_id=f"PRJ-{prj_number}",
+        )
         # add users to system
 
         return JsonResponse({"projectId": project_meta.project_id})
