@@ -7,12 +7,13 @@ import {
   tapisInputFileRegex,
   TAppFileSettings,
 } from '../AppsWizard/AppsFormSchema';
-import { getSystemDisplayName } from '../utils';
+import { getSystemDisplayName, getExecSystemFromId } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
 import { useSystemOverview, useSystemQueue } from '@client/hooks';
 import systemStatusStyles from '../components/SystemStatusModal/SystemStatusModal.module.css';
 import queueStyles from '../components/SystemStatusModal/SystemQueueTable.module.css';
+import { useGetSystems } from '@client/hooks';
 
 const ExtendedSelect: React.FC<{
   after?: React.FC<{
@@ -74,11 +75,14 @@ const QueueStatus: React.FC<{
 }> = ({ value }) => {
   const { getValues } = useFormContext();
   const selectedSystemId = getValues('configuration.execSystemId');
-  const displayName = getSystemDisplayName(selectedSystemId);
+  const { data: { executionSystems } } = useGetSystems();
+  const currentExecSystem = getExecSystemFromId(executionSystems, selectedSystemId);
   const { data: systems } = useSystemOverview();
+
   const selectedSystem = systems?.find(
-    (sys) => sys.display_name === displayName
+    (sys) => sys.hostname === currentExecSystem?.host
   );
+
   const { data: queueData } = useSystemQueue(selectedSystem?.hostname || '');
   const selectedQueue = queueData?.find((q) => q.name === value);
 
