@@ -37,6 +37,8 @@ export const mapConfig = {
   minZoom: 2, // 2 typically prevents zooming out too far to see multiple earths
   maxZoom: 24, // Maximum possible detail
   maxFitBoundsSelectedFeatureZoom: 18,
+  selectedEventZoomToLevel: 11, // Zoom level to use when an event is selected
+  minZoomForOpenTopo: 9,        // Minimum zoom level for displaying OpenTopo datasets
   maxBounds: [
     [-90, -180], // Southwest coordinates
     [90, 180], // Northeast coordinates
@@ -174,11 +176,11 @@ export const LeafletMap: React.FC = () => {
         </LayersControl>
 
         {/* Open Topo features, only visible when zoomed in and DS event selected*/}
-        <ZoomConditionalLayerGroup minZoom={9}>
+        <ZoomConditionalLayerGroup minZoom={mapConfig.minZoomForOpenTopo}>
           <OpenTopoLayer />
         </ZoomConditionalLayerGroup>
         {/* Recon Portal features, only zoomed in when DS event selected*/}
-        <ZoomOnEventSelection zoomLevel={11}></ZoomOnEventSelection>
+        <ZoomOnEventSelection zoomLevel={mapConfig.selectedEventZoomToLevel}></ZoomOnEventSelection>
         {/* Marker Features with Clustering (also includes point cloud markers) */}
         <MarkerClusterGroup
           zIndexOffset={1}
@@ -186,7 +188,7 @@ export const LeafletMap: React.FC = () => {
           chunkedLoading={true}
           showCoverageOnHover={false}
           animate={true}
-          maxFitBoundsSelectedFeatureZoom={15}
+          maxFitBoundsSelectedFeatureZoom={mapConfig.maxFitBoundsSelectedFeatureZoom}
           spiderifyOnHover={true}
           spiderfyOnMaxZoom={true}
           spiderfyOnZoom={15}
