@@ -759,3 +759,11 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         },
     },
 ]
+
+
+OPENAI_API_URL = os.environ.get("OPENAI_API_URL")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+NEO4J_URL = os.environ.get("NEO4J_URL")
+NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
+NEO4J_PASS = os.environ.get("NEO4J_PASS")
