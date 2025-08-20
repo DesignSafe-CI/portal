@@ -1,0 +1,7 @@
+.aiButton {
+  background: linear-gradient(135deg, #47a59d 0%, #337ab7 100%) !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
+  box-shadow: 0 0 0 2px #47a59d, 0 0 8px rgba(71, 165, 157, 0.3) !important;
+  color: white !important;
+}
