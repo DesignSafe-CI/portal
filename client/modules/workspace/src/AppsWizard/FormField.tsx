@@ -75,8 +75,13 @@ const QueueStatus: React.FC<{
 }> = ({ value }) => {
   const { getValues } = useFormContext();
   const selectedSystemId = getValues('configuration.execSystemId');
-  const { data: { executionSystems } } = useGetSystems();
-  const currentExecSystem = getExecSystemFromId(executionSystems, selectedSystemId);
+  const {
+    data: { executionSystems },
+  } = useGetSystems();
+  const currentExecSystem = getExecSystemFromId(
+    executionSystems,
+    selectedSystemId
+  );
   const { data: systems } = useSystemOverview();
 
   const selectedSystem = systems?.find(
