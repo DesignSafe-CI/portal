@@ -1,9 +1,8 @@
-import { Button, Form, Input, Collapse, Select, Drawer } from 'antd';
+import { Button, Form, Input, Collapse, Select } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSyncExternalStore } from 'react';
 import * as dropdownOptions from '../../projects/forms/ProjectFormDropdowns';
-import { AIChat } from '../AIChat/AIChat';
 import styles from './PublicationSearchToolbar.module.css';
 
 const { Panel } = Collapse;
@@ -46,7 +45,6 @@ export const PublicationSearchToolbar: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [form] = Form.useForm();
   const [showTips, setShowTips] = useState(false);
-  const [showAiDrawer, setShowAiDrawer] = useState(false);
   const searchBarRef = useRef<HTMLDivElement>(null);
   const searchHelpRef = useRef<HTMLDivElement>(null);
 
@@ -191,12 +189,6 @@ export const PublicationSearchToolbar: React.FC = () => {
           </div>
         )}
       </div>
-      
-      <Button type="default" className={styles.askAiButton} onClick={() => setShowAiDrawer(true)}>
-        <i className="fa fa-lightbulb-o" />
-        Ask AI
-      </Button>
-
       <div>
         <label htmlFor="nh-type-select" className={styles.filterLabel}>
           Natural Hazard Type
@@ -239,17 +231,6 @@ export const PublicationSearchToolbar: React.FC = () => {
       <Button type="link" onClick={handleClearFilters}>
         Clear Filters
       </Button>
-
-      <Drawer
-        title="Ask AI"
-        placement="bottom"
-        height={600}
-        open={showAiDrawer}
-        onClose={() => setShowAiDrawer(false)}
-        maskClosable={true}
-      >
-        <AIChat closed={!showAiDrawer} />
-      </Drawer>
     </div>
   );
 };

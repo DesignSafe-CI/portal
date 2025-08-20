@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bubble, Sender } from '@ant-design/x';
 import { UserOutlined, RobotOutlined } from '@ant-design/icons';
-import { Layout } from 'antd';
+import { Layout, Flex } from 'antd';
 import useWebSocket from 'react-use-websocket';
 import parse from 'html-react-parser';
 import markdownit from 'markdown-it';
@@ -188,19 +188,22 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
 
   return (
     <Layout style={{ height: '100%' }}>
-      <Content style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
-        <Bubble.List
-          items={bubbleItems}
-          style={{ background: 'transparent' }}
-        />
-        {loading && (
-          <Bubble
-            content=""
-            placement="start"
-            avatar={{ icon: <RobotOutlined /> }}
-            loading={true}
+      <Content style={{ flex: 1, padding: '16px' }}>
+        <Flex vertical style={{ height: '100%' }}>
+          <Bubble.List
+            items={bubbleItems}
+            style={{ background: 'transparent', width: '100%' }}
           />
-        )}
+          {loading && (
+            <Bubble
+              content=""
+              placement="start"
+              avatar={{ icon: <RobotOutlined /> }}
+              loading={true}
+              style={{ marginTop: '8px' }}
+            />
+          )}
+        </Flex>
       </Content>
 
       <Footer
