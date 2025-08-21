@@ -15,7 +15,8 @@ export const useClarivateMetrics = (
       if (opts?.debug) qs.set('debug', '1');
       const res = await fetch(`/api/publications/clarivate/?${qs.toString()}`);
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || 'Failed to fetch Clarivate metrics');
+      if (!res.ok)
+        throw new Error(json?.error || 'Failed to fetch Clarivate metrics');
       return {
         citationCount: json?.citation_count ?? 0,
         citations: Array.isArray(json?.citations) ? json.citations : [],
