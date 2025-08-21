@@ -76,6 +76,7 @@ export default function LegendControl() {
   useEffect(() => {
     if (!selectedEvent) return;
 
+    // @ts-expect-error Leaflet’s control factory typing is mis-resolved
     const control = L.control({ position: "topright" });
     let el: HTMLDivElement | null = null;
     let root: ReactDOM.Root | null = null;
