@@ -4,7 +4,7 @@ import { GeoJSON, Marker, Popup } from 'react-leaflet';
 import { faMap } from '@fortawesome/free-solid-svg-icons';
 import { OpenTopoPopupContent } from './OpenTopoPopupContent';
 import { createSvgMarkerIcon } from './leafletUtil';
-import { getOpenTopoColor } from '../utils';
+import { getOpenTopoColor } from '../utils/colors';
 import { getFirstLatLng } from './utils';
 import { useGetOpenTopo } from '@client/hooks';
 
