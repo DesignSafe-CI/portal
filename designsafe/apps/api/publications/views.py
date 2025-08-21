@@ -4,7 +4,11 @@ from designsafe.apps.api.agave import get_service_account_client
 from django.conf import settings
 from requests.exceptions import HTTPError
 from designsafe.apps.api.publications import operations
-from designsafe.apps.api.publications.operations import clarivate_single_api
+from designsafe.apps.api.publications.operations import (
+    clarivate_single_api,
+    clarivate_wos_exp_single_api_basic,
+    build_citation_json,
+)
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from django.utils.decorators import method_decorator
 import json
@@ -80,13 +84,43 @@ API endpoint to retrieve Clarivate citation count for a single DOI.
 
 class PublicationClarivateView(BaseApiView):
     def get(self, request):
-        doi = request.GET.get('doi', '')
+        doi = (request.GET.get('doi') or '').strip()
+        include = (request.GET.get('include') or '').strip().lower()
+        include_records = include in ('records', 'citations', 'all', 'true', '1')
+        debug_flag = (request.GET.get('debug') or '').lower() in ('1', 'true', 'yes')
 
         if not doi:
             return JsonResponse({'error': 'DOI parameter is required'}, status=400)
 
-        try:
-            citations = clarivate_single_api(doi)
-            return JsonResponse({'doi': doi, 'citation_count': citations})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+        payload = {'doi': doi, 'citations': []}
+        debug_info = {}
+
+        # Starter count 
+        count = clarivate_single_api(doi)
+        payload['citation_count'] = int(count)
+
+        # Expanded list
+        if include_records:
+            try:
+                raw = clarivate_wos_exp_single_api_basic(doi, debug=debug_info)
+
+                found = int(((raw or {}).get('QueryResult') or {}).get('RecordsFound') or 0)
+                recs_field = (((raw or {}).get('Data') or {}).get('Records') or {}).get('records')
+                debug_info['records_found'] = found
+                debug_info['records_field_type'] = type(recs_field).__name__ if recs_field is not None else 'NoneType'
+
+                if found > 0:
+                    try:
+                        payload['citations'] = build_citation_json(raw)
+                    except Exception as e:
+                        log.warning('build_citation_json failed: %s', e)
+                        debug_info['normalize_error'] = str(e)
+
+            except Exception as e:
+                debug_info['expanded_error'] = str(e)
+                debug_info['expanded_trace_tail'] = traceback.format_exc().splitlines()[-3:]
+
+        if debug_flag and debug_info:
+            payload['_debug'] = debug_info
+
+        return JsonResponse(payload)
