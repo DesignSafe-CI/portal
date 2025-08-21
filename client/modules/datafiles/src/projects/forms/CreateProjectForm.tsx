@@ -145,7 +145,7 @@ export const BaseProjectCreateForm: React.FC<{
             },
             {
               min: 1000,
-              message: 'Description must be at least 50 characters long',
+              message: 'Description must be at least 1000 characters long',
             },
             {
               max: 5000,
