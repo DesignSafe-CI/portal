@@ -43,6 +43,8 @@ interface UsageMetrics {
   };
 }
 
+type NameLike = { first_name?: string; last_name?: string; display_name?: string };
+
 /* ---------- Helpers  ---------- */
 const formatLastFirst = (n?: {
   first_name?: string;
@@ -68,7 +70,7 @@ const formatFirstLast = (n?: {
   return (n.display_name || '').trim();
 };
 
-const formatAuthorsLine = (names: any[] = []) => {
+const formatAuthorsLine = (names:  NameLike[] = []) => {
   if (!names.length) return '';
   const [first, ...rest] = names;
   const firstFmt = formatLastFirst(first);
@@ -343,14 +345,6 @@ const MetricsModalBody: React.FC<{
   ];
 
   /* ---------------- Citations list (Clarivate) ---------------- */
-  const renderAuthorShort = (n?: ClarivateName) => {
-    if (!n) return '';
-    const ln = n.last_name || n.display_name || '';
-    const fn = (n.first_name || '').trim();
-    const initial = fn ? `${fn[0]}.` : '';
-    return [ln, initial].filter(Boolean).join(', ');
-  };
-
   return (
     <div>
       <Title level={5} style={{ marginBottom: 8 }}>
