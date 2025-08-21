@@ -43,7 +43,32 @@ interface UsageMetrics {
   };
 }
 
-type NameLike = { first_name?: string; last_name?: string; display_name?: string };
+type NameLike = {
+  first_name?: string;
+  last_name?: string;
+  display_name?: string;
+};
+
+type CitationLike = {
+  doi?: string;
+  names?: NameLike[];
+  titles?: {
+    item?: string;
+    source?: string;
+    book_subtitle?: string;
+    series?: string;
+  };
+  pubinfo?: {
+    pubtype?: string;
+    pubyear?: number | string;
+    pubmonth?: string;
+    vol?: number | string;
+    issue?: number | string;
+    page?: { begin?: string; end?: string };
+  };
+};
+
+type QuarterKey = 'Q1' | 'Q2' | 'Q3' | 'Q4';
 
 /* ---------- Helpers  ---------- */
 const formatLastFirst = (n?: {
@@ -70,7 +95,7 @@ const formatFirstLast = (n?: {
   return (n.display_name || '').trim();
 };
 
-const formatAuthorsLine = (names:  NameLike[] = []) => {
+const formatAuthorsLine = (names: NameLike[] = []) => {
   if (!names.length) return '';
   const [first, ...rest] = names;
   const firstFmt = formatLastFirst(first);
@@ -79,7 +104,7 @@ const formatAuthorsLine = (names:  NameLike[] = []) => {
   return joined ? `${joined}.` : '';
 };
 
-const formatCitationLine = (c: any) => {
+const formatCitationLine = (c: CitationLike) => {
   const authors = formatAuthorsLine(c?.names || []);
 
   const title = (c?.titles?.item || '').trim();
@@ -174,14 +199,14 @@ const MetricsModalBody: React.FC<{
     yearMonthsData: YearMonthEntry[] = [],
     year: string
   ) {
-    const sums = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
+    const sums: Record<QuarterKey, number> = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
     yearMonthsData.forEach((m) => {
       const y = m.yearMonth?.substring(0, 4);
       if (y === year) {
         const month = parseInt(m.yearMonth.substring(5, 7), 10);
         const q =
           month <= 3 ? 'Q1' : month <= 6 ? 'Q2' : month <= 9 ? 'Q3' : 'Q4';
-        (sums as any)[q] += m.total ?? 0;
+        sums[q] += m.total ?? 0;
       }
     });
     return sums;
@@ -462,7 +487,7 @@ const MetricsModalBody: React.FC<{
                 key={c?.doi || idx}
                 style={{ marginBottom: 8, lineHeight: 1.4 }}
               >
-                {formatCitationLine(c)}
+                {formatCitationLine(c as unknown as CitationLike)}
               </li>
             ))}
           </ol>
