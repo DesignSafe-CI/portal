@@ -117,6 +117,13 @@ jobs:
         node-version: 22
         cache: npm
 
+    - name: Print node info
+      working-directory: client
+      run: |
+        echo "== RUNTIME =="
+        node -v
+        npm -v
+
     - run: npm ci
       working-directory: client
 
