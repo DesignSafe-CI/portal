@@ -38,7 +38,7 @@ export const mapConfig = {
   maxZoom: 24, // Maximum possible detail
   maxFitBoundsSelectedFeatureZoom: 15,
   selectedEventZoomToLevel: 11, // Zoom level to use when an event is selected
-  minZoomForOpenTopo: 9,        // Minimum zoom level for displaying OpenTopo datasets
+  minZoomForOpenTopo: 9, // Minimum zoom level for displaying OpenTopo datasets
   maxBounds: [
     [-90, -180], // Southwest coordinates
     [90, 180], // Northeast coordinates
@@ -180,7 +180,9 @@ export const LeafletMap: React.FC = () => {
           <OpenTopoLayer />
         </ZoomConditionalLayerGroup>
         {/* Recon Portal features, only zoomed in when DS event selected*/}
-        <ZoomOnEventSelection zoomLevel={mapConfig.selectedEventZoomToLevel}></ZoomOnEventSelection>
+        <ZoomOnEventSelection
+          zoomLevel={mapConfig.selectedEventZoomToLevel}
+        ></ZoomOnEventSelection>
         {/* Marker Features with Clustering (also includes point cloud markers) */}
         <MarkerClusterGroup
           zIndexOffset={1}
@@ -188,7 +190,9 @@ export const LeafletMap: React.FC = () => {
           chunkedLoading={true}
           showCoverageOnHover={false}
           animate={true}
-          maxFitBoundsSelectedFeatureZoom={mapConfig.maxFitBoundsSelectedFeatureZoom}
+          maxFitBoundsSelectedFeatureZoom={
+            mapConfig.maxFitBoundsSelectedFeatureZoom
+          }
           spiderifyOnHover={true}
           spiderfyOnMaxZoom={true}
           spiderfyOnZoom={15}
