@@ -28,7 +28,6 @@
     "react-hook-form": "^7.51.3",
     "react-hook-form-antd": "^1.1.0",
     "react-leaflet": "^4.2.1",
-    "react-leaflet-custom-control": "~1.4.0",
     "react-leaflet-markercluster": "^4.2.1",
     "react-router-dom": "^6.21.1",
     "react-use-websocket": "^4.8.1",
