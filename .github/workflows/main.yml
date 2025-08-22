@@ -116,6 +116,7 @@ jobs:
       with:
         node-version: 22
         cache: npm
+        cache-dependency-path: client/package-lock.json
 
     - name: Print node info
       working-directory: client
@@ -123,6 +124,10 @@ jobs:
         echo "== RUNTIME =="
         node -v
         npm -v
+        echo "vite in package.json:"; jq -r '.devDependencies.vite' package.json
+        echo "nx vite plugin:"; jq -r '.devDependencies["@nx/vite"]' package.json
+        echo "yaml in lockfile (top-level):"
+        jq -r '.packages["node_modules/yaml"].version // "none"' package-lock.json
 
     - run: npm ci
       working-directory: client
