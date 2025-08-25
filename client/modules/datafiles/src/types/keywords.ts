@@ -1,5 +1,5 @@
 export interface KeywordSuggestionResponse {
-  keywords: string[];
+  response: string[];
 }
 
 export const mockKeywordSuggestions = [
