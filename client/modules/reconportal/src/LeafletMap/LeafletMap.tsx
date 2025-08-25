@@ -36,7 +36,9 @@ export const mapConfig = {
   startingCenter: [40, -80] as L.LatLngTuple,
   minZoom: 2, // 2 typically prevents zooming out too far to see multiple earths
   maxZoom: 24, // Maximum possible detail
-  maxFitBoundsSelectedFeatureZoom: 18,
+  maxFitBoundsSelectedFeatureZoom: 15,
+  selectedEventZoomToLevel: 11, // Zoom level to use when an event is selected
+  minZoomForOpenTopo: 9, // Minimum zoom level for displaying OpenTopo datasets
   maxBounds: [
     [-90, -180], // Southwest coordinates
     [90, 180], // Northeast coordinates
@@ -155,14 +157,7 @@ export const LeafletMap: React.FC = () => {
       >
         {/* Base layers */}
         <LayersControl position="topright" collapsed={false}>
-          <LayersControl.BaseLayer checked name="View Borders">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              maxNativeZoom={19}
-            />
-          </LayersControl.BaseLayer>
-          <LayersControl.BaseLayer name="View Terrain">
+          <LayersControl.BaseLayer checked name="View Terrain">
             <TileLayer
               attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
               url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
@@ -171,14 +166,23 @@ export const LeafletMap: React.FC = () => {
               } /* Available zoom level should be higher but seems to be errors */
             />
           </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer name="View Borders">
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              maxNativeZoom={19}
+            />
+          </LayersControl.BaseLayer>
         </LayersControl>
 
         {/* Open Topo features, only visible when zoomed in and DS event selected*/}
-        <ZoomConditionalLayerGroup minZoom={9}>
+        <ZoomConditionalLayerGroup minZoom={mapConfig.minZoomForOpenTopo}>
           <OpenTopoLayer />
         </ZoomConditionalLayerGroup>
         {/* Recon Portal features, only zoomed in when DS event selected*/}
-        <ZoomOnEventSelection zoomLevel={11}></ZoomOnEventSelection>
+        <ZoomOnEventSelection
+          zoomLevel={mapConfig.selectedEventZoomToLevel}
+        ></ZoomOnEventSelection>
         {/* Marker Features with Clustering (also includes point cloud markers) */}
         <MarkerClusterGroup
           zIndexOffset={1}
@@ -186,7 +190,9 @@ export const LeafletMap: React.FC = () => {
           chunkedLoading={true}
           showCoverageOnHover={false}
           animate={true}
-          maxFitBoundsSelectedFeatureZoom={15}
+          maxFitBoundsSelectedFeatureZoom={
+            mapConfig.maxFitBoundsSelectedFeatureZoom
+          }
           spiderifyOnHover={true}
           spiderfyOnMaxZoom={true}
           spiderfyOnZoom={15}
