@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input, Popconfirm, Select } from 'antd';
+import { Alert, Button, Form, Input, Popconfirm, Select, Tag } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   nhTypeOptions,
@@ -19,6 +19,7 @@ import { TProjectUser } from './_fields/UserSelect';
 import {
   TBaseProjectValue,
   useAuthenticatedUser,
+  useKeywordSuggestions,
   useProjectDetail,
 } from '@client/hooks';
 import { customRequiredMark } from './_common';
@@ -138,6 +139,24 @@ export const BaseProjectForm: React.FC<{
     ],
     [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
+
+  const watchedTitle = Form.useWatch('title', form) ?? '';
+  const watchedDescription = Form.useWatch('description', form) ?? '';
+  const watchedSelected = Form.useWatch('keywords', form) ?? [];
+
+  const { data: suggestedKeywords = [] } = useKeywordSuggestions(
+    watchedTitle,
+    watchedDescription
+  );
+  const availableSuggestions = suggestedKeywords.filter(
+    (kw) => !watchedSelected.includes(kw)
+  );
+
+  useEffect(() => {
+    console.log('Project Title:', watchedTitle);
+    console.log('Project Description:', watchedDescription);
+    console.log('Suggested Keywords:', suggestedKeywords);
+  }, [watchedTitle, watchedDescription, suggestedKeywords]);
 
   const { user } = useAuthenticatedUser();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -379,6 +398,23 @@ export const BaseProjectForm: React.FC<{
               tokenSeparators={[',']}
             ></Select>
           </Form.Item>
+          {availableSuggestions.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              <p>Suggested Keywords:</p>
+              {availableSuggestions.map((kw) => (
+                <Tag
+                  key={kw}
+                  color="blue"
+                  style={{ cursor: 'pointer', marginBottom: 4 }}
+                  onClick={() => {
+                    form.setFieldValue('keywords', [...watchedSelected, kw]);
+                  }}
+                >
+                  {kw}
+                </Tag>
+              ))}
+            </div>
+          )}
         </Form.Item>
       )}
       <Form.Item label="Project Description" required>

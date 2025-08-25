@@ -17,6 +17,7 @@
     "paths": {
       "@client/common-components": ["modules/_common_components/src/index.ts"],
       "@client/datafiles": ["modules/datafiles/src/index.ts"],
+      "@client/datafiles/hooks/*": ["modules/datafiles/src/hooks/*"],
       "@client/hooks": ["modules/_hooks/src/index.ts"],
       "@client/onboarding": ["modules/onboarding/src/index.ts"],
       "@client/test-fixtures": ["modules/_test-fixtures/src/index.ts"],
