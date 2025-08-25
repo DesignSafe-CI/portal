@@ -15,7 +15,7 @@ export const ProjectBestPracticesModal: React.FC<{
   return (
     <>
       <Button type="primary" className="success-button" onClick={showModal}>
-        Publish / Amend / Version
+        Prepare to Publish / Amend / Version
       </Button>
       <Modal
         open={isModalOpen}
