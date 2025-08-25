@@ -24,6 +24,8 @@ import { OpenTopoLayer } from './OpenTopoLayer';
 import 'leaflet.markercluster';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 
+import LegendControl from './LegendControl';
+
 /* no need to import leaflet css as already in base index
 import 'leaflet/dist/leaflet.css';
 */
@@ -37,6 +39,7 @@ export const mapConfig = {
   minZoom: 2, // 2 typically prevents zooming out too far to see multiple earths
   maxZoom: 24, // Maximum possible detail
   maxFitBoundsSelectedFeatureZoom: 18,
+  minZoomForOpenTopo: 9, // Minimum zoom level for displaying OpenTopo dataset
   maxBounds: [
     [-90, -180], // Southwest coordinates
     [90, 180], // Northeast coordinates
@@ -174,7 +177,7 @@ export const LeafletMap: React.FC = () => {
         </LayersControl>
 
         {/* Open Topo features, only visible when zoomed in and DS event selected*/}
-        <ZoomConditionalLayerGroup minZoom={9}>
+        <ZoomConditionalLayerGroup minZoom={mapConfig.minZoomForOpenTopo}>
           <OpenTopoLayer />
         </ZoomConditionalLayerGroup>
         {/* Recon Portal features, only zoomed in when DS event selected*/}
@@ -194,6 +197,10 @@ export const LeafletMap: React.FC = () => {
         >
           {ReconPortalEvents}
         </MarkerClusterGroup>
+
+        {/* Legend - only visible when open topo features viewable*/}
+        <LegendControl minZoom={mapConfig.minZoomForOpenTopo} />
+
         {/* Zoom control */}
         <ZoomControl position="topright" />
 
