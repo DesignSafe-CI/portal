@@ -4,40 +4,91 @@
     2. Opens the corresponding collapse panel if present.
     3. Intentionally defensive about id formats.
 */
-(function ($) {
-  $(function () {
-    try {
-      var hash = window.location.hash;
-      if (!hash) return;
-      var target = $(hash);
-      if (!target || !target.length) {
+(function () {
+  // run the core logic once jQuery is available
+  var run = function ($) {
+    $(function () {
+      try {
+        var hash = window.location.hash;
+        if (!hash) {
+          console.log('[accordion-hash] no hash present, exiting');
+          return;
+        }
+        // Prefer getElementById to avoid CSS selector escaping issues
+        var target = null;
         var id = hash.replace('#', '');
-        // try common cascade pattern: cmsplugin_<pluginid>_<index>
-        var candidate = '#cmsplugin_' + id + '_0';
-        if ($(candidate).length) target = $(candidate);
-        // try collapse_ prefix
-        candidate = '#collapse_' + id;
-        if ($(candidate).length) target = $(candidate);
+        try {
+          var el = document.getElementById(id);
+          if (el) {
+            console.log('[accordion-hash] found element by getElementById', el);
+            target = $(el);
+          } else {
+            console.log('[accordion-hash] no element found by getElementById');
+          }
+        } catch (e) {
+          console.log('[accordion-hash] getElementById threw', e);
+          target = null;
+        }
+        // If not found by id, try a safe selector (use CSS.escape if available)
+        if (!target || !target.length) {
+          var selector = hash;
+          if (id && window.CSS && typeof CSS.escape === 'function') {
+            selector = '#' + CSS.escape(id);
+          }
+          target = $(selector);
+        }
+        if (!target || !target.length) {
+          // still not found: try common cascade pattern: cmsplugin_<pluginid>_<index>
+          var candidate = '#cmsplugin_' + id + '_0';
+          console.log('[accordion-hash] trying candidate', candidate);
+          if ($(candidate).length) {
+            console.log('[accordion-hash] found candidate', candidate);
+            target = $(candidate);
+          }
+          // try collapse_ prefix
+          candidate = '#collapse_' + id;
+          console.log('[accordion-hash] trying candidate', candidate);
+          if ($(candidate).length) {
+            console.log('[accordion-hash] found candidate', candidate);
+            target = $(candidate);
+          }
+        }
+        if (!target || !target.length) return;
+        // Use bootstrap collapse API to show it (Bootstrap 3 jQuery plugin)
+        if (typeof target.collapse === 'function') {
+          console.log('[accordion-hash] calling target.collapse("show")');
+          target.collapse('show');
+        } else {
+          // fallback: add class used by BS3
+          console.log('[accordion-hash] collapse plugin not available, adding class "in"');
+          target.addClass('in');
+        }
+        // scroll to header if possible
+        var header = $('[href="#' + target.attr('id') + '"]');
+        var el = header.length ? header : target;
+        if (el.length) {
+          var pos = el.offset().top - 10;
+          console.log('[accordion-hash] scrolling to pos', pos);
+          $('html,body').animate({scrollTop: pos}, 250);
+        }
+      } catch (e) {
+        // fail loudly for debugging
+        console.error && console.error('accordion-hash error', e);
       }
-      if (!target || !target.length) return;
-      // Use bootstrap collapse API to show it
-      if (typeof target.collapse === 'function') {
-        target.collapse('show');
+    });
+  };
+
+  if (window.jQuery) {
+    run(window.jQuery);
+  } else {
+    // jQuery not yet available; wait for window load which should occur after scripts at bottom
+    window.addEventListener('load', function () {
+      if (window.jQuery) {
+        run(window.jQuery);
       } else {
-        // fallback: add 'in' class used by BS3
-        target.addClass('in');
+        console.error && console.error('[accordion-hash] jQuery not found after window.load; aborting');
       }
-      // scroll to header if possible
-      var header = $('[href="#' + target.attr('id') + '"]');
-      var el = header.length ? header : target;
-      if (el.length) {
-        var pos = el.offset().top - 10;
-        $('html,body').animate({scrollTop: pos}, 250);
-      }
-    } catch (e) {
-      // fail silently
-      window.console && console.warn && console.warn('accordion-hash error', e);
-    }
-  });
-})(jQuery);
+    });
+  }
+})();
 </script>
