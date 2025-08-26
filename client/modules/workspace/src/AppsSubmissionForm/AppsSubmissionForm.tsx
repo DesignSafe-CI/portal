@@ -174,6 +174,7 @@ export const AppsSubmissionForm: React.FC = () => {
       executionSystems,
       allocations,
       defaultStorageSystem,
+      portalNamespace,
       username,
       portalAlloc
     );

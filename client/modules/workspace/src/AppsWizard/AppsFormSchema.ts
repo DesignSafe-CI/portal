@@ -323,6 +323,7 @@ const FormSchema = (
   executionSystems: TTapisSystem[],
   allocations: string[],
   defaultStorageSystem: TTapisSystem,
+  portalNamespace: string | undefined,
   username: string,
   portalAlloc?: string
 ) => {
@@ -605,6 +606,7 @@ const FormSchema = (
     allocations,
     execSystems,
     defaultExecSystem,
+    portalNamespace,
     queue
   );
 
