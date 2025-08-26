@@ -12,11 +12,13 @@ const tableColumns: TableProps['columns'] = [
 export const PreviewMetadata: React.FC<{
   selectedFile: TFileListing;
   fileMeta: Record<string, string>;
-}> = ({ selectedFile, fileMeta }) => {
+  api: string;
+  scheme?: string;
+}> = ({ selectedFile, fileMeta, api, scheme = 'private' }) => {
   const { data: fileListingMeta } = useFileDetail(
-    'tapis',
+    api,
     selectedFile.system,
-    'private',
+    scheme,
     selectedFile.path
   );
 

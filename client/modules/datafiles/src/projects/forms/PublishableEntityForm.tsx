@@ -1,4 +1,4 @@
-import { Form, Input, Button, FormInstance, Alert } from 'antd';
+import { Form, Input, Button, FormInstance, Alert, Select } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   facilityOptions,
@@ -128,6 +128,22 @@ const ExperimentFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+      </Form.Item>
+
       <Form.Item label="Experiment Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
@@ -241,6 +257,22 @@ const SimulationFormFields: React.FC<{
         Information giving context, a linked dataset on DesignSafe, or works
         citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
+      </Form.Item>
+
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
       </Form.Item>
 
       <Form.Item label="Simulation Description" required>
@@ -358,7 +390,23 @@ const HybridSimFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Simulation Description" required>
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+      </Form.Item>
+
+      <Form.Item label="Hybrid Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
         characters in length.
@@ -527,6 +575,22 @@ const MissionFormFields: React.FC<{
         </div>
       </Form.Item>
 
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+      </Form.Item>
+
       <Form.Item label="Mission Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
@@ -622,7 +686,23 @@ const DocumentFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Mission Description" required>
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+      </Form.Item>
+
+      <Form.Item label="Document Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
         characters in length.

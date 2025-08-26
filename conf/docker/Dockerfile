@@ -1,4 +1,4 @@
-FROM node:16 as node_build
+FROM node:16 AS node_build
 COPY package.json package-lock.json /designsafe/
 WORKDIR /designsafe
 RUN npm ci
@@ -6,7 +6,7 @@ RUN npm ci
 COPY . /designsafe/
 RUN npm run build
 
-FROM node:20 as node_nx_build
+FROM node:22 AS node_nx_build
 COPY client/package.json client/package-lock.json /designsafe/
 WORKDIR /designsafe/client
 RUN npm ci
@@ -14,7 +14,7 @@ RUN npm ci
 COPY client/ /designsafe/client/
 RUN npm run build
 
-FROM python:3.11-bullseye as python-base
+FROM python:3.12-bookworm AS python-base
 
 LABEL maintainer="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
 
@@ -34,7 +34,7 @@ ENV LC_ALL en_US.utf-8
 ENV LANG en_US.utf-8
 
 # https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=2.1.1 \
+ENV POETRY_VERSION=2.1.3 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     PYSETUP_PATH="/opt/pysetup" \
     VENV_PATH="/opt/pysetup/.venv" \
@@ -43,7 +43,7 @@ ENV POETRY_VERSION=2.1.1 \
 # Install pipx and poetry
 RUN python3 -m pip install --user pipx && python3 -m pipx ensurepath
 ENV PATH="${PIPX_ROOT_PATH}:${VENV_PATH}/bin:$PATH"
-RUN pipx install poetry==2.1.1
+RUN pipx install poetry~=${POETRY_VERSION}
 
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
@@ -54,7 +54,7 @@ COPY pyproject.toml poetry.lock ./
 
 ##############
 # `development` image target is used for local development
-FROM python-base as development
+FROM python-base AS development
 
 RUN poetry sync
 
@@ -67,7 +67,7 @@ WORKDIR /srv/www/designsafe
 
 ##############
 # `production` image target is used for deployed runtime environments
-FROM python-base as production
+FROM python-base AS production
 
 # Install runtime dependencies
 RUN poetry sync --without=dev

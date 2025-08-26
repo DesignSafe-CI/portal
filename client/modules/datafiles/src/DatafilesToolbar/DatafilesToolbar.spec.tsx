@@ -65,7 +65,8 @@ describe('getToolbarRules', () => {
       isReadOnly,
       isAuthenticated,
       system,
-      USER_WORK_SYSTEM
+      USER_WORK_SYSTEM,
+      'tapis'
     );
 
     expect(rules.canPreview).toBe(false);
@@ -88,7 +89,8 @@ describe('getToolbarRules', () => {
       isReadOnly,
       isAuthenticated,
       system,
-      USER_WORK_SYSTEM
+      USER_WORK_SYSTEM,
+      'tapis'
     );
 
     expect(rules.canPreview).toBe(true);
@@ -111,7 +113,8 @@ describe('getToolbarRules', () => {
       isReadOnly,
       isAuthenticated,
       system,
-      USER_WORK_SYSTEM
+      USER_WORK_SYSTEM,
+      'tapis'
     );
 
     expect(rules.canPreview).toBe(true);
@@ -137,7 +140,8 @@ describe('getToolbarRules', () => {
       isReadOnly,
       isAuthenticated,
       system,
-      USER_WORK_SYSTEM
+      USER_WORK_SYSTEM,
+      'tapis'
     );
 
     expect(rules.canPreview).toBe(false);
@@ -163,7 +167,8 @@ describe('getToolbarRules', () => {
       isReadOnly,
       isAuthenticated,
       system,
-      USER_WORK_SYSTEM
+      USER_WORK_SYSTEM,
+      'tapis'
     );
 
     expect(rules.canPreview).toBe(false);
@@ -186,7 +191,8 @@ describe('getToolbarRules', () => {
       isReadOnly,
       isAuthenticated,
       system,
-      USER_WORK_SYSTEM
+      USER_WORK_SYSTEM,
+      'tapis'
     );
 
     expect(rules.canPreview).toBe(true);
@@ -212,7 +218,8 @@ describe('getToolbarRules', () => {
       isReadOnly,
       isAuthenticated,
       system,
-      USER_WORK_SYSTEM
+      USER_WORK_SYSTEM,
+      'tapis'
     );
 
     expect(rules.canPreview).toBe(false);
