@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import CustomControl from 'react-leaflet-custom-control';
-import { useMap, useMapEvents } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 
 import {
