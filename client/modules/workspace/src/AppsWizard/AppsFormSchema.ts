@@ -192,6 +192,7 @@ export const getConfigurationFields = (
   allocations: string[],
   execSystems: TTapisSystem[],
   selectedExecSystem: TTapisSystem,
+  portalNamespace: string | undefined,
   queue: TTapisSystemQueue
 ) => {
   const configurationFields: TDynamicField = {};
@@ -229,7 +230,11 @@ export const getConfigurationFields = (
       key: 'configuration.execSystemLogicalQueue',
       required: true,
       type: 'select',
-      options: getAppQueueValues(definition, selectedExecSystem).map((q) => ({
+      options: getAppQueueValues(
+        definition,
+        selectedExecSystem,
+        portalNamespace
+      ).map((q) => ({
         value: q.value,
         label: q.label,
       })),

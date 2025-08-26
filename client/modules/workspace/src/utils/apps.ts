@@ -342,10 +342,11 @@ export const getQueueValueForExecSystem = ({
  */
 export const getAppQueueValues = (
   definition: TTapisApp,
-  system: TTapisSystem
+  system: TTapisSystem,
+  portalNamespace: string | undefined
 ) => {
   const queueFilter: string[] | undefined = system.notes?.['queueFilter']?.find(
-    (qf) => qf.portalName === 'DESIGNSAFE'
+    (qf) => qf.portalName === portalNamespace
   )?.queues;
 
   return (
