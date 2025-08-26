@@ -1,0 +1,40 @@
+/* Accordion hash opener for Bootstrap 3 (djangocms-cascade v0.16.3)
+   This script looks for a URL hash and opens the corresponding collapse
+   panel if present. It is intentionally defensive about id formats.
+*/
+(function ($) {
+  $(function () {
+    try {
+      var hash = window.location.hash;
+      if (!hash) return;
+      var target = $(hash);
+      if (!target || !target.length) {
+        var id = hash.replace('#', '');
+        // try common cascade pattern: cmsplugin_<pluginid>_<index>
+        var candidate = '#cmsplugin_' + id + '_0';
+        if ($(candidate).length) target = $(candidate);
+        // try collapse_ prefix
+        candidate = '#collapse_' + id;
+        if ($(candidate).length) target = $(candidate);
+      }
+      if (!target || !target.length) return;
+      // Use bootstrap collapse API to show it
+      if (typeof target.collapse === 'function') {
+        target.collapse('show');
+      } else {
+        // fallback: add 'in' class used by BS3
+        target.addClass('in');
+      }
+      // scroll to header if possible
+      var header = $('[href="#' + target.attr('id') + '"]');
+      var el = header.length ? header : target;
+      if (el.length) {
+        var pos = el.offset().top - 10;
+        $('html,body').animate({scrollTop: pos}, 250);
+      }
+    } catch (e) {
+      // fail silently
+      window.console && console.warn && console.warn('accordion-hash error', e);
+    }
+  });
+})(jQuery);
