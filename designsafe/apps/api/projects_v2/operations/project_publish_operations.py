@@ -372,11 +372,13 @@ def get_publication_full_tree(
     # Update publication date on versioned/amended pubs to match the initial publication date.
     full_tree = fix_publication_dates(full_tree)
 
-    if version and version > 1:
+    try:
         existing_pub = Publication.objects.get(project_id=project_id)
         published_tree: nx.DiGraph = nx.node_link_graph(existing_pub.tree)
 
         full_tree = nx.compose(published_tree, full_tree)
+    except Publication.DoesNotExist:
+        pass
 
     return full_tree, full_path_mapping
 
@@ -401,6 +403,7 @@ def copy_publication_files(
     `path_mapping` is a dict mapping project paths to their corresponding paths in the
     published area.
     """
+    logger.debug("Copying publication files for %s", project_id)
     os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
     try:
 
@@ -447,7 +450,7 @@ def copy_publication_files(
                     },
                     queue="indexing",
                 )
-
+        logger.debug("Finished copying publication files for %s", project_id)
     except PermissionError as exc:
         logger.error(exc)
         send_project_permissions_alert(project_id, version, str(exc))
