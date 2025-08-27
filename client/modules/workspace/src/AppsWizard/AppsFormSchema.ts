@@ -192,6 +192,7 @@ export const getConfigurationFields = (
   allocations: string[],
   execSystems: TTapisSystem[],
   selectedExecSystem: TTapisSystem,
+  portalNamespace: string | undefined,
   queue: TTapisSystemQueue
 ) => {
   const configurationFields: TDynamicField = {};
@@ -231,8 +232,12 @@ export const getConfigurationFields = (
       type: 'select',
       options: getAppQueueValues(
         definition,
-        selectedExecSystem.batchLogicalQueues
-      ).map((q) => ({ value: q, label: q })),
+        selectedExecSystem,
+        portalNamespace
+      ).map((q) => ({
+        value: q.value,
+        label: q.label,
+      })),
     };
   }
 
@@ -318,6 +323,7 @@ const FormSchema = (
   executionSystems: TTapisSystem[],
   allocations: string[],
   defaultStorageSystem: TTapisSystem,
+  portalNamespace: string | undefined,
   username: string,
   portalAlloc?: string
 ) => {
@@ -600,6 +606,7 @@ const FormSchema = (
     allocations,
     execSystems,
     defaultExecSystem,
+    portalNamespace,
     queue
   );
 
