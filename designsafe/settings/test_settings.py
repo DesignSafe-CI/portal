@@ -811,3 +811,8 @@ RT_UN = 'test'
 RT_PW = 'test'
 RT_QUEUE = 'test'
 RT_TAG = 'test_tag'
+
+# TEJAS SAMBANOVA SETTINGS
+SN_API_KEY = "test"
+SN_API_ENDPOINT = "https://test.com"
+CHROMA_ENDPOINT = "https://test.com"
