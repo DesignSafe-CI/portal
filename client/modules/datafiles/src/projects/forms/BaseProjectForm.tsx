@@ -21,6 +21,8 @@ import {
   useAuthenticatedUser,
   useKeywordSuggestions,
   useProjectDetail,
+  useDebounceValue,
+  TGetKeywordSuggestionsParams,
 } from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { AuthorSelect } from './_fields/AuthorSelect';
@@ -140,22 +142,26 @@ export const BaseProjectForm: React.FC<{
     [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
 
-  const watchedTitle = Form.useWatch('title', form) ?? '';
-  const watchedDescription = Form.useWatch('description', form) ?? '';
-  const watchedSelected = Form.useWatch('keywords', form) ?? [];
+  const watchedTitle: string = Form.useWatch('title', form) ?? '';
+  const watchedDescription: string = Form.useWatch('description', form) ?? '';
+  const watchedSelected: string[] = Form.useWatch('keywords', form) ?? [];
 
-  const { data: suggestedKeywords = [] } = useKeywordSuggestions(
-    watchedTitle,
-    watchedDescription
+  const [searchTerms, setSearchTerms] = useState<TGetKeywordSuggestionsParams>({
+    title: watchedTitle,
+    description: watchedDescription,
+  });
+  const debouncedSearchTerms = useDebounceValue<TGetKeywordSuggestionsParams>(
+    searchTerms,
+    300
   );
+  const { data: suggestedKeywords = [] } =
+    useKeywordSuggestions(debouncedSearchTerms);
   const availableSuggestions = suggestedKeywords.filter(
-    (kw) => !watchedSelected.includes(kw)
+    (kw: string) => !watchedSelected.includes(kw)
   );
 
   useEffect(() => {
-    console.log('Project Title:', watchedTitle);
-    console.log('Project Description:', watchedDescription);
-    console.log('Suggested Keywords:', suggestedKeywords);
+    setSearchTerms({ title: watchedTitle, description: watchedDescription });
   }, [watchedTitle, watchedDescription, suggestedKeywords]);
 
   const { user } = useAuthenticatedUser();

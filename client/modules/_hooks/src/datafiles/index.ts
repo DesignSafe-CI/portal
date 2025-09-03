@@ -21,7 +21,7 @@ export { useNewFolder } from './useNewFolder';
 export { useUploadFile } from './useUploadFile';
 export { useUploadFolder } from './useUploadFolder';
 export { useFileDetail } from './useFileDetail';
-export { useKeywordSuggestions } from './useKeywordSuggestions';
+export * from './useKeywordSuggestions';
 
 export * from './usePathDisplayName';
 
