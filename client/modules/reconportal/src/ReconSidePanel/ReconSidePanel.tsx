@@ -337,7 +337,9 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                 <List
                   dataSource={filteredReconPortalEvents}
                   renderItem={renderEventCard}
-                  locale={{ emptyText: 'No events match your selected filters' }}
+                  locale={{
+                    emptyText: 'No events match your selected filters',
+                  }}
                   className={styles.eventList}
                   itemLayout="vertical"
                   split={false}
@@ -346,7 +348,9 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               </div>
             </>
           ) : (
-            <div className={styles.eventsScrollableArea}>{renderEventDetail(selectedEvent)}</div>
+            <div className={styles.eventsScrollableArea}>
+              {renderEventDetail(selectedEvent)}
+            </div>
           )}
         </div>
       </Flex>
