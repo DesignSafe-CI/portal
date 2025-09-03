@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiClient';
-import { KeywordSuggestionResponse } from '../../../datafiles/src/types/keywords';
 
 export type TGetKeywordSuggestionsParams = {
   title: string;
   description: string;
 };
+
+export interface KeywordSuggestionResponse {
+  response: string[];
+}
 
 export function useKeywordSuggestions(
   searchParams: TGetKeywordSuggestionsParams

@@ -1,6 +1,8 @@
+"""Views for RAG-based keyword suggestions."""
+
+import json
 import logging
 import chromadb
-import json
 from typing_extensions import List, TypedDict
 from langchain_core.documents import Document
 from langgraph.graph import START, StateGraph
@@ -51,6 +53,8 @@ class KeywordsView(BaseApiView):
 
 
 class State(TypedDict):
+    """RAG state model"""
+
     question: str
     context: List[Document]
     answer: str
@@ -79,6 +83,8 @@ class RAG:
     Answer:
     """
 
+    QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
+
     def __init__(self):
         try:
             self.client = chromadb.HttpClient(host=settings.CHROMA_ENDPOINT, port=443)
@@ -101,7 +107,6 @@ class RAG:
                 top_p=0.1,
             )
 
-            self.QA_CHAIN_PROMPT = PromptTemplate.from_template(self.template)
         except Exception as e:
             logger.exception("Error initializing RAG")
             raise e
