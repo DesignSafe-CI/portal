@@ -40,17 +40,26 @@ export const OpenTopoPopupContent: React.FC<OpenTopoPopupContentProps> = ({
 
         <div className={styles.fieldContainer}>
           <Text className={styles.compactText}>Data Source</Text>
-          <Text strong className={styles.compactText}>OpenTopography</Text>
+          <Text strong className={styles.compactText}>
+            OpenTopography
+          </Text>
         </div>
 
         <div className={styles.fieldContainer}>
           <Text className={styles.compactText}>Products Available</Text>
-          <Text strong className={styles.compactText}>{product}</Text>
+          <Text strong className={styles.compactText}>
+            {product}
+          </Text>
         </div>
 
         <div className={styles.fieldContainer}>
           <Text className={styles.compactText}>DOI</Text>
-          <Link href={doiUrl} target="_blank" rel="noopener noreferrer" className={styles.compactText}>
+          <Link
+            href={doiUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.compactText}
+          >
             {doiUrl}
             <span className={styles.externalIcon}>
               <FontAwesomeIcon icon={faExternalLinkAlt} size="sm" />
