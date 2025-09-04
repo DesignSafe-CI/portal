@@ -41,7 +41,7 @@ export const OpenTopoLayer: React.FC = () => {
             const isSelected =
               selectedOpenTopoDataset === dataset.identifier.value;
             return {
-              color: getOpenTopoColor(dataset, isSelected),
+              color: getOpenTopoColor(isSelected),
               weight: isSelected ? 4 : 2,
               fillOpacity: isSelected ? 0.6 : 0.3,
               dashArray: isSelected ? '5, 10' : undefined,
