@@ -146,7 +146,10 @@ export const BaseProjectForm: React.FC<{
   const watchedDescription: string = Form.useWatch('description', form) ?? '';
   const watchedSelected: string[] = Form.useWatch('keywords', form) ?? [];
   const selectedMemo = useMemo(() => watchedSelected, [watchedSelected]);
-  const descriptionMemo = useMemo(() => watchedDescription, [watchedDescription]);
+  const descriptionMemo = useMemo(
+    () => watchedDescription,
+    [watchedDescription]
+  );
   const titleMemo = useMemo(() => watchedTitle, [watchedTitle]);
 
   const [searchTerms, setSearchTerms] = useState<TGetKeywordSuggestionsParams>({
