@@ -24,5 +24,6 @@ export function useKeywordSuggestions(
     },
     enabled: !!searchParams.title.trim() && !!searchParams.description.trim(),
     staleTime: Infinity,
+    placeholderData: (prev) => prev ?? [],
   });
 }

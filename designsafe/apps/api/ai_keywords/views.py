@@ -40,7 +40,6 @@ class KeywordsView(BaseApiView):
         resp = graph.invoke(
             {"question": f"project title: {title}, description: {description}"}
         )
-        logger.debug("RAG response: %s", resp)
         try:
             answer = json.loads(resp["answer"])
         except json.JSONDecodeError:

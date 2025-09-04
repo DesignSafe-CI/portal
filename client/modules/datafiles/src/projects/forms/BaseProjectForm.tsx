@@ -145,6 +145,9 @@ export const BaseProjectForm: React.FC<{
   const watchedTitle: string = Form.useWatch('title', form) ?? '';
   const watchedDescription: string = Form.useWatch('description', form) ?? '';
   const watchedSelected: string[] = Form.useWatch('keywords', form) ?? [];
+  const selectedMemo = useMemo(() => watchedSelected, [watchedSelected]);
+  const descriptionMemo = useMemo(() => watchedDescription, [watchedDescription]);
+  const titleMemo = useMemo(() => watchedTitle, [watchedTitle]);
 
   const [searchTerms, setSearchTerms] = useState<TGetKeywordSuggestionsParams>({
     title: watchedTitle,
@@ -152,17 +155,17 @@ export const BaseProjectForm: React.FC<{
   });
   const debouncedSearchTerms = useDebounceValue<TGetKeywordSuggestionsParams>(
     searchTerms,
-    300
+    1000
   );
   const { data: suggestedKeywords = [] } =
     useKeywordSuggestions(debouncedSearchTerms);
   const availableSuggestions = suggestedKeywords.filter(
-    (kw: string) => !watchedSelected.includes(kw)
+    (kw: string) => !selectedMemo.includes(kw)
   );
 
   useEffect(() => {
-    setSearchTerms({ title: watchedTitle, description: watchedDescription });
-  }, [watchedTitle, watchedDescription, suggestedKeywords]);
+    setSearchTerms({ title: titleMemo, description: descriptionMemo });
+  }, [titleMemo, descriptionMemo]);
 
   const { user } = useAuthenticatedUser();
   const [showConfirm, setShowConfirm] = useState(false);
