@@ -91,6 +91,40 @@ const getSteps = (
         },
       ];
 
+    case 'software':
+      return [
+        {
+          title: 'Proofread Project',
+          content: (
+            <PipelineProofreadProjectStep
+              projectId={projectId}
+              nextStep={next}
+              prevStep={prev}
+            />
+          ),
+        },
+        {
+          title: 'Order Authors',
+          content: (
+            <PipelineOrderAuthors
+              projectId={projectId}
+              prevStep={prev}
+              nextStep={next}
+            />
+          ),
+        },
+        {
+          title: 'Licenses',
+          content: (
+            <PipelineSelectLicense
+              projectId={projectId}
+              nextStep={next}
+              prevStep={prev}
+            />
+          ),
+        },
+      ];
+
     case 'other':
       return [
         {
@@ -146,11 +180,11 @@ export const ProjectPipeline: React.FC<{ projectId: string }> = ({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { data } = useProjectDetail(projectId);
-  const projectType = data?.baseProject.value.projectType;
+  const projectType = data?.baseProject.value.projectType ?? 'None';
 
   // type Other doesn't support entity selection, so we select the base project here.
   useEffect(() => {
-    if (projectType === 'other' && data?.baseProject.uuid) {
+    if (['other', 'software'].includes(projectType) && data?.baseProject.uuid) {
       setSearchParams(
         (e) => {
           e.set('selected', data?.baseProject.uuid);

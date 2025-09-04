@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 
 export const ProjectBestPracticesModal: React.FC<{
   projectId: string;
-}> = ({ projectId }) => {
+  disabled?: boolean;
+}> = ({ projectId, disabled = false }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => setIsModalOpen(true);
@@ -14,7 +15,12 @@ export const ProjectBestPracticesModal: React.FC<{
 
   return (
     <>
-      <Button type="primary" className="success-button" onClick={showModal}>
+      <Button
+        type="primary"
+        className="success-button"
+        onClick={showModal}
+        disabled={disabled}
+      >
         Publish / Amend / Version
       </Button>
       <Modal

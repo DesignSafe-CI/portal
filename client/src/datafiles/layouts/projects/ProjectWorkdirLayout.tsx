@@ -5,6 +5,7 @@ import {
   EmptyProjectFileListing,
   FileListing,
   ProjectDataTransferModal,
+  ProjectGithubFileListing,
   ProjectNavbar,
 } from '@client/datafiles';
 import { DatafilesBreadcrumb } from '@client/common-components';
@@ -16,6 +17,8 @@ export const ProjectWorkdirLayout: React.FC = () => {
   const { data } = useProjectDetail(projectId ?? '');
   if (!projectId) return null;
   if (!data) return <div>loading...</div>;
+
+  const projectType = data.baseProject.value.projectType;
 
   const changeTypeModal = (
     <ChangeProjectTypeModal projectId={projectId}>
@@ -57,7 +60,9 @@ export const ProjectWorkdirLayout: React.FC = () => {
       ) : (
         <div style={{ display: 'flex', marginBottom: '10px', gap: '1rem' }}>
           <ProjectNavbar projectId={projectId} />
-          <ProjectDataTransferModal projectId={projectId} />
+          {data.baseProject.value.projectType !== 'software' && (
+            <ProjectDataTransferModal projectId={projectId} />
+          )}
         </div>
       )}
       <DatafilesBreadcrumb
@@ -78,7 +83,7 @@ export const ProjectWorkdirLayout: React.FC = () => {
       />
       <div style={{ paddingBottom: '32px' }}>
         {' '}
-        {data && (
+        {data && projectType !== 'software' && (
           <FileListing
             api="tapis"
             system={`project-${data.baseProject.uuid}`}
@@ -86,6 +91,9 @@ export const ProjectWorkdirLayout: React.FC = () => {
             scroll={{ y: 500 }}
             emptyListingDisplay={<EmptyProjectFileListing />}
           />
+        )}
+        {data && projectType === 'software' && (
+          <ProjectGithubFileListing projectId={projectId} />
         )}
       </div>
     </>
