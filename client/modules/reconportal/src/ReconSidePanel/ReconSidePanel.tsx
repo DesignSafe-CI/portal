@@ -200,8 +200,8 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
             </Tag>
           </Flex>
         </Card>
-        <div style={{ textAlign: 'center', margin: '24px 0 8px 0' }}>
-          <span style={{ fontWeight: 600 }}>Reconaissance Data</span>
+        <div className={styles.reconDataTitle}>
+          <span>Reconaissance Data</span>
         </div>
         <Flex
           vertical

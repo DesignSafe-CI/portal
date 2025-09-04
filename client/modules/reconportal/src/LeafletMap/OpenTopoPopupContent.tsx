@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { OpenTopoDataset } from '@client/hooks';
 import { Typography, Space } from 'antd';
+import styles from './OpenTopoPopupContent.module.css';
 
 const { Title, Text, Link } = Typography;
 
@@ -24,38 +25,34 @@ export const OpenTopoPopupContent: React.FC<OpenTopoPopupContentProps> = ({
   const doiUrl = dataset.url;
   const product = dataset.fileFormat;
   return (
-    <Typography>
-      <Title level={5} style={{ marginBottom: 6 }}>
+    <Typography className={styles.popupContainer}>
+      <Title level={5} className={styles.title}>
         {title}
       </Title>
 
-      <Space direction="vertical" size={6}>
-        <div>
-          <Text>Date of Survey</Text>
-          <br />
-          <Text strong>
+      <Space direction="vertical" size={2}>
+        <div className={styles.fieldContainer}>
+          <Text className={styles.compactText}>Date of Survey</Text>
+          <Text strong className={styles.compactText}>
             {startDate} – {endDate}
           </Text>
         </div>
 
-        <div>
-          <Text>Data Source</Text>
-          <br />
-          <Text strong>OpenTopography</Text>
+        <div className={styles.fieldContainer}>
+          <Text className={styles.compactText}>Data Source</Text>
+          <Text strong className={styles.compactText}>OpenTopography</Text>
         </div>
 
-        <div>
-          <Text>Products Available</Text>
-          <br />
-          <Text strong>{product}</Text>
+        <div className={styles.fieldContainer}>
+          <Text className={styles.compactText}>Products Available</Text>
+          <Text strong className={styles.compactText}>{product}</Text>
         </div>
 
-        <div>
-          <Text>DOI</Text>
-          <br />
-          <Link href={doiUrl} target="_blank" rel="noopener noreferrer">
+        <div className={styles.fieldContainer}>
+          <Text className={styles.compactText}>DOI</Text>
+          <Link href={doiUrl} target="_blank" rel="noopener noreferrer" className={styles.compactText}>
             {doiUrl}
-            <span style={{ marginLeft: 4 }}>
+            <span className={styles.externalIcon}>
               <FontAwesomeIcon icon={faExternalLinkAlt} size="sm" />
             </span>
           </Link>
