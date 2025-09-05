@@ -18,14 +18,27 @@
 
 .scrollableList {
   flex: 1;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
-  padding-bottom: 48px;
+  overflow: hidden;
 }
 
-.eventContainer:first-child {
-  margin-top: 24px;
-  border-top: 1px solid var(--global-color-primary--light);
+.filtersSection {
+  position: sticky;
+  top: 0;
+  background: var(--global-color-primary--xx-light);
+  z-index: 1;
+  padding: 16px;
+  border-bottom: 1px solid var(--global-color-primary--light);
+  flex-shrink: 0;
+}
+
+.eventsScrollableArea {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 48px;
+  overscroll-behavior: contain;
 }
 
 .eventContainer {
