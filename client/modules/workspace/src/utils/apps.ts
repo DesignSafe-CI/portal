@@ -337,15 +337,24 @@ export const getQueueValueForExecSystem = ({
  * 2. if queue filter list is set, only allow queues in that list.
  * @function
  * @param {any} definition App definition
- * @param {any} queues
+ * @param {any} system
  * @returns list of queues in sorted order
  */
 export const getAppQueueValues = (
   definition: TTapisApp,
-  queues: TTapisSystemQueue[]
+  system: TTapisSystem,
+  portalNamespace: string | undefined
 ) => {
+  const queueFilter: string[] | undefined = system.notes?.['queueFilter']?.find(
+    (qf) => qf.portalName === portalNamespace
+  )?.queues;
+
   return (
-    (queues ?? [])
+    (system?.batchLogicalQueues ?? [])
+      /*
+    Apply queueFilter when it's set
+    */
+      .filter((q) => !queueFilter || queueFilter.includes(q.name))
       /*
     Hide queues for which the app default nodeCount does not meet the minimum or maximum requirements
     while hideNodeCountAndCoresPerNode is true
@@ -356,14 +365,17 @@ export const getAppQueueValues = (
           (definition.jobAttributes.nodeCount >= q.minNodeCount &&
             definition.jobAttributes.nodeCount <= q.maxNodeCount)
       )
-      .map((q) => q.name)
       // Hide queues when app includes a queueFilter and queue is not present in queueFilter
       .filter(
-        (queueName) =>
+        (q) =>
           !definition.notes.queueFilter ||
-          definition.notes.queueFilter.includes(queueName)
+          definition.notes.queueFilter.includes(q.name)
       )
-      .sort()
+      .map((q) => ({
+        value: q.name,
+        label: q.description || q.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label))
   );
 };
 
