@@ -1,4 +1,4 @@
-import { usePatchProjectMetadata } from '@client/hooks';
+import { usePatchProjectMetadata, useProjectDetail } from '@client/hooks';
 import { Alert, Button, ConfigProvider, Form, Input, Spin } from 'antd';
 import { AxiosError } from 'axios';
 import React, { useMemo } from 'react';
@@ -8,6 +8,8 @@ export const ProjectGithubTransfer: React.FC<{ projectId: string }> = ({
 }) => {
   const { mutate, error, isSuccess, isPending } =
     usePatchProjectMetadata(projectId);
+
+  const { data: projectMetadata } = useProjectDetail(projectId);
 
   const updateUrl = (url: string) =>
     mutate({ patchMetadata: { githubUrl: url } });
@@ -68,6 +70,7 @@ export const ProjectGithubTransfer: React.FC<{ projectId: string }> = ({
           Release URL
         </label>
         <Form
+          initialValues={{ url: projectMetadata?.baseProject.value.githubUrl }}
           layout="inline"
           onFinish={(f) => updateUrl(f.url)}
           style={{ marginBottom: '1rem' }}
@@ -95,7 +98,8 @@ export const ProjectGithubTransfer: React.FC<{ projectId: string }> = ({
               {
                 pattern:
                   /^(?:https?:\/\/)?(?:www\.)?github\.com\/(\S+)\/(\S+)\/releases\/tag\/(\S+)$/,
-                message: 'Please enter the URL of a valid GitHub release.',
+                message:
+                  'Please enter the URL of a valid GitHub release. Check that there are no spaces before or after the URL.',
               },
             ]}
           >
@@ -174,7 +178,7 @@ export const ProjectGithubTransfer: React.FC<{ projectId: string }> = ({
           ></span>
           <div>
             <strong>CodeMeta File</strong> (<code>codemeta.json</code>)<br />
-            Generate a metadata file at
+            Generate a metadata file at{' '}
             <a
               href="https://codemeta.github.io/codemeta-generator/"
               target="_blank"
