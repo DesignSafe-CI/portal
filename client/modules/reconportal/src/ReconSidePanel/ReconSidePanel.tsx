@@ -259,7 +259,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
         <div className={styles.scrollableList}>
           {!selectedEvent ? (
             <>
-              <div style={{ padding: '16px' }}>
+              <div className={styles.filtersSection}>
                 <Flex vertical gap={8}>
                   <Text
                     style={{
@@ -284,67 +284,73 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                     </Link>
                   </Text>
                 </Flex>
+
+                <div style={{ marginTop: '16px', width: '100%' }}>
+                  <Search
+                    placeholder="Search by keyword"
+                    allowClear
+                    enterButton="Search"
+                    size="large"
+                    onSearch={onSearch}
+                  />
+
+                  <Flex
+                    gap={16}
+                    justify="space-between"
+                    style={{ width: '100%', marginTop: '16px' }}
+                  >
+                    <Select
+                      placeholder="Select Event Type"
+                      style={{ flex: 1 }}
+                      onChange={handleEventTypeChange}
+                      value={selectedEventType}
+                      allowClear
+                    >
+                      {eventTypes.map((eventType: EventTypeResponse) => (
+                        <Select.Option
+                          key={eventType.name}
+                          value={eventType.name}
+                        >
+                          {eventType.display_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+
+                    <Select
+                      placeholder="Select Year"
+                      style={{ flex: 1 }}
+                      onChange={handleYearChange}
+                      value={selectedYear}
+                      allowClear
+                    >
+                      {availableYears.map((year) => (
+                        <Select.Option key={year} value={year}>
+                          {year}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Flex>
+                </div>
               </div>
 
-              <div style={{ padding: '0 16px', width: '100%' }}>
-                <Search
-                  placeholder="Search by keyword"
-                  allowClear
-                  enterButton="Search"
-                  size="large"
-                  onSearch={onSearch}
+              <div className={styles.eventsScrollableArea}>
+                <List
+                  dataSource={filteredReconPortalEvents}
+                  renderItem={renderEventCard}
+                  locale={{
+                    emptyText: 'No events match your selected filters',
+                  }}
+                  className={styles.eventList}
+                  itemLayout="vertical"
+                  split={false}
+                  style={{ width: '100%' }}
                 />
-
-                <Flex
-                  gap={16}
-                  justify="space-between"
-                  style={{ width: '100%', marginTop: '16px' }}
-                >
-                  <Select
-                    placeholder="Select Event Type"
-                    style={{ flex: 1 }}
-                    onChange={handleEventTypeChange}
-                    value={selectedEventType}
-                    allowClear
-                  >
-                    {eventTypes.map((eventType: EventTypeResponse) => (
-                      <Select.Option
-                        key={eventType.name}
-                        value={eventType.name}
-                      >
-                        {eventType.display_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-
-                  <Select
-                    placeholder="Select Year"
-                    style={{ flex: 1 }}
-                    onChange={handleYearChange}
-                    value={selectedYear}
-                    allowClear
-                  >
-                    {availableYears.map((year) => (
-                      <Select.Option key={year} value={year}>
-                        {year}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Flex>
               </div>
-
-              <List
-                dataSource={filteredReconPortalEvents}
-                renderItem={renderEventCard}
-                locale={{ emptyText: 'No events match your selected filters' }}
-                className={styles.eventList}
-                itemLayout="vertical"
-                split={false}
-                style={{ width: '100%' }}
-              />
             </>
           ) : (
-            <div style={{}}>{renderEventDetail(selectedEvent)}</div>
+            <div className={styles.eventsScrollableArea}>
+              {renderEventDetail(selectedEvent)}
+            </div>
           )}
         </div>
       </Flex>
