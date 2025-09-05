@@ -13,6 +13,7 @@ import styles from './LegendControl.module.css';
 
 function LegendContent({ selectedIconHtml }: { selectedIconHtml: string }) {
   const openTopoColor = getOpenTopoColor();
+  const selectedOpenTopoColor = getOpenTopoColor(true);
   return (
     <div className={styles.container}>
       <div className={styles.legendRow}>
@@ -41,7 +42,27 @@ function LegendContent({ selectedIconHtml }: { selectedIconHtml: string }) {
           </span>
         </span>
         <span className={styles.legendLabel}>OpenTopography Datasets</span>
-        {/* TODO Add selected OpenTopo dataset entry to legend - after WG-544 (https://github.com/DesignSafe-CI/portal/pull/1620) merged */}
+      </div>
+      <div className={styles.legendRow}>
+        <span className={styles.legendIcon}>
+          <span
+            className={styles.legendSwatch}
+            style={{ border: `2px solid ${selectedOpenTopoColor}` }}
+          >
+            <span
+              style={{
+                background: selectedOpenTopoColor,
+                opacity: 0.3,
+                width: '100%',
+                height: '100%',
+                display: 'block',
+              }}
+            />
+          </span>
+        </span>
+        <span className={styles.legendLabel}>
+          Selected OpenTopography Dataset
+        </span>
       </div>
     </div>
   );
