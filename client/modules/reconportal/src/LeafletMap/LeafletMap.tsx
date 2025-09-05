@@ -24,6 +24,8 @@ import { OpenTopoLayer } from './OpenTopoLayer';
 import 'leaflet.markercluster';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 
+import LegendControl from './LegendControl';
+
 /* no need to import leaflet css as already in base index
 import 'leaflet/dist/leaflet.css';
 */
@@ -200,6 +202,10 @@ export const LeafletMap: React.FC = () => {
         >
           {ReconPortalEvents}
         </MarkerClusterGroup>
+
+        {/* Legend - only visible when open topo features viewable*/}
+        <LegendControl minZoom={mapConfig.minZoomForOpenTopo} />
+
         {/* Zoom control */}
         <ZoomControl position="topright" />
 
