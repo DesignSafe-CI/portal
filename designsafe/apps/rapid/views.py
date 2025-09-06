@@ -32,8 +32,6 @@ metrics_logger = logging.getLogger('metrics')
 
 from designsafe import settings
 
-TAPIS_TENANT_BASEURL = os.environ.get("TAPIS_TENANT_BASEURL")
-TAPIS_ADMIN_JWT = os.environ.get("TAPIS_ADMIN_JWT")
 
 def thumbnail_image(fobj, size=(400, 400)):
     im = Image.open(fobj)
