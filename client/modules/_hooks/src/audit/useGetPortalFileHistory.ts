@@ -17,7 +17,7 @@ async function fetchPortalFileHistory(
   filename: string
 ): Promise<PortalFileAuditResponse> {
   const encoded = encodeURIComponent(filename);
-  const response = await fetch(`/audit/api/file/${encoded}/portal/`);
+  const response = await fetch(`/audit/api/file/${encoded}/portal/combined/`);
   if (!response.ok) throw new Error(`API Error: ${response.status}`);
   return response.json();
 }

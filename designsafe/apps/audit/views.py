@@ -5,9 +5,24 @@ from django.http import JsonResponse
 from django.db import connections, Error as DatabaseError
 from django.contrib.auth.decorators import login_required
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Minimal input validation (length-only) to prevent very long inputs
+_MAX_INPUT_LEN = 512
 
 
-# portals.c7b61598a1d9d658ddfa68d6fb03a065d8d21c303cb32fb22df24b250f7c4a79 -- tracking_id - jake book upload
+def _validate_len_or_400(value, field_name):
+    """Return 400 JsonResponse if value is not a reasonable length; else None."""
+    if not isinstance(value, str):
+        return JsonResponse({"error": f"Invalid {field_name}"}, status=400)
+    trimmed = value.strip()
+    if not trimmed or len(trimmed) > _MAX_INPUT_LEN:
+        return JsonResponse({"error": f"Invalid {field_name}"}, status=400)
+    return None
+
+
 @login_required
 def audit_trail(request):
     """
@@ -17,104 +32,17 @@ def audit_trail(request):
     return render(request, "designsafe/apps/audit/audit_trail.html", context)
 
 
-def trace_file_portal_search(rows, filename):
-    def return_as_dict(v):
-        if isinstance(v, dict):
-            return v
-        if isinstance(v, str):
-            try:
-                return json.loads(v)
-            except Exception:
-                return {}
-    #normalize input: accept {"data": [...]} or the list itself
-    if isinstance(rows, dict) and "data" in rows:
-        rows = rows.get("data") or []
-    if not isinstance(rows, list):
-        return []
-
-    seed = (filename or "").strip().lower()
-    aliases = {seed} if seed else set()
-    kept = []
-
-    def get_basename_from_path(p):
-        return (p or "").rstrip("/").split("/")[-1].lower()
-
-    for r in rows:
-        action = (r.get("action") or "").lower()
-        data = return_as_dict(r.get("data"))
-
-        #skip if it can't be parsed
-        if not isinstance(data, dict):
-            continue
-
-        body = data.get("body", {}) if isinstance(data, dict) else {}
-
-        if action == "upload":
-            fname = (body.get("file_name") or "").strip().lower()
-            if fname and fname in aliases:
-                kept.append(r)
-
-        elif action == "rename":
-            base = get_basename_from_path(data.get("path"))
-            if base and base in aliases:
-                new_name = (body.get("new_name") or "").strip().lower()
-                if new_name:
-                    aliases.add(new_name)
-                kept.append(r)
-
-        elif action == "move":
-            base = get_basename_from_path(data.get("path"))
-            if base and base in aliases:
-                kept.append(r)
-
-        elif action == "trash":
-            base = get_basename_from_path(data.get("path"))
-            if not base:
-                base = get_basename_from_path(body.get("path"))
-            if base and base in aliases:
-                kept.append(r)
-
-        elif action == "submitjob":
-            job = body.get("job", {}) if isinstance(body, dict) else {}
-            file_inputs = job.get("fileInputs") or []
-
-            for fi in file_inputs:
-                if isinstance(fi, dict):
-                    source_url = fi.get("sourceUrl")
-                    if source_url:
-                        base = get_basename_from_path(source_url)
-                        if base and base in aliases:
-                            kept.append(r)
-                            break
-    return kept
-
-def trace_file_tapis_search(rows, filename):
-    # TODO: once DB is back up and running need to implement search for tapis file
-    # getting rows via action upload, ACTION_UPLOAD, ACTION_MOVE, ACTION_DELETE
-    # set aliases to filename
-    # rows upload & ACTION_UPLOAD -> check base of target_path -> if matching in aliases, add to kept
-    # rows ACTION_MOVE -> either a rename or move ->
-    #       check for rename
-    #          if base in source_path in aliases
-    pass
-
+@login_required
 def get_portal_session_audit_search(request, username):
     """
     Fetches audit records for given username from portal audit database
     """
     try:
+        bad = _validate_len_or_400(username, "username")
+        if bad:
+            return bad
         audit_db = connections["audit"]
         cursor = audit_db.cursor()
-
-        # region TEST - "joyce_cywu"
-        # query = """
-        # SELECT session_id, timestamp, portal, username, action, tracking_id, data
-        # FROM public.portal_audit
-        # WHERE session_id = 'np0qhb1qf1p0vyphzpv1u6aosafszidk'
-        # AND username = %s
-        # ORDER BY timestamp ASC;
-        #     """
-        # endregion
 
         query = """
         SELECT timestamp, portal, username, action, tracking_id, data
@@ -131,142 +59,416 @@ def get_portal_session_audit_search(request, username):
 
         cursor.execute(query, [username])
         columns = [col[0] for col in cursor.description]
-        results = [dict(zip(columns, row)) for row in cursor.fetchall()] #getting to json
+        results = [dict(zip(columns, row)) for row in cursor.fetchall()]
         cursor.close()
-        print("Portal recent session query successful.", flush=True)
         return JsonResponse({"data": results})
     except DatabaseError as exc:
-        print("Error in get_portal_audit_search:", str(exc))
+        logger.exception("Error in get_portal_audit_search")
         return JsonResponse({"error": str(exc)}, status=500)
 
 
-def get_portal_file_audit_search(request, filename):
+@login_required
+def get_upload_portal_search(request, filename):
     """
-    Fetches audit records given filename from portal audit database
+    Fetches audit records given filename under "upload" action from portal audit database
     """
     try:
+        bad = _validate_len_or_400(filename, "filename")
+        if bad:
+            return bad
         audit_db = connections["audit"]
         cursor = audit_db.cursor()
 
-        # region - test queries
-        # query = """
-        # SELECT timestamp, portal, username, action, tracking_id, data
-        # FROM public.portal_audit
-        # WHERE tracking_id = (
-        #     SELECT tracking_id
-        #     FROM public.portal_audit
-        #     WHERE action = 'upload'
-        #     AND data::text ILIKE %s
-        #     LIMIT 1
-        # )
-        # AND tracking_id IS NOT NULL
-        # AND action IN ('upload', 'rename', 'move', 'trash', 'download')
-        # ORDER BY "timestamp" ASC;
-        # """
-
-        # test query which basically gets the all the tracking_ids from all rows that
-        #have the filename in its data field. From there goes through every single tracking_id, looks at all its rows,
-        #and selects the ones that have either upload, rename, move, trash, download, or submitJob as its actions.
-        #From there it creates a giant JSON file with every possible row that i need to check against
-        #created because tracking_id is not as viable as originally thought, same file uploads were spread across multiple tracking_ids
-
-        #-- e.g. "%MPAKCE.tcl%"
-        # query = """
-        # WITH hits AS (
-        # SELECT DISTINCT tracking_id
-        # FROM public.portal_audit
-        # WHERE data::text ILIKE %s
-        # ),
-        # events AS (
-        # SELECT pa.session_id, pa.timestamp, pa.portal, pa.username,
-        #         pa.action, pa.tracking_id, pa.data
-        # FROM public.portal_audit pa
-        # JOIN hits h ON h.tracking_id = pa.tracking_id
-        # WHERE lower(pa.action) IN ('upload','rename','move','trash','download','submitjob')
-        # )
-        # SELECT json_build_object(
-        # 'data',
-        # COALESCE(
-        #     json_agg(
-        #     json_build_object(
-        #         'timestamp',   e.timestamp,
-        #         'portal',      e.portal,
-        #         'username',    e.username,
-        #         'action',      e.action,
-        #         'tracking_id', e.tracking_id,
-        #         'data',        e.data::json
-        #     )
-        #     ORDER BY e.timestamp, e.tracking_id, e.action
-        #     ),
-        #     '[]'::json
-        # )
-        # ) AS payload
-        # FROM events e;
-        # """
-
-        # query = """
-        # SELECT timestamp, portal, username, action, tracking_id, data
-        # FROM public.portal_audit
-        # WHERE tracking_id = (
-        # SELECT tracking_id
-        # FROM public.portal_audit
-        # WHERE (lower(action) = 'upload' OR lower(action) = 'submitjob')
-        #     AND data::text ILIKE %s
-        # ORDER BY timestamp DESC
-        # LIMIT 1
-        # )
-        # AND action IN ('upload','rename','move','trash','download','submitJob')
-        # ORDER BY timestamp ASC;
-        # """
-
-
-        # endregion
-
         query = """
-        WITH hits AS (
+        WITH upload_ids AS (
         SELECT DISTINCT tracking_id
         FROM public.portal_audit
-        WHERE data::text ILIKE %s
-        ),
-        events AS (
-        SELECT pa.session_id, pa.timestamp, pa.portal, pa.username,
-                pa.action, pa.tracking_id, pa.data
-        FROM public.portal_audit pa
-        JOIN hits h ON h.tracking_id = pa.tracking_id
-        WHERE lower(pa.action) IN ('upload','rename','move','trash','submitjob')
+        WHERE lower(action) = 'upload'
+            AND lower(data->'body'->>'file_name') = lower(%s)
         )
-        SELECT e.timestamp, e.portal, e.username, e.action, e.tracking_id, e.data
-        FROM events e
-        ORDER BY e.timestamp, e.tracking_id, e.action;
+        SELECT timestamp, portal, username, action, tracking_id, data
+        FROM public.portal_audit
+        WHERE tracking_id IN (SELECT tracking_id FROM upload_ids)
+        AND lower(action) IN ('upload','rename','move', 'trash')
+        ORDER BY timestamp ASC, tracking_id ASC;
         """
-        #order changed from timestamp first, then tracking id, then action -- change more convinient as it will now group together tracking_ids  or idk need feedback on that, no nvm bad idea
 
-
-
-        pattern = f"%{filename}%"
-        cursor.execute(query, [pattern])
-        print(cursor.description)
+        cursor.execute(query, [filename])
         columns = [col[0] for col in cursor.description]
         results = [dict(zip(columns, row)) for row in cursor.fetchall()]
         cursor.close()
-        print("Portal file search query successful.", flush=True)
-        filteredRows = trace_file_portal_search(results, filename)
-        #print(results, flush=True)
-        return JsonResponse({"data": filteredRows}, json_dumps_params={"indent": 2, "ensure_ascii": False})
+
+        for row in results:
+            data_field = row.get("data")
+            if isinstance(data_field, str):
+                try:
+                    row["data"] = json.loads(data_field)
+                except (json.JSONDecodeError, TypeError):
+                    pass
+
+        filteredResults = portal_upload_file_trace(results, filename)
+        return JsonResponse(
+            {"data": filteredResults},
+            json_dumps_params={"indent": 2, "ensure_ascii": False},
+        )
     except DatabaseError as exc:
-        print("Error in get_portal_file_audit_search:", str(exc))
+        logger.exception("Error in get_upload_portal_search")
         return JsonResponse({"error": str(exc)}, status=500)
 
 
-def get_tapis_file_audit_search(request, filename):
+@login_required
+def get_rename_portal_search(request, filename):
     """
-    Fetches audit records given filename from tapis files audit database
+    Fetches audit records given filename under "rename" action from portal audit database
     """
-    # TODO: Implement database query for file tracking on tapis DB side
+    try:
+        bad = _validate_len_or_400(filename, "filename")
+        if bad:
+            return bad
+        audit_db = connections["audit"]
+        cursor = audit_db.cursor()
 
-    return JsonResponse({"data": []})
+        query = """
+        WITH rename_ids AS (
+        SELECT DISTINCT tracking_id
+        FROM public.portal_audit
+        WHERE lower(action) = 'rename'
+            AND lower(data->'body'->>'new_name') = lower(%s)
+        )
+        SELECT timestamp, portal, username, action, tracking_id, data
+        FROM public.portal_audit
+        WHERE tracking_id IN (SELECT tracking_id FROM rename_ids)
+        AND lower(action) IN ('upload','rename','move', 'trash')
+        ORDER BY timestamp ASC, tracking_id ASC;
+        """
+
+        cursor.execute(query, [filename])
+        columns = [col[0] for col in cursor.description]
+        results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        cursor.close()
+
+        for row in results:
+            data_field = row.get("data")
+            if isinstance(data_field, str):
+                try:
+                    row["data"] = json.loads(data_field)
+                except (json.JSONDecodeError, TypeError):
+                    pass
+
+        filteredResults = portal_rename_file_trace(results, filename)
+        return JsonResponse(
+            {"data": filteredResults},
+            json_dumps_params={"indent": 2, "ensure_ascii": False},
+        )
+    except DatabaseError as exc:
+        logger.exception("Error in get_rename_portal_search")
+        return JsonResponse({"error": str(exc)}, status=500)
 
 
+@login_required
+def get_portal_file_combined_search(request, filename):
+    """
+    Combined search returns merged results of upload trace and rename trace,
+    Response format: { "data": [ ...groups from upload..., ...groups from rename... ] }
+    """
+    bad = _validate_len_or_400(filename, "filename")
+    if bad:
+        return bad
+    combined = []
+
+    for resp in (
+        get_upload_portal_search(request, filename),
+        get_rename_portal_search(request, filename),
+    ):
+        try:
+            if getattr(resp, "status_code", 200) == 200:
+                payload = json.loads(resp.content or b"{}")
+                combined.extend(payload.get("data", []))
+        except Exception:
+            pass
+
+    return JsonResponse(
+        {"data": combined}, json_dumps_params={"indent": 2, "ensure_ascii": False}
+    )
+
+
+def portal_upload_file_trace(payload: json, filename: str):
+    """Filtering results to have full traces done"""
+    """Goal: Return filtered array of dicts each one containing row from database"""
+    """
+    Filtered criteria (upload anchor):
+    - Start a new group per unique directory containing a matching upload
+    - Track aliases: directory (aliasesPath) and filenames (aliasesFilename)
+    - Add subsequent rename/move/trash when they match current directory and filename
+    """
+    if isinstance(payload, dict) and "data" in payload:
+        data = payload.get("data") or []
+    elif isinstance(payload, list):
+        data = payload
+    else:
+        data = []
+
+    flat_data = []
+    if isinstance(data, list):
+        for item in data:
+            if isinstance(item, list):
+                flat_data.extend(item)
+            elif isinstance(item, dict):
+                flat_data.append(item)
+
+    filename = filename.lower()
+    keptRows = (
+        []
+    )  # list of dicts contataining what will be returned to the frontend, this is going to be like a list of dicts, like list1 containitng 5 dict entries, list2 containning 4 dict entries, and so on until no more data to look at, and all those lists put under keptRows list
+    aliasesPath = (
+        []
+    )  # list correlating with index on keptRows, ex if keptRows[0] has path "erikriv16/scratch/working", then aliasesPath will have the same as well, good way to keep track
+    aliasesFilename = (
+        []
+    )  # list of lists correlating with index on keptRows, ex if keptRows[0] (first dict entry) has a rename row that has new name as fileRename.txt, that file name will be stored in aliasesFilename[0] as a list ['fileRename.txt', .....] - adn keep adding from there if more renames come along
+    index = 0
+
+    def get_path_without_filename(full_path):
+        """Extract path without filename"""
+        if not full_path or "." not in full_path.split("/")[-1]:
+            return full_path
+        return "/".join(full_path.rstrip("/").split("/")[:-1])
+
+    def get_filename_from_path(full_path):
+        return full_path.rstrip("/").split("/")[-1].lower()
+
+    def normalize_dir_path(p):
+        return (p or "").strip().strip("/").lower()
+
+    for entry in flat_data:
+        action = entry.get("action", "").lower()
+        entry_data = entry.get("data", {})
+        body = entry_data.get("body", {})
+        path = entry_data.get("path", "")
+        file_name = body.get("file_name", "").lower()
+
+        if action == "upload" and file_name == filename:
+            path_without_filename = normalize_dir_path(get_path_without_filename(path))
+            if path_without_filename not in aliasesPath:
+                # Create new list in keptRows
+                keptRows.append([entry])
+                aliasesPath.append(path_without_filename)  # Store directory path only
+                aliasesFilename.append([file_name])
+                index = len(keptRows) - 1
+            else:
+                index = aliasesPath.index(path_without_filename)
+                keptRows[index].append(entry)
+
+        elif action == "rename":
+            path_without_filename = normalize_dir_path(get_path_without_filename(path))
+            filename_from_path = get_filename_from_path(path)
+            new_name = body.get("new_name", "").lower()
+
+            # Check each alias group to see if this rename belongs to it
+            for i in range(len(aliasesPath)):
+                if path_without_filename == aliasesPath[i]:
+                    if filename_from_path in aliasesFilename[i]:
+                        keptRows[i].append(entry)
+                        if new_name:
+                            aliasesFilename[i].append(new_name)
+                        index = i
+                        break
+
+        # if action is move, need to check if path without filename at end in corresponding aliasesPath, adn if filename at end of path in aliasesFilename, if it is, we add this row to keptRows to its correspoding list, and update aliasesPath to this path excluding the filename
+        elif action == "move":
+            path_without_filename = normalize_dir_path(get_path_without_filename(path))
+            filename_from_path = get_filename_from_path(path)
+            dest_path = body.get("dest_path", "")
+
+            for i in range(len(aliasesPath)):
+                if (
+                    path_without_filename == aliasesPath[i]
+                    and filename_from_path in aliasesFilename[i]
+                ):
+                    keptRows[i].append(entry)
+                    aliasesPath[i] = normalize_dir_path(dest_path)
+                    index = i
+                    break
+
+        elif action == "trash":
+            path_without_filename = normalize_dir_path(get_path_without_filename(path))
+            filename_from_path = get_filename_from_path(path)
+            trash_path = body.get("trash_path", "")
+
+            for i in range(len(aliasesPath)):
+                if (
+                    path_without_filename == aliasesPath[i]
+                    and filename_from_path in aliasesFilename[i]
+                ):
+                    keptRows[i].append(entry)
+                    if trash_path:
+                        aliasesPath[i] = normalize_dir_path(trash_path)
+                    index = i
+                    break
+
+    return keptRows
+
+
+def portal_rename_file_trace(payload: json, filename: str):
+    """Filtering results to have full traces done"""
+    """Goal: Return filtered array of dicts each one containing row from database"""
+    """
+    Filtered criteria (rename anchor):
+    - Find rename rows whose body.new_name matches the searched filename
+    - Walk backward through renames to resolve the original name
+    - Prefer upload-style grouping over all rows for that origin
+    - Fallback: build a chain using filename aliases across rename/move/trash
+    """
+
+    if isinstance(payload, dict) and "data" in payload:
+        data = payload.get("data") or []
+    elif isinstance(payload, list):
+        data = payload
+    else:
+        data = []
+
+    flat_data = []
+    if isinstance(data, list):
+        for item in data:
+            if isinstance(item, list):
+                flat_data.extend(item)
+            elif isinstance(item, dict):
+                flat_data.append(item)
+
+    # target filename we are tracing
+    target = (filename or "").lower()
+
+    def get_filename_from_path(full_path):
+        return (full_path or "").rstrip("/").split("/")[-1].lower()
+
+    def is_rename_target(row, name):
+        if (row.get("action") or "").lower() != "rename":
+            return False
+        data = row.get("data") or {}
+        body = data.get("body", {}) or {}
+        return (body.get("new_name") or "").lower() == name
+
+    def resolve_origin_from_index(hit_index):
+        current = target
+        for j in range(hit_index, -1, -1):
+            row_j = flat_data[j]
+            if (row_j.get("action") or "").lower() != "rename":
+                continue
+            data_j = row_j.get("data") or {}
+            body_j = data_j.get("body", {}) or {}
+            if (body_j.get("new_name") or "").lower() == current:
+                previous = get_filename_from_path(data_j.get("path", ""))
+                if previous:
+                    current = previous
+        return current
+
+    def extract_origin_from_group(group):
+        if not group:
+            return ""
+        first = group[0]
+        data0 = first.get("data") or {}
+        if not isinstance(data0, dict):
+            try:
+                data0 = json.loads(data0)
+            except Exception:
+                data0 = {}
+        body0 = data0.get("body", {}) or {}
+        file_from_body = (body0.get("file_name") or "").lower()
+        if file_from_body:
+            return file_from_body
+        return get_filename_from_path(data0.get("path", ""))
+
+    def build_alias_chain(origin: str):
+        aliases_filename = {origin}
+        chain = []
+        for row in flat_data:
+            action = (row.get("action") or "").lower()
+            data_obj = row.get("data") or {}
+            if not isinstance(data_obj, dict):
+                try:
+                    data_obj = json.loads(data_obj)
+                except Exception:
+                    data_obj = {}
+            body_obj = data_obj.get("body", {}) or {}
+            if action == "rename":
+                old = get_filename_from_path(data_obj.get("path", ""))
+                if old in aliases_filename:
+                    chain.append(row)
+                    new_name = (body_obj.get("new_name") or "").lower()
+                    if new_name:
+                        aliases_filename.add(new_name)
+            elif action in ("move", "trash"):
+                base_name = get_filename_from_path(
+                    data_obj.get("path") or body_obj.get("path") or ""
+                )
+                if base_name in aliases_filename:
+                    chain.append(row)
+        return chain
+
+    # find rename targets and resolve origins
+    rename_hit_indexes = [
+        i for i, r in enumerate(flat_data) if is_rename_target(r, target)
+    ]
+    origins = {
+        resolve_origin_from_index(i)
+        for i in rename_hit_indexes
+        if resolve_origin_from_index(i)
+    }
+
+    # Prefer upload-style grouping for each origin
+    result_groups = []
+    seen_keys = set()
+    for origin in origins:
+        groups = portal_upload_file_trace(flat_data, origin) or []
+        for g in groups:
+            if not g:
+                continue
+            first = g[0]
+            first_data = first.get("data") or {}
+            if not isinstance(first_data, dict):
+                try:
+                    first_data = json.loads(first_data)
+                except Exception:
+                    first_data = {}
+            first_path = (
+                first_data.get("path")
+                or (first_data.get("body", {}) or {}).get("path")
+                or ""
+            )
+            key = (first.get("tracking_id"), first.get("timestamp"), first_path)
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+            result_groups.append(g)
+
+    # fallback to alias chain if no upload-based group covered this origin
+    covered_origins = {extract_origin_from_group(g) for g in result_groups}
+    for origin in origins:
+        if origin in covered_origins:
+            continue
+        chain = build_alias_chain(origin)
+        if chain:
+            first = chain[0]
+            first_data = first.get("data") or {}
+            if not isinstance(first_data, dict):
+                try:
+                    first_data = json.loads(first_data)
+                except Exception:
+                    first_data = {}
+            first_path = (
+                first_data.get("path")
+                or (first_data.get("body", {}) or {}).get("path")
+                or ""
+            )
+            key = (first.get("tracking_id"), first.get("timestamp"), first_path)
+            if key not in seen_keys:
+                seen_keys.add(key)
+                result_groups.append(chain)
+
+    return result_groups
+
+
+@login_required
 def get_usernames_portal(request):
     """
     Updating array with usernames for search
@@ -286,9 +488,5 @@ def get_usernames_portal(request):
 
         return JsonResponse({"usernames": usernames})
     except DatabaseError as exc:
-        print("Error in update_usernames_autocomplete:", str(exc))
+        logger.exception("Error in get_usernames_portal")
         return JsonResponse({"error": str(exc)}, status=500)
-
-
-
-#need to work on UI API 500 errro response when page is not loading ==== MUST

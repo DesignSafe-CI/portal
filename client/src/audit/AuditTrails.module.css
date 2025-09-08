@@ -17,3 +17,172 @@
   width: 100%;
   overflow-x: auto;
 }
+
+/* FILE TABLE CSS BELOW ================== */
+.clip {
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+}
+
+.summaryBox {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border: 2px solid;
+  border-radius: 10px;
+  background-color: var(--global-color-primary--x-light);
+  cursor: pointer;
+  height: 100px;
+}
+
+.filenameSummaryBox {
+  flex: 0 200px;
+  font-weight: bold;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* middle details column (First Appearance, User, Timestamp) */
+.details {
+  flex: 1;
+  min-width: 0px;
+  padding-left: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.row {
+  display: flex;
+}
+
+.label {
+  font-weight: bold;
+  margin-right: 5px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.value {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  min-width: 0;
+}
+/* middle row columns end*/
+
+.modalContent {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* TIMELINE CSS BELOW ======================= */
+
+.timelineDropDown {
+  border: 1px solid var(--global-color-primary--normal);
+  border-radius: 10px;
+  font-size: 14px;
+  padding: 25px;
+  background-color: #fafafa;
+  overflow: hidden;
+}
+
+.timelineContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+  max-width: 1000px;
+  min-width: 1000px;
+  position: relative;
+  overflow: hidden;
+}
+
+.nodeLine {
+  position: absolute;
+  left: calc(50% - 100px);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--global-color-primary--light);
+}
+
+.lineToNode {
+  width: 60px;
+  height: 2px;
+  background-color: var(--global-color-primary--light);
+}
+
+.icon {
+  font-size: 18px;
+  color: black;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--global-color-primary--x-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoBox {
+  flex: 1;
+  margin-left: 24px;
+  min-width: 400px;
+  padding: 15px;
+  background-color: #ffffff;
+  border: 1px solid;
+  border-radius: 10px;
+}
+
+.headerInfoBox {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.textInfoBox {
+  margin-left: 6px;
+  font-size: 13px;
+}
+
+.viewLogsLink {
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 13px;
+}
+
+.node {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.timestamp {
+  font-size: 13px;
+  margin-right: 25px;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 200px;
+}

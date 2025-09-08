@@ -59,8 +59,8 @@ def test_portal_search_returns_empty_data(authenticated_client):
         assert data["data"] == []
 
 
-#when search happens for a file that dosen't exist - need to implement get_tapis_files_audit_search fn in views.py
-#don't need mock because return value hardcoded in views.py
+# when search happens for a file that dosen't exist - need to implement get_tapis_files_audit_search fn in views.py
+# don't need mock because return value hardcoded in views.py
 def test_tapis_files_audit_search_returns_empty_data(authenticated_client):
     """Test that tapis files search returns empty data structure when no data exists"""
     response = authenticated_client.get(
@@ -110,5 +110,4 @@ def test_portal_search_handles_database_error(authenticated_client):
         assert "error" in data
 
 
-
-#NEED TO REDO ALL OF THIS, UPDATED VIEWS AND URLS FILES IN NEXT COMMIT
+# NEED TO REDO ALL OF THIS, UPDATED VIEWS AND URLS FILES IN NEXT COMMIT, CURRENTLY NOT WOKRING
