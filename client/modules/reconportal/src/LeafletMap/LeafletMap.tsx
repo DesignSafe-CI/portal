@@ -39,8 +39,8 @@ export const mapConfig = {
   minZoom: 2, // 2 typically prevents zooming out too far to see multiple earths
   maxZoom: 24, // Maximum possible detail
   maxFitBoundsSelectedFeatureZoom: 15,
-  selectedEventZoomToLevel: 11, // Zoom level to use when an event is selected
-  minZoomForOpenTopo: 9, // Minimum zoom level for displaying OpenTopo datasets
+  selectedEventZoomToLevel: 8, // Zoom level to use when an event is selected
+  minZoomForOpenTopo: 6, // Minimum zoom level for displaying OpenTopo datasets
   maxBounds: [
     [-90, -180], // Southwest coordinates
     [90, 180], // Northeast coordinates
