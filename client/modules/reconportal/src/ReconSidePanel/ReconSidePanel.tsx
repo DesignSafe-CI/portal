@@ -248,7 +248,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
             gap={20}
           >
             <Image
-              src="/static/scripts/rapid/images/logoicon.png"
+              src="/static/images/reconPortalIcon.png"
               preview={false}
               style={{ width: '48px', height: '48px' }}
             />
