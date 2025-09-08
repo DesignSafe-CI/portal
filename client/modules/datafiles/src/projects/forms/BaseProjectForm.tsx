@@ -61,6 +61,14 @@ export const ProjectTypeInput: React.FC<{
           description="For work other than the project types above."
         />
       );
+    case 'software':
+      return (
+        <ProjectTypeRadioSelect
+          label="Research Software"
+          iconName="fa fa-github overview-prj-type"
+          description="For code that solves complex problems in a scientific context."
+        />
+      );
 
     case 'hybrid_simulation':
       return (
@@ -319,7 +327,7 @@ export const BaseProjectForm: React.FC<{
         <GuestMembersInput name="guestMembers" />
       </Form.Item>
 
-      {projectType === 'other' && (
+      {['other', 'software'].includes(projectType ?? '') && (
         <>
           <Form.Item label="Assign Authorship" required>
             You can order the authors during the publication process.

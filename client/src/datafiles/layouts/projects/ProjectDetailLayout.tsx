@@ -55,7 +55,9 @@ export const ProjectDetailLayout: React.FC = () => {
   if (!user)
     return (
       <Layout>
-        <DatafilesToolbar searchInput={<FileListingSearchBar />} />
+        {data?.baseProject.value.projectType !== 'software' && (
+          <DatafilesToolbar searchInput={<FileListingSearchBar />} />
+        )}
         <Alert
           showIcon
           type="error"
@@ -74,7 +76,13 @@ export const ProjectDetailLayout: React.FC = () => {
 
   return (
     <Layout>
-      <DatafilesToolbar searchInput={<FileListingSearchBar />} />
+      <DatafilesToolbar
+        searchInput={
+          data?.baseProject.value.projectType !== 'software' && (
+            <FileListingSearchBar />
+          )
+        }
+      />
       <ProjectTitleHeader projectId={projectId} />
       <BaseProjectDetails projectValue={data.baseProject.value} />
       <Outlet />
