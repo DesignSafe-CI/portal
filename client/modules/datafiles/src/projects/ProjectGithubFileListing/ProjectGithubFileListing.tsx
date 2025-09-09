@@ -114,7 +114,26 @@ export const ProjectGithubFileListing: React.FC<{ projectId: string }> = ({
       />
     );
   }
-  return <BaseGithubFileListing githubUrl={githubUrl} />;
+  return (
+    <>
+      <Alert
+        showIcon
+        style={{ margin: '1rem 0px' }}
+        //message="No Repository Selected"
+        description={
+          <div>
+            If you need to modify the GitHub release associated with this
+            project, you can do so from the{' '}
+            <Link to={`/projects/${projectId}/curation`}>
+              Curation Directory
+            </Link>{' '}
+            .
+          </div>
+        }
+      />
+      <BaseGithubFileListing githubUrl={githubUrl} />
+    </>
+  );
 };
 
 export const BaseGithubFileListing: React.FC<{ githubUrl?: string }> = ({

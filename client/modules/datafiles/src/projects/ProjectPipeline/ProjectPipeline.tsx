@@ -99,7 +99,6 @@ const getSteps = (
             <PipelineProofreadProjectStep
               projectId={projectId}
               nextStep={next}
-              prevStep={prev}
             />
           ),
         },
