@@ -186,7 +186,7 @@ export const ProjectGithubTransfer: React.FC<{ projectId: string }> = ({
             >
               https://codemeta.github.io/codemeta-generator/
             </a>{' '}
-            and include it in your GitHub release. < br />
+            and include it in your GitHub release. <br />
             Software name, description, license, and version from this file will
             overwrite project metadata to maintain consistency
           </div>
