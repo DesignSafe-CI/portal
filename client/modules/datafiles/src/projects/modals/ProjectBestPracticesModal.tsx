@@ -21,7 +21,7 @@ export const ProjectBestPracticesModal: React.FC<{
         onClick={showModal}
         disabled={disabled}
       >
-        Publish / Amend / Version
+        Prepare to Publish / Amend / Version
       </Button>
       <Modal
         open={isModalOpen}

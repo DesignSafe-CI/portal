@@ -36,19 +36,21 @@ export const PublishedEntityListingLayout: React.FC = () => {
         data.baseProject.projectType
       ) && (
         <DoiContextProvider value={data.baseProject.dois?.[0]}>
-          <FileListing
-            scroll={{ y: 500, x: 500 }}
-            api="tapis"
-            system="designsafe.storage.published"
-            path={encodeURIComponent(
-              `${
-                data.tree.children.find((c) => c.version === selectedVersion)
-                  ?.basePath ?? ''
-              }/data`
-            )}
-            baseRoute="."
-            fileTags={data.fileTags}
-          />
+          {!data.baseProject.tombstone && (
+            <FileListing
+              scroll={{ y: 500, x: 500 }}
+              api="tapis"
+              system="designsafe.storage.published"
+              path={encodeURIComponent(
+                `${
+                  data.tree.children.find((c) => c.version === selectedVersion)
+                    ?.basePath ?? ''
+                }/data`
+              )}
+              baseRoute="."
+              fileTags={data.fileTags}
+            />
+          )}
         </DoiContextProvider>
       )}
       {data.baseProject.projectType === 'software' && (
