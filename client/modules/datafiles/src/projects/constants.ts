@@ -162,6 +162,7 @@ export const ENTITIES_WITH_FILES: Record<
   ],
   field_reconnaissance: [],
   other: [PROJECT],
+  software: [PROJECT],
   None: [],
 };
 

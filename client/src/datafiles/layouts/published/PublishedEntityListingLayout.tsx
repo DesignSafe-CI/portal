@@ -1,6 +1,11 @@
-import { FileListing, PublicationView } from '@client/datafiles';
+import {
+  BaseGithubFileListing,
+  FileListing,
+  PublicationView,
+} from '@client/datafiles';
 import {
   DoiContextProvider,
+  TBaseProjectValue,
   usePublicationDetail,
   usePublicationVersions,
 } from '@client/hooks';
@@ -12,6 +17,17 @@ export const PublishedEntityListingLayout: React.FC = () => {
   const { data } = usePublicationDetail(projectId ?? '');
   const { selectedVersion } = usePublicationVersions(projectId ?? '');
   if (!projectId || !data) return null;
+
+  let githubUrl = data.baseProject.githubUrl;
+  if (data.baseProject.projectType === 'software') {
+    const versionValue = data.tree.children.find(
+      (c) => (c.version ?? 1) === selectedVersion
+    )?.value;
+    if (versionValue) {
+      githubUrl =
+        (versionValue as unknown as TBaseProjectValue).githubUrl ?? '';
+    }
+  }
 
   return (
     <div>
@@ -36,6 +52,9 @@ export const PublishedEntityListingLayout: React.FC = () => {
             />
           )}
         </DoiContextProvider>
+      )}
+      {data.baseProject.projectType === 'software' && (
+        <BaseGithubFileListing githubUrl={githubUrl} />
       )}
     </div>
   );
