@@ -81,6 +81,7 @@ const AuditTrailSessionTable: React.FC<AuditTrailSessionTableProps> = ({
   const extractDataField = (data: unknown, path: string): string => {
     if (!data) return '-';
     const fields = path.split('.');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let value: any = data as any;
     for (let i = 0; i < fields.length; i++) {
       if (value && typeof value === 'object' && fields[i] in value) {

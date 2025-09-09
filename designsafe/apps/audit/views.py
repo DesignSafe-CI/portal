@@ -190,7 +190,7 @@ def get_portal_file_combined_search(request, filename: str):
         {"data": combined}, json_dumps_params={"indent": 2, "ensure_ascii": False}
     )
 
-
+# pylint: disable=too-many-locals,too-many-branches,too-many-statements,too-many-nested-blocks
 def portal_upload_file_trace(payload: json, filename: str):
     """
     Build upload-anchored timelines for a file.
@@ -304,7 +304,7 @@ def portal_upload_file_trace(payload: json, filename: str):
 
     return kept_rows
 
-
+# pylint: disable=too-many-locals,too-many-branches,too-many-statements,too-many-nested-blocks
 def portal_rename_file_trace(payload: json, filename: str):
     """
     Build rename-anchored timelines for a file.

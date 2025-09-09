@@ -12,7 +12,7 @@ import styles from './AuditTrails.module.css';
 
 interface AuditTrailFileTableProps {
   auditData: { data: PortalFileAuditEntry[] } | undefined;
-  auditError: any;
+  auditError: Error | null;
   auditLoading: boolean;
   searchTerm?: string;
 }
