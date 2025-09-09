@@ -10,9 +10,20 @@ import {
 } from '@ant-design/icons';
 //not sure what would be the best thing to use here for the icons
 import styles from './AuditTrails.module.css';
+import { PortalFileAuditEntry } from '@client/hooks';
+
+type DataObj = {
+  path?: string;
+  body?: {
+    file_name?: string;
+    new_name?: string;
+    dest_path?: string;
+    trash_path?: string;
+  };
+};
 
 interface TimelineProps {
-  operations: any[];
+  operations: PortalFileAuditEntry[];
   filename: string;
   searchTerm?: string;
 }
@@ -56,29 +67,33 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
     }
   };
 
-  const getActionDetails = (operation: any) => {
-    const { action, data } = operation;
+  const getActionDetails = (operation: PortalFileAuditEntry) => {
+    const { action } = operation;
+    const dataObj: DataObj | undefined =
+      typeof operation.data === 'string'
+        ? undefined
+        : (operation.data as DataObj);
 
     switch (action.toLowerCase()) {
       case 'upload':
         return {
           source: 'N/A',
-          destination: data?.path || 'N/A',
+          destination: dataObj?.path || 'N/A',
         };
       case 'rename':
         return {
-          source: data?.path || 'N/A',
-          destination: data?.body?.new_name || 'N/A',
+          source: dataObj?.path || 'N/A',
+          destination: dataObj?.body?.new_name || 'N/A',
         };
       case 'move':
         return {
-          source: data?.path || 'N/A',
-          destination: data?.body?.dest_path || 'N/A',
+          source: dataObj?.path || 'N/A',
+          destination: dataObj?.body?.dest_path || 'N/A',
         };
       case 'trash':
         return {
-          source: data?.path || 'N/A',
-          destination: data?.body?.trash_path || 'N/A',
+          source: dataObj?.path || 'N/A',
+          destination: dataObj?.body?.trash_path || 'N/A',
         };
       default:
         return {
@@ -88,7 +103,7 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
     }
   };
 
-  const handleViewLogs = (operation: any) => {
+  const handleViewLogs = (operation: PortalFileAuditEntry) => {
     setModalContent(JSON.stringify(operation, null, 2));
     setModalOpen(true);
   };
@@ -98,11 +113,14 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
     setModalContent('');
   };
 
-  const isHighlightOperation = (operation: any): boolean => {
+  const isHighlightOperation = (operation: PortalFileAuditEntry): boolean => {
     const term = (searchTerm || '').toLowerCase();
     if (!term) return false;
     const action = (operation?.action || '').toLowerCase();
-    const body = operation?.data?.body || {};
+    const body =
+      typeof operation.data === 'string'
+        ? {}
+        : (operation.data as DataObj).body || {};
     if (action === 'upload') {
       const fileName = (body?.file_name || '').toLowerCase();
       return fileName === term;

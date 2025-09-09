@@ -33,9 +33,9 @@ const AuditTrailSessionTable: React.FC<AuditTrailSessionTableProps> = ({
   };
 
   const handleViewLogs = (entry: PortalAuditEntry) => {
-    const content = safePretty((entry as any).data);
+    const content = safePretty(entry.data as unknown);
     setModalContent(content);
-    setFooterEntry(entry as any);
+    setFooterEntry(entry);
     setModalOpen(true);
   };
 
@@ -78,11 +78,10 @@ const AuditTrailSessionTable: React.FC<AuditTrailSessionTableProps> = ({
     return '-';
   };
 
-  const extractDataField = (data: any, path: string): string => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  const extractDataField = (data: unknown, path: string): string => {
     if (!data) return '-';
     const fields = path.split('.');
-    let value = data;
+    let value: any = data as any;
     for (let i = 0; i < fields.length; i++) {
       if (value && typeof value === 'object' && fields[i] in value) {
         value = value[fields[i]];

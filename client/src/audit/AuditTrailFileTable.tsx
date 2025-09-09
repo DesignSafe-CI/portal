@@ -17,6 +17,11 @@ interface AuditTrailFileTableProps {
   searchTerm?: string;
 }
 
+type DataObj = {
+  path?: string;
+  body?: { file_name?: string; new_name?: string };
+};
+
 const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
   auditData,
   auditError,
@@ -50,18 +55,19 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
 
   //getting filename to display on each dropdown menu, is "rename" row, uses body.new_name, if "upload" row, uses body.file_name
   // if else, try to get basename from data.path, and if all fails use tracking_id as filename
-  const getFilename = (entry: any) => {
+  const getFilename = (entry: PortalFileAuditEntry) => {
     if (!entry) return 'Unknown file';
     const action = (entry.action || '').toLowerCase();
-    const body =
-      entry && entry.data && entry.data.body ? entry.data.body : undefined;
+    const dataObj: DataObj | undefined =
+      typeof entry.data === 'string' ? undefined : (entry.data as DataObj);
+    const body = dataObj?.body;
     if (action === 'rename' && body && body.new_name) {
       return body.new_name;
     }
     if (body && body.file_name) {
       return body.file_name;
     }
-    const path = entry && entry.data && entry.data.path;
+    const path = dataObj?.path;
     if (typeof path === 'string' && path) {
       const base = path.replace(/\/$/, '').split('/').pop();
       if (base) return base;
@@ -70,8 +76,10 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
     return entry.tracking_id || 'Unknown file';
   };
 
-  const getFirstAppearance = (entry: any) => {
-    const rawPath = entry?.data?.path;
+  const getFirstAppearance = (entry: PortalFileAuditEntry) => {
+    const dataObj: DataObj | undefined =
+      typeof entry.data === 'string' ? undefined : (entry.data as DataObj);
+    const rawPath = dataObj?.path;
     if (!rawPath || typeof rawPath !== 'string') {
       return 'Upload at (path unavailable)';
     }
@@ -85,34 +93,32 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
     return `Upload at ${directoryPath}`;
   };
 
-  const getUser = (entry: any) => {
+  const getUser = (entry: PortalFileAuditEntry) => {
     return (entry && entry.username) || 'Unknown user';
   };
 
   //picking summary entry, if row is upload and search term matches the filename(data.body.file_name) in that row, then we use that one
   //is no upload row is found, look for rename row and search terms that matches filename (data.body.new_name) in that row, then we use that one instead
-  const pickSummaryEntry = (entries: any[], term?: string) => {
+  const pickSummaryEntry = (entries: PortalFileAuditEntry[], term?: string) => {
     if (!entries || entries.length === 0) return undefined;
     const lowered = (term || '').toLowerCase();
     if (lowered) {
       //upload search
-      const uploadHit = entries.find(
-        (e) =>
-          (e.action || '').toLowerCase() === 'upload' &&
-          e.data &&
-          e.data.body &&
-          (e.data.body.file_name || '').toLowerCase() === lowered
-      );
+      const uploadHit = entries.find((e) => {
+        if ((e.action || '').toLowerCase() !== 'upload') return false;
+        const d: DataObj | undefined =
+          typeof e.data === 'string' ? undefined : (e.data as DataObj);
+        return (d?.body?.file_name || '').toLowerCase() === lowered;
+      });
       if (uploadHit) return uploadHit;
 
       //rename search
-      const renameHit = entries.find(
-        (e) =>
-          (e.action || '').toLowerCase() === 'rename' &&
-          e.data &&
-          e.data.body &&
-          (e.data.body.new_name || '').toLowerCase() === lowered
-      );
+      const renameHit = entries.find((e) => {
+        if ((e.action || '').toLowerCase() !== 'rename') return false;
+        const d: DataObj | undefined =
+          typeof e.data === 'string' ? undefined : (e.data as DataObj);
+        return (d?.body?.new_name || '').toLowerCase() === lowered;
+      });
       if (renameHit) return renameHit;
     }
     return entries[0];
@@ -171,7 +177,10 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
             ? fileEntries
             : [fileEntries];
           const firstEntry =
-            pickSummaryEntry(entriesArr as any[], searchTerm) || entriesArr[0];
+            pickSummaryEntry(
+              entriesArr as PortalFileAuditEntry[],
+              searchTerm
+            ) || (entriesArr[0] as PortalFileAuditEntry);
           const isExpanded = expandedItems.has(fileIndex);
           const filename = getFilename(firstEntry);
           const firstAppearance = getFirstAppearance(firstEntry);

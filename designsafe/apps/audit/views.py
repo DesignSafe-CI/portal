@@ -1,15 +1,14 @@
 """Views for the audit app."""
 
+import json
+import logging
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db import connections, Error as DatabaseError
 from django.contrib.auth.decorators import login_required
-import json
-import logging
 
 logger = logging.getLogger(__name__)
 
-# Minimal input validation (length-only) to prevent very long inputs
 _MAX_INPUT_LEN = 512
 
 
@@ -106,9 +105,9 @@ def get_upload_portal_search(request, filename):
                 except (json.JSONDecodeError, TypeError):
                     pass
 
-        filteredResults = portal_upload_file_trace(results, filename)
+        filtered_results = portal_upload_file_trace(results, filename)
         return JsonResponse(
-            {"data": filteredResults},
+            {"data": filtered_results},
             json_dumps_params={"indent": 2, "ensure_ascii": False},
         )
     except DatabaseError as exc:
@@ -155,9 +154,9 @@ def get_rename_portal_search(request, filename):
                 except (json.JSONDecodeError, TypeError):
                     pass
 
-        filteredResults = portal_rename_file_trace(results, filename)
+        filtered_results = portal_rename_file_trace(results, filename)
         return JsonResponse(
-            {"data": filteredResults},
+            {"data": filtered_results},
             json_dumps_params={"indent": 2, "ensure_ascii": False},
         )
     except DatabaseError as exc:
@@ -166,7 +165,7 @@ def get_rename_portal_search(request, filename):
 
 
 @login_required
-def get_portal_file_combined_search(request, filename):
+def get_portal_file_combined_search(request, filename: str):
     """
     Combined search returns merged results of upload trace and rename trace,
     Response format: { "data": [ ...groups from upload..., ...groups from rename... ] }
@@ -184,8 +183,8 @@ def get_portal_file_combined_search(request, filename):
             if getattr(resp, "status_code", 200) == 200:
                 payload = json.loads(resp.content or b"{}")
                 combined.extend(payload.get("data", []))
-        except Exception:
-            pass
+        except ValueError:
+            continue
 
     return JsonResponse(
         {"data": combined}, json_dumps_params={"indent": 2, "ensure_ascii": False}
@@ -193,12 +192,10 @@ def get_portal_file_combined_search(request, filename):
 
 
 def portal_upload_file_trace(payload: json, filename: str):
-    """Filtering results to have full traces done"""
-    """Goal: Return filtered array of dicts each one containing row from database"""
     """
-    Filtered criteria (upload anchor):
+    Build upload-anchored timelines for a file.
     - Start a new group per unique directory containing a matching upload
-    - Track aliases: directory (aliasesPath) and filenames (aliasesFilename)
+    - Track aliases: directory (aliases_path) and filenames (aliases_filenames)
     - Add subsequent rename/move/trash when they match current directory and filename
     """
     if isinstance(payload, dict) and "data" in payload:
@@ -217,13 +214,13 @@ def portal_upload_file_trace(payload: json, filename: str):
                 flat_data.append(item)
 
     filename = filename.lower()
-    keptRows = (
+    kept_rows = (
         []
     )  # list of dicts contataining what will be returned to the frontend, this is going to be like a list of dicts, like list1 containitng 5 dict entries, list2 containning 4 dict entries, and so on until no more data to look at, and all those lists put under keptRows list
-    aliasesPath = (
+    aliases_path = (
         []
     )  # list correlating with index on keptRows, ex if keptRows[0] has path "erikriv16/scratch/working", then aliasesPath will have the same as well, good way to keep track
-    aliasesFilename = (
+    aliases_filenames = (
         []
     )  # list of lists correlating with index on keptRows, ex if keptRows[0] (first dict entry) has a rename row that has new name as fileRename.txt, that file name will be stored in aliasesFilename[0] as a list ['fileRename.txt', .....] - adn keep adding from there if more renames come along
     index = 0
@@ -249,15 +246,14 @@ def portal_upload_file_trace(payload: json, filename: str):
 
         if action == "upload" and file_name == filename:
             path_without_filename = normalize_dir_path(get_path_without_filename(path))
-            if path_without_filename not in aliasesPath:
-                # Create new list in keptRows
-                keptRows.append([entry])
-                aliasesPath.append(path_without_filename)  # Store directory path only
-                aliasesFilename.append([file_name])
-                index = len(keptRows) - 1
+            if path_without_filename not in aliases_path:
+                kept_rows.append([entry])
+                aliases_path.append(path_without_filename)
+                aliases_filenames.append([file_name])
+                index = len(kept_rows) - 1
             else:
-                index = aliasesPath.index(path_without_filename)
-                keptRows[index].append(entry)
+                index = aliases_path.index(path_without_filename)
+                kept_rows[index].append(entry)
 
         elif action == "rename":
             path_without_filename = normalize_dir_path(get_path_without_filename(path))
@@ -265,12 +261,12 @@ def portal_upload_file_trace(payload: json, filename: str):
             new_name = body.get("new_name", "").lower()
 
             # Check each alias group to see if this rename belongs to it
-            for i in range(len(aliasesPath)):
-                if path_without_filename == aliasesPath[i]:
-                    if filename_from_path in aliasesFilename[i]:
-                        keptRows[i].append(entry)
+            for i, alias_dir in enumerate(aliases_path):
+                if path_without_filename == alias_dir:
+                    if filename_from_path in aliases_filenames[i]:
+                        kept_rows[i].append(entry)
                         if new_name:
-                            aliasesFilename[i].append(new_name)
+                            aliases_filenames[i].append(new_name)
                         index = i
                         break
 
@@ -280,13 +276,13 @@ def portal_upload_file_trace(payload: json, filename: str):
             filename_from_path = get_filename_from_path(path)
             dest_path = body.get("dest_path", "")
 
-            for i in range(len(aliasesPath)):
+            for i, alias_dir in enumerate(aliases_path):
                 if (
-                    path_without_filename == aliasesPath[i]
-                    and filename_from_path in aliasesFilename[i]
+                    path_without_filename == alias_dir
+                    and filename_from_path in aliases_filenames[i]
                 ):
-                    keptRows[i].append(entry)
-                    aliasesPath[i] = normalize_dir_path(dest_path)
+                    kept_rows[i].append(entry)
+                    aliases_path[i] = normalize_dir_path(dest_path)
                     index = i
                     break
 
@@ -295,25 +291,23 @@ def portal_upload_file_trace(payload: json, filename: str):
             filename_from_path = get_filename_from_path(path)
             trash_path = body.get("trash_path", "")
 
-            for i in range(len(aliasesPath)):
+            for i, alias_dir in enumerate(aliases_path):
                 if (
-                    path_without_filename == aliasesPath[i]
-                    and filename_from_path in aliasesFilename[i]
+                    path_without_filename == alias_dir
+                    and filename_from_path in aliases_filenames[i]
                 ):
-                    keptRows[i].append(entry)
+                    kept_rows[i].append(entry)
                     if trash_path:
-                        aliasesPath[i] = normalize_dir_path(trash_path)
+                        aliases_path[i] = normalize_dir_path(trash_path)
                     index = i
                     break
 
-    return keptRows
+    return kept_rows
 
 
 def portal_rename_file_trace(payload: json, filename: str):
-    """Filtering results to have full traces done"""
-    """Goal: Return filtered array of dicts each one containing row from database"""
     """
-    Filtered criteria (rename anchor):
+    Build rename-anchored timelines for a file.
     - Find rename rows whose body.new_name matches the searched filename
     - Walk backward through renames to resolve the original name
     - Prefer upload-style grouping over all rows for that origin
@@ -370,7 +364,7 @@ def portal_rename_file_trace(payload: json, filename: str):
         if not isinstance(data0, dict):
             try:
                 data0 = json.loads(data0)
-            except Exception:
+            except ValueError:
                 data0 = {}
         body0 = data0.get("body", {}) or {}
         file_from_body = (body0.get("file_name") or "").lower()
@@ -378,7 +372,7 @@ def portal_rename_file_trace(payload: json, filename: str):
             return file_from_body
         return get_filename_from_path(data0.get("path", ""))
 
-    def build_alias_chain(origin: str):
+    def build_alias_chain(origin):
         aliases_filename = {origin}
         chain = []
         for row in flat_data:
@@ -387,7 +381,7 @@ def portal_rename_file_trace(payload: json, filename: str):
             if not isinstance(data_obj, dict):
                 try:
                     data_obj = json.loads(data_obj)
-                except Exception:
+                except ValueError:
                     data_obj = {}
             body_obj = data_obj.get("body", {}) or {}
             if action == "rename":
@@ -406,14 +400,15 @@ def portal_rename_file_trace(payload: json, filename: str):
         return chain
 
     # find rename targets and resolve origins
-    rename_hit_indexes = [
-        i for i, r in enumerate(flat_data) if is_rename_target(r, target)
-    ]
-    origins = {
-        resolve_origin_from_index(i)
-        for i in rename_hit_indexes
-        if resolve_origin_from_index(i)
-    }
+    rename_hit_indexes = []
+    for i, row in enumerate(flat_data):
+        if is_rename_target(row, target):
+            rename_hit_indexes.append(i)
+    origins = set()
+    for i in rename_hit_indexes:
+        origin = resolve_origin_from_index(i)
+        if origin:
+            origins.add(origin)
 
     # Prefer upload-style grouping for each origin
     result_groups = []
@@ -428,7 +423,7 @@ def portal_rename_file_trace(payload: json, filename: str):
             if not isinstance(first_data, dict):
                 try:
                     first_data = json.loads(first_data)
-                except Exception:
+                except ValueError:
                     first_data = {}
             first_path = (
                 first_data.get("path")
@@ -442,7 +437,9 @@ def portal_rename_file_trace(payload: json, filename: str):
             result_groups.append(g)
 
     # fallback to alias chain if no upload-based group covered this origin
-    covered_origins = {extract_origin_from_group(g) for g in result_groups}
+    covered_origins = set()
+    for g in result_groups:
+        covered_origins.add(extract_origin_from_group(g))
     for origin in origins:
         if origin in covered_origins:
             continue
@@ -453,7 +450,7 @@ def portal_rename_file_trace(payload: json, filename: str):
             if not isinstance(first_data, dict):
                 try:
                     first_data = json.loads(first_data)
-                except Exception:
+                except ValueError:
                     first_data = {}
             first_path = (
                 first_data.get("path")
