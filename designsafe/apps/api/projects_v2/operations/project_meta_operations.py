@@ -1,7 +1,10 @@
 """Utilities for creating and managing project metadata objects/associations."""
 
 import operator
+import re
+import requests
 from django.db import models, transaction
+from pydantic import BaseModel
 from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
 from designsafe.apps.api.projects_v2.schema_models.base import (
     FileObj,
@@ -256,3 +259,53 @@ def set_file_tags(uuid: str, file_path: str, file_tags: list[str]):
         entity.save()
 
     return entity
+
+
+class InvalidGithubUrl(Exception):
+    """Raise when a GitHub URL cannot be parsed."""
+
+
+class MissingGithubFile(Exception):
+    """Raise when a GitHub repo is missing a required file."""
+
+
+class GithubReleaseParams(BaseModel):
+    """Model for GitHub release parameters."""
+
+    org: str
+    repo: str
+    tag: str
+
+
+def validate_github_release(github_url: str) -> GithubReleaseParams:
+    """Validate a GitHub release URL and check for required files."""
+    release_url_regex = r"^(https?:\/\/)?(www\.)?github\.com\/(?P<org>.*)\/(?P<repo>.*)\/releases\/tag\/(?P<tag>.*)$"
+    try:
+        matches = re.match(release_url_regex, github_url.strip()).groupdict()
+        org = matches["org"]
+        repo = matches["repo"]
+        tag = matches["tag"]
+    except (AttributeError, KeyError) as exc:
+        raise InvalidGithubUrl from exc
+
+    gh_content_url = (
+        f"https://api.github.com/repos/{org}/{repo}/contents/codemeta.json?ref={tag}"
+    )
+    gh_readme_url = f"https://api.github.com/repos/{org}/{repo}/readme?ref={tag}"
+
+    missing_files = []
+    readme_request = requests.get(
+        gh_readme_url, headers={"Accept": "application/json"}, timeout=30
+    )
+    if not readme_request.ok:
+        missing_files.append("readme")
+    codemeta_request = requests.get(
+        gh_content_url, headers={"Accept": "application/json"}, timeout=30
+    )
+    if not codemeta_request.ok:
+        missing_files.append("codemeta")
+
+    if missing_files:
+        raise MissingGithubFile(missing_files)
+
+    return GithubReleaseParams(org=org, repo=repo, tag=tag)

@@ -366,7 +366,7 @@ def ingest_pub_fedora(project_id: str, version: int = 1, amend: bool = False):
     pub_meta = Publication.objects.get(project_id=project_id)
     project_type = pub_meta.value.get("projectType", "other")
 
-    if project_type == "other":
+    if project_type in ["other", "software"]:
         container_path = project_id
         if version and version > 1:
             container_path = f"{container_path}v{version}"
