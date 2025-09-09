@@ -56,6 +56,7 @@ class BaseProject(MetadataModel):
         "hybrid_simulation",
         "field_recon",
         "field_reconnaissance",
+        "software",
         "None",
     ] = "None"
     title: str
@@ -135,6 +136,8 @@ class BaseProject(MetadataModel):
     tombstone: bool = False
     tombstone_message: Optional[str] = None
 
+    github_url: Optional[str] = None
+
     def construct_users(self) -> list[ProjectUser]:
         """Fill in missing user information from the database."""
         users = []
@@ -186,6 +189,9 @@ class BaseProject(MetadataModel):
         ]
         if self.dois:
             fedora_json["identifier"] += self.dois
+
+        if self.github_url:
+            fedora_json["isPartOf"] = self.github_url
 
         fedora_json["coverage"] = []
         for nh_event in self.nh_events:

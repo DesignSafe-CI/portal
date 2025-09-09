@@ -72,6 +72,7 @@ export type TBaseProjectValue = {
     | 'hybrid_simulation'
     | 'field_recon'
     | 'field_reconnaissance'
+    | 'software'
     | 'None';
 
   title: string;
@@ -96,6 +97,8 @@ export type TBaseProjectValue = {
   fileTags: TFileTag[];
 
   hazmapperMaps?: THazmapperMap[];
+
+  githubUrl?: string;
 
   license?: string;
 };

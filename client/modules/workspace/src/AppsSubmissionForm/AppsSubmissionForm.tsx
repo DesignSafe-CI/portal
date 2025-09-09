@@ -87,7 +87,7 @@ export const AppsSubmissionForm: React.FC = () => {
   const [, setInteractiveModalDetails] =
     useInteractiveModalContext() as TInteractiveModalContext;
 
-  const { definition, license, defaultSystemNeedsKeys } = app;
+  const { definition, license, defaultSystemNeedsKeys, portalNamespace } = app;
 
   const defaultStorageHost = defaultStorageSystem.host;
   const hasCorral = ['data.tacc.utexas.edu', 'corral.tacc.utexas.edu'].some(
@@ -174,6 +174,7 @@ export const AppsSubmissionForm: React.FC = () => {
       executionSystems,
       allocations,
       defaultStorageSystem,
+      portalNamespace,
       username,
       portalAlloc
     );
@@ -475,6 +476,7 @@ export const AppsSubmissionForm: React.FC = () => {
           allocations,
           filteredExecSystems,
           currentExecSystem,
+          portalNamespace,
           defaultQueue
         );
 
