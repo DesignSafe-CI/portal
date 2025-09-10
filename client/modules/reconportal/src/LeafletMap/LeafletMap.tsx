@@ -136,7 +136,7 @@ export const LeafletMap: React.FC = () => {
             },
           }}
         >
-          <Popup closeButton={false}>
+          <Popup closeButton={false} offset={[0, -30]}>
             <ReconPortalPopupContent event={reconEvent} />
           </Popup>
         </Marker>
