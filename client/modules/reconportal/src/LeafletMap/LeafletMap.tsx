@@ -57,7 +57,7 @@ export const LeafletMap: React.FC = () => {
     selectedReconPortalEventIdentifier,
   } = useReconEventContext();
 
-  const handleFeatureClick = (reconEvent: ReconPortalEvent) => {
+  const selectReconEvent = (reconEvent: ReconPortalEvent) => {
     setSelectedReconPortalEventIdentifier(
       getReconPortalEventIdentifier(reconEvent)
     );
@@ -88,7 +88,7 @@ export const LeafletMap: React.FC = () => {
           icon={icon}
           position={[reconEvent.location.lat, reconEvent.location.lon]}
           eventHandlers={{
-            click: () => handleFeatureClick(reconEvent),
+            click: () => selectReconEvent(reconEvent),
             mouseover: (e) => {
               // Only show hover popup if this marker is not currently selected
               if (
@@ -137,7 +137,26 @@ export const LeafletMap: React.FC = () => {
           }}
         >
           <Popup closeButton={false} offset={[0, -30]}>
-            <ReconPortalPopupContent event={reconEvent} />
+            <div
+              role="button"
+              tabIndex={0}
+              style={{ cursor: 'pointer' }}
+              onClick={(ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                selectReconEvent(reconEvent); // setSelectedReconPortalEventIdentifier(...)
+                // optional: close the popup after selection
+                // e.target.closePopup();
+              }}
+              onKeyDown={(ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                  ev.preventDefault();
+                  selectReconEvent(reconEvent);
+                }
+              }}
+            >
+              <ReconPortalPopupContent event={reconEvent} />
+            </div>
           </Popup>
         </Marker>
       );
