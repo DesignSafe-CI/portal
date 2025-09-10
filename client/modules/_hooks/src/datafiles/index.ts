@@ -22,6 +22,7 @@ export { useUploadFile } from './useUploadFile';
 export { useUploadFolder } from './useUploadFolder';
 export { useFileDetail } from './useFileDetail';
 export * from './useKeywordSuggestions';
+export { useGithubListing, type TGithubFileObj } from './useGithubListing';
 
 export * from './usePathDisplayName';
 
