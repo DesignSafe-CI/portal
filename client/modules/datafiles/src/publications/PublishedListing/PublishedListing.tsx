@@ -34,6 +34,7 @@ const PublishedDescriptionModal: React.FC<{
 const projectTypeMapping: Record<string, string> = {
   field_recon: 'Field research',
   other: 'Other',
+  software: 'Research Software',
   experimental: 'Experimental',
   simulation: 'Simulation',
   hybrid_simulation: 'Hybrid Simulation',

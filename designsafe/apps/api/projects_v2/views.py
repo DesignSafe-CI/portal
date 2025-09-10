@@ -35,6 +35,8 @@ from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     change_project_type,
     create_project_metdata,
     get_changed_users,
+    validate_github_release,
+    MissingGithubFile,
 )
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     add_values_to_tree,
@@ -168,7 +170,11 @@ class ProjectsView(BaseApiView):
         initialize_project_graph(project_meta.project_id)
         project_users = [user.username for user in project_meta.users.all()]
         # create project system
-        setup_project_file_system(project_uuid=project_meta.uuid, users=project_users)
+        setup_project_file_system(
+            project_uuid=project_meta.uuid,
+            users=project_users,
+            project_id=f"PRJ-{prj_number}",
+        )
         # add users to system
 
         return JsonResponse({"projectId": project_meta.project_id})
@@ -276,6 +282,13 @@ class ProjectInstanceView(BaseApiView):
                 "info": {"project_id": project, "body": request_body},
             },
         )
+
+        if "githubUrl" in request_body.keys():
+            try:
+                request_body["githubUrl"] = request_body["githubUrl"].strip()
+                validate_github_release(request_body["githubUrl"])
+            except MissingGithubFile as exc:
+                return JsonResponse({"message": exc.args[0]}, status=400)
 
         prev_metadata = BaseProject.model_validate(project.value)
         updated_project = patch_metadata(project.uuid, request_body)
