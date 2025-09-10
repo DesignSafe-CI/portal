@@ -7,7 +7,7 @@ import {
   tapisInputFileRegex,
   TAppFileSettings,
 } from '../AppsWizard/AppsFormSchema';
-import { getSystemDisplayName, getExecSystemFromId } from '../utils';
+import { getExecSystemFromId } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
 import { useSystemOverview, useSystemQueue } from '@client/hooks';
@@ -46,10 +46,15 @@ const SystemStatus: React.FC<{
   value: string;
 }> = ({ value }) => {
   const { data: systems } = useSystemOverview();
-  const displayName = getSystemDisplayName(value);
+  const {
+    data: { executionSystems },
+  } = useGetSystems();
+  const currentExecSystem = getExecSystemFromId(executionSystems, value);
   const selectedSystem = systems?.find(
-    (sys) => sys.display_name === displayName
+    (sys) => sys.hostname === currentExecSystem?.host
   );
+
+  if (!currentExecSystem || !selectedSystem) return null;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
@@ -92,25 +97,18 @@ const QueueStatus: React.FC<{
   const selectedQueue = queueData?.find((q) => q.name === value);
 
   if (!value || !selectedSystem) return null;
+  if (!selectedQueue || selectedQueue.hidden) return null;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
       <span style={{ marginRight: -5, marginLeft: 8 }}>Queue Status:</span>
       <div
         className={`${queueStyles.statusBadge} ${
-          selectedQueue
-            ? selectedQueue.down
-              ? queueStyles.closed
-              : queueStyles.open
-            : queueStyles.closed
+          selectedQueue.down ? queueStyles.closed : queueStyles.open
         }`}
         style={{ marginLeft: 12 }}
       >
-        {selectedQueue
-          ? selectedQueue.down
-            ? 'Closed'
-            : 'Open'
-          : 'Not Available'}
+        {selectedQueue.down ? 'Closed' : 'Open'}
       </div>
     </div>
   );
