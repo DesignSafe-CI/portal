@@ -1,3 +1,3 @@
-export * from './ReconPortal/ReconPortal';
+export * from './LeafletMap/LeafletMap';
 export * from './ReconSidePanel/ReconSidePanel';
 export * from './utils/colors';

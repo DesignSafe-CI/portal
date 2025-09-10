@@ -146,74 +146,72 @@ export const LeafletMap: React.FC = () => {
   }, [filteredReconPortalEvents, selectedReconPortalEventIdentifier]);
 
   return (
-    <>
-      <MapContainer
-        center={mapConfig.startingCenter}
-        zoom={3}
-        className={styles.root}
-        zoomControl={false}
-        minZoom={mapConfig.minZoom}
-        maxZoom={mapConfig.maxZoom}
-        maxBounds={mapConfig.maxBounds}
-        preferCanvas={true}
+    <MapContainer
+      center={mapConfig.startingCenter}
+      zoom={3}
+      className={styles.root}
+      zoomControl={false}
+      minZoom={mapConfig.minZoom}
+      maxZoom={mapConfig.maxZoom}
+      maxBounds={mapConfig.maxBounds}
+      preferCanvas={true}
+    >
+      {/* Base layers */}
+      <LayersControl position="topright" collapsed={false}>
+        <LayersControl.BaseLayer checked name="View Satellite">
+          <TileLayer
+            attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            maxNativeZoom={
+              14
+            } /* Available zoom level should be higher but seems to be errors */
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name="View Borders">
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxNativeZoom={19}
+          />
+        </LayersControl.BaseLayer>
+      </LayersControl>
+
+      {/* Open Topo features, only visible when zoomed in and DS event selected*/}
+      <ZoomConditionalLayerGroup minZoom={mapConfig.minZoomForOpenTopo}>
+        <OpenTopoLayer />
+      </ZoomConditionalLayerGroup>
+      {/* Recon Portal features, only zoomed in when DS event selected*/}
+      <ZoomOnEventSelection
+        zoomLevel={mapConfig.selectedEventZoomToLevel}
+      ></ZoomOnEventSelection>
+      {/* Marker Features with Clustering (also includes point cloud markers) */}
+      <MarkerClusterGroup
+        zIndexOffset={1}
+        iconCreateFunction={createClusterIcon}
+        chunkedLoading={true}
+        showCoverageOnHover={false}
+        animate={true}
+        maxFitBoundsSelectedFeatureZoom={
+          mapConfig.maxFitBoundsSelectedFeatureZoom
+        }
+        spiderifyOnHover={true}
+        spiderfyOnMaxZoom={true}
+        spiderfyOnZoom={15}
+        zoomToBoundsOnClick={true}
       >
-        {/* Base layers */}
-        <LayersControl position="topright" collapsed={false}>
-          <LayersControl.BaseLayer checked name="View Satellite">
-            <TileLayer
-              attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              maxNativeZoom={
-                14
-              } /* Available zoom level should be higher but seems to be errors */
-            />
-          </LayersControl.BaseLayer>
-          <LayersControl.BaseLayer name="View Borders">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              maxNativeZoom={19}
-            />
-          </LayersControl.BaseLayer>
-        </LayersControl>
+        {ReconPortalEvents}
+      </MarkerClusterGroup>
 
-        {/* Open Topo features, only visible when zoomed in and DS event selected*/}
-        <ZoomConditionalLayerGroup minZoom={mapConfig.minZoomForOpenTopo}>
-          <OpenTopoLayer />
-        </ZoomConditionalLayerGroup>
-        {/* Recon Portal features, only zoomed in when DS event selected*/}
-        <ZoomOnEventSelection
-          zoomLevel={mapConfig.selectedEventZoomToLevel}
-        ></ZoomOnEventSelection>
-        {/* Marker Features with Clustering (also includes point cloud markers) */}
-        <MarkerClusterGroup
-          zIndexOffset={1}
-          iconCreateFunction={createClusterIcon}
-          chunkedLoading={true}
-          showCoverageOnHover={false}
-          animate={true}
-          maxFitBoundsSelectedFeatureZoom={
-            mapConfig.maxFitBoundsSelectedFeatureZoom
-          }
-          spiderifyOnHover={true}
-          spiderfyOnMaxZoom={true}
-          spiderfyOnZoom={15}
-          zoomToBoundsOnClick={true}
-        >
-          {ReconPortalEvents}
-        </MarkerClusterGroup>
+      {/* Legend - only visible when open topo features viewable*/}
+      <LegendControl minZoom={mapConfig.minZoomForOpenTopo} />
 
-        {/* Legend - only visible when open topo features viewable*/}
-        <LegendControl minZoom={mapConfig.minZoomForOpenTopo} />
+      {/* Zoom control */}
+      <ZoomControl position="topright" />
 
-        {/* Zoom control */}
-        <ZoomControl position="topright" />
-
-        {/* Selected event banner popup */}
-        {selectedEvent && (
-          <ReconPortalSelectedPopup selectedEvent={selectedEvent} />
-        )}
-      </MapContainer>
-    </>
+      {/* Selected event banner popup */}
+      {selectedEvent && (
+        <ReconPortalSelectedPopup selectedEvent={selectedEvent} />
+      )}
+    </MapContainer>
   );
 };
