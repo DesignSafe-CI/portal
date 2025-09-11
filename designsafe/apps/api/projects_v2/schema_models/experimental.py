@@ -17,6 +17,7 @@ from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
     handle_legacy_authors,
     handle_dropdown_value,
+    handle_keywords,
 )
 from designsafe.apps.api.projects_v2.constants import (
     FACILITY_OPTIONS,
@@ -36,6 +37,8 @@ class Experiment(MetadataModel):
 
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
+
+    keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
 
     facility: Annotated[
         Optional[DropdownValue],
