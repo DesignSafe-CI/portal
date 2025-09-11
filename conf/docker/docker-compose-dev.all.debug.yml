@@ -84,6 +84,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
+      -  ../../client/react-assets.html:/srv/www/designsafe/designsafe/templates/react-assets.html
       - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
       - des_chroma_data:/srv/www/designsafe/chroma_db
