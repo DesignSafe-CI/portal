@@ -145,7 +145,11 @@ export const ProjectGithubTransfer: React.FC<{ projectId: string }> = ({
               >
                 https://codemeta.github.io/codemeta-generator/
               </a>{' '}
-              and include it in your GitHub release.
+              and include it in your GitHub release. Fill out as much
+              information as possible and select the 3-clause BSD license.
+              <br />
+              Software name, description, license, and version from this file
+              will overwrite project metadata to maintain consistency.
             </span>
           }
         />
@@ -187,8 +191,12 @@ export const ProjectGithubTransfer: React.FC<{ projectId: string }> = ({
               https://codemeta.github.io/codemeta-generator/
             </a>{' '}
             and include it in your GitHub release. <br />
-            Software name, description, license, and version from this file will
-            overwrite project metadata to maintain consistency
+            Fill out as much information as possible and select the 3-clause BSD
+            license. <br />
+            <strong>
+              Software name, description, and license from this file will
+              overwrite project metadata to maintain consistency
+            </strong>
           </div>
         </div>
         <hr />
@@ -206,8 +214,8 @@ export const ProjectGithubTransfer: React.FC<{ projectId: string }> = ({
           ></span>
           <div>
             <strong>README File</strong> (<code>README.md</code>)<br />
-            Include a README file in addition to the code metadata in your
-            GitHub release.
+            Include a README file with instructions on how to install and use
+            the software in the Github release.
           </div>
         </div>
       </article>
