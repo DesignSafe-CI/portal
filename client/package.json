@@ -47,6 +47,7 @@
     "@nx/vite": "21.4.0",
     "@nx/workspace": "21.4.0",
     "@playwright/test": "^1.36.0",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "16.1.0",
     "@types/leaflet": "^1.9.19",
     "@types/leaflet.markercluster": "^1.5.5",
