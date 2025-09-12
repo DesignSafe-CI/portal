@@ -8,12 +8,18 @@ import {
   getReconPortalEventIdentifier,
 } from '@client/hooks';
 import { createSvgMarkerIcon } from './leafletUtil';
-import { getReconEventColor, getOpenTopoColor } from '../utils/colors';
+import {
+  getReconEventColor,
+  getOpenTopoColor,
+  getOpenTopoFillColor,
+} from '../utils/colors';
 import styles from './LegendControl.module.css';
 
 function LegendContent({ selectedIconHtml }: { selectedIconHtml: string }) {
   const openTopoColor = getOpenTopoColor();
+  const openTopoFillColor = getOpenTopoFillColor();
   const selectedOpenTopoColor = getOpenTopoColor(true);
+  const selectedOpenTopoFillColor = getOpenTopoFillColor(true);
   return (
     <div className={styles.container}>
       <div className={styles.legendRow}>
@@ -32,8 +38,8 @@ function LegendContent({ selectedIconHtml }: { selectedIconHtml: string }) {
           >
             <span
               style={{
-                background: openTopoColor,
-                opacity: 0.3,
+                background: openTopoFillColor,
+                opacity: 0.4,
                 width: '100%',
                 height: '100%',
                 display: 'block',
@@ -51,8 +57,8 @@ function LegendContent({ selectedIconHtml }: { selectedIconHtml: string }) {
           >
             <span
               style={{
-                background: selectedOpenTopoColor,
-                opacity: 0.3,
+                background: selectedOpenTopoFillColor,
+                opacity: 0.4,
                 width: '100%',
                 height: '100%',
                 display: 'block',
