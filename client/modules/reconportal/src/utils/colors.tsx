@@ -7,6 +7,16 @@ export function getOpenTopoColor(isSelected?: boolean): string {
   if (isSelected) {
     return '#FFD230';
   }
+  return '#D6D3D1';
+}
+
+/**
+ * Get fill color for OpenTopo dataset
+ */
+export function getOpenTopoFillColor(isSelected?: boolean): string {
+  if (isSelected) {
+    return '#FFD230';
+  }
   return 'black';
 }
 
