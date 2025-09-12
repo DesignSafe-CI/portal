@@ -21,6 +21,8 @@ import {
   useAuthenticatedUser,
   useKeywordSuggestions,
   useProjectDetail,
+  useDebounceValue,
+  TGetKeywordSuggestionsParams,
 } from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { AuthorSelect } from './_fields/AuthorSelect';
@@ -60,6 +62,14 @@ export const ProjectTypeInput: React.FC<{
           label="Other Type Project"
           iconName="curation-other overview-prj-type"
           description="For work other than the project types above."
+        />
+      );
+    case 'software':
+      return (
+        <ProjectTypeRadioSelect
+          label="Research Software"
+          iconName="fa fa-github overview-prj-type"
+          description="For code that solves complex problems in a scientific context."
         />
       );
 
@@ -140,23 +150,33 @@ export const BaseProjectForm: React.FC<{
     [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
 
-  const watchedTitle = Form.useWatch('title', form) ?? '';
-  const watchedDescription = Form.useWatch('description', form) ?? '';
-  const watchedSelected = Form.useWatch('keywords', form) ?? [];
-
-  const { data: suggestedKeywords = [] } = useKeywordSuggestions(
-    watchedTitle,
-    watchedDescription
+  const watchedTitle: string = Form.useWatch('title', form) ?? '';
+  const watchedDescription: string = Form.useWatch('description', form) ?? '';
+  const watchedSelected: string[] = Form.useWatch('keywords', form) ?? [];
+  const selectedMemo = useMemo(() => watchedSelected, [watchedSelected]);
+  const descriptionMemo = useMemo(
+    () => watchedDescription,
+    [watchedDescription]
   );
+  const titleMemo = useMemo(() => watchedTitle, [watchedTitle]);
+
+  const [searchTerms, setSearchTerms] = useState<TGetKeywordSuggestionsParams>({
+    title: watchedTitle,
+    description: watchedDescription,
+  });
+  const debouncedSearchTerms = useDebounceValue<TGetKeywordSuggestionsParams>(
+    searchTerms,
+    1000
+  );
+  const { data: suggestedKeywords = [] } =
+    useKeywordSuggestions(debouncedSearchTerms);
   const availableSuggestions = suggestedKeywords.filter(
-    (kw) => !watchedSelected.includes(kw)
+    (kw: string) => !selectedMemo.includes(kw)
   );
 
   useEffect(() => {
-    console.log('Project Title:', watchedTitle);
-    console.log('Project Description:', watchedDescription);
-    console.log('Suggested Keywords:', suggestedKeywords);
-  }, [watchedTitle, watchedDescription, suggestedKeywords]);
+    setSearchTerms({ title: titleMemo, description: descriptionMemo });
+  }, [titleMemo, descriptionMemo]);
 
   const { user } = useAuthenticatedUser();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -338,7 +358,7 @@ export const BaseProjectForm: React.FC<{
         <GuestMembersInput name="guestMembers" />
       </Form.Item>
 
-      {projectType === 'other' && (
+      {['other', 'software'].includes(projectType ?? '') && (
         <>
           <Form.Item label="Assign Authorship" required>
             You can order the authors during the publication process.

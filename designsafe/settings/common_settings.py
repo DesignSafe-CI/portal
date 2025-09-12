@@ -759,3 +759,8 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
         },
     },
 ]
+
+# TEJAS SAMBANOVA SETTINGS
+SN_API_KEY = os.environ.get("SN_API_KEY")
+SN_API_ENDPOINT = os.environ.get("SN_API_ENDPOINT")
+CHROMA_ENDPOINT = os.environ.get("CHROMA_ENDPOINT")

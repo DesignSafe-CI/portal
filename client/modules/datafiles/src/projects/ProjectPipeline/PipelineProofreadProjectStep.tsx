@@ -5,7 +5,7 @@ import { Button } from 'antd';
 
 export const PipelineProofreadProjectStep: React.FC<{
   projectId: string;
-  prevStep: () => void;
+  prevStep?: () => void;
   nextStep: () => void;
 }> = ({ projectId, prevStep, nextStep }) => {
   const { data } = useProjectDetail(projectId ?? '');
@@ -20,10 +20,14 @@ export const PipelineProofreadProjectStep: React.FC<{
           marginTop: 24,
         }}
       >
-        <Button type="link" onClick={() => prevStep()}>
-          <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
-          Selection
-        </Button>
+        {prevStep ? (
+          <Button type="link" onClick={() => prevStep()}>
+            <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
+            Selection
+          </Button>
+        ) : (
+          <span /> /* Empty element to force Continue button to the right */
+        )}
         <Button
           className="success-button"
           style={{ padding: '0px 40px' }}
