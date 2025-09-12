@@ -25,9 +25,8 @@ export const ReconPortalPopupContent: React.FC<ReconPortalPopuprops> = ({
         {title}
       </Title>
       {!showDetails && (
-        <span>
-          (Event details, including reconnaissance data, appear in the left
-          panel)
+        <span style={{ fontSize: 12 }}>
+          Event details and reconnaissance data appear in the left panel.
         </span>
       )}
 
