@@ -97,8 +97,13 @@ export const ZoomConditionalLayerGroup: React.FC<{
 };
 
 /**
- * A React-Leaflet wrapper that conditionally zooms on the selected event
+ * A React-Leaflet wrapper that manages map zooming behavior.
+ *
+ * - If an event is selected, zooms the map to that event at the given zoom level.
+ * - If no event is selected but there are filtered events, fits the map bounds to include all of them
+ * - If there are no filtered events, falls back to fitting the whole world.
  */
+
 export const ZoomOnEventSelection: React.FC<{
   zoomLevel: number;
 }> = ({ zoomLevel }) => {
@@ -126,7 +131,23 @@ export const ZoomOnEventSelection: React.FC<{
         });
       }
     } else {
-      map.fitWorld();
+      /**
+       * Zoom to all selected events (or the entire world)
+       */
+      const events = filteredReconPortalEvents ?? [];
+      if (events.length > 0) {
+        const bounds = L.latLngBounds(
+          events.map(
+            (e) => [e.location.lat, e.location.lon] as [number, number]
+          )
+        );
+        if (bounds.isValid()) {
+          map.whenReady(() => map.fitBounds(bounds, { maxZoom: 5 }));
+        }
+      } else {
+        // fallback if no events available
+        map.fitWorld();
+      }
     }
   }, [
     map,
