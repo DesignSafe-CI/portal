@@ -2,6 +2,7 @@
 
 import operator
 import re
+from typing import Optional
 import requests
 from django.db import models, transaction
 from pydantic import BaseModel
@@ -275,6 +276,8 @@ class GithubReleaseParams(BaseModel):
     org: str
     repo: str
     tag: str
+    description: Optional[str]
+    title: Optional[str]
 
 
 def validate_github_release(github_url: str) -> GithubReleaseParams:
@@ -305,7 +308,22 @@ def validate_github_release(github_url: str) -> GithubReleaseParams:
     if not codemeta_request.ok:
         missing_files.append("codemeta")
 
+    codemeta_content_url = codemeta_request.json()["download_url"]
+    codemeta_content = requests.get(
+        codemeta_content_url, headers={"Accept": "application/json"}, timeout=30
+    )
+    if not codemeta_content.ok:
+        missing_files.append("codemeta")
+    codemeta_title = codemeta_content.json().get("name")
+    codemeta_description = codemeta_content.json().get("description")
+
     if missing_files:
         raise MissingGithubFile(missing_files)
 
-    return GithubReleaseParams(org=org, repo=repo, tag=tag)
+    return GithubReleaseParams(
+        org=org,
+        repo=repo,
+        tag=tag,
+        title=codemeta_title,
+        description=codemeta_description,
+    )
