@@ -19,7 +19,14 @@ export const AIChatButton: React.FC = () => {
       </Button>
 
       <Drawer
-        title="Ask AI"
+        title={
+          <div>
+            <div>Ask AI</div>
+            <div style={{ fontSize: '11px', fontWeight: 'normal', color: 'gray' }}>
+              Beta - This model is still in training. It searches Published Data and User Documentation only.
+            </div>
+          </div>
+        }
         placement="bottom"
         height={600}
         open={showDrawer}
