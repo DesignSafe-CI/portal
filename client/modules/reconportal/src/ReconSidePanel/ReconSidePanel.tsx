@@ -205,7 +205,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
         </Card>
         <Divider style={{ margin: '0px 0px 8px 0px' }} />
         <div className={styles.reconDataTitle}>
-          <span>Reconaissance Data</span>
+          <span>Reconnaissance Data</span>
         </div>
         <Flex
           vertical
@@ -296,6 +296,8 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                     enterButton="Search"
                     size="large"
                     onSearch={onSearch}
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
                   />
 
                   <Flex
