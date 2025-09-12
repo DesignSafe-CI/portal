@@ -333,21 +333,25 @@ export const PublishedEntityDisplay: React.FC<{
                   license={license}
                   publicationDate={treeData.publicationDate}
                 />
-                {(treeData.value.fileObjs?.length ?? 0) > 0 && (
-                  <EntityFileListingTable
-                    treeData={treeData}
-                    preview={preview}
-                  />
+                {!treeData.value.tombstone && (
+                  <>
+                    {(treeData.value.fileObjs?.length ?? 0) > 0 && (
+                      <EntityFileListingTable
+                        treeData={treeData}
+                        preview={preview}
+                      />
+                    )}
+                    {(sortedChildren ?? []).map((child) => (
+                      <RecursiveTree
+                        preview={preview}
+                        treeData={child}
+                        key={child.id}
+                        defaultOpen={defaultOpenChildren}
+                        showEditCategories={showEditCategories}
+                      />
+                    ))}
+                  </>
                 )}
-                {(sortedChildren ?? []).map((child) => (
-                  <RecursiveTree
-                    preview={preview}
-                    treeData={child}
-                    key={child.id}
-                    defaultOpen={defaultOpenChildren}
-                    showEditCategories={showEditCategories}
-                  />
-                ))}
               </>
             ),
           },
