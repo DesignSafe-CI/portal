@@ -35,7 +35,6 @@ import { ReconPortalPopupContent } from './ReconPortalPopUpContent';
 import { ReconPortalSelectedPopup } from './ReconPortalSelectedPopUp';
 
 export const mapConfig = {
-  startingCenter: [40, -80] as L.LatLngTuple,
   minZoom: 2, // 2 typically prevents zooming out too far to see multiple earths
   maxZoom: 24, // Maximum possible detail
   maxFitBoundsSelectedFeatureZoom: 15,
@@ -166,8 +165,8 @@ export const LeafletMap: React.FC = () => {
 
   return (
     <MapContainer
-      center={mapConfig.startingCenter}
-      zoom={3}
+      zoom={mapConfig.minZoom}
+      bounds={mapConfig.maxBounds}
       className={styles.root}
       zoomControl={false}
       minZoom={mapConfig.minZoom}

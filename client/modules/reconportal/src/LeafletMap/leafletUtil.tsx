@@ -126,7 +126,7 @@ export const ZoomOnEventSelection: React.FC<{
         });
       }
     } else {
-      map.setView(L.latLng(40, -80), 3);
+      map.fitWorld();
     }
   }, [
     map,
