@@ -11,6 +11,7 @@ import {
   Card,
   Button,
   Tag,
+  Divider,
 } from 'antd';
 import styles from './ReconSidePanel.module.css';
 import {
@@ -166,7 +167,8 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
     const datasets = event.datasets || [];
     return (
       <div className={styles.eventDetail}>
-        <Card className={styles.eventDetailCard}>
+        <Card variant="borderless" className={styles.eventDetailCard}>
+          <Divider style={{ margin: '0px' }} />
           <Flex className={styles.eventDetailTitleRow}>
             <div>
               <FontAwesomeIcon
@@ -183,23 +185,25 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
               onClick={handleBackClick}
             />
           </Flex>
-          <Flex vertical className={styles.eventDetailField}>
-            <span className={styles.eventDetailLabel}>Location</span>
+          <Divider style={{ margin: '0px 0px 8px 0px' }} />
+          <div className={styles.eventDetailField}>
+            <span className={styles.eventDetailLabel}>Location: </span>
             <span className={styles.eventDetailValue}>{description}</span>
-          </Flex>
-          <Flex vertical className={styles.eventDetailField}>
-            <span className={styles.eventDetailLabel}>Hazard Date</span>
+          </div>
+          <div className={styles.eventDetailField}>
+            <span className={styles.eventDetailLabel}>Hazard Date: </span>
             <span className={styles.eventDetailValue}>
               {formatDate(new Date(date))}
             </span>
-          </Flex>
-          <Flex vertical className={styles.eventDetailField} align="flex-start">
-            <span className={styles.eventDetailLabel}>Hazard Type</span>
+          </div>
+          <div className={styles.eventDetailField}>
+            <span className={styles.eventDetailLabel}>Hazard Type: </span>
             <Tag color={eventTypeColor} className={styles.eventDetailTag}>
               {eventType}
             </Tag>
-          </Flex>
+          </div>
         </Card>
+        <Divider style={{ margin: '0px 0px 8px 0px' }} />
         <div className={styles.reconDataTitle}>
           <span>Reconaissance Data</span>
         </div>
