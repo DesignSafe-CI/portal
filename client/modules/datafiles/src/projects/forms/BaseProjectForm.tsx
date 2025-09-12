@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input, Popconfirm, Select } from 'antd';
+import { Alert, Button, Form, Input, Popconfirm, Select, Tag } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   nhTypeOptions,
@@ -19,7 +19,10 @@ import { TProjectUser } from './_fields/UserSelect';
 import {
   TBaseProjectValue,
   useAuthenticatedUser,
+  useKeywordSuggestions,
   useProjectDetail,
+  useDebounceValue,
+  TGetKeywordSuggestionsParams,
 } from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { AuthorSelect } from './_fields/AuthorSelect';
@@ -146,6 +149,34 @@ export const BaseProjectForm: React.FC<{
     ],
     [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
+
+  const watchedTitle: string = Form.useWatch('title', form) ?? '';
+  const watchedDescription: string = Form.useWatch('description', form) ?? '';
+  const watchedSelected: string[] = Form.useWatch('keywords', form) ?? [];
+  const selectedMemo = useMemo(() => watchedSelected, [watchedSelected]);
+  const descriptionMemo = useMemo(
+    () => watchedDescription,
+    [watchedDescription]
+  );
+  const titleMemo = useMemo(() => watchedTitle, [watchedTitle]);
+
+  const [searchTerms, setSearchTerms] = useState<TGetKeywordSuggestionsParams>({
+    title: watchedTitle,
+    description: watchedDescription,
+  });
+  const debouncedSearchTerms = useDebounceValue<TGetKeywordSuggestionsParams>(
+    searchTerms,
+    1000
+  );
+  const { data: suggestedKeywords = [] } =
+    useKeywordSuggestions(debouncedSearchTerms);
+  const availableSuggestions = suggestedKeywords.filter(
+    (kw: string) => !selectedMemo.includes(kw)
+  );
+
+  useEffect(() => {
+    setSearchTerms({ title: titleMemo, description: descriptionMemo });
+  }, [titleMemo, descriptionMemo]);
 
   const { user } = useAuthenticatedUser();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -387,6 +418,23 @@ export const BaseProjectForm: React.FC<{
               tokenSeparators={[',']}
             ></Select>
           </Form.Item>
+          {availableSuggestions.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              <p>Suggested Keywords:</p>
+              {availableSuggestions.map((kw) => (
+                <Tag
+                  key={kw}
+                  color="blue"
+                  style={{ cursor: 'pointer', marginBottom: 4 }}
+                  onClick={() => {
+                    form.setFieldValue('keywords', [...watchedSelected, kw]);
+                  }}
+                >
+                  {kw}
+                </Tag>
+              ))}
+            </div>
+          )}
         </Form.Item>
       )}
       <Form.Item label="Project Description" required>
