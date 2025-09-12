@@ -40,6 +40,13 @@ export const PipelineProofreadProjectStep: React.FC<{
       <section>
         <h3 style={{ textAlign: 'center' }}>Proofread your Project Metadata</h3>
         <ul style={{ listStylePosition: 'inside', paddingInlineStart: '0px' }}>
+          {data.baseProject.value.projectType === 'software' && (
+            <li>
+              By publishing, you, the developer, are agreeing to accept
+              responsibility to maintain the software, and be responsive to user
+              inquiries.
+            </li>
+          )}
           <li>Project metadata is published alongside your project.</li>
           <li>
             If you need help, attend{' '}

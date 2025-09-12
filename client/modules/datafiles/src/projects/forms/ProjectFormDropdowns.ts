@@ -17,6 +17,7 @@ export const nhTypeOptions = [
   { value: 'storm surge', label: 'Storm Surge' },
   { value: 'pandemic', label: 'Pandemic' },
   { value: 'wind', label: 'Wind' },
+  { value: 'multi', label: 'Multi-Hazard' },
 ];
 
 export const frTypeOptions = [
