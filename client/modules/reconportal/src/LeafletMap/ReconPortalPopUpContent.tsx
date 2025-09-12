@@ -24,6 +24,8 @@ export const ReconPortalPopupContent: React.FC<ReconPortalPopuprops> = ({
       <Title level={5} style={{ marginBottom: 6 }}>
         {title}
       </Title>
+      {!showDetails && <span>(Event details, including reconnaissance data, appear in the left panel)</span>}
+
 
       {showDetails && (
         <Space direction="vertical" size={6}>
