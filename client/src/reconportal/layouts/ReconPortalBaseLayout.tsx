@@ -1,6 +1,6 @@
 import React from 'react';
-import { Layout, Flex } from 'antd';
-import { ReconPortal, ReconSidePanel } from '@client/reconportal';
+import { Layout } from 'antd';
+import { LeafletMap, ReconSidePanel } from '@client/reconportal';
 import { ReconEventProvider } from '@client/hooks';
 
 const { Sider, Content } = Layout;
@@ -8,29 +8,19 @@ const { Sider, Content } = Layout;
 const ReconPortalRoot: React.FC = () => {
   return (
     <ReconEventProvider>
-      <Flex
-        vertical
+      <Layout
+        hasSider
         style={{
-          margin: '-20px 0 0 0px',
-          height: '100vh',
+          gap: '0px',
         }}
       >
-        <Layout
-          hasSider
-          style={{
-            gap: '0px',
-          }}
-        >
-          <Sider width="20%" breakpoint="md" collapsedWidth={0}>
-            <Flex vertical justify="left" style={{ height: '100%' }}>
-              <ReconSidePanel />
-            </Flex>
-          </Sider>
-          <Content>
-            <ReconPortal />
-          </Content>
-        </Layout>
-      </Flex>
+        <Sider width="350px">
+          <ReconSidePanel />
+        </Sider>
+        <Content>
+          <LeafletMap />
+        </Content>
+      </Layout>
     </ReconEventProvider>
   );
 };
