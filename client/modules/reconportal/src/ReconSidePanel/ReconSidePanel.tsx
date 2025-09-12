@@ -296,6 +296,8 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                     enterButton="Search"
                     size="large"
                     onSearch={onSearch}
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
                   />
 
                   <Flex
