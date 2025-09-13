@@ -38,7 +38,7 @@ const projectTypeMapping: Record<string, string> = {
   experimental: 'Experimental',
   simulation: 'Simulation',
   hybrid_simulation: 'Hybrid Simulation',
-  field_reconnaissance: 'Field Reconaissance',
+  field_reconnaissance: 'Field Reconnaissance',
   None: 'None',
 };
 

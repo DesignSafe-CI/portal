@@ -8,7 +8,6 @@ import './search';
 import './dashboard';
 import './applications/app';
 import './notifications/app';
-import './rapid';
 import './geo';
 
 

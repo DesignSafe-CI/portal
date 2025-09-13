@@ -109,6 +109,7 @@ export const EntityFileListingTable: React.FC<{
         scheme="public"
         columns={columns}
         scroll={{ x: 500, y: 500 }}
+        // @ts-expect-error TODO: treeData.value.fileObjs is TFileObj[], possibly needs mapping to TFileListing[]
         dataSource={treeData.value.fileObjs}
         noSelection={preview}
         disabled

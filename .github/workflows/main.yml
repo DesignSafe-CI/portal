@@ -116,6 +116,7 @@ jobs:
       with:
         node-version: 22
         cache: npm
+        cache-dependency-path: client/package-lock.json
 
     - run: npm ci
       working-directory: client

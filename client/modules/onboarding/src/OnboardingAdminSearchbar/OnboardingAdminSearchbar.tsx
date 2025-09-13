@@ -23,8 +23,6 @@ export const OnboardingAdminSearchbar: React.FC<{ disabled: boolean }> = ({
     setSearchParams(newSearchParams);
   };
 
-  useEffect(() => {}, [searchParams, query]);
-
   return (
     <Form
       onFinish={(data) => onSubmit(data.query)}
