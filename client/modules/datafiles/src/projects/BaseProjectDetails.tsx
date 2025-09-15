@@ -139,6 +139,7 @@ export const UsernamePopover: React.FC<{ user: TProjectUser }> = ({ user }) => {
 const projectTypeMapping = {
   field_recon: 'Field research',
   other: 'Other',
+  software: 'Software',
   experimental: 'Experimental',
   simulation: 'Simulation',
   hybrid_simulation: 'Hybrid Simulation',
@@ -190,7 +191,7 @@ export const BaseProjectDetails: React.FC<{
           <col />
         </colgroup>
         <tbody>
-          {pi && projectValue.projectType !== 'other' && (
+          {pi && !['other', 'software'].includes(projectValue.projectType) && (
             <tr className={styles['prj-row']}>
               <td>PI</td>
               <td style={{ fontWeight: 'bold' }}>
@@ -198,21 +199,22 @@ export const BaseProjectDetails: React.FC<{
               </td>
             </tr>
           )}
-          {coPis.length > 0 && projectValue.projectType !== 'other' && (
-            <tr className={styles['prj-row']}>
-              <td>Co-PIs</td>
-              <td style={{ fontWeight: 'bold' }}>
-                {coPis.map((u, i) => (
-                  <React.Fragment key={JSON.stringify(u)}>
-                    <UsernamePopover user={u} />
-                    {i !== coPis.length - 1 && '; '}
-                  </React.Fragment>
-                ))}
-              </td>
-            </tr>
-          )}
+          {coPis.length > 0 &&
+            !['other', 'software'].includes(projectValue.projectType) && (
+              <tr className={styles['prj-row']}>
+                <td>Co-PIs</td>
+                <td style={{ fontWeight: 'bold' }}>
+                  {coPis.map((u, i) => (
+                    <React.Fragment key={JSON.stringify(u)}>
+                      <UsernamePopover user={u} />
+                      {i !== coPis.length - 1 && '; '}
+                    </React.Fragment>
+                  ))}
+                </td>
+              </tr>
+            )}
           {projectValue.authors.length > 0 &&
-            projectValue.projectType === 'other' && (
+            ['other', 'software'].includes(projectValue.projectType) && (
               <tr className={styles['prj-row']}>
                 <td>Authors</td>
                 <td style={{ fontWeight: 'bold' }}>
@@ -225,7 +227,7 @@ export const BaseProjectDetails: React.FC<{
                 </td>
               </tr>
             )}
-          {projectValue.projectType !== 'other' && (
+          {!['other', 'software'].includes(projectValue.projectType) && (
             <tr className={styles['prj-row']}>
               <td>Project Type</td>
               <td style={{ fontWeight: 'bold' }}>
@@ -376,6 +378,20 @@ export const BaseProjectDetails: React.FC<{
               </td>
             </tr>
           )}
+          {projectValue.githubUrl && (
+            <tr className={styles['prj-row']}>
+              <td>Software Release</td>
+              <td style={{ fontWeight: 'bold' }}>
+                <a
+                  href={projectValue.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {projectValue.githubUrl}
+                </a>
+              </td>
+            </tr>
+          )}
 
           {projectValue.dois && projectValue.dois[0] && (
             <tr className={styles['prj-row']}>
@@ -384,14 +400,15 @@ export const BaseProjectDetails: React.FC<{
             </tr>
           )}
 
-          {projectValue.projectType === 'other' && projectValue.license && (
-            <tr className={styles['prj-row']}>
-              <td>License</td>
-              <td style={{ fontWeight: 'bold' }}>
-                <LicenseDisplay licenseType={projectValue.license} />
-              </td>
-            </tr>
-          )}
+          {['other', 'software'].includes(projectValue.projectType) &&
+            projectValue.license && (
+              <tr className={styles['prj-row']}>
+                <td>License</td>
+                <td style={{ fontWeight: 'bold' }}>
+                  <LicenseDisplay licenseType={projectValue.license} />
+                </td>
+              </tr>
+            )}
 
           {versions && versions.length > 1 && (
             <tr className={styles['prj-row']}>
@@ -418,7 +435,7 @@ export const BaseProjectDetails: React.FC<{
 
       {isPublished && (
         <section style={{ paddingBottom: '12px' }}>
-          {!['other', 'field_reconnaissance'].includes(
+          {!['other', 'software', 'field_reconnaissance'].includes(
             projectValue.projectType
           ) && (
             <>

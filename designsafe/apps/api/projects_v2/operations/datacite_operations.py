@@ -22,6 +22,7 @@ def get_datacite_json(
     datacite_json = {}
     is_other = pub_graph.nodes["NODE_ROOT"].get("projectType", None) in [
         "other",
+        "software",
         "field_research",
     ]
     if is_other:
@@ -109,6 +110,8 @@ def get_datacite_json(
     )
     if data_type := entity_meta.get("dataType", None):
         datacite_json["types"]["resourceType"] += f"/{data_type['name']}"
+    if pub_graph.nodes["NODE_ROOT"].get("projectType", None) == "software":
+        datacite_json["types"]["resourceType"] += "/software"
     if exp_type := entity_meta.get("experimentType", None):
         datacite_json["types"]["resourceType"] += f"/{exp_type['name']}"
     if sim_type := entity_meta.get("simulationType", None):
@@ -117,6 +120,9 @@ def get_datacite_json(
         datacite_json["types"]["resourceType"] += f"/{location}"
 
     datacite_json["types"]["resourceTypeGeneral"] = "Dataset"
+    if pub_graph.nodes["NODE_ROOT"].get("projectType", None) == "software":
+        datacite_json["types"]["resourceTypeGeneral"] = "Software"
+
     datacite_json["version"] = version
 
     datacite_json["descriptions"] = [
@@ -189,6 +195,15 @@ def get_datacite_json(
             identifier["relatedIdentifier"] = r_data["doi"]
             identifier["relatedIdentifierType"] = r_data["hrefType"].upper()
             datacite_json["relatedIdentifiers"].append(identifier)
+
+    if github_url := entity_meta.get("githubUrl"):
+        datacite_json["relatedIdentifiers"].append(
+            {
+                "relationType": "IsPartOf",
+                "relatedIdentifierType": "URL",
+                "relatedIdentifier": github_url,
+            }
+        )
 
     project_id = base_meta["projectId"]
     datacite_url = f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}"

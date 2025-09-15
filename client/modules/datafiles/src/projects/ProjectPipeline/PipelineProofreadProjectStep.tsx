@@ -5,7 +5,7 @@ import { Button } from 'antd';
 
 export const PipelineProofreadProjectStep: React.FC<{
   projectId: string;
-  prevStep: () => void;
+  prevStep?: () => void;
   nextStep: () => void;
 }> = ({ projectId, prevStep, nextStep }) => {
   const { data } = useProjectDetail(projectId ?? '');
@@ -20,10 +20,14 @@ export const PipelineProofreadProjectStep: React.FC<{
           marginTop: 24,
         }}
       >
-        <Button type="link" onClick={() => prevStep()}>
-          <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
-          Selection
-        </Button>
+        {prevStep ? (
+          <Button type="link" onClick={() => prevStep()}>
+            <i role="none" className="fa fa-arrow-left"></i>&nbsp; Back to
+            Selection
+          </Button>
+        ) : (
+          <span /> /* Empty element to force Continue button to the right */
+        )}
         <Button
           className="success-button"
           style={{ padding: '0px 40px' }}
@@ -36,6 +40,13 @@ export const PipelineProofreadProjectStep: React.FC<{
       <section>
         <h3 style={{ textAlign: 'center' }}>Proofread your Project Metadata</h3>
         <ul style={{ listStylePosition: 'inside', paddingInlineStart: '0px' }}>
+          {data.baseProject.value.projectType === 'software' && (
+            <li>
+              By publishing, you, the developer, are agreeing to accept
+              responsibility to maintain the software, and be responsive to user
+              inquiries.
+            </li>
+          )}
           <li>Project metadata is published alongside your project.</li>
           <li>
             If you need help, attend{' '}
