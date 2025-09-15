@@ -128,6 +128,16 @@
   overflow: hidden;
 }
 
+/* Do NOT scroll body of Recon Portal */
+.o-site__body:has(> #recon-root),
+#recon-root,
+#recon-root > div.ant-flex,
+#recon-root .ant-layout-has-sider,
+#recon-root .ant-layout-sider {
+  height: 100%;
+  overflow: hidden;
+}
+
 /* Do NOT scroll "Applications:" and "Job Status" */
 .ant-layout-sider-children {
   overflow-y: scroll;
@@ -144,4 +154,10 @@
 .ant-layout-sider-children > a + div + ul {
   overflow: auto;
   height: 100%;
+}
+
+/* Do NOT scroll recon portal sider */
+#recon-root .ant-layout-sider,
+#recon-root .ant-layout-sider-children {
+  overflow-y: hidden !important;
 }

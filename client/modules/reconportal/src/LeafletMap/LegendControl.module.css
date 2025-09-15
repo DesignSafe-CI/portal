@@ -1,0 +1,25 @@
+.root {
+  padding: 5px 5px;
+}
+.legendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+.legendIcon {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.legendLabel {
+  flex: 1;
+}
+.legendSwatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  display: inline-block;
+}
