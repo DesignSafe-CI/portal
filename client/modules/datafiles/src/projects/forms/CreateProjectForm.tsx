@@ -138,7 +138,8 @@ export const BaseProjectCreateForm: React.FC<{
         1000 and 5000 characters in length. (
         <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
           Learn how to write descriptions.
-        </a>)
+        </a>
+        )
         <Form.Item
           name="description"
           rules={[
