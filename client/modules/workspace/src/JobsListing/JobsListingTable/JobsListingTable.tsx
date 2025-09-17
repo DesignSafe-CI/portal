@@ -100,14 +100,14 @@ export const JobsListingTable: React.FC<
 
   /* RENDER THE TABLE */
   return (
-    <Table
+    <Table<TTapisJob>
       ref={scrollRefCallback}
       className={`${styles['listing-table-base']} ${
         (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
       } ${className ?? ''}`}
       scroll={{ y: '100%', x: '500px' }} // set to undefined to disable sticky header
       columns={columns}
-      rowKey={(record) => record.id}
+      rowKey={(record) => String(record.id)}
       dataSource={combinedListing}
       pagination={false}
       loading={isLoading || isFetchingNextPage}

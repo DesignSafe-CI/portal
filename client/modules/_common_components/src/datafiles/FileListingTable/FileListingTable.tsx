@@ -144,7 +144,7 @@ export const FileListingTable: React.FC<
 
   /* RENDER THE TABLE */
   return (
-    <Table
+    <Table<TFileListing>
       ref={scrollRefCallback}
       className={`${styles['listing-table-base']} ${
         (combinedListing?.length ?? 0) > 0 ? 'table--pull-spinner-bottom' : ''
@@ -166,7 +166,7 @@ export const FileListingTable: React.FC<
       }
       scroll={{ y: '100%', x: '1000px' }} // set to undefined to disable sticky header
       columns={columns}
-      rowKey={(record) => record.path}
+      rowKey={(record) => String(record.path)}
       dataSource={combinedListing}
       pagination={false}
       loading={isLoading || isFetchingNextPage}

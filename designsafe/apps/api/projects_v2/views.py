@@ -286,7 +286,12 @@ class ProjectInstanceView(BaseApiView):
         if "githubUrl" in request_body.keys():
             try:
                 request_body["githubUrl"] = request_body["githubUrl"].strip()
-                validate_github_release(request_body["githubUrl"])
+                github_params = validate_github_release(request_body["githubUrl"])
+                if github_params.description:
+                    request_body["description"] = github_params.description
+                if github_params.title:
+                    request_body["title"] = github_params.title
+                request_body["license"] = "3-Clause BSD License"
             except MissingGithubFile as exc:
                 return JsonResponse({"message": exc.args[0]}, status=400)
 
