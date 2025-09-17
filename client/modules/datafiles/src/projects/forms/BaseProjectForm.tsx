@@ -453,35 +453,36 @@ export const BaseProjectForm: React.FC<{
             ></Select>
           </Form.Item>
           {availableSuggestions.length === 0 ? (
-                <div style={{ marginTop: 8 }}>
-                <span>Suggested Keywords: </span>
-                <em style={{ color: 'rgba(0,0,0,.45)' }}>
-                  Enter a project <strong>title</strong> and <strong>description</strong> to see keyword suggestions.
-                </em>
-              </div>
-              ) : (
-                <div style={{ marginTop: 8 }}>
-                  <p>Suggested Keywords:</p>
-                  {availableSuggestions.map((kw) => (
-                    <Tag
-                      key={kw}
-                      color="blue"
-                      style={{ cursor: 'pointer', marginBottom: 4 }}
-                      onClick={() => {
-                        const current: string[] = form.getFieldValue('keywords') || [];
-                        if (!current.includes(kw)) {
-                          form.setFieldValue('keywords', [...current, kw]);
-                        }
-                      }}
-                    >
-                      {kw}
-                    </Tag>
-                  ))}
-                </div>
-              )}
-            </Form.Item>
+            <div style={{ marginTop: 8 }}>
+              <span>Suggested Keywords: </span>
+              <em style={{ color: 'rgba(0,0,0,.45)' }}>
+                Enter a project <strong>title</strong> and{' '}
+                <strong>description</strong> to see keyword suggestions.
+              </em>
+            </div>
+          ) : (
+            <div style={{ marginTop: 8 }}>
+              <p>Suggested Keywords:</p>
+              {availableSuggestions.map((kw) => (
+                <Tag
+                  key={kw}
+                  color="blue"
+                  style={{ cursor: 'pointer', marginBottom: 4 }}
+                  onClick={() => {
+                    const current: string[] =
+                      form.getFieldValue('keywords') || [];
+                    if (!current.includes(kw)) {
+                      form.setFieldValue('keywords', [...current, kw]);
+                    }
+                  }}
+                >
+                  {kw}
+                </Tag>
+              ))}
+            </div>
           )}
-
+        </Form.Item>
+      )}
 
       {hasValidationErrors && (
         <Alert
