@@ -103,7 +103,7 @@ class RAG:
 
             self.vector_store = Chroma(
                 client=self.client,
-                collection_name="keywords_testing",
+                collection_name=settings.CHROMA_COLLECTION,
                 embedding_function=embedding_function,
             )
 
