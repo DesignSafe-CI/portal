@@ -148,7 +148,7 @@ const ExperimentFormFields: React.FC<{
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
         characters in length. (
-        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
           Learn how to write descriptions.
         </a>
         )
@@ -283,7 +283,7 @@ const SimulationFormFields: React.FC<{
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
         characters in length. (
-        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
           Learn how to write descriptions.
         </a>
         )
@@ -418,7 +418,7 @@ const HybridSimFormFields: React.FC<{
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
         characters in length. (
-        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
           Learn how to write descriptions.
         </a>
         )
@@ -607,7 +607,7 @@ const MissionFormFields: React.FC<{
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
         characters in length. (
-        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
           Learn how to write descriptions.
         </a>
         )
@@ -722,7 +722,7 @@ const DocumentFormFields: React.FC<{
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
         characters in length. (
-        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
           Learn how to write descriptions.
         </a>
         )
