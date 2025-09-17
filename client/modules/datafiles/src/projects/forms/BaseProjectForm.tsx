@@ -150,33 +150,41 @@ export const BaseProjectForm: React.FC<{
     [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
 
+  // Watch title, description, and keywords for AI keyword suggestions
   const watchedTitle: string = Form.useWatch('title', form) ?? '';
   const watchedDescription: string = Form.useWatch('description', form) ?? '';
-  const watchedSelected: string[] = Form.useWatch('keywords', form) ?? [];
-  const selectedMemo = useMemo(() => watchedSelected, [watchedSelected]);
+  const watchedKeywords: string[] = Form.useWatch('keywords', form) ?? [];
+
+  const titleMemo = useMemo(() => watchedTitle, [watchedTitle]);
   const descriptionMemo = useMemo(
     () => watchedDescription,
     [watchedDescription]
   );
-  const titleMemo = useMemo(() => watchedTitle, [watchedTitle]);
+  const keywordsMemo = useMemo(() => watchedKeywords, [watchedKeywords]);
 
   const [searchTerms, setSearchTerms] = useState<TGetKeywordSuggestionsParams>({
     title: watchedTitle,
     description: watchedDescription,
   });
+
+  // Debounce search terms to avoid excessive API calls
   const debouncedSearchTerms = useDebounceValue<TGetKeywordSuggestionsParams>(
     searchTerms,
     1000
   );
+
   const { data: suggestedKeywords = [] } =
     useKeywordSuggestions(debouncedSearchTerms);
   const availableSuggestions = suggestedKeywords.filter(
-    (kw: string) => !selectedMemo.includes(kw)
+    (kw: string) => !keywordsMemo.includes(kw)
   );
 
   useEffect(() => {
-    setSearchTerms({ title: titleMemo, description: descriptionMemo });
-  }, [titleMemo, descriptionMemo]);
+    setSearchTerms({
+      title: titleMemo,
+      description: descriptionMemo,
+    });
+  }, [titleMemo, descriptionMemo, keywordsMemo]);
 
   const { user } = useAuthenticatedUser();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -427,7 +435,7 @@ export const BaseProjectForm: React.FC<{
                   color="blue"
                   style={{ cursor: 'pointer', marginBottom: 4 }}
                   onClick={() => {
-                    form.setFieldValue('keywords', [...watchedSelected, kw]);
+                    form.setFieldValue('keywords', [...watchedKeywords, kw]);
                   }}
                 >
                   {kw}
