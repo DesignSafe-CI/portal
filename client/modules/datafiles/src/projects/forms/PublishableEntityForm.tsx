@@ -104,18 +104,18 @@ const ExperimentFormFields: React.FC<{
       {Object.keys(experimentEquipmentTypeOptions).includes(
         facilityValue?.id
       ) && (
-        <Form.Item label="Equipment Type">
-          <Form.Item
-            className="inner-form-item"
-            name={['value', 'equipmentType']}
-          >
-            <DropdownSelectSingleValue
-              placeholder="Select an equipment type, or enter a custom value"
-              options={experimentEquipmentTypeOptions[facilityValue.id]}
-            />
+          <Form.Item label="Equipment Type">
+            <Form.Item
+              className="inner-form-item"
+              name={['value', 'equipmentType']}
+            >
+              <DropdownSelectSingleValue
+                placeholder="Select an equipment type, or enter a custom value"
+                options={experimentEquipmentTypeOptions[facilityValue.id]}
+              />
+            </Form.Item>
           </Form.Item>
-        </Form.Item>
-      )}
+        )}
 
       <Form.Item label="Referenced Data and Software">
         Published data used in the creation of this dataset.
@@ -147,7 +147,10 @@ const ExperimentFormFields: React.FC<{
       <Form.Item label="Experiment Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
-        characters in length.
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+          Learn how to write descriptions.
+        </a>)
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -278,7 +281,10 @@ const SimulationFormFields: React.FC<{
       <Form.Item label="Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
-        characters in length.
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+          Learn how to write descriptions.
+        </a>)
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -409,7 +415,10 @@ const HybridSimFormFields: React.FC<{
       <Form.Item label="Hybrid Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
-        characters in length.
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+          Learn how to write descriptions.
+        </a>)
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -594,7 +603,10 @@ const MissionFormFields: React.FC<{
       <Form.Item label="Mission Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
-        characters in length.
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+          Learn how to write descriptions.
+        </a>)
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -705,7 +717,10 @@ const DocumentFormFields: React.FC<{
       <Form.Item label="Document Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 750 and 5000
-        characters in length.
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#writing-helpful-titles-keywords-and-descriptions">
+          Learn how to write descriptions.
+        </a>)
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -748,109 +763,109 @@ export const PublishableEntityForm: React.FC<{
   onCancelEdit,
   mode = 'edit',
 }) => {
-  const [form] = Form.useForm();
-  const { data } = useProjectDetail(projectId ?? '');
+    const [form] = Form.useForm();
+    const { data } = useProjectDetail(projectId ?? '');
 
-  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+    const [hasValidationErrors, setHasValidationErrors] = useState(false);
 
-  const entity = data?.entities.find((e) => e.uuid === entityUuid);
-  const entityDisplayName = entityName
-    ? constants.DISPLAY_NAMES[entityName]
-    : 'Category';
+    const entity = data?.entities.find((e) => e.uuid === entityUuid);
+    const entityDisplayName = entityName
+      ? constants.DISPLAY_NAMES[entityName]
+      : 'Category';
 
-  const setValues = useCallback(() => {
-    if (data && entity && mode === 'edit') {
-      form.setFieldsValue({ value: entity.value });
-    }
-    setHasValidationErrors(false);
-  }, [data, form, entity, mode]);
-  useEffect(() => setValues(), [setValues, projectId]);
+    const setValues = useCallback(() => {
+      if (data && entity && mode === 'edit') {
+        form.setFieldsValue({ value: entity.value });
+      }
+      setHasValidationErrors(false);
+    }, [data, form, entity, mode]);
+    useEffect(() => setValues(), [setValues, projectId]);
 
-  if (!data) return <div>Loading</div>;
-  return (
-    <Form
-      form={form}
-      scrollToFirstError={{ behavior: 'smooth' }}
-      layout="vertical"
-      onFinishFailed={() => setHasValidationErrors(true)}
-      onFinish={(v) => {
-        onSubmit(v.value);
-        setHasValidationErrors(false);
-        onCancelEdit();
-        form.resetFields();
-      }}
-      requiredMark={customRequiredMark}
-    >
-      {projectType === 'experimental' && (
-        <ExperimentFormFields
-          form={form}
-          projectUsers={data.baseProject.value.users}
-          currentAuthors={entity?.value.authors ?? []}
-        />
-      )}
-      {projectType === 'simulation' && (
-        <SimulationFormFields
-          projectUsers={data.baseProject.value.users}
-          currentAuthors={entity?.value.authors ?? []}
-        />
-      )}
-      {projectType === 'hybrid_simulation' && (
-        <HybridSimFormFields
-          projectUsers={data.baseProject.value.users}
-          currentAuthors={entity?.value.authors ?? []}
-        />
-      )}
-      {entityName === constants.FIELD_RECON_MISSION && (
-        <MissionFormFields
-          projectUsers={data.baseProject.value.users}
-          currentAuthors={entity?.value.authors ?? []}
-        />
-      )}
-      {entityName === constants.FIELD_RECON_REPORT && (
-        <DocumentFormFields
-          projectUsers={data.baseProject.value.users}
-          currentAuthors={entity?.value.authors ?? []}
-        />
-      )}
-
-      {hasValidationErrors && (
-        <Alert
-          type="error"
-          style={{ marginBottom: '10px' }}
-          showIcon
-          message={
-            <span>
-              One or more fields could not be validated. Please check the form
-              for errors.
-            </span>
-          }
-        />
-      )}
-
-      <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        {mode === 'edit' && (
-          <Button
-            onClick={() => {
-              onCancelEdit();
-              form.resetFields();
-              setHasValidationErrors(false);
-            }}
-            style={{ marginRight: '10px' }}
-            type="link"
-          >
-            Cancel Editing
-          </Button>
+    if (!data) return <div>Loading</div>;
+    return (
+      <Form
+        form={form}
+        scrollToFirstError={{ behavior: 'smooth' }}
+        layout="vertical"
+        onFinishFailed={() => setHasValidationErrors(true)}
+        onFinish={(v) => {
+          onSubmit(v.value);
+          setHasValidationErrors(false);
+          onCancelEdit();
+          form.resetFields();
+        }}
+        requiredMark={customRequiredMark}
+      >
+        {projectType === 'experimental' && (
+          <ExperimentFormFields
+            form={form}
+            projectUsers={data.baseProject.value.users}
+            currentAuthors={entity?.value.authors ?? []}
+          />
         )}
-        <Button type="primary" className="success-button" htmlType="submit">
-          {mode === 'create' ? (
-            <span>
-              <i role="none" className="fa fa-plus"></i> Add {entityDisplayName}
-            </span>
-          ) : (
-            <span>Update</span>
+        {projectType === 'simulation' && (
+          <SimulationFormFields
+            projectUsers={data.baseProject.value.users}
+            currentAuthors={entity?.value.authors ?? []}
+          />
+        )}
+        {projectType === 'hybrid_simulation' && (
+          <HybridSimFormFields
+            projectUsers={data.baseProject.value.users}
+            currentAuthors={entity?.value.authors ?? []}
+          />
+        )}
+        {entityName === constants.FIELD_RECON_MISSION && (
+          <MissionFormFields
+            projectUsers={data.baseProject.value.users}
+            currentAuthors={entity?.value.authors ?? []}
+          />
+        )}
+        {entityName === constants.FIELD_RECON_REPORT && (
+          <DocumentFormFields
+            projectUsers={data.baseProject.value.users}
+            currentAuthors={entity?.value.authors ?? []}
+          />
+        )}
+
+        {hasValidationErrors && (
+          <Alert
+            type="error"
+            style={{ marginBottom: '10px' }}
+            showIcon
+            message={
+              <span>
+                One or more fields could not be validated. Please check the form
+                for errors.
+              </span>
+            }
+          />
+        )}
+
+        <Form.Item style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {mode === 'edit' && (
+            <Button
+              onClick={() => {
+                onCancelEdit();
+                form.resetFields();
+                setHasValidationErrors(false);
+              }}
+              style={{ marginRight: '10px' }}
+              type="link"
+            >
+              Cancel Editing
+            </Button>
           )}
-        </Button>
-      </Form.Item>
-    </Form>
-  );
-};
+          <Button type="primary" className="success-button" htmlType="submit">
+            {mode === 'create' ? (
+              <span>
+                <i role="none" className="fa fa-plus"></i> Add {entityDisplayName}
+              </span>
+            ) : (
+              <span>Update</span>
+            )}
+          </Button>
+        </Form.Item>
+      </Form>
+    );
+  };
