@@ -2,7 +2,7 @@
 
 import json
 import logging
-import chromadb
+from chromadb import HttpClient, Settings
 from typing_extensions import List, TypedDict
 from langchain_core.documents import Document
 from langgraph.graph import START, StateGraph
@@ -86,7 +86,16 @@ class RAG:
 
     def __init__(self):
         try:
-            self.client = chromadb.HttpClient(host=settings.CHROMA_ENDPOINT, port=443)
+            self.client = HttpClient(
+                host=settings.CHROMA_ENDPOINT,
+                port=settings.CHROMA_PORT,
+                ssl=True,
+                settings=Settings(
+                    chroma_client_auth_provider="chromadb.auth.basic_authn.BasicAuthClientProvider",
+                    chroma_client_auth_credentials=f"{settings.CHROMA_USERNAME}:{settings.CHROMA_PASSWORD}",
+                    chroma_auth_token_transport_header="Authorization",
+                ),
+            )
 
             embedding_function = HuggingFaceEmbeddings(
                 model_name="sentence-transformers/all-MiniLM-L6-v2"

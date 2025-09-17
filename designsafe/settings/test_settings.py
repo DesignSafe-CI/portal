@@ -812,7 +812,10 @@ RT_PW = 'test'
 RT_QUEUE = 'test'
 RT_TAG = 'test_tag'
 
-# TEJAS SAMBANOVA SETTINGS
+# AI KEYWORDS SETTINGS
 SN_API_KEY = "test"
 SN_API_ENDPOINT = "https://test.com"
 CHROMA_ENDPOINT = "https://test.com"
+CHROMA_PORT = 443
+CHROMA_PASSWORD = "test"
+CHROMA_USERNAME = "test"
