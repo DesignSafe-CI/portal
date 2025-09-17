@@ -69,12 +69,9 @@ export const PipelinePublishModal: React.FC<{
   };
 
   const [publishingAgreement, setPublishingAgreement] = useState(false);
-  const [softwareAttestation, setSoftwareAttestation] = useState(false);
 
   const canPublish =
-    publishingAgreement &&
-    (projectType === 'software' ? softwareAttestation : true) &&
-    (operation === 'version' ? !!versionInfo : true);
+    publishingAgreement && (operation === 'version' ? !!versionInfo : true);
 
   return (
     <>
@@ -122,35 +119,6 @@ export const PipelinePublishModal: React.FC<{
                 </Tag>
               </label>
             </span>
-            {projectType === 'software' && (
-              <div>
-                <Checkbox
-                  id="software-attestation-checkbox"
-                  checked={softwareAttestation}
-                  onChange={(e) => setSoftwareAttestation(e.target.checked)}
-                />
-                <label
-                  htmlFor="software-attestation-checkbox"
-                  style={{ display: 'inline-flex', alignItems: 'center' }}
-                >
-                  &nbsp; I have personally evaluated this software release and
-                  attest that it performs as documented in the README file.
-                  &nbsp;
-                  <Tag
-                    color="#d9534f"
-                    style={{
-                      borderRadius: '2.7px',
-                      lineHeight: 1,
-                      paddingInline: 0,
-                      padding: '0.2em 0.4em 0.3em',
-                      fontSize: '75%',
-                    }}
-                  >
-                    Required
-                  </Tag>
-                </label>
-              </div>
-            )}
             {operation === 'version' && (
               <div style={{ textAlign: 'start', margin: '10px 0px' }}>
                 {' '}
