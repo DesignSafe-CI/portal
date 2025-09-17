@@ -452,7 +452,6 @@ export const BaseProjectForm: React.FC<{
               tokenSeparators={[',']}
             ></Select>
           </Form.Item>
-          {/* Helper / status messaging */}
           {availableSuggestions.length === 0 ? (
                 <div style={{ marginTop: 8 }}>
                 <span>Suggested Keywords: </span>
