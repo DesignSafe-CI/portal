@@ -146,7 +146,7 @@ const ExperimentFormFields: React.FC<{
 
       <Form.Item label="Experiment Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 1000 and 5000
+        How can the data be reused? Description must be between 750 and 5000
         characters in length.
         <Form.Item
           name={['value', 'description']}
@@ -157,8 +157,8 @@ const ExperimentFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 1000,
-              message: 'Description must be at least 1000 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
@@ -277,7 +277,7 @@ const SimulationFormFields: React.FC<{
 
       <Form.Item label="Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 1000 and 5000
+        How can the data be reused? Description must be between 750 and 5000
         characters in length.
         <Form.Item
           name={['value', 'description']}
@@ -288,8 +288,8 @@ const SimulationFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 1000,
-              message: 'Description must be at least 1000 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
@@ -408,7 +408,7 @@ const HybridSimFormFields: React.FC<{
 
       <Form.Item label="Hybrid Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 1000 and 5000
+        How can the data be reused? Description must be between 750 and 5000
         characters in length.
         <Form.Item
           name={['value', 'description']}
@@ -419,8 +419,8 @@ const HybridSimFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 1000,
-              message: 'Description must be at least 1000 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
@@ -593,7 +593,7 @@ const MissionFormFields: React.FC<{
 
       <Form.Item label="Mission Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 1000 and 5000
+        How can the data be reused? Description must be between 750 and 5000
         characters in length.
         <Form.Item
           name={['value', 'description']}
@@ -604,8 +604,8 @@ const MissionFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 1000,
-              message: 'Description must be at least 1000 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
@@ -704,7 +704,7 @@ const DocumentFormFields: React.FC<{
 
       <Form.Item label="Document Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 1000 and 5000
+        How can the data be reused? Description must be between 750 and 5000
         characters in length.
         <Form.Item
           name={['value', 'description']}
@@ -715,8 +715,8 @@ const DocumentFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 1000,
-              message: 'Description must be at least 1000 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
