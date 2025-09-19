@@ -72,8 +72,10 @@ class DesignSafeRAG:
         Settings.embed_model = self.embed_model
 
         # Initialize ChromaDB
-        self.chroma_client = chromadb.PersistentClient(
-            path=chroma_path, settings=ChromaSettings(anonymized_telemetry=False)
+        self.chroma_client = chromadb.HttpClient(
+            host="chromadb",
+            port=8000,
+            settings=ChromaSettings(anonymized_telemetry=False),
         )
 
         # Create or get collection
@@ -248,12 +250,12 @@ class DesignSafeRAG:
         anchor = anchor.strip("-")
         return anchor
 
-    def process_markdown_files(self, docs_dir: str = "user-guide/docs"):
+    def process_markdown_files(self, docs_dir: str = "/docs/docs"):
         """Process all markdown files from the documentation directory."""
         docs_path = Path(docs_dir)
 
         # Parse MkDocs config
-        config_path = Path("user-guide/mkdocs.yml")
+        config_path = Path("/docs/mkdocs.yml")
         config = self.parse_mkdocs_config(str(config_path))
 
         # Extract navigation structure
@@ -435,6 +437,7 @@ def main():
 # if __name__ == "__main__":
 #     main()
 
+
 def query_docs_rag(payload):
     """Utility function to query the documentation RAG"""
     rag = DesignSafeRAG()
@@ -444,20 +447,24 @@ def query_docs_rag(payload):
     # Display response
     output_str = ""
     output_str += response.response
-    output_str += "\n"
+
+    output_str += "\n \n "
 
     # Display source documents
+
     if hasattr(response, "source_nodes"):
         output_str += "Sources:\n"
-        output_str += ("-" * 40)
+
+        # pylint-disable=anomalous-backslash-in-string
+        output_str += "\\-" * 40
         output_str += "\n"
+
         for i, node in enumerate(response.source_nodes, 1):
             metadata = node.metadata
-            output_str += (
-                f"{i}. {metadata.get('title', 'N/A')} - {metadata.get('section', 'N/A')}\n"
-            )
-            output_str += (f"   URL: {metadata.get('url', 'N/A')}\n")
+            output_str += f"{i}\\. {metadata.get('title', 'N/A')} - {metadata.get('section', 'N/A')}\n "
+            output_str += f"   URL: {metadata.get('url', 'N/A')}\n "
             # print()
+
     return output_str
 
 

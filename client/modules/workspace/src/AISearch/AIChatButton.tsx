@@ -14,7 +14,7 @@ export const AIChatButton: React.FC = () => {
         className={styles.aiButton}
       >
         <b>
-          <i className="fa fa-lightbulb-o" /> Ask AI
+          <i className="fa fa-lightbulb-o" /> Ask AI (Beta)
         </b>
       </Button>
 

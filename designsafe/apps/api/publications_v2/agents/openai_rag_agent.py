@@ -2,7 +2,6 @@
 
 from typing import Literal
 from collections.abc import Callable
-import urllib
 from asgiref.sync import sync_to_async
 import networkx as nx
 import openai
@@ -42,6 +41,7 @@ class AgentDeps(BaseModel):
     """Dependencies for the OpenAI RAG agent"""
 
     query: str
+    result_size: int = 10
     response_callback: Callable
 
 
@@ -67,7 +67,7 @@ agent = Agent(
             3. If any keywords of key phrases are plural, add the singular form. If the keyword contains a number, include a version where the number is written out. For example if the keyword contains the character '1', write it out as 'one' and add it to the list.
             4. Key phrases can contain a maximum of 2 words separated by spaces.
             5. Avoid common stop words like "the", "and", or "with". Also, avoid overly generic terms unless they are critical to the topic.""",
-        "Provide the full result link at the end so that users can explore a more complete set of results. Do not give further suggestions.",
+        "Provide the full result link at the end so that users can access it to explore the full set of DesignSafe publications.",
     ),
 )
 
@@ -107,7 +107,7 @@ class RetrievalSummary(BaseModel):
     full_result_link: str
 
 
-def get_es_results(search_params: SearchParams):
+def get_es_results(search_params: SearchParams, max_num_results=10):
     """Get Elasticsearch results based on query params extracted from the user's query."""
 
     es_author_string = " OR ".join(
@@ -133,7 +133,10 @@ def get_es_results(search_params: SearchParams):
     )
 
     search_results = (
-        IndexedPublication.search().filter(es_rag_query).extra(size=10).execute()
+        IndexedPublication.search()
+        .filter(es_rag_query)
+        .extra(size=max_num_results)
+        .execute()
     )
     return combined_query_string, search_results
 
@@ -151,7 +154,10 @@ async def vector_lookup(
 
     vector_results: list[PublicationRagResult] = []
     res = await oai_rag_client.vector_stores.search(
-        OAI_VECTOR_STORE_ID, query=query, max_num_results=10, rewrite_query=True
+        OAI_VECTOR_STORE_ID,
+        query=query,
+        max_num_results=ctx.deps.result_size,
+        rewrite_query=True,
     )
     for search_result in res.data:
         project_id = search_result.attributes.get("projectId")
@@ -174,7 +180,9 @@ async def vector_lookup(
     print("recovered results")
     print(search_params)
 
-    query_string, es_search_results = await sync_to_async(get_es_results)(search_params)
+    query_string, es_search_results = await sync_to_async(get_es_results)(
+        search_params, max_num_results=ctx.deps.result_size
+    )
     print(es_search_results.hits.total)
     es_project_ids = set((hit.meta.id for hit in es_search_results.hits))
 
@@ -235,5 +243,5 @@ async def vector_lookup(
     return RetrievalSummary(
         documents=final_result,
         count=es_search_results.hits.total.value,
-        full_result_link=f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published?q={urllib.parse.quote(query_string)}",
+        full_result_link=f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published",
     )
