@@ -17,7 +17,7 @@ from designsafe.apps.workspace.models.app_cms_plugins import (
 logger = logging.getLogger(__name__)
 
 
-def get_instance_from_url(url):
+def get_entry_instance(url):
     """Helper function to get an AppListingEntry instance based on URL."""
 
     app_listing_entries = AppListingEntry.objects.filter(enabled=True)
@@ -71,7 +71,7 @@ plugin_pool.register_plugin(AppCategoryListing)
 
 class RelatedApps(CMSPluginBase):
     """CMS plugin to render related apps."""
-    # IDEA: Use get_instance_from_url, not RelatedAppsPlugin plugin
+    # IDEA: Use get_entry_instance, not RelatedAppsPlugin plugin
 
     model = RelatedAppsPlugin
     name = "Related Apps"
@@ -108,7 +108,7 @@ plugin_pool.register_plugin(RelatedApps)
 
 class AppVariants(CMSPluginBase):
     """CMS plugin to render an apps versions/variants."""
-    # IDEA: Use get_instance_from_url, not AppVariantsPlugin plugin
+    # IDEA: Use get_entry_instance, not AppVariantsPlugin plugin
 
     model = AppVariantsPlugin
     name = "App Version Selection"
@@ -150,7 +150,7 @@ class AppUserGuideLink(CMSPluginBase):
         if isinstance(instance, AppUserGuideLinkPlugin):
             instance_app = getattr(instance, "app", None)
         if instance_app is None:
-            instance_app = get_instance_from_url(context.get("request").path)
+            instance_app = get_entry_instance(context.get("request").path)
 
         context = super().render(context, plugin_instance, placeholder)
         context["user_guide_link"] = getattr(instance_app, "user_guide_link", None)
