@@ -27,6 +27,11 @@ def get_instance_from_url(url):
 
     return None
 
+def is_editing_text(url):
+    """Helper function to determine if the current context is editing text."""
+
+    return 'admin/cms/page/edit-plugin' in url
+
 
 class AppCategoryListing(CMSPluginBase):
     """CMS plugin to render the list of apps for a given category."""
@@ -129,6 +134,7 @@ class AppUserGuideLink(CMSPluginBase):
     name = "App User Guide Link"
     module = "Tools & Applications"
     render_template = "designsafe/apps/workspace/app_user_guide_link_plugin.html"
+    text_enabled = True
     cache = False
 
 
@@ -148,6 +154,7 @@ class AppUserGuideLink(CMSPluginBase):
 
         context = super().render(context, plugin_instance, placeholder)
         context["user_guide_link"] = getattr(instance_app, "user_guide_link", None)
+        context["is_editing_text"] = is_editing_text(context.get("request").path)
         return context
 
 
