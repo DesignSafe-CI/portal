@@ -137,7 +137,6 @@ class AppUserGuideLink(CMSPluginBase):
     text_enabled = True
     cache = False
 
-
     def render(
         self,
         context,
