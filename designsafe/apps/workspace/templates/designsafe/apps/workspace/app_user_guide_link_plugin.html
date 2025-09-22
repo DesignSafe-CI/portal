@@ -1,0 +1,14 @@
+{# @var user_guide_link #}
+
+{% if user_guide_link %}
+    <a
+        class="btn btn-secondary"
+        href="{{ user_guide_link }}"
+        target="_blank"
+        aria-describedby="msg-open-new-window"
+    >
+        View User Guide
+    </a>
+{% else %}
+    <span>User guide not found.</span>
+{% endif %}

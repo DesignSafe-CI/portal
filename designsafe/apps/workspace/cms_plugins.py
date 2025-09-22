@@ -105,3 +105,21 @@ class AppVariants(CMSPluginBase):
 
 
 plugin_pool.register_plugin(AppVariants)
+
+
+class AppUserGuideLink(CMSPluginBase):
+    """CMS plugin to render the user guide link."""
+
+    model = AppListingEntry
+    name = "User Guide Link"
+    module = "Tools & Applications"
+    render_template = "designsafe/apps/workspace/user_guide_link_plugin.html"
+    cache = False
+
+    def render(self, context, instance: AppListingEntry, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["user_guide_link"] = instance.user_guide_link
+        return context
+
+plugin_pool.register_plugin(AppUserGuideLink)
+
