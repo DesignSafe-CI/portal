@@ -123,10 +123,10 @@ plugin_pool.register_plugin(AppVariants)
 class UserGuideLink(CMSPluginBase):
     """CMS plugin to render the user guide link."""
 
-    model = None
+
     name = "User Guide Link"
     module = "Tools & Applications"
-    render_template = "designsafe/apps/workspace/user_guide_link_plugin.html"
+    render_template = "designsafe/apps/workspace/app_user_guide_link_plugin.html"
     cache = False
 
     def render(self, context, instance=None, placeholder=None):
