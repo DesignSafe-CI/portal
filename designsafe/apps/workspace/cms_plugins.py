@@ -71,7 +71,7 @@ plugin_pool.register_plugin(AppCategoryListing)
 
 class RelatedApps(CMSPluginBase):
     """CMS plugin to render related apps."""
-    # IDEA: Use get_entry_instance, not RelatedAppsPlugin plugin
+    # IDEA: Use get_entry_instance if model field is empty (i.e. auto value)
 
     model = RelatedAppsPlugin
     name = "Related Apps"
@@ -108,7 +108,7 @@ plugin_pool.register_plugin(RelatedApps)
 
 class AppVariants(CMSPluginBase):
     """CMS plugin to render an apps versions/variants."""
-    # IDEA: Use get_entry_instance, not AppVariantsPlugin plugin
+    # IDEA: Use get_entry_instance if model field is empty (i.e. auto value)
 
     model = AppVariantsPlugin
     name = "App Version Selection"
