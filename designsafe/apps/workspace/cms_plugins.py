@@ -15,6 +15,17 @@ from designsafe.apps.workspace.models.app_cms_plugins import (
 logger = logging.getLogger(__name__)
 
 
+def get_instance_from_url(url):
+    from designsafe.apps.workspace.models.app_entries import AppListingEntry
+
+    app_listing_entries = AppListingEntry.objects.filter(enabled=True)
+    for entry in app_listing_entries:
+        if entry.href == url:
+            return entry
+
+        return None
+
+
 class AppCategoryListing(CMSPluginBase):
     """CMS plugin to render the list of apps for a given category."""
 
@@ -53,6 +64,7 @@ plugin_pool.register_plugin(AppCategoryListing)
 
 class RelatedApps(CMSPluginBase):
     """CMS plugin to render related apps."""
+    """IDEA: Use get_instance_from_url, not RelatedAppsPlugin plugin."""
 
     model = RelatedAppsPlugin
     name = "Related Apps"
@@ -89,6 +101,7 @@ plugin_pool.register_plugin(RelatedApps)
 
 class AppVariants(CMSPluginBase):
     """CMS plugin to render an apps versions/variants."""
+    """IDEA: Use get_instance_from_url, not AppVariantsPlugin plugin."""
 
     model = AppVariantsPlugin
     name = "App Version Selection"
@@ -107,19 +120,24 @@ class AppVariants(CMSPluginBase):
 plugin_pool.register_plugin(AppVariants)
 
 
-class AppUserGuideLink(CMSPluginBase):
+class UserGuideLink(CMSPluginBase):
     """CMS plugin to render the user guide link."""
 
-    model = AppListingEntry
+    model = None
     name = "User Guide Link"
     module = "Tools & Applications"
     render_template = "designsafe/apps/workspace/user_guide_link_plugin.html"
     cache = False
 
-    def render(self, context, instance: AppListingEntry, placeholder):
+    def render(self, context, instance=None, placeholder=None):
+        if instance is None:
+            instance = get_instance_from_url(context.request.path)
+        if instance is None:
+            raise ValueError("No matching AppListingEntry found")
         context = super().render(context, instance, placeholder)
         context["user_guide_link"] = instance.user_guide_link
         return context
 
-plugin_pool.register_plugin(AppUserGuideLink)
+
+plugin_pool.register_plugin(UserGuideLink)
 
