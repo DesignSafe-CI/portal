@@ -13,6 +13,7 @@ from designsafe.apps.workspace.models.app_cms_plugins import (
     AppVariantsPlugin,
     AppUserGuideLinkPlugin,
 )
+from designsafe.apps.workspace.forms import AppUserGuideLinkPluginForm
 
 logger = logging.getLogger(__name__)
 
@@ -131,6 +132,7 @@ class AppUserGuideLink(CMSPluginBase):
     """CMS plugin to render the user guide link."""
 
     model = AppUserGuideLinkPlugin
+    form = AppUserGuideLinkPluginForm
     name = "App User Guide Link"
     module = "Tools & Applications"
     render_template = "designsafe/apps/workspace/app_user_guide_link_plugin.html"
