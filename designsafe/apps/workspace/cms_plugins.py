@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_instance_from_url(url):
-    from designsafe.apps.workspace.models.app_entries import AppListingEntry
+    """Helper function to get an AppListingEntry instance based on URL."""
 
     app_listing_entries = AppListingEntry.objects.filter(enabled=True)
     for entry in app_listing_entries:
@@ -64,7 +64,7 @@ plugin_pool.register_plugin(AppCategoryListing)
 
 class RelatedApps(CMSPluginBase):
     """CMS plugin to render related apps."""
-    """IDEA: Use get_instance_from_url, not RelatedAppsPlugin plugin."""
+    # IDEA: Use get_instance_from_url, not RelatedAppsPlugin plugin
 
     model = RelatedAppsPlugin
     name = "Related Apps"
@@ -101,7 +101,7 @@ plugin_pool.register_plugin(RelatedApps)
 
 class AppVariants(CMSPluginBase):
     """CMS plugin to render an apps versions/variants."""
-    """IDEA: Use get_instance_from_url, not AppVariantsPlugin plugin."""
+    # IDEA: Use get_instance_from_url, not AppVariantsPlugin plugin
 
     model = AppVariantsPlugin
     name = "App Version Selection"
@@ -140,4 +140,3 @@ class UserGuideLink(CMSPluginBase):
 
 
 plugin_pool.register_plugin(UserGuideLink)
-
