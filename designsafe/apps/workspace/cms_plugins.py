@@ -120,10 +120,10 @@ class AppVariants(CMSPluginBase):
 plugin_pool.register_plugin(AppVariants)
 
 
-class UserGuideLink(CMSPluginBase):
+class AppUserGuideLink(CMSPluginBase):
     """CMS plugin to render the user guide link."""
 
-    name = "User Guide Link"
+    name = "App User Guide Link"
     module = "Tools & Applications"
     render_template = "designsafe/apps/workspace/app_user_guide_link_plugin.html"
     cache = False
@@ -138,4 +138,4 @@ class UserGuideLink(CMSPluginBase):
         return context
 
 
-plugin_pool.register_plugin(UserGuideLink)
+plugin_pool.register_plugin(AppUserGuideLink)
