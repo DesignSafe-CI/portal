@@ -1,6 +1,7 @@
 """CMS plugins for Tools & Applications pages."""
 
 import logging
+from typing import Optional, Union
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from designsafe.apps.workspace.models.app_entries import (
@@ -10,6 +11,7 @@ from designsafe.apps.workspace.models.app_cms_plugins import (
     AppCategoryListingPlugin,
     RelatedAppsPlugin,
     AppVariantsPlugin,
+    AppUserGuideLinkPlugin,
 )
 
 logger = logging.getLogger(__name__)
@@ -20,10 +22,10 @@ def get_instance_from_url(url):
 
     app_listing_entries = AppListingEntry.objects.filter(enabled=True)
     for entry in app_listing_entries:
-        if entry.href == url:
+        if entry.href in url:
             return entry
 
-        return None
+    return None
 
 
 class AppCategoryListing(CMSPluginBase):
@@ -123,18 +125,29 @@ plugin_pool.register_plugin(AppVariants)
 class AppUserGuideLink(CMSPluginBase):
     """CMS plugin to render the user guide link."""
 
+    model = AppUserGuideLinkPlugin
     name = "App User Guide Link"
     module = "Tools & Applications"
     render_template = "designsafe/apps/workspace/app_user_guide_link_plugin.html"
     cache = False
 
-    def render(self, context, instance=None, placeholder=None):
-        if instance is None:
-            instance = get_instance_from_url(context.request.path)
-        if instance is None:
-            raise ValueError("No matching AppListingEntry found")
-        context = super().render(context, instance, placeholder)
-        context["user_guide_link"] = instance.user_guide_link
+
+    def render(
+        self,
+        context,
+        instance: Optional[Union[AppUserGuideLinkPlugin, AppListingEntry]] = None,
+        placeholder=None,
+    ):
+        plugin_instance = instance if isinstance(instance, AppUserGuideLinkPlugin) else None
+
+        instance_app = None
+        if isinstance(instance, AppUserGuideLinkPlugin):
+            instance_app = getattr(instance, "app", None)
+        if instance_app is None:
+            instance_app = get_instance_from_url(context.get("request").path)
+
+        context = super().render(context, plugin_instance, placeholder)
+        context["user_guide_link"] = getattr(instance_app, "user_guide_link", None)
         return context
 
 
