@@ -31,7 +31,8 @@ def get_entry_instance(url):
 def is_editing_text(url):
     """Helper function to determine if the current context is editing text."""
 
-    return 'admin/cms/page/edit-plugin' in url
+    # e.g. /…/page/edit-plugin/123/, /…/page/plugin/text_plugin/render-plugin/
+    return 'admin/cms/page' in url
 
 
 class AppCategoryListing(CMSPluginBase):
