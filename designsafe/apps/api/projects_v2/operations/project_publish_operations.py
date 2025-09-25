@@ -32,6 +32,9 @@ from designsafe.apps.api.projects_v2.operations.path_operations import (
     construct_entity_filepaths,
     update_path_mappings,
 )
+from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
+    validate_github_release,
+)
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
@@ -372,11 +375,13 @@ def get_publication_full_tree(
     # Update publication date on versioned/amended pubs to match the initial publication date.
     full_tree = fix_publication_dates(full_tree)
 
-    if version and version > 1:
+    try:
         existing_pub = Publication.objects.get(project_id=project_id)
         published_tree: nx.DiGraph = nx.node_link_graph(existing_pub.tree)
 
         full_tree = nx.compose(published_tree, full_tree)
+    except Publication.DoesNotExist:
+        pass
 
     return full_tree, full_path_mapping
 
@@ -401,6 +406,7 @@ def copy_publication_files(
     `path_mapping` is a dict mapping project paths to their corresponding paths in the
     published area.
     """
+    logger.debug("Copying publication files for %s", project_id)
     os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
     try:
 
@@ -447,11 +453,47 @@ def copy_publication_files(
                     },
                     queue="indexing",
                 )
-
+        logger.debug("Finished copying publication files for %s", project_id)
     except PermissionError as exc:
         logger.error(exc)
         send_project_permissions_alert(project_id, version, str(exc))
         raise exc
+
+    finally:
+        os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
+
+
+def copy_github_release(tree: nx.DiGraph, version: int = 1):
+    """Download GitHub release archive to Corral."""
+
+    gh_node = next(
+        (
+            node
+            for node in tree.nodes
+            if tree.nodes[node]["name"] == "designsafe.project"
+            and tree.nodes[node]["version"] == version
+        )
+    )
+    base_path = tree.nodes[gh_node]["basePath"]
+    corral_path = f"/corral-repl/tacc/NHERI/published{base_path}/data"
+    github_url = tree.nodes[gh_node]["value"]["githubUrl"]
+
+    github_params = validate_github_release(github_url)
+    filename = f"{github_params.repo}_{github_params.tag}.zip"
+    full_corral_path = f"{corral_path}/{filename}"
+    github_release_url = f"https://api.github.com/repos/{github_params.org}/{github_params.repo}/releases/tags/{github_params.tag}"
+
+    os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
+    try:
+
+        os.makedirs(corral_path, exist_ok=True)
+        repo_zip_url = (
+            requests.get(github_release_url, timeout=10).json().get("zipball_url")
+        )
+        repo_zip_contents = requests.get(repo_zip_url, stream=True, timeout=600)
+        with open(full_corral_path, "wb") as file:
+            for chunk in repo_zip_contents.iter_content(chunk_size=10 * 1024):
+                file.write(chunk)
 
     finally:
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
@@ -487,20 +529,35 @@ def publish_project(
         for node in pub_tree.successors("NODE_ROOT")
     ]
 
+    project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
+
+    base_meta_node = next(
+        (
+            node
+            for node in pub_tree.nodes
+            if pub_tree.nodes[node]["name"] == constants.PROJECT
+            and pub_tree.nodes[node].get("version", version) == version
+        )
+    )
+
+    project_type = pub_tree.nodes[base_meta_node]["value"]["projectType"]
+
     # If we don't explicitly close the db connection, it will remain open during the
     # entire data-copying step, which can cause operations to fail.
     close_old_connections()
 
     if not settings.DEBUG:
-        project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
         # Copy files first so if it fails we don't create orphan metadata/datacite entries.
-        copy_publication_files(
-            path_mapping,
-            project_id,
-            project_uuid=project_uuid,
-            version=version,
-            dirs_to_lock=pub_data_dirs,
-        )
+        if project_type != "software":
+            copy_publication_files(
+                path_mapping,
+                project_id,
+                project_uuid=project_uuid,
+                version=version,
+                dirs_to_lock=pub_data_dirs,
+            )
+        elif project_type == "software":
+            copy_github_release(pub_tree, version)
 
     new_dois = []
 
@@ -529,14 +586,6 @@ def publish_project(
         for doi in new_dois:
             publish_datacite_doi(doi)
 
-    base_meta_node = next(
-        (
-            node
-            for node in pub_tree.nodes
-            if pub_tree.nodes[node]["name"] == constants.PROJECT
-            and pub_tree.nodes[node].get("version", version) == version
-        )
-    )
     base_meta_value = pub_tree.nodes[base_meta_node]["value"]
 
     pub_metadata, _ = Publication.objects.update_or_create(
@@ -595,6 +644,7 @@ def amend_publication(project_id: str):
                 prj_meta_value = ProjectMetadata.objects.get(uuid=uuid).value
                 prj_meta_value.pop("fileObjs", None)
                 prj_meta_value.pop("fileTags", None)
+                prj_meta_value.pop("githubUrl", None)
                 amended_meta_value = {**published_meta_value, **prj_meta_value}
                 pub_tree.nodes[node]["value"] = amended_meta_value
             except ProjectMetadata.DoesNotExist:

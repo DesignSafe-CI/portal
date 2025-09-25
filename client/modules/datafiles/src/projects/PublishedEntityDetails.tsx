@@ -218,6 +218,14 @@ export const PublishedEntityDetails: React.FC<{
               </td>
             </tr>
           )}
+          {entityValue.keywords && entityValue.keywords[0] && (
+            <tr className={styles['prj-row']}>
+              <td>Keywords</td>
+              <td style={{ fontWeight: 'bold' }}>
+                {entityValue.keywords?.join(', ')}
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       <DescriptionExpander>

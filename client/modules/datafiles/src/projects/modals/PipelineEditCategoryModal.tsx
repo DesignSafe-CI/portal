@@ -50,7 +50,9 @@ export const PipelineEditCategoryModal: React.FC<{
         <article style={{ marginTop: '5px' }}>
           {formType === 'category' && (
             <ProjectCategoryForm
-              onCancelEdit={() => {}}
+              onCancelEdit={() => {
+                /* intentionally empty */
+              }}
               projectType={projectType}
               projectId={projectId}
               entityUuid={entityUuid}
@@ -68,7 +70,9 @@ export const PipelineEditCategoryModal: React.FC<{
           )}
           {formType === 'publication' && (
             <PublishableEntityForm
-              onCancelEdit={() => {}}
+              onCancelEdit={() => {
+                /* intentionally empty */
+              }}
               entityName={entityName ?? ''}
               mode="edit"
               projectId={projectId}
