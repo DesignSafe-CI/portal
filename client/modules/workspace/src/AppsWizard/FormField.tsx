@@ -7,7 +7,7 @@ import {
   tapisInputFileRegex,
   TAppFileSettings,
 } from '../AppsWizard/AppsFormSchema';
-import { getExecSystemFromId } from '../utils';
+import { getExecSystemFromId, getSystemName } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
 import { SystemsDocumentation } from './SystemsDocumentation';
@@ -60,7 +60,9 @@ const SystemStatus: React.FC<{
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
       <span style={{ marginRight: -5, marginLeft: 8 }}>
-        {value.charAt(0).toUpperCase() + value.slice(1)} status:
+        {currentExecSystem?.notes?.label ||
+          getSystemName(currentExecSystem?.host || '')}{' '}
+        status:
       </span>
       <div
         className={`${systemStatusStyles.statusBadge} ${
