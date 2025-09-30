@@ -463,7 +463,7 @@ export const BaseProjectForm: React.FC<{
           ) : (
             <div style={{ marginTop: 8 }}>
               <p>Suggested Keywords:</p>
-              {availableSuggestions.map((kw) => (
+              {availableSuggestions.slice(0, 10).map((kw) => (
                 <Tag
                   key={kw}
                   color="blue"
