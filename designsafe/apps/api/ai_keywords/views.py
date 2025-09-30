@@ -43,7 +43,7 @@ class KeywordsView(BaseApiView):
             {"question": f"project title: {title}, description: {description}"}
         )
         try:
-            answer = resp["answer"].split(', ')
+            answer = resp["answer"].split(", ")
         except AttributeError:
             logger.exception("Error decoding answer")
             logger.debug(f"Raw answer: {resp['answer']}")
@@ -126,7 +126,9 @@ class RAG:
 
     def retrieve(self, state: State):
         """Retrieve relevant documents from vector store based on the question."""
-        retrieved_docs = self.vector_store.similarity_search_with_relevance_scores(state["question"], k=10, score_threshold=SCORE_THRESHOLD)
+        retrieved_docs = self.vector_store.similarity_search_with_relevance_scores(
+            state["question"], k=10, score_threshold=SCORE_THRESHOLD
+        )
         return {"context": [doc[0].page_content for doc in retrieved_docs]}
 
     def generate(self, state: State):
