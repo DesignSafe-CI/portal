@@ -42,7 +42,6 @@ def add_publications_to_chroma(publications: list[Publication]) -> None:
     metadatas = []
 
     for pub in publications:
-
         keywords = _retrieve_keywords(pub)
 
         # Convert nhTypes to a string
