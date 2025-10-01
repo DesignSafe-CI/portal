@@ -92,12 +92,17 @@ class PublicationClarivateView(BaseApiView):
         if not doi:
             return JsonResponse({'error': 'DOI parameter is required'}, status=400)
 
+        logger.info(
+            "CLARIVATE MISS: doi=%s include_records=%s", doi, include_records
+        )
+
         payload = {'doi': doi, 'citations': []}
         debug_info = {}
 
         # Starter count 
         count = clarivate_single_api(doi)
         payload['citation_count'] = int(count)
+        logger.info("CLARIVATE starter-count: doi=%s count=%s", doi, payload['citation_count'])
 
         # Expanded list
         if include_records:
@@ -108,6 +113,10 @@ class PublicationClarivateView(BaseApiView):
                 recs_field = (((raw or {}).get('Data') or {}).get('Records') or {}).get('records')
                 debug_info['records_found'] = found
                 debug_info['records_field_type'] = type(recs_field).__name__ if recs_field is not None else 'NoneType'
+                logger.info(
+                    "CLARIVATE expanded-citing: doi=%s records_found=%s",
+                    doi, recs_field
+                )
 
                 if found > 0:
                     try:
@@ -119,6 +128,7 @@ class PublicationClarivateView(BaseApiView):
             except Exception as e:
                 debug_info['expanded_error'] = str(e)
                 debug_info['expanded_trace_tail'] = traceback.format_exc().splitlines()[-3:]
+                logger.warning("CLARIVATE expanded error: doi=%s err=%s", doi, e, exc_info=False)
 
         if debug_flag and debug_info:
             payload['_debug'] = debug_info
