@@ -91,8 +91,17 @@ const WorkspaceRoot: React.FC = () => {
           </Sider>
           <ErrorBoundary
             fallbackRender={() => (
-              <div style={{ padding: 20 }}>
-                <div>App not found</div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                }}
+              >
+                <div style={{ fontSize: 24, fontWeight: 500 }}>
+                  App not found
+                </div>
               </div>
             )}
           >
