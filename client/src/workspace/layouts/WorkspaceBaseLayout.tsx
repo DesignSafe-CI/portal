@@ -98,7 +98,6 @@ const WorkspaceRoot: React.FC = () => {
           >
             <Outlet />
           </ErrorBoundary>
-
         </Layout>
       </Flex>
       <Toast />
