@@ -45,6 +45,10 @@
   flex: none;
 }
 
+.ant-table-selection-col {
+  min-width: 32px;
+}
+
 .ant-table-body {
   overflow: scroll;
 }

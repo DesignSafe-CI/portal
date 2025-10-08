@@ -41,11 +41,32 @@ export const PipelineProofreadProjectStep: React.FC<{
         <h3 style={{ textAlign: 'center' }}>Proofread your Project Metadata</h3>
         <ul style={{ listStylePosition: 'inside', paddingInlineStart: '0px' }}>
           {data.baseProject.value.projectType === 'software' && (
-            <li>
-              By publishing, you, the developer, are agreeing to accept
-              responsibility to maintain the software, and be responsive to user
-              inquiries.
-            </li>
+            <>
+              <li>
+                Please read and follow the{' '}
+                <a
+                  href="https://www.designsafe-ci.org/user-guide/curating/policies/#publishing-research-software"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Policies
+                </a>{' '}
+                and{' '}
+                <a
+                  href="https://www.designsafe-ci.org/user-guide/curating/bestpractices/#research-software"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Best Practices
+                </a>{' '}
+                regarding publication of research software.
+              </li>
+              <li>
+                By publishing, you, the developer, are agreeing to accept
+                responsibility to maintain the software, and be responsive to
+                user inquiries.
+              </li>
+            </>
           )}
           <li>Project metadata is published alongside your project.</li>
           <li>
