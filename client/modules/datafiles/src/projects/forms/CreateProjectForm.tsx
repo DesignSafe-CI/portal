@@ -144,7 +144,6 @@ export const BaseProjectCreateForm: React.FC<{
           name="description"
           rules={[
             {
-              required: true,
               message: 'Please enter a description',
             },
             {
