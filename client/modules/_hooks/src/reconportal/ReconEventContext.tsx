@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { type ReconPortalEvent } from '@client/hooks';
 
@@ -32,6 +32,16 @@ export const ReconEventProvider: React.FC<{
   >([]);
 
   const selectedReconPortalEventIdentifier = searchParams.get('eventId');
+
+  // Track in Google Analytics whenever eventId changes
+  useEffect(() => {
+    if (selectedReconPortalEventIdentifier && window.gtag) {
+      // Maps URL param 'eventId' → GA parameter name 'recon_event_id'
+      window.gtag('event', 'page_view', {
+        recon_event_id: selectedReconPortalEventIdentifier,
+      });
+    }
+  }, [selectedReconPortalEventIdentifier]);
 
   const setSelectedReconPortalEventIdentifier = (
     eventIdentifier: string | null
