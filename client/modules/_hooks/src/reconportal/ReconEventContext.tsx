@@ -2,6 +2,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { type ReconPortalEvent } from '@client/hooks';
 
+// Extend Window interface to include gtag for Google Analytics
+declare global {
+  interface Window {
+    gtag?: any;
+  }
+}
+
 type ReconEventContextType = {
   selectedReconPortalEventIdentifier: string | null;
   setSelectedReconPortalEventIdentifier: (title: string | null) => void;
