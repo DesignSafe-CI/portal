@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Outlet } from 'react-router-dom';
 import { Flex, Layout } from 'antd';
 import {
@@ -88,7 +89,24 @@ const WorkspaceRoot: React.FC = () => {
             />
             <AppsSideNav categories={data.categories} />
           </Sider>
-          <Outlet />
+          <ErrorBoundary
+            fallbackRender={() => (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                }}
+              >
+                <div style={{ fontSize: 24, fontWeight: 500 }}>
+                  App not found
+                </div>
+              </div>
+            )}
+          >
+            <Outlet />
+          </ErrorBoundary>
         </Layout>
       </Flex>
       <Toast />
