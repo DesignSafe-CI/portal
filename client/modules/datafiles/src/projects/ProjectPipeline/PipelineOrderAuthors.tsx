@@ -122,9 +122,9 @@ export const PipelineOrderAuthors: React.FC<{
                     )
                     .join(', ')}
                   .{' '}
-                  {data.baseProject.value.projectType !== 'other' && (
-                    <span>"{entity.value.title}", in </span>
-                  )}
+                  {!['other', 'software'].includes(
+                    data.baseProject.value.projectType
+                  ) && <span>"{entity.value.title}", in </span>}
                   <i>{data.baseProject.value.title}</i>. DesignSafe-CI. (DOI
                   will appear after publication)
                 </div>

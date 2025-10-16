@@ -4,6 +4,11 @@ export { BaseProjectDetails } from './BaseProjectDetails';
 export { ProjectTree } from './ProjectTree/ProjectTree';
 export { ProjectTitleHeader } from './ProjectTitleHeader/ProjectTitleHeader';
 export { ProjectCurationFileListing } from './ProjectCurationFileListing/ProjectCurationFileListing';
+export { ProjectGithubTransfer } from './ProjectGithubTransfer/ProjectGithubTransfer';
+export {
+  ProjectGithubFileListing,
+  BaseGithubFileListing,
+} from './ProjectGithubFileListing/ProjectGithubFileListing';
 export { ProjectNavbar } from './ProjectNavbar/ProjectNavbar';
 export { ProjectPipeline } from './ProjectPipeline/ProjectPipeline';
 export { EmptyProjectFileListing } from './EmptyProjectFileListing';

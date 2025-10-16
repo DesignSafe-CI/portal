@@ -61,6 +61,14 @@ export const ProjectTypeInput: React.FC<{
           description="For work other than the project types above."
         />
       );
+    case 'software':
+      return (
+        <ProjectTypeRadioSelect
+          label="Research Software"
+          iconName="fa fa-github overview-prj-type"
+          description="For code that solves complex problems in a scientific context."
+        />
+      );
 
     case 'hybrid_simulation':
       return (
@@ -319,7 +327,7 @@ export const BaseProjectForm: React.FC<{
         <GuestMembersInput name="guestMembers" />
       </Form.Item>
 
-      {projectType === 'other' && (
+      {['other', 'software'].includes(projectType ?? '') && (
         <>
           <Form.Item label="Assign Authorship" required>
             You can order the authors during the publication process.
@@ -384,7 +392,11 @@ export const BaseProjectForm: React.FC<{
       <Form.Item label="Project Description" required>
         What is this project about? How can data in this project be reused? How
         is this project unique? Who is the audience? Description must be between
-        50 and 5000 characters in length.
+        1000 and 5000 characters in length. (
+        <a href="/user-guide/curating/bestpractices/#project-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
         <Form.Item
           name="description"
           rules={[
@@ -393,8 +405,8 @@ export const BaseProjectForm: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
+              min: 1000,
+              message: 'Description must be at least 1000 characters long',
             },
             {
               max: 5000,

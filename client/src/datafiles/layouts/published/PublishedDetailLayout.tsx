@@ -6,6 +6,7 @@ import {
   DownloadCitation,
 } from '@client/datafiles';
 import {
+  TBaseProjectValue,
   apiClient,
   usePublicationDetail,
   usePublicationVersions,
@@ -57,10 +58,11 @@ export const PublishedDetailLayout: React.FC = () => {
 
   const selectedVersion =
     version ||
-    versionFromPath ||
     searchParams.get('version') ||
+    versionFromPath ||
     Math.max(...allVersions).toString();
 
+  console.log(selectedVersion);
   useEffect(() => {
     if (version) {
       const newSearchParams = new URLSearchParams(searchParams);
@@ -73,7 +75,7 @@ export const PublishedDetailLayout: React.FC = () => {
   useEffect(() => {
     if (!data) return;
 
-    data?.baseProject.projectType !== 'other' &&
+    !['other', 'software'].includes(data?.baseProject.projectType) &&
       apiClient.get(
         `/api/datafiles/tapis/public/listing/designsafe.storage.published/${projectId}${
           selectedVersion && parseInt(selectedVersion) > 1
@@ -114,6 +116,17 @@ export const PublishedDetailLayout: React.FC = () => {
     );
   }
 
+  let baseProjectValue = data.baseProject;
+
+  if (data.baseProject.projectType === 'software') {
+    const versionValue = data.tree.children.find(
+      (c) => (c.version ?? 1) === parseFloat(selectedVersion)
+    )?.value;
+    if (versionValue) {
+      baseProjectValue = versionValue as unknown as TBaseProjectValue;
+    }
+  }
+
   const publicationDate = data.tree.children.find(
     (c) => c.value.projectId === projectId
   )?.publicationDate;
@@ -145,7 +158,7 @@ export const PublishedDetailLayout: React.FC = () => {
         />
       </div>
 
-      {data.baseProject.projectType === 'other' && (
+      {['other', 'software'].includes(data.baseProject.projectType) && (
         <>
           {data.baseProject.tombstone && (
             <Alert
@@ -190,7 +203,7 @@ export const PublishedDetailLayout: React.FC = () => {
         </>
       )}
       <BaseProjectDetails
-        projectValue={data?.baseProject}
+        projectValue={baseProjectValue}
         publicationDate={publicationDate}
         versions={allVersions}
         isPublished
