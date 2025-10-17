@@ -55,6 +55,15 @@ const PipelineValidationAlert: React.FC<{
                 <strong>No publishable collections are selected.</strong>
               </div>
             ))}
+          {(validationErrors ?? [])
+            .filter((e) => e.errorType === 'VERSION_MULTIPLE')
+            .map((validationError) => (
+              <div key={validationError.title}>
+                <strong>
+                  Only a single collection can be versioned at a time.
+                </strong>
+              </div>
+            ))}
         </div>
       }
     />
@@ -129,6 +138,15 @@ export const PipelineSelectForPublish: React.FC<{
           missing: [],
         },
       ]);
+    } else if (operation === 'version' && entityUuids.length > 1) {
+      setValidationErrors([
+        {
+          name: 'Project',
+          title: 'Project',
+          errorType: 'VERSION_MULTIPLE',
+          missing: [],
+        },
+      ]);
     } else if (res.result.length > 0) {
       setValidationErrors(res.result);
     } else {
@@ -163,31 +181,6 @@ export const PipelineSelectForPublish: React.FC<{
           Continue
         </Button>
       </div>
-      {operation !== 'publish' && (
-        <Alert
-          showIcon
-          style={{ marginBottom: '12px' }}
-          description={
-            <span>
-              Amending or revising a project will impact all previously
-              published works. New datasets cannot be published through this
-              process.
-              <br />
-              If you need to publish subsequent dataset(s), please{' '}
-              <a
-                href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-describedby="msg-open-new-window"
-              >
-                submit a ticket
-              </a>{' '}
-              with your project number, the name of the dataset(s), and the
-              author order of the dataset(s).
-            </span>
-          }
-        />
-      )}
       {(validationErrors?.length ?? 0) > 0 && (
         <PipelineValidationAlert validationErrors={validationErrors} />
       )}
@@ -195,7 +188,15 @@ export const PipelineSelectForPublish: React.FC<{
         {sortedChildren.map((child) => (
           <section key={child.id}>
             <Button
-              disabled={operation === 'amend'}
+              disabled={
+                operation === 'amend' ||
+                // Can't publish a collection that has already been published.
+                (operation === 'publish' &&
+                  (child.value.dois?.length ?? 0) > 0) ||
+                // Can't version a collection that has not been published.
+                (operation === 'version' &&
+                  (child.value.dois?.length ?? 0) === 0)
+              }
               type="link"
               onClick={() => toggleEntitySelection(child.uuid)}
             >

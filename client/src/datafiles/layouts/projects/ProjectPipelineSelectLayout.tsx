@@ -38,23 +38,10 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
             <hr />
             <ul>
               <li>Publish new dataset(s) in your project.</li>
-              {projectType == 'other' ? (
+              {['other', 'software'].includes(projectType) && (
                 <li>
                   Subsequent dataset publishing is not allowed for this project
                   type. If you need to add more datasets, please&nbsp;
-                  <a
-                    href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-describedby="msg-open-new-window"
-                  >
-                    submit a ticket
-                  </a>{' '}
-                  with your project number and the name of the dataset(s).
-                </li>
-              ) : (
-                <li>
-                  If you need to publish subsequent dataset(s),&nbsp;
                   <a
                     href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
                     target="_blank"
@@ -72,9 +59,11 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
             >
               <button
                 className="btn btn-small btn-add"
-                disabled={has_published_entities}
+                disabled={['software', 'other'].includes(projectType)}
               >
-                Publish
+                {has_published_entities
+                  ? 'Publish Additional Datasets'
+                  : 'Publish'}
               </button>
             </NavLink>
           </div>
