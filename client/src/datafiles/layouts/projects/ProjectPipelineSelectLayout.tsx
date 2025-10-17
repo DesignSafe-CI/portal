@@ -1,16 +1,20 @@
-import { useProjectDetail } from '@client/hooks';
+import { useProjectDetail, useProjectPreview } from '@client/hooks';
 import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 
 export const ProjectPipelineSelectLayout: React.FC = () => {
   const { projectId } = useParams();
   const { data } = useProjectDetail(projectId ?? '');
+  const { data: fullTreeData } = useProjectPreview(projectId ?? '');
   if (!projectId || !data) return null;
 
-  const has_published_entities = !!data.entities.find(
+  const hasPublishedEntities = !!data.entities.find(
     (e) => e.value.dois && e.value.dois.length > 0
   );
 
+  const allEntitiesPublished = fullTreeData?.tree.children.every(
+    (e) => e.value.dois && e.value.dois.length > 0
+  );
   const projectType = data.baseProject?.value?.projectType; //getting selected project type value
 
   return (
@@ -59,9 +63,9 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
             >
               <button
                 className="btn btn-small btn-add"
-                disabled={['software', 'other'].includes(projectType)}
+                disabled={allEntitiesPublished}
               >
-                {has_published_entities
+                {hasPublishedEntities
                   ? 'Publish Additional Datasets'
                   : 'Publish'}
               </button>
@@ -90,7 +94,7 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
               >
                 <button
                   className="btn btn-small btn-add"
-                  disabled={!has_published_entities}
+                  disabled={!hasPublishedEntities}
                 >
                   Amend
                 </button>
@@ -120,7 +124,7 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
               >
                 <button
                   className="btn btn-small btn-add"
-                  disabled={!has_published_entities}
+                  disabled={!hasPublishedEntities}
                 >
                   Version
                 </button>
