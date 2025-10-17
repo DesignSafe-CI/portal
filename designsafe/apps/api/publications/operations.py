@@ -257,248 +257,40 @@ def initilize_publication(publication, status='publishing', revision=None, revis
         IndexedPublication._index.refresh(using=es_client)
         return pub
 
+def clarivate_single_api(doi):
 
-def clarivate_single_api(doi: str) -> int:
-    """
-    Return WOS/WOK citation count from Clarivate Starter.
-    Be defensive: return 0 on any odd shape or network failure.
-    """
     base_url = 'https://api.clarivate.com/apis/wos-starter/v1/documents'
     apikey = os.environ.get('WOS_APIKEY')
-    if not apikey or not doi:
-        return 0
-
-    try:
-        r = requests.get(base_url, headers={'X-Apikey': apikey},
-                         params={'db': 'DRCI', 'q': f"DO={doi}"}, timeout=10)
-        r.raise_for_status()
-        j = r.json()
-        hits = j.get('hits') or []
-        if not isinstance(hits, list) or not hits:
-            return 0
-        citations = hits[0].get('citations') or []
-        if not isinstance(citations, list):
-            return 0
-        for src in citations:
-            db = (src or {}).get('db')
-            cnt = (src or {}).get('count')
-            if db in ('WOS', 'WOK') and isinstance(cnt, (int, float)):
-                return int(cnt)
-        return 0
-    except Exception:
-        return 0
     
+    if not apikey:
+        return {"error": "Clarivate API key is missing"}
 
-BASE_WOS_HOSTS = [
-    "https://wos-api.clarivate.com/api/wos",  # preferred
-    "https://api.clarivate.com/api/wos",      # fallback
-]
+    if not doi:
+        return {"error": "DOI is required"}
 
-
-def _expanded_key():
-    k = os.environ.get("WOS_EXP_APIKEY") or os.environ.get("WOS_APIKEY")
-    if not k:
-        raise RuntimeError("Clarivate Expanded API key is missing")
-    return k
-
-
-def _starter_uid_for_doi(doi: str) -> str | None:
-    """Starter sometimes returns a UID; only accept WOS/WOK for /citing."""
-    k = os.environ.get("WOS_APIKEY")
-    if not k:
-        return None
+    params = {'db': 'DRCI', 'q': f"DO={doi}"}
+    
     try:
-        r = requests.get(
-            "https://api.clarivate.com/apis/wos-starter/v1/documents",
-            headers={"X-Apikey": k},
-            params={"db": "DRCI", "q": f"DO={doi}"},
-            timeout=10,
+        response = requests.get(
+            base_url,
+            headers={'X-Apikey': apikey},
+            params=params
         )
-        r.raise_for_status()
-        j = r.json()
-        hit = (j.get("hits") or [None])[0] or {}
-        uid = hit.get("uid") or hit.get("uid_wos")
-        return uid if isinstance(uid, str) and (uid.startswith("WOS:") or uid.startswith("WOK:")) else None
-    except Exception:
-        return None
+        response.raise_for_status()
+        rspdict = response.json()
 
+        citations = [
+            source['count'] for source in rspdict['hits'][0]['citations']
+            if source['db'] == 'WOK'
+        ][0]
 
-def _wos_get(path="", *, params=None, timeout=12):
-    k = _expanded_key()
-    last_exc = None
-    for base in BASE_WOS_HOSTS:
-        try:
-            return requests.get(f"{base}{path}", headers={"X-Apikey": k}, params=params, timeout=timeout)
-        except Exception as e:
-            last_exc = e
-    raise last_exc
+        return citations
 
-
-def _lookup_uid_for_doi(doi: str, debug: dict | None = None) -> str | None:
-    uid = _starter_uid_for_doi(doi)
-    if uid:
-        debug and debug.setdefault("uid_attempts", []).append({"source": "STARTER", "uid": uid})
-        return uid
-
-    for db in ("WOS", "WOK", "DCI"):
-        r = _wos_get("", params={"databaseId": db, "usrQuery": f"DO=({doi})", "optionView": "SR"}, timeout=8)
-        if debug is not None:
-            debug.setdefault("uid_attempts", []).append({"db": db, "status": r.status_code, "body_snippet": r.text[:200]})
-        if r.status_code != 200:
-            continue
-        try:
-            j = r.json()
-        except Exception:
-            continue
-        recs = (((j.get("Data") or {}).get("Records") or {}).get("records"))
-        if isinstance(recs, str) or not recs:
-            continue
-        if isinstance(recs, dict):
-            rec = recs.get("REC")
-        else:
-            rec = recs
-        if isinstance(rec, list):
-            rec = rec[0] if rec else None
-        if isinstance(rec, dict):
-            uid = rec.get("UID")
-            if uid:
-                return uid
-    return None  
-
-
-def clarivate_wos_exp_single_api_basic(doi: str, debug: dict | None = None) -> dict:
-    """Return a dict with QueryResult/Data; never raise on empty/odd shapes."""
-    uid = _lookup_uid_for_doi(doi, debug)
-    if not uid:
-        raise RuntimeError("Could not resolve UID for DOI")
-
-    last = None
-    for db in ("WOS", "WOK"):
-        r = _wos_get("/citing", params={"databaseId": db, "uniqueId": uid, "count": 100}, timeout=12)
-        if debug is not None:
-            debug.setdefault("citing_attempts", []).append({"db": db, "status": r.status_code, "body_snippet": r.text[:200]})
-        if r.status_code != 200:
-            last = requests.HTTPError(f"{r.status_code} for /citing {db}")
-            continue
-        try:
-            j = r.json()
-        except Exception as e:
-            last = e
-            continue
-        # Ensure we always return a predictable dict
-        q = j.get("QueryResult") or {}
-        if not isinstance(q, dict):
-            q = {}
-        if "QueryResult" not in j:
-            j["QueryResult"] = q
-        d = j.get("Data") or {}
-        if not isinstance(d, dict):
-            d = {}
-        if "Data" not in j:
-            j["Data"] = d
-        recs = (d.get("Records") or {}).get("records")
-        # If Clarivate sends records as "", keep it—caller checks RecordsFound
-        return j
-
-    # If both attempts failed, raise the last error
-    if last:
-        raise last
-    raise RuntimeError("Failed to fetch citing records")
-
-
-def build_citation_json(citeresponse: dict) -> list[dict]:
-    import logging
-    log = logging.getLogger(__name__)
-    cites: list[dict] = []
-
-    try:
-        if not isinstance(citeresponse, dict):
-            return []
-
-        q = citeresponse.get('QueryResult') or {}
-        found = q.get('RecordsFound', 0) or 0
-        if not isinstance(found, int):
-            try:
-                found = int(found)
-            except Exception:
-                found = 0
-        if found == 0:
-            return []
-
-        # records can be "", {}, {"REC": {...}} or {"REC": [...]}
-        recs_container = (((citeresponse.get('Data') or {}).get('Records') or {}).get('records'))
-        if not recs_container or isinstance(recs_container, str):
-            return []
-
-        if isinstance(recs_container, dict):
-            recs = recs_container.get('REC')
-        else:
-            recs = recs_container  # fail-soft
-
-        if not recs:
-            return []
-        if isinstance(recs, dict):
-            recs = [recs]
-        if not isinstance(recs, list):
-            return []
-
-        for rec in recs:
-            if not isinstance(rec, dict):
-                continue
-
-            # identifiers → citing DOI
-            ids = ((((rec.get('dynamic_data') or {})
-                     .get('cluster_related') or {})
-                     .get('identifiers') or {})
-                   .get('identifier')) or []
-            if isinstance(ids, dict):
-                ids = [ids]
-            doi_vals = [i.get('value') for i in ids if isinstance(i, dict) and i.get('type') == 'doi']
-            doi = doi_vals[0] if doi_vals else ''
-
-            # summary / titles
-            summary = (rec.get('static_data') or {}).get('summary') or {}
-            tdata = ((summary.get('titles') or {}).get('title')) or []
-            if isinstance(tdata, dict):
-                tdata = [tdata]
-            tmap = {t.get('type'): t.get('content') for t in tdata if isinstance(t, dict)}
-            titles = {
-                'item': tmap.get('item', ''),
-                'source': (tmap.get('source') or '').title(),
-                'book_subtitle': tmap.get('book_subtitle', ''),
-                'series': tmap.get('series', ''),
-            }
-
-            # names
-            names_elem = ((summary.get('names') or {}).get('name')) or []
-            if isinstance(names_elem, dict):
-                names_elem = [names_elem]
-            names = []
-            for n in names_elem:
-                if not isinstance(n, dict):
-                    continue
-                names.append({
-                    'first_name': n.get('first_name', ''),
-                    'last_name': n.get('last_name', '') or n.get('display_name', ''),
-                    'role': n.get('role', ''),
-                })
-
-            # pub info
-            pub_info = summary.get('pub_info') or {}
-            page = pub_info.get('page') or {}
-            pubinfo = {
-                'pubtype':  pub_info.get('pubtype',  ''),
-                'pubyear':  pub_info.get('pubyear',  ''),
-                'pubmonth': pub_info.get('pubmonth', ''),
-                'vol':      pub_info.get('vol',      ''),
-                'issue':    pub_info.get('issue',    ''),
-                'page':     {'begin': page.get('begin', ''), 'end': page.get('end', '')},
-            }
-
-            cites.append({'doi': doi, 'titles': titles, 'names': names, 'pubinfo': pubinfo})
-
-    except Exception as e:
-        # never crash the endpoint
-        log.warning('build_citation_json failed safely: %s', e)
-
-    return cites
+    except requests.exceptions.RequestException as e:
+        return {
+            "error": str(e),
+        }
+    except (KeyError, IndexError) as e:
+        return {
+            "error": "Unexpected response format",
+        }
