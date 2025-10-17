@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input, Popconfirm, Select } from 'antd';
+import { Alert, Button, Form, Input, Popconfirm, Select, Tag } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   nhTypeOptions,
@@ -19,7 +19,10 @@ import { TProjectUser } from './_fields/UserSelect';
 import {
   TBaseProjectValue,
   useAuthenticatedUser,
+  useKeywordSuggestions,
   useProjectDetail,
+  useDebounceValue,
+  TGetKeywordSuggestionsParams,
 } from '@client/hooks';
 import { customRequiredMark } from './_common';
 import { AuthorSelect } from './_fields/AuthorSelect';
@@ -146,6 +149,42 @@ export const BaseProjectForm: React.FC<{
     ],
     [watchedPi, watchedCoPis, watchedMembers, watchedGuestMembers]
   );
+
+  // Watch title, description, and keywords for AI keyword suggestions
+  const watchedTitle: string = Form.useWatch('title', form) ?? '';
+  const watchedDescription: string = Form.useWatch('description', form) ?? '';
+  const watchedKeywords: string[] = Form.useWatch('keywords', form) ?? [];
+
+  const titleMemo = useMemo(() => watchedTitle, [watchedTitle]);
+  const descriptionMemo = useMemo(
+    () => watchedDescription,
+    [watchedDescription]
+  );
+  const keywordsMemo = useMemo(() => watchedKeywords, [watchedKeywords]);
+
+  const [searchTerms, setSearchTerms] = useState<TGetKeywordSuggestionsParams>({
+    title: watchedTitle,
+    description: watchedDescription,
+  });
+
+  // Debounce search terms to avoid excessive API calls
+  const debouncedSearchTerms = useDebounceValue<TGetKeywordSuggestionsParams>(
+    searchTerms,
+    1000
+  );
+
+  const { data: suggestedKeywords = [] } =
+    useKeywordSuggestions(debouncedSearchTerms);
+  const availableSuggestions = suggestedKeywords.filter(
+    (kw: string) => !keywordsMemo.includes(kw)
+  );
+
+  useEffect(() => {
+    setSearchTerms({
+      title: titleMemo,
+      description: descriptionMemo,
+    });
+  }, [titleMemo, descriptionMemo, keywordsMemo]);
 
   const { user } = useAuthenticatedUser();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -372,23 +411,6 @@ export const BaseProjectForm: React.FC<{
         <HazardEventsInput name="nhEvents" />
       </Form.Item>
 
-      {projectType !== 'None' && (
-        <Form.Item label="Keywords" required>
-          Choose informative words that indicate the content of the project.
-          Keywords should be comma-separated.
-          <Form.Item
-            name="keywords"
-            rules={[{ required: true }]}
-            className="inner-form-item"
-          >
-            <Select
-              mode="tags"
-              notFoundContent={null}
-              tokenSeparators={[',']}
-            ></Select>
-          </Form.Item>
-        </Form.Item>
-      )}
       <Form.Item label="Project Description" required>
         What is this project about? How can data in this project be reused? How
         is this project unique? Who is the audience? Description must be between
@@ -418,6 +440,54 @@ export const BaseProjectForm: React.FC<{
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
+
+      {projectType !== 'None' && (
+        <Form.Item label="Keywords" required>
+          Choose informative words that indicate the content of the project.
+          Keywords should be comma-separated.
+          <Form.Item
+            name="keywords"
+            rules={[{ required: true }]}
+            className="inner-form-item"
+          >
+            <Select
+              mode="tags"
+              notFoundContent={null}
+              tokenSeparators={[',']}
+            ></Select>
+          </Form.Item>
+          {availableSuggestions.length === 0 ? (
+            <div style={{ marginTop: 8 }}>
+              <span>Suggested Keywords: </span>
+              <em style={{ color: 'rgba(0,0,0,.45)' }}>
+                Enter a project <strong>title</strong> and{' '}
+                <strong>description</strong> to see keyword suggestions.
+              </em>
+            </div>
+          ) : (
+            <div style={{ marginTop: 8 }}>
+              <p>Suggested Keywords:</p>
+              {availableSuggestions.slice(0, 10).map((kw) => (
+                <Tag
+                  key={kw}
+                  color="blue"
+                  style={{ cursor: 'pointer', marginBottom: 4 }}
+                  onClick={() => {
+                    const current: string[] =
+                      form.getFieldValue('keywords') || [];
+                    if (!current.includes(kw)) {
+                      form.setFieldValue('keywords', [...current, kw]);
+                    }
+                  }}
+                >
+                  {kw}
+                </Tag>
+              ))}
+            </div>
+          )}
+        </Form.Item>
+      )}
+
       {hasValidationErrors && (
         <Alert
           type="error"
