@@ -1,16 +1,20 @@
-import { useProjectDetail } from '@client/hooks';
+import { useProjectDetail, useProjectPreview } from '@client/hooks';
 import React from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 
 export const ProjectPipelineSelectLayout: React.FC = () => {
   const { projectId } = useParams();
   const { data } = useProjectDetail(projectId ?? '');
+  const { data: fullTreeData } = useProjectPreview(projectId ?? '');
   if (!projectId || !data) return null;
 
-  const has_published_entities = !!data.entities.find(
+  const hasPublishedEntities = !!data.entities.find(
     (e) => e.value.dois && e.value.dois.length > 0
   );
 
+  const allEntitiesPublished = fullTreeData?.tree.children.every(
+    (e) => e.value.dois && e.value.dois.length > 0
+  );
   const projectType = data.baseProject?.value?.projectType; //getting selected project type value
 
   return (
@@ -38,23 +42,10 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
             <hr />
             <ul>
               <li>Publish new dataset(s) in your project.</li>
-              {projectType == 'other' ? (
+              {['other', 'software'].includes(projectType) && (
                 <li>
                   Subsequent dataset publishing is not allowed for this project
                   type. If you need to add more datasets, please&nbsp;
-                  <a
-                    href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-describedby="msg-open-new-window"
-                  >
-                    submit a ticket
-                  </a>{' '}
-                  with your project number and the name of the dataset(s).
-                </li>
-              ) : (
-                <li>
-                  If you need to publish subsequent dataset(s),&nbsp;
                   <a
                     href={`/help/new-ticket/?category=DATA_CURATION_PUBLICATION&amp;subject=Request+to+Update+or+Remove+Authors+for+${projectId}`}
                     target="_blank"
@@ -72,9 +63,11 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
             >
               <button
                 className="btn btn-small btn-add"
-                disabled={has_published_entities}
+                disabled={allEntitiesPublished}
               >
-                Publish
+                {hasPublishedEntities
+                  ? 'Publish Additional Datasets'
+                  : 'Publish'}
               </button>
             </NavLink>
           </div>
@@ -101,7 +94,7 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
               >
                 <button
                   className="btn btn-small btn-add"
-                  disabled={!has_published_entities}
+                  disabled={!hasPublishedEntities}
                 >
                   Amend
                 </button>
@@ -131,7 +124,7 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
               >
                 <button
                   className="btn btn-small btn-add"
-                  disabled={!has_published_entities}
+                  disabled={!hasPublishedEntities}
                 >
                   Version
                 </button>

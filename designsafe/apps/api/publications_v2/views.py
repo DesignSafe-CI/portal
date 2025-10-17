@@ -328,7 +328,9 @@ class PublicationVersionView(BaseApiView):
         pub_root = Publication.objects.get(project_id=project_id)
         pub_tree: nx.DiGraph = nx.node_link_graph(pub_root.tree)
         latest_version = max(
-            pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
+            pub_tree.nodes[node]["version"]
+            for node in pub_tree.successors("NODE_ROOT")
+            if pub_tree.nodes[node]["uuid"] == entities_to_publish[0]
         )
 
         publish_project_async.apply_async(

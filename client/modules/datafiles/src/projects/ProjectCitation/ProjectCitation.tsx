@@ -32,7 +32,7 @@ export const ProjectCitation: React.FC<{
         )
         .join(', ')}
       .{' '}
-      {data.baseProject.value.projectType !== 'other' && (
+      {!['other', 'software'].includes(data.baseProject.value.projectType) && (
         <span>"{entityDetails.value.title}", in </span>
       )}
       <i>{data.baseProject.value.title}</i>. DesignSafe-CI. (DOI will appear
@@ -73,7 +73,7 @@ export const PublishedCitation: React.FC<{
         )
         .join(', ')}{' '}
       ({new Date(entityDetails.publicationDate).getFullYear()}).{' '}
-      {data.baseProject.projectType !== 'other' && (
+      {!['other', 'software'].includes(data.baseProject.projectType) && (
         <span>"{entityDetails.value.title}", in </span>
       )}
       <i>{data.baseProject.title}</i>

@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   apiClient,
   DoiContextProvider,
@@ -11,7 +17,7 @@ import {
   usePublicationVersions,
   useSelectedFiles,
 } from '@client/hooks';
-import { Alert, Button, Collapse, Tag } from 'antd';
+import { Alert, Button, Collapse, Select, Tag } from 'antd';
 import styles from './ProjectPreview.module.css';
 import { DISPLAY_NAMES, PROJECT_COLORS } from '../constants';
 import { ProjectCollapse } from '../ProjectCollapser/ProjectCollapser';
@@ -25,7 +31,12 @@ import {
   FileTypeIcon,
   TFileListingColumns,
 } from '@client/common-components';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { PublishedEntityDetails } from '../PublishedEntityDetails';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
@@ -201,6 +212,7 @@ export const PublishedEntityDisplay: React.FC<{
   projectId: string;
   preview?: boolean;
   license?: string;
+  versions?: number[];
   treeData: TPreviewTreeData;
   defaultOpen?: boolean;
   defaultOpenChildren?: boolean;
@@ -210,6 +222,7 @@ export const PublishedEntityDisplay: React.FC<{
   preview,
   treeData,
   license,
+  versions = [1],
   defaultOpen = false,
   defaultOpenChildren = false,
   showEditCategories = false,
@@ -263,7 +276,7 @@ export const PublishedEntityDisplay: React.FC<{
       >
         <span>
           {DISPLAY_NAMES[treeData.name]} |{' '}
-          <strong>{treeData.value.title}</strong>
+          <strong>{treeData.value.title}</strong> &nbsp;
         </span>
         {preview &&
           ((treeData.value.dois?.length ?? 0) > 0 ? (
@@ -331,6 +344,7 @@ export const PublishedEntityDisplay: React.FC<{
                 <PublishedEntityDetails
                   entityValue={treeData.value}
                   license={license}
+                  versions={versions}
                   publicationDate={treeData.publicationDate}
                 />
                 {!treeData.value.tombstone && (
@@ -410,14 +424,39 @@ export const PublicationView: React.FC<{
   version?: number;
 }> = ({ projectId, version = 1 }) => {
   const { data } = usePublicationDetail(projectId ?? '');
+  const [searchParams] = useSearchParams();
   const { unsetSelections } = useSelectedFiles('tapis', '', '');
   // Unset file selections when project ID changes to prevent them carrying over on nav.
   useEffect(() => unsetSelections(), [projectId, unsetSelections]);
   const { children } = data?.tree ?? {};
 
-  const { selectedVersion } = usePublicationVersions(projectId);
   const { hash } = useLocation();
   const openUuid = hash.split('#detail-').slice(-1)[0];
+
+  const { versionsPerUuid, selectedVersionPerUuid, hasVersionSelected } =
+    useMemo(() => {
+      const versionsPerUuid: Record<string, number[]> = {};
+      children?.forEach((child) => {
+        versionsPerUuid[child.value.dois?.[0] ?? '-'] = [
+          ...(versionsPerUuid[child.value.dois?.[0] ?? '-'] ?? []),
+          child.version ?? 1,
+        ].sort();
+      });
+      const selectedVersionPerUuid: Record<string, number> = {};
+      const hasVersionSelected: Record<string, boolean> = {};
+      Object.keys(versionsPerUuid).forEach((doi) => {
+        const paramName = `version-${doi}`;
+        if (searchParams.get(paramName)) {
+          hasVersionSelected[doi] = true;
+        }
+        const selectedVersion = parseFloat(
+          searchParams.get(paramName) ??
+            Math.max(...versionsPerUuid[doi]).toString()
+        );
+        selectedVersionPerUuid[doi] = selectedVersion;
+      });
+      return { versionsPerUuid, selectedVersionPerUuid, hasVersionSelected };
+    }, [children, searchParams]);
 
   const sortedChildren = useMemo(
     () => [...(children ?? [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
@@ -430,7 +469,8 @@ export const PublicationView: React.FC<{
       {sortedChildren
         .filter(
           (child) =>
-            child.version === selectedVersion &&
+            child.version ===
+              selectedVersionPerUuid[child.value.dois?.[0] ?? '-'] &&
             child.name !== 'designsafe.project'
         )
         .map((child, idx) => (
@@ -439,9 +479,11 @@ export const PublicationView: React.FC<{
               license={data.baseProject.license}
               projectId={projectId}
               treeData={child}
+              versions={versionsPerUuid[child.value.dois?.[0] ?? '-']}
               defaultOpen={
                 (idx === 0 && sortedChildren.length === 1) ||
-                child.uuid === openUuid
+                child.uuid === openUuid ||
+                hasVersionSelected[child.value.dois?.[0] ?? '-']
               }
               key={child.id}
             />
