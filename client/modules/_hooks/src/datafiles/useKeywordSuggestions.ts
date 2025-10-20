@@ -14,7 +14,12 @@ export function useKeywordSuggestions(
   searchParams: TGetKeywordSuggestionsParams
 ) {
   return useQuery({
-    queryKey: ['keywordSuggestions', searchParams],
+    queryKey: [
+      'keywordSuggestions',
+      ,
+      searchParams.title.trim(),
+      searchParams.description.trim(),
+    ],
     queryFn: async () => {
       const res = await apiClient.get<KeywordSuggestionResponse>(
         '/api/keyword-suggestions/',
@@ -23,7 +28,6 @@ export function useKeywordSuggestions(
       return res.data.response;
     },
     enabled: !!searchParams.title.trim() && !!searchParams.description.trim(),
-    staleTime: Infinity,
-    placeholderData: (prev) => prev ?? [],
+    staleTime: 0,
   });
 }

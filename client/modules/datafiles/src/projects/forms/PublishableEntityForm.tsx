@@ -7,7 +7,7 @@ import {
   simulationTypeOptions,
   HybridSimTypeOptions,
 } from './ProjectFormDropdowns';
-
+import { KeywordSuggestor } from './KeywordSuggestor';
 import {
   TBaseProjectValue,
   TProjectUser,
@@ -128,22 +128,6 @@ const ExperimentFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Keywords" required>
-        Choose informative words that indicate the content of the project.
-        Keywords should be comma-separated.
-        <Form.Item
-          name={['value', 'keywords']}
-          rules={[{ required: true }]}
-          className="inner-form-item"
-        >
-          <Select
-            mode="tags"
-            notFoundContent={null}
-            tokenSeparators={[',']}
-          ></Select>
-        </Form.Item>
-      </Form.Item>
-
       <Form.Item label="Experiment Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
@@ -170,6 +154,28 @@ const ExperimentFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
+      </Form.Item>
+
       <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
         <Form.Item
@@ -193,9 +199,10 @@ const ExperimentFormFields: React.FC<{
 };
 
 const SimulationFormFields: React.FC<{
+  form: FormInstance;
   projectUsers: TProjectUser[];
   currentAuthors?: TProjectUser[];
-}> = ({ projectUsers, currentAuthors = [] }) => {
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Simulation Title" required>
@@ -259,22 +266,6 @@ const SimulationFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Keywords" required>
-        Choose informative words that indicate the content of the project.
-        Keywords should be comma-separated.
-        <Form.Item
-          name={['value', 'keywords']}
-          rules={[{ required: true }]}
-          className="inner-form-item"
-        >
-          <Select
-            mode="tags"
-            notFoundContent={null}
-            tokenSeparators={[',']}
-          ></Select>
-        </Form.Item>
-      </Form.Item>
-
       <Form.Item label="Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
@@ -301,6 +292,28 @@ const SimulationFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
+      </Form.Item>
+
       <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
         <Form.Item
@@ -324,9 +337,10 @@ const SimulationFormFields: React.FC<{
 };
 
 const HybridSimFormFields: React.FC<{
+  form: FormInstance;
   projectUsers: TProjectUser[];
   currentAuthors?: TProjectUser[];
-}> = ({ projectUsers, currentAuthors = [] }) => {
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Hybrid Simulation Title" required>
@@ -390,22 +404,6 @@ const HybridSimFormFields: React.FC<{
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
-      <Form.Item label="Keywords" required>
-        Choose informative words that indicate the content of the project.
-        Keywords should be comma-separated.
-        <Form.Item
-          name={['value', 'keywords']}
-          rules={[{ required: true }]}
-          className="inner-form-item"
-        >
-          <Select
-            mode="tags"
-            notFoundContent={null}
-            tokenSeparators={[',']}
-          ></Select>
-        </Form.Item>
-      </Form.Item>
-
       <Form.Item label="Hybrid Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
@@ -432,6 +430,28 @@ const HybridSimFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
+      </Form.Item>
+
       <Form.Item label="Assign Authorship" required>
         You can order the authors during the publication process.
         <Form.Item
@@ -455,9 +475,10 @@ const HybridSimFormFields: React.FC<{
 };
 
 const MissionFormFields: React.FC<{
+  form: FormInstance;
   projectUsers: TProjectUser[];
   currentAuthors?: TProjectUser[];
-}> = ({ projectUsers, currentAuthors = [] }) => {
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Mission Title" required>
@@ -575,22 +596,6 @@ const MissionFormFields: React.FC<{
         </div>
       </Form.Item>
 
-      <Form.Item label="Keywords" required>
-        Choose informative words that indicate the content of the project.
-        Keywords should be comma-separated.
-        <Form.Item
-          name={['value', 'keywords']}
-          rules={[{ required: true }]}
-          className="inner-form-item"
-        >
-          <Select
-            mode="tags"
-            notFoundContent={null}
-            tokenSeparators={[',']}
-          ></Select>
-        </Form.Item>
-      </Form.Item>
-
       <Form.Item label="Mission Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
@@ -616,14 +621,37 @@ const MissionFormFields: React.FC<{
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
+
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
+      </Form.Item>
     </>
   );
 };
 
 const DocumentFormFields: React.FC<{
+  form: FormInstance;
   projectUsers: TProjectUser[];
   currentAuthors?: TProjectUser[];
-}> = ({ projectUsers, currentAuthors = [] }) => {
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Document Title" required>
@@ -686,22 +714,6 @@ const DocumentFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Keywords" required>
-        Choose informative words that indicate the content of the project.
-        Keywords should be comma-separated.
-        <Form.Item
-          name={['value', 'keywords']}
-          rules={[{ required: true }]}
-          className="inner-form-item"
-        >
-          <Select
-            mode="tags"
-            notFoundContent={null}
-            tokenSeparators={[',']}
-          ></Select>
-        </Form.Item>
-      </Form.Item>
-
       <Form.Item label="Document Description" required>
         What was under investigation? How was it tested? What was the outcome?
         How can the data be reused? Description must be between 50 and 5000
@@ -726,6 +738,28 @@ const DocumentFormFields: React.FC<{
         >
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
+      </Form.Item>
+
+      <Form.Item label="Keywords" required>
+        Choose informative words that indicate the content of the project.
+        Keywords should be comma-separated.
+        <Form.Item
+          name={['value', 'keywords']}
+          rules={[{ required: true }]}
+          className="inner-form-item"
+        >
+          <Select
+            mode="tags"
+            notFoundContent={null}
+            tokenSeparators={[',']}
+          ></Select>
+        </Form.Item>
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
       </Form.Item>
     </>
   );
@@ -790,24 +824,28 @@ export const PublishableEntityForm: React.FC<{
       )}
       {projectType === 'simulation' && (
         <SimulationFormFields
+          form={form}
           projectUsers={data.baseProject.value.users}
           currentAuthors={entity?.value.authors ?? []}
         />
       )}
       {projectType === 'hybrid_simulation' && (
         <HybridSimFormFields
+          form={form}
           projectUsers={data.baseProject.value.users}
           currentAuthors={entity?.value.authors ?? []}
         />
       )}
       {entityName === constants.FIELD_RECON_MISSION && (
         <MissionFormFields
+          form={form}
           projectUsers={data.baseProject.value.users}
           currentAuthors={entity?.value.authors ?? []}
         />
       )}
       {entityName === constants.FIELD_RECON_REPORT && (
         <DocumentFormFields
+          form={form}
           projectUsers={data.baseProject.value.users}
           currentAuthors={entity?.value.authors ?? []}
         />
