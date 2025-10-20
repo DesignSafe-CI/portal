@@ -16,7 +16,6 @@ export function useKeywordSuggestions(
   return useQuery({
     queryKey: [
       'keywordSuggestions',
-      ,
       searchParams.title.trim(),
       searchParams.description.trim(),
     ],
