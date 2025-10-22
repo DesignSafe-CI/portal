@@ -5,7 +5,7 @@ import {
   ProjectGithubTransfer,
   ProjectNavbar,
   RelateDataModal,
-  CurationInfoBanner
+  CurationInfoBanner,
 } from '@client/datafiles';
 import { DatafilesBreadcrumb } from '@client/common-components';
 import { useProjectDetail } from '@client/hooks';
@@ -179,8 +179,8 @@ export const ProjectCurationLayout: React.FC = () => {
           </span>
         )}
       </div>
-      <div style={{ marginTop: '20px'}}>
-        <CurationInfoBanner/>
+      <div style={{ marginTop: '20px' }}>
+        <CurationInfoBanner />
       </div>
       <DatafilesBreadcrumb
         initialBreadcrumbs={[
