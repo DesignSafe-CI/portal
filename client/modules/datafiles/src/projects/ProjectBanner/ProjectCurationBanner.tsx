@@ -4,7 +4,14 @@ import { WarningOutlined } from '@ant-design/icons';
 import styles from './ProjectCurationBanner.module.css';
 
 export const CurationInfoBanner: React.FC = () => {
-  const [visible, setVisible] = React.useState(true);
+  const [visible, setVisible] = React.useState(() => {
+    return localStorage.getItem('curationBannerDismissed') !== 'true';
+  });
+
+  const handleClose = () => {
+    localStorage.setItem('curationBannerDismissed', 'true');
+    setVisible(false);
+  };
 
   if (!visible) return null;
 
@@ -16,7 +23,7 @@ export const CurationInfoBanner: React.FC = () => {
         closable
         showIcon
         icon={<WarningOutlined style={{ color: '#52c41a' }} />}
-        onClose={() => setVisible(false)}
+        onClose={handleClose}
         className={styles.banner}
         message={
           <span>

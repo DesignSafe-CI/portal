@@ -179,9 +179,11 @@ export const ProjectCurationLayout: React.FC = () => {
           </span>
         )}
       </div>
-      <div style={{ marginTop: '20px' }}>
-        <CurationInfoBanner />
-      </div>
+      {localStorage.getItem('curationBannerDismissed') !== 'true' && (
+        <div style={{ marginTop: '20px' }}>
+          <CurationInfoBanner />
+        </div>
+      )}
       <DatafilesBreadcrumb
         initialBreadcrumbs={[
           { path: `/projects/${projectId}/curation`, title: projectId },
