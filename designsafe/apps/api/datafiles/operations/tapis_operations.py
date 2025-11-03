@@ -18,6 +18,19 @@ from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
 
+def is_file_previewable(file_name):
+    """Checking if a file can be previewed based on its extension"""
+    if not file_name:
+        return False
+    file_ext  = os.path.splitext(file_name)[1].lower()
+    return file_ext in (
+        settings.SUPPORTED_TEXT_PREVIEW_EXTS +
+        settings.SUPPORTED_IMAGE_PREVIEW_EXTS +
+        settings.SUPPORTED_OBJECT_PREVIEW_EXTS +
+        settings.SUPPORTED_MS_OFFICE +
+        settings.SUPPORTED_VIDEO_EXTS +
+        settings.SUPPORTED_IPYNB_PREVIEW_EXTS
+    )
 
 def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
     """
@@ -69,7 +82,7 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
                 format_str = 'folder'
         else:
             type_str = 'dir' if f.type == 'dir' else 'file'
-            format_str = 'folder' if type_str == 'dir' else 'raw'       
+            format_str = 'folder' if type_str == 'dir' else 'raw'
 
         listing_resp.append({
             'system': system,
@@ -81,6 +94,7 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
             'length': f.size,
             'lastModified': f.lastModified,
             '_links': {'self': {'href': f.url}},
+            'isPreviewable': is_file_previewable(f.name),
         })
 
     agave_listing_indexer.delay(listing_resp)
@@ -190,6 +204,8 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
     search = search.extra(from_=int(offset), size=int(limit))
     res = search.execute()
     hits = [hit.to_dict() for hit in res]
+    for hit in hits:
+        hit['isPreviewable'] = is_file_previewable(hit.get('name', ''))
 
     return {'listing': hits, 'reachedEnd': len(hits) < int(limit)}
 
@@ -282,12 +298,12 @@ def move(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
 
     if src_system != dest_system:
         raise ValueError("src_system and dest_system must be identical for move.")
-    client.files.moveCopy(systemId=src_system, 
+    client.files.moveCopy(systemId=src_system,
                           path=src_path,
                           operation="MOVE",
                           newPath=dest_path_full,
                           headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
-    
+
     move_file_meta_async.delay(src_system, src_path, dest_system, dest_path_full)
 
 
@@ -303,7 +319,7 @@ def move(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
         'filePath': dest_path,
         'recurse': False
     }, queue='indexing')
-    
+
     agave_indexer.apply_async(kwargs={
         'systemId': dest_system,
         'filePath': dest_path_full,
@@ -423,7 +439,7 @@ def rename(client, system, path, new_name, *args, **kwargs):
     path = path.strip('/')
     new_path = str(Path(path).parent / new_name)
 
-    client.files.moveCopy(systemId=system, 
+    client.files.moveCopy(systemId=system,
                           path=path,
                           operation="MOVE",
                           newPath=new_path,
@@ -435,12 +451,12 @@ def rename(client, system, path, new_name, *args, **kwargs):
                                       'filePath': os.path.dirname(path),
                                       'recurse': False},
                               queue='indexing')
-    
+
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': new_path,
                                       'recurse': True},
                               queue='indexing')
-    
+
     return {"result": "OK"}
 
 
@@ -510,9 +526,9 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
 
 
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
-    response_json = client.files.insert(systemId=system,   
-                                        path=dest_path, 
-                                        file=uploaded_file, 
+    response_json = client.files.insert(systemId=system,
+                                        path=dest_path,
+                                        file=uploaded_file,
                                         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     return {"result": "OK"}
     agave_indexer.apply_async(kwargs={'systemId': system,

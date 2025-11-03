@@ -40,7 +40,10 @@ export function getToolbarRules(
   );
 
   return {
-    canPreview: selectedFiles.length === 1 && selectedFiles[0].type === 'file',
+    canPreview:
+      selectedFiles.length === 1 &&
+      selectedFiles[0].type === 'file' &&
+      selectedFiles[0].isPreviewable !== false,
     canRename:
       api === 'tapis' &&
       isAuthenticated &&
