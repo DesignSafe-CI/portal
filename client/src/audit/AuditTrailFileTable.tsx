@@ -19,6 +19,7 @@ interface AuditTrailFileTableProps {
 
 type DataObj = {
   path?: string;
+  system?: string;
   body?: { file_name?: string; new_name?: string };
 };
 
@@ -95,6 +96,10 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
 
   const getUser = (entry: PortalFileAuditEntry) => {
     return (entry && entry.username) || 'Unknown user';
+  };
+
+  const getHost = (entry: PortalFileAuditEntry) => {
+    return (entry.data as DataObj)?.system || 'Unknown system';
   };
 
   //picking summary entry, if row is upload and search term matches the filename(data.body.file_name) in that row, then we use that one
@@ -185,6 +190,7 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
           const filename = getFilename(firstEntry);
           const firstAppearance = getFirstAppearance(firstEntry);
           const user = getUser(firstEntry);
+          const host = getHost(firstEntry)
           const timestamp = formatTimestamp(firstEntry.timestamp);
 
           return (
@@ -212,6 +218,10 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
                   <div className={styles.row}>
                     <span className={styles.label}>User:</span>
                     <span className={styles.value}>{user}</span>
+                  </div>
+                  <div className={styles.row}>
+                    <span className={styles.label}>Host:</span>
+                    <span className={styles.value}>{host}</span>
                   </div>
                   <div className={styles.row}>
                     <span className={styles.label}>Timestamp:</span>
