@@ -62,6 +62,7 @@ def index(request):
 
 def get_event_types(request):
     s = RapidNHEventType.search()
+    s = s.extra(size=40) # Allows up to 40 event types
     try:
         results  = s.execute(ignore_cache=True)
     except (TransportError, ConnectionTimeout) as err:
