@@ -102,9 +102,13 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
                   <span className={styles.statusTitle}>
                     {selectedSystem.display_name} Status:
                   </span>
-                    <StatusTag variant={selectedSystem.is_operational ? 'open' : 'error'}>
-                      {selectedSystem.is_operational ? 'Operational' : 'Maintenance'}
-                    </StatusTag>
+                  <StatusTag
+                    variant={selectedSystem.is_operational ? 'open' : 'error'}
+                  >
+                    {selectedSystem.is_operational
+                      ? 'Operational'
+                      : 'Maintenance'}
+                  </StatusTag>
                 </div>
               </div>
               <div className={styles.tableContainer}>

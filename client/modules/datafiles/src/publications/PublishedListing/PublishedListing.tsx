@@ -55,7 +55,9 @@ const columns: TableColumnsType<TPublicationListingItem> = [
         <Link to={record.projectId}>{record.title}</Link>
         <br />
         {record.type !== 'other' && (
-          <StatusTag variant="open">{projectTypeMapping[record.type]}</StatusTag>
+          <StatusTag variant="open">
+            {projectTypeMapping[record.type]}
+          </StatusTag>
         )}
         {record.dataTypes.map((t) => (
           <StatusTag variant="open" key={t}>
