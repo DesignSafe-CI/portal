@@ -89,7 +89,7 @@
   overflow: auto;
 }
 
-.statusBadge {
+/* .statusBadge {
   display: inline-flex;
   align-items: center;
   padding: 1px 5px;
@@ -99,13 +99,18 @@
   text-align: center;
 }
 
-.open {
+/* .open {
   background-color: #48a69c;
+} */
+
+/* .open {
+  background-color: #f8dca7;
+  color: black;
 }
 
 .closed {
   background-color: #eb6e6e;
-}
+} */
 
 .modalContainer {
   top: 230px;
@@ -124,3 +129,5 @@
 .modalContainer :global(.ant-modal-body) {
   padding: 0px 24px 24px 24px !important;
 }
+
+/* # F8DCA7 */

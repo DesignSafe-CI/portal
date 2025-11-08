@@ -8,6 +8,7 @@ import {
   getExecSystemsFromApp,
   getSystemDisplayName,
 } from '../../utils/apps';
+import { StatusTag } from '../../_common';
 import styles from './SystemStatusModal.module.css';
 
 interface SystemStatusModalProps {
@@ -101,17 +102,9 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
                   <span className={styles.statusTitle}>
                     {selectedSystem.display_name} Status:
                   </span>
-                  <div
-                    className={`${styles.statusBadge} ${
-                      selectedSystem.is_operational
-                        ? styles.open
-                        : styles.closed
-                    }`}
-                  >
-                    {selectedSystem.is_operational
-                      ? 'Operational'
-                      : 'Maintenance'}
-                  </div>
+                    <StatusTag variant={selectedSystem.is_operational ? 'open' : 'error'}>
+                      {selectedSystem.is_operational ? 'Operational' : 'Maintenance'}
+                    </StatusTag>
                 </div>
               </div>
               <div className={styles.tableContainer}>

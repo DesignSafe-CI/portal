@@ -32,7 +32,7 @@
   background-color: #ffffff;
 }
 
-.statusBadge {
+/* .statusBadge {
   display: inline-flex;
   align-items: center;
   padding: 1px 5px;
@@ -40,15 +40,20 @@
   border-radius: 4px;
   color: white;
   text-align: center;
-}
+} */
 
-.open {
+/* .open {
   background-color: #48a69c;
+} */
+/*
+.open {
+  background-color: #f8dca7;
+  color: black;
 }
 
 .closed {
   background-color: #eb6e6e;
-}
+} */
 
 .queueTable th {
   border-bottom: 1px solid #707070;
