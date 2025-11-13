@@ -89,29 +89,6 @@
   overflow: auto;
 }
 
-/* .statusBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 5px;
-  font-size: 11px;
-  border-radius: 4px;
-  color: white;
-  text-align: center;
-}
-
-/* .open {
-  background-color: #48a69c;
-} */
-
-/* .open {
-  background-color: #f8dca7;
-  color: black;
-}
-
-.closed {
-  background-color: #eb6e6e;
-} */
-
 .modalContainer {
   top: 230px;
 }
