@@ -237,7 +237,7 @@ export const BaseProjectForm: React.FC<{
         </Form.Item>
       )}
 
-      {projectType === 'other' && (
+      {['other', 'software'].includes(projectType ?? '') && (
         <>
           <Form.Item label="Data Types" required>
             The nature or genre of the content. Enter a custom value by typing
