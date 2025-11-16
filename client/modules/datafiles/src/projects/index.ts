@@ -10,6 +10,7 @@ export {
   BaseGithubFileListing,
 } from './ProjectGithubFileListing/ProjectGithubFileListing';
 export { ProjectNavbar } from './ProjectNavbar/ProjectNavbar';
+export { CurationInfoBanner } from './ProjectBanner/ProjectCurationBanner';
 export { ProjectPipeline } from './ProjectPipeline/ProjectPipeline';
 export { EmptyProjectFileListing } from './EmptyProjectFileListing';
 export {
