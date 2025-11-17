@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from 'antd';
-import styles from './AuditTrails.module.css';
+import styles from '../../AuditTrail.module.css';
 import { PortalAuditEntry } from '@client/hooks';
 import { Spinner } from '@client/common-components';
 

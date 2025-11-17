@@ -8,7 +8,7 @@ import { Tooltip } from 'antd';
 import AuditTrailFileTimeline from './AuditTrailFileTimeline';
 import { PortalFileAuditEntry } from '@client/hooks';
 import { Spinner } from '@client/common-components';
-import styles from './AuditTrails.module.css';
+import styles from '../../AuditTrail.module.css';
 
 interface AuditTrailFileTableProps {
   auditData: { data: PortalFileAuditEntry[] } | undefined;

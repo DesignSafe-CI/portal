@@ -9,7 +9,7 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 //not sure what would be the best thing to use here for the icons
-import styles from './AuditTrails.module.css';
+import styles from '../../AuditTrail.module.css';
 import { PortalFileAuditEntry } from '@client/hooks';
 
 type DataObj = {

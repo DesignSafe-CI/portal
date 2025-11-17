@@ -5,8 +5,8 @@ import {
   useGetPortalFileHistory,
   useGetUsernames,
 } from '@client/hooks';
-import AuditTrailSessionTable from './AuditTrailSessionTable';
-import AuditTrailFileTable from './AuditTrailFileTable';
+import AuditTrailSessionTable from './session/AuditTrailSessionTable';
+import AuditTrailFileTable from './file/AuditTrailFileTable';
 
 const AuditTrail: React.FC = () => {
   type Mode = 'user-session' | 'portal-file';

@@ -1,5 +1,5 @@
 import React from 'react';
-import AuditTrail from './AuditTrail';
+import AuditTrail from './layouts/AuditTrailLayout';
 
 import { createBrowserRouter } from 'react-router-dom';
 

@@ -167,28 +167,52 @@ def get_rename_portal_search(request, filename):
 @login_required
 def get_portal_file_combined_search(request, filename: str):
     """
-    Combined search returns merged results of upload trace and rename trace,
-    Response format: { "data": [ ...groups from upload..., ...groups from rename... ] }
+    Combined search returns upload and rename based timelines combined into one with additional fields for frontend
     """
-    bad = _validate_len_or_400(filename, "filename")
-    if bad:
-        return bad
-    combined = []
-
+    combined_groups = []
     for resp in (
         get_upload_portal_search(request, filename),
         get_rename_portal_search(request, filename),
     ):
-        try:
-            if getattr(resp, "status_code", 200) == 200:
-                payload = json.loads(resp.content or b"{}")
-                combined.extend(payload.get("data", []))
-        except ValueError:
+        payload = json.loads(resp.content)
+        combined_groups.extend(payload.get("data", []))
+
+    timelines = []
+    for idx, events in enumerate(combined_groups, start=1):
+        if not events:
             continue
 
-    return JsonResponse(
-        {"data": combined}, json_dumps_params={"indent": 2, "ensure_ascii": False}
-    )
+        first = events[0]
+        last = events[-1]
+        first_data = first.get("data")
+        first_body = first_data.get("body", {})
+        path = first_data.get("path") or first_body.get("path")
+        timeline_file_name = (first_body.get("file_name") or first_body.get("new_name")) #first item has to be upload or rename row
+
+        timelines.append(
+            {
+                "id": idx,
+                "timeline_file_name": timeline_file_name,
+                "first_appearance": first.get("timestamp"),
+                "last_activity": last.get("timestamp"),
+                "event_count": len(events),
+                "user": first.get("username"),
+                "host": first_data.get("system"),
+                "path": path,
+                "events": [
+                    {
+                        "timestamp": entry.get("timestamp"),
+                        "action": entry.get("action"),
+                        "username": entry.get("username"),
+                        "details": entry.get("data"),
+                    }
+                    for entry in events
+                ],
+            }
+        )
+
+    payload = {"file_name": filename, "timelines": timelines}
+    return JsonResponse(payload, json_dumps_params={"indent": 2, "ensure_ascii": False})
 
 
 # pylint: disable=too-many-locals,too-many-branches,too-many-statements,too-many-nested-blocks
@@ -313,7 +337,7 @@ def portal_rename_file_trace(payload: json, filename: str):
     - Find rename rows whose body.new_name matches the searched filename
     - Walk backward through renames to resolve the original name
     - Prefer upload-style grouping over all rows for that origin
-    - Fallback: build a chain using filename aliases across rename/move/trash
+    - Fallback(if not upload is found): build a chain using filename aliases across rename/move/trash
     """
 
     if isinstance(payload, dict) and "data" in payload:
