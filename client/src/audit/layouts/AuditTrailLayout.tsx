@@ -7,6 +7,7 @@ import {
 } from '@client/hooks';
 import AuditTrailSessionTable from './session/AuditTrailSessionTable';
 import AuditTrailFileTable from './file/AuditTrailFileTable';
+import { filterUsernames } from '../utils';
 
 const AuditTrail: React.FC = () => {
   type Mode = 'user-session' | 'portal-file';
@@ -28,16 +29,8 @@ const AuditTrail: React.FC = () => {
     refetch: refetchFile,
   } = useGetPortalFileHistory(query, false);
 
-  const filteredUsernames =
-    query.length > 0 && allUsernames
-      ? allUsernames
-          .filter((name) => name.toLowerCase().includes(query.toLowerCase()))
-          .slice(0, 20)
-      : [];
+  const filteredUsernames = filterUsernames(allUsernames || [], query);
 
-  const auditData = mode === 'user-session' ? portalData : fileData;
-  const auditError = mode === 'user-session' ? portalError : fileError;
-  const auditLoading = mode === 'user-session' ? portalLoading : fileLoading;
   const auditRefetch = mode === 'user-session' ? refetchPortal : refetchFile;
 
   const onSearch = (e: React.FormEvent) => {
@@ -92,25 +85,31 @@ const AuditTrail: React.FC = () => {
           )}
           <button
             type="submit"
-            disabled={auditLoading || !query.trim() || query.length > 512}
+            disabled={
+              (mode === 'user-session' ? portalLoading : fileLoading) ||
+              !query.trim() ||
+              query.length > 512
+            }
             style={{ marginLeft: '10px' }}
           >
-            {auditLoading ? 'Loading…' : 'Submit'}
+            {(mode === 'user-session' ? portalLoading : fileLoading)
+              ? 'Loading…'
+              : 'Submit'}
           </button>
         </div>
       </form>
 
       {mode === 'user-session' ? (
         <AuditTrailSessionTable
-          auditData={auditData}
-          auditError={auditError}
-          auditLoading={auditLoading}
+          auditData={portalData}
+          auditError={portalError}
+          auditLoading={portalLoading}
         />
       ) : (
         <AuditTrailFileTable
-          auditData={auditData}
-          auditError={auditError}
-          auditLoading={auditLoading}
+          auditData={fileData}
+          auditError={fileError}
+          auditLoading={fileLoading}
           searchTerm={(query || '').trim()}
         />
       )}

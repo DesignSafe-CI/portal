@@ -6,22 +6,17 @@ import {
 } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import AuditTrailFileTimeline from './AuditTrailFileTimeline';
-import { PortalFileAuditEntry } from '@client/hooks';
+import { FileHistoryResponse, Timeline } from '@client/hooks';
 import { Spinner } from '@client/common-components';
+import { formatTimestamp, getDisplayFileName } from '../../utils';
 import styles from '../../AuditTrail.module.css';
 
 interface AuditTrailFileTableProps {
-  auditData: { data: PortalFileAuditEntry[] } | undefined;
+  auditData: FileHistoryResponse | undefined;
   auditError: Error | null;
   auditLoading: boolean;
   searchTerm?: string;
 }
-
-type DataObj = {
-  path?: string;
-  system?: string;
-  body?: { file_name?: string; new_name?: string };
-};
 
 const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
   auditData,
@@ -41,94 +36,6 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
     setExpandedItems(newExpanded);
   };
 
-  //changing format to readable one
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-      month: 'numeric',
-      day: 'numeric',
-      year: '2-digit',
-    });
-  };
-
-  //getting filename to display on each dropdown menu, is "rename" row, uses body.new_name, if "upload" row, uses body.file_name
-  // if else, try to get basename from data.path, and if all fails use tracking_id as filename
-  const getFilename = (entry: PortalFileAuditEntry) => {
-    if (!entry) return 'Unknown file';
-    const action = (entry.action || '').toLowerCase();
-    const dataObj: DataObj | undefined =
-      typeof entry.data === 'string' ? undefined : (entry.data as DataObj);
-    const body = dataObj?.body;
-    if (action === 'rename' && body && body.new_name) {
-      return body.new_name;
-    }
-    if (body && body.file_name) {
-      return body.file_name;
-    }
-    const path = dataObj?.path;
-    if (typeof path === 'string' && path) {
-      const base = path.replace(/\/$/, '').split('/').pop();
-      if (base) return base;
-    }
-    //Fallback to tracking_id if nothing else
-    return entry.tracking_id || 'Unknown file';
-  };
-
-  const getFirstAppearance = (entry: PortalFileAuditEntry) => {
-    const dataObj: DataObj | undefined =
-      typeof entry.data === 'string' ? undefined : (entry.data as DataObj);
-    const rawPath = dataObj?.path;
-    if (!rawPath || typeof rawPath !== 'string') {
-      return 'Upload at (path unavailable)';
-    }
-
-    const segments = rawPath.split('/');
-    const lastSegment = segments[segments.length - 1] || '';
-    const directoryPath = lastSegment.includes('.')
-      ? segments.slice(0, -1).join('/') || '/'
-      : rawPath;
-
-    return `Upload at ${directoryPath}`;
-  };
-
-  const getUser = (entry: PortalFileAuditEntry) => {
-    return (entry && entry.username) || 'Unknown user';
-  };
-
-  const getHost = (entry: PortalFileAuditEntry) => {
-    return (entry.data as DataObj)?.system || 'Unknown system';
-  };
-
-  //picking summary entry, if row is upload and search term matches the filename(data.body.file_name) in that row, then we use that one
-  //is no upload row is found, look for rename row and search terms that matches filename (data.body.new_name) in that row, then we use that one instead
-  const pickSummaryEntry = (entries: PortalFileAuditEntry[], term?: string) => {
-    if (!entries || entries.length === 0) return undefined;
-    const lowered = (term || '').toLowerCase();
-    if (lowered) {
-      //upload search
-      const uploadHit = entries.find((e) => {
-        if ((e.action || '').toLowerCase() !== 'upload') return false;
-        const d: DataObj | undefined =
-          typeof e.data === 'string' ? undefined : (e.data as DataObj);
-        return (d?.body?.file_name || '').toLowerCase() === lowered;
-      });
-      if (uploadHit) return uploadHit;
-
-      //rename search
-      const renameHit = entries.find((e) => {
-        if ((e.action || '').toLowerCase() !== 'rename') return false;
-        const d: DataObj | undefined =
-          typeof e.data === 'string' ? undefined : (e.data as DataObj);
-        return (d?.body?.new_name || '').toLowerCase() === lowered;
-      });
-      if (renameHit) return renameHit;
-    }
-    return entries[0];
-  };
-
   if (auditLoading) {
     return <Spinner />;
   }
@@ -137,9 +44,7 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
     return <div>Error loading file table: {auditError.message}</div>;
   }
 
-  const rawData = auditData && auditData.data ? auditData.data : [];
-
-  const displayData = Array.isArray(rawData[0]) ? rawData : [];
+  const timelines = auditData?.timelines || [];
 
   return (
     <div>
@@ -165,45 +70,40 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
             <li>Red outline highlights the file name you searched for.</li>
             <li>
               Hover over filename/first appearance text for full value; use
-              “View logs” for raw data.
+              "View logs" for raw data.
             </li>
           </ul>
         </div>
       </details>
 
-      {auditData &&
-        displayData.length === 0 &&
-        !auditLoading &&
-        !auditError && <div>No file history found.</div>}
+      {auditData && timelines.length === 0 && !auditLoading && !auditError && (
+        <div>No file history found.</div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {displayData.map((fileEntries, fileIndex) => {
-          const entriesArr = Array.isArray(fileEntries)
-            ? fileEntries
-            : [fileEntries];
-          const firstEntry =
-            pickSummaryEntry(
-              entriesArr as PortalFileAuditEntry[],
-              searchTerm
-            ) || (entriesArr[0] as PortalFileAuditEntry);
-          const isExpanded = expandedItems.has(fileIndex);
-          const filename = getFilename(firstEntry);
-          const firstAppearance = getFirstAppearance(firstEntry);
-          const user = getUser(firstEntry);
-          const host = getHost(firstEntry)
-          const timestamp = formatTimestamp(firstEntry.timestamp);
+        {timelines.map((timeline: Timeline) => {
+          const isExpanded = expandedItems.has(timeline.id);
+          const firstAppearance = `Upload at ${
+            timeline.path || '(path unavailable)'
+          }`;
+          const timestamp = formatTimestamp(timeline.first_appearance);
 
           return (
-            <div key={fileIndex}>
+            <div key={timeline.id}>
               {/* summary box clickable */}
               <div
                 className={styles.summaryBox}
-                onClick={() => toggleExpanded(fileIndex)}
+                onClick={() => toggleExpanded(timeline.id)}
               >
                 {/* filename on the left for each summary box */}
                 <div className={styles.filenameSummaryBox}>
-                  <Tooltip title={filename} placement="top">
-                    <span className={styles.clip}>{filename}</span>
+                  <Tooltip
+                    title={getDisplayFileName(timeline, searchTerm)}
+                    placement="top"
+                  >
+                    <span className={styles.clip}>
+                      {getDisplayFileName(timeline, searchTerm)}
+                    </span>
                   </Tooltip>
                 </div>
 
@@ -217,11 +117,11 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
                   </div>
                   <div className={styles.row}>
                     <span className={styles.label}>User:</span>
-                    <span className={styles.value}>{user}</span>
+                    <span className={styles.value}>{timeline.user}</span>
                   </div>
                   <div className={styles.row}>
                     <span className={styles.label}>Host:</span>
-                    <span className={styles.value}>{host}</span>
+                    <span className={styles.value}>{timeline.host}</span>
                   </div>
                   <div className={styles.row}>
                     <span className={styles.label}>Timestamp:</span>
@@ -243,10 +143,8 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
               {isExpanded && (
                 <div style={{ marginTop: '10px' }}>
                   <AuditTrailFileTimeline
-                    operations={
-                      Array.isArray(fileEntries) ? fileEntries : [fileEntries]
-                    }
-                    filename={filename}
+                    operations={timeline.events}
+                    filename={getDisplayFileName(timeline, searchTerm)}
                     searchTerm={searchTerm}
                   />
                 </div>

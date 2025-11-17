@@ -8,22 +8,16 @@ import {
   ArrowRightOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-//not sure what would be the best thing to use here for the icons
 import styles from '../../AuditTrail.module.css';
-import { PortalFileAuditEntry } from '@client/hooks';
-
-type DataObj = {
-  path?: string;
-  body?: {
-    file_name?: string;
-    new_name?: string;
-    dest_path?: string;
-    trash_path?: string;
-  };
-};
+import { TimelineEvent } from '@client/hooks';
+import {
+  formatTimestamp,
+  getActionDetails,
+  isHighlightOperation,
+} from '../../utils';
 
 interface TimelineProps {
-  operations: PortalFileAuditEntry[];
+  operations: TimelineEvent[];
   filename: string;
   searchTerm?: string;
 }
@@ -35,19 +29,6 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
-
-  //using in filetable as well, maybe move to another file?
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-      month: 'numeric',
-      day: 'numeric',
-      year: '2-digit',
-    });
-  };
 
   const getActionIcon = (action: string) => {
     switch (action.toLowerCase()) {
@@ -62,48 +43,12 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
       case 'delete':
       case 'trash':
         return <DeleteOutlined className={styles.icon} />;
-      default: //don't think I need because all actions possible in query are already accounted for
+      default:
         return <ArrowRightOutlined className={styles.icon} />;
     }
   };
 
-  const getActionDetails = (operation: PortalFileAuditEntry) => {
-    const { action } = operation;
-    const dataObj: DataObj | undefined =
-      typeof operation.data === 'string'
-        ? undefined
-        : (operation.data as DataObj);
-
-    switch (action.toLowerCase()) {
-      case 'upload':
-        return {
-          source: 'N/A',
-          destination: dataObj?.path || 'N/A',
-        };
-      case 'rename':
-        return {
-          source: dataObj?.path || 'N/A',
-          destination: dataObj?.body?.new_name || 'N/A',
-        };
-      case 'move':
-        return {
-          source: dataObj?.path || 'N/A',
-          destination: dataObj?.body?.dest_path || 'N/A',
-        };
-      case 'trash':
-        return {
-          source: dataObj?.path || 'N/A',
-          destination: dataObj?.body?.trash_path || 'N/A',
-        };
-      default:
-        return {
-          source: 'Unknown',
-          destination: 'Unknown',
-        };
-    }
-  };
-
-  const handleViewLogs = (operation: PortalFileAuditEntry) => {
+  const handleViewLogs = (operation: TimelineEvent) => {
     setModalContent(JSON.stringify(operation, null, 2));
     setModalOpen(true);
   };
@@ -111,25 +56,6 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
   const handleModalClose = () => {
     setModalOpen(false);
     setModalContent('');
-  };
-
-  const isHighlightOperation = (operation: PortalFileAuditEntry): boolean => {
-    const term = (searchTerm || '').toLowerCase();
-    if (!term) return false;
-    const action = (operation?.action || '').toLowerCase();
-    const body =
-      typeof operation.data === 'string'
-        ? {}
-        : (operation.data as DataObj).body || {};
-    if (action === 'upload') {
-      const fileName = (body?.file_name || '').toLowerCase();
-      return fileName === term;
-    }
-    if (action === 'rename') {
-      const newName = (body?.new_name || '').toLowerCase();
-      return newName === term;
-    }
-    return false;
   };
 
   return (
@@ -175,7 +101,7 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
                 ></div>
                 {/* Operation Node */}
                 {(() => {
-                  const highlight = isHighlightOperation(operation);
+                  const highlight = isHighlightOperation(operation, searchTerm);
                   return (
                     <div
                       className={styles.node}
