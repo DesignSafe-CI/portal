@@ -292,7 +292,7 @@ def format_hyb_sim(hyb_sim):
         if work['type'] == 'Linked Project':
             part_of.append(work_val)
         
-        if work['type'] == 'Linked Dataset':
+        if work['type'] == 'Linked Dataset or Software':
             part_of.append(work_val)
 
         if work['type'] == 'Context':

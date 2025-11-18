@@ -111,7 +111,7 @@ class AssociatedProject(MetadataModel):
     """model for associated projects."""
 
     # only title guaranteed
-    type: str = "Linked Dataset"
+    type: str = "Linked Dataset or Software"
     title: str
     href: Optional[str] = ""
     href_type: str = "URL"
@@ -122,7 +122,7 @@ class AssociatedProject(MetadataModel):
     doi: str = ""
 
     def to_fedora_json(self) -> dict:
-        if self.type == "Linked Dataset":
+        if self.type == "Linked Dataset or Software":
             return {"isPartOf": f"{self.title} ({self.href})"}
         if self.type == "Context":
             return {"references": f"{self.title} ({self.href})"}
