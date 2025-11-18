@@ -4,14 +4,15 @@ import { usePublicationDetail } from '@client/hooks';
 
 export const VersionChangesModal: React.FC<{
   projectId: string;
+  doi: string;
   version: number;
-}> = ({ projectId, version }) => {
+}> = ({ projectId, doi, version }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data } = usePublicationDetail(projectId);
 
   const versionedPubs = data?.tree.children.filter(
-    (c) => c.version === version
+    (c) => c.version === version && c.value.dois?.[0] === doi
   );
 
   const versionDate =

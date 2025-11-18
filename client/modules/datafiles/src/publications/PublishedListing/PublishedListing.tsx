@@ -2,6 +2,7 @@ import { TPublicationListingItem, usePublishedListing } from '@client/hooks';
 import { Alert, Button, Modal, Table, TableColumnsType, Tag } from 'antd';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { StatusTag } from '@client/workspace';
 
 const PublishedDescriptionModal: React.FC<{
   title: string;
@@ -54,12 +55,14 @@ const columns: TableColumnsType<TPublicationListingItem> = [
         <Link to={record.projectId}>{record.title}</Link>
         <br />
         {record.type !== 'other' && (
-          <Tag color="#337ab7">{projectTypeMapping[record.type]}</Tag>
+          <StatusTag variant="open">
+            {projectTypeMapping[record.type]}
+          </StatusTag>
         )}
         {record.dataTypes.map((t) => (
-          <Tag color="#337ab7" key={t}>
+          <StatusTag variant="open" key={t}>
             {t}
-          </Tag>
+          </StatusTag>
         ))}
       </>
     ),
