@@ -39,19 +39,6 @@ export const ProjectDetailLayout: React.FC = () => {
   const { user } = useAuthenticatedUser();
   const { projectId } = useParams();
   const { data, isError } = useProjectDetail(projectId ?? '');
-  if (isError) {
-    return (
-      <Layout>
-        <Alert
-          showIcon
-          type="error"
-          style={{ marginTop: '16px', color: '#d9534f', textAlign: 'center' }}
-          description={'There was an error fetching this project.'}
-        />
-      </Layout>
-    );
-  }
-
   if (!user)
     return (
       <Layout>
@@ -66,6 +53,19 @@ export const ProjectDetailLayout: React.FC = () => {
         />
       </Layout>
     );
+
+  if (isError) {
+    return (
+      <Layout>
+        <Alert
+          showIcon
+          type="error"
+          style={{ marginTop: '16px', color: '#d9534f', textAlign: 'center' }}
+          description={'There was an error fetching this project.'}
+        />
+      </Layout>
+    );
+  }
 
   if (!data || !projectId)
     return (
