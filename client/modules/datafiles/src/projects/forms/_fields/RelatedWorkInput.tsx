@@ -27,7 +27,7 @@ export const RelatedWorkInput: React.FC<{ name: string | string[] }> = ({
                     options={[
                       { value: 'Context', label: 'Context' },
                       {
-                        value: 'Linked Dataset or Software',
+                        value: 'Linked Dataset',
                         label: 'Linked Dataset or Software',
                       },
                       { value: 'Cited By', label: 'Cited By' },

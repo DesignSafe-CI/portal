@@ -213,7 +213,7 @@ def format_sim(sim):
         if work['type'] == 'Linked Project':
             part_of.append(work_val)
         
-        if work['type'] == 'Linked Dataset or Software':
+        if work['type'] == 'Linked Dataset':
             part_of.append(work_val)
 
         if work['type'] == 'Context':

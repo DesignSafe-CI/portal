@@ -176,7 +176,7 @@ def get_datacite_json(
     datacite_json["relatedIdentifiers"] = []
     relation_mapping = {
         "Linked Project": "IsPartOf",
-        "Linked Dataset or Software": "IsPartOf",
+        "Linked Dataset": "IsPartOf",
         "Cited By": "IsCitedBy",
         "Context": "IsDocumentedBy",
     }
