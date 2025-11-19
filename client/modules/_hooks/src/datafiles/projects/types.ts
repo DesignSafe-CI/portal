@@ -21,7 +21,7 @@ export type TReferencedWork = {
 };
 
 export type TAssociatedProject = {
-  type: 'Context' | 'Linked Dataset or Software' | 'Cited By';
+  type: 'Context' | 'Linked Dataset' | 'Cited By';
   title: string;
   href: string;
   hrefType: 'doi' | 'url';
