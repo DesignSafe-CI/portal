@@ -12,6 +12,7 @@ export const fileFixtures = {
     lastModified: '2024-10-03T19:44:11Z',
     length: 10000,
     permissions: 'READ',
+    isPreviewable: true,
   } as TFileListing,
 
   anotherTxtFile: {
@@ -24,6 +25,7 @@ export const fileFixtures = {
     lastModified: '2024-10-03T19:44:11Z',
     length: 10000,
     permissions: 'READ',
+    isPreviewable: true,
   } as TFileListing,
 
   hazmapperFile: {
@@ -36,6 +38,7 @@ export const fileFixtures = {
     lastModified: '2024-10-04T00:50:22Z',
     length: 100,
     permissions: 'READ',
+    isPreviewable: true,
   } as TFileListing,
 
   subDirectory: {

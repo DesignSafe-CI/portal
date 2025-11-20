@@ -118,13 +118,14 @@ const ExperimentFormFields: React.FC<{
       )}
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -260,13 +261,14 @@ const SimulationFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -402,13 +404,14 @@ const HybridSimFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -553,13 +556,14 @@ const MissionFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -701,13 +705,14 @@ const DocumentFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
