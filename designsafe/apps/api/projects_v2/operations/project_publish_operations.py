@@ -40,6 +40,7 @@ from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
 from designsafe.libs.common.context_managers import AsyncTaskContext
+from designsafe.apps.api.ai_keywords.utils import add_publications_to_chroma
 
 logger = logging.getLogger(__name__)
 
@@ -614,9 +615,10 @@ def publish_project_async(
     version_info: Optional[str] = None,
     dry_run: bool = False,
 ):
-    """Async wrapper arount publication"""
+    """Async wrapper around publication"""
     with AsyncTaskContext():
-        publish_project(project_id, entity_uuids, version, version_info, dry_run)
+        meta = publish_project(project_id, entity_uuids, version, version_info, dry_run)
+        add_publications_to_chroma(publications=[meta])
 
 
 def amend_publication(project_id: str):
