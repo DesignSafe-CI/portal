@@ -79,7 +79,7 @@ class RAG:
     - Think like a user: choose terms someone would actually type (hazard type, method, region).
     - Include technology or problem addressed, and the purpose of the data.
     - Repeat important words from your title/description to boost discoverability.
-    - Rank by frequency among other existing projects, by similarity or synonym to the words in the project title and project description; proper nouns carry less weight.
+    - Rank by frequency among other existing projects, by similarity or synonym to the words in the project title, project description, and "nhTypes" field in the metadata object of the retrieved context; proper nouns carry less weight.
     - Do not include proper nouns (e.g. specific names of people, places, or events) unless directly referenced in the provided title or description.
 
     Question: {question}
