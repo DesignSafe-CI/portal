@@ -5,8 +5,6 @@ from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from designsafe.libs.elasticsearch.utils import new_es_client
 from django.contrib.auth import get_user_model
 from elasticsearch_dsl import Q
-import os
-import requests
 import datetime
 import json
 import urllib
@@ -256,42 +254,3 @@ def initilize_publication(publication, status='publishing', revision=None, revis
         # Refresh index so that search works in subsequent pipeline operations.
         IndexedPublication._index.refresh(using=es_client)
         return pub
-
-def clarivate_single_api(doi):
-
-    base_url = 'https://api.clarivate.com/apis/wos-starter/v1/documents'
-    apikey = os.environ.get('WOS_APIKEY')
-    
-    if not apikey:
-        return {"error": "Clarivate API key is missing"}
-
-    if not doi:
-        return {"error": "DOI is required"}
-
-    params = {'db': 'DRCI', 'q': f"DO={doi}"}
-    
-    try:
-        response = requests.get(
-            base_url,
-            headers={'X-Apikey': apikey},
-            params=params
-        )
-        response.raise_for_status()
-        rspdict = response.json()
-
-        citations = sum(
-            source['count']
-            for source in rspdict['hits'][0]['citations']
-            if source['db'] in ('WOK', 'PPRN')
-        )
-
-        return citations
-
-    except requests.exceptions.RequestException as e:
-        return {
-            "error": str(e),
-        }
-    except (KeyError, IndexError) as e:
-        return {
-            "error": "Unexpected response format",
-        }

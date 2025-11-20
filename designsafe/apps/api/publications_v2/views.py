@@ -7,6 +7,7 @@ from django.http import HttpRequest, JsonResponse
 from designsafe.apps.api.views import BaseApiView, ApiException
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import IndexedPublication
+from designsafe.apps.api.publications_v2.operations.clarivate import clarivate_single_api
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     publish_project_async,
     amend_publication_async,
@@ -220,6 +221,22 @@ class PublicationListingView(BaseApiView):
             for pub in publications
         ]
         return JsonResponse({"result": result, "total": total})
+
+
+class PublicationClarivateView(BaseApiView):
+    """API endpoint to retrieve Clarivate citation count for a single DOI."""
+
+    def get(self, request: HttpRequest):
+        doi = request.GET.get("doi", "")
+
+        if not doi:
+            return JsonResponse({"error": "DOI parameter is required"}, status=400)
+
+        try:
+            citations = clarivate_single_api(doi)
+            return JsonResponse({"doi": doi, "citation_count": citations})
+        except Exception as exc:  # pragma: no cover - passthrough error handling
+            return JsonResponse({"error": str(exc)}, status=500)
 
 
 class PublicationDetailView(BaseApiView):

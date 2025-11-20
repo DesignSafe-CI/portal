@@ -4,7 +4,6 @@ from designsafe.apps.api.agave import get_service_account_client
 from django.conf import settings
 from requests.exceptions import HTTPError
 from designsafe.apps.api.publications import operations
-from designsafe.apps.api.publications.operations import clarivate_single_api
 from designsafe.apps.projects.managers import datacite as DataciteManager
 from django.utils.decorators import method_decorator
 import json
@@ -71,22 +70,5 @@ class PublicationDataCiteEventsView(BaseApiView):
             response.raise_for_status()  
             events = response.json()     
             return JsonResponse(events)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-        
-"""
-API endpoint to retrieve Clarivate citation count for a single DOI.
-"""
-
-class PublicationClarivateView(BaseApiView):
-    def get(self, request):
-        doi = request.GET.get('doi', '')
-
-        if not doi:
-            return JsonResponse({'error': 'DOI parameter is required'}, status=400)
-
-        try:
-            citations = clarivate_single_api(doi)
-            return JsonResponse({'doi': doi, 'citation_count': citations})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
