@@ -323,7 +323,10 @@ export const BaseProjectDetails: React.FC<{
               <td style={{ fontWeight: 'bold' }}>
                 {projectValue.associatedProjects.map((assoc) => (
                   <div key={JSON.stringify(assoc)}>
-                    {assoc.type} |{' '}
+                    {assoc.type === 'Linked Dataset'
+                      ? 'Linked Dataset or Software'
+                      : assoc.type}{' '}
+                    |{' '}
                     <a
                       href={assoc.href}
                       rel="noopener noreferrer"

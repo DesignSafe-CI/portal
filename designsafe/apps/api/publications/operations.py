@@ -279,10 +279,11 @@ def clarivate_single_api(doi):
         response.raise_for_status()
         rspdict = response.json()
 
-        citations = [
-            source['count'] for source in rspdict['hits'][0]['citations']
-            if source['db'] == 'WOK'
-        ][0]
+        citations = sum(
+            source['count']
+            for source in rspdict['hits'][0]['citations']
+            if source['db'] in ('WOK', 'PPRN')
+        )
 
         return citations
 
