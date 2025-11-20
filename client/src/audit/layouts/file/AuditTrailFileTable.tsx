@@ -9,6 +9,7 @@ import AuditTrailFileTimeline from './AuditTrailFileTimeline';
 import { FileHistoryResponse, Timeline } from '@client/hooks';
 import { Spinner } from '@client/common-components';
 import { formatTimestamp, getDisplayFileName } from '../../utils';
+import { FileSearchFilters } from './FileSearchFilter';
 import styles from '../../AuditTrail.module.css';
 
 interface AuditTrailFileTableProps {
@@ -16,6 +17,8 @@ interface AuditTrailFileTableProps {
   auditError: Error | null;
   auditLoading: boolean;
   searchTerm?: string;
+  usernameFilter: string | null;
+  onUsernameFilterChange: (username: string | null) => void;
 }
 
 const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
@@ -23,8 +26,11 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
   auditError,
   auditLoading,
   searchTerm,
+  usernameFilter,
+  onUsernameFilterChange,
 }) => {
   const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
+  const [showFilters, setShowFilters] = useState(false);
 
   const toggleExpanded = (index: number) => {
     const newExpanded = new Set(expandedItems);
@@ -48,6 +54,12 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
 
   return (
     <div>
+      <FileSearchFilters
+        username={usernameFilter}
+        onUsernameChange={onUsernameFilterChange}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+      />
       <h3>File History</h3>
 
       <details style={{ marginBottom: '15px', color: 'gray' }}>

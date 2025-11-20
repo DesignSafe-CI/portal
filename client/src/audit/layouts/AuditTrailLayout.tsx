@@ -13,6 +13,7 @@ const AuditTrail: React.FC = () => {
   type Mode = 'user-session' | 'portal-file';
   const [query, setQuery] = useState('');
   const [mode, setMode] = useState<Mode>('user-session');
+  const [usernameFilter, setUsernameFilter] = useState<string | null>(null);
 
   const { data: allUsernames } = useGetUsernames();
   const {
@@ -27,7 +28,7 @@ const AuditTrail: React.FC = () => {
     error: fileError,
     isLoading: fileLoading,
     refetch: refetchFile,
-  } = useGetPortalFileHistory(query, false);
+  } = useGetPortalFileHistory(query, false, usernameFilter);
 
   const filteredUsernames = filterUsernames(allUsernames || [], query);
 
@@ -56,6 +57,7 @@ const AuditTrail: React.FC = () => {
             onChange={(e) => {
               setMode(e.target.value as Mode);
               setQuery('');
+              setUsernameFilter(null);
             }}
             style={{ marginRight: 8 }}
           >
@@ -111,6 +113,8 @@ const AuditTrail: React.FC = () => {
           auditError={fileError}
           auditLoading={fileLoading}
           searchTerm={(query || '').trim()}
+          usernameFilter={usernameFilter}
+          onUsernameFilterChange={setUsernameFilter}
         />
       )}
     </div>

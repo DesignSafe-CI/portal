@@ -67,9 +67,10 @@ def get_portal_session_audit_search(request, username):
 
 
 @login_required
-def get_upload_portal_search(request, filename):
+def get_upload_portal_search(request, filename, username=None):
     """
     Fetches audit records given filename under "upload" action from portal audit database
+    Optionally filters by username if provided
     """
     try:
         bad = _validate_len_or_400(filename, "filename")
@@ -78,21 +79,38 @@ def get_upload_portal_search(request, filename):
         audit_db = connections["audit"]
         cursor = audit_db.cursor()
 
-        query = """
-        WITH upload_ids AS (
-        SELECT DISTINCT tracking_id
-        FROM public.portal_audit
-        WHERE lower(action) = 'upload'
-            AND lower(data->'body'->>'file_name') = lower(%s)
-        )
-        SELECT timestamp, portal, username, action, tracking_id, data
-        FROM public.portal_audit
-        WHERE tracking_id IN (SELECT tracking_id FROM upload_ids)
-        AND lower(action) IN ('upload','rename','move', 'trash')
-        ORDER BY timestamp ASC, tracking_id ASC;
-        """
-
-        cursor.execute(query, [filename])
+        if username:
+            query = """
+            WITH upload_ids AS (
+            SELECT DISTINCT tracking_id
+            FROM public.portal_audit
+            WHERE lower(action) = 'upload'
+                AND lower(data->'body'->>'file_name') = lower(%s)
+                AND username = %s
+            )
+            SELECT timestamp, portal, username, action, tracking_id, data
+            FROM public.portal_audit
+            WHERE tracking_id IN (SELECT tracking_id FROM upload_ids)
+            AND lower(action) IN ('upload','rename','move', 'trash')
+            AND username = %s
+            ORDER BY timestamp ASC, tracking_id ASC;
+            """
+            cursor.execute(query, [filename, username, username])
+        else:
+            query = """
+            WITH upload_ids AS (
+            SELECT DISTINCT tracking_id
+            FROM public.portal_audit
+            WHERE lower(action) = 'upload'
+                AND lower(data->'body'->>'file_name') = lower(%s)
+            )
+            SELECT timestamp, portal, username, action, tracking_id, data
+            FROM public.portal_audit
+            WHERE tracking_id IN (SELECT tracking_id FROM upload_ids)
+            AND lower(action) IN ('upload','rename','move', 'trash')
+            ORDER BY timestamp ASC, tracking_id ASC;
+            """
+            cursor.execute(query, [filename])
         columns = [col[0] for col in cursor.description]
         results = [dict(zip(columns, row)) for row in cursor.fetchall()]
         cursor.close()
@@ -116,9 +134,10 @@ def get_upload_portal_search(request, filename):
 
 
 @login_required
-def get_rename_portal_search(request, filename):
+def get_rename_portal_search(request, filename, username=None):
     """
     Fetches audit records given filename under "rename" action from portal audit database
+    Optionally filters by username if provided
     """
     try:
         bad = _validate_len_or_400(filename, "filename")
@@ -127,21 +146,38 @@ def get_rename_portal_search(request, filename):
         audit_db = connections["audit"]
         cursor = audit_db.cursor()
 
-        query = """
-        WITH rename_ids AS (
-        SELECT DISTINCT tracking_id
-        FROM public.portal_audit
-        WHERE lower(action) = 'rename'
-            AND lower(data->'body'->>'new_name') = lower(%s)
-        )
-        SELECT timestamp, portal, username, action, tracking_id, data
-        FROM public.portal_audit
-        WHERE tracking_id IN (SELECT tracking_id FROM rename_ids)
-        AND lower(action) IN ('upload','rename','move', 'trash')
-        ORDER BY timestamp ASC, tracking_id ASC;
-        """
-
-        cursor.execute(query, [filename])
+        if username:
+            query = """
+            WITH rename_ids AS (
+            SELECT DISTINCT tracking_id
+            FROM public.portal_audit
+            WHERE lower(action) = 'rename'
+                AND lower(data->'body'->>'new_name') = lower(%s)
+                AND username = %s
+            )
+            SELECT timestamp, portal, username, action, tracking_id, data
+            FROM public.portal_audit
+            WHERE tracking_id IN (SELECT tracking_id FROM rename_ids)
+            AND lower(action) IN ('upload','rename','move', 'trash')
+            AND username = %s
+            ORDER BY timestamp ASC, tracking_id ASC;
+            """
+            cursor.execute(query, [filename, username, username])
+        else:
+            query = """
+            WITH rename_ids AS (
+            SELECT DISTINCT tracking_id
+            FROM public.portal_audit
+            WHERE lower(action) = 'rename'
+                AND lower(data->'body'->>'new_name') = lower(%s)
+            )
+            SELECT timestamp, portal, username, action, tracking_id, data
+            FROM public.portal_audit
+            WHERE tracking_id IN (SELECT tracking_id FROM rename_ids)
+            AND lower(action) IN ('upload','rename','move', 'trash')
+            ORDER BY timestamp ASC, tracking_id ASC;
+            """
+            cursor.execute(query, [filename])
         columns = [col[0] for col in cursor.description]
         results = [dict(zip(columns, row)) for row in cursor.fetchall()]
         cursor.close()
@@ -168,11 +204,14 @@ def get_rename_portal_search(request, filename):
 def get_portal_file_combined_search(request, filename: str):
     """
     Combined search returns upload and rename based timelines combined into one with additional fields for frontend
+    Optionally filters by username if provided as query parameter
     """
+    username = request.GET.get("username", "").strip() or None
+
     combined_groups = []
     for resp in (
-        get_upload_portal_search(request, filename),
-        get_rename_portal_search(request, filename),
+        get_upload_portal_search(request, filename, username),
+        get_rename_portal_search(request, filename, username),
     ):
         payload = json.loads(resp.content)
         combined_groups.extend(payload.get("data", []))
