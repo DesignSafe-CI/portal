@@ -102,14 +102,6 @@ export const PreviewContent: TPreviewContent = ({
       }
       break;
     default:
-      return (
-        <Alert
-          style={{ marginTop: '25px' }}
-          type="warning"
-          showIcon
-          message="Unsupported File Type"
-          description="Preview for this item is not supported."
-        />
-      );
+      return null;
   }
 };
