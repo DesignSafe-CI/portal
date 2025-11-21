@@ -82,7 +82,7 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
         {
           key: 'welcome',
           content:
-            'Hello! I can help you search and understand publications and documentation. What would you like to know?',
+            'Hello! I can help you search and understand DesignSafe publications and documentation. What would you like to know?',
           role: 'assistant',
           timestamp: Date.now(),
         },
@@ -233,7 +233,7 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
       >
         <Sender
           onSubmit={handleSendMessage}
-          placeholder="Ask me anything about publications and documentation..."
+          placeholder="Ask me anything about DesignSafe publications and documentation..."
           loading={loading}
           disabled={loading}
           value={inputValue}
