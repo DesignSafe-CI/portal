@@ -187,7 +187,7 @@ export const BaseProjectDetails: React.FC<{
         style={{ width: '100%', marginBottom: '20px', borderSpacing: '200px' }}
       >
         <colgroup>
-          <col style={{ width: '200px' }} />
+          <col style={{ width: '220px' }} />
           <col />
         </colgroup>
         <tbody>
@@ -323,7 +323,10 @@ export const BaseProjectDetails: React.FC<{
               <td style={{ fontWeight: 'bold' }}>
                 {projectValue.associatedProjects.map((assoc) => (
                   <div key={JSON.stringify(assoc)}>
-                    {assoc.type} |{' '}
+                    {assoc.type === 'Linked Dataset'
+                      ? 'Linked Dataset or Software'
+                      : assoc.type}{' '}
+                    |{' '}
                     <a
                       href={assoc.href}
                       rel="noopener noreferrer"
@@ -410,26 +413,29 @@ export const BaseProjectDetails: React.FC<{
               </tr>
             )}
 
-          {versions && versions.length > 1 && (
-            <tr className={styles['prj-row']}>
-              <td>Version</td>
-              <td style={{ fontWeight: 'bold' }}>
-                <Select
-                  style={{ width: '200px' }}
-                  size="small"
-                  options={versions.map((v) => ({ value: v, label: v }))}
-                  value={currentVersion}
-                  onChange={(newVal) => setSelectedVersion(newVal)}
-                />{' '}
-                {currentVersion > 1 && (
-                  <VersionChangesModal
-                    projectId={projectValue.projectId}
-                    version={currentVersion}
-                  />
-                )}
-              </td>
-            </tr>
-          )}
+          {versions &&
+            versions.length > 1 &&
+            ['other', 'software'].includes(projectValue.projectType) && (
+              <tr className={styles['prj-row']}>
+                <td>Version</td>
+                <td style={{ fontWeight: 'bold' }}>
+                  <Select
+                    style={{ width: '200px' }}
+                    size="small"
+                    options={versions.map((v) => ({ value: v, label: v }))}
+                    value={currentVersion}
+                    onChange={(newVal) => setSelectedVersion(newVal)}
+                  />{' '}
+                  {currentVersion > 1 && (
+                    <VersionChangesModal
+                      projectId={projectValue.projectId}
+                      doi={projectValue.dois?.[0]}
+                      version={currentVersion}
+                    />
+                  )}
+                </td>
+              </tr>
+            )}
         </tbody>
       </table>
 
