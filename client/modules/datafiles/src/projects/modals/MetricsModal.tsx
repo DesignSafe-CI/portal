@@ -507,7 +507,7 @@ const MetricsModalBody: React.FC<{
             >
               Why is this citation list longer than the citation count figure
               DesignSafe reports? In most cases, this is due to duplicate
-              citations in this list. 
+              citations in this list.
             </Text>
           ) : null}
         </div>
