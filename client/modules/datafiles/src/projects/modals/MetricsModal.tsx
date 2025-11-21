@@ -181,6 +181,12 @@ const MetricsModalBody: React.FC<{
       ? clarivateCount
       : clarivateCitations?.length ?? 0;
 
+  const listExceedsCount =
+    clarivateCitations.length >
+    (typeof clarivateCount === 'number'
+      ? clarivateCount
+      : clarivateCitations.length);
+
   const uniqueInvestigations =
     usageMetricsData?.data?.attributes?.viewCount ?? 0;
   const uniqueRequests = usageMetricsData?.data?.attributes?.downloadCount ?? 0;
@@ -491,6 +497,19 @@ const MetricsModalBody: React.FC<{
               </li>
             ))}
           </ol>
+          {listExceedsCount ? (
+            <Text
+              type="secondary"
+              style={{
+                display: 'block',
+                marginTop: 8,
+              }}
+            >
+              Why is this citation list longer than the citation count figure
+              DesignSafe reports? In most cases, this is due to duplicate
+              citations in this list. 
+            </Text>
+          ) : null}
         </div>
       ) : (
         <Text type="secondary">No citations found.</Text>
