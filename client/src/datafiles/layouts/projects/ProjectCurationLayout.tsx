@@ -2,6 +2,7 @@ import {
   ManageCategoryModal,
   ManagePublishableEntityModal,
   ProjectCurationFileListing,
+  ProjectGithubTransfer,
   ProjectNavbar,
   RelateDataModal,
 } from '@client/datafiles';
@@ -139,7 +140,9 @@ export const ProjectCurationLayout: React.FC = () => {
         }}
       >
         <ProjectNavbar projectId={projectId} />
-        {data.baseProject.value.projectType !== 'other' && (
+        {!['other', 'software'].includes(
+          data.baseProject.value.projectType
+        ) && (
           <span
             style={{
               display: 'flex',
@@ -191,7 +194,13 @@ export const ProjectCurationLayout: React.FC = () => {
           );
         }}
       />
-      <ProjectCurationFileListing projectId={projectId} path={path ?? ''} />
+      {data.baseProject.value.projectType !== 'software' && (
+        <ProjectCurationFileListing projectId={projectId} path={path ?? ''} />
+      )}
+
+      {data.baseProject.value.projectType === 'software' && (
+        <ProjectGithubTransfer projectId={projectId} />
+      )}
     </div>
   );
 };
