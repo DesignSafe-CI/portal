@@ -100,12 +100,12 @@ if (navAiElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <AIChatButton />
-      </ConfigProvider>
+        </ConfigProvider>
       </QueryClientProvider>
-      </StrictMode>
-  )
+    </StrictMode>
+  );
 }
-        
+
 const reconElement = document.getElementById('recon-root');
 if (reconElement) {
   const reconRoot = ReactDOM.createRoot(reconElement as HTMLElement);
