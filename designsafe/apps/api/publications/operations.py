@@ -279,12 +279,13 @@ def clarivate_single_api(doi: str) -> int:
         citations = hits[0].get('citations') or []
         if not isinstance(citations, list):
             return 0
+        total = 0
         for src in citations:
             db = (src or {}).get('db')
             cnt = (src or {}).get('count')
-            if db in ('WOS', 'WOK') and isinstance(cnt, (int, float)):
-                return int(cnt)
-        return 0
+            if db in ('WOK', 'PPRN') and isinstance(cnt, (int, float)):
+                total += int(cnt)
+        return total
     except Exception:
         return 0
     
@@ -373,7 +374,7 @@ def clarivate_wos_exp_single_api_basic(doi: str, debug: dict | None = None) -> d
         raise RuntimeError("Could not resolve UID for DOI")
 
     last = None
-    for db in ("WOS", "WOK"):
+    for db in ("WOK",):
         r = _wos_get("/citing", params={"databaseId": db, "uniqueId": uid, "count": 100}, timeout=12)
         if debug is not None:
             debug.setdefault("citing_attempts", []).append({"db": db, "status": r.status_code, "body_snippet": r.text[:200]})
@@ -445,6 +446,12 @@ def build_citation_json(citeresponse: dict) -> list[dict]:
         for rec in recs:
             if not isinstance(rec, dict):
                 continue
+
+            uid = rec.get('UID')
+            if isinstance(uid, str):
+                src_db = uid.split(':', 1)[0]
+                if src_db == 'GCI':
+                    continue
 
             # identifiers → citing DOI
             ids = ((((rec.get('dynamic_data') or {})
