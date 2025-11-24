@@ -8,7 +8,7 @@ import datafilesRouter from './datafiles/datafilesRouter';
 import reconportalRouter from './reconportal/reconportalRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
-import { AIChatButton } from '../modules/workspace/src/AISearch/AIChatButton';
+import { AIChatButton } from '@client/workspace';
 
 const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
