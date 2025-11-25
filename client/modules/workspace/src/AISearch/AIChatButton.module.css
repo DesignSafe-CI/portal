@@ -5,3 +5,8 @@
   box-shadow: 0 0 0 2px #47a59d, 0 0 8px rgba(71, 165, 157, 0.3) !important;
   color: white !important;
 }
+
+.drawer :global(.ant-drawer-content-wrapper) {
+  left: 25%;
+  width: 50%;
+}
