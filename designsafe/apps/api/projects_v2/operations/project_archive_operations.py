@@ -6,6 +6,8 @@ import os
 import json
 import logging
 from typing import Optional
+import requests
+from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from celery import shared_task
 from designsafe.libs.common.context_managers import AsyncTaskContext
@@ -37,6 +39,18 @@ def archive(project_id: str, *args, **kwargs):
             logger.exception("Failed to create metadata!")
 
     create_metadata()
+
+
+def ranch_archive_webhook(project_id: str):
+    """Submit a webhook request to Jenkisn to trigger archiving of a publication to Ranch."""
+    auth = HTTPBasicAuth(settings.JENKINS_WH_USER, settings.JENKINS_WH_TOKEN)
+    req = requests.post(
+        settings.JENKINS_WH_URL,
+        auth=auth,
+        params={"PROJECT_ID": project_id},
+        timeout=30,
+    )
+    req.raise_for_status()
 
 
 @shared_task

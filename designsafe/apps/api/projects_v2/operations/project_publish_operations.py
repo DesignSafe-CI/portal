@@ -24,6 +24,7 @@ from designsafe.apps.api.projects_v2.operations.datacite_operations import (
 )
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
     archive_publication_async,
+    ranch_archive_webhook,
 )
 from designsafe.apps.api.projects_v2.operations.project_email_operations import (
     send_project_permissions_alert,
@@ -599,6 +600,7 @@ def publish_project(
         archive_publication_async.apply_async(
             args=[project_id, version], queue="default"
         )
+        ranch_archive_webhook(project_id)
         ingest_pub_fedora_async.apply_async(
             args=[project_id, version, False], queue="default"
         )
