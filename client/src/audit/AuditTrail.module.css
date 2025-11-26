@@ -82,6 +82,7 @@
 .modalContent {
   white-space: pre-wrap;
   word-break: break-all;
+  max-height: 400px;
 }
 
 /* TIMELINE CSS BELOW ======================= */

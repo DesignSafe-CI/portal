@@ -91,7 +91,7 @@ def get_upload_portal_search(request, filename, username=None):
             SELECT timestamp, portal, username, action, tracking_id, data
             FROM public.portal_audit
             WHERE tracking_id IN (SELECT tracking_id FROM upload_ids)
-            AND lower(action) IN ('upload','rename','move', 'trash')
+            AND lower(action) IN ('upload','rename','move', 'trash', 'submitjob')
             AND username = %s
             ORDER BY timestamp ASC, tracking_id ASC;
             """
@@ -107,7 +107,7 @@ def get_upload_portal_search(request, filename, username=None):
             SELECT timestamp, portal, username, action, tracking_id, data
             FROM public.portal_audit
             WHERE tracking_id IN (SELECT tracking_id FROM upload_ids)
-            AND lower(action) IN ('upload','rename','move', 'trash')
+            AND lower(action) IN ('upload','rename','move', 'trash', 'submitjob')
             ORDER BY timestamp ASC, tracking_id ASC;
             """
             cursor.execute(query, [filename])
@@ -364,6 +364,36 @@ def portal_upload_file_trace(payload: json, filename: str):
                     if trash_path:
                         aliases_path[i] = normalize_dir_path(trash_path)
                     index = i
+                    break
+
+        elif action == "submitjob":
+            entry_tracking_id = entry.get("tracking_id")
+            if not entry_tracking_id:
+                continue
+
+            # Extract sourceUrls from fileInputs
+            file_inputs = entry.get("data", {}).get("body", {}).get("job", {}).get("fileInputs", [])
+            source_urls = []
+            for fi in file_inputs:
+                source_url = fi.get("sourceUrl") or fi.get("sourceURL") or ""
+                if source_url:
+                    source_urls.append(source_url.lower())
+
+            # Find timeline with matching tracking_id
+            for i, timeline_events in enumerate(kept_rows):
+                if timeline_events and timeline_events[0].get("tracking_id") == entry_tracking_id:
+                    # Check if any sourceUrl contains any alias filename
+                    if not source_urls:
+                        kept_rows[i].append(entry)
+                    else:
+                        for source_url in source_urls:
+                            for alias_filename in aliases_filenames[i]:
+                                if alias_filename.lower() in source_url:
+                                    kept_rows[i].append(entry)
+                                    break
+                            else:
+                                continue
+                            break
                     break
 
     return kept_rows
