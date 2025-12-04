@@ -12,24 +12,35 @@ const formShape = {
   eventTitle: Yup.string().required('Required'),
   url: Yup.string().url('Invalid URL').required('Required'),
   latitude: Yup.number()
+    .typeError('Latitude must be a number')
     .min(-90, 'Latitude must be between -90 and 90')
     .max(90, 'Latitude must be between -90 and 90')
     .required('Required'),
   longitude: Yup.number()
+    .typeError('Longitude must be a number')
     .min(-180, 'Longitude must be between -180 and 180')
     .max(180, 'Longitude must be between -180 and 180')
     .required('Required'),
   body: Yup.string()
     .required('Required')
     .min(10, 'Description must be at least 10 characters'),
-  recaptchaResponse: Yup.string().required('Required'),
+  recaptchaResponse: Yup.string().required('Please complete the reCAPTCHA'),
 };
 
 const formSchema = Yup.object().shape(formShape);
 
+const getFieldError = (errors: any, touched: any, field: string) => {
+  const hasError = errors[field] && touched[field];
+  return {
+    validateStatus: hasError ? ('error' as const) : undefined,
+    help: hasError ? String(errors[field]) : '',
+  };
+};
+
 export const ContributeDataModal: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { Link } = Typography;
+  const recaptchaSiteKey = (window as any).__RECAPTCHA_SITE_KEY__ || '';
 
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => {
@@ -39,7 +50,7 @@ export const ContributeDataModal: React.FC = () => {
   const { mutate } = useCreateFeedbackTicket(
     'RECON-PORTAL',
     'Data Contribution'
-  ); // not sure if it will suffice, need to pass projectId adn title into hook, or create new hook?
+  ); // not sure if it will suffice, need to pass projectId adn title into useCreateFeedbackTicket, or create new hook?
   const [notifApi, contextHolder] = notification.useNotification();
 
   const handleSubmit = (
@@ -49,8 +60,8 @@ export const ContributeDataModal: React.FC = () => {
       dateOfHazard: string;
       eventTitle: string;
       url: string;
-      latitude: string;
-      longitude: string;
+      latitude: number;
+      longitude: number;
       body: string;
       recaptchaResponse: string;
     },
@@ -68,8 +79,6 @@ export const ContributeDataModal: React.FC = () => {
         Longitude: ${formData.longitude}
             `.trim();
 
-    // console.log('Formatted body that will be sent:', formattedBody);
-    // console.log('Full form data:', formData);
     mutate(
       {
         formData: {
@@ -78,11 +87,12 @@ export const ContributeDataModal: React.FC = () => {
           body: formattedBody,
           projectId: 'RECON-PORTAL',
           title: 'Data Contribution',
-          recaptchaToken: formData.recaptchaResponse, //not working with this part
+          recaptchaToken: formData.recaptchaResponse,
         },
       },
       {
         onSuccess: () => {
+          resetForm();
           handleClose();
           notifApi.open({
             type: 'success',
@@ -110,8 +120,8 @@ export const ContributeDataModal: React.FC = () => {
     dateOfHazard: '',
     eventTitle: '',
     url: '',
-    latitude: '',
-    longitude: '',
+    latitude: '' as any,
+    longitude: '' as any,
     body: '',
     recaptchaResponse: '',
   };
@@ -129,81 +139,145 @@ export const ContributeDataModal: React.FC = () => {
         footer={null}
       >
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Formik layout="vertical" style={{ flex: 1 }} onFinish={handleSubmit}>
-            <Form.Item
-              name="name"
-              label="Full Name"
-              required
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label="Email"
-              required
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="dateOfHazard"
-              label="Date of Hazard Event"
-              required
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="eventTitle"
-              label="Event Title"
-              required
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="url"
-              label="URL to Data"
-              required
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="latitude"
-              label="Latitude"
-              required
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="longitude"
-              label="Longitude"
-              required
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="body"
-              label="Brief Description"
-              required
-              rules={[{ required: true }]}
-            >
-              <Input.TextArea autoSize={{ minRows: 4 }} />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                type="primary"
-                style={{ float: 'right' }}
-                htmlType="submit"
+          <Formik
+            initialValues={initialValues}
+            validationSchema={formSchema}
+            onSubmit={handleSubmit}
+            enableReinitialize
+          >
+            {({
+              errors,
+              touched,
+              getFieldProps,
+              setFieldValue,
+              isSubmitting,
+            }) => (
+              <FormikForm
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                }}
               >
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
+                <Form.Item
+                  label="Full Name"
+                  required
+                  {...getFieldError(errors, touched, 'name')}
+                >
+                  <Input {...getFieldProps('name')} />
+                </Form.Item>
+
+                <Form.Item
+                  label="Email"
+                  required
+                  {...getFieldError(errors, touched, 'email')}
+                >
+                  <Input type="email" {...getFieldProps('email')} />
+                </Form.Item>
+
+                <Form.Item
+                  label="Date of Hazard Event"
+                  required
+                  {...getFieldError(errors, touched, 'dateOfHazard')}
+                >
+                  <Input {...getFieldProps('dateOfHazard')} />
+                </Form.Item>
+
+                <Form.Item
+                  label="Event Title"
+                  required
+                  {...getFieldError(errors, touched, 'eventTitle')}
+                >
+                  <Input {...getFieldProps('eventTitle')} />
+                </Form.Item>
+
+                <Form.Item
+                  label="URL to Data"
+                  required
+                  {...getFieldError(errors, touched, 'url')}
+                >
+                  <Input {...getFieldProps('url')} />
+                </Form.Item>
+
+                <Form.Item
+                  label="Latitude"
+                  required
+                  {...getFieldError(errors, touched, 'latitude')}
+                >
+                  <Input
+                    {...getFieldProps('latitude')}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFieldValue(
+                        'latitude',
+                        value === '' ? '' : Number(value)
+                      );
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Longitude"
+                  required
+                  {...getFieldError(errors, touched, 'longitude')}
+                >
+                  <Input
+                    {...getFieldProps('longitude')}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFieldValue(
+                        'longitude',
+                        value === '' ? '' : Number(value)
+                      );
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Brief Description"
+                  required
+                  {...getFieldError(errors, touched, 'body')}
+                >
+                  <Input.TextArea
+                    {...getFieldProps('body')}
+                    autoSize={{ minRows: 4 }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="reCAPTCHA"
+                  required
+                  {...getFieldError(errors, touched, 'recaptchaResponse')}
+                >
+                  {recaptchaSiteKey ? (
+                    <ReCAPTCHA
+                      sitekey={recaptchaSiteKey}
+                      onChange={(value) =>
+                        setFieldValue('recaptchaResponse', value || '')
+                      }
+                      onExpired={() => setFieldValue('recaptchaResponse', '')}
+                    />
+                  ) : (
+                    <div style={{ color: 'red' }}>
+                      RECAPTCHA site key not set yet
+                    </div>
+                  )}
+                </Form.Item>
+
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    style={{ float: 'right' }}
+                    htmlType="submit"
+                    loading={isSubmitting}
+                  >
+                    Submit
+                  </Button>
+                </Form.Item>
+              </FormikForm>
+            )}
+          </Formik>
         </div>
       </Modal>
     </>
