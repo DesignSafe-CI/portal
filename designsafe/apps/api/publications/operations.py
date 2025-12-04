@@ -282,9 +282,14 @@ def clarivate_single_api(doi: str) -> int:
         total = 0
         for src in citations:
             db = (src or {}).get('db')
-            cnt = (src or {}).get('count')
-            if db in ('WOK', 'PPRN') and isinstance(cnt, (int, float)):
-                total += int(cnt)
+            cnt_raw = (src or {}).get('count')
+            if db in ('WOK', 'PPRN'):
+                # Treat missing/blank counts as 0 so we still sum across sources.
+                try:
+                    cnt = int(cnt_raw)
+                except (TypeError, ValueError):
+                    cnt = 0
+                total += cnt
         return total
     except Exception:
         return 0

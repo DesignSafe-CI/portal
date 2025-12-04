@@ -104,7 +104,7 @@ const formatAuthorsLine = (names: NameLike[] = []) => {
   return joined ? `${joined}.` : '';
 };
 
-const formatCitationLine = (c: CitationLike) => {
+const formatCitationLine = (c: CitationLike): React.ReactNode => {
   const authors = formatAuthorsLine(c?.names || []);
 
   const title = (c?.titles?.item || '').trim();
@@ -120,12 +120,27 @@ const formatCitationLine = (c: CitationLike) => {
   const yearPart = year ? `${year}.` : '';
 
   const doi = (c?.doi || '').trim();
-  const doiPart = doi ? `DOI: ${doi}` : '';
-
-  return [authors, titlePart, sourcePart, volPart, yearPart, doiPart]
+  const base = [authors, titlePart, sourcePart, volPart, yearPart]
     .filter(Boolean)
     .join(' ')
     .replace(/\s+,/g, ',');
+
+  if (!doi) return base;
+
+  return (
+    <>
+      {base}
+      {base ? ' ' : ''}
+      DOI:{' '}
+      <a
+        href={`https://doi.org/${doi}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        https://doi.org/{doi}
+      </a>
+    </>
+  );
 };
 
 /* ---------- Clarivate types for citations ---------- */
