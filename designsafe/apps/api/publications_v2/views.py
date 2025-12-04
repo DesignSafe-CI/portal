@@ -105,7 +105,7 @@ def handle_search(query_opts: dict, offset=0, limit=100):
         query = query.filter(
             Q(
                 "term",
-                **{"nodes.value.dataType.id.keyword": data_type_query},
+                **{"nodes.value.dataTypes.id.keyword": data_type_query},
             )
         )
 

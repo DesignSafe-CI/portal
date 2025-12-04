@@ -23,14 +23,7 @@ def is_file_previewable(file_name):
     if not file_name:
         return False
     file_ext  = os.path.splitext(file_name)[1].lower()
-    return file_ext in (
-        settings.SUPPORTED_TEXT_PREVIEW_EXTS +
-        settings.SUPPORTED_IMAGE_PREVIEW_EXTS +
-        settings.SUPPORTED_OBJECT_PREVIEW_EXTS +
-        settings.SUPPORTED_MS_OFFICE +
-        settings.SUPPORTED_VIDEO_EXTS +
-        settings.SUPPORTED_IPYNB_PREVIEW_EXTS
-    )
+    return file_ext in settings.SUPPORTED_PREVIEW_EXTENSIONS
 
 def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
     """
