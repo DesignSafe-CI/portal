@@ -32,24 +32,6 @@
   background-color: #ffffff;
 }
 
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 5px;
-  font-size: 11px;
-  border-radius: 4px;
-  color: white;
-  text-align: center;
-}
-
-.open {
-  background-color: #48a69c;
-}
-
-.closed {
-  background-color: #eb6e6e;
-}
-
 .queueTable th {
   border-bottom: 1px solid #707070;
 }

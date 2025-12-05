@@ -15,6 +15,7 @@ export type TFileListing = {
   length: number;
   permissions: string;
   doi?: string;
+  isPreviewable?: boolean;
 };
 
 export type FileListingResponse = {

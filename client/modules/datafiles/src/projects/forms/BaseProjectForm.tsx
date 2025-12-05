@@ -380,13 +380,15 @@ export const BaseProjectForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Referenced Data and Software">
-            Published data used in the creation of this dataset.
+            Published dataset or software reused in the creation of, or to be
+            used with this publication.
             <ReferencedDataInput name="referencedData" />
           </Form.Item>
 
           <Form.Item label="Related Work">
-            Information giving context, a linked dataset on DesignSafe, or works
-            citing the DOI for this dataset.
+            Information giving context, a linked publication in DesignSafe, or
+            works citing the DOI in this publication. citing the DOI for this
+            dataset.
             <RelatedWorkInput name="associatedProjects" />
           </Form.Item>
         </>
