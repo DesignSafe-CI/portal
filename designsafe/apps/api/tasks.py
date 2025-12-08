@@ -862,6 +862,7 @@ def email_collaborator_added_to_project(self, project_id, project_uuid, project_
                         <p>Hi {name},</p><br>
                         <p>You have been added to the project <b>{title} (ID: {prjID})</b>.</p><br>
                         <p>You can visit the project using the url <a href=\"{url}\">{url}</a>.</p>
+                        <p>You must log in to view this project.</p>
                         <p>You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.</p>
                         <p>Thanks,<br>
                         The DesignSafe-CI Team.<br><br>

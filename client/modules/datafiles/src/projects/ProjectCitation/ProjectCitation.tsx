@@ -198,7 +198,7 @@ export const DownloadCitation: React.FC<{
                 ? 'Loading...'
                 : isClarivateError ||
                   typeof clarivateMetrics?.citationCount !== 'number'
-                ? '0'
+                ? '--'
                 : clarivateMetrics.citationCount}{' '}
               Citations
             </span>
