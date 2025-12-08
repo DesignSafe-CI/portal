@@ -35,3 +35,17 @@ class AppVariantsPlugin(CMSPlugin):
 
     def __str__(self):
         return self.app.label
+
+
+class AppUserGuideLinkPlugin(CMSPlugin):
+    """Model for rendering an app user guide link."""
+
+    app = models.ForeignKey(
+        to=AppListingEntry,
+        on_delete=models.deletion.CASCADE,
+        null=True,
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.app.label if self.app else "Based on URL"
