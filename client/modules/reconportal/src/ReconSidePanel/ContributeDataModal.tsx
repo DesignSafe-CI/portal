@@ -208,10 +208,11 @@ export const ContributeDataModal: React.FC = () => {
                   <Input
                     {...getFieldProps('latitude')}
                     onChange={(e) => {
-                      const value = e.target.value;
+                      const val = e.target.value;
+                      const num = Number(val);
                       setFieldValue(
                         'latitude',
-                        value === '' ? '' : Number(value)
+                        val === '' || isNaN(num) ? val : num
                       );
                     }}
                   />
@@ -225,10 +226,11 @@ export const ContributeDataModal: React.FC = () => {
                   <Input
                     {...getFieldProps('longitude')}
                     onChange={(e) => {
-                      const value = e.target.value;
+                      const val = e.target.value;
+                      const num = Number(val);
                       setFieldValue(
                         'longitude',
-                        value === '' ? '' : Number(value)
+                        val === '' || isNaN(num) ? val : num
                       );
                     }}
                   />
