@@ -12,6 +12,7 @@ from designsafe.apps.api.views import BaseApiView
 import logging
 import mimetypes
 import json
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -229,6 +230,26 @@ class FeedbackView(BaseApiView):
         body = data['body']
         project_id = data['projectId']
         project_title = data['title']
+        recaptcha_token = data.get('recaptchaToken') #for ContributeDataModal.tsx
+
+        if recaptcha_token:
+            try:
+                captcha_resp = requests.post(
+                    "https://www.google.com/recaptcha/api/siteverify",
+                    data={
+                        "secret": settings.RECAPTCHA_PRIVATE_KEY,
+                        "response": recaptcha_token
+                    },
+                    timeout=10
+                )
+                captcha_resp.raise_for_status()
+                captcha_json = captcha_resp.json()
+                if not captcha_json.get("success", False):
+                    logger.warning('reCAPTCHA verification failed for user: %s' % email)
+                    return ApiException(status=400, message="reCAPTCHA verification failed. Please try again.")
+            except requests.RequestException as exc:
+                logger.error('reCAPTCHA verification error: %s' % exc)
+                return ApiException(status=500, message="Error verifying reCAPTCHA. Please try again.")
 
         if subject is None or email is None or body is None:
             return HttpResponseBadRequest()
@@ -266,4 +287,4 @@ class FeedbackView(BaseApiView):
         if ticket_id > -1:
             return HttpResponse("OK")
         else:
-            return ApiException(status=400, message="There was a problem submittin your ticket.")
+            return ApiException(status=400, message="There was a problem submitting your ticket.")
