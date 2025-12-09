@@ -2,8 +2,10 @@ import {
   ManageCategoryModal,
   ManagePublishableEntityModal,
   ProjectCurationFileListing,
+  ProjectGithubTransfer,
   ProjectNavbar,
   RelateDataModal,
+  CurationInfoBanner,
 } from '@client/datafiles';
 import { DatafilesBreadcrumb } from '@client/common-components';
 import { useProjectDetail } from '@client/hooks';
@@ -139,7 +141,9 @@ export const ProjectCurationLayout: React.FC = () => {
         }}
       >
         <ProjectNavbar projectId={projectId} />
-        {data.baseProject.value.projectType !== 'other' && (
+        {!['other', 'software'].includes(
+          data.baseProject.value.projectType
+        ) && (
           <span
             style={{
               display: 'flex',
@@ -175,6 +179,11 @@ export const ProjectCurationLayout: React.FC = () => {
           </span>
         )}
       </div>
+      {localStorage.getItem('curationBannerDismissed') !== 'true' && (
+        <div style={{ marginTop: '20px' }}>
+          <CurationInfoBanner />
+        </div>
+      )}
       <DatafilesBreadcrumb
         initialBreadcrumbs={[
           { path: `/projects/${projectId}/curation`, title: projectId },
@@ -191,7 +200,13 @@ export const ProjectCurationLayout: React.FC = () => {
           );
         }}
       />
-      <ProjectCurationFileListing projectId={projectId} path={path ?? ''} />
+      {data.baseProject.value.projectType !== 'software' && (
+        <ProjectCurationFileListing projectId={projectId} path={path ?? ''} />
+      )}
+
+      {data.baseProject.value.projectType === 'software' && (
+        <ProjectGithubTransfer projectId={projectId} />
+      )}
     </div>
   );
 };

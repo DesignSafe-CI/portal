@@ -24,6 +24,7 @@ from designsafe.apps.api.projects_v2.operations.datacite_operations import (
 )
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
     archive_publication_async,
+    ranch_archive_webhook,
 )
 from designsafe.apps.api.projects_v2.operations.project_email_operations import (
     send_project_permissions_alert,
@@ -31,6 +32,10 @@ from designsafe.apps.api.projects_v2.operations.project_email_operations import 
 from designsafe.apps.api.projects_v2.operations.path_operations import (
     construct_entity_filepaths,
     update_path_mappings,
+    generate_sha512_manifest,
+)
+from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
+    validate_github_release,
 )
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.publications_v2.elasticsearch import index_publication
@@ -460,6 +465,70 @@ def copy_publication_files(
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
 
 
+def copy_github_release(tree: nx.DiGraph, version: int = 1):
+    """Download GitHub release archive to Corral."""
+
+    gh_node = next(
+        (
+            node
+            for node in tree.nodes
+            if tree.nodes[node]["name"] == "designsafe.project"
+            and tree.nodes[node]["version"] == version
+        )
+    )
+    base_path = tree.nodes[gh_node]["basePath"]
+    corral_path = f"/corral-repl/tacc/NHERI/published{base_path}/data"
+    github_url = tree.nodes[gh_node]["value"]["githubUrl"]
+
+    github_params = validate_github_release(github_url)
+    filename = f"{github_params.repo}_{github_params.tag}.zip"
+    full_corral_path = f"{corral_path}/{filename}"
+    github_release_url = f"https://api.github.com/repos/{github_params.org}/{github_params.repo}/releases/tags/{github_params.tag}"
+
+    os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
+    try:
+
+        os.makedirs(corral_path, exist_ok=True)
+        repo_zip_url = (
+            requests.get(github_release_url, timeout=10).json().get("zipball_url")
+        )
+        repo_zip_contents = requests.get(repo_zip_url, stream=True, timeout=600)
+        with open(full_corral_path, "wb") as file:
+            for chunk in repo_zip_contents.iter_content(chunk_size=10 * 1024):
+                file.write(chunk)
+
+    finally:
+        os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
+
+
+def create_publication_manifests(
+    pub_tree: nx.DiGraph, entity_uuids: list[str], version: int = 1
+):
+    """
+    Given a publication tree, set of entities, and version, determine the paths for
+    the newly published entities and generate a manifest-sha512.txt file for each.
+
+    :param pub_tree: NetworkX graph object representing a publication.
+    :type pub_tree: nx.DiGraph
+    :param entity_uuids: UUIDs for the collections being published.
+    :type entity_uuids: list[str]
+    :param version: The version of the publication, if it has been published previously.
+    :type version: int
+    """
+    entity_paths = [
+        str(
+            Path(settings.DESIGNSAFE_PUBLISHED_PATH)
+            / pub_tree.nodes[node]["basePath"].lstrip("/")
+        )
+        for node in pub_tree.nodes
+        if pub_tree.nodes[node]["uuid"] in entity_uuids
+        and pub_tree.nodes[node].get("version", version) == version
+    ]
+
+    for path in entity_paths:
+        generate_sha512_manifest(path)
+
+
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def publish_project(
     project_id: str,
@@ -492,19 +561,35 @@ def publish_project(
 
     project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
 
+    base_meta_node = next(
+        (
+            node
+            for node in pub_tree.nodes
+            if pub_tree.nodes[node]["name"] == constants.PROJECT
+            and pub_tree.nodes[node].get("version", version) == version
+        )
+    )
+
+    project_type = pub_tree.nodes[base_meta_node]["value"]["projectType"]
+
     # If we don't explicitly close the db connection, it will remain open during the
     # entire data-copying step, which can cause operations to fail.
     close_old_connections()
 
     if not settings.DEBUG:
         # Copy files first so if it fails we don't create orphan metadata/datacite entries.
-        copy_publication_files(
-            path_mapping,
-            project_id,
-            project_uuid=project_uuid,
-            version=version,
-            dirs_to_lock=pub_data_dirs,
-        )
+        if project_type != "software":
+            copy_publication_files(
+                path_mapping,
+                project_id,
+                project_uuid=project_uuid,
+                version=version,
+                dirs_to_lock=pub_data_dirs,
+            )
+        elif project_type == "software":
+            copy_github_release(pub_tree, version)
+
+        create_publication_manifests(pub_tree, entity_uuids, version)
 
     new_dois = []
 
@@ -533,14 +618,6 @@ def publish_project(
         for doi in new_dois:
             publish_datacite_doi(doi)
 
-    base_meta_node = next(
-        (
-            node
-            for node in pub_tree.nodes
-            if pub_tree.nodes[node]["name"] == constants.PROJECT
-            and pub_tree.nodes[node].get("version", version) == version
-        )
-    )
     base_meta_value = pub_tree.nodes[base_meta_node]["value"]
 
     pub_metadata, _ = Publication.objects.update_or_create(
@@ -554,6 +631,7 @@ def publish_project(
         archive_publication_async.apply_async(
             args=[project_id, version], queue="default"
         )
+        ranch_archive_webhook(project_id)
         ingest_pub_fedora_async.apply_async(
             args=[project_id, version, False], queue="default"
         )
@@ -599,6 +677,7 @@ def amend_publication(project_id: str):
                 prj_meta_value = ProjectMetadata.objects.get(uuid=uuid).value
                 prj_meta_value.pop("fileObjs", None)
                 prj_meta_value.pop("fileTags", None)
+                prj_meta_value.pop("githubUrl", None)
                 amended_meta_value = {**published_meta_value, **prj_meta_value}
                 pub_tree.nodes[node]["value"] = amended_meta_value
             except ProjectMetadata.DoesNotExist:

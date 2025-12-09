@@ -304,7 +304,12 @@ export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
               <dt>Job UUID: </dt>
               <dd>{jobData.uuid}</dd>
               <dt>Application: </dt>
-              <dd>{JSON.parse(jobData.notes).label || jobData.appId}</dd>
+              <dd>
+                {(typeof jobData.notes === 'string'
+                  ? JSON.parse(jobData.notes)
+                  : jobData.notes
+                ).label || jobData.appId}
+              </dd>
               <dt>System: </dt>
               <dd>{jobData.execSystemId}</dd>
             </dl>
