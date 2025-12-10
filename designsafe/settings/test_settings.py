@@ -815,6 +815,8 @@ RT_TAG = 'test_tag'
 # AI KEYWORDS SETTINGS
 SN_API_KEY = "test"
 SN_API_ENDPOINT = "https://test.com"
+OPENAI_API_KEY = "test"
+OPENAI_API_URL = "https://test.com"
 CHROMA_ENDPOINT = "https://test.com"
 CHROMA_PORT = 443
 CHROMA_PASSWORD = "test"
