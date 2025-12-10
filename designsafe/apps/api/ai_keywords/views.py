@@ -105,6 +105,7 @@ class RAG:
                 model="text-embedding-3-small",
                 api_key=self.API_KEY,
                 base_url=self.API_ENDPOINT,
+                dimensions=384,
             )
 
             self.vector_store = Chroma(
@@ -116,7 +117,7 @@ class RAG:
             self.llm = ChatOpenAI(
                 base_url=self.API_ENDPOINT,
                 api_key=self.API_KEY,
-                model="Llama-4-Maverick-17B-128E-Instruct",
+                model="gpt-4o-mini",
                 temperature=0.1,
                 top_p=0.1,
             )
