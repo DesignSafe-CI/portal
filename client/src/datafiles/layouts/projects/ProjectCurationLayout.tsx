@@ -5,6 +5,7 @@ import {
   ProjectGithubTransfer,
   ProjectNavbar,
   RelateDataModal,
+  CurationInfoBanner,
 } from '@client/datafiles';
 import { DatafilesBreadcrumb } from '@client/common-components';
 import { useProjectDetail } from '@client/hooks';
@@ -178,6 +179,11 @@ export const ProjectCurationLayout: React.FC = () => {
           </span>
         )}
       </div>
+      {localStorage.getItem('curationBannerDismissed') !== 'true' && (
+        <div style={{ marginTop: '20px' }}>
+          <CurationInfoBanner />
+        </div>
+      )}
       <DatafilesBreadcrumb
         initialBreadcrumbs={[
           { path: `/projects/${projectId}/curation`, title: projectId },

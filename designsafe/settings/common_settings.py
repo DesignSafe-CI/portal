@@ -638,6 +638,8 @@ DATACITE_SHOULDER = os.environ.get('DATACITE_SHOULDER')
 # Clarivate/World of Citation
 WOS_URL = os.environ.get('WOS_URL', 'https://api.clarivate.com/apis/wos-starter/v1/documents')
 WOS_PASS = os.environ.get('WOS_APIKEY', '')
+WOS_EXP_URL = os.environ.get('WOS_URL', 'https://wos-api.clarivate.com/api/wos')
+WOS_EXP_PASS = os.environ.get('WOS_EXP_APIKEY', '')
 
 DESIGNSAFE_ENVIRONMENT = os.environ.get('DESIGNSAFE_ENVIRONMENT', 'dev').lower()
 if os.environ.get('PORTAL_PROFILE') == 'True':
@@ -760,6 +762,7 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     },
 ]
 
+<<<<<<< HEAD
 # AI KEYWORDS SETTINGS
 SN_API_KEY = os.environ.get("SN_API_KEY")
 SN_API_ENDPOINT = os.environ.get("SN_API_ENDPOINT")
@@ -768,3 +771,9 @@ CHROMA_PORT = int(os.environ.get("CHROMA_PORT", 443))
 CHROMA_PASSWORD = os.environ.get("CHROMA_PASSWORD")
 CHROMA_USERNAME = os.environ.get("CHROMA_USERNAME")
 CHROMA_COLLECTION = os.environ.get("CHROMA_COLLECTION", "designsafe_keywords")
+=======
+# Jenkins webhook integration for Ranch backups
+JENKINS_WH_USER = os.environ.get("JENKINS_WH_USER", "wma_prtl")
+JENKINS_WH_TOKEN = os.environ.get("JENKINS_WH_TOKEN", "")
+JENKINS_WH_URL = os.environ.get("JENKINS_WH_URL", "https://jenkins.portals.tacc.utexas.edu/view/DesignSafe/job/designsafe_ranch_publication_backup/buildWithParameters")
+>>>>>>> main
