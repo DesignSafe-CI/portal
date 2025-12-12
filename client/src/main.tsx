@@ -8,7 +8,7 @@ import datafilesRouter from './datafiles/datafilesRouter';
 import reconportalRouter from './reconportal/reconportalRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
-import { AIChatButton } from '../modules/workspace/src/AISearch/AIChatButton';
+import { AIChatButton } from '@client/workspace';
 
 const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
@@ -100,12 +100,12 @@ if (navAiElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <AIChatButton />
-      </ConfigProvider>
+        </ConfigProvider>
       </QueryClientProvider>
-      </StrictMode>
-  )
+    </StrictMode>
+  );
 }
-        
+
 const reconElement = document.getElementById('recon-root');
 if (reconElement) {
   const reconRoot = ReactDOM.createRoot(reconElement as HTMLElement);

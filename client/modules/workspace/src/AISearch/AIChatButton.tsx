@@ -22,8 +22,11 @@ export const AIChatButton: React.FC = () => {
         title={
           <div>
             <div>Ask AI</div>
-            <div style={{ fontSize: '11px', fontWeight: 'normal', color: 'gray' }}>
-              Beta - This model is still in training. It searches Published Data and User Documentation only.
+            <div
+              style={{ fontSize: '11px', fontWeight: 'normal', color: 'gray' }}
+            >
+              Beta - This model is still in training. It searches DesignSafe
+              Published Data and User Documentation only.
             </div>
           </div>
         }
@@ -32,6 +35,7 @@ export const AIChatButton: React.FC = () => {
         open={showDrawer}
         onClose={() => setShowDrawer(false)}
         maskClosable={true}
+        rootClassName={styles.drawer}
       >
         <AIChat closed={!showDrawer} />
       </Drawer>

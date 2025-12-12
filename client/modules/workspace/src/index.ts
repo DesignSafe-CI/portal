@@ -13,3 +13,4 @@ export * from './constants';
 export * from './InteractiveSessionModal';
 export * from './_common';
 export * from './components/SystemStatusModal/SystemStatusModal';
+export { AIChatButton } from './AISearch/AIChatButton';
