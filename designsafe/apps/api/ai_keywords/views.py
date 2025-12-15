@@ -6,9 +6,8 @@ from typing_extensions import List, TypedDict
 from langchain_core.documents import Document
 from langgraph.graph import START, StateGraph
 from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from django.http import HttpRequest, JsonResponse
 from django.conf import settings
 from designsafe.apps.api.views import BaseApiView, ApiException
@@ -65,8 +64,8 @@ class State(TypedDict):
 class RAG:
     """Retrieval-Augmented Generation for keyword suggestions."""
 
-    API_KEY = settings.SN_API_KEY
-    API_ENDPOINT = settings.SN_API_ENDPOINT
+    API_KEY = settings.OPENAI_API_KEY
+    API_ENDPOINT = settings.OPENAI_API_URL
 
     template = """
     You are an assistant for finding keywords for a supplied project title and description. Use the following pieces of retrieved context to answer the question. If you don't know the answer, respond with nothing.
@@ -102,8 +101,11 @@ class RAG:
                 ),
             )
 
-            embedding_function = HuggingFaceEmbeddings(
-                model_name="sentence-transformers/all-MiniLM-L6-v2"
+            embedding_function = OpenAIEmbeddings(
+                model="text-embedding-3-small",
+                api_key=self.API_KEY,
+                base_url=self.API_ENDPOINT,
+                dimensions=384,
             )
 
             self.vector_store = Chroma(
@@ -115,7 +117,7 @@ class RAG:
             self.llm = ChatOpenAI(
                 base_url=self.API_ENDPOINT,
                 api_key=self.API_KEY,
-                model="Llama-4-Maverick-17B-128E-Instruct",
+                model="gpt-4o-mini",
                 temperature=0.1,
                 top_p=0.1,
             )
