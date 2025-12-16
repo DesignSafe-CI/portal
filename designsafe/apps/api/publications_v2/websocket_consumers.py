@@ -37,6 +37,23 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                 {"type": "chat.message", "payload": payload, "key": key}
             )
 
+        if message_type == "feedback":
+            session = self.scope["session"]
+            user = self.scope["user"]
+            ip_addr = self.scope["client"][0]
+
+            metrics.info(
+                "Chat",
+                extra={
+                    "agent": "",
+                    "ip": ip_addr,
+                    "operation": "chat.feedback",
+                    "sessionId": getattr(session, "session_key", ""),
+                    "user": getattr(user, "username"),
+                    "info": {"value": payload, "history": json_data.get("history")},
+                },
+            )
+
     async def chat_message(self, event):
         """Handle receipt of a chat message."""
 
