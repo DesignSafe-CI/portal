@@ -16,7 +16,7 @@ from designsafe.apps.api.publications_v2.models import Publication
 logger = logging.getLogger(__name__)
 
 
-def archive(project_id: str, *args, **kwargs):
+def create_metadata_file(project_id: str, *args, **kwargs):
     """Archive Published Files and Metadata
 
     When given a project_id, this function will copy and compress all of the published files
@@ -45,7 +45,7 @@ def ranch_archive_webhook(project_id: str):
     """Submit a webhook request to Jenkisn to trigger archiving of a publication to Ranch."""
     auth = HTTPBasicAuth(settings.JENKINS_WH_USER, settings.JENKINS_WH_TOKEN)
     req = requests.post(
-        settings.JENKINS_WH_URL,
+        settings.JENKINS_ARCHIVE_WH_URL,
         auth=auth,
         params={"PROJECT_ID": project_id},
         timeout=30,
@@ -57,4 +57,4 @@ def ranch_archive_webhook(project_id: str):
 def archive_publication_async(project_id: str, version: Optional[str] = 1):
     """async wrapper around archive"""
     with AsyncTaskContext():
-        archive(project_id, version)
+        create_metadata_file(project_id, version)
