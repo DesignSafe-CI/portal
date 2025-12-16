@@ -75,12 +75,10 @@ dependencies = [
     "llama-index-vector-stores-chroma (>=0.5.0,<0.6.0)",
     "langchain-core (>=0.3.72,<0.4.0)",
     "langchain-chroma (>=0.2.5,<0.3.0)",
-    "langchain-huggingface (>=0.3.1,<0.4.0)",
     "langchain-openai (>=0.3.28,<0.4.0)",
     "langgraph (>=0.6.3,<0.7.0)",
     "langchain (>=0.3.27,<0.4.0)",
     "boxsdk (>=3.14.0,<4.0.0)",
-    "sentence-transformers (>=5.1.0,<6.0.0)"
 ]
 
 [tool.poetry]
