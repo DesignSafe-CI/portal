@@ -142,6 +142,7 @@
                 </div>")
         }
     </script>
+    <script>window.__RECAPTCHA_SITE_KEY__ = "{{ RECAPTCHA_PUBLIC_KEY }}";</script>
     <script type="module">
         window.__authenticatedUser__ = "{{request.user.is_authenticated}}" === 'True' && {
             username: "{{request.user.username}}",

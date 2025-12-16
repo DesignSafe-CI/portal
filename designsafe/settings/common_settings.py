@@ -185,6 +185,7 @@ TEMPLATES = [
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
                 'designsafe.context_processors.tas_homedir',
+                'designsafe.context_processors.recaptcha_config',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
