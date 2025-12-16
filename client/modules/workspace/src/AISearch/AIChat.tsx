@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Bubble, Sender } from '@ant-design/x';
+import { Bubble, Sender, Actions } from '@ant-design/x';
 import { UserOutlined, RobotOutlined } from '@ant-design/icons';
-import { Layout, Flex } from 'antd';
+import { Layout, Flex, Button } from 'antd';
 import useWebSocket from 'react-use-websocket';
 import parse from 'html-react-parser';
 import markdownit from 'markdown-it';
+import { Icon } from '@client/common-components';
+import styles from './AIChat.module.css';
 
 const { Content, Footer } = Layout;
 
@@ -43,7 +45,7 @@ const renderMarkdown = (content: string) => {
 interface Message {
   key: string;
   content: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'feedback';
   timestamp: number;
   typing?: boolean | { step?: number; interval?: number };
 }
@@ -191,6 +193,26 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
     }
   };
 
+  const handleSendFeedback = (value: 'thumbs_up' | 'thumbs_down') => {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.sendJsonMessage({
+        type: 'feedback',
+        key: `feedback-${Date.now()}`,
+        history: messages,
+        payload: value,
+      });
+    }
+
+    const feedbackMessage: Message = {
+      key: `feedback-${Date.now()}`,
+      content:
+        'Your feedback has been recorded. Thank you for helping to improve our user experience.',
+      role: 'feedback',
+      timestamp: Date.now(),
+    };
+    setMessages((prev) => [...prev, feedbackMessage]);
+  };
+
   // Convert messages to Bubble.List format
   const bubbleItems = messages.map((message) => ({
     key: message.key,
@@ -202,10 +224,31 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
         : { icon: <RobotOutlined /> },
     messageRender: renderMarkdown,
     typing: message.typing,
+    footer: message.role == 'assistant' && (
+      <div
+        style={{
+          float: 'right',
+          flexDirection: 'row',
+        }}
+      >
+        <Button
+          type="text"
+          onClick={() => handleSendFeedback('thumbs_down')}
+          icon={
+            <Icon className="fa fa-thumbs-o-down" label="thumbs down"></Icon>
+          }
+        ></Button>
+        <Button
+          type="text"
+          onClick={() => handleSendFeedback('thumbs_up')}
+          icon={<Icon className="fa fa-thumbs-o-up" label="thumbs up"></Icon>}
+        ></Button>
+      </div>
+    ),
   }));
 
   return (
-    <Layout style={{ height: '100%' }}>
+    <Layout style={{ height: '100%' }} className={styles['ai-chat']}>
       <Content style={{ flex: 1, padding: '16px' }}>
         <Flex vertical style={{ height: '100%' }}>
           <Bubble.List
