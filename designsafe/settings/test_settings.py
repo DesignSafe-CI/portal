@@ -88,6 +88,7 @@ INSTALLED_APPS = (
     'designsafe.apps.api.publications_v2',
     'designsafe.apps.api.filemeta',
     'designsafe.apps.accounts',
+    'designsafe.apps.audit',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
     'designsafe.apps.dropbox_integration',
