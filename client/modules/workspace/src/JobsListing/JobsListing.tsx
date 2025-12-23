@@ -15,6 +15,7 @@ import {
   TGetNotificationsResponse,
   useInteractiveModalContext,
   TInteractiveModalContext,
+  TTapisJob,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -92,7 +93,7 @@ const InteractiveSessionButtons: React.FC<{
   );
 };
 
-export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
+export const JobsListing: React.FC<Omit<TableProps<TTapisJob>, 'columns'>> = ({
   ...tableProps
 }) => {
   const queryClient = useQueryClient();
@@ -201,12 +202,12 @@ export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
         render: (status) => {
           const text = getStatusText(status);
           if (status === 'FINISHED') {
-            return <StatusTag type="success">{text}</StatusTag>;
+            return <StatusTag variant="success">{text}</StatusTag>;
           }
           if (status === 'FAILED') {
-            return <StatusTag type="error">{text}</StatusTag>;
+            return <StatusTag variant="error">{text}</StatusTag>;
           }
-          return <StatusTag type="warning">{text}</StatusTag>;
+          return <StatusTag variant="warning">{text}</StatusTag>;
         },
       },
       { width: '10%', title: 'Nodes', dataIndex: 'nodeCount' },

@@ -1,3 +1,5 @@
+# pylint: disable=invalid-name
+
 import uuid
 import os
 import json
@@ -11,15 +13,25 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model, models
 from django.db.models import Q
+from tapipy.tapis import Tapis
+from django.views.decorators.cache import cache_page
+
 
 import logging
 from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
 from designsafe.apps.rapid import forms as rapid_forms
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
+from django.core.cache import cache
+import threading
 
 logger = logging.getLogger(__name__)
 metrics_logger = logging.getLogger('metrics')
 
 from designsafe import settings
+
 
 def thumbnail_image(fobj, size=(400, 400)):
     im = Image.open(fobj)
@@ -50,6 +62,7 @@ def index(request):
 
 def get_event_types(request):
     s = RapidNHEventType.search()
+    s = s.extra(size=40) # Allows up to 40 event types
     try:
         results  = s.execute(ignore_cache=True)
     except (TransportError, ConnectionTimeout) as err:
@@ -67,6 +80,26 @@ def get_events(request):
     total = s.count()
     out = [h.to_dict() for h in s[0:total]]
     return JsonResponse(out, safe=False)
+
+
+@cache_page(60 * 60 * 6)  # Caches the view for 6 hours
+@csrf_exempt
+@require_GET
+def opentopo_data(request):
+    """
+    Get open topo data for entire world.
+    """
+    # detail=true allows us to get coordinates for each dataset
+    OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false'
+    try:
+        logger.debug("Requesting opentopo data")
+        response = requests.get(OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD)
+        response.raise_for_status()
+        response_data = response.json()
+        return JsonResponse(response_data, safe=False, status=response.status_code)
+    except requests.RequestException as e:
+        logger.error(f"Error fetching URL {OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD}: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @user_passes_test(rapid_admin_check)

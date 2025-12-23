@@ -5,6 +5,7 @@ import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
+import reconportalRouter from './reconportal/reconportalRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import auditRouter from './audit/auditRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
@@ -30,6 +31,7 @@ const themeConfig: ThemeConfig = {
     },
     Layout: {
       bodyBg: 'transparent',
+      siderBg: 'transparent',
     },
     Steps: {
       colorPrimary: '#1cb500',
@@ -99,6 +101,14 @@ if (auditTrailElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={auditRouter} />
+const reconElement = document.getElementById('recon-root');
+if (reconElement) {
+  const reconRoot = ReactDOM.createRoot(reconElement as HTMLElement);
+  reconRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <RouterProvider router={reconportalRouter} />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>

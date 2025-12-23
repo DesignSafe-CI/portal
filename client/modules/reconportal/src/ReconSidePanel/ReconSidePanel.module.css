@@ -1,0 +1,136 @@
+.root {
+  padding: 5px;
+  height: inherit;
+}
+
+.header {
+  color: var(--ds-accent-color);
+}
+
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  background: var(--global-color-primary--xx-light);
+  z-index: 1;
+  padding: 16px 0;
+}
+
+.scrollableList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.filtersSection {
+  position: sticky;
+  top: 0;
+  background: var(--global-color-primary--xx-light);
+  z-index: 1;
+  padding: 16px;
+  border-bottom: 1px solid var(--global-color-primary--light);
+  flex-shrink: 0;
+}
+
+.eventsScrollableArea {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 48px;
+  overscroll-behavior: contain;
+}
+
+.eventContainer {
+  width: 100%;
+  border-bottom: 1px solid var(--global-color-primary--light);
+}
+
+.eventContainer:nth-child(even) :global(.ant-card) {
+  background-color: var(--global-color-primary--x-light) !important;
+}
+
+.eventContainer:last-child {
+  border-bottom: none;
+}
+
+.eventCard {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.eventTitle {
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.eventLocation {
+  color: var(--global-color-primary--dark);
+}
+
+.eventType {
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--global-color-primary--xx-light);
+}
+
+.eventList {
+  width: 100%;
+}
+
+.eventDetailTitleRow {
+  font-weight: 700;
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.eventDetailField {
+  padding: 4px 16px;
+}
+
+.eventDetailLabel {
+  color: var(--global-color-primary--dark);
+}
+
+.eventDetailValue {
+  color: var(--global-color-primary--dark);
+  font-weight: 600;
+}
+
+.eventDetailTag {
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: capitalize;
+  margin: 2px 2px;
+}
+
+.eventDetailCard :global(.ant-card-body) {
+  padding: 0 !important;
+  padding-bottom: 8px !important;
+}
+
+.reconDataSection {
+  padding: 8px 16px;
+  width: 100%;
+}
+
+.reconDataLink {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--global-color-primary--light);
+  width: 100%;
+}
+
+.reconDataLink:last-child {
+  border-bottom: none;
+}
+
+.reconDataTitle {
+  text-align: center;
+  margin-top: 8px;
+  font-weight: 600;
+}

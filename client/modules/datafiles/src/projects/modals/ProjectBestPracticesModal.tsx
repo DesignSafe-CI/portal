@@ -68,6 +68,25 @@ export const ProjectBestPracticesModal: React.FC<{
               {projectType === 'software' && (
                 <>
                   <li>
+                    Please read and follow the documented{' '}
+                    <a
+                      href="https://www.designsafe-ci.org/user-guide/curating/policies/#publishing-research-software"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Policies
+                    </a>{' '}
+                    and{' '}
+                    <a
+                      href="https://www.designsafe-ci.org/user-guide/curating/bestpractices/#research-software"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Best Practices
+                    </a>{' '}
+                    regarding publication of research software.
+                  </li>
+                  <li>
                     Test that the software is in working condition and can be
                     installed and used according to the readme file included in
                     the release.

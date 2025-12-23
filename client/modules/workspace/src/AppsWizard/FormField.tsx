@@ -7,13 +7,12 @@ import {
   tapisInputFileRegex,
   TAppFileSettings,
 } from '../AppsWizard/AppsFormSchema';
-import { getExecSystemFromId } from '../utils';
+import { getExecSystemFromId, getSystemName } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
 import { SystemsDocumentation } from './SystemsDocumentation';
 import { useSystemOverview, useSystemQueue } from '@client/hooks';
-import systemStatusStyles from '../components/SystemStatusModal/SystemStatusModal.module.css';
-import queueStyles from '../components/SystemStatusModal/SystemQueueTable.module.css';
+import { StatusTag } from '../_common';
 import { useGetSystems } from '@client/hooks';
 
 const ExtendedSelect: React.FC<{
@@ -60,18 +59,15 @@ const SystemStatus: React.FC<{
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
       <span style={{ marginRight: -5, marginLeft: 8 }}>
-        {value.charAt(0).toUpperCase() + value.slice(1)} status:
+        {currentExecSystem?.notes?.label ||
+          getSystemName(currentExecSystem?.host || '')}{' '}
+        status:
       </span>
-      <div
-        className={`${systemStatusStyles.statusBadge} ${
-          selectedSystem?.is_operational
-            ? systemStatusStyles.open
-            : systemStatusStyles.closed
-        }`}
-        style={{ marginLeft: 12 }}
-      >
-        {selectedSystem?.is_operational ? 'Operational' : 'Maintenance'}
-      </div>
+      <span style={{ marginLeft: 12 }}>
+        <StatusTag variant={selectedSystem?.is_operational ? 'open' : 'error'}>
+          {selectedSystem?.is_operational ? 'Operational' : 'Maintenance'}
+        </StatusTag>
+      </span>
     </div>
   );
 };
@@ -103,14 +99,11 @@ const QueueStatus: React.FC<{
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
       <span style={{ marginRight: -5, marginLeft: 8 }}>Queue Status:</span>
-      <div
-        className={`${queueStyles.statusBadge} ${
-          selectedQueue.down ? queueStyles.closed : queueStyles.open
-        }`}
-        style={{ marginLeft: 12 }}
-      >
-        {selectedQueue.down ? 'Closed' : 'Open'}
-      </div>
+      <span style={{ marginLeft: 12 }}>
+        <StatusTag variant={selectedSystem?.is_operational ? 'open' : 'error'}>
+          {selectedSystem?.is_operational ? 'Operational' : 'Maintenance'}
+        </StatusTag>
+      </span>
     </div>
   );
 };

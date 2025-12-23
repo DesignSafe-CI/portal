@@ -118,13 +118,14 @@ const ExperimentFormFields: React.FC<{
       )}
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -146,8 +147,12 @@ const ExperimentFormFields: React.FC<{
 
       <Form.Item label="Experiment Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -157,8 +162,8 @@ const ExperimentFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
@@ -249,13 +254,14 @@ const SimulationFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -277,8 +283,12 @@ const SimulationFormFields: React.FC<{
 
       <Form.Item label="Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -288,8 +298,8 @@ const SimulationFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
@@ -380,13 +390,14 @@ const HybridSimFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -408,8 +419,12 @@ const HybridSimFormFields: React.FC<{
 
       <Form.Item label="Hybrid Simulation Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -419,8 +434,8 @@ const HybridSimFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
@@ -520,13 +535,14 @@ const MissionFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -593,8 +609,12 @@ const MissionFormFields: React.FC<{
 
       <Form.Item label="Mission Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -604,8 +624,8 @@ const MissionFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
@@ -657,13 +677,14 @@ const DocumentFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -704,8 +725,12 @@ const DocumentFormFields: React.FC<{
 
       <Form.Item label="Document Description" required>
         What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
         <Form.Item
           name={['value', 'description']}
           className="inner-form-item"
@@ -715,8 +740,8 @@ const DocumentFormFields: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
+              min: 750,
+              message: 'Description must be at least 750 characters long',
             },
             {
               max: 5000,
