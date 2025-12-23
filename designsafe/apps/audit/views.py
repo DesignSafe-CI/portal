@@ -14,8 +14,9 @@ _MAX_INPUT_LEN = 512
 
 def validate_len_or_400(value, field_name):
     """Return 400 JsonResponse if value is not a reasonable length; else None."""
-    if not isinstance(value, str) or not (0 < len(value.strip()) <= _MAX_INPUT_LEN):
+    if not isinstance(value, str) or len(value.strip()) <= 0 or len(value.strip()) > _MAX_INPUT_LEN:
         return JsonResponse({"error": f"Invalid {field_name}"}, status=400)
+    return None
 
 
 @login_required
@@ -457,70 +458,70 @@ def portal_rename_file_trace(payload: list, filename: str):
 
             origins.add(current_name)
     # region (Cool analogy from chatGPT that makes it easy to visualize the backwards chaining)
-    """
-    The Analogy: The "Name Tag" Chase
-    Imagine you are a detective. You have a stack of paperwork describing a suspect.
-    You are holding a sticky note in your hand that says: "TARGET: C.txt".
-    Your goal is to find out what this person's original birth name was.
-    You start at the bottom of the stack (the most recent event) and work your way up to the top.
 
-    The Paperwork (The Data)
-    Here is the stack of papers on your desk:
+    # The Analogy: The "Name Tag" Chase
+    # Imagine you are a detective. You have a stack of paperwork describing a suspect.
+    # You are holding a sticky note in your hand that says: "TARGET: C.txt".
+    # Your goal is to find out what this person's original birth name was.
+    # You start at the bottom of the stack (the most recent event) and work your way up to the top.
 
-    Paper #0 (Bottom / Oldest): "I, A.txt, am uploading my file."
-    Paper #1 (Middle): "I, A.txt, am changing my name to B.txt."
-    Paper #2 (Top / Newest): "I, B.txt, am changing my name to C.txt."
+    # The Paperwork (The Data)
+    # Here is the stack of papers on your desk:
 
-    The Detective Work (The Loop)
-    You pick up the top paper (Paper #2) because you are looking for "C.txt".
+    # Paper #0 (Bottom / Oldest): "I, A.txt, am uploading my file."
+    # Paper #1 (Middle): "I, A.txt, am changing my name to B.txt."
+    # Paper #2 (Top / Newest): "I, B.txt, am changing my name to C.txt."
 
-    Step 1: Analyzing Paper #2
-    You look at your sticky note: It says "TARGET: C.txt".
-    You read Paper #2: "I, B.txt, am changing my name to C.txt."
-    The Match: You say, "Aha! This paper explains how 'C.txt' got its name."
-    The Deduction: If the name became C.txt right here, then before this moment, the name must have been B.txt.
-    The Action (Crucial Step): You cross out "C.txt" on your sticky note. You write "TARGET: B.txt".
-    (Now you are no longer looking for C. You are looking for B, because finding B is the only way to get back to the start.)
+    # The Detective Work (The Loop)
+    # You pick up the top paper (Paper #2) because you are looking for "C.txt".
 
-    Step 2: Analyzing Paper #1
-    You look at your sticky note: It now says "TARGET: B.txt".
-    You read Paper #1: "I, A.txt, am changing my name to B.txt."
-    The Match: You say, "Aha! This paper explains how 'B.txt' got its name."
-    The Deduction: If the name became B.txt right here, then before this moment, the name must have been A.txt.
-    The Action: You cross out "B.txt" on your sticky note. You write "TARGET: A.txt".
+    # Step 1: Analyzing Paper #2
+    # You look at your sticky note: It says "TARGET: C.txt".
+    # You read Paper #2: "I, B.txt, am changing my name to C.txt."
+    # The Match: You say, "Aha! This paper explains how 'C.txt' got its name."
+    # The Deduction: If the name became C.txt right here, then before this moment, the name must have been B.txt.
+    # The Action (Crucial Step): You cross out "C.txt" on your sticky note. You write "TARGET: B.txt".
+    # (Now you are no longer looking for C. You are looking for B, because finding B is the only way to get back to the start.)
 
-    Step 3: Analyzing Paper #0
-    You look at your sticky note: It now says "TARGET: A.txt".
-    You read Paper #0: "I, A.txt, am uploading my file."
-    The Check: Is this a name change? No. It's an upload.
-    Action: You stop.
-    Result: The name written on your sticky note is "A.txt". You found the birth name!
-    Now, mapping this back to the Code
-    That "Sticky Note" in your hand? That is the variable current_name.
+    # Step 2: Analyzing Paper #1
+    # You look at your sticky note: It now says "TARGET: B.txt".
+    # You read Paper #1: "I, A.txt, am changing my name to B.txt."
+    # The Match: You say, "Aha! This paper explains how 'B.txt' got its name."
+    # The Deduction: If the name became B.txt right here, then before this moment, the name must have been A.txt.
+    # The Action: You cross out "B.txt" on your sticky note. You write "TARGET: A.txt".
 
-    Here is the exact code with the "Sticky Note" logic explained:
+    # Step 3: Analyzing Paper #0
+    # You look at your sticky note: It now says "TARGET: A.txt".
+    # You read Paper #0: "I, A.txt, am uploading my file."
+    # The Check: Is this a name change? No. It's an upload.
+    # Action: You stop.
+    # Result: The name written on your sticky note is "A.txt". You found the birth name!
+    # Now, mapping this back to the Code
+    # That "Sticky Note" in your hand? That is the variable current_name.
 
-    Python Code Example
+    # Here is the exact code with the "Sticky Note" logic explained:
 
-    # 1. Start with the sticky note saying "C.txt"
-    current_name = target_name
+    # Python Code Example
 
-    # 2. Loop backwards through the papers (Index 2 -> 1 -> 0)
-    for j in range(i, -1, -1):
+    # # 1. Start with the sticky note saying "C.txt"
+    # current_name = target_name
 
-    # 3. Read the paper
-    prev_row = payload[j]
-    new_name_on_paper = prev_row['data']['body']['new_name'] # e.g., "C.txt"
-    old_name_on_paper = prev_row['data']['path']             # e.g., "B.txt"
+    # # 2. Loop backwards through the papers (Index 2 -> 1 -> 0)
+    # for j in range(i, -1, -1):
 
-    # 4. DOES THIS PAPER MATCH MY STICKY NOTE?
-    # Does the "New Name" on the paper match "current_name"?
-    if new_name_on_paper == current_name:
+    # # 3. Read the paper
+    # prev_row = payload[j]
+    # new_name_on_paper = prev_row['data']['body']['new_name'] # e.g., "C.txt"
+    # old_name_on_paper = prev_row['data']['path']             # e.g., "B.txt"
 
-        # 5. YES! UPDATE THE STICKY NOTE.
-        # Erase current_name. Replace it with the old name from the paper.
-        current_name = old_name_on_paper
-    """
+    # # 4. DOES THIS PAPER MATCH MY STICKY NOTE?
+    # # Does the "New Name" on the paper match "current_name"?
+    # if new_name_on_paper == current_name:
+
+    #     # 5. YES! UPDATE THE STICKY NOTE.
+    #     # Erase current_name. Replace it with the old name from the paper.
+    #     current_name = old_name_on_paper
+
     # endregion
 
     # PHASE 2 trace using primary trace function
@@ -745,6 +746,6 @@ def get_job_info_by_tracking_id(tracking_id: str, filename: str):
         cursor.close()
 
         return results
-    except DatabaseError as exc:
+    except DatabaseError as _:
         logger.exception("Error in get_job_info_by_tracking_id")
         return []
