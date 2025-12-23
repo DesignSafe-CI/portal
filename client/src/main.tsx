@@ -101,6 +101,12 @@ if (auditTrailElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={auditRouter} />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
 const reconElement = document.getElementById('recon-root');
 if (reconElement) {
   const reconRoot = ReactDOM.createRoot(reconElement as HTMLElement);
