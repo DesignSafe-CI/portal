@@ -132,7 +132,7 @@ const AuditTrailFileTable: React.FC<AuditTrailFileTableProps> = ({
                     <span className={styles.value}>{timeline.user}</span>
                   </div>
                   <div className={styles.row}>
-                    <span className={styles.label}>Host:</span>
+                    <span className={styles.label}>Tapis System:</span>
                     <span className={styles.value}>{timeline.host}</span>
                   </div>
                   <div className={styles.row}>

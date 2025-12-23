@@ -208,6 +208,7 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+#honestly dont think we need 2 connections like portal vs tapis, think we just need one and can keep calling from there
 if os.environ.get('DATABASE_HOST'):
     DATABASES = {
         'default': {
@@ -218,7 +219,8 @@ if os.environ.get('DATABASE_HOST'):
             'USER': os.environ.get('DATABASE_USER'),
             'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
         },
-        'audit': {
+        #name of DB
+        'trail_audit': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get('AUDIT_DB_NAME'),
             'HOST': os.environ.get('AUDIT_DB_HOST'),

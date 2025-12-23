@@ -1,9 +1,4 @@
 import { PortalAuditEntry, TimelineEvent, Timeline } from '@client/hooks';
-
-// ============================================================================
-// AuditTrailLayout.tsx
-// ============================================================================
-
 /**
  * Filter usernames based on query string
  * @param {string[]} usernames - Array of usernames
@@ -21,10 +16,6 @@ export function filterUsernames(
     .filter((name) => name.toLowerCase().includes(query.toLowerCase()))
     .slice(0, limit);
 }
-
-// ============================================================================
-// AuditTrailSessionTable.tsx
-// ============================================================================
 
 /**
  * Extract action-specific data from a portal audit entry
@@ -108,10 +99,6 @@ export function safePretty(value: unknown): string {
   }
 }
 
-// ============================================================================
-// AuditTrailFileTable & Timeline
-// ============================================================================
-
 /**
  * Format timestamp to readable date/time string
  * @param {string} timestamp - ISO timestamp string
@@ -147,48 +134,6 @@ export function formatDate(timestamp: string): string {
 export function formatTime(timestamp: string): string {
   const date = new Date(timestamp);
   return date.toLocaleTimeString();
-}
-
-/**
- * Get action details (source and destination) from a timeline event
- * @param {TimelineEvent} operation - Timeline event
- * @returns {object} Object with source and destination strings
- */
-export function getActionDetails(operation: TimelineEvent): {
-  source: string;
-  destination: string;
-} {
-  const { action } = operation;
-  const details = operation.details as Record<string, unknown>;
-  const body = (details?.body as Record<string, unknown>) || {};
-
-  switch (action.toLowerCase()) {
-    case 'upload':
-      return {
-        source: 'N/A',
-        destination: (details?.path as string) || 'N/A',
-      };
-    case 'rename':
-      return {
-        source: (details?.path as string) || 'N/A',
-        destination: (body?.new_name as string) || 'N/A',
-      };
-    case 'move':
-      return {
-        source: (details?.path as string) || 'N/A',
-        destination: (body?.dest_path as string) || 'N/A',
-      };
-    case 'trash':
-      return {
-        source: (details?.path as string) || 'N/A',
-        destination: (body?.trash_path as string) || 'N/A',
-      };
-    default:
-      return {
-        source: 'Unknown',
-        destination: 'Unknown',
-      };
-  }
 }
 
 /**
@@ -244,4 +189,66 @@ export function getDisplayFileName(
   }
 
   return timeline.timeline_file_name;
+}
+
+/**
+ * Check if an event is a TAPIS event
+ */
+export function isTapisEvent(operation: TimelineEvent): boolean {
+  const details = operation.details as Record<string, unknown>;
+  return !!(details.source_system_id || details.target_system_id);
+}
+
+/**
+ * Get source path from a timeline event based on action type
+ */
+export function getSourcePath(operation: TimelineEvent): string {
+  const details = operation.details as Record<string, unknown>;
+  const action = (operation.action || '').toLowerCase();
+
+  // If it's a TAPIS event, use source_path directly
+  if (isTapisEvent(operation)) {
+    return (details.source_path as string) || 'N/A';
+  }
+
+  switch (action) {
+    case 'upload':
+    case 'submitjob':
+      return 'N/A';
+    case 'rename':
+    case 'move':
+    case 'trash':
+      return (details.path as string) || 'N/A';
+    default:
+      return (details.path as string) || 'N/A';
+  }
+}
+
+/**
+ * Get target path from a timeline event based on action type
+ */
+export function getTargetPath(operation: TimelineEvent): string {
+  const details = operation.details as Record<string, unknown>;
+  const body = (details.body as Record<string, unknown>) || {};
+  const action = (operation.action || '').toLowerCase();
+
+  // If it's a TAPIS event, use target_path directly
+  if (isTapisEvent(operation)) {
+    return (details.target_path as string) || 'N/A';
+  }
+
+  switch (action) {
+    case 'upload':
+      return (details.path as string) || 'N/A';
+    case 'rename':
+      return (body.new_name as string) || 'N/A';
+    case 'move':
+      return (body.dest_path as string) || 'N/A';
+    case 'trash':
+      return (body.trash_path as string) || 'N/A';
+    case 'submitjob':
+      return 'N/A';
+    default:
+      return 'N/A';
+  }
 }

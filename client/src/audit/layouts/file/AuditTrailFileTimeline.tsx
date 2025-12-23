@@ -7,13 +7,15 @@ import {
   SwapOutlined,
   ArrowRightOutlined,
   DeleteOutlined,
+  PlayCircleOutlined,
 } from '@ant-design/icons';
 import styles from '../../AuditTrail.module.css';
 import { TimelineEvent } from '@client/hooks';
 import {
   formatTimestamp,
-  getActionDetails,
   isHighlightOperation,
+  getSourcePath,
+  getTargetPath,
 } from '../../utils';
 
 interface TimelineProps {
@@ -30,6 +32,10 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
 
+  const getDetailValue = (op: TimelineEvent, key: string) => {
+    return (op as any)[key] || (op.details as any)[key] || 'N/A';
+  };
+
   const getActionIcon = (action: string) => {
     switch (action.toLowerCase()) {
       case 'upload':
@@ -38,6 +44,8 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
         return <DownloadOutlined className={styles.icon} />;
       case 'rename':
         return <EditOutlined className={styles.icon} />;
+      case 'submitjob':
+        return <PlayCircleOutlined className={styles.icon} />;
       case 'move':
         return <SwapOutlined className={styles.icon} />;
       case 'delete':
@@ -84,8 +92,6 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
         <div className={styles.timelineContainer}>
           <div className={styles.nodeLine}></div>
           {operations.map((operation, index) => {
-            const actionDetails = getActionDetails(operation);
-
             return (
               // timeline excluding info box
               <div className={styles.timeline} key={index}>
@@ -141,31 +147,152 @@ const AuditTrailFileTimeline: React.FC<TimelineProps> = ({
                     </div>
                   </div>
 
-                  {/* File Details Section */}
+                  {/* Details Section */}
                   <div style={{ marginBottom: '20px' }}>
-                    <div className={styles.headerInfoBox}>File Details</div>
-                    <div>
-                      <span style={{ fontSize: '13px' }}>Source:</span>
-                      <span className={styles.textInfoBox}>
-                        {actionDetails.source}
-                      </span>
-                    </div>
-                    <div>
-                      <span style={{ fontSize: '13px' }}>Destination:</span>
-                      <span className={styles.textInfoBox}>
-                        {actionDetails.destination}
-                      </span>
-                    </div>
-                  </div>
+                    <div className={styles.headerInfoBox}>Details</div>
 
-                  {/* User Info Section */}
-                  <div style={{ marginBottom: '20px' }}>
-                    <div className={styles.headerInfoBox}>User Information</div>
-                    <div>
-                      <span style={{ fontSize: '13px' }}>User:</span>
-                      <span className={styles.textInfoBox}>
-                        {operation.username}
-                      </span>
+                    <div style={{ marginBottom: '12px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          marginBottom: '4px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Parent Tracking ID
+                      </div>
+                      <div
+                        className={styles.textInfoBox}
+                        style={{ wordBreak: 'break-word' }}
+                      >
+                        {getDetailValue(operation, 'parent_tracking_id')}
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          marginBottom: '4px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Tracking ID
+                      </div>
+                      <div
+                        className={styles.textInfoBox}
+                        style={{ wordBreak: 'break-word' }}
+                      >
+                        {getDetailValue(operation, 'tracking_id')}
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          marginBottom: '4px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Source Tapis System
+                      </div>
+                      <div
+                        className={styles.textInfoBox}
+                        style={{ wordBreak: 'break-word' }}
+                      >
+                        {getDetailValue(operation, 'source_system_id')}
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          marginBottom: '4px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Source Host
+                      </div>
+                      <div
+                        className={styles.textInfoBox}
+                        style={{ wordBreak: 'break-word' }}
+                      >
+                        {getDetailValue(operation, 'source_host')}
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          marginBottom: '4px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Source Path
+                      </div>
+                      <div
+                        className={styles.textInfoBox}
+                        style={{ wordBreak: 'break-word' }}
+                      >
+                        {getSourcePath(operation)}
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          marginBottom: '4px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Target Tapis System
+                      </div>
+                      <div
+                        className={styles.textInfoBox}
+                        style={{ wordBreak: 'break-word' }}
+                      >
+                        {getDetailValue(operation, 'target_system_id')}
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          marginBottom: '4px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Target Host
+                      </div>
+                      <div
+                        className={styles.textInfoBox}
+                        style={{ wordBreak: 'break-word' }}
+                      >
+                        {getDetailValue(operation, 'target_host')}
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          marginBottom: '4px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Target Path
+                      </div>
+                      <div
+                        className={styles.textInfoBox}
+                        style={{ wordBreak: 'break-word' }}
+                      >
+                        {getTargetPath(operation)}
+                      </div>
                     </div>
                   </div>
 
