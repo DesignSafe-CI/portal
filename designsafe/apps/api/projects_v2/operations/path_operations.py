@@ -14,6 +14,9 @@ from django.conf import settings
 from designsafe.libs.common.context_managers import Workdir, AsyncTaskContext
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
+from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
+    ranch_archive_webhook,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -252,3 +255,4 @@ def generate_manifests_for_project_async(project_id: str):
     :type project_id: str
     """
     generate_manifests_for_project(project_id)
+    ranch_archive_webhook(project_id)

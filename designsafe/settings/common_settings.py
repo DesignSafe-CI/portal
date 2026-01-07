@@ -765,4 +765,4 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
 # Jenkins webhook integration for Ranch backups
 JENKINS_WH_USER = os.environ.get("JENKINS_WH_USER", "wma_prtl")
 JENKINS_WH_TOKEN = os.environ.get("JENKINS_WH_TOKEN", "")
-JENKINS_WH_URL = os.environ.get("JENKINS_WH_URL", "https://jenkins.portals.tacc.utexas.edu/view/DesignSafe/job/designsafe_ranch_publication_backup/buildWithParameters")
+JENKINS_ARCHIVE_WH_URL = os.environ.get("JENKINS_WH_URL", "https://jenkins.portals.tacc.utexas.edu/view/DesignSafe/job/designsafe_ranch_publication_backup/buildWithParameters")

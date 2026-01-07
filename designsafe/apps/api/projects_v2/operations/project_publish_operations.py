@@ -23,7 +23,7 @@ from designsafe.apps.api.projects_v2.operations.datacite_operations import (
     get_doi_publication_date,
 )
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
-    archive_publication_async,
+    create_metadata_file,
     ranch_archive_webhook,
 )
 from designsafe.apps.api.projects_v2.operations.project_email_operations import (
@@ -628,9 +628,7 @@ def publish_project(
 
     index_publication(project_id)
     if not settings.DEBUG:
-        archive_publication_async.apply_async(
-            args=[project_id, version], queue="default"
-        )
+        create_metadata_file(project_id)
         ranch_archive_webhook(project_id)
         ingest_pub_fedora_async.apply_async(
             args=[project_id, version, False], queue="default"
@@ -710,6 +708,7 @@ def amend_publication(project_id: str):
     index_publication(project_id)
 
     if not settings.DEBUG:
+        create_metadata_file(project_id)
         ingest_pub_fedora_async.apply_async(
             args=[project_id, latest_version, True], queue="default"
         )
