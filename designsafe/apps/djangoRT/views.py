@@ -234,22 +234,34 @@ class FeedbackView(BaseApiView):
 
         if recaptcha_token:
             try:
-                captcha_resp = requests.post(
-                    "https://www.google.com/recaptcha/api/siteverify",
-                    data={
-                        "secret": settings.RECAPTCHA_PRIVATE_KEY,
-                        "response": recaptcha_token
-                    },
-                    timeout=10
-                )
+                payload = {
+                    "event": {
+                        "token": recaptcha_token,
+                        "siteKey": settings.RECAPTCHA_ENTERPRISE_SITE_KEY,
+                        "expectedAction": "USER_FEEDBACK"
+                    }
+                }
+
+                url = f"https://recaptchaenterprise.googleapis.com/v1/projects/{settings.RECAPTCHA_ENTERPRISE_PROJECT_ID}/assessments?key={settings.RECAPTCHA_ENTERPRISE_API_KEY}"
+
+                captcha_resp = requests.post(url, json=payload, timeout=10)
                 captcha_resp.raise_for_status()
                 captcha_json = captcha_resp.json()
-                if not captcha_json.get("success", False):
-                    logger.warning('reCAPTCHA verification failed for user: %s' % email)
-                    return ApiException(status=400, message="reCAPTCHA verification failed. Please try again.")
+
+                token_valid = captcha_json.get("tokenProperties", {}).get("valid", False)
+                score = captcha_json.get("riskAnalysis", {}).get("score", 0.0)
+
+                if not token_valid:
+                    logger.warning('reCAPTCHA token invalid for user: %s', email)
+                    raise ApiException(status=400, message="reCAPTCHA verification failed.")
+
+                if score < 0.7:
+                    logger.warning('reCAPTCHA score too low (%s) for user: %s', score, email)
+                    raise ApiException(status=400, message="reCAPTCHA verification failed.")
+
             except requests.RequestException as exc:
-                logger.error('reCAPTCHA verification error: %s' % exc)
-                return ApiException(status=500, message="Error verifying reCAPTCHA. Please try again.")
+                logger.error('reCAPTCHA verification error: %s', exc)
+                raise ApiException(status=500, message="Error verifying reCAPTCHA.")
 
         if subject is None or email is None or body is None:
             return HttpResponseBadRequest()
@@ -283,8 +295,7 @@ class FeedbackView(BaseApiView):
         logger.debug('Creating ticket for user: %s' % ticket)
 
         ticket_id = rt.createTicket(ticket)
-
         if ticket_id > -1:
             return HttpResponse("OK")
         else:
-            return ApiException(status=400, message="There was a problem submitting your ticket.")
+            raise ApiException(status=400, message="There was a problem submitting your ticket.")

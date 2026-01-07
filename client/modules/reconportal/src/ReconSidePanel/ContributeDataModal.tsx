@@ -35,7 +35,7 @@ export const ContributeDataModal: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm<FormValues>();
   const { Link } = Typography;
-  const recaptchaSiteKey = (window as any).__RECAPTCHA_SITE_KEY__ || '';
+  const recaptchaSiteKey = (window as any).__RECAPTCHA_ENTERPRISE_SITE_KEY || '';
 
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => {
