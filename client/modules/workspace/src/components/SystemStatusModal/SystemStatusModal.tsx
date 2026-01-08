@@ -66,6 +66,7 @@ const SystemStatusContent: React.FC<SystemStatusModalProps> = ({
       footer={null}
       width={800}
       style={{ top: '230px' }}
+      className={styles.systemStatusModal}
     >
       <div className={styles.modal}>
         <div className={styles.tabs}>

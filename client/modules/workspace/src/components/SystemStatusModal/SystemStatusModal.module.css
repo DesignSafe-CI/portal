@@ -107,16 +107,17 @@
   background-color: #eb6e6e;
 }
 
-:global(.ant-modal-content) {
+/* Scope these styles to only SystemStatusModal */
+.systemStatusModal :global(.ant-modal-content) {
   padding: 0 !important;
 }
 
-:global(.ant-modal-header) {
+.systemStatusModal :global(.ant-modal-header) {
   background-color: #f4f4f4 !important;
   border-bottom: none !important;
   padding: 16px 24px !important;
 }
 
-:global(.ant-modal-body) {
+.systemStatusModal :global(.ant-modal-body) {
   padding: 0px 24px 24px 24px !important;
 }

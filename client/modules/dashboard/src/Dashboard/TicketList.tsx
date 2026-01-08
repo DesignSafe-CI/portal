@@ -43,6 +43,9 @@ export const TicketList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('');
   const [showResolved, setShowResolved] = useState(false);
+  const [ticketToClose, setTicketToClose] = useState<number | null>(null);
+  const [closing, setClosing] = useState(false);
+  const [closeError, setCloseError] = useState<string | null>(null);
 
   // Normalize status: replace unknown or unexpected values with 'new'
   const normalizeStatus = (status?: string) => {
@@ -110,23 +113,28 @@ export const TicketList: React.FC = () => {
   });
 
   const handleClose = (ticketId: number) => {
-    Modal.confirm({
-      title: 'Confirm Close',
-      content: 'Are you sure you want to close this ticket?',
-      okText: 'Yes',
-      cancelText: 'No',
-      onOk: async () => {
-        try {
-          await axios.post(`/help/tickets/${ticketId}/close/`);
-          fetchTickets();
-        } catch {
-          Modal.error({
-            title: 'Error',
-            content: 'Failed to close ticket.',
-          });
-        }
-      },
-    });
+    setTicketToClose(ticketId);
+  };
+
+  const handleCloseCancel = () => {
+    setTicketToClose(null);
+    setCloseError(null);
+  };
+
+  const handleCloseConfirm = async () => {
+    if (!ticketToClose) return;
+
+    setClosing(true);
+    setCloseError(null);
+    try {
+      await axios.post(`/help/tickets/${ticketToClose}/close/`);
+      setTicketToClose(null);
+      fetchTickets();
+    } catch (err) {
+      setCloseError('Failed to close ticket. Please try again.');
+    } finally {
+      setClosing(false);
+    }
   };
 
   const columns = [
@@ -249,6 +257,39 @@ export const TicketList: React.FC = () => {
           />
         </div>
       )}
+
+      <Modal
+        title={<h2>Confirm Close</h2>}
+        width="60%"
+        open={ticketToClose !== null}
+        destroyOnClose
+        footer={null}
+        onCancel={handleCloseCancel}
+      >
+        {closeError && (
+          <Alert
+            message={closeError}
+            type="error"
+            showIcon
+          />
+        )}
+        <p style={{ textAlign: 'left', marginTop: '10px' }}>
+          Are you sure you want to close this ticket?
+        </p>
+        <div style={{ marginTop: '20px', textAlign: 'right' }}>
+          <Button onClick={handleCloseCancel} disabled={closing}>
+            No
+          </Button>
+          <Button
+            type="primary"
+            onClick={handleCloseConfirm}
+            loading={closing}
+            style={{ marginLeft: '8px' }}
+          >
+            Yes
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };
