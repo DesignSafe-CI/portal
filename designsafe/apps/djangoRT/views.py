@@ -219,10 +219,9 @@ def ticketattachment(request, ticketId, attachmentId):
 
 class FeedbackView(BaseApiView):
     def post(self, request):
-        """Post a feedback response
         """
-        rt = rtUtil.DjangoRt(queue=settings.DJANGO_RT['RT_FEEDBACK_QUEUE'])
-
+        Post a feedback response
+        """
         data = json.loads(request.body)
         email = request.user.email if request.user.is_authenticated else data['email']
         name = "{} {}".format(request.user.first_name, request.user.last_name) if request.user.is_authenticated else data['name']
@@ -230,6 +229,17 @@ class FeedbackView(BaseApiView):
         body = data['body']
         project_id = data['projectId']
         project_title = data['title']
+
+        # Check if this is a RECON-PORTAL event contribution (not project feedback)
+        # If project_id is 'RECON-PORTAL', use the main queue instead of feedback queue
+        if project_id == 'RECON-PORTAL':
+            queue = settings.DJANGO_RT['RT_QUEUE'] # Main queue
+            category = 'Data Contribution'
+        else:
+            queue = settings.DJANGO_RT['RT_FEEDBACK_QUEUE'] # Feedback queue
+            category = 'Project Feedback'
+
+        rt = rtUtil.DjangoRt(queue=queue)
 
         if not request.user.is_authenticated:
             recaptcha_token = data.get('recaptchaToken')
@@ -275,7 +285,7 @@ class FeedbackView(BaseApiView):
 
         meta = (
             ('Opened by', request.user.username),
-            ('Category', 'Project Feedback'),
+            ('Category', category),
             ('Resource', 'DesignSafe'),
             ('Project ID', project_id),
             ('Project Title', project_title),
