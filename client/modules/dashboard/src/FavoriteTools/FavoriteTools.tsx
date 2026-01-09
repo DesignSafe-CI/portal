@@ -30,7 +30,7 @@ const parseToolId = (tool_id: string): { app_id: string; version?: string } => {
 const makeFavoriteKey = (fav: Favorite) =>
   fav.version ? `${fav.app_id}-${fav.version}` : fav.app_id;
 
-const QuickLinksMenu: React.FC = () => {
+const FavoriteTools: React.FC = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const { data: favoritesData, isLoading: loadingFavs } = useFavorites();
   const { data: appsData, isLoading: loadingApps } = useAppsListing();
@@ -155,4 +155,4 @@ const QuickLinksMenu: React.FC = () => {
   );
 };
 
-export default QuickLinksMenu;
+export default FavoriteTools;

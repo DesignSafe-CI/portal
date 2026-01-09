@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './Dashboard.module.css';
-import FavoriteTools from './FavoriteTools';
+import styles from '../Dashboard/Dashboard.module.css';
+import FavoriteTools from '../FavoriteTools/FavoriteTools';
 
 const Quicklinks = () => {
   return (

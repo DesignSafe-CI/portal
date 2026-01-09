@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGetSUAllocations, useAuthenticatedUser } from '@client/hooks';
-import styles from './Dashboard.module.css';
+import styles from '../Dashboard/Dashboard.module.css';
 const HOST_LABELS: Record<string, string> = {
   'ls6.tacc.utexas.edu': 'Lonestar6 (HPC)',
   'frontera.tacc.utexas.edu': 'Frontera (HPC)',

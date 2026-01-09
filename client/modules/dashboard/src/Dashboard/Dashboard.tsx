@@ -3,14 +3,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Table, Tag } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 
-import Quicklinks from './QuickLinksNavbar';
-import RecentlyAccessed from './RecentlyAccessed';
-import RecentProjects from './RecentProjects';
-import { TicketList } from './TicketList';
-import JobStatus from './Jobstatus';
+import Quicklinks from '../QuickLinks/QuickLinksNavbar';
+import RecentlyAccessed from '../RecentlyAccessed/RecentlyAccessed';
+import RecentProjects from '../RecentProjects/RecentProjects';
+import { TicketList } from '../TicketList/TicketList';
+import JobStatus from '../JobStatus/JobStatus';
 import { useSystemOverview } from '@client/hooks';
-import SUAllocationsCard from './SUAllocationsCard';
-import UserGuides from './UserGuides';
+import SUAllocationsCard from '../SUAllocationsCard/SUAllocationsCard';
+import UserGuides from '../UserGuides/UserGuides';
 
 import styles from './Dashboard.module.css';
 

@@ -15,7 +15,7 @@ import {
   CommentOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import styles from './Dashboard.module.css';
+import styles from '../Dashboard/Dashboard.module.css';
 
 interface RawTicket {
   id: number;

@@ -1,4 +1,4 @@
 export * from './Dashboard/Dashboard';
-export * from './Dashboard/JobsListingWrapper';
-export * from './Dashboard/JobDetailModalWrapper';
-export * from './Dashboard/Jobstatus';
+export * from './JobsListingWrapper/JobsListingWrapper';
+export * from './JobDetailModalWrapper/JobDetailModalWrapper';
+export * from './JobStatus/JobStatus';

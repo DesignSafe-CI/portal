@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import styles from './Dashboard.module.css';
-import { JobsListingWrapper } from './JobsListingWrapper';
-import { JobDetailModalWrapper } from './JobDetailModalWrapper';
+import styles from '../Dashboard/Dashboard.module.css';
+import { JobsListingWrapper } from '../JobsListingWrapper/JobsListingWrapper';
+import { JobDetailModalWrapper } from '../JobDetailModalWrapper/JobDetailModalWrapper';
 
 const JobStatus: React.FC = () => {
   const [selectedJobUuid, setSelectedJobUuid] = useState<string | null>(null);

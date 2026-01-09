@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { List, Typography } from 'antd';
-import styles from './Dashboard.module.css';
+import styles from '../Dashboard/Dashboard.module.css';
 
 type RecentTool = {
   label: string;
