@@ -1,0 +1,3 @@
+.sender :global(.ant-input::placeholder) {
+  color: var(--global-color-primary--x-dark);
+}

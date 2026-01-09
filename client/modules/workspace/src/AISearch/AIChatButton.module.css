@@ -1,9 +1,41 @@
-.aiButton {
-  background: linear-gradient(135deg, #47a59d 0%, #337ab7 100%) !important;
-  border: 2px solid transparent !important;
-  background-clip: padding-box !important;
-  box-shadow: 0 0 0 2px #47a59d, 0 0 8px rgba(71, 165, 157, 0.3) !important;
-  color: white !important;
+:global(#nav-ai-root) .aiButton:global(.ant-btn) {
+  /* to match DesignSafe theme */
+  font-family: futura-pt;
+  font-weight: bold;
+  color: #fff;
+  background-color: var(--ds-accent-color);
+
+  /* to remove border, but still match search input height */
+  border: unset;
+  --height: 34px;
+  height: var(--height);
+
+  /* to align with sibling form elements */
+  vertical-align: middle;
+
+  /* to adjust animation on `:active` */
+  outline-color: transparent;
+  transition-property: outline-color, height;
+}
+:global(#nav-ai-root) .aiButton:global(.ant-btn:hover) {
+  background-color: var(--ds-accent-color--dark);
+}
+:global(#nav-ai-root) .aiButton:global(.ant-btn:active) {
+  /* to preserve complex unique style (too much for always), but only on button press */
+  outline: 2px solid var(--ds-accent-color);
+  outline-offset: 2px;
+  background-image: linear-gradient(
+    135deg,
+    var(--ds-accent-color),
+    var(--ds-active-color)
+  );
+  height: 28px;
+}
+
+.drawer-subtitle {
+  font-size: 11px;
+  font-weight: normal;
+  color: var(--global-color-primary--x-dark);
 }
 
 .drawer :global(.ant-drawer-content-wrapper) {
