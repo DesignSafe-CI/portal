@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Input, Modal, Typography, notification } from 'antd';
 import { z } from 'zod';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { useCreateFeedbackTicket } from '@client/hooks';
+import { useCreateFeedbackTicket, useAuthenticatedUser } from '@client/hooks';
 import { DateInput } from '@client/datafiles';
 
 const formSchema = z.object({
@@ -26,17 +26,22 @@ const formSchema = z.object({
     .min(-180, 'Longitude must be between -180 and 180')
     .max(180, 'Longitude must be between -180 and 180'),
   body: z.string().min(10, 'Description must be at least 10 characters'),
-  recaptchaResponse: z.string().min(1, 'Please complete the reCAPTCHA'),
+  recaptchaResponse: z
+    .string()
+    .min(1, 'Please complete the reCAPTCHA')
+    .optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export const ContributeDataModal: React.FC = () => {
+  const { user } = useAuthenticatedUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm<FormValues>();
   const { Link } = Typography;
   const recaptchaSiteKey =
     (window as any).__RECAPTCHA_ENTERPRISE_SITE_KEY || '';
+  const isAuthenticated = !!user;
 
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => {
@@ -71,7 +76,9 @@ export const ContributeDataModal: React.FC = () => {
           body: formattedBody,
           projectId: 'RECON-PORTAL',
           title: 'Data Contribution',
-          recaptchaToken: values.recaptchaResponse,
+          ...(values.recaptchaResponse && {
+            recaptchaToken: values.recaptchaResponse,
+          }), // Only include recaptcha if present
         },
       },
       {
@@ -100,6 +107,18 @@ export const ContributeDataModal: React.FC = () => {
 
   const validateField = (fieldName: keyof FormValues) => {
     return async (_: any, value: any) => {
+      // Handle reCAPTCHA separately
+      if (fieldName === 'recaptchaResponse') {
+        if (isAuthenticated) {
+          return Promise.resolve(); // Skip for logged-in users
+        }
+        // Require for unauthenticated users
+        if (!value || value.trim() === '') {
+          return Promise.reject('Please complete the reCAPTCHA');
+        }
+        return Promise.resolve();
+      }
+
       const fieldSchema = formSchema.shape[fieldName];
       try {
         await fieldSchema.parseAsync(value);
@@ -134,20 +153,23 @@ export const ContributeDataModal: React.FC = () => {
             label="Full Name"
             name="name"
             rules={[{ validator: validateField('name') }]}
+            initialValue={
+              user ? `${user?.firstName} ${user?.lastName}` : undefined
+            }
             required
           >
-            <Input />
+            <Input disabled={!!user} />
           </Form.Item>
 
           <Form.Item
             label="Email"
             name="email"
             rules={[{ validator: validateField('email') }]}
+            initialValue={user ? user.email : undefined}
             required
           >
-            <Input type="email" />
+            <Input type="email" disabled={!!user} />
           </Form.Item>
-
           <Form.Item
             label="Date of Hazard Event"
             name="dateOfHazard"
@@ -220,24 +242,27 @@ export const ContributeDataModal: React.FC = () => {
             <Input.TextArea autoSize={{ minRows: 4 }} />
           </Form.Item>
 
-          <Form.Item
-            label="reCAPTCHA"
-            name="recaptchaResponse"
-            rules={[{ validator: validateField('recaptchaResponse') }]}
-            required
-          >
-            {recaptchaSiteKey ? (
-              <ReCAPTCHA
-                sitekey={recaptchaSiteKey}
-                onChange={(value) =>
-                  form.setFieldValue('recaptchaResponse', value || '')
-                }
-                onExpired={() => form.setFieldValue('recaptchaResponse', '')}
-              />
-            ) : (
-              <div style={{ color: 'red' }}>RECAPTCHA site key not set yet</div>
-            )}
-          </Form.Item>
+          {!isAuthenticated && (
+            <Form.Item
+              name="recaptchaResponse"
+              rules={[{ validator: validateField('recaptchaResponse') }]}
+              required
+            >
+              {recaptchaSiteKey ? (
+                <ReCAPTCHA
+                  sitekey={recaptchaSiteKey}
+                  onChange={(value) =>
+                    form.setFieldValue('recaptchaResponse', value || '')
+                  }
+                  onExpired={() => form.setFieldValue('recaptchaResponse', '')}
+                />
+              ) : (
+                <div style={{ color: 'red' }}>
+                  RECAPTCHA site key not set yet
+                </div>
+              )}
+            </Form.Item>
+          )}
 
           <Form.Item>
             <Button type="primary" style={{ float: 'right' }} htmlType="submit">

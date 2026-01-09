@@ -230,9 +230,11 @@ class FeedbackView(BaseApiView):
         body = data['body']
         project_id = data['projectId']
         project_title = data['title']
-        recaptcha_token = data.get('recaptchaToken') #for ContributeDataModal.tsx
 
-        if recaptcha_token:
+        if not request.user.is_authenticated:
+            recaptcha_token = data.get('recaptchaToken')
+            if not recaptcha_token:
+                raise ApiException(status=400, message="reCAPTCHA is required.")
             try:
                 payload = {
                     "event": {
@@ -292,9 +294,10 @@ class FeedbackView(BaseApiView):
                                  requestor=email,
                                  cc='')
 
-        logger.debug('Creating ticket for user: %s' % ticket)
+        logger.debug(f'Creating ticket for user: {name} email: {email}')
 
         ticket_id = rt.createTicket(ticket)
+
         if ticket_id > -1:
             return HttpResponse("OK")
         else:
