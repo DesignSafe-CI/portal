@@ -7,7 +7,7 @@ export const AIChatButton: React.FC = () => {
   const [showDrawer, setShowDrawer] = useState(false);
 
   return (
-    <>
+    <div id="nav-ai-root">
       <Button
         type="default"
         onClick={() => setShowDrawer(true)}
@@ -22,9 +22,7 @@ export const AIChatButton: React.FC = () => {
         title={
           <div>
             <div>Ask AI</div>
-            <div
-              style={{ fontSize: '11px', fontWeight: 'normal', color: 'gray' }}
-            >
+            <div className={styles['drawer-subtitle']}>
               Beta - This model is still in training. It searches DesignSafe
               Published Data and User Documentation only.
             </div>
@@ -39,6 +37,6 @@ export const AIChatButton: React.FC = () => {
       >
         <AIChat closed={!showDrawer} />
       </Drawer>
-    </>
+    </div>
   );
 };
