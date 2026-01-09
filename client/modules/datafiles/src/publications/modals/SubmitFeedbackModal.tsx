@@ -24,7 +24,6 @@ export const SubmitFeedbackModal: React.FC<{
 
   const { user } = useAuthenticatedUser();
   const isAuthenticated = !!user;
-  debugger;
   const submitFeedback = (formData: {
     name: string;
     email: string;
