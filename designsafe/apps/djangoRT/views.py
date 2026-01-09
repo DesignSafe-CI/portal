@@ -234,7 +234,7 @@ class FeedbackView(BaseApiView):
         # If project_id is 'RECON-PORTAL', use the main queue instead of feedback queue
         if project_id == 'RECON-PORTAL':
             queue = settings.DJANGO_RT['RT_QUEUE'] # Main queue
-            category = 'Data Contribution'
+            category = project_title
         else:
             queue = settings.DJANGO_RT['RT_FEEDBACK_QUEUE'] # Feedback queue
             category = 'Project Feedback'

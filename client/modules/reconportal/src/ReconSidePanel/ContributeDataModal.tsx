@@ -51,8 +51,8 @@ export const ContributeDataModal: React.FC = () => {
 
   const { mutate } = useCreateFeedbackTicket(
     'RECON-PORTAL',
-    'Data Contribution'
-  ); // not sure if it will suffice, need to pass projectId adn title into useCreateFeedbackTicket, or create new hook?
+    'Data Contribution for DesignSafe Recon Portal'
+  );
   const [notifApi, contextHolder] = notification.useNotification();
 
   const handleSubmit = (values: FormValues) => {
