@@ -84,7 +84,7 @@
     {% block footer %}{% endblock %}
     <div id="toast-container"></div>
     <!-- scripts -->
-    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script src="https://www.google.com/recaptcha/enterprise.js"></script>
 
     <script src="{% static 'vendor/modernizr/modernizr.js' %}"></script>
     <script src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
@@ -142,7 +142,7 @@
                 </div>")
         }
     </script>
-    <script>window.__RECAPTCHA_SITE_KEY__ = "{{ RECAPTCHA_PUBLIC_KEY }}";</script>
+    <script>window.__RECAPTCHA_ENTERPRISE_SITE_KEY = "{{ RECAPTCHA_ENTERPRISE_SITE_KEY }}";</script>
     <script type="module">
         window.__authenticatedUser__ = "{{request.user.is_authenticated}}" === 'True' && {
             username: "{{request.user.username}}",
