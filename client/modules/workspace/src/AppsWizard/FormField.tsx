@@ -7,12 +7,13 @@ import {
   tapisInputFileRegex,
   TAppFileSettings,
 } from '../AppsWizard/AppsFormSchema';
-import { getSystemDisplayName } from '../utils';
+import { getExecSystemFromId, getSystemName } from '../utils';
 import { SecondaryButton } from '@client/common-components';
 import { SelectModal } from '../SelectModal/SelectModal';
+import { SystemsDocumentation } from './SystemsDocumentation';
 import { useSystemOverview, useSystemQueue } from '@client/hooks';
-import systemStatusStyles from '../components/SystemStatusModal/SystemStatusModal.module.css';
-import queueStyles from '../components/SystemStatusModal/SystemQueueTable.module.css';
+import { StatusTag } from '../_common';
+import { useGetSystems } from '@client/hooks';
 
 const ExtendedSelect: React.FC<{
   after?: React.FC<{
@@ -45,26 +46,28 @@ const SystemStatus: React.FC<{
   value: string;
 }> = ({ value }) => {
   const { data: systems } = useSystemOverview();
-  const displayName = getSystemDisplayName(value);
+  const {
+    data: { executionSystems },
+  } = useGetSystems();
+  const currentExecSystem = getExecSystemFromId(executionSystems, value);
   const selectedSystem = systems?.find(
-    (sys) => sys.display_name === displayName
+    (sys) => sys.hostname === currentExecSystem?.host
   );
+
+  if (!currentExecSystem || !selectedSystem) return null;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
       <span style={{ marginRight: -5, marginLeft: 8 }}>
-        {value.charAt(0).toUpperCase() + value.slice(1)} status:
+        {currentExecSystem?.notes?.label ||
+          getSystemName(currentExecSystem?.host || '')}{' '}
+        status:
       </span>
-      <div
-        className={`${systemStatusStyles.statusBadge} ${
-          selectedSystem?.is_operational
-            ? systemStatusStyles.open
-            : systemStatusStyles.closed
-        }`}
-        style={{ marginLeft: 12 }}
-      >
-        {selectedSystem?.is_operational ? 'Operational' : 'Maintenance'}
-      </div>
+      <span style={{ marginLeft: 12 }}>
+        <StatusTag variant={selectedSystem?.is_operational ? 'open' : 'error'}>
+          {selectedSystem?.is_operational ? 'Operational' : 'Maintenance'}
+        </StatusTag>
+      </span>
     </div>
   );
 };
@@ -74,31 +77,33 @@ const QueueStatus: React.FC<{
 }> = ({ value }) => {
   const { getValues } = useFormContext();
   const selectedSystemId = getValues('configuration.execSystemId');
-  const displayName = getSystemDisplayName(selectedSystemId);
-  const { data: queueData } = useSystemQueue(displayName);
+  const {
+    data: { executionSystems },
+  } = useGetSystems();
+  const currentExecSystem = getExecSystemFromId(
+    executionSystems,
+    selectedSystemId
+  );
+  const { data: systems } = useSystemOverview();
+
+  const selectedSystem = systems?.find(
+    (sys) => sys.hostname === currentExecSystem?.host
+  );
+
+  const { data: queueData } = useSystemQueue(selectedSystem?.hostname || '');
   const selectedQueue = queueData?.find((q) => q.name === value);
 
-  if (!value) return null;
+  if (!value || !selectedSystem) return null;
+  if (!selectedQueue || selectedQueue.hidden) return null;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginLeft: 12 }}>
       <span style={{ marginRight: -5, marginLeft: 8 }}>Queue Status:</span>
-      <div
-        className={`${queueStyles.statusBadge} ${
-          selectedQueue
-            ? selectedQueue.down
-              ? queueStyles.closed
-              : queueStyles.open
-            : queueStyles.closed
-        }`}
-        style={{ marginLeft: 12 }}
-      >
-        {selectedQueue
-          ? selectedQueue.down
-            ? 'Closed'
-            : 'Open'
-          : 'Not Available'}
-      </div>
+      <span style={{ marginLeft: 12 }}>
+        <StatusTag variant={selectedSystem?.is_operational ? 'open' : 'error'}>
+          {selectedSystem?.is_operational ? 'Operational' : 'Maintenance'}
+        </StatusTag>
+      </span>
     </div>
   );
 };
@@ -245,6 +250,11 @@ export const FormField: React.FC<{
         >
           {description}
         </small>
+      )}
+      {name === 'configuration.execSystemLogicalQueue' && (
+        <SystemsDocumentation
+          execSystemId={getValues('configuration.execSystemId')}
+        />
       )}
       {/* Select Modal has Form and input which cause state sharing with above FormItem
           So, SelectModal is outside FormItem.

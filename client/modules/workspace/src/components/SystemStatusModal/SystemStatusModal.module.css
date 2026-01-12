@@ -89,14 +89,8 @@
   overflow: auto;
 }
 
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 5px;
-  font-size: 11px;
-  border-radius: 4px;
-  color: white;
-  text-align: center;
+.modalContainer {
+  top: 230px;
 }
 
 .open {

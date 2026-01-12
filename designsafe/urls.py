@@ -31,7 +31,7 @@ from django.views.generic import RedirectView, TemplateView
 from django.urls import reverse, path
 from django.http import HttpResponseRedirect
 from designsafe.apps.auth.views import tapis_oauth as login
-from django.contrib.auth.views import LogoutView as des_logout
+from designsafe.apps.auth.views import LogoutView as des_logout
 from designsafe.views import project_version as des_version, redirect_old_nees
 from impersonate import views as impersonate_views
 

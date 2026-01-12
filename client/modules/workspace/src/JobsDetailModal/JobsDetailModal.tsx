@@ -99,7 +99,7 @@ export const JobsDetailModalBody: React.FC<{
       'nodeCount' in jobDisplay ? String(jobDisplay.nodeCount) : undefined,
     Allocation: 'allocation' in jobDisplay ? jobDisplay.allocation : undefined,
     Reservation:
-      'reservation' in jobDisplay ? jobDisplay.reservation?.arg : undefined,
+      'reservation' in jobDisplay ? jobDisplay.reservation : undefined,
     'Execution Directory':
       'execSystemExecDir' in jobData ? jobData.execSystemExecDir : undefined,
   };
@@ -304,7 +304,12 @@ export const JobsDetailModal: React.FC<{ uuid: string }> = ({ uuid }) => {
               <dt>Job UUID: </dt>
               <dd>{jobData.uuid}</dd>
               <dt>Application: </dt>
-              <dd>{JSON.parse(jobData.notes).label || jobData.appId}</dd>
+              <dd>
+                {(typeof jobData.notes === 'string'
+                  ? JSON.parse(jobData.notes)
+                  : jobData.notes
+                ).label || jobData.appId}
+              </dd>
               <dt>System: </dt>
               <dd>{jobData.execSystemId}</dd>
             </dl>

@@ -105,6 +105,7 @@ def _get_app(app_id, app_version, user):
 
     lic_type = _app_license_type(app_def)
     data["license"] = {"type": lic_type}
+    data["portalNamespace"] = settings.PORTAL_NAMESPACE
     if lic_type is not None:
         lic = _get_user_app_license(lic_type, user)
         data["license"]["enabled"] = lic is not None

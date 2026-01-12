@@ -6,7 +6,7 @@ import {
   DownloadCitation,
 } from '@client/datafiles';
 import {
-  apiClient,
+  TBaseProjectValue,
   usePublicationDetail,
   usePublicationVersions,
 } from '@client/hooks';
@@ -53,12 +53,12 @@ export const PublishedDetailLayout: React.FC = () => {
 
   // match /PRJ-XXXX--VY and capture the version, Y
   const pathRegex = /--V([0-9]*)/;
-  const versionFromPath = (path ?? '').match(pathRegex)?.[1] || '1';
+  const versionFromPath = (path ?? '').match(pathRegex)?.[1] || undefined;
 
   const selectedVersion =
     version ||
-    versionFromPath ||
     searchParams.get('version') ||
+    versionFromPath ||
     Math.max(...allVersions).toString();
 
   useEffect(() => {
@@ -70,10 +70,11 @@ export const PublishedDetailLayout: React.FC = () => {
   }, [version, searchParams, setSearchParams]);
 
   // List files in the project root for metrics/reporting purposes.
+  /*
   useEffect(() => {
     if (!data) return;
 
-    data?.baseProject.projectType !== 'other' &&
+    !['other', 'software'].includes(data?.baseProject.projectType) &&
       apiClient.get(
         `/api/datafiles/tapis/public/listing/designsafe.storage.published/${projectId}${
           selectedVersion && parseInt(selectedVersion) > 1
@@ -82,6 +83,7 @@ export const PublishedDetailLayout: React.FC = () => {
         }`
       );
   }, [data, selectedVersion, searchParams, projectId]);
+  */
 
   if (isError) {
     return (
@@ -112,6 +114,17 @@ export const PublishedDetailLayout: React.FC = () => {
         replace
       />
     );
+  }
+
+  let baseProjectValue = data.baseProject;
+
+  if (['other', 'software'].includes(data.baseProject.projectType)) {
+    const versionValue = data.tree.children.find(
+      (c) => (c.version ?? 1) === parseFloat(selectedVersion)
+    )?.value;
+    if (versionValue) {
+      baseProjectValue = versionValue as unknown as TBaseProjectValue;
+    }
   }
 
   const publicationDate = data.tree.children.find(
@@ -145,7 +158,7 @@ export const PublishedDetailLayout: React.FC = () => {
         />
       </div>
 
-      {data.baseProject.projectType === 'other' && (
+      {['other', 'software'].includes(data.baseProject.projectType) && (
         <>
           {data.baseProject.tombstone && (
             <Alert
@@ -190,7 +203,7 @@ export const PublishedDetailLayout: React.FC = () => {
         </>
       )}
       <BaseProjectDetails
-        projectValue={data?.baseProject}
+        projectValue={baseProjectValue}
         publicationDate={publicationDate}
         versions={allVersions}
         isPublished
