@@ -165,7 +165,7 @@ export const PublishedDetailLayout: React.FC = () => {
               showIcon
               type="warning"
               message={
-                <strong>The following Dataset does not exist anymore</strong>
+                <strong>The following dataset is no longer published in DesignSafe.</strong>
               }
               description={
                 <div>
