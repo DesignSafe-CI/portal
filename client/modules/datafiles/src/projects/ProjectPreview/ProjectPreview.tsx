@@ -269,7 +269,9 @@ export const PublishedEntityDisplay: React.FC<{
           showIcon
           type="warning"
           message={
-            <strong>The following dataset is no longer published in DesignSafe.</strong>
+            <strong>
+              The following dataset is no longer published in DesignSafe.
+            </strong>
           }
           description={
             <div>
@@ -277,7 +279,11 @@ export const PublishedEntityDisplay: React.FC<{
               <a href={`https://doi.org/${treeData.value.dois?.[0]}`}>
                 {treeData.value.dois?.[0]}
               </a>{' '}
-              was incomplete and removed. The metadata is still available.
+              does not comply with one or more{' '}
+              <a href="https://www.designsafe-ci.org/user-guide/curating/policies/">
+                DesignSafe policies
+              </a>{' '}
+              and has been removed. The metadata is still available.
             </div>
           }
         />
