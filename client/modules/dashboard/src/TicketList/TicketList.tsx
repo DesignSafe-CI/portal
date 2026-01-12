@@ -1,20 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
-import {
-  Table,
-  Button,
-  Input,
-  Alert,
-  Space,
-  Typography,
-  Spin,
-  Modal,
-} from 'antd';
+import { Table, Button, Input, Alert, Space, Typography, Spin } from 'antd';
 import {
   CloseOutlined,
   CommentOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
+import { apiClient } from '@client/hooks';
+import { CloseTicketModal } from './CloseTicketModal';
 import styles from '../Dashboard/Dashboard.module.css';
 
 interface RawTicket {
@@ -71,7 +63,7 @@ export const TicketList: React.FC = () => {
     setError(null);
 
     try {
-      const res = await axios.get('/help/tickets/', {
+      const res = await apiClient.get('/help/tickets/', {
         params: {
           fmt: 'json',
           show_resolved: true,
@@ -121,13 +113,15 @@ export const TicketList: React.FC = () => {
     setCloseError(null);
   };
 
-  const handleCloseConfirm = async () => {
+  const handleCloseConfirm = async (comment: string) => {
     if (!ticketToClose) return;
 
     setClosing(true);
     setCloseError(null);
     try {
-      await axios.post(`/help/tickets/${ticketToClose}/close/`);
+      const formData = new FormData();
+      formData.append('reply', comment);
+      await apiClient.post(`/help/tickets/${ticketToClose}/close/`, formData);
       setTicketToClose(null);
       fetchTickets();
     } catch (err) {
@@ -258,38 +252,14 @@ export const TicketList: React.FC = () => {
         </div>
       )}
 
-      <Modal
-        title={<h2>Confirm Close</h2>}
-        width="60%"
-        open={ticketToClose !== null}
-        destroyOnClose
-        footer={null}
+      <CloseTicketModal
+        ticketId={ticketToClose}
+        isOpen={ticketToClose !== null}
+        closing={closing}
+        closeError={closeError}
         onCancel={handleCloseCancel}
-      >
-        {closeError && (
-          <Alert
-            message={closeError}
-            type="error"
-            showIcon
-          />
-        )}
-        <p style={{ textAlign: 'left', marginTop: '10px' }}>
-          Are you sure you want to close this ticket?
-        </p>
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <Button onClick={handleCloseCancel} disabled={closing}>
-            No
-          </Button>
-          <Button
-            type="primary"
-            onClick={handleCloseConfirm}
-            loading={closing}
-            style={{ marginLeft: '8px' }}
-          >
-            Yes
-          </Button>
-        </div>
-      </Modal>
+        onConfirm={handleCloseConfirm}
+      />
     </div>
   );
 };
