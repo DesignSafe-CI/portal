@@ -1,98 +1,33 @@
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Table, Tag } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
-
 import Quicklinks from '../QuickLinks/QuickLinksNavbar';
 import RecentlyAccessed from '../RecentlyAccessed/RecentlyAccessed';
 import RecentProjects from '../RecentProjects/RecentProjects';
 import { TicketList } from '../TicketList/TicketList';
+import { SystemStatus } from '../SystemStatus/SystemStatus';
 import JobStatus from '../JobStatus/JobStatus';
-import { useSystemOverview } from '@client/hooks';
 import SUAllocationsCard from '../SUAllocationsCard/SUAllocationsCard';
 import UserGuides from '../UserGuides/UserGuides';
-
 import styles from './Dashboard.module.css';
 
 const queryClient = new QueryClient();
 
-interface HPCSystem {
-  display_name: string;
-  hostname: string;
-  load_percentage: number;
-  is_operational: boolean;
-  running: number;
-  waiting: number;
-}
-
 export function Dashboard() {
-  const { data: liveSystems, isLoading } = useSystemOverview();
   const [showJobs, setShowJobs] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
   const [showTickets, setShowTickets] = useState(false);
   const [showAllocations, setShowAllocations] = useState(false);
 
-  const columns = [
-    {
-      title: 'System Name',
-      dataIndex: 'display_name',
-      key: 'name',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'is_operational',
-      key: 'status',
-      render: (isOperational: boolean) => (
-        <Tag color={isOperational ? 'green' : 'red'}>
-          {isOperational ? 'UP' : 'DOWN'}
-        </Tag>
-      ),
-    },
-    {
-      title: 'Load',
-      dataIndex: 'load_percentage',
-      key: 'load',
-      render: (load: number, record: HPCSystem) =>
-        record.is_operational ? (
-          `${load}%`
-        ) : (
-          <span className={styles.naText}>(N/A)</span>
-        ),
-    },
-    {
-      title: 'Running Jobs',
-      dataIndex: 'running',
-      key: 'running',
-      render: (value: number, record: HPCSystem) =>
-        record.is_operational ? (
-          value
-        ) : (
-          <span className={styles.naText}>(N/A)</span>
-        ),
-    },
-    {
-      title: 'Waiting Jobs',
-      dataIndex: 'waiting',
-      key: 'waiting',
-      render: (value: number, record: HPCSystem) =>
-        record.is_operational ? (
-          value
-        ) : (
-          <span className={styles.naText}>(N/A)</span>
-        ),
-    },
-  ];
-
   return (
     <QueryClientProvider client={queryClient}>
       <div className={styles.dashboardContainer}>
         {/* Sidebar */}
-
         <Quicklinks />
 
         {/* Middle Section */}
         <div className={styles.middleSection}>
-          <h1>DASHBOARD</h1>
+          <h1>Dashboard</h1>
 
           {/* Recent Jobs */}
           <div className={styles.section}>
@@ -160,16 +95,7 @@ export function Dashboard() {
         <div className={styles.rightPanel}>
           <div className={styles.statusCard}>
             <h3 className={styles.statusTitle}>System Status</h3>
-            <Table
-              columns={columns}
-              dataSource={liveSystems?.map((sys) => ({
-                key: sys.hostname,
-                ...sys,
-              }))}
-              loading={isLoading}
-              size="small"
-              pagination={false}
-            />
+            <SystemStatus />
           </div>
 
           <div className={styles.statusCard}>

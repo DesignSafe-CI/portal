@@ -44,7 +44,7 @@
 
 .statusCard {
   background-color: #fff;
-  padding: 1.5rem;
+  padding: 0rem 1.5rem 1.5rem 1.5rem;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
