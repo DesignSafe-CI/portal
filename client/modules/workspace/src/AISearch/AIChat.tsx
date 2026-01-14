@@ -245,6 +245,12 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
         ></Button>
       </div>
     ),
+    styles: {
+      content:
+        message.role === 'user'
+          ? { backgroundColor: '#F8DCA7' }
+          : { backgroundColor: '#f0f0f0' },
+    },
   }));
 
   return (
@@ -274,14 +280,16 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
           borderTop: '1px solid #e6e6e6',
         }}
       >
-        <Sender
-          onSubmit={handleSendMessage}
-          placeholder="Ask me anything about DesignSafe publications and documentation..."
-          loading={loading}
-          disabled={loading}
-          value={inputValue}
-          onChange={setInputValue}
-        />
+        <div className={styles.sender}>
+          <Sender
+            onSubmit={handleSendMessage}
+            placeholder="Ask me anything about DesignSafe publications and documentation..."
+            loading={loading}
+            disabled={loading}
+            value={inputValue}
+            onChange={setInputValue}
+          />
+        </div>
       </Footer>
     </Layout>
   );
