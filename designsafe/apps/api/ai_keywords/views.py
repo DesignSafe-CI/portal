@@ -44,7 +44,7 @@ class KeywordsView(BaseApiView):
         )
         try:
             resp_list = _parse_keywords_response(resp["answer"])
-        except Exception:
+        except (TypeError, ValueError):
             logger.exception("Error decoding answer")
             logger.debug(f"Raw answer: {resp['answer']}")
             resp_list = []
