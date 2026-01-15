@@ -33,17 +33,12 @@ function useJobsListing(pageSize: number = 10) {
   return useInfiniteQuery<TJobsListing, AxiosError<{ message?: string }>>({
     initialPageParam: 0,
     queryKey: ['workspace', 'jobsListing'],
-    queryFn: ({ pageParam, signal }) =>
-      getJobsListing(pageSize, (pageParam as TFileListingPageParam).page, {
-        signal,
-      }),
-    getNextPageParam: (
-      lastPage,
-      allpages,
-      lastPageParam: number | unknown
-    ): { page: number } | undefined => {
-      return lastPage.listing && lastPage.listing.length >= pageSize
-        ? { page: (lastPageParam as TFileListingPageParam).lastPageParam + 1 }
+    queryFn: ({ pageParam = 0, signal }) =>
+      getJobsListing(pageSize, pageParam as number, { signal }),
+
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+      return lastPage.listing?.length >= pageSize
+        ? (lastPageParam as number) + 1
         : undefined;
     },
     retry: (failureCount, error) =>
