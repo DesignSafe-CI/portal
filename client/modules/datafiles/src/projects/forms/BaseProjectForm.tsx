@@ -409,12 +409,6 @@ export const BaseProjectForm: React.FC<{
         <Form.Item label="Keywords" required>
           Choose informative words that indicate the content of the project.
           Keywords should be comma-separated.
-          <KeywordSuggestor
-            form={form}
-            titlePath={['title']}
-            descriptionPath={['description']}
-            keywordsPath={['keywords']}
-          />
           <Form.Item
             name="keywords"
             rules={[{ required: true }]}
@@ -426,6 +420,12 @@ export const BaseProjectForm: React.FC<{
               tokenSeparators={[',']}
             />
           </Form.Item>
+          <KeywordSuggestor
+            form={form}
+            titlePath={['title']}
+            descriptionPath={['description']}
+            keywordsPath={['keywords']}
+          />
         </Form.Item>
       )}
 
