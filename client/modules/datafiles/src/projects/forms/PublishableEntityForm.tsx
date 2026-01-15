@@ -162,6 +162,12 @@ const ExperimentFormFields: React.FC<{
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -173,12 +179,6 @@ const ExperimentFormFields: React.FC<{
             tokenSeparators={[',']}
           ></Select>
         </Form.Item>
-        <KeywordSuggestor
-          form={form}
-          titlePath={['value', 'title']}
-          descriptionPath={['value', 'description']}
-          keywordsPath={['value', 'keywords']}
-        />
       </Form.Item>
 
       <Form.Item label="Assign Authorship" required>
@@ -305,6 +305,12 @@ const SimulationFormFields: React.FC<{
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -316,12 +322,6 @@ const SimulationFormFields: React.FC<{
             tokenSeparators={[',']}
           ></Select>
         </Form.Item>
-        <KeywordSuggestor
-          form={form}
-          titlePath={['value', 'title']}
-          descriptionPath={['value', 'description']}
-          keywordsPath={['value', 'keywords']}
-        />
       </Form.Item>
 
       <Form.Item label="Assign Authorship" required>
@@ -448,6 +448,12 @@ const HybridSimFormFields: React.FC<{
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -459,12 +465,6 @@ const HybridSimFormFields: React.FC<{
             tokenSeparators={[',']}
           ></Select>
         </Form.Item>
-        <KeywordSuggestor
-          form={form}
-          titlePath={['value', 'title']}
-          descriptionPath={['value', 'description']}
-          keywordsPath={['value', 'keywords']}
-        />
       </Form.Item>
 
       <Form.Item label="Assign Authorship" required>
@@ -645,6 +645,12 @@ const MissionFormFields: React.FC<{
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -656,12 +662,6 @@ const MissionFormFields: React.FC<{
             tokenSeparators={[',']}
           ></Select>
         </Form.Item>
-        <KeywordSuggestor
-          form={form}
-          titlePath={['value', 'title']}
-          descriptionPath={['value', 'description']}
-          keywordsPath={['value', 'keywords']}
-        />
       </Form.Item>
     </>
   );
@@ -768,6 +768,12 @@ const DocumentFormFields: React.FC<{
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -779,12 +785,6 @@ const DocumentFormFields: React.FC<{
             tokenSeparators={[',']}
           ></Select>
         </Form.Item>
-        <KeywordSuggestor
-          form={form}
-          titlePath={['value', 'title']}
-          descriptionPath={['value', 'description']}
-          keywordsPath={['value', 'keywords']}
-        />
       </Form.Item>
     </>
   );
