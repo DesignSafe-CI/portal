@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 import networkx as nx
 from django.conf import settings
+from designsafe.libs.common.context_managers import Workdir
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.operations.path_operations import (
@@ -16,22 +17,6 @@ from designsafe.apps.api.datafiles.models import PublicationSymlink
 
 published_path = settings.DESIGNSAFE_PUBLISHED_PATH
 dataset_path = settings.PUBLISHED_DATASET_PATH
-
-
-class Workdir:
-    """
-    Context manager for changing the working directory. Used for constructing symlinks
-    """
-
-    def __init__(self, destination_dir):
-        self.starting_dir = os.getcwd()
-        self.destination_dir = destination_dir
-
-    def __enter__(self):
-        os.chdir(self.destination_dir)
-
-    def __exit__(self, *args):
-        os.chdir(self.starting_dir)
 
 
 def construct_symlink_mapping(project_id: str):
