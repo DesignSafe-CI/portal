@@ -1,33 +1,33 @@
-import React from 'react';
-import styles from '../Dashboard/Dashboard.module.css';
+import styles from './QuickLinksNavbar.module.css';
 import FavoriteTools from '../FavoriteTools/FavoriteTools';
+// import { NavLink } from 'react-router-dom';
+import { UserOutlined, ToolOutlined, BookOutlined } from '@ant-design/icons';
 
-const Quicklinks = () => {
+// I don't think we need to use NavLink on here instead of the <a> tags, but I could be mistaken
+const QuickLinks: React.FC = () => {
   return (
-    <div className={styles.sidebar}>
+    <nav className={styles.sidebar}>
       <div className={styles.sidebarTitle}>Quick Links</div>
 
-      {/* Favorite Tools */}
       <div style={{ marginBottom: '1rem' }}>
         <FavoriteTools />
       </div>
 
       <a href="/account" className={styles.sidebarLink}>
-        <i className="fa fa-user" style={{ marginRight: '8px' }}></i>
+        <UserOutlined className={styles.sidebarIcon} />
         Manage Account
       </a>
-
       <a href="/workspace" className={styles.sidebarLink}>
-        <i className="fa fa-wrench" style={{ marginRight: '8px' }}></i>
+        <ToolOutlined className={styles.sidebarIcon} />
         Tools & Applications
       </a>
 
       <a href="/learning-center/overview" className={styles.sidebarLink}>
-        <i className="fa fa-book" style={{ marginRight: '8px' }}></i>
+        <BookOutlined className={styles.sidebarIcon} />
         Training
       </a>
-    </div>
+    </nav>
   );
 };
 
-export default Quicklinks;
+export default QuickLinks;

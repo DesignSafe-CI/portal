@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
-import Quicklinks from '../QuickLinks/QuickLinksNavbar';
+import QuickLinks from '../QuickLinks/QuickLinksNavbar';
 import RecentlyAccessed from '../RecentlyAccessed/RecentlyAccessed';
 import RecentProjects from '../RecentProjects/RecentProjects';
 import { TicketList } from '../TicketList/TicketList';
@@ -23,7 +23,7 @@ export function Dashboard() {
     <QueryClientProvider client={queryClient}>
       <div className={styles.dashboardContainer}>
         {/* Sidebar */}
-        <Quicklinks />
+        <QuickLinks />
 
         {/* Middle Section */}
         <div className={styles.middleSection}>
