@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Table, Typography } from 'antd';
+import React, { useMemo } from 'react';
+import { useProjectListing } from '@client/hooks';
+import { Table, Typography, Alert } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import styles from '../Dashboard/Dashboard.module.css';
 
@@ -31,50 +31,48 @@ interface RawProject {
 const { Link, Text } = Typography;
 
 const RecentProjects: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const { data, isLoading, error } = useProjectListing(1, 100);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          '/api/projects/v2/?offset=0&limit=100'
-        );
-        const rawProjects: RawProject[] = response.data.result;
+  const sortedRecent = useMemo(() => {
+    if (!data?.result) return [];
 
-        const mapped: Project[] = rawProjects.map((proj) => {
-          const piUser = proj.value.users?.find((user) => user.role === 'pi');
+    const rawProjects: RawProject[] = data.result;
 
-          return {
-            uuid: proj.uuid,
-            title: proj.value.title,
-            projectId: proj.value.projectId,
-            lastUpdated: proj.lastUpdated,
-            pi: piUser ? `${piUser.fname} ${piUser.lname}` : 'N/A',
-          };
-        });
+    const mapped: Project[] = rawProjects.map((proj) => {
+      const piUser = proj.value.users?.find((user) => user.role === 'pi');
 
-        const sortedRecent = mapped
-          .sort(
-            (a, b) =>
-              new Date(b.lastUpdated).getTime() -
-              new Date(a.lastUpdated).getTime()
-          )
-          .slice(0, 3);
+      return {
+        uuid: proj.uuid,
+        title: proj.value.title,
+        projectId: proj.value.projectId,
+        lastUpdated: proj.lastUpdated,
+        pi: piUser ? `${piUser.fname} ${piUser.lname}` : 'N/A',
+      };
+    });
 
-        setProjects(sortedRecent);
-      } catch (error) {
-        console.error('Failed to fetch recent projects!', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    return mapped
+      .sort(
+        (a, b) =>
+          new Date(b.lastUpdated).getTime() -
+          new Date(a.lastUpdated).getTime()
+      )
+      .slice(0, 3);
+  }, [data]);
 
-    fetchProjects();
-  }, []);
+  if (error) {
+    return (
+      <Alert
+        type="error"
+        message="Failed to load recent projects"
+        description="Please try refreshing the page."
+        showIcon
+      />
+    );
+  }
 
-  if (projects.length === 0) return null;
+  if (!isLoading && sortedRecent.length === 0) {
+    return null;
+  }
 
   const columns: ColumnsType<Project> = [
     {
@@ -108,11 +106,11 @@ const RecentProjects: React.FC = () => {
   return (
     <div className={styles.recentProjectsContainer}>
       <Table
-        dataSource={projects}
+        dataSource={sortedRecent}
         columns={columns}
         rowKey="uuid"
         pagination={false}
-        loading={loading}
+        loading={isLoading}
         size="middle"
       />
     </div>
