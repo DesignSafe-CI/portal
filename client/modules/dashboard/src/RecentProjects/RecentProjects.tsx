@@ -53,8 +53,7 @@ const RecentProjects: React.FC = () => {
     return mapped
       .sort(
         (a, b) =>
-          new Date(b.lastUpdated).getTime() -
-          new Date(a.lastUpdated).getTime()
+          new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
       )
       .slice(0, 3);
   }, [data]);
