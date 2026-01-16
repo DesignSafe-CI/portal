@@ -16,7 +16,6 @@ from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
     handle_legacy_authors,
     handle_dropdown_values,
-    handle_keywords,
 )
 from designsafe.apps.api.projects_v2.constants import (
     FR_EQUIPMENT_TYPES,
@@ -34,8 +33,6 @@ class Mission(MetadataModel):
 
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
-
-    keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
 
     event: str = ""
     date_start: Optional[str] = None
@@ -99,8 +96,6 @@ class FieldReconReport(MetadataModel):
         list[ReferencedWork], BeforeValidator(handle_array_of_none)
     ] = []
     related_work: list[AssociatedProject] = []
-
-    keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
 
     file_tags: list[FileTag] = []
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = (

@@ -39,21 +39,6 @@ export const ProjectDetailLayout: React.FC = () => {
   const { user } = useAuthenticatedUser();
   const { projectId } = useParams();
   const { data, isError } = useProjectDetail(projectId ?? '');
-  if (!user)
-    return (
-      <Layout>
-        {data?.baseProject.value.projectType !== 'software' && (
-          <DatafilesToolbar searchInput={<FileListingSearchBar />} />
-        )}
-        <Alert
-          showIcon
-          type="error"
-          style={{ marginTop: '16px', color: '#d9534f', textAlign: 'center' }}
-          message={'Please log in to access this feature.'}
-        />
-      </Layout>
-    );
-
   if (isError) {
     return (
       <Layout>
@@ -67,6 +52,19 @@ export const ProjectDetailLayout: React.FC = () => {
     );
   }
 
+  if (!user)
+    return (
+      <Layout>
+        <DatafilesToolbar searchInput={<FileListingSearchBar />} />
+        <Alert
+          showIcon
+          type="error"
+          style={{ marginTop: '16px', color: '#d9534f', textAlign: 'center' }}
+          message={'Please log in to access this feature.'}
+        />
+      </Layout>
+    );
+
   if (!data || !projectId)
     return (
       <Layout style={{ position: 'relative' }}>
@@ -76,13 +74,7 @@ export const ProjectDetailLayout: React.FC = () => {
 
   return (
     <Layout>
-      <DatafilesToolbar
-        searchInput={
-          data?.baseProject.value.projectType !== 'software' && (
-            <FileListingSearchBar />
-          )
-        }
-      />
+      <DatafilesToolbar searchInput={<FileListingSearchBar />} />
       <ProjectTitleHeader projectId={projectId} />
       <BaseProjectDetails projectValue={data.baseProject.value} />
       <Outlet />

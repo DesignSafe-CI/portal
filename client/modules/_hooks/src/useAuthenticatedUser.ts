@@ -12,7 +12,6 @@ export type TUser = {
 declare global {
   interface Window {
     __authenticatedUser__?: TUser;
-    __DEBUG__?: boolean;
   }
 }
 

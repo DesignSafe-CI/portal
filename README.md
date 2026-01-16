@@ -89,7 +89,6 @@ If you are on a Mac or a Windows machine, the recommended method is to install
    $ ./manage.py migrate
    $ ./manage.py collectstatic --ignore demo --no-input
    $ ./manage.py createsuperuser
-   $ ./manage.py es_setup # optional: see https://tacc-main.atlassian.net/wiki/spaces/UP/pages/6659524#es_setup for more info
    ```
 
 6. Setup local access to the portal:

@@ -17,7 +17,6 @@ export const nhTypeOptions = [
   { value: 'storm surge', label: 'Storm Surge' },
   { value: 'pandemic', label: 'Pandemic' },
   { value: 'wind', label: 'Wind' },
-  { value: 'multi', label: 'Multi-Hazard' },
 ];
 
 export const frTypeOptions = [
@@ -129,6 +128,7 @@ export const dataTypeOptions = [
   { value: 'audio', label: 'Audio' },
   { value: 'benchmark dataset', label: 'Benchmark Dataset' },
   { value: 'check sheet', label: 'Check Sheet' },
+  { value: 'code', label: 'Code' },
   { value: 'database', label: 'Database' },
   { value: 'dataset', label: 'Dataset' },
   { value: 'engineering', label: 'Engineering' },
@@ -146,7 +146,6 @@ export const dataTypeOptions = [
     value: 'research experience for undergraduates',
     label: 'Research Experience for Undergraduates',
   },
-  { value: 'code', label: 'Research Software' },
   { value: 'simcenter testbed', label: 'SimCenter Testbed' },
   { value: 'social sciences', label: 'Social Sciences' },
   { value: 'survey instrument', label: 'Survey Instrument' },

@@ -60,7 +60,7 @@ export const ProjectListing: React.FC = () => {
                 showIcon
                 type="error"
                 description={
-                  <span>There was an error retrieving your projects.</span>
+                  <span>There was an error retrieving your projects."</span>
                 }
               />
             )}

@@ -11,9 +11,6 @@ export default defineConfig({
   server: {
     port: 4200,
     origin: 'designsafe.dev',
-    cors: {
-      origin: ['https://designsafe.dev'],
-    },
   },
 
   preview: {

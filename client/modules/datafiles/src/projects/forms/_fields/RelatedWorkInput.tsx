@@ -26,10 +26,7 @@ export const RelatedWorkInput: React.FC<{ name: string | string[] }> = ({
                     placeholder="--Type--"
                     options={[
                       { value: 'Context', label: 'Context' },
-                      {
-                        value: 'Linked Dataset',
-                        label: 'Linked Dataset or Software',
-                      },
+                      { value: 'Linked Dataset', label: 'Linked Dataset' },
                       { value: 'Cited By', label: 'Cited By' },
                     ]}
                   />

@@ -19,7 +19,6 @@ export type TAppResponse = {
     type?: string;
     enabled?: boolean;
   };
-  portalNamespace?: string;
   defaultSystemNeedsKeys?: TTapisSystem;
 };
 

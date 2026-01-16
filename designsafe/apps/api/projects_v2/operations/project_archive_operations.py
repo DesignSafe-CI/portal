@@ -6,8 +6,6 @@ import os
 import json
 import logging
 from typing import Optional
-import requests
-from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from celery import shared_task
 from designsafe.libs.common.context_managers import AsyncTaskContext
@@ -16,7 +14,7 @@ from designsafe.apps.api.publications_v2.models import Publication
 logger = logging.getLogger(__name__)
 
 
-def create_metadata_file(project_id: str, *args, **kwargs):
+def archive(project_id: str, *args, **kwargs):
     """Archive Published Files and Metadata
 
     When given a project_id, this function will copy and compress all of the published files
@@ -41,20 +39,8 @@ def create_metadata_file(project_id: str, *args, **kwargs):
     create_metadata()
 
 
-def ranch_archive_webhook(project_id: str):
-    """Submit a webhook request to Jenkisn to trigger archiving of a publication to Ranch."""
-    auth = HTTPBasicAuth(settings.JENKINS_WH_USER, settings.JENKINS_WH_TOKEN)
-    req = requests.post(
-        settings.JENKINS_ARCHIVE_WH_URL,
-        auth=auth,
-        params={"PROJECT_ID": project_id},
-        timeout=30,
-    )
-    req.raise_for_status()
-
-
 @shared_task
 def archive_publication_async(project_id: str, version: Optional[str] = 1):
     """async wrapper around archive"""
     with AsyncTaskContext():
-        create_metadata_file(project_id, version)
+        archive(project_id, version)

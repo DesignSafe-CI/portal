@@ -268,7 +268,6 @@ def index_listing(files):
         file_dict = dict(_file)
         if file_dict['name'][0] == '.':
             continue
-        file_dict.pop("isPreviewable", None)
         file_dict['lastUpdated'] = current_time()
         file_dict['basePath'] = os.path.dirname(file_dict['path'])
         file_uuid = file_uuid_sha256(file_dict['system'], file_dict['path'])

@@ -253,7 +253,7 @@ export const DownloadDatasetModal: React.FC<{
         &nbsp;&nbsp;Download Dataset
       </Button>
       <Modal
-        destroyOnHidden
+        destroyOnClose
         open={isModalOpen}
         onCancel={handleClose}
         width={600}

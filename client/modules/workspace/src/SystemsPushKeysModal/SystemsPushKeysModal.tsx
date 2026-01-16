@@ -47,7 +47,7 @@ export const SystemsPushKeysModalBody: React.FC<{
       title={<h2>Authenticate with TACC Token</h2>}
       width="600px"
       open={!!system}
-      destroyOnHidden
+      destroyOnClose
       onCancel={handleCancel}
       footer={null}
     >

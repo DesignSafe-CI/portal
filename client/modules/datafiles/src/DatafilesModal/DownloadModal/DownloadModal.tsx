@@ -98,22 +98,8 @@ export const DownloadModal: React.FC<{
           <a href="/user-guide/managingdata/datatransfer/">
             https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/
           </a>
-          ). When using Cyberduck, Globus, or Command Line Interface, a
-          project’s datasets/files are accessible at the following path:
-          <strong>
-            data.tacc.utexas.edu/corral/projects/NHERI/published/published-data/PRJ-####
-          </strong>
-          .
+          ).
         </p>
-        <div hidden={!(system === 'designsafe.storage.published')}>
-          <p>
-            This data directory is accessible on{' '}
-            <strong>data.tacc.utexas.edu</strong> at the following path:
-          </p>
-          <p>
-            <code>{`/corral/projects/NHERI/published/published-data/${selectedFiles[0]?.name}`}</code>
-          </p>
-        </div>
       </Modal>
       <MicrosurveyModal
         isModalOpen={isMicrosurveyOpen}

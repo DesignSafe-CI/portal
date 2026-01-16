@@ -21,7 +21,6 @@ export { useNewFolder } from './useNewFolder';
 export { useUploadFile } from './useUploadFile';
 export { useUploadFolder } from './useUploadFolder';
 export { useFileDetail } from './useFileDetail';
-export { useGithubListing, type TGithubFileObj } from './useGithubListing';
 
 export * from './usePathDisplayName';
 

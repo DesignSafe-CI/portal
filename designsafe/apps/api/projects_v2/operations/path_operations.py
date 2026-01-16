@@ -5,20 +5,9 @@ in the directory structure. UNUSED for now, pending stakeholder approval.
 from typing import Optional
 import copy
 from pathlib import Path
-import subprocess
-import logging
 import networkx as nx
-from celery import shared_task
 from django.utils.text import slugify
-from django.conf import settings
-from designsafe.libs.common.context_managers import Workdir, AsyncTaskContext
-from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
-from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
-    ranch_archive_webhook,
-)
-
-logger = logging.getLogger(__name__)
 
 
 def construct_entity_filepaths(
@@ -188,71 +177,3 @@ def update_path_mappings(pub_graph: nx.DiGraph, legacy_other_pubs=False):
                 node_data["value"]["fileTags"] = updated_tags
 
     return _pub_graph, pub_mapping
-
-
-def generate_sha512_manifest(base_path: str, data_dir: str = "data"):
-    """
-    Create a BagIt-compatible sha512 manifest file for a directory.
-
-    The equivalent shell command is:
-    ```
-    cd base_path && find data -type f -print0 | xargs -0 sha512sum > manifest-sha512.txt
-    ```
-
-    :param base_path: The path to the dir that should contain the manifest file.
-    :type base_path: str
-    :param data_dir: The path (relative to base_path) that contains the files to checksum.
-    :type data_dir: str
-    """
-    with Workdir(base_path):
-        with open("manifest-sha512.txt", "w", encoding="utf-8") as f:
-            args = ["find", "-L", data_dir, "-type", "f", "-print0"]
-            with subprocess.Popen(args, stdout=subprocess.PIPE) as p1:
-                subprocess.check_call(
-                    ["xargs", "-0", "sha512sum"], stdin=p1.stdout, stdout=f
-                )
-
-
-def generate_manifests_for_project(project_id: str):
-    """
-    Generate a sha512 manifest for each published collection within a project.
-
-    :param project_id: Project ID
-    :type project_id: str
-    """
-    logger.debug("Generating manifests for publication %s", project_id)
-    paths_to_archive = []
-    with AsyncTaskContext():
-        pub_meta = Publication.objects.get(project_id=project_id)
-        pub_tree: nx.DiGraph = nx.node_link_graph(pub_meta.tree)
-        for published_node in pub_tree.successors("NODE_ROOT"):
-            base_path = pub_tree.nodes[published_node]["basePath"]
-            archive_path = str(
-                Path(settings.DESIGNSAFE_PUBLISHED_PATH) / base_path.lstrip("/")
-            )
-            paths_to_archive.append(archive_path)
-
-    for path in paths_to_archive:
-        try:
-            logger.debug("Generating manifest for path %s", path)
-            generate_sha512_manifest(path)
-        except (
-            subprocess.CalledProcessError,
-            subprocess.SubprocessError,
-            FileNotFoundError,
-        ) as exc:
-            logger.debug("Failed to generate manifest at %s", path)
-            raise exc
-    logger.debug("Finished generating manifests for publication %s", project_id)
-
-
-@shared_task
-def generate_manifests_for_project_async(project_id: str):
-    """
-    Async wrapper around ```generate_manifests_for_project```
-
-    :param project_id: Project ID
-    :type project_id: str
-    """
-    generate_manifests_for_project(project_id)
-    ranch_archive_webhook(project_id)

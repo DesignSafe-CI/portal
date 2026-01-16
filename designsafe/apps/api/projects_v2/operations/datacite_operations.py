@@ -22,7 +22,6 @@ def get_datacite_json(
     datacite_json = {}
     is_other = pub_graph.nodes["NODE_ROOT"].get("projectType", None) in [
         "other",
-        "software",
         "field_research",
     ]
     if is_other:
@@ -63,14 +62,6 @@ def get_datacite_json(
                 "name": f"{author.get('lname', '')}, {author.get('fname', '')}",
                 "givenName": author.get("fname", ""),
                 "familyName": author.get("lname", ""),
-                "affiliation": [
-                    {
-                        "name": author.get("inst", ""),
-                        "schemeUri": None,
-                        "affiliationIdentifier": None,
-                        "affiliationIdentifierScheme": None,
-                    }
-                ],
             }
         )
         institutions.append(author.get("inst", ""))
@@ -84,17 +75,13 @@ def get_datacite_json(
         for institution in list(set(institutions))
     ]
     datacite_json["creators"] = author_attr
-
+    datacite_json["titles"] = [
+        {"title": title} for title in set([entity_meta["title"]])
+    ]
     if not is_other:
-
-        datacite_json["titles"] = [
-            {"title": f"{title}, in {base_meta['title']}"}
-            for title in set([entity_meta["title"]])
-        ]
-    else:
-        datacite_json["titles"] = [
-            {"title": title} for title in set([entity_meta["title"]])
-        ]
+        datacite_json["titles"].append(
+            {"title": f"in {base_meta['title']}", "titleType": "Subtitle"}
+        )
     datacite_json["publisher"] = "Designsafe-CI"
 
     if version == 1 or not version:
@@ -110,8 +97,6 @@ def get_datacite_json(
     )
     if data_type := entity_meta.get("dataType", None):
         datacite_json["types"]["resourceType"] += f"/{data_type['name']}"
-    if pub_graph.nodes["NODE_ROOT"].get("projectType", None) == "software":
-        datacite_json["types"]["resourceType"] += "/software"
     if exp_type := entity_meta.get("experimentType", None):
         datacite_json["types"]["resourceType"] += f"/{exp_type['name']}"
     if sim_type := entity_meta.get("simulationType", None):
@@ -120,9 +105,6 @@ def get_datacite_json(
         datacite_json["types"]["resourceType"] += f"/{location}"
 
     datacite_json["types"]["resourceTypeGeneral"] = "Dataset"
-    if pub_graph.nodes["NODE_ROOT"].get("projectType", None) == "software":
-        datacite_json["types"]["resourceTypeGeneral"] = "Software"
-
     datacite_json["version"] = version
 
     datacite_json["descriptions"] = [
@@ -134,13 +116,9 @@ def get_datacite_json(
         for desc in set([base_meta["description"], entity_meta["description"]])
     ]
 
-    if not is_other:
-        all_keywords = base_meta.get("keywords", []) + entity_meta.get("keywords", [])
-        datacite_json["subjects"] = [{"subject": keyword} for keyword in all_keywords]
-    else:
-        datacite_json["subjects"] = [
-            {"subject": keyword} for keyword in base_meta.get("keywords", [])
-        ]
+    datacite_json["subjects"] = [
+        {"subject": keyword} for keyword in base_meta.get("keywords", [])
+    ]
 
     facilities = entity_meta.get("facilities", [])
     if exp_facility := entity_meta.get("facility", None):
@@ -196,32 +174,12 @@ def get_datacite_json(
             identifier["relatedIdentifierType"] = r_data["hrefType"].upper()
             datacite_json["relatedIdentifiers"].append(identifier)
 
-    if github_url := entity_meta.get("githubUrl"):
-        datacite_json["relatedIdentifiers"].append(
-            {
-                "relationType": "IsPartOf",
-                "relatedIdentifierType": "URL",
-                "relatedIdentifier": github_url,
-            }
-        )
-
     project_id = base_meta["projectId"]
     datacite_url = f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}"
     if not is_other:
         datacite_url += f"/#detail-{entity_uuid}"
     if version and version > 1:
         datacite_url += f"/?version={version}"
-
-    datacite_json["rightsList"] = [
-        {
-            "lang": "en",
-            "rights": base_meta["license"],
-            "rightsUri": None,
-            "schemeUri": None,
-            "rightsIdentifier": None,
-            "rightsIdentifierScheme": None,
-        }
-    ]
 
     datacite_json["url"] = datacite_url
     datacite_json["prefix"] = settings.DATACITE_SHOULDER

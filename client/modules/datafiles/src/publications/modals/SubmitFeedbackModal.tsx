@@ -51,7 +51,7 @@ export const SubmitFeedbackModal: React.FC<{
         &nbsp;Leave Feedback
       </Button>
       <Modal
-        destroyOnHidden
+        destroyOnClose
         open={isModalOpen}
         onCancel={handleClose}
         width={900}

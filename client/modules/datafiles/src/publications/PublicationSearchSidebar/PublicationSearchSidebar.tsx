@@ -211,32 +211,6 @@ export const PublicationSearchSidebar: React.FC = () => {
         {' '}
         <div className={styles.checkboxRow}>
           <Checkbox
-            checked={searchParams.getAll('project-type').includes('software')}
-            onChange={() => toggleProjectTypeFilter('software')}
-          />
-          &nbsp;
-          <strong>Software</strong>
-        </div>
-        {/* <div>
-          <label className={styles.sidebarLabel} htmlFor="data-type-select">
-            Software Type
-          </label>
-          <Select
-            options={[
-              { label: 'All Types', value: null },
-            ]}
-            value={searchParams.get('software-type')}
-            onChange={(v) => setSearchParam('software-type', v)}
-            allowClear
-            style={{ width: '100%' }}
-            placeholder="All Types"
-          />
-        </div> */}
-      </article>
-      <article className={styles.projectTypeOptions}>
-        {' '}
-        <div className={styles.checkboxRow}>
-          <Checkbox
             checked={searchParams.getAll('project-type').includes('other')}
             onChange={() => toggleProjectTypeFilter('other')}
           />

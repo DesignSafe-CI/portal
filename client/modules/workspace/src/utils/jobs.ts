@@ -126,7 +126,7 @@ export type TJobDisplayInfo = {
   queue?: string;
   coresPerNode?: number;
   nodeCount?: number;
-  reservation?: string;
+  reservation?: TJobArgSpec;
 };
 
 function getParameterSetNotesLabel(obj: unknown): string | undefined {
@@ -232,22 +232,21 @@ export function getJobDisplayInformation(
             display.allocation = allocation;
           }
         }
-
-        const reservationParam = schedulerOptions.find(
-          (opt) => opt.notes?.isReservation
-        );
-        if (reservationParam) {
-          display.reservation = reservationParam?.arg?.replace(
-            '--reservation=',
-            ''
-          );
-        }
         display.queue = job.execSystemLogicalQueue;
       }
 
       if (!app.definition.notes.hideNodeCountAndCoresPerNode) {
         display.coresPerNode = job.coresPerNode;
         display.nodeCount = job.nodeCount;
+      }
+
+      if (schedulerOptions) {
+        schedulerOptions.forEach((opt) => {
+          if (opt.notes?.isReservation && opt.arg) {
+            opt.arg = opt.arg.replace('--reservation=', '');
+            display.reservation = opt;
+          }
+        });
       }
 
       // Tapis adds env variables when envKey is used, filter those out
@@ -299,9 +298,6 @@ export const mergeConfigurationDefaultsWithJobData = (
   const allocationParam = schedulerOptions.find(
     (opt) => opt.name === 'TACC Allocation'
   );
-  const reservationParam = schedulerOptions.find(
-    (opt) => opt.name === 'TACC Reservation'
-  );
 
   return {
     ...configuration,
@@ -313,9 +309,6 @@ export const mergeConfigurationDefaultsWithJobData = (
     allocation:
       getAllocationFromDirective(allocationParam?.arg) ??
       configuration.allocation,
-    reservation:
-      reservationParam?.arg?.replace('--reservation=', '') ??
-      configuration.reservation,
   };
 };
 
@@ -377,6 +370,19 @@ export const mergeParameterSetDefaultsWithJobData = (
 
   for (const key in parameterSet) {
     const jobParams = jobParameterSet[key as keyof TParameterSetSubmit];
+    if (key == 'schedulerOptions') {
+      jobParams.forEach((param) => {
+        if (
+          typeof param.notes == 'string' &&
+          param.notes === '{"isReservation":true}'
+        ) {
+          if ('arg' in param) {
+            const reservationArg = param.arg;
+            param.arg = reservationArg?.replace('--reservation=', '');
+          }
+        }
+      });
+    }
     if (
       jobParams &&
       typeof jobParams === 'object' &&

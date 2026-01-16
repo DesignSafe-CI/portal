@@ -112,11 +112,11 @@ def initialize_project_graph(project_id: str):
         "order": 0,
     }
 
-    if project_type in ("other", "software"):
+    if project_type == "other":
         # type Other projects have a "null" parent node above the project root, to
         # support multiple versions.
         project_graph.add_node(
-            root_node_id, **{"uuid": None, "name": None, "projectType": project_type}
+            root_node_id, **{"uuid": None, "name": None, "projectType": "other"}
         )
         base_node_id = f"NODE_project_{uuid.uuid4()}"
         project_graph.add_node(base_node_id, **base_node_data)

@@ -1,7 +1,6 @@
 import {
   BaseProjectDetails,
   ProjectBestPracticesModal,
-  ProjectGithubFileListing,
   ProjectNavbar,
   ProjectPreview,
   ProjectTitleHeader,
@@ -9,7 +8,7 @@ import {
 import { useProjectDetail } from '@client/hooks';
 import { Alert } from 'antd';
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export const ProjectPreviewLayout: React.FC = () => {
   const { projectId } = useParams();
@@ -17,10 +16,6 @@ export const ProjectPreviewLayout: React.FC = () => {
 
   if (!projectId) return null;
   if (!data) return null;
-
-  const disabledNoRepo =
-    data.baseProject.value.projectType === 'software' &&
-    !data.baseProject.value.githubUrl;
   return (
     <div style={{ flex: 1, paddingBottom: '30px' }}>
       <ProjectTitleHeader projectId={projectId} />
@@ -33,35 +28,10 @@ export const ProjectPreviewLayout: React.FC = () => {
         }}
       >
         <ProjectNavbar projectId={projectId} />
-        <ProjectBestPracticesModal
-          projectId={projectId}
-          disabled={disabledNoRepo}
-        />
+        <ProjectBestPracticesModal projectId={projectId} />
       </div>
 
       <ProjectPreview projectId={projectId} />
-
-      {data.baseProject.value.projectType === 'software' &&
-        (data.baseProject.value.githubUrl ? (
-          <ProjectGithubFileListing projectId={projectId} />
-        ) : (
-          <Alert
-            type="error"
-            showIcon
-            description={
-              <div>
-                Please go to the{' '}
-                <Link to={`/projects/${projectId}/curation`}>
-                  Curation Directory
-                </Link>{' '}
-                to associate a GitHub repository with your project before you
-                publish.
-              </div>
-            }
-            message="No Repository Selected"
-          />
-        ))}
-
       {data.baseProject.value.projectType === 'other' && (
         <Alert
           showIcon

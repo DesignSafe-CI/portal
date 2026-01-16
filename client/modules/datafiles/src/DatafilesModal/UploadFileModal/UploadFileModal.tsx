@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Modal, Upload, UploadFile, UploadProps } from 'antd';
+import { Button, Modal, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { useUploadFile } from '@client/hooks';
-import type { TModalChildren } from '../DatafilesModal';
+import { TModalChildren } from '../DatafilesModal';
+import styles from './UploadFileModal.module.css';
 
-const MAX_FILES = 25;
-const MAX_TOTAL_SIZE = 2 * 1024 ** 3; // 2 GB in bytes
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 export const UploadFileModalBody: React.FC<{
   isOpen: boolean;
@@ -19,25 +20,20 @@ export const UploadFileModalBody: React.FC<{
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
-
-  const totalBytes = fileList.reduce((sum, f) => sum + (f.size ?? 0), 0);
-  const overCount = fileList.length > MAX_FILES;
-  const overSize = totalBytes > MAX_TOTAL_SIZE;
-  const uploadDisabled =
-    uploading || fileList.length === 0 || overCount || overSize;
+  const [, setCurrentIndex] = useState(0);
 
   const handleReset = () => {
     setFileList([]);
+    setCurrentIndex(0);
   };
 
   const handleUpload = async () => {
     setUploading(true);
     try {
-      for (const file of fileList) {
+      for (let i = 0; i < fileList.length; i++) {
         const formData = new FormData();
-        const blob = file as unknown as Blob;
-        formData.append('uploaded_file', blob, file.name);
-        formData.append('file_name', file.name);
+        formData.append('uploaded_file', fileList[i] as FileType);
+        formData.append('file_name', fileList[i].name);
         formData.append('webkit_relative_path', '');
 
         await mutateAsync({
@@ -48,90 +44,91 @@ export const UploadFileModalBody: React.FC<{
           uploaded_file: formData,
         });
       }
+
+      // All files uploaded successfully, close the modal
       setUploading(false);
-      handleReset();
+      setFileList([]);
       handleCancel();
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error('Error during form submission:', error);
+      // Handle error if needed
       setUploading(false);
     }
   };
 
-  const uploadProps: UploadProps = {
-    multiple: true,
-    fileList,
-    beforeUpload: (file) => {
-      setFileList((prev) => [...prev, file]);
-      return false; // prevent auto upload
-    },
+  const props: UploadProps = {
+    multiple: true, // Enable multiple file selection
     onRemove: (file) => {
-      setFileList((prev) => prev.filter((f) => f.uid !== file.uid));
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
     },
+    beforeUpload: (file) => {
+      // Add the selected file to the existing fileList
+      setFileList((prevFileList) => [...prevFileList, file]);
+      return false; // Return false to prevent automatic uploading
+    },
+    fileList,
   };
 
-  const newPath = path.replace(/%2F/g, '/').replace(/^\//, '');
+  const newPath = path
+    .replace(/%2F/g, '/')
+    .replace(/^\//, '')
+    .replace(/^/, ' ');
 
   return (
     <Modal
       title={<h2>Upload Files</h2>}
       width="60%"
       open={isOpen}
-      footer={null}
+      footer={null} // Remove the footer from here
       onCancel={() => {
-        handleReset();
         handleCancel();
+        handleReset();
       }}
     >
-      <Upload {...uploadProps}>
+      <Upload {...props}>
         <div>
-          Uploading to&nbsp;
-          <span className="fa fa-folder">&nbsp;{newPath || '/'}</span>
+          Uploading to
+          <span className={`fa fa-folder ${styles.pathText}`}>{newPath}</span>
         </div>
         <div>
           <b>
-            Select files (for more than 2 GB or {MAX_FILES} files, please use
-            Globus)
+            {' '}
+            Select files (for more than 2GB or 25 files, please use Globus to
+            upload)
           </b>
         </div>
         <Button icon={<UploadOutlined />}>Choose Files</Button>
+        <div>{fileList.length} staged for upload</div>
       </Upload>
-
-      <div style={{ marginTop: 12 }}>
-        {fileList.length} file{fileList.length !== 1 && 's'} staged, total{' '}
-        {(totalBytes / 1024 ** 3).toFixed(2)} GB
-        {overCount && (
-          <div style={{ color: 'red', marginTop: 4 }}>
-            ⚠ You have selected more than {MAX_FILES} files.
-          </div>
-        )}
-        {overSize && (
-          <div style={{ color: 'red', marginTop: 4 }}>
-            ⚠ Total size exceeds 2 GB limit.
-          </div>
-        )}
-      </div>
-
       <div
         style={{
-          marginTop: 24,
+          marginTop: '20px',
           display: 'flex',
           justifyContent: 'space-between',
         }}
       >
-        <Button
-          type="dashed"
-          onClick={handleReset}
-          disabled={fileList.length === 0 || uploading}
-        >
-          Reset
-        </Button>
+        <div>
+          <Button
+            type="dashed"
+            onClick={handleReset}
+            disabled={fileList.length === 0}
+            loading={uploading}
+            style={{ marginTop: 16 }}
+          >
+            Reset
+          </Button>
+        </div>
         <Button
           type="primary"
           onClick={handleUpload}
-          disabled={uploadDisabled}
+          disabled={fileList.length === 0 || uploading}
           loading={uploading}
+          style={{ marginTop: 16 }}
         >
-          {uploading ? 'Uploading…' : 'Start Upload'}
+          {uploading ? 'Uploading' : 'Start Upload'}
         </Button>
       </div>
     </Modal>
@@ -146,8 +143,14 @@ export const UploadFileModal: React.FC<{
   children: TModalChildren;
 }> = ({ api, system, scheme, path, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => setIsModalOpen(true);
-  const handleCancel = () => setIsModalOpen(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <>

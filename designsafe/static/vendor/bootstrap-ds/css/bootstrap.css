@@ -1359,7 +1359,7 @@ mark,
   padding-bottom: 40px;
 }
 .overview-prj-type {
-  font-size:32px !important;
+  font-size:32px;
   margin-right:10px;
   margin-left:10px;
 }

@@ -9,6 +9,7 @@ module.exports = (env) => {
         mode: process.env.NODE_ENV,
         devtool: sourceMap,
         entry: {
+            rapid: './designsafe/static/scripts/rapid/index.js',
             geo: './designsafe/static/scripts/geo/index.js',
             base: './designsafe/static/scripts/ng-designsafe/ng-designsafe.js',
             dd: './designsafe/static/scripts/data-depot/index.js',

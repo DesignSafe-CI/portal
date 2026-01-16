@@ -30,7 +30,7 @@ export const FileListing: React.FC<
     baseRoute?: string;
     fileTags?: TFileTag[];
     emptyListingDisplay?: React.ReactNode;
-  } & Omit<TableProps<TFileListing>, 'columns' | 'className'>
+  } & Omit<TableProps, 'columns'>
 > = ({
   api,
   system,
@@ -56,7 +56,7 @@ export const FileListing: React.FC<
         dataIndex: 'name',
         ellipsis: false,
         width: '50%',
-        render: (data: TFileListing['name'], record: TFileListing) => (
+        render: (data, record) => (
           <>
             {record.type === 'dir' ? (
               <NavLink

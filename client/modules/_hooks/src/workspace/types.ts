@@ -52,24 +52,6 @@ export type TAppFileInput = {
   targetPath?: string;
 };
 
-type TAppNotes = {
-  label?: string;
-  shortLabel?: string;
-  helpUrl?: string;
-  category?: string;
-  isInteractive?: boolean;
-  hideNodeCountAndCoresPerNode?: boolean;
-  icon?: string;
-  dynamicExecSystems?: string[];
-  queueFilter?: string[];
-  hideQueue?: boolean;
-  hideAllocation?: boolean;
-  hideMaxMinutes?: boolean;
-  jobLaunchDescription?: string;
-  showReservation?: boolean;
-  showTargetPath?: boolean;
-};
-
 export type TTapisApp = {
   sharedAppCtx: string;
   isPublic: boolean;
@@ -129,7 +111,21 @@ export type TTapisApp = {
     tags: string[];
   };
   tags: string[];
-  notes: TAppNotes;
+  notes: {
+    label?: string;
+    shortLabel?: string;
+    helpUrl?: string;
+    category?: string;
+    isInteractive?: boolean;
+    hideNodeCountAndCoresPerNode?: boolean;
+    icon?: string;
+    dynamicExecSystems?: string[];
+    queueFilter?: string[];
+    hideQueue?: boolean;
+    hideAllocation?: boolean;
+    hideMaxMinutes?: boolean;
+    jobLaunchDescription?: string;
+  };
   uuid: string;
   deleted: boolean;
   created: string;
@@ -186,7 +182,7 @@ export type TTapisJob = {
   mpiCmd?: string;
   name: string;
   nodeCount: number;
-  notes: TAppNotes;
+  notes: string;
   owner: string;
   parameterSet: string;
   remoteChecksFailed: number;

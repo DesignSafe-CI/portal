@@ -23,21 +23,19 @@ export const AddFileFolder: React.FC = () => {
   const isPublished = matches.find((m) => m.id === 'published');
   const isNees = matches.find((m) => m.id === 'nees');
 
+  const isReadOnly = !!(
+    (isProjects && !projectId) ||
+    isPublished ||
+    isNees ||
+    system === 'designsafe.storage.community'
+  );
+
   if (!isProjects) projectId = '';
   const { data } = useProjectDetail(projectId ?? '');
   if (projectId) {
     system = `project-${data?.baseProject.uuid}`;
     api = 'tapis';
   }
-  const isSoftwareProject = data?.baseProject.value.projectType === 'software';
-
-  const isReadOnly = !!(
-    (isProjects && !projectId) ||
-    isPublished ||
-    isNees ||
-    isSoftwareProject ||
-    system === 'designsafe.storage.community'
-  );
 
   if (!user) return null;
 

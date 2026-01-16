@@ -1,7 +1,6 @@
 export type TTapisSystemQueue = {
   name: string;
   hpcQueueName: string;
-  description: string;
   maxJobs: number;
   maxJobsPerUser: number;
   minNodeCount: number;
@@ -12,11 +11,6 @@ export type TTapisSystemQueue = {
   maxMemoryMB: number;
   minMinutes: number;
   maxMinutes: number;
-};
-
-export type TTapisSystemQueueFilter = {
-  portalName: string;
-  queues: [];
 };
 
 export type TTapisSystem = {
@@ -67,7 +61,6 @@ export type TTapisSystem = {
     label?: string;
     isMyData?: boolean;
     hasWork?: boolean;
-    queueFilter?: TTapisSystemQueueFilter[];
     portalNames: string[];
     noAllocationRequired?: boolean;
   };

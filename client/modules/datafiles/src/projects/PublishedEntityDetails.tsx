@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import React from 'react';
 import { TEntityValue } from '@client/hooks';
 
 import styles from './BaseProjectDetails.module.css';
@@ -8,63 +7,13 @@ import {
   LicenseDisplay,
   UsernamePopover,
 } from './BaseProjectDetails';
-import { Alert, Select } from 'antd';
-import { VersionChangesModal } from './modals/VersionChangesModal';
-
-const EntityVersionSelector: React.FC<{
-  doi: string;
-  versions: number[];
-}> = ({ doi, versions }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { projectId } = useParams();
-  const paramName = `version-${doi}`;
-  const selectedVersion = parseFloat(
-    searchParams.get(paramName) ?? Math.max(...versions).toString()
-  );
-  const onSelect = useCallback(
-    (version: number) => {
-      const params = new URLSearchParams(searchParams);
-      params.set(paramName, version.toString());
-      setSearchParams(params);
-    },
-    [searchParams, setSearchParams, paramName]
-  );
-
-  const options = useMemo(
-    () => versions.map((v) => ({ label: v, value: v })),
-    [versions]
-  );
-
-  return (
-    <>
-      <Select
-        style={{ width: '200px' }}
-        size="small"
-        options={options}
-        onChange={onSelect}
-        value={selectedVersion}
-      />
-      {selectedVersion > 1 && versions.length > 1 && (
-        <>
-          {' '}
-          <VersionChangesModal
-            projectId={projectId ?? ''}
-            doi={doi}
-            version={selectedVersion}
-          />
-        </>
-      )}
-    </>
-  );
-};
+import { Alert } from 'antd';
 
 export const PublishedEntityDetails: React.FC<{
   entityValue: TEntityValue;
   publicationDate?: string;
   license?: string;
-  versions?: number[];
-  uuid?: string;
-}> = ({ entityValue, publicationDate, license, versions, uuid }) => {
+}> = ({ entityValue, publicationDate, license }) => {
   return (
     <section style={{ marginBottom: '20px' }}>
       {entityValue.tombstone && (
@@ -266,25 +215,6 @@ export const PublishedEntityDetails: React.FC<{
               <td>License</td>
               <td style={{ fontWeight: 'bold' }}>
                 <LicenseDisplay licenseType={license} />
-              </td>
-            </tr>
-          )}
-          {entityValue.keywords && entityValue.keywords[0] && (
-            <tr className={styles['prj-row']}>
-              <td>Keywords</td>
-              <td style={{ fontWeight: 'bold' }}>
-                {entityValue.keywords?.join(', ')}
-              </td>
-            </tr>
-          )}
-          {versions && versions.length > 1 && (
-            <tr className={styles['prj-row']}>
-              <td>Version</td>
-              <td style={{ fontWeight: 'bold' }}>
-                <EntityVersionSelector
-                  doi={entityValue.dois?.[0] ?? ''}
-                  versions={versions}
-                />
               </td>
             </tr>
           )}

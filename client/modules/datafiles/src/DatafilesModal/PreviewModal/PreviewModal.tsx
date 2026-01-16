@@ -130,18 +130,16 @@ export const PreviewModalBody: React.FC<{
           </>
         )}
       </div>
-      {selectedFile.isPreviewable !== false && (
-        <div className={styles.modalContentContainer}>
-          {isLoading && <PreviewSpinner />}
-          {data && isOpen && (
-            <PreviewContent
-              href={data.href}
-              fileType={data.fileType}
-              handleCancel={handleClose}
-            ></PreviewContent>
-          )}
-        </div>
-      )}
+      <div className={styles.modalContentContainer}>
+        {isLoading && <PreviewSpinner />}
+        {data && isOpen && (
+          <PreviewContent
+            href={data.href}
+            fileType={data.fileType}
+            handleCancel={handleClose}
+          ></PreviewContent>
+        )}
+      </div>
     </Modal>
   );
 };

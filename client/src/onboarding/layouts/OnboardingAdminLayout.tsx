@@ -315,6 +315,8 @@ const OnboardingAdminLayout = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, isError, isLoading } = useGetOnboardingAdminList();
 
+  useEffect(() => {}, [searchParams]);
+
   const toggleShowIncomplete = () => {
     const showIncompleteOnly = searchParams.get('showIncompleteOnly');
     const newSearchParams = searchParams;

@@ -15,7 +15,6 @@ import {
   TGetNotificationsResponse,
   useInteractiveModalContext,
   TInteractiveModalContext,
-  TTapisJob,
 } from '@client/hooks';
 import {
   JobsListingTable,
@@ -31,7 +30,6 @@ import {
 } from '../utils';
 import styles from './JobsListing.module.css';
 import { formatDateTimeFromValue } from '../utils/timeFormat';
-import { StatusTag } from '../_common';
 import { JobsReuseInputsButton } from '../JobsReuseInputsButton/JobsReuseInputsButton';
 
 export const JobActionButton: React.FC<{
@@ -93,7 +91,7 @@ const InteractiveSessionButtons: React.FC<{
   );
 };
 
-export const JobsListing: React.FC<Omit<TableProps<TTapisJob>, 'columns'>> = ({
+export const JobsListing: React.FC<Omit<TableProps, 'columns'>> = ({
   ...tableProps
 }) => {
   const queryClient = useQueryClient();
@@ -196,19 +194,22 @@ export const JobsListing: React.FC<Omit<TableProps<TTapisJob>, 'columns'>> = ({
       },
       {
         width: '10%',
+        title: 'Application',
+        dataIndex: 'appId',
+        render: (appId, job) => {
+          const appNotes = JSON.parse(job.notes);
+
+          return (
+            appNotes.label ||
+            `${appId.charAt(0).toUpperCase()}${appId.slice(1)}`
+          );
+        },
+      },
+      {
+        width: '10%',
         title: 'Job Status',
         dataIndex: 'status',
-
-        render: (status) => {
-          const text = getStatusText(status);
-          if (status === 'FINISHED') {
-            return <StatusTag variant="success">{text}</StatusTag>;
-          }
-          if (status === 'FAILED') {
-            return <StatusTag variant="error">{text}</StatusTag>;
-          }
-          return <StatusTag variant="warning">{text}</StatusTag>;
-        },
+        render: (status) => <>{getStatusText(status)}</>,
       },
       { width: '10%', title: 'Nodes', dataIndex: 'nodeCount' },
       { width: '10%', title: 'Cores', dataIndex: 'coresPerNode' },

@@ -106,7 +106,6 @@ export const fieldDisplayOrder: Record<string, string[]> = {
     'allocation',
     'execSystemId',
     'execSystemLogicalQueue',
-    'reservation',
     'maxMinutes',
     'nodeCount',
     'coresPerNode',
@@ -155,10 +154,6 @@ export const getConfigurationSchema = (
         execSystems
       );
     }
-
-    if (definition.notes.showReservation) {
-      configurationSchema['reservation'] = z.string().optional();
-    }
   }
 
   if (!definition.notes.hideMaxMinutes) {
@@ -179,7 +174,6 @@ export const getConfigurationSchema = (
       queue
     );
   }
-
   return configurationSchema;
 };
 
@@ -192,7 +186,6 @@ export const getConfigurationFields = (
   allocations: string[],
   execSystems: TTapisSystem[],
   selectedExecSystem: TTapisSystem,
-  portalNamespace: string | undefined,
   queue: TTapisSystemQueue
 ) => {
   const configurationFields: TDynamicField = {};
@@ -232,12 +225,8 @@ export const getConfigurationFields = (
       type: 'select',
       options: getAppQueueValues(
         definition,
-        selectedExecSystem,
-        portalNamespace
-      ).map((q) => ({
-        value: q.value,
-        label: q.label,
-      })),
+        selectedExecSystem.batchLogicalQueues
+      ).map((q) => ({ value: q, label: q })),
     };
   }
 
@@ -258,18 +247,6 @@ export const getConfigurationFields = (
           label: projectId,
         })),
       ],
-    };
-  }
-
-  if (definition.jobType === 'BATCH' && definition.notes.showReservation) {
-    configurationFields['reservation'] = {
-      description:
-        'If you have a TACC reservation, enter the reservation string here.',
-      label: 'TACC Reservation',
-      name: 'configuration.reservation',
-      key: 'configuration.reservation',
-      required: false,
-      type: 'text',
     };
   }
 
@@ -323,7 +300,6 @@ const FormSchema = (
   executionSystems: TTapisSystem[],
   allocations: string[],
   defaultStorageSystem: TTapisSystem,
-  portalNamespace: string | undefined,
   username: string,
   portalAlloc?: string
 ) => {
@@ -575,10 +551,6 @@ const FormSchema = (
         ? allocations[0]
         : ''
       : '';
-
-    if (definition.notes.showReservation) {
-      appFields.configuration.defaults['reservation'] = '';
-    }
   }
 
   if (!definition.notes.hideMaxMinutes) {
@@ -606,7 +578,6 @@ const FormSchema = (
     allocations,
     execSystems,
     defaultExecSystem,
-    portalNamespace,
     queue
   );
 

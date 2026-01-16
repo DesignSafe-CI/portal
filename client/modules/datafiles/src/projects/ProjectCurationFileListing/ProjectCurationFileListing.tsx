@@ -207,7 +207,7 @@ const FileCurationSelector: React.FC<{
       ))}
       <li style={{ display: 'flex', gap: '4rem' }}>
         {showEntitySelector ? (
-          <section style={{ display: 'flex', flex: 1, minWidth: 0 }}>
+          <section style={{ display: 'flex', flex: 1 }}>
             <Select<string>
               virtual={false}
               value={selectedEntity}
@@ -219,11 +219,10 @@ const FileCurationSelector: React.FC<{
                   ? `for ${selectedFiles.length} selected file(s)`
                   : ''
               }`}
-              style={{ flex: 1, minWidth: 0 }}
+              style={{ flex: 1 }}
             />
             {selectedEntity && (
               <Button
-                style={{ marginLeft: '5px' }}
                 onClick={() =>
                   addFileAssociation(
                     {
@@ -241,7 +240,7 @@ const FileCurationSelector: React.FC<{
                 }
                 type="link"
               >
-                Save
+                &nbsp; Save
               </Button>
             )}
           </section>

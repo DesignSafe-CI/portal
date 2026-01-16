@@ -143,8 +143,7 @@ class ProjectUserView(BaseApiView):
             raise ApiException(message="Authentication required", status=401)
 
         username_query = request.GET.get("q")
-        user_match = get_user_model().objects.filter(is_active=True,
-                                                     username__iexact=username_query)
+        user_match = get_user_model().objects.filter(username__iexact=username_query)
         user_resp = [
             {
                 "fname": u.first_name,

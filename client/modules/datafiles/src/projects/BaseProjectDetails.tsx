@@ -139,11 +139,10 @@ export const UsernamePopover: React.FC<{ user: TProjectUser }> = ({ user }) => {
 const projectTypeMapping = {
   field_recon: 'Field research',
   other: 'Other',
-  software: 'Software',
   experimental: 'Experimental',
   simulation: 'Simulation',
   hybrid_simulation: 'Hybrid Simulation',
-  field_reconnaissance: 'Field Reconnaissance',
+  field_reconnaissance: 'Field Reconaissance',
   None: 'None',
 };
 
@@ -187,11 +186,11 @@ export const BaseProjectDetails: React.FC<{
         style={{ width: '100%', marginBottom: '20px', borderSpacing: '200px' }}
       >
         <colgroup>
-          <col style={{ width: '220px' }} />
+          <col style={{ width: '200px' }} />
           <col />
         </colgroup>
         <tbody>
-          {pi && !['other', 'software'].includes(projectValue.projectType) && (
+          {pi && projectValue.projectType !== 'other' && (
             <tr className={styles['prj-row']}>
               <td>PI</td>
               <td style={{ fontWeight: 'bold' }}>
@@ -199,22 +198,21 @@ export const BaseProjectDetails: React.FC<{
               </td>
             </tr>
           )}
-          {coPis.length > 0 &&
-            !['other', 'software'].includes(projectValue.projectType) && (
-              <tr className={styles['prj-row']}>
-                <td>Co-PIs</td>
-                <td style={{ fontWeight: 'bold' }}>
-                  {coPis.map((u, i) => (
-                    <React.Fragment key={JSON.stringify(u)}>
-                      <UsernamePopover user={u} />
-                      {i !== coPis.length - 1 && '; '}
-                    </React.Fragment>
-                  ))}
-                </td>
-              </tr>
-            )}
+          {coPis.length > 0 && projectValue.projectType !== 'other' && (
+            <tr className={styles['prj-row']}>
+              <td>Co-PIs</td>
+              <td style={{ fontWeight: 'bold' }}>
+                {coPis.map((u, i) => (
+                  <React.Fragment key={JSON.stringify(u)}>
+                    <UsernamePopover user={u} />
+                    {i !== coPis.length - 1 && '; '}
+                  </React.Fragment>
+                ))}
+              </td>
+            </tr>
+          )}
           {projectValue.authors.length > 0 &&
-            ['other', 'software'].includes(projectValue.projectType) && (
+            projectValue.projectType === 'other' && (
               <tr className={styles['prj-row']}>
                 <td>Authors</td>
                 <td style={{ fontWeight: 'bold' }}>
@@ -227,7 +225,7 @@ export const BaseProjectDetails: React.FC<{
                 </td>
               </tr>
             )}
-          {!['other', 'software'].includes(projectValue.projectType) && (
+          {projectValue.projectType !== 'other' && (
             <tr className={styles['prj-row']}>
               <td>Project Type</td>
               <td style={{ fontWeight: 'bold' }}>
@@ -323,10 +321,7 @@ export const BaseProjectDetails: React.FC<{
               <td style={{ fontWeight: 'bold' }}>
                 {projectValue.associatedProjects.map((assoc) => (
                   <div key={JSON.stringify(assoc)}>
-                    {assoc.type === 'Linked Dataset'
-                      ? 'Linked Dataset or Software'
-                      : assoc.type}{' '}
-                    |{' '}
+                    {assoc.type} |{' '}
                     <a
                       href={assoc.href}
                       rel="noopener noreferrer"
@@ -381,20 +376,6 @@ export const BaseProjectDetails: React.FC<{
               </td>
             </tr>
           )}
-          {projectValue.githubUrl && (
-            <tr className={styles['prj-row']}>
-              <td>Software Release</td>
-              <td style={{ fontWeight: 'bold' }}>
-                <a
-                  href={projectValue.githubUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {projectValue.githubUrl}
-                </a>
-              </td>
-            </tr>
-          )}
 
           {projectValue.dois && projectValue.dois[0] && (
             <tr className={styles['prj-row']}>
@@ -403,45 +384,41 @@ export const BaseProjectDetails: React.FC<{
             </tr>
           )}
 
-          {['other', 'software'].includes(projectValue.projectType) &&
-            projectValue.license && (
-              <tr className={styles['prj-row']}>
-                <td>License</td>
-                <td style={{ fontWeight: 'bold' }}>
-                  <LicenseDisplay licenseType={projectValue.license} />
-                </td>
-              </tr>
-            )}
+          {projectValue.projectType === 'other' && projectValue.license && (
+            <tr className={styles['prj-row']}>
+              <td>License</td>
+              <td style={{ fontWeight: 'bold' }}>
+                <LicenseDisplay licenseType={projectValue.license} />
+              </td>
+            </tr>
+          )}
 
-          {versions &&
-            versions.length > 1 &&
-            ['other', 'software'].includes(projectValue.projectType) && (
-              <tr className={styles['prj-row']}>
-                <td>Version</td>
-                <td style={{ fontWeight: 'bold' }}>
-                  <Select
-                    style={{ width: '200px' }}
-                    size="small"
-                    options={versions.map((v) => ({ value: v, label: v }))}
-                    value={currentVersion}
-                    onChange={(newVal) => setSelectedVersion(newVal)}
-                  />{' '}
-                  {currentVersion > 1 && (
-                    <VersionChangesModal
-                      projectId={projectValue.projectId}
-                      doi={projectValue.dois?.[0]}
-                      version={currentVersion}
-                    />
-                  )}
-                </td>
-              </tr>
-            )}
+          {versions && versions.length > 1 && (
+            <tr className={styles['prj-row']}>
+              <td>Version</td>
+              <td style={{ fontWeight: 'bold' }}>
+                <Select
+                  style={{ width: '200px' }}
+                  size="small"
+                  options={versions.map((v) => ({ value: v, label: v }))}
+                  value={currentVersion}
+                  onChange={(newVal) => setSelectedVersion(newVal)}
+                />{' '}
+                {currentVersion > 1 && (
+                  <VersionChangesModal
+                    projectId={projectValue.projectId}
+                    version={currentVersion}
+                  />
+                )}
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
       {isPublished && (
         <section style={{ paddingBottom: '12px' }}>
-          {!['other', 'software', 'field_reconnaissance'].includes(
+          {!['other', 'field_reconnaissance'].includes(
             projectValue.projectType
           ) && (
             <>

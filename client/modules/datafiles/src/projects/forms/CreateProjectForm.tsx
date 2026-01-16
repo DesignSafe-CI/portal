@@ -135,11 +135,7 @@ export const BaseProjectCreateForm: React.FC<{
       <Form.Item label="Project Description" required>
         What is this project about? How can data in this project be reused? How
         is this project unique? Who is the audience? Description must be between
-        50 and 5000 characters in length. (
-        <a href="/user-guide/curating/bestpractices/#project-level-descriptions">
-          Learn how to write descriptions.
-        </a>
-        )
+        50 and 5000 characters in length.
         <Form.Item
           name="description"
           rules={[

@@ -72,7 +72,6 @@ export type TBaseProjectValue = {
     | 'hybrid_simulation'
     | 'field_recon'
     | 'field_reconnaissance'
-    | 'software'
     | 'None';
 
   title: string;
@@ -98,8 +97,6 @@ export type TBaseProjectValue = {
 
   hazmapperMaps?: THazmapperMap[];
 
-  githubUrl?: string;
-
   license?: string;
 };
 
@@ -123,7 +120,6 @@ export type TEntityValue = {
   dois?: string[];
   referencedData: TReferencedWork[];
   relatedWork: TAssociatedProject[];
-  keywords?: string[];
 
   experimentType?: TDropdownValue;
   equipmentType?: TDropdownValue;

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Spin, Alert } from 'antd';
-import { StatusTag } from '../../_common';
 import { useSystemQueue } from '@client/hooks';
 
 import styles from './SystemQueueTable.module.css';
@@ -47,9 +46,13 @@ export const SystemQueueTable: React.FC<SystemQueueTableProps> = ({
               <tr key={idx}>
                 <td>{queue.name}</td>
                 <td>
-                  <StatusTag variant={queue.down ? 'error' : 'open'}>
+                  <div
+                    className={`${styles.statusBadge} ${
+                      queue.down ? styles.closed : styles.open
+                    }`}
+                  >
                     {queue.down ? 'Closed' : 'Open'}
-                  </StatusTag>
+                  </div>
                 </td>
                 <td>{queue.free}</td>
                 <td>{queue.running}</td>

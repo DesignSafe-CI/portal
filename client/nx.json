@@ -53,6 +53,5 @@
       }
     }
   },
-  "defaultProject": "client",
-  "useInferencePlugins": false
+  "defaultProject": "client"
 }

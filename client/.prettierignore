@@ -2,6 +2,3 @@
 /dist
 /coverage
 /.nx/cache
-.nx/
-
-/.nx/workspace-data

@@ -86,7 +86,7 @@ export const RenameModalBody: React.FC<{
       title={<h2>Rename {selectedFilesName[0]?.name}</h2>}
       width="60%"
       open={isOpen}
-      destroyOnHidden
+      destroyOnClose
       footer={null} // Remove the footer from here
       onCancel={handleCancel}
     >

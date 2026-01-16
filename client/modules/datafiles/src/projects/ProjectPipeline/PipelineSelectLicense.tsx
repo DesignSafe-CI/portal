@@ -85,155 +85,149 @@ export const PipelineSelectLicense: React.FC<{
         onChange={(e) => mutate({ patchMetadata: { license: e.target.value } })}
       >
         <section>
-          {data.baseProject.value.projectType !== 'software' && (
-            <>
-              <h3>Datasets</h3>
-              <summary style={{ fontSize: '14px', paddingBottom: '10px' }}>
-                If you are publishing data, such as simulation or experimental
-                data, choose between:
-              </summary>
+          <h3>Datasets</h3>
+          <summary style={{ fontSize: '14px', paddingBottom: '10px' }}>
+            If you are publishing data, such as simulation or experimental data,
+            choose between:
+          </summary>
 
-              <Row>
-                <Col span={12}>
-                  <Radio value="Open Data Commons Attribution">
-                    <LicenseRadioIcon
-                      label="Open Data Commons Attribution"
-                      iconName="curation-odc"
-                      recommended="RECOMMEND"
-                    />
-                  </Radio>
-                  <ul
-                    style={{
-                      listStylePosition: 'inside',
-                      paddingInlineStart: '0px',
-                    }}
-                  >
-                    <li>
-                      You allow others to freely share, reuse, and adapt your
-                      data/database.
-                    </li>
-                    <li>
-                      You expect to be attributed for any public use of the
-                      data/database.
-                    </li>
-                  </ul>
-                  Please read the{' '}
-                  <a
-                    href="https://opendatacommons.org/licenses/by/"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-describedby="msg-open-ext-site-new-window"
-                  >
-                    License Website
-                  </a>
-                </Col>
-                <Col span={12}>
-                  <Radio value="Open Data Commons Public Domain Dedication">
-                    <LicenseRadioIcon
-                      label="Open Data Commons Public Domain Dedication"
-                      iconName="curation-odc"
-                      recommended="CONSIDER"
-                    />
-                  </Radio>
-                  <ul
-                    style={{
-                      listStylePosition: 'inside',
-                      paddingInlineStart: '0px',
-                    }}
-                  >
-                    <li>
-                      You allow others to freely share, modify, and use this
-                      data/database for any purpose without any restrictions
-                    </li>
-                    <li>You do not expect to be attributed for it.</li>
-                  </ul>
-                  Please read the{' '}
-                  <a
-                    href="https://opendatacommons.org/licenses/pddl/1-0/"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-describedby="msg-open-ext-site-new-window"
-                  >
-                    License Website
-                  </a>
-                </Col>
-              </Row>
+          <Row>
+            <Col span={12}>
+              <Radio value="Open Data Commons Attribution">
+                <LicenseRadioIcon
+                  label="Open Data Commons Attribution"
+                  iconName="curation-odc"
+                  recommended="RECOMMEND"
+                />
+              </Radio>
+              <ul
+                style={{
+                  listStylePosition: 'inside',
+                  paddingInlineStart: '0px',
+                }}
+              >
+                <li>
+                  You allow others to freely share, reuse, and adapt your
+                  data/database.
+                </li>
+                <li>
+                  You expect to be attributed for any public use of the
+                  data/database.
+                </li>
+              </ul>
+              Please read the{' '}
+              <a
+                href="https://opendatacommons.org/licenses/by/"
+                target="_blank"
+                rel="noreferrer"
+                aria-describedby="msg-open-ext-site-new-window"
+              >
+                License Website
+              </a>
+            </Col>
+            <Col span={12}>
+              <Radio value="Open Data Commons Public Domain Dedication">
+                <LicenseRadioIcon
+                  label="Open Data Commons Public Domain Dedication"
+                  iconName="curation-odc"
+                  recommended="CONSIDER"
+                />
+              </Radio>
+              <ul
+                style={{
+                  listStylePosition: 'inside',
+                  paddingInlineStart: '0px',
+                }}
+              >
+                <li>
+                  You allow others to freely share, modify, and use this
+                  data/database for any purpose without any restrictions
+                </li>
+                <li>You do not expect to be attributed for it.</li>
+              </ul>
+              Please read the{' '}
+              <a
+                href="https://opendatacommons.org/licenses/pddl/1-0/"
+                target="_blank"
+                rel="noreferrer"
+                aria-describedby="msg-open-ext-site-new-window"
+              >
+                License Website
+              </a>
+            </Col>
+          </Row>
 
-              <h3>Works</h3>
-              <summary style={{ fontSize: '14px', paddingBottom: '10px' }}>
-                If you are publishing papers, presentations, learning objects,
-                workflows, designs, etc, choose between:
-              </summary>
+          <h3>Works</h3>
+          <summary style={{ fontSize: '14px', paddingBottom: '10px' }}>
+            If you are publishing papers, presentations, learning objects,
+            workflows, designs, etc, choose between:
+          </summary>
 
-              <Row>
-                <Col span={12}>
-                  <Radio value="Creative Commons Attribution">
-                    <LicenseRadioIcon
-                      label="Creative Commons Attribution"
-                      iconName="curation-cc-share"
-                      recommended="RECOMMEND"
-                    />
-                  </Radio>
-                  <ul
-                    style={{
-                      listStylePosition: 'inside',
-                      paddingInlineStart: '0px',
-                    }}
-                  >
-                    <li>
-                      You allow others to freely share, reuse, and adapt your
-                      work.
-                    </li>
-                    <li>
-                      You expect to be attributed for any public use of your
-                      work.
-                    </li>
-                    <li>You retain your copyright.</li>
-                  </ul>
-                  Please read the{' '}
-                  <a
-                    href="https://creativecommons.org/licenses/by/4.0/"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-describedby="msg-open-ext-site-new-window"
-                  >
-                    License Website
-                  </a>
-                </Col>
-                <Col span={12}>
-                  <Radio value="Creative Commons Public Domain Dedication">
-                    <LicenseRadioIcon
-                      label="Creative Commons Public Domain Dedication"
-                      iconName="curation-cc-zero"
-                      recommended="CONSIDER"
-                    />
-                  </Radio>
-                  <ul
-                    style={{
-                      listStylePosition: 'inside',
-                      paddingInlineStart: '0px',
-                    }}
-                  >
-                    <li>
-                      You allow others to freely share, modify, and use this
-                      work for any purpose without any restrictions.
-                    </li>
-                    <li>You do not expect to be attributed for it.</li>
-                    <li>You give all of your rights away.</li>
-                  </ul>
-                  Please read the{' '}
-                  <a
-                    href="https://creativecommons.org/publicdomain/zero/1.0/"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-describedby="msg-open-ext-site-new-window"
-                  >
-                    License Website
-                  </a>
-                </Col>
-              </Row>
-            </>
-          )}
+          <Row>
+            <Col span={12}>
+              <Radio value="Creative Commons Attribution">
+                <LicenseRadioIcon
+                  label="Creative Commons Attribution"
+                  iconName="curation-cc-share"
+                  recommended="RECOMMEND"
+                />
+              </Radio>
+              <ul
+                style={{
+                  listStylePosition: 'inside',
+                  paddingInlineStart: '0px',
+                }}
+              >
+                <li>
+                  You allow others to freely share, reuse, and adapt your work.
+                </li>
+                <li>
+                  You expect to be attributed for any public use of your work.
+                </li>
+                <li>You retain your copyright.</li>
+              </ul>
+              Please read the{' '}
+              <a
+                href="https://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                rel="noreferrer"
+                aria-describedby="msg-open-ext-site-new-window"
+              >
+                License Website
+              </a>
+            </Col>
+            <Col span={12}>
+              <Radio value="Creative Commons Public Domain Dedication">
+                <LicenseRadioIcon
+                  label="Creative Commons Public Domain Dedication"
+                  iconName="curation-cc-zero"
+                  recommended="CONSIDER"
+                />
+              </Radio>
+              <ul
+                style={{
+                  listStylePosition: 'inside',
+                  paddingInlineStart: '0px',
+                }}
+              >
+                <li>
+                  You allow others to freely share, modify, and use this work
+                  for any purpose without any restrictions.
+                </li>
+                <li>You do not expect to be attributed for it.</li>
+                <li>You give all of your rights away.</li>
+              </ul>
+              Please read the{' '}
+              <a
+                href="https://creativecommons.org/publicdomain/zero/1.0/"
+                target="_blank"
+                rel="noreferrer"
+                aria-describedby="msg-open-ext-site-new-window"
+              >
+                License Website
+              </a>
+            </Col>
+          </Row>
 
           <h3>Software</h3>
           <summary style={{ fontSize: '14px', paddingBottom: '10px' }}>

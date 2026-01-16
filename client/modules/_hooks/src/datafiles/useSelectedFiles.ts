@@ -12,7 +12,6 @@ export function useSelectedFiles(
     [api, system, basePath]
   );
   const selectedRowsQuery = useQuery<TFileListing[]>({
-    queryFn: () => [],
     queryKey,
     initialData: [],
     enabled: false,

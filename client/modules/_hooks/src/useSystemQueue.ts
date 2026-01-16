@@ -40,6 +40,5 @@ export function useSystemQueue(hostname: string) {
   return useQuery<QueueItem[], Error>({
     queryKey: ['systemQueue', hostname],
     queryFn: () => fetchSystemQueue(hostname),
-    enabled: !!hostname,
   });
 }

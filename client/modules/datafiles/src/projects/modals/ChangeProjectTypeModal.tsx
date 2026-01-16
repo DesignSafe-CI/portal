@@ -50,13 +50,6 @@ const ProjectTypeSelector: React.FC<{
             description="For work done in areas affected by natural hazards."
           />
         </Radio>
-        <Radio value="software">
-          <ProjectTypeRadioSelect
-            label="Research Software"
-            iconName="overview-prj-type fa fa-github"
-            description="For code that solves complex problems in a scientific context."
-          />
-        </Radio>
         <Radio value="other">
           <ProjectTypeRadioSelect
             label="Other Type Project"
@@ -137,7 +130,7 @@ export const ProjectInfoDisplay: React.FC<{
           },
         ];
     }
-  }, [projectType, showProtectedDataOptions]);
+  }, [projectType]);
 
   const [current, setCurrent] = useState(0);
 
@@ -248,7 +241,7 @@ export const ChangeProjectTypeModal: React.FC<{
       <Modal
         open={isModalOpen}
         onCancel={handleClose}
-        width={currentDisplay === 'PROJECT_FORM' ? 1000 : 900}
+        width={900}
         title={<h2>Change Project Type</h2>}
         footer={null}
       >

@@ -16,7 +16,6 @@ from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
     handle_legacy_authors,
     handle_dropdown_value,
-    handle_keywords,
 )
 from designsafe.apps.api.projects_v2.constants import HYBRID_SIM_TYPES
 
@@ -35,7 +34,6 @@ class HybridSimulation(MetadataModel):
     procedure_end: Optional[str] = None
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
-    keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
     project: list[str] = []
     dois: list[str] = []

@@ -4,7 +4,7 @@ services:
         context: ../../.
         dockerfile: conf/docker/Dockerfile
         target: development
-      image: designsafeci/portal:latest
+      image: designsafeci/portal:tapis-v3
       env_file: ../env_files/designsafe.env
       command: /bin/bash
       container_name: des_django

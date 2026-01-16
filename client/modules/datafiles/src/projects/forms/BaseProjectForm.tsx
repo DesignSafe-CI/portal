@@ -61,14 +61,6 @@ export const ProjectTypeInput: React.FC<{
           description="For work other than the project types above."
         />
       );
-    case 'software':
-      return (
-        <ProjectTypeRadioSelect
-          label="Research Software"
-          iconName="fa fa-github overview-prj-type"
-          description="For code that solves complex problems in a scientific context."
-        />
-      );
 
     case 'hybrid_simulation':
       return (
@@ -236,7 +228,7 @@ export const BaseProjectForm: React.FC<{
         </Form.Item>
       )}
 
-      {['other', 'software'].includes(projectType ?? '') && (
+      {projectType === 'other' && (
         <>
           <Form.Item label="Data Types" required>
             The nature or genre of the content. Enter a custom value by typing
@@ -327,7 +319,7 @@ export const BaseProjectForm: React.FC<{
         <GuestMembersInput name="guestMembers" />
       </Form.Item>
 
-      {['other', 'software'].includes(projectType ?? '') && (
+      {projectType === 'other' && (
         <>
           <Form.Item label="Assign Authorship" required>
             You can order the authors during the publication process.
@@ -349,15 +341,13 @@ export const BaseProjectForm: React.FC<{
           </Form.Item>
 
           <Form.Item label="Referenced Data and Software">
-            Published dataset or software reused in the creation of, or to be
-            used with this publication.
+            Published data used in the creation of this dataset.
             <ReferencedDataInput name="referencedData" />
           </Form.Item>
 
           <Form.Item label="Related Work">
-            Information giving context, a linked publication in DesignSafe, or
-            works citing the DOI in this publication. citing the DOI for this
-            dataset.
+            Information giving context, a linked dataset on DesignSafe, or works
+            citing the DOI for this dataset.
             <RelatedWorkInput name="associatedProjects" />
           </Form.Item>
         </>
@@ -394,11 +384,7 @@ export const BaseProjectForm: React.FC<{
       <Form.Item label="Project Description" required>
         What is this project about? How can data in this project be reused? How
         is this project unique? Who is the audience? Description must be between
-        1000 and 5000 characters in length. (
-        <a href="/user-guide/curating/bestpractices/#project-level-descriptions">
-          Learn how to write descriptions.
-        </a>
-        )
+        50 and 5000 characters in length.
         <Form.Item
           name="description"
           rules={[
@@ -407,8 +393,8 @@ export const BaseProjectForm: React.FC<{
               message: 'Please enter a description',
             },
             {
-              min: 1000,
-              message: 'Description must be at least 1000 characters long',
+              min: 50,
+              message: 'Description must be at least 50 characters long',
             },
             {
               max: 5000,
