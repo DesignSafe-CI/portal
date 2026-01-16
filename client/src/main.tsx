@@ -1,13 +1,15 @@
 import './styles.css';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
+import { BrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
+
+/**removed unrequired imports */
 
 console.log(Dashboard);
 
@@ -99,7 +101,9 @@ if (dashboardElement) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
-          <Dashboard />
+          <BrowserRouter>
+            <Dashboard />
+          </BrowserRouter>
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>

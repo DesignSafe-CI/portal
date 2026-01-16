@@ -5,3 +5,294 @@
  * .container {
  * }
 */
+/*Dashboard styling*/
+
+.dashboardContainer {
+  display: flex;
+  gap: 2rem;
+}
+
+.middleSection {
+  flex: 2;
+}
+
+.sectionHeader {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.verticalSeparator {
+  width: 1px;
+  background-color: #ccc;
+  margin-top: 2.5rem;
+  margin-bottom: 2rem;
+  height: auto;
+  min-height: 300px;
+}
+
+.rightPanel {
+  flex: 1.3;
+  padding-right: 1.5rem;
+}
+
+.statusCard {
+  background-color: #fff;
+  padding: 0rem 1.5rem 1.5rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.statusTitle {
+  margin-bottom: 1rem;
+}
+
+.naText {
+  color: #999;
+}
+/*End of Dashboard styling*/
+
+/*for joblisting*/
+.jobStatusContainer {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
+}
+
+.jobStatusHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.jobStatusHeader h2 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.viewAllLink {
+  font-size: 0.9rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.viewAllLink:hover {
+  text-decoration: underline;
+}
+
+.jobsTableWrapper {
+  overflow-x: auto;
+}
+.limitedWidthTable {
+  max-width: 75%; /* or 800px, adjust as needed */
+  min-width: 750px;
+}
+.recentJobsCard {
+  max-width: 980px;
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.recentJobsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.viewAllLink {
+  font-size: 14px;
+  color: #0073e6;
+  text-decoration: none;
+}
+
+.viewAllLink:hover {
+  text-decoration: underline;
+}
+
+.jobsTableWrapper {
+  max-width: 100%;
+}
+.header-details {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #666;
+}
+
+.header-details dt {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.header-details dd {
+  margin: 0;
+}
+/* Userguide css */
+.userGuidesWrapper {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.userGuidesHeading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.videoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 1.2rem;
+  justify-items: center;
+}
+
+.videoCard,
+.videoCardSingle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.videoCardSingle {
+  grid-column: span 2;
+  margin-top: 1rem;
+}
+
+.videoThumbnail {
+  width: 100%;
+  max-width: 200px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.videoThumbnail:hover {
+  transform: scale(1.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.videoTitle {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #0070c9;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.videoTitle:hover {
+  text-decoration: underline;
+}
+.youtubeIcon {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  margin-right: 6px;
+  display: inline-block;
+  transform: translateY(-1px);
+}
+.headingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.userGuidesHeading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+
+.moreVideosLink {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0070c9;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.moreVideosLink:hover {
+  text-decoration: underline;
+  color: #004a99;
+}
+/* jolistingwrapper.css*/
+
+.jobActions {
+  padding-top: 15px;
+}
+.jobActions :is(a, button) + :is(a, button) {
+  margin-left: 15px;
+}
+
+.link:hover {
+  color: var(--global-color-accent--normal);
+}
+/*su card styling*/
+.suCard {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.suTitle {
+  margin-bottom: 12px;
+}
+
+.suUsername {
+  color: #2b6cb0;
+}
+
+.suSection {
+  margin-bottom: 12px;
+}
+
+.suHost {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.suTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.suTheadRow {
+  background: #f5f5f5;
+}
+
+.suTh {
+  padding: 6px 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.suTd {
+  padding: 6px 8px;
+  border-bottom: 1px solid #eee;
+}
