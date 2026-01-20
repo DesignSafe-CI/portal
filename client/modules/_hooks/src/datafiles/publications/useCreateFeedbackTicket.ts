@@ -7,7 +7,7 @@ async function createFeedbackTicket(formData: {
   body: string;
   projectId: string;
   title: string;
-  recaptchaToken?: string; //for ContributeDataModal.tsx
+  recaptchaToken?: string;
 }) {
   // Replace undefined with null so that deleted values are unset instead of ignored.
   const res = await apiClient.post(`/help/feedback/`, {
