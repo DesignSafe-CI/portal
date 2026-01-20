@@ -73,6 +73,9 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
 
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [thumbStatus, setThumbStatus] = useState<
+    Record<string, 'thumbsup' | 'thumbsdown' | undefined>
+  >({});
 
   useEffect(() => {
     if (closed) {
@@ -202,15 +205,6 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
         payload: value,
       });
     }
-
-    const feedbackMessage: Message = {
-      key: `feedback-${Date.now()}`,
-      content:
-        'Your feedback has been recorded. Thank you for helping to improve our user experience.',
-      role: 'feedback',
-      timestamp: Date.now(),
-    };
-    setMessages((prev) => [...prev, feedbackMessage]);
   };
 
   // Convert messages to Bubble.List format
@@ -224,7 +218,7 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
         : { icon: <RobotOutlined /> },
     messageRender: renderMarkdown,
     typing: message.typing,
-    footer: message.role == 'assistant' && (
+    footer: message.role === 'assistant' && (
       <div
         style={{
           float: 'right',
@@ -233,15 +227,37 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
       >
         <Button
           type="text"
-          onClick={() => handleSendFeedback('thumbs_down')}
+          onClick={() => {
+            setThumbStatus({ ...thumbStatus, [message.key]: 'thumbsdown' });
+            handleSendFeedback('thumbs_down');
+          }}
           icon={
-            <Icon className="fa fa-thumbs-o-down" label="thumbs down"></Icon>
+            <Icon
+              className={
+                thumbStatus[message.key] === 'thumbsdown'
+                  ? 'fa fa-thumbs-down'
+                  : 'fa fa-thumbs-o-down'
+              }
+              label="thumbs up"
+            ></Icon>
           }
         ></Button>
         <Button
           type="text"
-          onClick={() => handleSendFeedback('thumbs_up')}
-          icon={<Icon className="fa fa-thumbs-o-up" label="thumbs up"></Icon>}
+          onClick={() => {
+            setThumbStatus({ ...thumbStatus, [message.key]: 'thumbsup' });
+            handleSendFeedback('thumbs_up');
+          }}
+          icon={
+            <Icon
+              className={
+                thumbStatus[message.key] === 'thumbsup'
+                  ? 'fa fa-thumbs-up'
+                  : 'fa fa-thumbs-o-up'
+              }
+              label="thumbs up"
+            ></Icon>
+          }
         ></Button>
       </div>
     ),
