@@ -23,13 +23,14 @@ class KeywordsView(BaseApiView):
     """View to get keyword suggestions based on project title and description."""
 
     def get(self, request: HttpRequest):
-        """Get keyword suggestions based on project title and description."""
+        """Get keyword suggestions based on project title, description, and hazard types."""
 
         title = request.GET.get("title")
         description = request.GET.get("description")
+        hazard_types = request.GET.get("hazard_types")
 
-        if not title or not description:
-            raise ApiException("title or description not in request")
+        if not title or not description or not hazard_types:
+            raise ApiException("title, description, or hazard types not in request")
 
         try:
             rag = RAG()
@@ -40,7 +41,7 @@ class KeywordsView(BaseApiView):
         graph_builder.add_edge(START, "retrieve")
         graph = graph_builder.compile()
         resp = graph.invoke(
-            {"question": f"project title: {title}, description: {description}"}
+            {"question": f"project title: {title}, description: {description}, hazard types: {hazard_types}"}
         )
         try:
             answer = resp["answer"].split(", ")
