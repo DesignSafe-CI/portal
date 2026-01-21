@@ -197,7 +197,7 @@ def create_anchor(text: str) -> str:
 
 def process_markdown_files(docs_dir: str = "/docs"):
     """Process all markdown files from the documentation directory."""
-    docs_path = Path(docs_dir) / "docs"
+    docs_path = Path(docs_dir) / "user-guide"
 
     # Parse MkDocs config
     config_path = Path(f"{docs_dir}/mkdocs.yml")
