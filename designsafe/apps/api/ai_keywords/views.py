@@ -145,18 +145,12 @@ class RAG:
 def _parse_keywords_response(answer: str) -> list[str]:
     """Normalize the LLM response into a list of keyword strings."""
     
-    """Guards against non-string inputs (None, dict, list, etc.)"""
     if not isinstance(answer, str):
         return []
-
-    """Removes leading/trailing whitespace so subsequent checks are accurate."""
     normalized = answer.strip()
-    
-    """If the string is empty after trimming, return an empty list."""
     if not normalized:
         return []
 
-    """Checks if the response looks like a JSON list. If so, attempt to parse it. Returns the parsed list if successful."""
     if normalized.startswith("[") and normalized.endswith("]"):
         try:
             parsed = json.loads(normalized)
@@ -165,10 +159,7 @@ def _parse_keywords_response(answer: str) -> list[str]:
         except json.JSONDecodeError:
             pass
 
-    """Splits a comma-separated string into pieces and trims each piece."""
     parts = [part.strip() for part in normalized.split(",")]
-    
-    """Cleans each piece and returns the non-empty cleaned keywords."""
     return [_clean_keyword(part) for part in parts if _clean_keyword(part)]
 
 
@@ -178,12 +169,11 @@ def _clean_keyword(value: str) -> str:
         return ""
     cleaned = value.strip().strip("[](){}")
     
-    """Checks that the string has at least 2 characters and is wrapped in matching single or double quotes"""
+    # Checks that the string has at least 2 characters and is wrapped in matching single or double quotes. If so, removes the outer quotes.
     if (
         len(cleaned) >= 2
         and cleaned[0] == cleaned[-1]
         and cleaned[0] in ("'", '"')
     ):
-        """Removes the outer quotes and any extra whitespace inside"""
         cleaned = cleaned[1:-1].strip()
     return cleaned
