@@ -8,6 +8,7 @@ import datafilesRouter from './datafiles/datafilesRouter';
 import reconportalRouter from './reconportal/reconportalRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
+import { AIChatButton } from '@client/workspace';
 
 const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
@@ -85,6 +86,20 @@ if (onboardingElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={onboardingRouter} />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
+const navAiElement = document.getElementById('nav-ai-root');
+if (navAiElement) {
+  const navAiRoot = ReactDOM.createRoot(navAiElement as HTMLElement);
+  navAiRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <AIChatButton />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
