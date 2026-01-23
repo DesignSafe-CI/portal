@@ -22,13 +22,14 @@ class KeywordsView(BaseApiView):
     """View to get keyword suggestions based on project title and description."""
 
     def get(self, request: HttpRequest):
-        """Get keyword suggestions based on project title and description."""
+        """Get keyword suggestions based on project title, description, and hazard types."""
 
         title = request.GET.get("title")
         description = request.GET.get("description")
+        hazard_types = request.GET.getlist("hazard_types[]")
 
-        if not title or not description:
-            raise ApiException("title or description not in request")
+        if not title or not description or not hazard_types:
+            raise ApiException("title, description, or hazard types not in request")
 
         try:
             rag = RAG()
@@ -39,7 +40,7 @@ class KeywordsView(BaseApiView):
         graph_builder.add_edge(START, "retrieve")
         graph = graph_builder.compile()
         resp = graph.invoke(
-            {"question": f"project title: {title}, description: {description}"}
+            {"question": f"project title: {title}, description: {description}, hazard types: {hazard_types}"}
         )
         try:
             answer = resp["answer"].split(", ")
@@ -68,7 +69,7 @@ class RAG:
     API_ENDPOINT = settings.OPENAI_API_URL
 
     template = """
-    You are an assistant for finding keywords for a supplied project title and description. Use the following pieces of retrieved context to answer the question. If you don't know the answer, respond with nothing.
+    You are an assistant for finding keywords for a supplied project title, description, and list of natural hazard types. Use the following pieces of retrieved context to answer the question. If you don't know the answer, respond with nothing.
     Reference the "keywords" field in the metadata object of the retrieved responses for existing keyword examples.
     Respond only with the suggested keywords as a comma-separated list of strings, ordered by rank. Respond only with your final answer, and do not include any other text or commentary.
     Make sure to follow these guidelines for keyword suggestions:
@@ -78,7 +79,7 @@ class RAG:
     - Think like a user: choose terms someone would actually type (hazard type, method, region).
     - Include technology or problem addressed, and the purpose of the data.
     - Repeat important words from your title/description to boost discoverability.
-    - Rank by frequency among other existing projects, by similarity or synonym to the words in the project title and project description; proper nouns carry less weight.
+    - Rank by frequency among other existing projects, by similarity or synonym to the words in the project title, project description, and "nhTypes" field in the metadata object of the retrieved context; proper nouns carry less weight.
     - Do not include proper nouns (e.g. specific names of people, places, or events) unless directly referenced in the provided title or description.
 
     Question: {question}
