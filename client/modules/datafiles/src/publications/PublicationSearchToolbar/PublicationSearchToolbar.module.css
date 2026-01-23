@@ -77,3 +77,11 @@
 .filterSelect {
   width: 150px;
 }
+
+.askAiButton {
+  background: linear-gradient(135deg, #47a59d 0%, #337ab7 100%) !important;
+  border: 1px solid #2e6da4 !important;
+  color: white !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
+}

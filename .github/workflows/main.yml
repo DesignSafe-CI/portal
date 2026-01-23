@@ -30,6 +30,10 @@ jobs:
       run: |
         cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
+    - name: Ensure react-assets template exists for use in unit tests
+      run: |
+        touch designsafe/templates/base.j2 designsafe/templates/react-assets.html
+
     - run: |
         poetry sync
 

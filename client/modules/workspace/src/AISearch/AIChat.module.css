@@ -1,0 +1,8 @@
+.sender :global(.ant-input::placeholder) {
+  color: var(--global-color-primary--x-dark);
+}
+
+.ai-chat :global(.ant-bubble-footer) {
+  width: 100%;
+  margin-top: 0;
+}
