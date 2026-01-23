@@ -651,7 +651,11 @@ def publish_project_async(
     """Async wrapper around publication"""
     with AsyncTaskContext():
         meta = publish_project(project_id, entity_uuids, version, version_info, dry_run)
-        add_publications_to_chroma(publications=[meta])
+
+        try:
+            add_publications_to_chroma(publications=[meta])
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error("Error adding publication to Chroma vector store: %s", e)
 
 
 def amend_publication(project_id: str):

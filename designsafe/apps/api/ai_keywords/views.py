@@ -1,5 +1,6 @@
 """Views for RAG-based keyword suggestions."""
 
+import json
 import logging
 from chromadb import HttpClient, Settings
 from typing_extensions import List, TypedDict
@@ -43,13 +44,11 @@ class KeywordsView(BaseApiView):
             {"question": f"project title: {title}, description: {description}, hazard types: {hazard_types}"}
         )
         try:
-            answer = resp["answer"].split(", ")
-        except AttributeError:
+            resp_list = _parse_keywords_response(resp["answer"])
+        except (AttributeError, TypeError, ValueError):
             logger.exception("Error decoding answer")
             logger.debug(f"Raw answer: {resp['answer']}")
-            answer = []
-
-        resp_list = answer if isinstance(answer, list) else []
+            resp_list = []
 
         return JsonResponse({"response": resp_list})
 
@@ -142,3 +141,40 @@ class RAG:
         )
         response = self.llm.invoke(messages)
         return {"answer": response.content}
+
+
+def _parse_keywords_response(answer: str) -> list[str]:
+    """Normalize the LLM response into a list of keyword strings."""
+    
+    if not isinstance(answer, str):
+        return []
+    normalized = answer.strip()
+    if not normalized:
+        return []
+
+    if normalized.startswith("[") and normalized.endswith("]"):
+        try:
+            parsed = json.loads(normalized)
+            if isinstance(parsed, list):
+                return [_clean_keyword(kw) for kw in parsed if _clean_keyword(kw)]
+        except json.JSONDecodeError:
+            pass
+
+    parts = [part.strip() for part in normalized.split(",")]
+    return [_clean_keyword(part) for part in parts if _clean_keyword(part)]
+
+
+def _clean_keyword(value: str) -> str:
+    """Strip wrapping quotes/brackets from a keyword."""
+    if not isinstance(value, str):
+        return ""
+    cleaned = value.strip().strip("[](){}")
+    
+    # Checks that the string has at least 2 characters and is wrapped in matching single or double quotes. If so, removes the outer quotes.
+    if (
+        len(cleaned) >= 2
+        and cleaned[0] == cleaned[-1]
+        and cleaned[0] in ("'", '"')
+    ):
+        cleaned = cleaned[1:-1].strip()
+    return cleaned

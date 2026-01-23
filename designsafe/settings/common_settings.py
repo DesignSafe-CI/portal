@@ -762,6 +762,10 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     },
 ]
 
+
+NEO4J_URL = os.environ.get("NEO4J_URL")
+NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
+NEO4J_PASS = os.environ.get("NEO4J_PASS")
 # AI KEYWORDS SETTINGS
 SN_API_KEY = os.environ.get("SN_API_KEY")
 SN_API_ENDPOINT = os.environ.get("SN_API_ENDPOINT")
@@ -772,7 +776,6 @@ CHROMA_PORT = int(os.environ.get("CHROMA_PORT", 443))
 CHROMA_PASSWORD = os.environ.get("CHROMA_PASSWORD")
 CHROMA_USERNAME = os.environ.get("CHROMA_USERNAME")
 CHROMA_COLLECTION = os.environ.get("CHROMA_COLLECTION", "designsafe_keywords")
-
 # Jenkins webhook integration for Ranch backups
 JENKINS_WH_USER = os.environ.get("JENKINS_WH_USER", "wma_prtl")
 JENKINS_WH_TOKEN = os.environ.get("JENKINS_WH_TOKEN", "")
