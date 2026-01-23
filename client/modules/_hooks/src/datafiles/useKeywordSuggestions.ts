@@ -28,7 +28,10 @@ export function useKeywordSuggestions(
       );
       return res.data.response;
     },
-    enabled: !!searchParams.title.trim() && !!searchParams.description.trim() && !!searchParams.hazard_types,
+    enabled:
+      !!searchParams.title.trim() &&
+      !!searchParams.description.trim() &&
+      !!searchParams.hazard_types,
     staleTime: 0,
   });
 }

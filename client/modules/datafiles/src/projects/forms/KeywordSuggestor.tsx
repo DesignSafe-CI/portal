@@ -8,7 +8,7 @@ type Props = {
   form: FormInstance;
   titlePath: (string | number)[];
   descriptionPath: (string | number)[];
-  hazardTypesPath: (string | number)[];
+  hazardTypesPath?: (string | number)[]; // not all instances of this component have a natural hazard types field
   keywordsPath: (string | number)[];
 };
 
@@ -21,11 +21,18 @@ export const KeywordSuggestor: React.FC<Props> = ({
 }) => {
   const title: string = Form.useWatch(titlePath, form) ?? '';
   const description: string = Form.useWatch(descriptionPath, form) ?? '';
-  const hazard_types: {id: string, name: string}[] = Form.useWatch(hazardTypesPath, form) ?? '';
+  const hazard_types: { id: string; name: string }[] =
+    Form.useWatch(hazardTypesPath, form) ?? '';
   const keywords: string[] = Form.useWatch(keywordsPath, form) ?? [];
 
   const debounced = useDebounceValue(
-    { title: title.trim(), description: description.trim(), hazard_types: Object.values(hazard_types).map((hazard_type) => hazard_type.name) },
+    {
+      title: title.trim(),
+      description: description.trim(),
+      hazard_types: Object.values(hazard_types).map(
+        (hazard_type) => hazard_type.name
+      ),
+    },
     800
   );
 
@@ -42,7 +49,9 @@ export const KeywordSuggestor: React.FC<Props> = ({
   );
 
   const hasText =
-    debounced.title.length > 0 && debounced.description.length > 0 && debounced.hazard_types.length > 0;
+    debounced.title.length > 0 &&
+    debounced.description.length > 0 &&
+    debounced.hazard_types.length > 0;
 
   if (!hasText) {
     return (
