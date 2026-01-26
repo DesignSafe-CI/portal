@@ -4,6 +4,7 @@ import apiClient from '../apiClient';
 export type TGetKeywordSuggestionsParams = {
   title: string;
   description: string;
+  hazard_types?: string[];
 };
 
 export interface KeywordSuggestionResponse {
@@ -18,6 +19,7 @@ export function useKeywordSuggestions(
       'keywordSuggestions',
       searchParams.title.trim(),
       searchParams.description.trim(),
+      searchParams.hazard_types,
     ],
     queryFn: async () => {
       const res = await apiClient.get<KeywordSuggestionResponse>(

@@ -413,6 +413,7 @@ export const BaseProjectForm: React.FC<{
             form={form}
             titlePath={['title']}
             descriptionPath={['description']}
+            hazardTypesPath={['nhTypes']}
             keywordsPath={['keywords']}
           />
           <Form.Item
