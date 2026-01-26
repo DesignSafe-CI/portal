@@ -647,7 +647,16 @@ def publish_project_async(
 ):
     """Async wrapper arount publication"""
     with AsyncTaskContext():
-        publish_project(project_id, entity_uuids, version, version_info, dry_run)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        close_old_connections()
+        try:
+            publish_project(project_id, entity_uuids, version, version_info, dry_run)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = True
+            project_meta.save()
 
 
 def amend_publication(project_id: str):
@@ -718,4 +727,12 @@ def amend_publication(project_id: str):
 def amend_publication_async(project_id: str):
     """async wrapper around amend_publication"""
     with AsyncTaskContext():
-        amend_publication(project_id)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        try:
+            amend_publication(project_id)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = False
+            project_meta.save()
