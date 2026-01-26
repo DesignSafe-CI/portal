@@ -7,12 +7,12 @@ from pydantic_ai.exceptions import ModelHTTPError
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 # from designsafe.apps.api.publications_v2.agents.neo4j_rag_agent import neo4j_agent
-from designsafe.apps.api.publications_v2.agents.openai_rag_agent import agent as PubsAgent, AgentDeps
+from designsafe.apps.api.publications_v2.agents.openai_rag_agent import (
+    agent as PubsAgent,
+    AgentDeps,
+)
 from designsafe.apps.api.publications_v2.agents.docs_rag_agent import agent as DocsAgent
 from designsafe.apps.api.publications_v2.agents.intent_agent import intent_agent
-from designsafe.apps.api.publications_v2.agents.create_docs_rag import (
-    async_query_docs_rag,
-)
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger("metrics")

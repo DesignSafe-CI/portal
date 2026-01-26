@@ -3,7 +3,7 @@
 import json
 import logging
 from chromadb import HttpClient, Settings
-from typing_extensions import List, TypedDict
+from typing_extensions import TypedDict
 from langchain_core.documents import Document
 from langgraph.graph import START, StateGraph
 from langchain_chroma import Chroma
@@ -41,7 +41,9 @@ class KeywordsView(BaseApiView):
         graph_builder.add_edge(START, "retrieve")
         graph = graph_builder.compile()
         resp = graph.invoke(
-            {"question": f"project title: {title}, description: {description} {f", hazard types: {hazard_types}" if hazard_types else '' }"}
+            {
+                "question": f"project title: {title}, description: {description} {f", hazard types: {hazard_types}" if hazard_types else '' }"
+            }
         )
         try:
             resp_list = _parse_keywords_response(resp["answer"])
@@ -57,7 +59,7 @@ class State(TypedDict):
     """RAG state model"""
 
     question: str
-    context: List[Document]
+    context: list[Document]
     answer: str
 
 
@@ -145,7 +147,7 @@ class RAG:
 
 def _parse_keywords_response(answer: str) -> list[str]:
     """Normalize the LLM response into a list of keyword strings."""
-    
+
     if not isinstance(answer, str):
         return []
     normalized = answer.strip()
@@ -169,12 +171,8 @@ def _clean_keyword(value: str) -> str:
     if not isinstance(value, str):
         return ""
     cleaned = value.strip().strip("[](){}")
-    
+
     # Checks that the string has at least 2 characters and is wrapped in matching single or double quotes. If so, removes the outer quotes.
-    if (
-        len(cleaned) >= 2
-        and cleaned[0] == cleaned[-1]
-        and cleaned[0] in ("'", '"')
-    ):
+    if len(cleaned) >= 2 and cleaned[0] == cleaned[-1] and cleaned[0] in ("'", '"'):
         cleaned = cleaned[1:-1].strip()
     return cleaned

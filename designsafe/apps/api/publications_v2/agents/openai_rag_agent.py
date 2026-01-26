@@ -173,17 +173,12 @@ async def vector_lookup(
         "Publication lookup complete. Constructing your response..."
     )
 
-    # print(vector_results[0])
-
     recovered_project_ids = set((res.project_id for res in vector_results))
 
-    print("recovered results")
-    print(search_params)
-
-    query_string, es_search_results = await sync_to_async(get_es_results)(
+    _, es_search_results = await sync_to_async(get_es_results)(
         search_params, max_num_results=ctx.deps.result_size
     )
-    print(es_search_results.hits.total)
+
     es_project_ids = set((hit.meta.id for hit in es_search_results.hits))
 
     hits_in_both = recovered_project_ids.intersection(es_project_ids)
@@ -243,5 +238,5 @@ async def vector_lookup(
     return RetrievalSummary(
         documents=final_result,
         count=es_search_results.hits.total.value,
-        full_result_link=f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published",
+        full_result_link="https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published",
     )

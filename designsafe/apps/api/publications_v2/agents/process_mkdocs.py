@@ -70,7 +70,9 @@ def extract_nav_structure(nav: List, parent_path: str = "") -> List[Dict]:
 def build_url(md_file: str) -> str:
     """Build the full URL from a markdown file path."""
     # Remove .md extension and handle special cases
-    base_url = os.environ.get("DOCS_BASE_URL", "https://www.designsafe-ci.org/user-guide/")
+    base_url = os.environ.get(
+        "DOCS_BASE_URL", "https://www.designsafe-ci.org/user-guide/"
+    )
     if md_file == "index.md":
         return base_url
 
@@ -78,6 +80,7 @@ def build_url(md_file: str) -> str:
     return urljoin(base_url, url_path)
 
 
+# pylint: disable=too-many-locals
 def extract_sections_from_markdown(content: str, file_info: Dict) -> List[Document]:
     """Extract sections from markdown content with proper metadata."""
     documents = []
