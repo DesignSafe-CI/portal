@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Form, Input, Modal } from 'antd';
 import { useAuthenticatedUser, useCreateFeedbackTicket } from '@client/hooks';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { notification } from 'antd';
 
 export const SubmitFeedbackModal: React.FC<{
@@ -8,9 +9,13 @@ export const SubmitFeedbackModal: React.FC<{
   title: string;
 }> = ({ projectId, title }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
+  const recaptchaSiteKey =
+    (window as any).__RECAPTCHA_ENTERPRISE_SITE_KEY || '';
 
   const showModal = () => setIsModalOpen(true);
   const handleClose = () => {
+    form.resetFields();
     setIsModalOpen(false);
   };
 
@@ -18,13 +23,24 @@ export const SubmitFeedbackModal: React.FC<{
   const [notifApi, contextHolder] = notification.useNotification();
 
   const { user } = useAuthenticatedUser();
+  const isAuthenticated = !!user;
   const submitFeedback = (formData: {
     name: string;
     email: string;
     body: string;
+    recaptchaResponse?: string;
   }) => {
     mutate(
-      { formData: { ...formData, projectId, title } },
+      {
+        formData: {
+          ...formData,
+          projectId,
+          title,
+          ...(formData.recaptchaResponse && {
+            recaptchaToken: formData.recaptchaResponse,
+          }),
+        },
+      },
       {
         onSuccess: () => {
           handleClose();
@@ -60,6 +76,7 @@ export const SubmitFeedbackModal: React.FC<{
       >
         <div style={{ display: 'flex', gap: '1rem' }}>
           <Form
+            form={form}
             layout="vertical"
             style={{ flex: 1 }}
             onFinish={(formData) => submitFeedback(formData)}
@@ -102,6 +119,29 @@ export const SubmitFeedbackModal: React.FC<{
             >
               <Input.TextArea autoSize={{ minRows: 4 }} />
             </Form.Item>
+            {!isAuthenticated && (
+              <Form.Item
+                name="recaptchaResponse"
+                required
+                rules={[
+                  { required: true, message: 'Please complete the reCAPTCHA' },
+                ]}
+              >
+                {recaptchaSiteKey ? (
+                  <ReCAPTCHA
+                    sitekey={recaptchaSiteKey}
+                    onChange={(value) =>
+                      form.setFieldValue('recaptchaResponse', value || '')
+                    }
+                    onExpired={() =>
+                      form.setFieldValue('recaptchaResponse', '')
+                    }
+                  />
+                ) : (
+                  <div style={{ color: 'red' }}>RECAPTCHA site key not set</div>
+                )}
+              </Form.Item>
+            )}
             <Form.Item>
               <Button
                 type="primary"
