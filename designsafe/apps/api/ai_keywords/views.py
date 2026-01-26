@@ -42,7 +42,7 @@ class KeywordsView(BaseApiView):
         graph = graph_builder.compile()
         resp = graph.invoke(
             {
-                "question": f"project title: {title}, description: {description} {f", hazard types: {hazard_types}" if hazard_types else '' }"
+                "question": f"project title: {title}, description: {description} {f', hazard types: {hazard_types}' if hazard_types else '' }"
             }
         )
         try:

@@ -96,7 +96,7 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                         json.dumps(
                             {
                                 "type": "chat.response",
-                                "key": f"response-{event["key"]}",
+                                "key": f"response-{event['key']}",
                                 "payload": text,
                             }
                         )
