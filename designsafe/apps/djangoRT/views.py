@@ -12,6 +12,7 @@ from designsafe.apps.api.views import BaseApiView
 import logging
 import mimetypes
 import json
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -218,10 +219,9 @@ def ticketattachment(request, ticketId, attachmentId):
 
 class FeedbackView(BaseApiView):
     def post(self, request):
-        """Post a feedback response
         """
-        rt = rtUtil.DjangoRt(queue=settings.DJANGO_RT['RT_FEEDBACK_QUEUE'])
-
+        Post a feedback response
+        """
         data = json.loads(request.body)
         email = request.user.email if request.user.is_authenticated else data['email']
         name = "{} {}".format(request.user.first_name, request.user.last_name) if request.user.is_authenticated else data['name']
@@ -229,6 +229,51 @@ class FeedbackView(BaseApiView):
         body = data['body']
         project_id = data['projectId']
         project_title = data['title']
+
+        # Check if this is a RECON-PORTAL event contribution (not project feedback)
+        # If project_id is 'RECON-PORTAL', use the main queue instead of feedback queue
+        if project_id == 'RECON-PORTAL':
+            queue = settings.DJANGO_RT['RT_QUEUE'] # Main queue
+            category = project_title
+        else:
+            queue = settings.DJANGO_RT['RT_FEEDBACK_QUEUE'] # Feedback queue
+            category = 'Project Feedback'
+
+        rt = rtUtil.DjangoRt(queue=queue)
+
+        if not request.user.is_authenticated:
+            recaptcha_token = data.get('recaptchaToken')
+            if not recaptcha_token:
+                raise ApiException(status=400, message="reCAPTCHA is required.")
+            try:
+                payload = {
+                    "event": {
+                        "token": recaptcha_token,
+                        "siteKey": settings.RECAPTCHA_ENTERPRISE_SITE_KEY,
+                        "expectedAction": "USER_FEEDBACK"
+                    }
+                }
+
+                url = f"https://recaptchaenterprise.googleapis.com/v1/projects/{settings.RECAPTCHA_ENTERPRISE_PROJECT_ID}/assessments?key={settings.RECAPTCHA_ENTERPRISE_API_KEY}"
+
+                captcha_resp = requests.post(url, json=payload, timeout=10)
+                captcha_resp.raise_for_status()
+                captcha_json = captcha_resp.json()
+
+                token_valid = captcha_json.get("tokenProperties", {}).get("valid", False)
+                score = captcha_json.get("riskAnalysis", {}).get("score", 0.0)
+
+                if not token_valid:
+                    logger.warning('reCAPTCHA token invalid for user: %s', email)
+                    raise ApiException(status=400, message="reCAPTCHA verification failed.")
+
+                if score < 0.7:
+                    logger.warning('reCAPTCHA score too low (%s) for user: %s', score, email)
+                    raise ApiException(status=400, message="reCAPTCHA verification failed.")
+
+            except requests.RequestException as exc:
+                logger.error('reCAPTCHA verification error: %s', exc)
+                raise ApiException(status=500, message="Error verifying reCAPTCHA.")
 
         if subject is None or email is None or body is None:
             return HttpResponseBadRequest()
@@ -240,7 +285,7 @@ class FeedbackView(BaseApiView):
 
         meta = (
             ('Opened by', request.user.username),
-            ('Category', 'Project Feedback'),
+            ('Category', category),
             ('Resource', 'DesignSafe'),
             ('Project ID', project_id),
             ('Project Title', project_title),
@@ -259,11 +304,11 @@ class FeedbackView(BaseApiView):
                                  requestor=email,
                                  cc='')
 
-        logger.debug('Creating ticket for user: %s' % ticket)
+        logger.debug(f'Creating ticket for user: {name} email: {email}')
 
         ticket_id = rt.createTicket(ticket)
 
         if ticket_id > -1:
             return HttpResponse("OK")
         else:
-            return ApiException(status=400, message="There was a problem submittin your ticket.")
+            raise ApiException(status=400, message="There was a problem submitting your ticket.")
