@@ -185,6 +185,7 @@ TEMPLATES = [
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
                 'designsafe.context_processors.tas_homedir',
+                'designsafe.context_processors.recaptcha_config',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -619,12 +620,17 @@ PUBLISHED_DATASET_PATH = os.environ.get('PUBLISHED_DATASET_PATH', '/published-da
 COMMUNITY_SYSTEM = 'designsafe.storage.community'
 NEES_PUBLIC_SYSTEM = 'nees.public'
 
-# RECAPTCHA SETTINGS FOR LESS SPAMMO
+# RECAPTCHA SETTINGS FOR LESS SPAMMO (CMS)
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
-RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY') # Possibly deprecated; not in reachable code
+RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY') # Possibly deprecated; not in reachable code
 NOCAPTCHA = True
+
+# reCAPTCHA Enterprise settings (Portal)
+RECAPTCHA_ENTERPRISE_SITE_KEY = os.environ.get('RECAPTCHA_ENTERPRISE_SITE_KEY')
+RECAPTCHA_ENTERPRISE_PROJECT_ID = os.environ.get('RECAPTCHA_ENTERPRISE_PROJECT_ID')
+RECAPTCHA_ENTERPRISE_API_KEY = os.environ.get('RECAPTCHA_ENTERPRISE_API_KEY')
 
 # FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
