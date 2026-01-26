@@ -65,6 +65,8 @@ class ProjectMetadata(models.Model):
         help_text="(DEPRECATE IN V3) Tapis V2 association IDs.",
     )
 
+    is_publishing = models.BooleanField(default=False)
+
     @property
     def project_id(self) -> str:
         """Convenience method for retrieving project IDs."""
