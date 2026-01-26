@@ -69,7 +69,7 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                 json.dumps(
                     {
                         "type": "chat.status",
-                        "key": f"status-{event["key"]}",
+                        "key": f"status-{event['key']}",
                         "payload": payload,
                     }
                 )
@@ -110,7 +110,7 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                     json.dumps(
                         {
                             "type": "chat.error",
-                            "key": f"error-{event["key"]}",
+                            "key": f"error-{event['key']}",
                             "payload": "Token limit exceeded. Retrying with reduced context...",
                         }
                     )
@@ -131,7 +131,7 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                         json.dumps(
                             {
                                 "type": "chat.response",
-                                "key": f"response-{event["key"]}",
+                                "key": f"response-{event['key']}",
                                 "payload": text,
                             }
                         )
@@ -157,7 +157,7 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                 json.dumps(
                     {
                         "type": "chat.error",
-                        "key": f"error-{event["key"]}",
+                        "key": f"error-{event['key']}",
                         "payload": "An unexpected error occurred while processing yoru query.",
                     }
                 )
