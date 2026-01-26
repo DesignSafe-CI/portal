@@ -264,6 +264,30 @@ export const PublishedEntityDisplay: React.FC<{
       ref={publishedRef}
       style={{ scrollMargin: '70px' }}
     >
+      {treeData.value.tombstone && (
+        <Alert
+          showIcon
+          type="warning"
+          message={
+            <strong>
+              The following dataset is no longer published in DesignSafe.
+            </strong>
+          }
+          description={
+            <div>
+              The Dataset with DOI:{' '}
+              <a href={`https://doi.org/${treeData.value.dois?.[0]}`}>
+                {treeData.value.dois?.[0]}
+              </a>{' '}
+              does not comply with one or more{' '}
+              <a href="https://www.designsafe-ci.org/user-guide/curating/policies/">
+                DesignSafe policies
+              </a>{' '}
+              and has been removed. The metadata is still available.
+            </div>
+          }
+        />
+      )}
       <div
         className={styles['pub-show-button']}
         style={{
