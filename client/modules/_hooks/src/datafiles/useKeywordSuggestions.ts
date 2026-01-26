@@ -4,7 +4,7 @@ import apiClient from '../apiClient';
 export type TGetKeywordSuggestionsParams = {
   title: string;
   description: string;
-  hazard_types: string[];
+  hazard_types?: string[];
 };
 
 export interface KeywordSuggestionResponse {
@@ -30,8 +30,7 @@ export function useKeywordSuggestions(
     },
     enabled:
       !!searchParams.title.trim() &&
-      !!searchParams.description.trim() &&
-      !!searchParams.hazard_types,
+      !!searchParams.description.trim(),
     staleTime: 0,
   });
 }

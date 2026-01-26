@@ -49,9 +49,7 @@ export const KeywordSuggestor: React.FC<Props> = ({
   );
 
   const hasText =
-    debounced.title.length > 0 &&
-    debounced.description.length > 0 &&
-    debounced.hazard_types.length > 0;
+    debounced.title.length > 0 && debounced.description.length > 0;
 
   if (!hasText) {
     return (

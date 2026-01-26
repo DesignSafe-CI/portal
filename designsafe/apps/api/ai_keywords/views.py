@@ -29,8 +29,8 @@ class KeywordsView(BaseApiView):
         description = request.GET.get("description")
         hazard_types = request.GET.getlist("hazard_types[]")
 
-        if not title or not description or not hazard_types:
-            raise ApiException("title, description, or hazard types not in request")
+        if not title or not description:
+            raise ApiException("title or description not in request")
 
         try:
             rag = RAG()
@@ -41,7 +41,7 @@ class KeywordsView(BaseApiView):
         graph_builder.add_edge(START, "retrieve")
         graph = graph_builder.compile()
         resp = graph.invoke(
-            {"question": f"project title: {title}, description: {description}, hazard types: {hazard_types}"}
+            {"question": f"project title: {title}, description: {description} {f", hazard types: {hazard_types}" if hazard_types else '' }"}
         )
         try:
             resp_list = _parse_keywords_response(resp["answer"])
@@ -68,7 +68,7 @@ class RAG:
     API_ENDPOINT = settings.OPENAI_API_URL
 
     template = """
-    You are an assistant for finding keywords for a supplied project title, description, and list of natural hazard types. Use the following pieces of retrieved context to answer the question. If you don't know the answer, respond with nothing.
+    You are an assistant for finding keywords for a supplied project title, description, and a list of natural hazard types if included. Use the following pieces of retrieved context to answer the question. If you don't know the answer, respond with nothing.
     Reference the "keywords" field in the metadata object of the retrieved responses for existing keyword examples.
     Respond only with the suggested keywords as a comma-separated list of strings, ordered by rank. Respond only with your final answer, and do not include any other text or commentary.
     Make sure to follow these guidelines for keyword suggestions:
