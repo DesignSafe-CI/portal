@@ -77,7 +77,7 @@ export const ProjectPreviewLayout: React.FC = () => {
           />
         ))}
 
-      {data.baseProject.value.projectType === 'other' && !data.isPublishing &&  (
+      {data.baseProject.value.projectType === 'other' && !data.isPublishing && (
         <Alert
           showIcon
           description={
