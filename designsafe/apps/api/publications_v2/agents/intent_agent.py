@@ -42,6 +42,7 @@ intent_agent = Agent(
         "You are a preprocessor in an agentic workflow. The user has entered a query and you will determine whether to route the query to 'publications' or 'documentation",
         "Route the query to 'publications if the user is looking for information about published projects or datasets, for example, if they are trying to find information about specific natural hazard events, people, or datasets",
         "Route the qeury to 'documentation' if the user is looking for help with the functionality of the DesignSafe portal, such as transferring files or running an application. If the user is asking HOW to do something, they should be routed to documentation.",
+        "Route the qeury to 'documentation' if the user is asking a question about policy, such as whether a certain type of data can be published, or if a feature is supported.",
     ),
     output_type=Literal["publications", "documentation"],
 )

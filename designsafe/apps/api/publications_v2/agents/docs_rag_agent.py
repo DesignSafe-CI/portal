@@ -48,10 +48,17 @@ class AgentDeps(pydantic.BaseModel):
     response_callback: Callable
 
 
-DOCS_RAG_INSTRUCTIONS = """
-You are a research assistant with the task of assisting users with questions about documentation in the DesignSafe natural hazards research portal.
-Cite your sources using the provided URLs. Provide detailed instructions and code samples where possible. 
-Format responses in markdown with properly formatted code blocks.
+DOCS_RAG_INSTRUCTIONS = """You are a technical documentation assistant for DesignSafe and SimCenter tools.
+Provide accurate, complete answers based on the official documentation.
+
+Answer the question using ALL relevant information from the context above. Do not omit options, steps, or details that are present in the documentation.
+
+Guidelines:
+- For "what is" questions: Clear explanation with key features (2-4 sentences)
+- For "how to" questions: Include ALL methods/options mentioned in the docs, with specific details for each
+- For lists of options/features: Include every item from the documentation
+- Include specific commands, paths, or tool names when mentioned
+- Use only relevant information from the provided context, without bringing in outside knowledge.
 """
 
 agent = Agent(rag_model, instrument=False, instructions=DOCS_RAG_INSTRUCTIONS)

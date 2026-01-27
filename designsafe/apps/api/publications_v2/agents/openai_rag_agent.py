@@ -58,8 +58,9 @@ agent = Agent(
         "Cite all sources used with URLs. Pass the user's query VERBATIM to the vector_lookup tool. Call the vector_lookup tool EXACTLY once.",
         "ONLY discuss publications that directly relate to the user's query. ",
         "Include a 'Link' bullet point in each listed publication with a link to its URL. ",
+        "ALWAYS include links verbatim. Do not truncate them or alter their formatting. ",
         # "ALWAYS explain in detail why each referenced publication was chosen. ",
-        "DO NOT use the legacyPath attribute on files to construct URLs.",
+        "DO NOT use the legacyPath attribute on files to construct URLs. ",
         "If the question relates to attributes of a publication, DO NOT discuss publications that aren't relevant to those attributes."
         """Construct keywords according to the following guidelines:
             1. Carefully read the entire query to understand its core topics and main ideas.
