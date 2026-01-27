@@ -23,6 +23,7 @@ import {
   getReconPortalEventIdentifier,
   useAvailableEventYears,
 } from '@client/hooks';
+import { ContributeDataModal } from './ContributeDataModal';
 import { formatDate } from '@client/workspace';
 import { CloseOutlined } from '@ant-design/icons';
 import { getReconEventColor } from '../utils';
@@ -285,6 +286,7 @@ export const ReconSidePanel: React.FC<LayoutProps> = ({
                       Learn how to contribute your datasets
                     </Link>
                   </Text>
+                  <ContributeDataModal />
                 </Flex>
 
                 <div style={{ marginTop: '16px', width: '100%' }}>

@@ -23,7 +23,7 @@ from designsafe.apps.api.projects_v2.operations.datacite_operations import (
     get_doi_publication_date,
 )
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
-    archive_publication_async,
+    create_metadata_file,
     ranch_archive_webhook,
 )
 from designsafe.apps.api.projects_v2.operations.project_email_operations import (
@@ -629,9 +629,7 @@ def publish_project(
 
     index_publication(project_id)
     if not settings.DEBUG:
-        archive_publication_async.apply_async(
-            args=[project_id, version], queue="default"
-        )
+        create_metadata_file(project_id)
         ranch_archive_webhook(project_id)
         ingest_pub_fedora_async.apply_async(
             args=[project_id, version, False], queue="default"
@@ -650,12 +648,22 @@ def publish_project_async(
 ):
     """Async wrapper around publication"""
     with AsyncTaskContext():
-        meta = publish_project(project_id, entity_uuids, version, version_info, dry_run)
-
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        close_old_connections()
         try:
-            add_publications_to_chroma(publications=[meta])
-        except Exception as e:  # pylint: disable=broad-except
-            logger.error("Error adding publication to Chroma vector store: %s", e)
+            meta = publish_project(
+                project_id, entity_uuids, version, version_info, dry_run
+            )
+            try:
+                add_publications_to_chroma(publications=[meta])
+            except Exception as e:  # pylint: disable=broad-except
+                logger.error("Error adding publication to Chroma vector store: %s", e)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = True
+            project_meta.save()
 
 
 def amend_publication(project_id: str):
@@ -716,6 +724,7 @@ def amend_publication(project_id: str):
     index_publication(project_id)
 
     if not settings.DEBUG:
+        create_metadata_file(project_id)
         ingest_pub_fedora_async.apply_async(
             args=[project_id, latest_version, True], queue="default"
         )
@@ -725,4 +734,12 @@ def amend_publication(project_id: str):
 def amend_publication_async(project_id: str):
     """async wrapper around amend_publication"""
     with AsyncTaskContext():
-        amend_publication(project_id)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        try:
+            amend_publication(project_id)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = False
+            project_meta.save()

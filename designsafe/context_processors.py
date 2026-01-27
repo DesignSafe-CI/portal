@@ -60,3 +60,12 @@ def tas_homedir(request):
         return {}
 
     return {"tas_homedir": request.user.profile.get_homedir()}
+
+def recaptcha_config(request):
+    """Provide reCAPTCHA public key for frontend"""
+    key = getattr(settings, 'RECAPTCHA_PUBLIC_KEY', None) or ''
+    enterprise_site_key = getattr(settings, 'RECAPTCHA_ENTERPRISE_SITE_KEY', '') or ''
+    return {
+        'RECAPTCHA_PUBLIC_KEY': key,
+        'RECAPTCHA_ENTERPRISE_SITE_KEY': enterprise_site_key,
+    }
