@@ -7,6 +7,7 @@ import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
 import reconportalRouter from './reconportal/reconportalRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
+import auditRouter from './audit/auditRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
 
 const queryClient = new QueryClient();
@@ -85,6 +86,21 @@ if (onboardingElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={onboardingRouter} />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
+//audit trial component
+const auditTrailElement = document.getElementById('audit-trail-root');
+if (auditTrailElement) {
+  const auditTrailRoot = ReactDOM.createRoot(auditTrailElement as HTMLElement);
+  auditTrailRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <RouterProvider router={auditRouter} />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>

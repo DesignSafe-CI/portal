@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     'designsafe.apps.api.publications_v2',
     'designsafe.apps.api.filemeta',
     'designsafe.apps.accounts',
+    'designsafe.apps.audit',
     'designsafe.apps.cms_plugins',
     'designsafe.apps.box_integration',
     'designsafe.apps.dropbox_integration',
@@ -208,6 +209,7 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+#honestly dont think we need 2 connections like portal vs tapis, think we just need one and can keep calling from there
 if os.environ.get('DATABASE_HOST'):
     DATABASES = {
         'default': {
@@ -218,6 +220,15 @@ if os.environ.get('DATABASE_HOST'):
             'USER': os.environ.get('DATABASE_USER'),
             'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
         },
+        #name of DB
+        'trail_audit': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('AUDIT_DB_NAME'),
+            'HOST': os.environ.get('AUDIT_DB_HOST'),
+            'PORT': os.environ.get('AUDIT_DB_PORT'),
+            'USER': os.environ.get('AUDIT_DB_USER'),
+            'PASSWORD': os.environ.get('AUDIT_DB_PASSWORD'),
+        }
     }
 else:
     DATABASES = {

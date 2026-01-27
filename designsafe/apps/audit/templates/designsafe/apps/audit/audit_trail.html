@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% load sekizai_tags %} {% block title %}Audit Trail{% endblock %} {% block content %}
+<div class="container-fluid">
+    <h1>Audit Trail</h1>
+    <div id="audit-trail-root"></div>
+</div>
+
+{% addtoblock "react_assets" %} {% if debug %}
+<script type="module">
+    import RefreshRuntime from 'http://localhost:4200/static/react-assets/@react-refresh'; RefreshRuntime.injectIntoGlobalHook(window); window.$RefreshReg$ = () => {}; window.$RefreshSig$ = () => (type) => type; window.__vite_plugin_react_preamble_installed__
+    = true;
+</script>
+<script type="module" src="http://localhost:4200/static/react-assets/@vite/client"></script>
+<script type="module" src="http://localhost:4200/static/react-assets/src/main.tsx"></script>
+{% else %} {% include "react-assets.html" %} {% endif %} {% endaddtoblock %} {% endblock %}
