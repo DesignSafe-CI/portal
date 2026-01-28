@@ -1,0 +1,16 @@
+{# @var user_guide_link #}
+
+{% if user_guide_link or is_editing_text %}
+    <a
+        class="btn btn-secondary"
+        {% if is_editing_text %}
+        href="__DYNAMIC__"
+        {% else %}
+        href="{{ user_guide_link }}"
+        {% endif %}
+        target="_blank"
+        aria-describedby="msg-open-new-window"
+    >User Guide</a>
+{% else %}
+    <span>User guide not found.</span>
+{% endif %}
