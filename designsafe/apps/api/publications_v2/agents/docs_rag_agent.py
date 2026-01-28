@@ -1,0 +1,77 @@
+"""
+Agent for documentation RAG
+"""
+
+import os
+from collections.abc import Callable
+import chromadb
+from chromadb.config import Settings as ChromaSettings
+import pydantic
+from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIResponsesModel
+from pydantic_ai.providers.openai import OpenAIProvider
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+OPENAI_INFERENCE_MODEL = os.environ.get("OPENAI_INFERENCE_MODEL", "gpt-4o-mini")
+
+
+class RagDocument(pydantic.BaseModel):
+    """Class representing a docs section retrieved by RAG."""
+
+    text: str
+    url: str
+    title: str
+
+
+rag_model = OpenAIResponsesModel(
+    OPENAI_INFERENCE_MODEL,
+    provider=OpenAIProvider(
+        api_key=os.environ.get("OPENAI_API_KEY"),
+        base_url="https://api.openai.com/v1/",
+    ),
+)
+
+
+class AgentDeps(pydantic.BaseModel):
+    """Dependencies for the OpenAI RAG agent"""
+
+    query: str
+    result_size: int = 10
+    response_callback: Callable
+
+
+DOCS_RAG_INSTRUCTIONS = """You are a technical documentation assistant for DesignSafe and SimCenter tools.
+Provide accurate, complete answers based on the official documentation.
+
+Answer the question using ALL relevant information from the context above. Do not omit options, steps, or details that are present in the documentation.
+
+Guidelines:
+- For "what is" questions: Clear explanation with key features (2-4 sentences)
+- For "how to" questions: Include ALL methods/options mentioned in the docs, with specific details for each
+- For lists of options/features: Include every item from the documentation
+- Include specific commands, paths, or tool names when mentioned
+- Use only relevant information from the provided context, without bringing in outside knowledge.
+- Cite ALL relevant sources using the provide URL.
+"""
+
+agent = Agent(rag_model, instrument=False, instructions=DOCS_RAG_INSTRUCTIONS)
+
+
+@agent.tool_plain
+def documentation_lookup(query: str) -> list[RagDocument]:
+    """Tool to search documentation and retrieve relevant sections."""
+    chroma_client = chromadb.HttpClient(
+        host="chromadb",
+        port=8000,
+        settings=ChromaSettings(anonymized_telemetry=False),
+    )
+    collection = chroma_client.get_collection("designsafe_docs")
+
+    docs_res = []
+    query_resp = collection.query(query_texts=[query])
+    docs = query_resp["documents"][0]
+    metas = query_resp["metadatas"][0]
+    for text, meta in zip(docs, metas):
+        docs_res.append(RagDocument(text=text, url=meta["url"], title=meta["title"]))
+
+    return docs_res

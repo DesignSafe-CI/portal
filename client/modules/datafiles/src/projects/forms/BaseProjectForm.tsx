@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input, Popconfirm, Select } from 'antd';
+import { Alert, Button, Form, Input, Popconfirm, Select, Tag } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   nhTypeOptions,
@@ -24,6 +24,7 @@ import {
 import { customRequiredMark } from './_common';
 import { AuthorSelect } from './_fields/AuthorSelect';
 import { ProjectTypeRadioSelect } from '../modals/ProjectTypeRadioSelect';
+import { KeywordSuggestor } from './KeywordSuggestor';
 
 export const ProjectTypeInput: React.FC<{
   projectType: TBaseProjectValue['projectType'];
@@ -374,23 +375,6 @@ export const BaseProjectForm: React.FC<{
         <HazardEventsInput name="nhEvents" />
       </Form.Item>
 
-      {projectType !== 'None' && (
-        <Form.Item label="Keywords" required>
-          Choose informative words that indicate the content of the project.
-          Keywords should be comma-separated.
-          <Form.Item
-            name="keywords"
-            rules={[{ required: true }]}
-            className="inner-form-item"
-          >
-            <Select
-              mode="tags"
-              notFoundContent={null}
-              tokenSeparators={[',']}
-            ></Select>
-          </Form.Item>
-        </Form.Item>
-      )}
       <Form.Item label="Project Description" required>
         What is this project about? How can data in this project be reused? How
         is this project unique? Who is the audience? Description must be between
@@ -420,6 +404,32 @@ export const BaseProjectForm: React.FC<{
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
+
+      {projectType !== 'None' && (
+        <Form.Item label="Keywords" required>
+          Choose informative words that indicate the content of the project.
+          Keywords should be comma-separated.
+          <KeywordSuggestor
+            form={form}
+            titlePath={['title']}
+            descriptionPath={['description']}
+            hazardTypesPath={['nhTypes']}
+            keywordsPath={['keywords']}
+          />
+          <Form.Item
+            name="keywords"
+            rules={[{ required: true }]}
+            className="inner-form-item"
+          >
+            <Select
+              mode="tags"
+              notFoundContent={null}
+              tokenSeparators={[',']}
+            />
+          </Form.Item>
+        </Form.Item>
+      )}
+
       {hasValidationErrors && (
         <Alert
           type="error"

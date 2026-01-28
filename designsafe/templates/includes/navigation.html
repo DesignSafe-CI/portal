@@ -1,4 +1,4 @@
-{% load menu_tags cms_tags %}
+{% load menu_tags cms_tags sekizai_tags %}
 <nav class="navbar navbar-default navbar-inverse navbar-ds">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -40,7 +40,24 @@
         <input type="radio" name="search-radio" id="search-radio-datasets" value="datasets" style="display:table-cell; vertical-align: middle; margin-top:0px; margin-right:0.25rem;">
         <label for="search-radio-datasets" style="color:white; margin-bottom:0px; vertical-align: middle;">Datasets</label>
 
+        <div id="nav-ai-root" style="display: inline-block; margin-left: 1rem;"></div>
       </form>
     </div>
   </div>
 </nav>
+
+{% addtoblock "react_assets" %}
+  {% if debug %}
+    <script type="module">
+        import RefreshRuntime from 'http://localhost:4200/static/react-assets/@react-refresh';
+        RefreshRuntime.injectIntoGlobalHook(window);
+        window.$RefreshReg$ = () => {};
+        window.$RefreshSig$ = () => (type) => type;
+        window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
+    <script type="module" src="http://localhost:4200/static/react-assets/@vite/client"></script>
+    <script type="module" src="http://localhost:4200/static/react-assets/src/main.tsx"></script>
+  {% else %}
+    {% include "react-assets.html" %}
+  {% endif %}
+{% endaddtoblock %}

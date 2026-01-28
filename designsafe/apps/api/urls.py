@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^notifications/', include('designsafe.apps.api.notifications.urls')),
     url(r'^users/', include('designsafe.apps.api.users.urls')),
     url(r'^search/', include(('designsafe.apps.api.search.urls', 'designsafe.apps.api.search'), namespace="ds_search_api")),
-    url(r'^licenses/', include('designsafe.apps.api.licenses.urls'))
+    url(r'^licenses/', include('designsafe.apps.api.licenses.urls')),
+    path("keyword-suggestions", include("designsafe.apps.api.ai_keywords.urls"))
 ]
