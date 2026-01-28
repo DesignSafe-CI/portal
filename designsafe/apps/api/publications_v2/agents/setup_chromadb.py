@@ -6,9 +6,15 @@ import os
 import uuid
 import chromadb
 from chromadb.config import Settings as ChromaSettings
+from chromadb.api import ClientAPI
 from chromadb.utils import embedding_functions
 from designsafe.apps.api.publications_v2.agents.process_mkdocs import (
     process_markdown_files,
+    Document,
+)
+from designsafe.apps.api.publications_v2.agents.process_url import (
+    WebScraper,
+    DOC_SOURCES,
 )
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
@@ -24,6 +30,36 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
 )
 
 
+def ingest_documents(chroma_client: ClientAPI, docs: list[Document]):
+    """
+    Ingest a set of documents into ChromaDB
+
+    :param chroma_client: ChromaDB client object.
+    :type chroma_client: ClientAPI
+    :param docs: List of document objects to ingest.
+    :type docs: list[Document]
+    """
+    collection = chroma_client.get_or_create_collection(
+        CHROMA_COLLECTION_NAME, embedding_function=openai_ef
+    )
+    chunk_size = 1
+    docs_slice = slice(0, chunk_size)
+    while docs_chunk := docs[docs_slice]:
+        documents = [d.text for d in docs_chunk]
+        metadata = [d.metadata for d in docs_chunk]
+
+        ids = [str(uuid.uuid4()) for d in documents]
+        try:
+            collection.add(documents=documents, metadatas=metadata, ids=ids)
+        # pylint:disable=broad-exception-caught
+        except Exception:
+            print(f"EXCEPTION: {documents}")
+
+        print(f"indexed embeddings for slice {docs_slice.start}-{docs_slice.stop}")
+
+        docs_slice = slice(docs_slice.stop, docs_slice.stop + chunk_size)
+
+
 def setup_chromadb():
     """
     Method to ingest documentation into ChromaDB.
@@ -33,20 +69,11 @@ def setup_chromadb():
         port=8000,
         settings=ChromaSettings(anonymized_telemetry=False),
     )
-    collection = chroma_client.get_or_create_collection(
-        CHROMA_COLLECTION_NAME, embedding_function=openai_ef
-    )
+
     docs = process_markdown_files()
-    # def embed_documents(chunk_size=100):
-    chunk_size = 100
-    docs_slice = slice(0, chunk_size)
-    while docs_chunk := docs[docs_slice]:
-        documents = [d.text for d in docs_chunk]
-        metadata = [d.metadata for d in docs_chunk]
+    ingest_documents(chroma_client, docs)
 
-        ids = [str(uuid.uuid4()) for d in documents]
-        collection.add(documents=documents, metadatas=metadata, ids=ids)
-
-        print(f"indexed embeddings for slice {docs_slice.start}-{docs_slice.stop}")
-
-        docs_slice = slice(docs_slice.stop, docs_slice.stop + chunk_size)
+    scraper = WebScraper()
+    for web_source_key in DOC_SOURCES:
+        docs = scraper.scrape_site(web_source_key)
+        ingest_documents(chroma_client, docs)

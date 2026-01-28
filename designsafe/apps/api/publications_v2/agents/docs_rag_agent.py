@@ -15,14 +15,6 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 OPENAI_INFERENCE_MODEL = os.environ.get("OPENAI_INFERENCE_MODEL", "gpt-4o-mini")
 
 
-chroma_client = chromadb.HttpClient(
-    host="chromadb",
-    port=8000,
-    settings=ChromaSettings(anonymized_telemetry=False),
-)
-collection = chroma_client.get_collection("designsafe_docs")
-
-
 class RagDocument(pydantic.BaseModel):
     """Class representing a docs section retrieved by RAG."""
 
@@ -59,6 +51,7 @@ Guidelines:
 - For lists of options/features: Include every item from the documentation
 - Include specific commands, paths, or tool names when mentioned
 - Use only relevant information from the provided context, without bringing in outside knowledge.
+- Cite ALL relevant sources using the provide URL.
 """
 
 agent = Agent(rag_model, instrument=False, instructions=DOCS_RAG_INSTRUCTIONS)
@@ -67,6 +60,13 @@ agent = Agent(rag_model, instrument=False, instructions=DOCS_RAG_INSTRUCTIONS)
 @agent.tool_plain
 def documentation_lookup(query: str) -> list[RagDocument]:
     """Tool to search documentation and retrieve relevant sections."""
+    chroma_client = chromadb.HttpClient(
+        host="chromadb",
+        port=8000,
+        settings=ChromaSettings(anonymized_telemetry=False),
+    )
+    collection = chroma_client.get_collection("designsafe_docs")
+
     docs_res = []
     query_resp = collection.query(query_texts=[query])
     docs = query_resp["documents"][0]
