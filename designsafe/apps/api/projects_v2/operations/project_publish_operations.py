@@ -42,6 +42,7 @@ from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
 from designsafe.libs.common.context_managers import AsyncTaskContext
+from designsafe.apps.api.ai_keywords.utils import add_publications_to_chroma
 
 logger = logging.getLogger(__name__)
 
@@ -645,9 +646,24 @@ def publish_project_async(
     version_info: Optional[str] = None,
     dry_run: bool = False,
 ):
-    """Async wrapper arount publication"""
+    """Async wrapper around publication"""
     with AsyncTaskContext():
-        publish_project(project_id, entity_uuids, version, version_info, dry_run)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        close_old_connections()
+        try:
+            meta = publish_project(
+                project_id, entity_uuids, version, version_info, dry_run
+            )
+            try:
+                add_publications_to_chroma(publications=[meta])
+            except Exception as e:  # pylint: disable=broad-except
+                logger.error("Error adding publication to Chroma vector store: %s", e)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = True
+            project_meta.save()
 
 
 def amend_publication(project_id: str):
@@ -718,4 +734,12 @@ def amend_publication(project_id: str):
 def amend_publication_async(project_id: str):
     """async wrapper around amend_publication"""
     with AsyncTaskContext():
-        amend_publication(project_id)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        try:
+            amend_publication(project_id)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = False
+            project_meta.save()

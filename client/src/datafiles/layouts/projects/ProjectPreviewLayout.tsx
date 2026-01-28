@@ -35,9 +35,24 @@ export const ProjectPreviewLayout: React.FC = () => {
         <ProjectNavbar projectId={projectId} />
         <ProjectBestPracticesModal
           projectId={projectId}
-          disabled={disabledNoRepo}
+          disabled={disabledNoRepo || data.isPublishing}
         />
       </div>
+
+      {data.isPublishing && (
+        <Alert
+          type="warning"
+          showIcon
+          description={
+            <div>
+              A dataset from this project is currently being published. Until
+              this process is completed, published datasets within this project
+              cannot be added or modified.
+            </div>
+          }
+          style={{ marginBottom: '10px' }}
+        />
+      )}
 
       <ProjectPreview projectId={projectId} />
 
@@ -62,7 +77,7 @@ export const ProjectPreviewLayout: React.FC = () => {
           />
         ))}
 
-      {data.baseProject.value.projectType === 'other' && (
+      {data.baseProject.value.projectType === 'other' && !data.isPublishing && (
         <Alert
           showIcon
           description={

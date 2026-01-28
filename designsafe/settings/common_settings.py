@@ -185,6 +185,7 @@ TEMPLATES = [
                 'designsafe.context_processors.debug',
                 'designsafe.context_processors.messages',
                 'designsafe.context_processors.tas_homedir',
+                'designsafe.context_processors.recaptcha_config',
                 'designsafe.apps.cms_plugins.context_processors.cms_section',
             ],
         },
@@ -619,12 +620,17 @@ PUBLISHED_DATASET_PATH = os.environ.get('PUBLISHED_DATASET_PATH', '/published-da
 COMMUNITY_SYSTEM = 'designsafe.storage.community'
 NEES_PUBLIC_SYSTEM = 'nees.public'
 
-# RECAPTCHA SETTINGS FOR LESS SPAMMO
+# RECAPTCHA SETTINGS FOR LESS SPAMMO (CMS)
 DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
 DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
-RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY')
+RECAPTCHA_PUBLIC_KEY = os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_PUBLIC_KEY') # Possibly deprecated; not in reachable code
+RECAPTCHA_PRIVATE_KEY= os.environ.get('DJANGOCMS_FORMS_RECAPTCHA_SECRET_KEY') # Possibly deprecated; not in reachable code
 NOCAPTCHA = True
+
+# reCAPTCHA Enterprise settings (Portal)
+RECAPTCHA_ENTERPRISE_SITE_KEY = os.environ.get('RECAPTCHA_ENTERPRISE_SITE_KEY')
+RECAPTCHA_ENTERPRISE_PROJECT_ID = os.environ.get('RECAPTCHA_ENTERPRISE_PROJECT_ID')
+RECAPTCHA_ENTERPRISE_API_KEY = os.environ.get('RECAPTCHA_ENTERPRISE_API_KEY')
 
 # FOR RAPID UPLOADS
 DESIGNSAFE_UPLOAD_PATH = '/corral-repl/tacc/NHERI/uploads'
@@ -762,6 +768,20 @@ PORTAL_USER_ACCOUNT_SETUP_STEPS = [
     },
 ]
 
+
+NEO4J_URL = os.environ.get("NEO4J_URL")
+NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
+NEO4J_PASS = os.environ.get("NEO4J_PASS")
+# AI KEYWORDS SETTINGS
+SN_API_KEY = os.environ.get("SN_API_KEY")
+SN_API_ENDPOINT = os.environ.get("SN_API_ENDPOINT")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+OPENAI_API_URL = os.environ.get("OPENAI_API_URL")
+CHROMA_ENDPOINT = os.environ.get("CHROMA_ENDPOINT")
+CHROMA_PORT = int(os.environ.get("CHROMA_PORT", 443))
+CHROMA_PASSWORD = os.environ.get("CHROMA_PASSWORD")
+CHROMA_USERNAME = os.environ.get("CHROMA_USERNAME")
+CHROMA_COLLECTION = os.environ.get("CHROMA_COLLECTION", "designsafe_keywords")
 # Jenkins webhook integration for Ranch backups
 JENKINS_WH_USER = os.environ.get("JENKINS_WH_USER", "wma_prtl")
 JENKINS_WH_TOKEN = os.environ.get("JENKINS_WH_TOKEN", "")
