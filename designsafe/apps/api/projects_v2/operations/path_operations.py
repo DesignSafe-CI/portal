@@ -4,6 +4,8 @@ in the directory structure. UNUSED for now, pending stakeholder approval.
 
 from typing import Optional
 import copy
+import tempfile
+import os
 from pathlib import Path
 import subprocess
 import logging
@@ -205,12 +207,16 @@ def generate_sha512_manifest(base_path: str, data_dir: str = "data"):
     :type data_dir: str
     """
     with Workdir(base_path):
-        with open("manifest-sha512.txt", "w", encoding="utf-8") as f:
+        with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as f:
+            tmp_path = f.name
+            logger.debug("Writing manifest to temp file %s", tmp_path)
             args = ["find", "-L", data_dir, "-type", "f", "-print0"]
             with subprocess.Popen(args, stdout=subprocess.PIPE) as p1:
                 subprocess.check_call(
                     ["xargs", "-0", "sha512sum"], stdin=p1.stdout, stdout=f
                 )
+
+        os.replace(tmp_path, "manifest-sha512.txt")
 
 
 def generate_manifests_for_project(project_id: str):
