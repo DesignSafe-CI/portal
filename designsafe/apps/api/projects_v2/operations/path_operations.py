@@ -5,7 +5,7 @@ in the directory structure. UNUSED for now, pending stakeholder approval.
 from typing import Optional
 import copy
 import tempfile
-import os
+import shutil
 from pathlib import Path
 import subprocess
 import logging
@@ -216,7 +216,7 @@ def generate_sha512_manifest(base_path: str, data_dir: str = "data"):
                     ["xargs", "-0", "sha512sum"], stdin=p1.stdout, stdout=f
                 )
 
-        os.replace(tmp_path, "manifest-sha512.txt")
+        shutil.move(tmp_path, "manifest-sha512.txt")
 
 
 def generate_manifests_for_project(project_id: str):
