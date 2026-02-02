@@ -214,6 +214,7 @@ class ProjectInstanceView(BaseApiView):
                 "tree": nx.tree_data(
                     nx.node_link_graph(project.project_graph.value), "NODE_ROOT"
                 ),
+                "isPublishing": project.is_publishing,
             }
         )
 
@@ -413,6 +414,7 @@ class ProjectPreviewView(BaseApiView):
                 "baseProject": project.to_dict(),
                 "entities": [e.to_dict() for e in entities],
                 "tree": nx.tree_data(preview_tree, "NODE_ROOT"),
+                "isPublishing": project.is_publishing,
             }
         )
 

@@ -7,7 +7,6 @@ import {
 } from '@client/datafiles';
 import {
   TBaseProjectValue,
-  apiClient,
   usePublicationDetail,
   usePublicationVersions,
 } from '@client/hooks';
@@ -54,7 +53,7 @@ export const PublishedDetailLayout: React.FC = () => {
 
   // match /PRJ-XXXX--VY and capture the version, Y
   const pathRegex = /--V([0-9]*)/;
-  const versionFromPath = (path ?? '').match(pathRegex)?.[1] || '1';
+  const versionFromPath = (path ?? '').match(pathRegex)?.[1] || undefined;
 
   const selectedVersion =
     version ||
@@ -62,7 +61,6 @@ export const PublishedDetailLayout: React.FC = () => {
     versionFromPath ||
     Math.max(...allVersions).toString();
 
-  console.log(selectedVersion);
   useEffect(() => {
     if (version) {
       const newSearchParams = new URLSearchParams(searchParams);
@@ -72,6 +70,7 @@ export const PublishedDetailLayout: React.FC = () => {
   }, [version, searchParams, setSearchParams]);
 
   // List files in the project root for metrics/reporting purposes.
+  /*
   useEffect(() => {
     if (!data) return;
 
@@ -84,6 +83,7 @@ export const PublishedDetailLayout: React.FC = () => {
         }`
       );
   }, [data, selectedVersion, searchParams, projectId]);
+  */
 
   if (isError) {
     return (
@@ -118,7 +118,7 @@ export const PublishedDetailLayout: React.FC = () => {
 
   let baseProjectValue = data.baseProject;
 
-  if (data.baseProject.projectType === 'software') {
+  if (['other', 'software'].includes(data.baseProject.projectType)) {
     const versionValue = data.tree.children.find(
       (c) => (c.version ?? 1) === parseFloat(selectedVersion)
     )?.value;
@@ -165,7 +165,9 @@ export const PublishedDetailLayout: React.FC = () => {
               showIcon
               type="warning"
               message={
-                <strong>The following Dataset does not exist anymore</strong>
+                <strong>
+                  The following dataset is no longer published in DesignSafe.
+                </strong>
               }
               description={
                 <div>
@@ -173,7 +175,11 @@ export const PublishedDetailLayout: React.FC = () => {
                   <a href={`https://doi.org/${data.baseProject.dois[0]}`}>
                     {data.baseProject.dois[0]}
                   </a>{' '}
-                  was incomplete and removed. The metadata is still available.
+                  does not comply with one or more{' '}
+                  <a href="https://www.designsafe-ci.org/user-guide/curating/policies/">
+                    DesignSafe policies
+                  </a>{' '}
+                  and has been removed. The metadata is still available.
                 </div>
               }
             />

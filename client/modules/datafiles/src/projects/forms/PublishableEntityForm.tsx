@@ -7,7 +7,7 @@ import {
   simulationTypeOptions,
   HybridSimTypeOptions,
 } from './ProjectFormDropdowns';
-
+import { KeywordSuggestor } from './KeywordSuggestor';
 import {
   TBaseProjectValue,
   TProjectUser,
@@ -118,19 +118,56 @@ const ExperimentFormFields: React.FC<{
       )}
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
+      </Form.Item>
+
+      <Form.Item label="Experiment Description" required>
+        What was under investigation? How was it tested? What was the outcome?
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
+        <Form.Item
+          name={['value', 'description']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a description',
+            },
+            {
+              min: 750,
+              message: 'Description must be at least 750 characters long',
+            },
+            {
+              max: 5000,
+              message: 'Description cannot be longer than 5000 characters',
+            },
+          ]}
+        >
+          <Input.TextArea autoSize={{ minRows: 4 }} />
+        </Form.Item>
       </Form.Item>
 
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -141,32 +178,6 @@ const ExperimentFormFields: React.FC<{
             notFoundContent={null}
             tokenSeparators={[',']}
           ></Select>
-        </Form.Item>
-      </Form.Item>
-
-      <Form.Item label="Experiment Description" required>
-        What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
-        <Form.Item
-          name={['value', 'description']}
-          className="inner-form-item"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a description',
-            },
-            {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
-            },
-            {
-              max: 5000,
-              message: 'Description cannot be longer than 5000 characters',
-            },
-          ]}
-        >
-          <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
 
@@ -193,9 +204,10 @@ const ExperimentFormFields: React.FC<{
 };
 
 const SimulationFormFields: React.FC<{
+  form: FormInstance;
   projectUsers: TProjectUser[];
   currentAuthors?: TProjectUser[];
-}> = ({ projectUsers, currentAuthors = [] }) => {
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Simulation Title" required>
@@ -249,19 +261,56 @@ const SimulationFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
+      </Form.Item>
+
+      <Form.Item label="Simulation Description" required>
+        What was under investigation? How was it tested? What was the outcome?
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
+        <Form.Item
+          name={['value', 'description']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a description',
+            },
+            {
+              min: 750,
+              message: 'Description must be at least 750 characters long',
+            },
+            {
+              max: 5000,
+              message: 'Description cannot be longer than 5000 characters',
+            },
+          ]}
+        >
+          <Input.TextArea autoSize={{ minRows: 4 }} />
+        </Form.Item>
       </Form.Item>
 
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -272,32 +321,6 @@ const SimulationFormFields: React.FC<{
             notFoundContent={null}
             tokenSeparators={[',']}
           ></Select>
-        </Form.Item>
-      </Form.Item>
-
-      <Form.Item label="Simulation Description" required>
-        What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
-        <Form.Item
-          name={['value', 'description']}
-          className="inner-form-item"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a description',
-            },
-            {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
-            },
-            {
-              max: 5000,
-              message: 'Description cannot be longer than 5000 characters',
-            },
-          ]}
-        >
-          <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
 
@@ -324,9 +347,10 @@ const SimulationFormFields: React.FC<{
 };
 
 const HybridSimFormFields: React.FC<{
+  form: FormInstance;
   projectUsers: TProjectUser[];
   currentAuthors?: TProjectUser[];
-}> = ({ projectUsers, currentAuthors = [] }) => {
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Hybrid Simulation Title" required>
@@ -380,19 +404,56 @@ const HybridSimFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
+      </Form.Item>
+
+      <Form.Item label="Hybrid Simulation Description" required>
+        What was under investigation? How was it tested? What was the outcome?
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
+        <Form.Item
+          name={['value', 'description']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a description',
+            },
+            {
+              min: 750,
+              message: 'Description must be at least 750 characters long',
+            },
+            {
+              max: 5000,
+              message: 'Description cannot be longer than 5000 characters',
+            },
+          ]}
+        >
+          <Input.TextArea autoSize={{ minRows: 4 }} />
+        </Form.Item>
       </Form.Item>
 
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -403,32 +464,6 @@ const HybridSimFormFields: React.FC<{
             notFoundContent={null}
             tokenSeparators={[',']}
           ></Select>
-        </Form.Item>
-      </Form.Item>
-
-      <Form.Item label="Hybrid Simulation Description" required>
-        What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
-        <Form.Item
-          name={['value', 'description']}
-          className="inner-form-item"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a description',
-            },
-            {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
-            },
-            {
-              max: 5000,
-              message: 'Description cannot be longer than 5000 characters',
-            },
-          ]}
-        >
-          <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
 
@@ -455,9 +490,10 @@ const HybridSimFormFields: React.FC<{
 };
 
 const MissionFormFields: React.FC<{
+  form: FormInstance;
   projectUsers: TProjectUser[];
   currentAuthors?: TProjectUser[];
-}> = ({ projectUsers, currentAuthors = [] }) => {
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Mission Title" required>
@@ -520,13 +556,14 @@ const MissionFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -575,9 +612,45 @@ const MissionFormFields: React.FC<{
         </div>
       </Form.Item>
 
+      <Form.Item label="Mission Description" required>
+        What was under investigation? How was it tested? What was the outcome?
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
+        <Form.Item
+          name={['value', 'description']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a description',
+            },
+            {
+              min: 750,
+              message: 'Description must be at least 750 characters long',
+            },
+            {
+              max: 5000,
+              message: 'Description cannot be longer than 5000 characters',
+            },
+          ]}
+        >
+          <Input.TextArea autoSize={{ minRows: 4 }} />
+        </Form.Item>
+      </Form.Item>
+
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -590,40 +663,15 @@ const MissionFormFields: React.FC<{
           ></Select>
         </Form.Item>
       </Form.Item>
-
-      <Form.Item label="Mission Description" required>
-        What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
-        <Form.Item
-          name={['value', 'description']}
-          className="inner-form-item"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a description',
-            },
-            {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
-            },
-            {
-              max: 5000,
-              message: 'Description cannot be longer than 5000 characters',
-            },
-          ]}
-        >
-          <Input.TextArea autoSize={{ minRows: 4 }} />
-        </Form.Item>
-      </Form.Item>
     </>
   );
 };
 
 const DocumentFormFields: React.FC<{
+  form: FormInstance;
   projectUsers: TProjectUser[];
   currentAuthors?: TProjectUser[];
-}> = ({ projectUsers, currentAuthors = [] }) => {
+}> = ({ form, projectUsers, currentAuthors = [] }) => {
   return (
     <>
       <Form.Item label="Document Title" required>
@@ -657,13 +705,14 @@ const DocumentFormFields: React.FC<{
       </Form.Item>
 
       <Form.Item label="Referenced Data and Software">
-        Published data used in the creation of this dataset.
+        Published dataset or software reused in the creation of, or to be used
+        with this publication.
         <ReferencedDataInput name={['value', 'referencedData']} />
       </Form.Item>
 
       <Form.Item label="Related Work">
-        Information giving context, a linked dataset on DesignSafe, or works
-        citing the DOI for this dataset.
+        Information giving context, a linked publication in DesignSafe, or works
+        citing the DOI in this publication. citing the DOI for this dataset.
         <RelatedWorkInput name={['value', 'relatedWork']} />
       </Form.Item>
 
@@ -686,9 +735,45 @@ const DocumentFormFields: React.FC<{
         </Form.Item>
       </Form.Item>
 
+      <Form.Item label="Document Description" required>
+        What was under investigation? How was it tested? What was the outcome?
+        How can the data be reused? Description must be between 750 and 5000
+        characters in length. (
+        <a href="/user-guide/curating/bestpractices/#dataset-level-descriptions">
+          Learn how to write descriptions.
+        </a>
+        )
+        <Form.Item
+          name={['value', 'description']}
+          className="inner-form-item"
+          rules={[
+            {
+              required: true,
+              message: 'Please enter a description',
+            },
+            {
+              min: 750,
+              message: 'Description must be at least 750 characters long',
+            },
+            {
+              max: 5000,
+              message: 'Description cannot be longer than 5000 characters',
+            },
+          ]}
+        >
+          <Input.TextArea autoSize={{ minRows: 4 }} />
+        </Form.Item>
+      </Form.Item>
+
       <Form.Item label="Keywords" required>
         Choose informative words that indicate the content of the project.
         Keywords should be comma-separated.
+        <KeywordSuggestor
+          form={form}
+          titlePath={['value', 'title']}
+          descriptionPath={['value', 'description']}
+          keywordsPath={['value', 'keywords']}
+        />
         <Form.Item
           name={['value', 'keywords']}
           rules={[{ required: true }]}
@@ -699,32 +784,6 @@ const DocumentFormFields: React.FC<{
             notFoundContent={null}
             tokenSeparators={[',']}
           ></Select>
-        </Form.Item>
-      </Form.Item>
-
-      <Form.Item label="Document Description" required>
-        What was under investigation? How was it tested? What was the outcome?
-        How can the data be reused? Description must be between 50 and 5000
-        characters in length.
-        <Form.Item
-          name={['value', 'description']}
-          className="inner-form-item"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter a description',
-            },
-            {
-              min: 50,
-              message: 'Description must be at least 50 characters long',
-            },
-            {
-              max: 5000,
-              message: 'Description cannot be longer than 5000 characters',
-            },
-          ]}
-        >
-          <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       </Form.Item>
     </>
@@ -790,24 +849,28 @@ export const PublishableEntityForm: React.FC<{
       )}
       {projectType === 'simulation' && (
         <SimulationFormFields
+          form={form}
           projectUsers={data.baseProject.value.users}
           currentAuthors={entity?.value.authors ?? []}
         />
       )}
       {projectType === 'hybrid_simulation' && (
         <HybridSimFormFields
+          form={form}
           projectUsers={data.baseProject.value.users}
           currentAuthors={entity?.value.authors ?? []}
         />
       )}
       {entityName === constants.FIELD_RECON_MISSION && (
         <MissionFormFields
+          form={form}
           projectUsers={data.baseProject.value.users}
           currentAuthors={entity?.value.authors ?? []}
         />
       )}
       {entityName === constants.FIELD_RECON_REPORT && (
         <DocumentFormFields
+          form={form}
           projectUsers={data.baseProject.value.users}
           currentAuthors={entity?.value.authors ?? []}
         />

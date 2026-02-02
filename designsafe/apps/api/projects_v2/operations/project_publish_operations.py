@@ -23,7 +23,8 @@ from designsafe.apps.api.projects_v2.operations.datacite_operations import (
     get_doi_publication_date,
 )
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
-    archive_publication_async,
+    create_metadata_file,
+    ranch_archive_webhook,
 )
 from designsafe.apps.api.projects_v2.operations.project_email_operations import (
     send_project_permissions_alert,
@@ -31,6 +32,7 @@ from designsafe.apps.api.projects_v2.operations.project_email_operations import 
 from designsafe.apps.api.projects_v2.operations.path_operations import (
     construct_entity_filepaths,
     update_path_mappings,
+    generate_sha512_manifest,
 )
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     validate_github_release,
@@ -40,6 +42,7 @@ from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
 from designsafe.libs.common.context_managers import AsyncTaskContext
+from designsafe.apps.api.ai_keywords.utils import add_publications_to_chroma
 
 logger = logging.getLogger(__name__)
 
@@ -499,6 +502,34 @@ def copy_github_release(tree: nx.DiGraph, version: int = 1):
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
 
 
+def create_publication_manifests(
+    pub_tree: nx.DiGraph, entity_uuids: list[str], version: int = 1
+):
+    """
+    Given a publication tree, set of entities, and version, determine the paths for
+    the newly published entities and generate a manifest-sha512.txt file for each.
+
+    :param pub_tree: NetworkX graph object representing a publication.
+    :type pub_tree: nx.DiGraph
+    :param entity_uuids: UUIDs for the collections being published.
+    :type entity_uuids: list[str]
+    :param version: The version of the publication, if it has been published previously.
+    :type version: int
+    """
+    entity_paths = [
+        str(
+            Path(settings.DESIGNSAFE_PUBLISHED_PATH)
+            / pub_tree.nodes[node]["basePath"].lstrip("/")
+        )
+        for node in pub_tree.nodes
+        if pub_tree.nodes[node]["uuid"] in entity_uuids
+        and pub_tree.nodes[node].get("version", version) == version
+    ]
+
+    for path in entity_paths:
+        generate_sha512_manifest(path)
+
+
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def publish_project(
     project_id: str,
@@ -559,6 +590,8 @@ def publish_project(
         elif project_type == "software":
             copy_github_release(pub_tree, version)
 
+        create_publication_manifests(pub_tree, entity_uuids, version)
+
     new_dois = []
 
     for entity_uuid in entity_uuids:
@@ -596,9 +629,8 @@ def publish_project(
 
     index_publication(project_id)
     if not settings.DEBUG:
-        archive_publication_async.apply_async(
-            args=[project_id, version], queue="default"
-        )
+        create_metadata_file(project_id)
+        ranch_archive_webhook(project_id)
         ingest_pub_fedora_async.apply_async(
             args=[project_id, version, False], queue="default"
         )
@@ -614,9 +646,24 @@ def publish_project_async(
     version_info: Optional[str] = None,
     dry_run: bool = False,
 ):
-    """Async wrapper arount publication"""
+    """Async wrapper around publication"""
     with AsyncTaskContext():
-        publish_project(project_id, entity_uuids, version, version_info, dry_run)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        close_old_connections()
+        try:
+            meta = publish_project(
+                project_id, entity_uuids, version, version_info, dry_run
+            )
+            try:
+                add_publications_to_chroma(publications=[meta])
+            except Exception as e:  # pylint: disable=broad-except
+                logger.error("Error adding publication to Chroma vector store: %s", e)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = True
+            project_meta.save()
 
 
 def amend_publication(project_id: str):
@@ -677,6 +724,7 @@ def amend_publication(project_id: str):
     index_publication(project_id)
 
     if not settings.DEBUG:
+        create_metadata_file(project_id)
         ingest_pub_fedora_async.apply_async(
             args=[project_id, latest_version, True], queue="default"
         )
@@ -686,4 +734,12 @@ def amend_publication(project_id: str):
 def amend_publication_async(project_id: str):
     """async wrapper around amend_publication"""
     with AsyncTaskContext():
-        amend_publication(project_id)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        try:
+            amend_publication(project_id)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = False
+            project_meta.save()
