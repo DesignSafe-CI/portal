@@ -5,9 +5,9 @@ in the directory structure. UNUSED for now, pending stakeholder approval.
 from typing import Optional
 import copy
 import tempfile
+import subprocess
 import shutil
 from pathlib import Path
-import subprocess
 import logging
 import networkx as nx
 from celery import shared_task
@@ -217,6 +217,7 @@ def generate_sha512_manifest(base_path: str, data_dir: str = "data"):
                 )
 
         shutil.move(tmp_path, "manifest-sha512.txt")
+        subprocess.run(["chmod", "-R", "a-x,a=rX", "manifest-sha512.txt"], check=True)
 
 
 def generate_manifests_for_project(project_id: str):
