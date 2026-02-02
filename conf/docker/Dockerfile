@@ -1,3 +1,5 @@
+FROM --platform=linux/amd64 designsafeci/ds-user-guide AS ds-user-guide
+
 FROM node:16 AS node_build
 COPY package.json package-lock.json /designsafe/
 WORKDIR /designsafe
@@ -59,7 +61,7 @@ FROM python-base AS development
 RUN poetry sync
 
 # Copy in base project directory without built client assets for local development
-COPY --from=designsafeci/ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
+COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
 COPY --chown=tg458981:G-816877 . /srv/www/designsafe
 
 USER tg458981
@@ -73,8 +75,9 @@ FROM python-base AS production
 # Install runtime dependencies
 RUN poetry sync --without=dev
 
+
 # Copy user guide material for populating RAG
-COPY --from=designsafeci/ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
+COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
 # Copy in built client assets
 COPY --from=node_build --chown=tg458981:G-816877 /designsafe/ /srv/www/designsafe
 COPY --from=node_nx_build --chown=tg458981:G-816877 /designsafe/client/dist/client/. /srv/www/designsafe/designsafe/static/react-assets
