@@ -24,11 +24,6 @@ async function getJobsListing(
   return res.data.response;
 }
 
-type TFileListingPageParam = {
-  page: number;
-  lastPageParam: number;
-};
-
 function useJobsListing(pageSize: number = 10) {
   return useInfiniteQuery<TJobsListing, AxiosError<{ message?: string }>>({
     initialPageParam: 0,
