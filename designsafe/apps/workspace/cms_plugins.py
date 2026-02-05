@@ -146,15 +146,14 @@ class AppUserGuideLink(CMSPluginBase):
         instance: Optional[Union[AppUserGuideLinkPlugin, AppListingEntry]] = None,
         placeholder=None,
     ):
-        plugin_instance = instance if isinstance(instance, AppUserGuideLinkPlugin) else None
-
+        context = super().render(context, instance, placeholder)
         instance_app = None
+
         if isinstance(instance, AppUserGuideLinkPlugin):
             instance_app = getattr(instance, "app", None)
         if instance_app is None:
             instance_app = get_entry_instance(context.get("request").path)
 
-        context = super().render(context, plugin_instance, placeholder)
         context["user_guide_link"] = getattr(instance_app, "user_guide_link", None)
         context["is_editing_text"] = is_editing_text(context.get("request").path)
         return context
