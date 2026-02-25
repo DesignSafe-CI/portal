@@ -32,7 +32,7 @@ AGENT_INSTRUCTIONS = """
     A relationship constraint: “by”, “from”, “in”, “published in”, “cited by”, “between years…”
     Any explicit date/year/volume/issue/page/DOI/ID used to locate or filter publications
     Rule: If a graph query is plausible, you must use publication_graph_search first.
-    Input rule: Pass the user’s query verbatim to publication_graph_search.
+    Input rule: Call publication_graph_search without arguments.
 
     Priority 3: publication_vector_search (topic discovery)
     Use publication_vector_search only when:
