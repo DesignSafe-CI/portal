@@ -76,10 +76,13 @@ ENTITIES_WITH_REQUIRED_FILES = [
     constants.EXPERIMENT_MODEL_CONFIG,
     constants.EXPERIMENT_SENSOR,
     constants.EXPERIMENT_EVENT,
+    constants.EXPERIMENT_ANALYSIS,
+    constants.EXPERIMENT_REPORT,
     constants.SIMULATION_MODEL,
     constants.SIMULATION_INPUT,
     constants.SIMULATION_OUTPUT,
     constants.SIMULATION_REPORT,
+    constants.SIMULATION_ANALYSIS,
     constants.FIELD_RECON_SOCIAL_SCIENCE,
     constants.FIELD_RECON_GEOSCIENCE,
     constants.FIELD_RECON_PLANNING,
@@ -662,7 +665,7 @@ def publish_project_async(
                 logger.error("Error adding publication to Chroma vector store: %s", e)
         finally:
             project_meta = ProjectMetadata.get_project_by_id(project_id)
-            project_meta.is_publishing = True
+            project_meta.is_publishing = False
             project_meta.save()
 
 
@@ -677,10 +680,21 @@ def amend_publication(project_id: str):
     latest_version = max(
         pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
     )
+
+    published_node_values = [
+        pub_tree.nodes[node] for node in pub_tree.successors("NODE_ROOT")
+    ]
+    max_version_per_uuid = {}
+    for node_value in published_node_values:
+        if node_value["version"] >= max_version_per_uuid.get(node_value["uuid"], 1):
+            max_version_per_uuid[node_value["uuid"]] = node_value["version"]
+
+    # Only amend the latest version of each published DOI.
     pubs_to_amend = [
         node
         for node in pub_tree.successors("NODE_ROOT")
-        if pub_tree.nodes[node]["version"] == latest_version
+        if pub_tree.nodes[node]["version"]
+        == max_version_per_uuid[pub_tree.nodes[node]["uuid"]]
     ]
 
     for pub_node in pubs_to_amend:
@@ -714,7 +728,9 @@ def amend_publication(project_id: str):
     # Update datacite metadata
     for node in pubs_to_amend:
         datacite_json = get_datacite_json(
-            pub_tree, pub_tree.nodes[node]["uuid"], latest_version
+            pub_tree,
+            pub_tree.nodes[node]["uuid"],
+            max_version_per_uuid[pub_tree.nodes[node]["uuid"]],
         )
         upsert_datacite_json(
             datacite_json, doi=pub_tree.nodes[node]["value"]["dois"][0]

@@ -73,7 +73,8 @@ def get_datacite_json(
                 ],
             }
         )
-        institutions.append(author.get("inst", ""))
+        if inst := author.get("inst", ""):
+            institutions.append(inst)
 
     datacite_json["contributors"] = [
         {
