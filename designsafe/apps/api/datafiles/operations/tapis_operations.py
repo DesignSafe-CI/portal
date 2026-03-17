@@ -14,6 +14,7 @@ from designsafe.apps.api.datafiles.models import PublicationSymlink
 from django.conf import settings
 from elasticsearch_dsl import Q
 import requests
+import httpx
 from requests.exceptions import HTTPError
 
 logger = logging.getLogger(__name__)
@@ -519,10 +520,22 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
 
 
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
-    response_json = client.files.insert(systemId=system,
-                                        path=dest_path,
-                                        file=uploaded_file,
-                                        headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    #response_json = client.files.insert(systemId=system,
+    #                                    path=dest_path,
+    #                                    file=uploaded_file,
+    #                                    headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    
+    upload_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/files/ops/{system}/{dest_path.lstrip('/')}"
+    headers = {'x-tapis-token': client.get_access_jwt(),
+               "X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")
+               }
+
+    res = httpx.post(upload_url,
+                     headers=headers,
+                     files={'file': uploaded_file},
+                     timeout=600)
+    res.raise_for_status()
+
     return {"result": "OK"}
     agave_indexer.apply_async(kwargs={'systemId': system,
                                       'filePath': path,
