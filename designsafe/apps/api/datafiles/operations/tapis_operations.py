@@ -520,10 +520,12 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
 
 
     dest_path = os.path.join(path.strip('/'), uploaded_file.name)
-    #response_json = client.files.insert(systemId=system,
-    #                                    path=dest_path,
-    #                                    file=uploaded_file,
-    #                                    headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+
+    # client.files.insert reads entire file into memory during upload
+    # response_json = client.files.insert(systemId=system,
+    #                                     path=dest_path,
+    #                                     file=uploaded_file,
+    #                                     headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     
     upload_url = f"{settings.TAPIS_TENANT_BASEURL}/v3/files/ops/{system}/{dest_path.lstrip('/')}"
     headers = {'x-tapis-token': client.get_access_jwt(),
