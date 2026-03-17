@@ -4,6 +4,7 @@
 import logging
 from functools import wraps
 from base64 import b64decode
+from urllib.parse import urlparse
 from django.conf import settings
 from django.http import HttpRequest
 from django.contrib.auth import get_user_model
@@ -73,6 +74,9 @@ def tapis_jwt_login(func):
     #pylint: disable=missing-docstring
     @wraps(func)
     def decorated_function(request: HttpRequest, *args, **kwargs):
+        tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
+            "."
+        )[0]
         if request.user.is_authenticated:
             return func(request, *args, **kwargs)
 
@@ -81,7 +85,9 @@ def tapis_jwt_login(func):
             logger.debug('No JWT payload found. Falling back')
             return func(request, *args, **kwargs)
 
-        tapis_client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL)
+        tapis_client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL,
+                             tenant_id=tenant_id
+                             )
         try:
             validation_response = tapis_client.validate_token(tapis_jwt)
         except BaseTapyException:
