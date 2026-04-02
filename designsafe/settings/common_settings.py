@@ -330,7 +330,8 @@ CMSPLUGIN_CASCADE = {
         'ResponsiveEmbedPlugin',
         'AppCategoryListing',
         'RelatedApps',
-        'AppVariants'
+        'AppVariants',
+        'AppUserGuideLink',
     )
 }
 CMSPLUGIN_CASCADE_PLUGINS = [
