@@ -502,7 +502,7 @@ const MetricsModalBody: React.FC<{
         <Spin />
       ) : (clarivateCitations?.length ?? 0) > 0 ? (
         <div style={{ maxHeight: 400, overflowY: 'auto', paddingRight: 8 }}>
-          <ol style={{ paddingLeft: 18, marginBottom: 0 }}>
+          <ol style={{ paddingLeft: 36, marginBottom: 0 }}>
             {clarivateCitations.map((c, idx) => (
               <li
                 key={c?.doi || idx}
