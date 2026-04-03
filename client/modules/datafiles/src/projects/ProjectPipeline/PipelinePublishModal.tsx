@@ -5,6 +5,7 @@ import {
   useVersionProject,
 } from '@client/hooks';
 import { Button, Checkbox, Input, Modal, Tag } from 'antd';
+import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,21 +43,47 @@ export const PipelinePublishModal: React.FC<{
     });
   };
 
+  const errorCallback = (err: AxiosError) => {
+    const desc =
+      err.response?.status === 429
+        ? 'This project is currently being published. Please wait and try again later.'
+        : 'An unexpected error occurred while processing your publication request.';
+    navigate(`/projects/${projectId}`);
+    notifyApi?.open({
+      type: 'error',
+      message: '',
+      description: desc,
+      placement: 'bottomLeft',
+    });
+  };
+
   const doPublish = () => {
     switch (operation) {
       case 'publish':
         publishMutation(
           { projectId, entityUuids },
-          { onSuccess: successCallback }
+          {
+            onSuccess: successCallback,
+            onError: (err) => errorCallback(err as AxiosError),
+          }
         );
         break;
       case 'amend':
-        amendMutation({ projectId }, { onSuccess: successCallback });
+        amendMutation(
+          { projectId },
+          {
+            onSuccess: successCallback,
+            onError: (err) => errorCallback(err as AxiosError),
+          }
+        );
         break;
       case 'version':
         versionMutation(
           { projectId, entityUuids, versionInfo },
-          { onSuccess: successCallback }
+          {
+            onSuccess: successCallback,
+            onError: (err) => errorCallback(err as AxiosError),
+          }
         );
         break;
     }

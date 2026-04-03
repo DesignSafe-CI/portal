@@ -7,6 +7,7 @@ async function createFeedbackTicket(formData: {
   body: string;
   projectId: string;
   title: string;
+  recaptchaToken?: string;
 }) {
   // Replace undefined with null so that deleted values are unset instead of ignored.
   const res = await apiClient.post(`/help/feedback/`, {
@@ -16,6 +17,7 @@ async function createFeedbackTicket(formData: {
     subject: `Project Feedback for ${formData.projectId}`,
     projectId: formData.projectId,
     title: formData.title,
+    recaptchaToken: formData.recaptchaToken,
   });
   return res.data;
 }
@@ -31,6 +33,7 @@ export function useCreateFeedbackTicket(projectId: string, title: string) {
         body: string;
         projectId: string;
         title: string;
+        recaptchaToken?: string;
       };
     }) => createFeedbackTicket(formData),
   });

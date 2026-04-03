@@ -85,6 +85,7 @@ services:
       - elasticsearch:elasticsearch
     volumes:
       - ../../.:/srv/www/designsafe
+      -  ../../client/react-assets.html:/srv/www/designsafe/designsafe/templates/react-assets.html
       - ../../data/media:/srv/www/designsafe/media
       - ~/corral-repl/tacc/NHERI:/corral-repl/tacc/NHERI
     ports:
@@ -144,8 +145,16 @@ services:
     container_name: des_ngrok
     hostname: des_ngrok
 
+  chromadb:
+    image: chromadb/chroma
+    volumes:
+      - docs_chroma_data:/chroma/chroma
+    environment:
+      - ANONYMIZED_TELEMETRY=False
+
 volumes:
   des_redis_data:
   des_postgres_data:
   des_es_data:
   des_rabbitmq_data:
+  docs_chroma_data:

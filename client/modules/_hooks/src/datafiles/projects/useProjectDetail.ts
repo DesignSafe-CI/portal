@@ -7,6 +7,7 @@ type TProjectDetailResponse = {
   baseProject: TBaseProject;
   entities: TEntityMeta[];
   tree: TTreeData;
+  isPublishing: boolean;
 };
 
 async function getProjectDetail({

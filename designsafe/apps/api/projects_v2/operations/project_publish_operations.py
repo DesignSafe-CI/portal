@@ -42,6 +42,7 @@ from designsafe.apps.api.publications_v2.elasticsearch import index_publication
 from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
 from designsafe.libs.common.context_managers import AsyncTaskContext
+from designsafe.apps.api.ai_keywords.utils import add_publications_to_chroma
 
 logger = logging.getLogger(__name__)
 
@@ -75,10 +76,13 @@ ENTITIES_WITH_REQUIRED_FILES = [
     constants.EXPERIMENT_MODEL_CONFIG,
     constants.EXPERIMENT_SENSOR,
     constants.EXPERIMENT_EVENT,
+    constants.EXPERIMENT_ANALYSIS,
+    constants.EXPERIMENT_REPORT,
     constants.SIMULATION_MODEL,
     constants.SIMULATION_INPUT,
     constants.SIMULATION_OUTPUT,
     constants.SIMULATION_REPORT,
+    constants.SIMULATION_ANALYSIS,
     constants.FIELD_RECON_SOCIAL_SCIENCE,
     constants.FIELD_RECON_GEOSCIENCE,
     constants.FIELD_RECON_PLANNING,
@@ -456,7 +460,8 @@ def copy_publication_files(
                     queue="indexing",
                 )
         logger.debug("Finished copying publication files for %s", project_id)
-    except PermissionError as exc:
+    except (shutil.Error, PermissionError, OSError) as exc:
+        logger.debug("Alerting due to data transfer failure for %s", project_id)
         logger.error(exc)
         send_project_permissions_alert(project_id, version, str(exc))
         raise exc
@@ -645,9 +650,24 @@ def publish_project_async(
     version_info: Optional[str] = None,
     dry_run: bool = False,
 ):
-    """Async wrapper arount publication"""
+    """Async wrapper around publication"""
     with AsyncTaskContext():
-        publish_project(project_id, entity_uuids, version, version_info, dry_run)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        close_old_connections()
+        try:
+            meta = publish_project(
+                project_id, entity_uuids, version, version_info, dry_run
+            )
+            try:
+                add_publications_to_chroma(publications=[meta])
+            except Exception as e:  # pylint: disable=broad-except
+                logger.error("Error adding publication to Chroma vector store: %s", e)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = False
+            project_meta.save()
 
 
 def amend_publication(project_id: str):
@@ -661,10 +681,21 @@ def amend_publication(project_id: str):
     latest_version = max(
         pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
     )
+
+    published_node_values = [
+        pub_tree.nodes[node] for node in pub_tree.successors("NODE_ROOT")
+    ]
+    max_version_per_uuid = {}
+    for node_value in published_node_values:
+        if node_value["version"] >= max_version_per_uuid.get(node_value["uuid"], 1):
+            max_version_per_uuid[node_value["uuid"]] = node_value["version"]
+
+    # Only amend the latest version of each published DOI.
     pubs_to_amend = [
         node
         for node in pub_tree.successors("NODE_ROOT")
-        if pub_tree.nodes[node]["version"] == latest_version
+        if pub_tree.nodes[node]["version"]
+        == max_version_per_uuid[pub_tree.nodes[node]["uuid"]]
     ]
 
     for pub_node in pubs_to_amend:
@@ -698,7 +729,9 @@ def amend_publication(project_id: str):
     # Update datacite metadata
     for node in pubs_to_amend:
         datacite_json = get_datacite_json(
-            pub_tree, pub_tree.nodes[node]["uuid"], latest_version
+            pub_tree,
+            pub_tree.nodes[node]["uuid"],
+            max_version_per_uuid[pub_tree.nodes[node]["uuid"]],
         )
         upsert_datacite_json(
             datacite_json, doi=pub_tree.nodes[node]["value"]["dois"][0]
@@ -718,4 +751,12 @@ def amend_publication(project_id: str):
 def amend_publication_async(project_id: str):
     """async wrapper around amend_publication"""
     with AsyncTaskContext():
-        amend_publication(project_id)
+        project_meta = ProjectMetadata.get_project_by_id(project_id)
+        project_meta.is_publishing = True
+        project_meta.save()
+        try:
+            amend_publication(project_id)
+        finally:
+            project_meta = ProjectMetadata.get_project_by_id(project_id)
+            project_meta.is_publishing = False
+            project_meta.save()

@@ -65,6 +65,7 @@ datadump.json
 
 # no development databases
 db.sqlite3*
+/srv/www/designsafe/chroma_db/*
 
 # ignore various Python things
 __pycache__/

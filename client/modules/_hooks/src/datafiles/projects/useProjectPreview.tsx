@@ -6,6 +6,7 @@ type TProjectPreviewResponse = {
   baseProject: TBaseProject;
   entities: TEntityMeta[];
   tree: TPreviewTreeData;
+  isPublishing: boolean;
 };
 
 async function getProjectPreview({

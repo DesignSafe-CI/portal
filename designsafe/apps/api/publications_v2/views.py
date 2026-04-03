@@ -287,7 +287,11 @@ class PublicationPublishView(BaseApiView):
         if (not project_id) or (not entities_to_publish):
             raise ApiException("Missing project ID or entity list.", status=400)
 
-        get_project_for_user(project_id, user)
+        project_meta = get_project_for_user(project_id, user)
+        if project_meta.is_publishing:
+            raise ApiException(
+                "Attempted to publish while the pipeline is in progress", status=429
+            )
 
         publish_project_async.apply_async([project_id, entities_to_publish])
         logger.debug(project_id)
@@ -323,7 +327,11 @@ class PublicationVersionView(BaseApiView):
         if (not project_id) or (not entities_to_publish):
             raise ApiException("Missing project ID or entity list.", status=400)
 
-        get_project_for_user(project_id, user)
+        project_meta = get_project_for_user(project_id, user)
+        if project_meta.is_publishing:
+            raise ApiException(
+                "Attempted to publish while the pipeline is in progress", status=429
+            )
 
         pub_root = Publication.objects.get(project_id=project_id)
         pub_tree: nx.DiGraph = nx.node_link_graph(pub_root.tree)
@@ -367,7 +375,11 @@ class PublicationAmendView(BaseApiView):
         if not project_id:
             raise ApiException("Missing project ID.", status=400)
 
-        get_project_for_user(project_id, user)
+        project_meta = get_project_for_user(project_id, user)
+        if project_meta.is_publishing:
+            raise ApiException(
+                "Attempted to publish while the pipeline is in progress", status=429
+            )
 
         amend_publication_async.apply_async([project_id])
         logger.debug(project_id)
