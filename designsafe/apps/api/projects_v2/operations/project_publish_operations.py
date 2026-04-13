@@ -460,7 +460,8 @@ def copy_publication_files(
                     queue="indexing",
                 )
         logger.debug("Finished copying publication files for %s", project_id)
-    except PermissionError as exc:
+    except (shutil.Error, PermissionError, OSError) as exc:
+        logger.debug("Alerting due to data transfer failure for %s", project_id)
         logger.error(exc)
         send_project_permissions_alert(project_id, version, str(exc))
         raise exc

@@ -8,10 +8,14 @@ import requests
 from agavepy.agave import Agave, load_resource
 from tapipy.tapis import Tapis
 from django.conf import settings
+from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
 AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
+tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
+            "."
+        )[0]
 
 def get_service_account_client_v2():
     """Return service account agave client.
@@ -34,6 +38,7 @@ def get_service_account_client():
 
     return Tapis(
         base_url=settings.TAPIS_TENANT_BASEURL,
+        tenant_id=tenant_id,
         access_token=settings.TAPIS_ADMIN_JWT)
 
 
@@ -42,6 +47,7 @@ def get_tg458981_client():
 
     return Tapis(
         base_url=settings.TAPIS_TENANT_BASEURL,
+        tenant_id=tenant_id,
         access_token=settings.TAPIS_TG458981_JWT)
 
 
@@ -50,6 +56,7 @@ def get_sandbox_service_account_client():
     """Return sandbox service account"""
     return Tapis(
         base_url=settings.TAPIS_TENANT_BASEURL,
+        tenant_id=tenant_id,
         access_token=settings.TAPIS_ADMIN_JWT)
 
 def service_account():
