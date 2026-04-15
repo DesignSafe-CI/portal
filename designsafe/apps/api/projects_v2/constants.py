@@ -130,6 +130,10 @@ FACILITY_OPTIONS = [
             "Structural/Earthquake Engineering Laboratory"
         ),
     },
+    {
+        "id": "clash",
+        "name": "CLaSH - Center for Land Surface Hazards",
+    },
 ]
 
 EQUIPMENT_TYPES = equipment_types = {

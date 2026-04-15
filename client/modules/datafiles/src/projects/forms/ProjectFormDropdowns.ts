@@ -122,6 +122,10 @@ export const facilityOptions = [
     label:
       'University of California, Los Angeles, Structural/Earthquake Engineering Laboratory',
   },
+  {
+    value: 'clash',
+    label: 'CLaSH - Center for Land Surface Hazards',
+  },
 ];
 
 export const dataTypeOptions = [

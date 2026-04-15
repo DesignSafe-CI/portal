@@ -22,6 +22,7 @@
             { "name": "simcntr", "label": "SimCenter" },                                
             { "name": "nco-purdue", "label": "Network Coordination Office - Purdue University" },
             { "name": "crbcrp", "label": "Center for Risk-Based Community Resilience Planning" },
+            { "name": "clash", "label": "CLaSH - Center for Land Surface Hazards"},
             { "name": "other", "label": "Other" }
         ],
         "other": [
