@@ -96,12 +96,13 @@ class TapisOAuthToken(models.Model):
 
     def refresh_tokens(self):
         """Refresh and update Tapis OAuth Tokens"""
-        self.client.refresh_tokens()
+        client = self.client
+        client.refresh_tokens()
         self.update(
             created=int(time.time()),
-            access_token=self.client.access_token.access_token,
-            refresh_token=self.client.refresh_token.refresh_token,
-            expires_in=self.client.access_token.expires_in().total_seconds(),
+            access_token=client.access_token.access_token,
+            refresh_token=client.refresh_token.refresh_token,
+            expires_in=client.access_token.expires_in().total_seconds(),
         )
 
     def __str__(self):
