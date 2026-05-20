@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Spin, Alert } from 'antd';
-import { StatusTag, SystemStatusModal } from '@client/workspace';
+import { SystemStatusModal } from '@client/workspace';
 import { useSystemOverview } from '@client/hooks';
 import styles from './SystemStatus.module.css';
 
@@ -49,11 +49,10 @@ export const SystemStatus: React.FC = () => {
                       {system.display_name}
                     </td>
                     <td className={styles.statusCol}>
-                      <StatusTag
-                        variant={system.is_operational ? 'open' : 'error'}
+                      <span
                       >
                         {system.is_operational ? 'Open' : 'Closed'}
-                      </StatusTag>
+                      </span>
                     </td>
                     <td className={styles.numericCol}>
                       {system.is_operational
