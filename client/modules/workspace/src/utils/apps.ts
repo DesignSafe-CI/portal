@@ -542,9 +542,8 @@ export const findAppById = (
   if (!data) return null;
   for (const category of data.categories) {
     for (const app of category.apps) {
-      if (app.app_id === appId) {
-        if (app.version === version) {
-          return app;
+      if (app.app_id === appId && app.version === version) {
+        return app;
         }
       }
     }
