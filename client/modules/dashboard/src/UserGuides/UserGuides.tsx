@@ -3,16 +3,20 @@ import styles from '../Dashboard/Dashboard.module.css';
 
 const videos = [
   {
-    id: 'w0lhfz03QIk',
-    title: 'Checking Allocation Balance',
+    id: '1yWRGAdR3XU',
+    title: 'Overview Of The Dashboard',
+  },
+  {
+    id: 'BSCMzvb80',
+    title: 'How To Mark Favorite Apps'
   },
   {
     id: '_wDIKMwqej8',
-    title: 'Adding users to allocation',
+    title: 'Adding Users To Allocation',
   },
   {
     id: 'X4mb6PJ9GD0',
-    title: 'Opening a help ticket',
+    title: 'Opening A Help Ticket',
   },
 ];
 
@@ -32,7 +36,7 @@ const UserGuides = () => {
       </div>
 
       <div className={styles.videoGrid}>
-        {videos.slice(0, 2).map((video) => (
+        {videos.map((video) => (
           <div key={video.id} className={styles.videoCard}>
             <a
               href={`https://www.youtube.com/watch?v=${video.id}`}
@@ -60,33 +64,6 @@ const UserGuides = () => {
             </a>
           </div>
         ))}
-      </div>
-
-      <div className={styles.videoCardSingle}>
-        <a
-          href={`https://www.youtube.com/watch?v=${videos[2].id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src={`https://img.youtube.com/vi/${videos[2].id}/0.jpg`}
-            alt={videos[2].title}
-            className={styles.videoThumbnail}
-          />
-        </a>
-        <a
-          href={`https://www.youtube.com/watch?v=${videos[2].id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.videoTitle}
-        >
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png"
-            alt="YouTube"
-            className={styles.youtubeIcon}
-          />
-          {videos[2].title}
-        </a>
       </div>
     </div>
   );
