@@ -7,7 +7,7 @@ const videos = [
     title: 'Overview Of The Dashboard',
   },
   {
-    id: 'BSCMzvb80',
+    id: 'BSCMzvb80-M',
     title: 'How To Mark Favorite Apps'
   },
   {
