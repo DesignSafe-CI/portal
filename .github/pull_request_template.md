@@ -19,7 +19,7 @@
 ## Summary of Changes: ##
 
 <!--
-Any important details excluded from the overview, but mayeb not clear when viewing the diff.
+Details (perhaps excluded from the simpler overview) that may be clearer as text than reading the diff.
 -->
 
 ## Testing Steps: ##
