@@ -1,5 +1,11 @@
 ## Overview: ##
 
+<!--
+1–3 sentences stating what problem this solves and what you changed at a high level. Example:
+
+"Adds/Fixes X, when Y, via Z."
+-->
+
 ## PR Status: ##
 
 * [X] Ready.
@@ -12,9 +18,32 @@
 
 ## Summary of Changes: ##
 
+<!--
+Any important details excluded from the overview, but mayeb not clear when viewing the diff.
+-->
+
 ## Testing Steps: ##
-1. 
+
+1. …
 
 ## UI Photos:
 
+<!--
+Any screenshots or videos to illustrate the change.
+
+https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files
+
+You're welcome to organize screenshots e.g. —
+
+| Before | After |
+| - | - |
+| <img width="900" alt="before" src="..." /> | <img width="900" alt="after" src="..." /> |
+
+— or (outside a table) drag-n-drop videos with a filename that GitHub will render as the video's title.
+-->
+
 ## Notes: ##
+
+<!--
+Optional: gotchas, known limitations, further context, etc.
+-->
