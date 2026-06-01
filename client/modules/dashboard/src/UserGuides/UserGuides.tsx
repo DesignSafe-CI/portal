@@ -8,7 +8,7 @@ const videos = [
   },
   {
     id: 'BSCMzvb80-M',
-    title: 'How To Mark Favorite Apps'
+    title: 'How To Mark Favorite Apps',
   },
   {
     id: '_wDIKMwqej8',

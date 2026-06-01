@@ -49,10 +49,7 @@ export const SystemStatus: React.FC = () => {
                       {system.display_name}
                     </td>
                     <td className={styles.statusCol}>
-                      <span
-                      >
-                        {system.is_operational ? 'Open' : 'Closed'}
-                      </span>
+                      <span>{system.is_operational ? 'Open' : 'Closed'}</span>
                     </td>
                     <td className={styles.numericCol}>
                       {system.is_operational
