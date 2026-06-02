@@ -1,9 +1,7 @@
 ## Overview
 
 <!--
-1–3 sentences stating what problem this solves and what you changed at a high level. Example:
-
-"Adds/Fixes X, when Y, via Z."
+1–3 sentences stating what problem this solves and what you changed at a high level. Example: "Adds/Fixes X, when Y, via Z."
 -->
 
 ## PR Status
@@ -29,8 +27,7 @@ Details (perhaps excluded from the simpler overview) that may be clearer as text
 ## UI
 
 <!--
-Any screenshots or videos to illustrate the change:
-https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files
+Any screenshots or videos to illustrate the change: https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files
 -->
 
 ## Notes
