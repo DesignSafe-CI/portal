@@ -26,20 +26,11 @@ Details (perhaps excluded from the simpler overview) that may be clearer as text
 
 1. …
 
-## UI Photos:
+## UI
 
 <!--
-Any screenshots or videos to illustrate the change.
-
+Any screenshots or videos to illustrate the change:
 https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/attaching-files
-
-You're welcome to organize screenshots e.g. —
-
-| Before | After |
-| - | - |
-| <img width="900" alt="before" src="..." /> | <img width="900" alt="after" src="..." /> |
-
-— or (outside a table) drag-n-drop videos with a filename that GitHub will render as the video's title.
 -->
 
 ## Notes: ##
