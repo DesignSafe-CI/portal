@@ -32,7 +32,7 @@ export const ProjectDataTransferModal: React.FC<{
           <p>
             To transfer data to this project, please consult the{' '}
             <a
-              href="https://www.designsafe-ci.org/user-guide/managingdata/#data-transfer-guides"
+              href="https://www.designsafe-ci.org/user-guide/managingdata/datatransfer/"
               rel="noopener noreferrer"
               target="_blank"
             >

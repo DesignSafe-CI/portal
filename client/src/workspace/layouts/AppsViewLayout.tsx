@@ -17,7 +17,11 @@ export const AppsViewLayout: React.FC = () => {
   const { data: app } = useGetAppsSuspense({ appId, appVersion });
   const { data } = useAppsListing();
 
-  const portalApp = findAppById(data, app.definition.id);
+  const portalApp = findAppById(
+    data,
+    app.definition.id,
+    app.definition.version
+  );
 
   const icon = portalApp?.icon || app.definition.notes.icon || 'Generic-App';
   const userGuideLink =

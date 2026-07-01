@@ -91,7 +91,9 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                 ),
             )
             async with stream_response as result:
+                res = ""
                 async for text in result.stream(debounce_by=1):
+                    res = text
                     await self.send(
                         json.dumps(
                             {
@@ -101,6 +103,21 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                             }
                         )
                     )
+
+                session = self.scope["session"]
+                user = self.scope["user"]
+                ip_addr = self.scope["client"][0]
+                metrics.info(
+                    "Chat",
+                    extra={
+                        "agent": "",
+                        "ip": ip_addr,
+                        "operation": "chat.response",
+                        "sessionId": getattr(session, "session_key", ""),
+                        "user": getattr(user, "username"),
+                        "info": {"query": event["payload"], "response": res},
+                    },
+                )
 
         # pylint:disable=broad-exception-caught
         except ModelHTTPError as exc:

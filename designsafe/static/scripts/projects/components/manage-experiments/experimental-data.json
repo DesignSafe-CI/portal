@@ -21,7 +21,8 @@
             { "name": "rtmd-lehigh", "label": "Real-Time Multi-Directional (RTMD) Experimental Facility with Large-Scale Hybrid Simulation Testing Capabilities - LeHigh University" },
             { "name": "simcntr", "label": "SimCenter" },
             { "name": "nco-purdue", "label": "Network Coordination Office - Purdue University" },
-            { "name": "crbcrp", "label": "Center for Risk-Based Community Resilience Planning" },            
+            { "name": "crbcrp", "label": "Center for Risk-Based Community Resilience Planning" },
+            { "name": "clash", "label": "CLaSH - Center for Land Surface Hazards"},            
             { "name": "other", "label": "Other" }
         ],
         "other": [

@@ -236,7 +236,7 @@ class DataDepotPublishedView(TemplateView):
         context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
         try:
             scholar_context, datacite_context, title = get_google_scholar_context(kwargs['project_id'])
-            context['dc_context'] = datacite_context
+            context['dc_context'] = [json.dumps(ctx) for ctx in datacite_context]
             context['scholar_context'] = scholar_context
             context['citation_title'] = f"{kwargs['project_id']} | {title}"
         except Exception:
