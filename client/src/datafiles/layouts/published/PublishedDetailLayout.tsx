@@ -136,8 +136,7 @@ export const PublishedDetailLayout: React.FC = () => {
   for (let entity of entities) {
     if (entity.value.tombstone === undefined) {
       entitiesTombstoned = entitiesTombstoned && false;
-    }
-    else {
+    } else {
       entitiesTombstoned = entitiesTombstoned && entity.value.tombstone;
     }
   }
@@ -163,12 +162,12 @@ export const PublishedDetailLayout: React.FC = () => {
           <strong>{data.baseProject.projectId}</strong> |{' '}
           {data.baseProject.title}
         </span>
-        {(!data.baseProject.tombstone && !entitiesTombstoned) &&
+        {!data.baseProject.tombstone && !entitiesTombstoned && (
           <DownloadDatasetModal
             projectId={projectId}
             license={data.baseProject.license}
           />
-        }
+        )}
       </div>
 
       {['other', 'software'].includes(data.baseProject.projectType) && (
