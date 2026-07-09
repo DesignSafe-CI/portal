@@ -131,6 +131,17 @@ export const PublishedDetailLayout: React.FC = () => {
     (c) => c.value.projectId === projectId
   )?.publicationDate;
 
+  let entitiesTombstoned = true;
+  const entities = data.tree.children;
+  for (let entity of entities) {
+    if (entity.value.tombstone === undefined) {
+      entitiesTombstoned = entitiesTombstoned && false;
+    }
+    else {
+      entitiesTombstoned = entitiesTombstoned && entity.value.tombstone;
+    }
+  }
+
   return (
     <Layout style={{ paddingBottom: '100px' }}>
       <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
@@ -152,10 +163,12 @@ export const PublishedDetailLayout: React.FC = () => {
           <strong>{data.baseProject.projectId}</strong> |{' '}
           {data.baseProject.title}
         </span>
-        <DownloadDatasetModal
-          projectId={projectId}
-          license={data.baseProject.license}
-        />
+        {(!data.baseProject.tombstone && !entitiesTombstoned) &&
+          <DownloadDatasetModal
+            projectId={projectId}
+            license={data.baseProject.license}
+          />
+        }
       </div>
 
       {['other', 'software'].includes(data.baseProject.projectType) && (
