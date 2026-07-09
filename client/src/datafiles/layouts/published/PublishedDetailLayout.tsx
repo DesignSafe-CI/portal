@@ -133,7 +133,7 @@ export const PublishedDetailLayout: React.FC = () => {
 
   let entitiesTombstoned = true;
   const entities = data.tree.children;
-  for (let entity of entities) {
+  for (const entity of entities) {
     if (entity.value.tombstone === undefined) {
       entitiesTombstoned = entitiesTombstoned && false;
     } else {
