@@ -131,15 +131,8 @@ export const PublishedDetailLayout: React.FC = () => {
     (c) => c.value.projectId === projectId
   )?.publicationDate;
 
-  let entitiesTombstoned = true;
   const entities = data.tree.children;
-  for (const entity of entities) {
-    if (entity.value.tombstone === undefined) {
-      entitiesTombstoned = entitiesTombstoned && false;
-    } else {
-      entitiesTombstoned = entitiesTombstoned && entity.value.tombstone;
-    }
-  }
+  const entitiesTombstoned = entities.some((e) => !!e.value.tombstone);
 
   return (
     <Layout style={{ paddingBottom: '100px' }}>
