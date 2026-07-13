@@ -24,6 +24,7 @@ jobs:
       run: |
         git fetch origin ${{github.base_ref}}
         pipx install poetry==2.1.1
+        poetry env use python3.11
 
     - name: Copy base.html for use in unit tests
       run: |
@@ -50,6 +51,7 @@ jobs:
       run: |
         git fetch origin ${{github.base_ref}}
         pipx install poetry==2.1.1
+        poetry env use python3.11
 
     - name: Install Python Packages
       run:  |
