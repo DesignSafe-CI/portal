@@ -37,7 +37,7 @@ from impersonate import views as impersonate_views
 
 # sitemap - classes must be imported and added to sitemap dictionary
 from django.contrib.sitemaps.views import sitemap, index
-from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap
+from designsafe.sitemaps import StaticViewSitemap, DynamicViewSitemap, HomeSitemap, ProjectSitemap, SubSitemap, DesignSafeCMSSitemap, NeesSitemap
 
 
 sitemaps = {
@@ -46,6 +46,7 @@ sitemaps = {
         'static': StaticViewSitemap,
         'dynamic': DynamicViewSitemap,
         'projects': ProjectSitemap,
+        'nees': NeesSitemap,
         'cmspages': DesignSafeCMSSitemap,
         }
 

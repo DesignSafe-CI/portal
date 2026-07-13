@@ -180,8 +180,28 @@ class ProjectSitemap(sitemaps.Sitemap):
                 'project' : proj.project_id,
                 'system' : 'designsafe.storage.published'
             }
-            projPath.append('{root}public/{system}/{project}'.format(**subpath))
+            projPath.append({'location': '{root}public/{system}/{project}'.format(**subpath),
+                             'lastmod': proj.last_updated})
 
+        return projPath
+
+    def location(self, item):
+        return item.get("location")
+    
+    def lastmod(self, item):
+        return item.get("lastmod")
+
+
+class NeesSitemap(sitemaps.Sitemap):
+    priority = 0.6
+    changefreq = 'weekly'
+
+    def get_urls(self, site=None, **kwargs):
+        site = Site(domain='www.designsafe-ci.org')
+        return super(NeesSitemap, self).get_urls(site=site, **kwargs)
+
+    def items(self):
+        projPath = []
 
         count = 0
         while True:
