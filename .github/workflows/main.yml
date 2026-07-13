@@ -30,7 +30,7 @@ jobs:
         cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
     - run: |
-        poetry env use python3.11
+        env use python3.11
         poetry sync
 
     - name: Run Server-side unit tests and generate coverage report
@@ -54,7 +54,7 @@ jobs:
 
     - name: Install Python Packages
       run:  |
-        poetry env use python3.11
+        env use python3.11
         poetry sync
 
     - name: Run Server-side linting with pytest
