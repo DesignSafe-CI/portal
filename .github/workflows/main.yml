@@ -15,16 +15,16 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
 
-    - name: Fetch base and install Poetry
-      run: |
-        git fetch origin ${{github.base_ref}}
-        pipx install poetry==2.1.1
-
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
         cache: 'poetry'
+
+    - name: Fetch base and install Poetry
+      run: |
+        git fetch origin ${{github.base_ref}}
+        pipx install poetry==2.1.1
 
     - name: Copy base.html for use in unit tests
       run: |
@@ -42,16 +42,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Fetch base and install Poetry
-      run: |
-        git fetch origin ${{github.base_ref}}
-        pipx install poetry==2.1.1
-
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
         cache: 'poetry'
+
+    - name: Fetch base and install Poetry
+      run: |
+        git fetch origin ${{github.base_ref}}
+        pipx install poetry==2.1.1
 
     - name: Install Python Packages
       run:  |
