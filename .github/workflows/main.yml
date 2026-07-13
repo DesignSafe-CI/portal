@@ -24,13 +24,13 @@ jobs:
       run: |
         git fetch origin ${{github.base_ref}}
         pipx install poetry==2.1.1
-        poetry env use python3.11
 
     - name: Copy base.html for use in unit tests
       run: |
         cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
     - run: |
+        poetry env use python3.11
         poetry sync
 
     - name: Run Server-side unit tests and generate coverage report
@@ -51,10 +51,10 @@ jobs:
       run: |
         git fetch origin ${{github.base_ref}}
         pipx install poetry==2.1.1
-        poetry env use python3.11
 
     - name: Install Python Packages
       run:  |
+        poetry env use python3.11
         poetry sync
 
     - name: Run Server-side linting with pytest
