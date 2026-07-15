@@ -531,16 +531,18 @@ export const useGetAppParams = () => {
  * Find app in app tray categories and get the icon info.
  * @param data TAppCategories or undefined
  * @param appId string - id of an app.
+ * @param version string - version of an app.
  * @returns icon name if available, otherwise null
  */
 export const findAppById = (
   data: TAppCategories | undefined,
-  appId: string
+  appId: string,
+  version: string
 ) => {
   if (!data) return null;
   for (const category of data.categories) {
     for (const app of category.apps) {
-      if (app.app_id === appId) {
+      if (app.app_id === appId && (!version || app.version === version)) {
         return app;
       }
     }

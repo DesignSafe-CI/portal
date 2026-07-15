@@ -131,6 +131,9 @@ export const PublishedDetailLayout: React.FC = () => {
     (c) => c.value.projectId === projectId
   )?.publicationDate;
 
+  const entities = data.tree.children;
+  const entitiesTombstoned = entities.some((e) => !!e.value.tombstone);
+
   return (
     <Layout style={{ paddingBottom: '100px' }}>
       <div style={{ position: 'sticky', top: 0, zIndex: 1 }}>
@@ -152,10 +155,12 @@ export const PublishedDetailLayout: React.FC = () => {
           <strong>{data.baseProject.projectId}</strong> |{' '}
           {data.baseProject.title}
         </span>
-        <DownloadDatasetModal
-          projectId={projectId}
-          license={data.baseProject.license}
-        />
+        {!data.baseProject.tombstone && !entitiesTombstoned && (
+          <DownloadDatasetModal
+            projectId={projectId}
+            license={data.baseProject.license}
+          />
+        )}
       </div>
 
       {['other', 'software'].includes(data.baseProject.projectType) && (
