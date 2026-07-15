@@ -19,6 +19,7 @@ from hashlib import sha256
 from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
+from designsafe.settings.djangocms_forms_compat import apply_storage_compatibility
 
 
 gettext = lambda s: s
@@ -291,6 +292,12 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
     },
 }
+
+# djangocms-forms-maintained still uses the pre-Django 5 storage API. Keep its
+# configuration sourced from STORAGES until the archived plugin is replaced.
+DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
+apply_storage_compatibility()
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
