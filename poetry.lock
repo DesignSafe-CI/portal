@@ -1809,14 +1809,14 @@ django = ">=3.2"
 
 [[package]]
 name = "django-cms"
-version = "4.1.11"
+version = "5.0.9"
 description = "Lean enterprise content management powered by Django."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "django_cms-4.1.11-py2.py3-none-any.whl", hash = "sha256:4bd7c1ecbfe300ca9984a1b96b07db108a501fa574cca45596ed90c604faef00"},
-    {file = "django_cms-4.1.11.tar.gz", hash = "sha256:1be4ffeadaf443a1c93893bf7257c15dc3d48586f940de121badaa82242d74b0"},
+    {file = "django_cms-5.0.9-py2.py3-none-any.whl", hash = "sha256:5c37b691c295604b10ccafdf9245bed109c9d54a92c39aa6558f65baca84f972"},
+    {file = "django_cms-5.0.9.tar.gz", hash = "sha256:89f362910d152781e859a9cec1d223f87c95c814ea19c4e967736b9a5d1c4145"},
 ]
 
 [package.dependencies]
@@ -2057,7 +2057,7 @@ django-cms = ">=3.7"
 
 [[package]]
 name = "djangocms-cascade"
-version = "0.16.3"
+version = "0.16.4"
 description = "Collection of extendible plugins for django-CMS to create and edit widgets in a simple manner"
 optional = false
 python-versions = ">=3.10"
@@ -2068,15 +2068,15 @@ develop = false
 [package.dependencies]
 Django = ">=5.2,<5.3"
 django-classy-tags = ">=4.1"
-django-cms = ">=4.1,<4.2"
+django-cms = ">=5.0,<5.1"
 djangocms-text-ckeditor = ">=5.1"
 jsonfield = "*"
 
 [package.source]
 type = "git"
 url = "https://github.com/van-go/djangocms-cascade.git"
-reference = "f0de89d5413943c22f26ca4296eb5db11b977bf0"
-resolved_reference = "f0de89d5413943c22f26ca4296eb5db11b977bf0"
+reference = "009a7d8ccc5e8b1ff645091fe6780af71a798b31"
+resolved_reference = "009a7d8ccc5e8b1ff645091fe6780af71a798b31"
 
 [[package]]
 name = "djangocms-file"
@@ -10349,4 +10349,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "ac10f4a655dd57bfeee5a7d5a0e6c59a442188715d4feaa9c7c3adf91e7b5371"
+content-hash = "7585d50886e09a10251fce0b06d6f065eff06111164f4696e123edf8a37dea21"
