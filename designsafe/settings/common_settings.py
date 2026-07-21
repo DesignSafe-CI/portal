@@ -313,6 +313,7 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 # CMS Settings
 #
 #####
+CMS_CONFIRM_VERSION4 = True
 DJANGOCMS_PICTURE_TEMPLATES = [
     ('non_responsive', 'Non-Responsive Image'),
     ('responsive', 'Responsive Image'),
