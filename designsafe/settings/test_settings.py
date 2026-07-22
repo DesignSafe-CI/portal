@@ -157,7 +157,6 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -249,7 +248,6 @@ FIXTURE_DIRS = [
 # CMS Settings
 #
 #####
-CMS_CONFIRM_VERSION4 = True
 DJANGOCMS_PICTURE_TEMPLATES = [
     ('non_responsive', 'Non-Responsive Image'),
     ('responsive', 'Responsive Image'),
@@ -824,5 +822,3 @@ CHROMA_PORT = 443
 CHROMA_PASSWORD = "test"
 CHROMA_USERNAME = "test"
 CHROMA_COLLECTION = "test"
-
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
