@@ -1,0 +1,60 @@
+<style id="css-a11y-color-contrast">
+/* To darken links when in a light gray container */
+/* (known to affect these pages: HOME) */
+div:is(
+    [style*="background-color: #f4f4f4"],
+    [style*="background-color: #f2f2f2"],
+    [style*="background-color: #f7f7f7"],
+) a {
+    color: #23527c;
+}
+div:is(
+    [style*="background-color: #f4f4f4"],
+    [style*="background-color: #f2f2f2"],
+    [style*="background-color: #f7f7f7"],
+) a:is(:hover, :focus) {
+    color: #1f496e;
+}
+
+
+
+/* To darken a specific gray color enough on white for accessible small text */
+/* (known to affect these pages: HOME) */
+[style*="color: #69645B"] {
+    color: #5D5850 !important; /* overwrite style attribute */
+}
+
+
+
+/* To darken the sea green when it is text or has text on it */
+/* (known to affect these pages: HOME) */
+[style*="background-color: #44a59e"] {
+    background-color: #37817B !important; /* overwrite style attribute */
+}
+[style*="background: #62b1b6"] {
+    background: #37817B !important; /* overwrite style attribute */
+}
+[style*="color: #47a59d"] {
+    color: #37817B !important; /* overwrite style attribute */
+}
+
+
+/* To darken the sea green when it is a background image */
+/* (known to affect these pages: HOME) */
+.bg-image-gs {
+    /* To allow pseudo element `position: absolute` */
+    position: relative;
+}
+.bg-image-gs::after {
+    /* To add a filter */
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    content: "";
+    background-color: black;
+    opacity: 0.2;
+}
+.bg-image-gs > * {
+    /* So child elements are above filter */
+    position: relative;
+    z-index: 1;
+}
+</style>
