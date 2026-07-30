@@ -9,8 +9,6 @@ import onboardingRouter from './onboarding/onboardingRouter';
 import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
 
-
-
 console.log(Dashboard);
 
 const queryClient = new QueryClient();
