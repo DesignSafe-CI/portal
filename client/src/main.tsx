@@ -9,7 +9,7 @@ import onboardingRouter from './onboarding/onboardingRouter';
 import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
 
-/**removed unrequired imports */
+
 
 console.log(Dashboard);
 
