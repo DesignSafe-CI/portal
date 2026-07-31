@@ -98,6 +98,7 @@ class DataDepotToolbarCtrl {
 }
 
 
+
 export const DataDepotToolbarComponent = {
     controller: DataDepotToolbarCtrl,
     controllerAs: '$ctrl',

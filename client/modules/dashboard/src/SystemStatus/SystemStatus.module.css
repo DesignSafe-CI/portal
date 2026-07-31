@@ -1,0 +1,75 @@
+.systemTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0;
+}
+
+.systemTable th {
+  padding: 8px 8px;
+  text-align: left;
+  vertical-align: middle;
+  white-space: normal;
+  border-bottom: 1px solid #707070;
+  font-size: 0.85em;
+}
+
+.systemTable td {
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.85em;
+}
+
+.systemNameCol {
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.statusCol {
+  text-align: center;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* Load, Running Jobs, adn Waiting Jobs */
+.numericCol {
+  text-align: right;
+  padding-left: 8px;
+  padding-right: 8px;
+  white-space: nowrap;
+}
+
+.systemTable tbody tr:nth-child(even) {
+  background-color: #f4f4f4;
+}
+
+.systemTable tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.systemTable th {
+  border-bottom: 1px solid #707070;
+}
+
+.systemTable td {
+  border-bottom: 1px solid rgba(112, 112, 112, 0.25);
+}
+
+.systemUnavailable {
+  padding-top: 20px;
+  text-align: center;
+}
+
+.tableWrapper {
+  position: relative;
+}
+
+.viewDetailsLink {
+  position: absolute;
+  top: -20px;
+  right: 0;
+  cursor: pointer;
+  font-size: 0.8em;
+  text-decoration: underline;
+}

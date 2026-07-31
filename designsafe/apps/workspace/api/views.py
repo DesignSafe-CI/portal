@@ -2,7 +2,6 @@
 .. :module:: apps.workspace.api.views
    :synopsys: Views to handle Workspace API
 """
-
 import logging
 import json
 from urllib.parse import urlparse
@@ -28,7 +27,10 @@ from designsafe.apps.workspace.models.app_entries import (
 from designsafe.apps.api.users.utils import get_allocations
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
 from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
-
+from django.views import View
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.contrib.auth.mixins import LoginRequiredMixin
+from designsafe.apps.workspace.models.user_favorites import UserFavorite
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")
@@ -56,14 +58,12 @@ TACC_EXEC_SYSTEMS = {
     },
 }
 
-
 def _app_license_type(app_def):
     """Gets an app's license type, if any."""
 
     app_lic_type = getattr(app_def.notes, "licenseType", None)
     lic_type = app_lic_type if app_lic_type in LICENSE_TYPES else None
     return lic_type
-
 
 def _get_user_app_license(license_type, user):
     """Gets a user's app license from the database."""
@@ -76,7 +76,6 @@ def _get_user_app_license(license_type, user):
         return None
     lic = license_model.objects.filter(user=user).first()
     return lic
-
 
 def _get_systems(
     user: object, can_exec: bool, systems: list = None, list_type: str = "ALL"
@@ -92,7 +91,6 @@ def _get_systems(
     return tapis.systems.getSystems(
         listType=list_type, select="allAttributes", search=search_string
     )
-
 
 def _get_app(app_id, app_version, user):
     """Gets an app from Tapis, and includes license and execution system info in response."""
@@ -113,7 +111,6 @@ def _get_app(app_id, app_version, user):
 
     return data
 
-
 def test_system_access_ok(
     tapis: object, username: str, system_id: str, path: str = "/"
 ) -> bool:
@@ -130,7 +127,6 @@ def test_system_access_ok(
             "System access check failed for user: %s on system: %s", username, system_id
         )
         raise
-
 
 def test_system_needs_keys(
     tapis: object, username: str, system_id: str, path: str = "/"
@@ -177,7 +173,6 @@ def test_system_needs_keys(
             f"User {username} does not have system credentials and cannot push keys or create credentials for system {system_id}."
         ) from exc
 
-
 class SystemListingView(AuthenticatedApiView):
     """System Listing View"""
 
@@ -214,7 +209,6 @@ class SystemDefinitionView(AuthenticatedApiView):
         return JsonResponse(
             {"status": 200, "response": system_def}, encoder=BaseTapisResultSerializer
         )
-
 
 class AppsView(AuthenticatedApiView):
     """View for Tapis app listings."""
@@ -261,7 +255,6 @@ class AppsView(AuthenticatedApiView):
             },
             encoder=BaseTapisResultSerializer,
         )
-
 
 class AppsTrayView(AuthenticatedApiView):
     """Views for Workspace Apps Tray listings."""
@@ -451,6 +444,7 @@ class AppsTrayView(AuthenticatedApiView):
             categories.append(category_result)
 
         return categories, html_definitions
+    
 
     def get(self, request, *args, **kwargs):
         """
@@ -523,7 +517,6 @@ class AppsTrayView(AuthenticatedApiView):
             encoder=BaseTapisResultSerializer,
         )
 
-
 class AppDescriptionView(AuthenticatedApiView):
     """Views for retreiving AppDescription objects."""
 
@@ -535,7 +528,6 @@ class AppDescriptionView(AuthenticatedApiView):
         except ObjectDoesNotExist:
             return JsonResponse({"message": f"No description found for {app_id}"})
         return JsonResponse({"response": data})
-
 
 class JobHistoryView(AuthenticatedApiView):
     """View for returning job history"""
@@ -893,13 +885,10 @@ class JobsView(AuthenticatedApiView):
             encoder=BaseTapisResultSerializer,
         )
 
-
 class AllocationsView(AuthenticatedApiView):
     """Allocations API View"""
-
     def get(self, request):
         """Returns active user allocations on TACC resources
-
         : returns: {'response': {'active': allocations, 'portal_alloc': settings.PORTAL_ALLOCATION, 'inactive': inactive, 'hosts': hosts}}
         : rtype: dict
         """
@@ -911,10 +900,46 @@ class AllocationsView(AuthenticatedApiView):
                 for allocation in allocations
                 if allocation not in settings.ALLOCATIONS_TO_EXCLUDE
             ]
-
         return JsonResponse(
             {
                 "status": 200,
                 "response": data,
             }
         )
+
+
+class UserFavoriteList(LoginRequiredMixin, View):
+    def get(self, request):
+        favorites = UserFavorite.objects.filter(user=request.user)
+        data = [
+            {"id": fav.id, "tool_id": fav.tool_id, "added_on": fav.added_on.isoformat()}
+            for fav in favorites
+        ]
+        return JsonResponse(data, safe=False)
+
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            tool_id = data.get("tool_id")
+            if not tool_id:
+                return HttpResponseBadRequest("Missing tool_id")
+            favorite, created = UserFavorite.objects.get_or_create(
+                user=request.user, tool_id=tool_id
+            )
+            return JsonResponse({"success": True, "created": created})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+
+
+class RemoveFavoriteTool(LoginRequiredMixin, View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            tool_id = data.get("tool_id")
+            if not tool_id:
+                return HttpResponseBadRequest("Missing tool_id")
+            UserFavorite.objects.filter(user=request.user, tool_id=tool_id).delete()
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
