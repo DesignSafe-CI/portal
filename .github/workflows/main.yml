@@ -15,22 +15,22 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
 
-    - name: Fetch base and install Poetry
-      run: |
-        git fetch origin ${{github.base_ref}}
-        pipx install poetry==2.1.1
-
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        cache: 'poetry'
+
+    - name: Fetch base and install Poetry
+      run: |
+        git fetch origin ${{github.base_ref}}
+        pipx install poetry==2.1.1
 
     - name: Copy base.html for use in unit tests
       run: |
         cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
     - run: |
+        env use python3.11
         poetry sync
 
     - name: Run Server-side unit tests and generate coverage report
@@ -42,19 +42,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
     - name: Fetch base and install Poetry
       run: |
         git fetch origin ${{github.base_ref}}
         pipx install poetry==2.1.1
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        cache: 'poetry'
-
     - name: Install Python Packages
       run:  |
+        env use python3.11
         poetry sync
 
     - name: Run Server-side linting with pytest
