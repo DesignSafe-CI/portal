@@ -29,7 +29,7 @@ export const AIChatButton: React.FC = () => {
           </div>
         }
         placement="bottom"
-        height={600}
+        height="var(--ai-chat-drawer-height)"
         open={showDrawer}
         onClose={() => setShowDrawer(false)}
         maskClosable={true}
