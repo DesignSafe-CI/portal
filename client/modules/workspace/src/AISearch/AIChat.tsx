@@ -218,7 +218,7 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
         : { icon: <RobotOutlined /> },
     messageRender: renderMarkdown,
     typing: message.typing,
-    footer: message.role === 'assistant' && (
+    footer: message.role === 'assistant' && message.key !== 'welcome' && (
       <div
         style={{
           float: 'right',
