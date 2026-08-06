@@ -29,6 +29,7 @@ export const BaseProjectCreateForm: React.FC<{
         username: user?.username,
         email: user?.email,
         inst: user?.institution,
+        orcidId: user?.orcidId,
         role: 'pi',
       },
     ]);
