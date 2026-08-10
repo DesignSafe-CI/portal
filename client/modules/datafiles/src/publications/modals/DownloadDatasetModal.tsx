@@ -297,15 +297,20 @@ export const DownloadDatasetModal: React.FC<{
           <hr />
           <p>The files are licensed by the following:</p>
           {license && LICENSE_INFO_MAP[license]}
-          <p>
-            <a
-              href="/user-guide/curating/policies/#data-publication-and-usage"
-              target="_blank"
-              aria-describedby="msg-open-new-window"
-            >
-              Data Usage Agreement
-            </a>
-          </p>
+          <ul>
+            <li>
+              By clicking “Download Dataset,” you acknowledge that you have read
+              and agree to comply with the{' '}
+              <a
+                href="/user-guide/curating/policies/#data-publication-and-usage"
+                target="_blank"
+                aria-describedby="msg-open-new-window"
+              >
+                Data Usage Agreement
+              </a>
+              .
+            </li>
+          </ul>
           <div style={{ float: 'right' }}>
             <DatafilesModal.Download
               api="tapis"
