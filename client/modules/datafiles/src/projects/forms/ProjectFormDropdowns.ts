@@ -129,33 +129,22 @@ export const facilityOptions = [
 ];
 
 export const dataTypeOptions = [
-  { value: 'archival materials', label: 'Archival Materials' },
-  { value: 'audio', label: 'Audio' },
   { value: 'benchmark dataset', label: 'Benchmark Dataset' },
   { value: 'check sheet', label: 'Check Sheet' },
-  { value: 'database', label: 'Database' },
   { value: 'dataset', label: 'Dataset' },
-  { value: 'engineering', label: 'Engineering' },
-  { value: 'image', label: 'Image' },
-  { value: 'interdisciplinary', label: 'Interdisciplinary' },
-  { value: 'jupyter notebook', label: 'Jupyter Notebook' },
+  { value: 'jupyter notebook', label: 'Jupyter/Computational Notebook' },
   { value: 'learning object', label: 'Learning Object' },
   { value: 'model', label: 'Model' },
-  { value: 'paper', label: 'Paper' },
-  { value: 'proceeding', label: 'Proceeding' },
   { value: 'poster', label: 'Poster' },
   { value: 'presentation', label: 'Presentation' },
   { value: 'report', label: 'Report' },
+  { value: 'code', label: 'Research Software/Script' },
   {
     value: 'research experience for undergraduates',
     label: 'Research Experience for Undergraduates',
   },
-  { value: 'code', label: 'Research Software' },
-  { value: 'simcenter testbed', label: 'SimCenter Testbed' },
-  { value: 'social sciences', label: 'Social Sciences' },
   { value: 'survey instrument', label: 'Survey Instrument' },
   { value: 'testbed', label: 'Testbed' },
-  { value: 'video', label: 'Video' },
 ];
 
 export const equipmentOptions: DefaultOptionType[] = [

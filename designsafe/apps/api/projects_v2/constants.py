@@ -291,33 +291,22 @@ FIELD_RESEARCH_TYPES = [
 ]
 
 OTHER_DATA_TYPES = [
-    {"id": "archival materials", "name": "Archival Materials"},
-    {"id": "audio", "name": "Audio"},
     {"id": "benchmark dataset", "name": "Benchmark Dataset"},
     {"id": "check sheet", "name": "Check Sheet"},
-    {"id": "code", "name": "Code"},
-    {"id": "database", "name": "Database"},
     {"id": "dataset", "name": "Dataset"},
-    {"id": "engineering", "name": "Engineering"},
-    {"id": "image", "name": "Image"},
-    {"id": "interdisciplinary", "name": "Interdisciplinary"},
-    {"id": "jupyter notebook", "name": "Jupyter Notebook"},
+    {"id": "jupyter notebook", "name": "Jupyter/Computational Notebook"},
     {"id": "learning object", "name": "Learning Object"},
     {"id": "model", "name": "Model"},
-    {"id": "paper", "name": "Paper"},
-    {"id": "proceeding", "name": "Proceeding"},
     {"id": "poster", "name": "Poster"},
     {"id": "presentation", "name": "Presentation"},
     {"id": "report", "name": "Report"},
+    {"id": "code", "name": "Research Software/Script"},
     {
         "id": "research experience for undergraduates",
         "name": "Research Experience for Undergraduates",
     },
-    {"id": "simcenter testbed", "name": "SimCenter Testbed"},
-    {"id": "social sciences", "name": "Social Sciences"},
     {"id": "survey instrument", "name": "Survey Instrument"},
     {"id": "testbed", "name": "Testbed"},
-    {"id": "video", "name": "Video"},
 ]
 
 SIMULATION_TYPES = [
