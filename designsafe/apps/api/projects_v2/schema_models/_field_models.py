@@ -43,6 +43,7 @@ class ProjectUser(MetadataModel):
     inst: Optional[str] = None
     user: Optional[str] = None
     username: Optional[str] = None
+    orcid_id: Optional[str] = None
     role: Optional[Literal["pi", "co_pi", "team_member", "guest"]] = None
 
     authorship: Optional[bool] = None
