@@ -237,6 +237,7 @@ STATICFILES_FINDERS = (
 )
 MEDIA_ROOT = '/srv/www/designsafe/media/'
 MEDIA_URL = '/media/'
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 FIXTURE_DIRS = [
     os.path.join(BASE_DIR, 'designsafe', 'fixtures'),
