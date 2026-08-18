@@ -291,6 +291,11 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
     },
 }
+
+# djangocms-forms-maintained still reads the legacy setting while using the
+# Django 5 storage registry. Keep it sourced from the canonical configuration.
+DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',

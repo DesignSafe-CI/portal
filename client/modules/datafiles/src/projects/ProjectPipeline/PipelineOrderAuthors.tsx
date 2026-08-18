@@ -1,7 +1,73 @@
 import { TProjectUser, useProjectDetail } from '@client/hooks';
-import { Button } from 'antd';
+import { Button, Form, Input, Modal } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import { usePatchEntityMetadata } from '@client/hooks';
+import React, { useState } from 'react';
+import { customRequiredMark } from '../forms/_common';
+
+const AddOrcidModal: React.FC<
+  React.PropsWithChildren<{
+    entityUuid: string;
+    authorList: TProjectUser[];
+    index: number;
+  }>
+> = ({ children, entityUuid, authorList, index }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { mutate } = usePatchEntityMetadata();
+  const [form] = Form.useForm();
+
+  function addOrcidId(orcidId: string) {
+    authorList[index] = { ...authorList[index], orcidId: orcidId };
+    mutate({ entityUuid, patchMetadata: { authors: authorList } });
+  }
+
+  function onFinish(orcidId: string) {
+    addOrcidId(orcidId);
+    setIsModalOpen(false);
+  }
+
+  return (
+    <>
+      <Button type="link" onClick={() => setIsModalOpen(!isModalOpen)}>
+        {children}
+      </Button>
+      <Modal
+        open={isModalOpen}
+        title={`Add ORCID ID for ${authorList[index].fname} ${authorList[index].lname}`}
+        onOk={form.submit}
+        onCancel={() => setIsModalOpen(false)}
+      >
+        <div>
+          Learn more about ORCID and look up IDs:{' '}
+          <a
+            href="https://orcid.org/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            https://orcid.org/
+          </a>
+          <Form
+            form={form}
+            initialValues={{ orcidId: authorList[index].orcidId }}
+            onFinish={(formData) => onFinish(formData.orcidId)} //addOrcidId(formData.orcidId)}
+            requiredMark={customRequiredMark}
+            layout="vertical"
+            style={{ marginTop: '1rem' }}
+          >
+            <Form.Item
+              required
+              rules={[{ required: true }]}
+              name="orcidId"
+              label="ORCID ID"
+            >
+              <Input></Input>
+            </Form.Item>
+          </Form>
+        </div>
+      </Modal>
+    </>
+  );
+};
 
 export const PipelineOrderAuthors: React.FC<{
   projectId: string;
@@ -134,7 +200,28 @@ export const PipelineOrderAuthors: React.FC<{
                   {(entity.value.authors ?? []).map((author, idx, arr) => (
                     <tr key={`${author.email}-${author.fname}-${author.lname}`}>
                       <td style={{ verticalAlign: 'middle' }}>
-                        {author.lname}, {author.fname}
+                        {author.lname}, {author.fname}{' '}
+                        {author.orcidId ? (
+                          <span>
+                            (ORCID: {author.orcidId}{' '}
+                            <AddOrcidModal
+                              authorList={arr}
+                              entityUuid={entity.uuid}
+                              index={idx}
+                            >
+                              Edit
+                            </AddOrcidModal>
+                            )
+                          </span>
+                        ) : (
+                          <AddOrcidModal
+                            authorList={arr}
+                            entityUuid={entity.uuid}
+                            index={idx}
+                          >
+                            Add ORCID ID
+                          </AddOrcidModal>
+                        )}
                       </td>
                       <td>
                         <span> &nbsp;</span>
