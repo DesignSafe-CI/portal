@@ -5,6 +5,7 @@ export type TProjectUser = {
   inst: string;
   role: 'pi' | 'co_pi' | 'team_member' | 'guest';
   username?: string;
+  orcidId?: string;
   authorship?: boolean;
 };
 

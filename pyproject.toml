@@ -9,14 +9,14 @@ dependencies = [
     "agavepy==1.0.0a12",
     "pytas",
     "attrdict",
-    "Django(>=4.2, <5.0.0)",
+    "Django==5.2.12",
     "daphne>=4.0.0",
     "channels>=4.0.0",
     "channels-redis>=4.1.0",
     "cryptography>=41.0.4",
     "django-cms (>=3.11.3, <4.0.0) ",
     "importlib-resources>=5.4.0",
-    "django-filer (>=2.2, <3.0.0)",
+    "django-filer (>=3.0, <4.0.0)",
     "django-formtools == 2.2",
     "django-haystack == 3.2.1",
     "django-impersonate == 1.9.1",
@@ -41,7 +41,7 @@ dependencies = [
     "django-recaptcha2",
     "djangocms-snippet == 3.0.0",
     "django-bootstrap3 == 23.4",
-    "djangocms-text-ckeditor == 5.1",
+    "djangocms-text-ckeditor == 5.1.7",
     "djangocms-cascade",
     "djangocms-style == 3.0.0",
     "djangocms-video == 3.0.0",
@@ -89,7 +89,7 @@ pytas = {git = "https://bitbucket.org/taccaci/pytas.git", tag = "v1.7.0"}
 attrdict = { git = "https://github.com/DesignSafe-CI/AttrDict", rev = "83b779ee82d5b0e33be695d398162b8f2430ff33" }
 django-recaptcha2 = { git = "https://github.com/DesignSafe-CI/django-recaptcha2", tag = "v1.4.1--compat-django4" }
 djangocms-cascade = { git = "https://github.com/DesignSafe-CI/djangocms-cascade", rev = "9e9f9e3088a0fcfdc1b27ad7e08b68390aa6a570" }
-djangocms-forms-maintained = { git = "https://github.com/TACC/djangocms-forms", rev = "63ead9288c2ea65139124698bffc0ad01d182afa" }
+djangocms-forms-maintained = { git = "https://github.com/TACC/djangocms-forms", rev = "fce019099b7542bfe2b449cff8ca4e5d0a03e92e" }
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.0"

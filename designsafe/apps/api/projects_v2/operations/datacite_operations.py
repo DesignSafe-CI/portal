@@ -58,21 +58,28 @@ def get_datacite_json(
         author for author in authors if not author.get("authorship") is False
     ]
     for author in datacite_authors:
-        author_attr.append(
-            {
-                "name": f"{author.get('lname', '')}, {author.get('fname', '')}",
-                "givenName": author.get("fname", ""),
-                "familyName": author.get("lname", ""),
-                "affiliation": [
-                    {
-                        "name": author.get("inst", ""),
-                        "schemeUri": None,
-                        "affiliationIdentifier": None,
-                        "affiliationIdentifierScheme": None,
-                    }
-                ],
-            }
-        )
+        author_meta = {
+            "name": f"{author.get('lname', '')}, {author.get('fname', '')}",
+            "givenName": author.get("fname", ""),
+            "familyName": author.get("lname", ""),
+            "affiliation": [
+                {
+                    "name": author.get("inst", ""),
+                    "schemeUri": None,
+                    "affiliationIdentifier": None,
+                    "affiliationIdentifierScheme": None,
+                }
+            ],
+        }
+        if author.get("orcidId"):
+            author_meta["nameIdentifiers"] = [
+                {
+                    "schemeUri": "https://orcid.org",
+                    "nameIdentifier": f"https://orcid.org/{author.get("orcidId")}",
+                    "nameIdentifierScheme": "ORCID",
+                }
+            ]
+        author_attr.append(author_meta)
         if inst := author.get("inst", ""):
             institutions.append(inst)
 

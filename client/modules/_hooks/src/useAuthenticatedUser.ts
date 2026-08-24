@@ -6,6 +6,7 @@ export type TUser = {
   institution: string;
   homedir: string;
   isStaff: boolean;
+  orcidId?: string;
   setupComplete: boolean;
 };
 

@@ -150,6 +150,7 @@
             lastName: "{{ request.user.last_name }}",
             email: "{{ request.user.email }}",
             institution: "{{ request.user.profile.institution }}",
+            orcidId: "{{ request.user.profile.orcid_id }}",
             homedir: "{{tas_homedir}}",
             isStaff: {{ request.user.is_staff|yesno:"true,false" }},
             setupComplete: {{ request.user.profile.setup_complete|yesno:"true,false" }},
