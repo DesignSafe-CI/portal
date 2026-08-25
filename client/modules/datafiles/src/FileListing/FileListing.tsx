@@ -8,6 +8,7 @@ import {
 } from '@client/common-components';
 import { NavLink } from 'react-router-dom';
 import { PreviewModalBody } from '../DatafilesModal/PreviewModal';
+import { DownloadModal } from '../DatafilesModal/DownloadModal';
 import { TFileListing, TFileTag, useDoiContext } from '@client/hooks';
 import styles from './FileListing.module.css';
 
@@ -30,6 +31,7 @@ export const FileListing: React.FC<
     baseRoute?: string;
     fileTags?: TFileTag[];
     emptyListingDisplay?: React.ReactNode;
+    downloadArchives?: boolean;
   } & Omit<TableProps<TFileListing>, 'columns' | 'className'>
 > = ({
   api,
@@ -39,6 +41,7 @@ export const FileListing: React.FC<
   baseRoute,
   fileTags,
   emptyListingDisplay,
+  downloadArchives = false,
   ...tableProps
 }) => {
   // Base file listing for use with My Data/Community Data
@@ -75,6 +78,28 @@ export const FileListing: React.FC<
                 </i>
                 {data}
               </NavLink>
+            ) : downloadArchives &&
+              record.name.toLowerCase().endsWith('.zip') ? (
+              <>
+                <FileTypeIcon name={record.name} />
+                &nbsp;&nbsp;
+                <DownloadModal
+                  api={api}
+                  system={system}
+                  scheme={scheme}
+                  selectedFiles={[{ ...record, doi }]}
+                >
+                  {({ onClick }) => (
+                    <Button
+                      type="link"
+                      style={{ userSelect: 'text' }}
+                      onClick={onClick}
+                    >
+                      {data}
+                    </Button>
+                  )}
+                </DownloadModal>
+              </>
             ) : (
               <>
                 <FileTypeIcon name={record.name} />
@@ -117,7 +142,16 @@ export const FileListing: React.FC<
         render: (d) => new Date(d).toLocaleString(),
       },
     ],
-    [setPreviewModalState, baseRoute, fileTags, doi]
+    [
+      setPreviewModalState,
+      baseRoute,
+      fileTags,
+      doi,
+      downloadArchives,
+      api,
+      system,
+      scheme,
+    ]
   );
 
   return (
