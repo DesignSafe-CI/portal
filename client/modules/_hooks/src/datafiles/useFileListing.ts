@@ -39,7 +39,9 @@ async function getFileListing(
   const offset = page * limit;
 
   const res = await apiClient.get<FileListingResponse>(
-    `/api/datafiles/${api}/${scheme}/listing/${system}/${encodeURIComponent(path)}`,
+    `/api/datafiles/${api}/${scheme}/listing/${system}/${encodeURIComponent(
+      path
+    )}`,
     {
       signal,
       params: { offset, limit, nextPageToken, q: queryString, doi: doi },
