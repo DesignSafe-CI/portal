@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
 import DatafilesModal from '../../DatafilesModal/DatafilesModal';
 import { usePublicationDetail } from '@client/hooks';
+import { DISPLAY_NAMES } from '../../projects/constants';
 
 const gnuGeneralLicenseInfo = (
   <>
@@ -224,27 +225,17 @@ export const DownloadDatasetModal: React.FC<{
     .filter((doi) => !!doi)
     .join(',');
 
-  //const archivePath =
-  //  selectedVersion > 1
-  //    ? `/archives/${projectId}v${selectedVersion}_archive.zip`
-  //    : `/archives/${projectId}_archive.zip`;
-
-  // const archivePath = `/published-data/${projectId}`;
-
-  /*
-  const { data, isError, isLoading } = useFileDetail(
-    'tapis',
-    'designsafe.storage.published',
-    'public',
-    archivePath,
-    isModalOpen
-  );
-  const FILE_SIZE_LIMIT = 5368709120; // 5 GB
-  const exceedsLimit = useMemo(
-    () => (data?.length ?? 0) > FILE_SIZE_LIMIT,
-    [data?.length]
-  );
-  */
+  const downloadablePublications = publicationData?.tree.children
+    .sort((a, b) => (a.version ?? 1) - (b.version ?? 1))
+    .sort((a, b) => a.order - b.order)
+    .map((c) => ({
+      name: DISPLAY_NAMES[c.name],
+      title: c.value.title,
+      version: c.version,
+      path: c.basePath,
+      uuid: c.uuid,
+      doi: c.value.dois?.[0] ?? '',
+    }));
 
   return (
     <>
@@ -262,10 +253,61 @@ export const DownloadDatasetModal: React.FC<{
       >
         <>
           <p />
+          <p>
+            {downloadablePublications?.map((p) => (
+              <div
+                key={p.uuid}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                <div>
+                  <strong>{p.name}</strong>: {p.title}{' '}
+                  {(p.version ?? 1) > 1 && <span>(Version {p.version})</span>}
+                </div>
+                <DatafilesModal.Download
+                  api="tapis"
+                  system="designsafe.storage.published"
+                  scheme="public"
+                  selectedFiles={[
+                    {
+                      system: 'designsafe.storage.published',
+                      format: 'folder',
+                      type: 'dir',
+                      mimeType: '',
+                      lastModified: '',
+                      length: 0,
+                      permissions: '',
+                      name: p.title,
+                      path: p.path,
+                      doi: p.doi,
+                    },
+                  ]}
+                >
+                  {({ onClick }) => (
+                    <Button
+                      type="primary"
+                      className="success-button"
+                      onClick={onClick}
+                    >
+                      <span>
+                        <i className="curation-download" />
+                        &nbsp;&nbsp;Download Dataset
+                      </span>
+                    </Button>
+                  )}
+                </DatafilesModal.Download>
+              </div>
+            ))}
+          </p>
 
           <p>
-            This download is a ZIP file of the complete project dataset. To
-            download the metadata only,&nbsp;
+            This download is a ZIP file of the published dataset. To download
+            the metadata for the full project,&nbsp;
             <DatafilesModal.Download
               api="tapis"
               system="designsafe.storage.published"
@@ -295,56 +337,21 @@ export const DownloadDatasetModal: React.FC<{
           </p>
 
           <hr />
+          <p>
+            By clicking “Download Dataset,” you acknowledge that you have read
+            and agree to comply with the{' '}
+            <a
+              href="/user-guide/curating/policies/#data-publication-and-usage"
+              target="_blank"
+              aria-describedby="msg-open-new-window"
+            >
+              Data Usage Agreement
+            </a>
+            .
+          </p>
+
           <p>The files are licensed by the following:</p>
           {license && LICENSE_INFO_MAP[license]}
-          <ul>
-            <li>
-              By clicking “Download Dataset,” you acknowledge that you have read
-              and agree to comply with the{' '}
-              <a
-                href="/user-guide/curating/policies/#data-publication-and-usage"
-                target="_blank"
-                aria-describedby="msg-open-new-window"
-              >
-                Data Usage Agreement
-              </a>
-              .
-            </li>
-          </ul>
-          <div style={{ float: 'right' }}>
-            <DatafilesModal.Download
-              api="tapis"
-              system="designsafe.storage.published"
-              scheme="public"
-              selectedFiles={[
-                {
-                  system: 'designsafe.storage.published',
-                  format: 'folder',
-                  type: 'dir',
-                  mimeType: '',
-                  lastModified: '',
-                  length: 0,
-                  permissions: '',
-                  name: projectId,
-                  path: `/published-data/${projectId}`,
-                  doi: doiString,
-                },
-              ]}
-            >
-              {({ onClick }) => (
-                <Button
-                  type="primary"
-                  className="success-button"
-                  onClick={onClick}
-                >
-                  <span>
-                    <i className="curation-download" />
-                    &nbsp;&nbsp;Download Dataset
-                  </span>
-                </Button>
-              )}
-            </DatafilesModal.Download>
-          </div>
         </>
       </Modal>
     </>
