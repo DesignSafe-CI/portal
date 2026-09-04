@@ -77,7 +77,6 @@ def get_datacite_json(
     publication_subtree = nx.dfs_tree(pub_graph, entity_node)
     for node in publication_subtree:
         value = pub_graph.nodes[node]["value"]
-        print(value["title"])
         date_start = value.get("dateStart")
         date_end = value.get("dateEnd")
 
