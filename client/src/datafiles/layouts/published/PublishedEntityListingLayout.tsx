@@ -31,7 +31,6 @@ export const PublishedEntityListingLayout: React.FC = () => {
               system="designsafe.storage.published"
               scheme="public"
               path={encodeURIComponent(`${selectedBasePath}/data`)}
-              downloadArchives={data.baseProject.projectType === 'software'}
               emptyListingDisplay={
                 data.baseProject.projectType === 'software'
                   ? 'File Unavailable'

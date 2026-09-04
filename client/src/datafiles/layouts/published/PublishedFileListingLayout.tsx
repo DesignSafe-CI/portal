@@ -41,7 +41,6 @@ export const PublishedFileListingLayout: React.FC = () => {
           system="designsafe.storage.published"
           scheme="public"
           path={path ?? ''}
-          downloadArchives={data?.baseProject.projectType === 'software'}
           emptyListingDisplay={
             data?.baseProject.projectType === 'software'
               ? 'File Unavailable'
