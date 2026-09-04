@@ -10,6 +10,27 @@ from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
 
 
+def format_datacite_date_range(date_start: str, date_end: Optional[str]):
+    """Convert a date range to datacite JSON"""
+    date_string = date_start
+    if date_end:
+        date_string = f"{date_start}/{date_end}"
+
+    return {"date": date_string, "dateType": "Collected"}
+
+
+def dedup_collectors(collectors: list[dict]) -> list[dict]:
+    """
+    Deduplicate a list of data collectors. Serialization using str() is OK in this
+    case because each collector dict is constructed identically.
+    """
+
+    collector_dedup_dict = {
+        str(collector): i for (i, collector) in enumerate(collectors)
+    }
+    return [collectors[i] for i in collector_dedup_dict.values()]
+
+
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def get_datacite_json(
     pub_graph: nx.DiGraph, entity_uuid: str, version: Optional[int] = 1
@@ -38,6 +59,37 @@ def get_datacite_json(
     else:
         base_meta_node = "NODE_ROOT"
 
+    # Format data collectors and collection dates from sub-entities.
+    collector_contributors = []
+    dates = []
+    publication_subtree = nx.dfs_tree(pub_graph, base_meta_node)
+    for node in publication_subtree:
+        value = pub_graph.nodes[node]["value"]
+        date_start = value.get("dateStart")
+        date_end = value.get("dateEnd")
+
+        if date_start:
+            dates.append(format_datacite_date_range(date_start, date_end))
+
+        collectors = value.get("dataCollectors", [])
+        for collector in collectors:
+            collector_meta = {
+                "name": f"{collector.get('lname', '')}, {collector.get('fname', '')}",
+                "contributorType": "DataCollector",
+                "givenName": collector.get("fname", ""),
+                "familyName": collector.get("lname", ""),
+                "affiliation": [
+                    {
+                        "name": collector.get("inst", ""),
+                        "schemeUri": None,
+                        "affiliationIdentifier": None,
+                        "affiliationIdentifierScheme": None,
+                    }
+                ],
+            }
+            collector_contributors.append(collector_meta)
+    deduped_collectors = dedup_collectors(collector_contributors)
+
     base_meta = pub_graph.nodes[base_meta_node]["value"]
 
     entity_node = base_meta_node = next(
@@ -45,7 +97,7 @@ def get_datacite_json(
             node
             for node in pub_graph
             if pub_graph.nodes[node]["uuid"] == entity_uuid
-            and pub_graph.nodes[node]["version"] == version
+            and pub_graph.nodes[node].get("version", 1) == version
         ),
         None,
     )
@@ -112,6 +164,7 @@ def get_datacite_json(
         ).year
 
     datacite_json["types"] = {}
+    datacite_json["dates"] = dates
 
     datacite_json["types"]["resourceType"] = PATH_SLUGS.get(
         pub_graph.nodes[entity_node]["name"]
@@ -163,6 +216,9 @@ def get_datacite_json(
                 "name": facility["name"],
             }
         )
+
+    for collector in deduped_collectors:
+        datacite_json["contributors"].append(collector)
 
     datacite_json["language"] = "English"
     datacite_json["identifiers"] = [
