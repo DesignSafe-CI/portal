@@ -59,12 +59,25 @@ def get_datacite_json(
     else:
         base_meta_node = "NODE_ROOT"
 
+    base_meta = pub_graph.nodes[base_meta_node]["value"]
+
+    entity_node = base_meta_node = next(
+        (
+            node
+            for node in pub_graph
+            if pub_graph.nodes[node]["uuid"] == entity_uuid
+            and pub_graph.nodes[node].get("version", 1) == version
+        ),
+        None,
+    )
+
     # Format data collectors and collection dates from sub-entities.
     collector_contributors = []
     dates = []
-    publication_subtree = nx.dfs_tree(pub_graph, base_meta_node)
+    publication_subtree = nx.dfs_tree(pub_graph, entity_node)
     for node in publication_subtree:
         value = pub_graph.nodes[node]["value"]
+        print(value["title"])
         date_start = value.get("dateStart")
         date_end = value.get("dateEnd")
 
@@ -89,18 +102,6 @@ def get_datacite_json(
             }
             collector_contributors.append(collector_meta)
     deduped_collectors = dedup_collectors(collector_contributors)
-
-    base_meta = pub_graph.nodes[base_meta_node]["value"]
-
-    entity_node = base_meta_node = next(
-        (
-            node
-            for node in pub_graph
-            if pub_graph.nodes[node]["uuid"] == entity_uuid
-            and pub_graph.nodes[node].get("version", 1) == version
-        ),
-        None,
-    )
 
     author_attr = []
     institutions = []
