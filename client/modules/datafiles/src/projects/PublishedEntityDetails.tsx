@@ -212,7 +212,7 @@ export const PublishedEntityDetails: React.FC<{
           )}
           {(entityValue.referencedData?.length ?? 0) > 0 && (
             <tr className={styles['prj-row']}>
-              <td>Referenced Data</td>
+              <td>Referenced Data and Software</td>
               <td style={{ fontWeight: 'bold' }}>
                 {entityValue.referencedData.map((ref) => (
                   <div key={JSON.stringify(ref)}>
