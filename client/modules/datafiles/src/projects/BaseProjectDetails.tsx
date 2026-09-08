@@ -71,11 +71,22 @@ export const LicenseDisplay: React.FC<{ licenseType: string }> = ({
     'Creative Commons Public Domain Dedication': 'curation-cc-zero',
     '3-Clause BSD License': 'curation-3bsd',
   };
+  const LICENSE_URL_MAP: Record<string, string> = {
+    'GNU General Public License': 'https://choosealicense.com/licenses/gpl-3.0/',
+    'Open Data Commons Attribution': 'https://opendatacommons.org/licenses/by/summary/',
+    'Open Data Commons Public Domain Dedication': 'https://opendatacommons.org/licenses/pddl/summary/',
+    'Creative Commons Attribution': 'https://creativecommons.org/licenses/by/4.0/deed.en',
+    'Creative Commons Public Domain Dedication': 'https://creativecommons.org/publicdomain/zero/1.0/',
+    '3-Clause BSD License': 'https://opensource.org/license/bsd-3-clause',
+  }
+
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <i className={ENTITY_ICON_MAP[licenseType]} />
       &nbsp;
-      <strong>{licenseType}</strong>
+      <a href={LICENSE_URL_MAP[licenseType]}>
+        <strong>{licenseType}</strong>
+      </a>
     </div>
   );
 };
