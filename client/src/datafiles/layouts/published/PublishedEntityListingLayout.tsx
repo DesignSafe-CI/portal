@@ -30,7 +30,7 @@ export const PublishedEntityListingLayout: React.FC = () => {
               api="tapis"
               system="designsafe.storage.published"
               scheme="public"
-              path={encodeURIComponent(`${selectedBasePath}/data`)}
+              path={`${selectedBasePath}/data`}
               emptyListingDisplay={
                 data.baseProject.projectType === 'software'
                   ? 'File Unavailable'

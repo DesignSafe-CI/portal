@@ -37,7 +37,7 @@ async function getFilePreview({
   signal,
 }: TPreviewParams & { signal: AbortSignal }) {
   const res = await apiClient.get<TFilePreviewResponse>(
-    `/api/datafiles/${api}/${scheme}/preview/${system}/${path}`,
+    `/api/datafiles/${api}/${scheme}/preview/${system}/${encodeURIComponent(path)}`,
     { params: { doi }, signal }
   );
   return res.data;
