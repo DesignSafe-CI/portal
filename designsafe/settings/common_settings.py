@@ -292,8 +292,11 @@ STORAGES = {
     },
 }
 
-# djangocms-forms-maintained still reads the legacy setting while using the
-# Django 5 storage registry. Keep it sourced from the canonical configuration.
+# djangocms-forms-maintained (TACC/djangocms-forms fork) predates Django's
+# STORAGES registry (added in 4.2) and only reads the legacy
+# DEFAULT_FILE_STORAGE setting via its AppConf. Derive it from
+# STORAGES["default"]["BACKEND"] above so the two settings can't drift apart
+# if the storage backend ever changes.
 DEFAULT_FILE_STORAGE = STORAGES["default"]["BACKEND"]
 
 STATICFILES_FINDERS = (

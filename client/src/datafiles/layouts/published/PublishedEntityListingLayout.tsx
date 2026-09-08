@@ -1,11 +1,6 @@
-import {
-  BaseGithubFileListing,
-  FileListing,
-  PublicationView,
-} from '@client/datafiles';
+import { FileListing, PublicationView } from '@client/datafiles';
 import {
   DoiContextProvider,
-  TBaseProjectValue,
   usePublicationDetail,
   usePublicationVersions,
 } from '@client/hooks';
@@ -18,21 +13,14 @@ export const PublishedEntityListingLayout: React.FC = () => {
   const { selectedVersion } = usePublicationVersions(projectId ?? '');
   if (!projectId || !data) return null;
 
-  let githubUrl = data.baseProject.githubUrl;
-  if (data.baseProject.projectType === 'software') {
-    const versionValue = data.tree.children.find(
-      (c) => (c.version ?? 1) === selectedVersion
-    )?.value;
-    if (versionValue) {
-      githubUrl =
-        (versionValue as unknown as TBaseProjectValue).githubUrl ?? '';
-    }
-  }
+  const selectedBasePath =
+    data.tree.children.find((child) => (child.version ?? 1) === selectedVersion)
+      ?.basePath ?? '';
 
   return (
     <div>
       <PublicationView projectId={projectId} />
-      {['other', 'field_reconnaissance'].includes(
+      {['other', 'software', 'field_reconnaissance'].includes(
         data.baseProject.projectType
       ) && (
         <DoiContextProvider value={data.baseProject.dois?.[0]}>
@@ -41,20 +29,18 @@ export const PublishedEntityListingLayout: React.FC = () => {
               scroll={{ y: 500, x: 500 }}
               api="tapis"
               system="designsafe.storage.published"
-              path={encodeURIComponent(
-                `${
-                  data.tree.children.find((c) => c.version === selectedVersion)
-                    ?.basePath ?? ''
-                }/data`
-              )}
+              scheme="public"
+              path={encodeURIComponent(`${selectedBasePath}/data`)}
+              emptyListingDisplay={
+                data.baseProject.projectType === 'software'
+                  ? 'File Unavailable'
+                  : undefined
+              }
               baseRoute="."
               fileTags={data.fileTags}
             />
           )}
         </DoiContextProvider>
-      )}
-      {data.baseProject.projectType === 'software' && (
-        <BaseGithubFileListing githubUrl={githubUrl} />
       )}
     </div>
   );
