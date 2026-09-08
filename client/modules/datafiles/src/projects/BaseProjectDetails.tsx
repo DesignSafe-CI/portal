@@ -8,6 +8,7 @@ import {
 
 import styles from './BaseProjectDetails.module.css';
 import { Button, Col, Popover, Row, Select, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { RelateDataModal } from './modals';
 import { ProjectInfoModal } from './modals/ProjectInfoModal';
@@ -381,20 +382,21 @@ export const BaseProjectDetails: React.FC<{
               </td>
             </tr>
           )}
-          {projectValue.githubUrl && (
-            <tr className={styles['prj-row']}>
-              <td>Software Release</td>
-              <td style={{ fontWeight: 'bold' }}>
-                <a
-                  href={projectValue.githubUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {projectValue.githubUrl}
-                </a>
-              </td>
-            </tr>
-          )}
+          {projectValue.githubUrl &&
+            projectValue.projectType !== 'software' && (
+              <tr className={styles['prj-row']}>
+                <td>Software Release</td>
+                <td style={{ fontWeight: 'bold' }}>
+                  <a
+                    href={projectValue.githubUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {projectValue.githubUrl}
+                  </a>
+                </td>
+              </tr>
+            )}
 
           {projectValue.dois && projectValue.dois[0] && (
             <tr className={styles['prj-row']}>
@@ -417,7 +419,20 @@ export const BaseProjectDetails: React.FC<{
             versions.length > 1 &&
             ['other', 'software'].includes(projectValue.projectType) && (
               <tr className={styles['prj-row']}>
-                <td>Version</td>
+                <td>
+                  Version{' '}
+                  {projectValue.projectType === 'software' && (
+                    <Popover
+                      overlayStyle={{ maxWidth: 420 }}
+                      content="The DesignSafe research software publication version may differ with the GitHub release version. In DesignSafe the published research software is the citable archival record. Instead, the GitHub version reflects changes made to an actively maintained code. The author decides what release they consider worth publishing and when."
+                    >
+                      <QuestionCircleOutlined
+                        style={{ color: '#5883b2' }}
+                        aria-label="About software publication versions"
+                      />
+                    </Popover>
+                  )}
+                </td>
                 <td style={{ fontWeight: 'bold' }}>
                   <Select
                     style={{ width: '200px' }}
