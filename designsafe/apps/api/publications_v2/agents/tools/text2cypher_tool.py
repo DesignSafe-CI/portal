@@ -122,7 +122,7 @@ examples = [
 ]
 
 
-prompt_template = """
+PROMPT_TEMPLATE = """
 Instructions: 
 Generate Cypher statement to query a graph database to get the data to answer the user question below.
 
@@ -170,14 +170,13 @@ ONLY RESPOND WITH CYPHER, NO CODEBLOCKS.
 User question: {question}
 """
 
-agent = Agent(
-    "openai:gpt-4o-mini",
-    instructions="""You are a helpful assistant helping natural hazards researchers search and understand published work in the Designsafe-CI natural hazards research portal. 
+AGENT_INSTRUCTIONS = """You are a helpful assistant helping natural hazards researchers search and understand published work in the Designsafe-CI natural hazards research portal. 
     Whenever you are asked to count something, give some examples so that the user can explore further.
     Use the query_graph_database tool, and pass the user's query VERBATIM without modifying it.
     If the user appears to have misspelled a name or concept, include the correct spelling in your response in bold.
-    """,
-)
+    """
+
+agent = Agent("openai:gpt-4o-mini", instructions=AGENT_INSTRUCTIONS)
 
 
 # @agent.tool_plain
@@ -189,7 +188,7 @@ async def publication_graph_search(ctx: RunContext) -> str:
     neo4j_driver = AsyncGraphDatabase.driver(
         NEO4J_URI, auth=("neo4j", settings.NEO4J_PASS)
     )
-    text2cypher_prompt = prompt_template.format(
+    text2cypher_prompt = PROMPT_TEMPLATE.format(
         schema=SCHEMA, question=ctx.prompt, terminology=None, examples=examples
     )
 
