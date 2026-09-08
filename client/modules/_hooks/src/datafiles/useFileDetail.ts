@@ -10,7 +10,9 @@ async function getFileDetail(
   { signal }: { signal: AbortSignal }
 ) {
   const res = await apiClient.get<TFileListing>(
-    `/api/datafiles/${api}/${scheme}/detail/${system}/${encodeURIComponent(path)}`,
+    `/api/datafiles/${api}/${scheme}/detail/${system}/${encodeURIComponent(
+      path
+    )}`,
     { signal }
   );
   return res.data;
