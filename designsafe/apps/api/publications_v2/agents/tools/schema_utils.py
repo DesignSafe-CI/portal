@@ -1,9 +1,9 @@
 """
 Utils for extracting publication schema from Neo4j.
 """
+
 from typing import Any
 import neo4j
-
 
 NODE_PROPERTIES_QUERY = """
 CALL apoc.meta.data()
@@ -30,13 +30,12 @@ RETURN {start: label, type: property, end: toString(other_node)} AS output
 """
 
 
-
 def get_schema(
     driver: neo4j.Driver,
 ) -> str:
     """
     Retrieve the formatted schema for a given Neo4j database.
-    
+
     :param driver: neo4j driver instance
     :type driver: neo4j.Driver
     :return: Database schema formatted as an LLM-legible string.
@@ -77,7 +76,7 @@ def get_schema(
 def get_structured_schema(driver: neo4j.Driver) -> dict[str, Any]:
     """
     Generate a JSON schema for a Neo4j database.
-    
+
     :param driver: neo4j driver instance
     :type driver: neo4j.Driver
     :return: JSON representation of the database schema.
