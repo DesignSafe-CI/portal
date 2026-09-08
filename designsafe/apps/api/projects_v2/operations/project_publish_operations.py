@@ -400,6 +400,14 @@ class PublicationDirectoryAlreadyExists(Exception):
     """exception raised when attempting to publish into a directory that exists already"""
 
 
+class PipelinePublishFailure(Exception):
+    """Exception raised if an error in the pipeline results in a failure to publish."""
+
+
+class PipelineAmendFailure(Exception):
+    """Exception raised if an error in the pipeline results in a failure to publish."""
+
+
 def copy_publication_files(
     path_mapping: dict,
     project_id: str,
@@ -460,7 +468,7 @@ def copy_publication_files(
                     queue="indexing",
                 )
         logger.debug("Finished copying publication files for %s", project_id)
-    except (shutil.Error, PermissionError, OSError) as exc:
+    except (shutil.Error, PermissionError, OSError, ProjectFileNotFound) as exc:
         logger.debug("Alerting due to data transfer failure for %s", project_id)
         logger.error(exc)
         send_project_permissions_alert(project_id, version, str(exc))
@@ -664,6 +672,16 @@ def publish_project_async(
                 add_publications_to_chroma(publications=[meta])
             except Exception as e:  # pylint: disable=broad-except
                 logger.error("Error adding publication to Chroma vector store: %s", e)
+        except Exception as exc:
+            raise PipelinePublishFailure(
+                f"""Publication of {project_id} failed with {type(exc).__name__}: {exc}
+                    project_id: {project_id}
+                    entity_uuids: {entity_uuids}
+                    version: {version}
+                    version_info: {version_info}
+                    {locals()}
+                """
+            ) from exc
         finally:
             project_meta = ProjectMetadata.get_project_by_id(project_id)
             project_meta.is_publishing = False
@@ -756,6 +774,14 @@ def amend_publication_async(project_id: str):
         project_meta.save()
         try:
             amend_publication(project_id)
+
+        except Exception as exc:
+            raise PipelineAmendFailure(
+                f"""Publication of {project_id} failed with {type(exc).__name__}: {exc}
+                    project_id: {project_id}
+                    {locals()}
+                """
+            ) from exc
         finally:
             project_meta = ProjectMetadata.get_project_by_id(project_id)
             project_meta.is_publishing = False
