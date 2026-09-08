@@ -129,7 +129,7 @@ export const CopyModal: React.FC<{
     () => ({
       destApi: 'tapis',
       destSystem: USER_MYDATA_SYSTEM,
-      destPath: encodeURIComponent('/' + user?.username),
+      destPath: `/${user?.username}`,
     }),
     [user]
   );
@@ -157,7 +157,7 @@ export const CopyModal: React.FC<{
         setDest({
           destApi: 'tapis',
           destSystem: USER_WORK_SYSTEM,
-          destPath: encodeURIComponent('/work/' + user?.homedir),
+          destPath: `/work/${user?.homedir}`,
         });
         break;
       case 'myprojects':
@@ -187,7 +187,7 @@ export const CopyModal: React.FC<{
         return;
       }
       const newPath = path.split('/').slice(-1)[0];
-      setDest({ ...dest, destPath: newPath });
+      setDest({ ...dest, destPath: decodeURIComponent(newPath) });
     },
     [dest]
   );
@@ -266,7 +266,7 @@ export const CopyModal: React.FC<{
                   <BaseFileListingBreadcrumb
                     api={destApi}
                     system={destSystem}
-                    path={decodeURIComponent(destPath)}
+                    path={destPath}
                     systemRootAlias={dest.destProjectId}
                     initialBreadcrumbs={
                       destSystem.startsWith('project-')

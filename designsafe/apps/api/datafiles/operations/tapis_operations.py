@@ -53,7 +53,7 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
         return search(client, system, path, offset=0, limit=100, query_string=q, **kwargs)
     raw_listing = client.files.listFiles(
         systemId=system,
-        path=(path or '/'),
+        path=urllib.parse.quote((path or '/')),
         offset=int(offset),
         limit=int(limit),
         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")}
@@ -597,7 +597,7 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
     except FileMetaModel.DoesNotExist:
         meta = {}
 
-    postit_result = client.files.createPostIt(systemId=system, path=path, allowedUses=max_uses, validSeconds=lifetime, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
+    postit_result = client.files.createPostIt(systemId=system, path=urllib.parse.quote(path), allowedUses=max_uses, validSeconds=lifetime, headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")})
     url = postit_result.redeemUrl
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
