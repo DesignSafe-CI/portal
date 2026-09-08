@@ -21,7 +21,7 @@ export const AIChatButton: React.FC = () => {
       <Drawer
         title={
           <div>
-            <div>Ask AI</div>
+            <div className={styles['drawer-title']}>Ask AI</div>
             <div className={styles['drawer-subtitle']}>
               Beta - This model is still in training. It searches DesignSafe
               Published Data and User Documentation only.
@@ -29,7 +29,7 @@ export const AIChatButton: React.FC = () => {
           </div>
         }
         placement="bottom"
-        height={600}
+        height="var(--ai-chat-drawer-height)"
         open={showDrawer}
         onClose={() => setShowDrawer(false)}
         maskClosable={true}

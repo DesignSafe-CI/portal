@@ -60,4 +60,5 @@ def update_institution_from_tas(self, username):
     except Exception as exc:
         raise self.retry(exc=exc)
     user_model.profile.institution = tas_model.get("institution", None)
+    user_model.profile.orcid_id = tas_model.get("orcidId", None)
     user_model.profile.save()

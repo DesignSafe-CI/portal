@@ -150,6 +150,7 @@ class ProjectUserView(BaseApiView):
                 "fname": u.first_name,
                 "lname": u.last_name,
                 "inst": u.profile.institution,
+                "orcidId": getattr(u.profile, "orcid_id", None),
                 "email": u.email,
                 "username": u.username,
             }

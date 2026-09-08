@@ -1,0 +1,17 @@
+<style id="css-replace-twitter-icon-with-x">
+a:has(img[alt="Twitter"]) {
+    display: inline-block;
+    vertical-align: middle;
+    width: 25px;
+    height: 25px;
+}
+a:has(img[alt="Twitter"])::after {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    content: url("/media/filer_public/52/10/5210b030-f2c8-43f7-98a0-94d6227ee3de/twitter-x_icon.svg");
+}
+a > img[alt="Twitter"] {
+    display: none;
+}
+</style>

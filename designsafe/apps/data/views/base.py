@@ -24,42 +24,110 @@ import json
 
 logger = logging.getLogger(__name__)
 
+LICENSE_MAP = {
+    "Open Data Commons Attribution": "https://opendatacommons.org/licenses/by/",
+    "Open Data Commons Public Domain Dedication": "https://opendatacommons.org/licenses/pddl/1-0/",
+    "Creative Commons Attribution": "https://creativecommons.org/licenses/by/4.0/",
+    "Creative Commons Public Domain Dedication": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "3-Clause BSD License": "https://opensource.org/license/bsd-3-clause/",
+}
+
+
+def check_scholar_meta():
+    """
+    Integration test utility to confirm that valid Scholar/Dataset metadata can
+    be generated for all publications.
+    """
+    for pub in Publication.objects.all():
+        get_google_scholar_context(pub.project_id)
+
 
 def get_google_scholar_context(project_id):
     """Get context info for Google Scholar/Datacite"""
     pub = Publication.objects.get(project_id=project_id)
     pub_tree = nx.node_link_graph(pub.tree)
-    latest_version = max(
-            pub_tree.nodes[node]["version"] for node in pub_tree.successors("NODE_ROOT")
-        )
     published_ents = [node for node in pub_tree.successors("NODE_ROOT") 
-                    if pub_tree.nodes[node]["version"] == latest_version]
+                    if not pub_tree.nodes[node]["value"].get("tombstoned")]
 
-    datacite_json_list = []
+
     scholar_meta = {}
     scholar_meta["keywords"] = ", ".join(pub.value.get("keywords", []))
     scholar_meta["citation_keywords"] = pub.value.get("keywords", [])
     scholar_meta["entities"] = []
+
+    pi_members = [u for u in pub.value.get("users", []) if u.get("role") in ("pi", "co_pi")]
+    dataset_creators = [{
+        "@type": "Person",
+        "givenName": u.get("fname"),
+        "familyName": u.get("lname"),
+        "name": f"{u.get('fname')} {u.get('lname')}"
+
+    } for u in pi_members]
+
+    dataset_json_ld = {
+       "@context": "https://schema.org/",
+       "@type": "Dataset",
+       "name": pub.value.get("title"),
+       "description": pub.value.get("description"),
+       "url": f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{pub.project_id}",
+       "isAccessibleForFree" : True,
+       "license": LICENSE_MAP.get(pub.value.get("license"), pub.value.get("license")),
+       "keywords": pub.value.get("keywords"),
+       "creator": dataset_creators,
+       "hasPart": []
+    }
+
     for ent in published_ents:
         ent_meta = pub_tree.nodes[ent]
         entity_scholar_data = {
             "title": ent_meta["value"]["title"],
             "description": ent_meta["value"].get("description"),
-            "doi": ent_meta["value"].get("dois", [])[0],
+            "doi": next(iter(ent_meta["value"].get("dois", [])), None),
             "authors": ent_meta["value"].get("authors", []),
             "publication_date": ent_meta["publicationDate"]
         }
         scholar_meta["entities"].append(entity_scholar_data)
 
 
-        datacite_json_list.append(get_datacite_json(pub_tree, 
-                                                    ent_meta["uuid"], 
-                                                    latest_version))
+        part_json_ld = {"@type": "Dataset"}
+        part_json_ld["name"] = ent_meta["value"].get("title")
+        part_json_ld["description"] = ent_meta["value"].get("description")
+        part_json_ld["keywords"] = ent_meta["value"].get("keywords")
+        part_json_ld["version"] = ent_meta.get("version")
+        part_json_ld["license"] = LICENSE_MAP.get(pub.value.get("license"), pub.value.get("license"))
+        part_json_ld["url"] = f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{pub.project_id}/#detail-f{ent_meta['uuid']}"
+        part_json_ld["funder"] = []
+        for funder in ent_meta["value"].get("fundingReferences", []):
+            part_json_ld["funder"].append({
+                "@type": "Organization",
+                "name": funder.get("name")
+            })
+
+        part_json_ld["creator"] = []
+        institutions = set()
+        for author in ent_meta["value"].get("authors", []):
+            part_json_ld["creator"].append({
+                "@type": "Person",
+                "givenName": author.get("fname"),
+                "familyName": author.get("lname"),
+                "name": f"{author.get('fname')} {author.get('lname')}"
+            })
+            institutions.add(author.get("inst"))
+
+        for inst in institutions:
+            part_json_ld["creator"].append({
+                "@type": "Organization",
+                "name": inst
+            })
+        if ent_meta["value"].get("dois"):
+            part_json_ld["citation"] = f"https://doi.org/{ent_meta["value"].get("dois")[0]}"
+
+        dataset_json_ld["hasPart"].append(part_json_ld)
+
+
     pub_title = pub.value["title"]
-    return scholar_meta, datacite_json_list, pub_title
+    return scholar_meta, [dataset_json_ld], pub_title
 
-
-     
 
 class  BasePublicTemplate(TemplateView):
     def get_context_data(self, **kwargs):
