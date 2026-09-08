@@ -405,7 +405,7 @@ class PipelinePublishFailure(Exception):
 
 
 class PipelineAmendFailure(Exception):
-    """Exception raised if an error in the pipeline results in a failure to publish."""
+    """Exception raised if an error in the pipeline results in a failure to amend."""
 
 
 def copy_publication_files(
@@ -774,7 +774,6 @@ def amend_publication_async(project_id: str):
         project_meta.save()
         try:
             amend_publication(project_id)
-
         except Exception as exc:
             raise PipelineAmendFailure(
                 f"""Publication of {project_id} failed with {type(exc).__name__}: {exc}
