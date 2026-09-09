@@ -39,7 +39,13 @@ export const PublishedFileListingLayout: React.FC = () => {
         <FileListing
           api="tapis"
           system="designsafe.storage.published"
+          scheme="public"
           path={path ?? ''}
+          emptyListingDisplay={
+            data?.baseProject.projectType === 'software'
+              ? 'File Unavailable'
+              : undefined
+          }
           fileTags={data?.fileTags}
           scroll={{ y: 500 }}
         />

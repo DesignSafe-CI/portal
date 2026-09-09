@@ -38,6 +38,10 @@
   color: var(--global-color-primary--x-dark);
 }
 
+.drawer-title {
+  font-family: futura-pt;
+}
+
 .drawer {
   --ai-chat-drawer-height: 100vh;
   --ai-chat-drawer-height: 100dvh;
@@ -46,6 +50,23 @@
 .drawer :global(.ant-drawer-content-wrapper) {
   left: 0;
   width: 100%;
+}
+
+.drawer :global(.ant-drawer-header-title) {
+  align-items: flex-start;
+}
+
+.drawer :global(.ant-drawer-header) {
+  padding-inline: 20px;
+}
+
+.drawer :global(.ant-drawer-close) {
+  width: 44px;
+  margin-inline-end: 16px;
+}
+
+.drawer :global(.ant-drawer-body) {
+  padding: 0;
 }
 
 @media (min-width: 576px) {

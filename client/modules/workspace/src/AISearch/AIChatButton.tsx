@@ -21,7 +21,7 @@ export const AIChatButton: React.FC = () => {
       <Drawer
         title={
           <div>
-            <div>Ask AI</div>
+            <div className={styles['drawer-title']}>Ask AI</div>
             <div className={styles['drawer-subtitle']}>
               Beta - This model is still in training. It searches DesignSafe
               Published Data and User Documentation only.

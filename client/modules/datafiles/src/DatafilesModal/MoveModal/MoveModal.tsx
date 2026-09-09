@@ -161,7 +161,7 @@ export const MoveModal: React.FC<{
   const navCallback = useCallback(
     (path: string) => {
       const newPath = path.split('/').slice(-1)[0];
-      setDest({ ...dest, destPath: newPath });
+      setDest({ ...dest, destPath: decodeURIComponent(newPath) });
     },
     [dest]
   );
@@ -244,7 +244,7 @@ export const MoveModal: React.FC<{
               <BaseFileListingBreadcrumb
                 api={destApi}
                 system={destSystem}
-                path={decodeURIComponent(destPath)}
+                path={destPath}
                 systemRootAlias={dest.destProjectId}
                 initialBreadcrumbs={[]}
                 itemRender={(item) => {
