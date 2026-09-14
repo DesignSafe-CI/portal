@@ -57,7 +57,7 @@ Guidelines:
 agent = Agent(rag_model, instrument=False, instructions=DOCS_RAG_INSTRUCTIONS)
 
 
-@agent.tool_plain
+# @agent.tool_plain
 def documentation_lookup(query: str) -> list[RagDocument]:
     """Tool to search documentation and retrieve relevant sections."""
     chroma_client = chromadb.HttpClient(
