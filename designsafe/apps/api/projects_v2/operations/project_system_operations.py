@@ -3,13 +3,14 @@
 # from portal.utils.encryption import createKeyPair
 import logging
 from typing import Literal
+
 from celery import shared_task
-from tapipy.tapis import Tapis
 from django.conf import settings
+from tapipy.errors import BaseTapyException
+from tapipy.tapis import Tapis
+
 from designsafe.apps.api.agave import service_account
 from designsafe.libs.common.context_managers import AsyncTaskContext
-from tapipy.errors import BaseTapyException
-
 
 logger = logging.getLogger(__name__)
 

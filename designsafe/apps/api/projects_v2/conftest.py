@@ -1,16 +1,17 @@
 """Fixtures related to project metadata."""
 import pytest
+
 from designsafe.apps.api.projects_v2 import constants
-from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
-    create_project_metdata,
-    create_entity_metadata,
-    add_file_associations,
-    set_file_tags,
-    FileObj,
-)
 from designsafe.apps.api.projects_v2.operations.graph_operations import (
-    initialize_project_graph,
     add_node_to_project,
+    initialize_project_graph,
+)
+from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
+    FileObj,
+    add_file_associations,
+    create_entity_metadata,
+    create_project_metdata,
+    set_file_tags,
 )
 
 

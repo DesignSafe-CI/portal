@@ -4,6 +4,7 @@
 """
 
 from django.urls import path
+
 from designsafe.apps.auth import views
 
 app_name = "designsafe_auth"

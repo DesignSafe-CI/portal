@@ -1,9 +1,10 @@
-import logging
-from django.core.management import BaseCommand, CommandError
-from six.moves import input
-from django.conf import settings
-import elasticsearch
 import getpass
+import logging
+
+import elasticsearch
+from django.conf import settings
+from django.core.management import BaseCommand
+
 logger = logging.getLogger(__name__)
 from designsafe.libs.elasticsearch.indices import init
 
@@ -39,7 +40,7 @@ class Command(BaseCommand):
         local_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[local]['hosts'],
                                                       timeout=300)
         remote_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[remote]['hosts'],
-            **{'http_auth': "designsafe_{}:{}".format(remote, password)},
+            http_auth=f"designsafe_{remote}:{password}",
                                                        timeout=300)
         def reindex(source_index, target_index, query=None):
             try:
@@ -67,7 +68,7 @@ class Command(BaseCommand):
 
         failed_indexes = []
         for index in indexes:
-            query = {"query": {"prefix": {"path._exact": "/{}".format(username)}}} if "files" in index else None
+            query = {"query": {"prefix": {"path._exact": f"/{username}"}}} if "files" in index else None
             result = reindex(
                 source_index=index.format(remote),
                 target_index=index.format(local),

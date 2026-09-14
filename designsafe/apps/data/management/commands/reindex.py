@@ -1,12 +1,12 @@
 """Reindex command"""
 import json
 import logging
-import six
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
-import elasticsearch
-from elasticsearch import TransportError
 
+import elasticsearch
+import six
+from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
+from elasticsearch import TransportError
 
 logger = logging.getLogger(__name__)
 
@@ -83,16 +83,15 @@ class Command(BaseCommand):
             if remote_host.startswith('http://') \
                 or remote_host.startswith('https://'):
                 hosts = [remote_host]
-                body['source']['remote'] = {'host': '{}:9200'.format(hosts[0])}
+                body['source']['remote'] = {'host': f'{hosts[0]}:9200'}
             else:
                 hosts = settings.ES_CONNECTIONS.get(remote_host, {}).get('hosts', [])
-                body['source']['remote'] = {'host': 'http://{}:9200'.format(hosts[0])}
+                body['source']['remote'] = {'host': f'http://{hosts[0]}:9200'}
         else:
             hosts = settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']
 
         if not hosts:
-            raise CommandError('No valid remote hosts given. Remote host value given: {}'.\
-                format(remote_host))
+            raise CommandError(f'No valid remote hosts given. Remote host value given: {remote_host}')
 
         if doc_type:
             body['source']['type'] = doc_type

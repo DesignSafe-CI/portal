@@ -1,10 +1,12 @@
 """ Base classes to handle agave metadata objects """
-import inspect
-import six
-import json
-import re
-import logging
 import datetime
+import inspect
+import json
+import logging
+import re
+
+import six
+
 from designsafe.apps.api import tasks
 from designsafe.apps.projects.models import Category
 
@@ -13,7 +15,7 @@ logger = logging.getLogger(__name__)
 REGISTRY = {}
 LAZY_OPS = []
 
-class RelatedQuery(object):
+class RelatedQuery:
     def __init__(self, uuid=None, uuids=None, related_obj_name=None, rel_cls=None):
         self.uuid = uuid
         self.uuids = uuids or []
@@ -71,7 +73,7 @@ class RelatedQuery(object):
         return self.to_python(value)
 
 def register_lazy_rel(cls, field_name, related_obj_name, multiple, rel_cls):
-    reg_key = '{}.{}'.format(cls.model_name, cls.__name__)
+    reg_key = f'{cls.model_name}.{cls.__name__}'
     LAZY_OPS.append((reg_key,
                       field_name,
                       RelatedQuery(related_obj_name=related_obj_name, rel_cls=rel_cls))
@@ -86,7 +88,7 @@ def set_lazy_rels():
     del LAZY_OPS[:]
 
 def register_class(cls, name, model_name):
-    registry_key = '{}.{}'.format(model_name, name)
+    registry_key = f'{model_name}.{name}'
     if REGISTRY.get(registry_key) is None:
         REGISTRY[registry_key] = cls
 
@@ -105,14 +107,14 @@ def spinal_to_camelcase(string):
     camel = ''.join([first, camel])
     return camel
 
-class Manager(object):
+class Manager:
     def __init__(self, model_cls):
         self.model_cls = model_cls
         self.agave_client = None
 
     def set_client(self, agave_client):
         self.agave_client = agave_client
-        setattr(self.model_cls._meta, 'agave_client', agave_client)
+        self.model_cls._meta.agave_client = agave_client
         return self
 
     def get(self, agave_client, uuid=None, project_id=None):
@@ -121,7 +123,7 @@ class Manager(object):
         elif project_id is not None:
             metas = agave_client.meta.listMetadata(
                 privileged=False,
-                q='{{"value.projectId": "{project_id}"}}'.format(project_id=project_id))
+                q=f'{{"value.projectId": "{project_id}"}}')
             if len(metas):
                 meta = metas[0]
             else:
@@ -143,12 +145,12 @@ class Manager(object):
         for meta in metas:
             yield self.model_cls(**meta)
 
-class Links(object):
+class Links:
     def __init__(self, values):
         for attrname, val in six.iteritems(values):
             setattr(self, attrname, val)
 
-class Options(object):
+class Options:
     """Options class to store model's _meta data
     """
     _model = None
@@ -184,7 +186,7 @@ class BaseModel(type):
     Metaclass for metadata models
     """
     def __new__(cls, name, bases, attrs):
-        super_new = super(BaseModel, cls).__new__
+        super_new = super().__new__
 
         # Also ensure initialization is only performed for subclasses of Model
         # (excluding Model class itself).
@@ -202,11 +204,11 @@ class BaseModel(type):
         model_name = attrs.get('model_name')
         new_class.add_to_class('_meta', Options(model_name))
         if attrs.get('_is_nested', False):
-            setattr(new_class, 'model_name', None)
+            new_class.model_name = None
         else:
-            setattr(new_class, 'model_name', model_name)
+            new_class.model_name = model_name
 
-        setattr(new_class, '_is_nested', attrs.pop('_is_nested', False))
+        new_class._is_nested = attrs.pop('_is_nested', False)
         for obj_name, obj in list(attrs.items()):
             new_class.add_to_class(obj_name, obj)
 
@@ -235,13 +237,13 @@ class BaseModel(type):
             #    manager.auto_created = True
             #    cls.add_to_class('objects', manager)
         if not opts.model_manager:
-            setattr(cls._meta, 'model_manager', Manager(cls))
+            cls._meta.model_manager = Manager(cls)
 
         if not isinstance(opts.model_manager, Manager):
             raise ValueError("Model Manager must be a Manager class.")
 
 
-class Model(object, metaclass=BaseModel):
+class Model(metaclass=BaseModel):
     """Metadata model"""
 
     def __init__(self, **kwargs):
@@ -303,7 +305,7 @@ class Model(object, metaclass=BaseModel):
         if self.name is None:
             self.name = self._meta.model_name
 
-        super(Model, self).__init__()
+        super().__init__()
     
     def __getattribute__(self, name):
         opts = object.__getattribute__(self, '_meta')
@@ -403,7 +405,6 @@ class Model(object, metaclass=BaseModel):
         return dict_obj
     
     def to_body_dict(self):
-        from designsafe.apps.data.models.agave.fields import ListField
         dict_obj = {}
 
         if not self._is_nested:
@@ -485,7 +486,7 @@ class Model(object, metaclass=BaseModel):
     def manager(cls):
         return cls._meta.model_manager
 
-class BaseAgaveResource(object):
+class BaseAgaveResource:
     """
     Base Class that all Agave API Resource objects inherit from.
     """
@@ -509,7 +510,7 @@ class BaseAgaveResource(object):
         if camel_name in self._wrapped:
             return self._wrapped.get(camel_name)
 
-        raise AttributeError('\'{0}\' has no attribute \'{1}\''.format(self.__class__.__name__, name))
+        raise AttributeError(f'\'{self.__class__.__name__}\' has no attribute \'{name}\'')
 
     def __setattr__(self, name, value):
         if name != '_wrapped' and name != '_agave':
@@ -518,4 +519,4 @@ class BaseAgaveResource(object):
                 self._wrapped[camel_name] = value
                 return
 
-        super(BaseAgaveResource, self).__setattr__(name, value)
+        super().__setattr__(name, value)

@@ -1,8 +1,9 @@
 """Elasticsearch model for published works"""
 
-from elasticsearch_dsl import Document
-from elasticsearch.exceptions import NotFoundError
 from django.conf import settings
+from elasticsearch.exceptions import NotFoundError
+from elasticsearch_dsl import Document
+
 from designsafe.apps.api.publications_v2.models import Publication
 
 

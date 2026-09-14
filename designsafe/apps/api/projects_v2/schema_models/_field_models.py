@@ -2,10 +2,11 @@
 
 from datetime import datetime
 from functools import partial
-from typing import Annotated, Literal, Optional
+from typing import Annotated, Literal
+
+from django.contrib.auth import get_user_model
 from pydantic import AliasChoices, BaseModel, BeforeValidator, ConfigDict, Field
 from pydantic.alias_generators import to_camel
-from django.contrib.auth import get_user_model
 from pytas.http import TASClient
 
 
@@ -34,19 +35,19 @@ class MetadataModel(BaseModel):
 class ProjectUser(MetadataModel):
     """Model for project users."""
 
-    order: Optional[int] = None
-    guest: Optional[bool] = None
-    fname: Optional[str] = None
-    lname: Optional[str] = None
-    name: Optional[str] = None
-    email: Optional[str] = None
-    inst: Optional[str] = None
-    user: Optional[str] = None
-    username: Optional[str] = None
-    orcid_id: Optional[str] = None
-    role: Optional[Literal["pi", "co_pi", "team_member", "guest"]] = None
+    order: int | None = None
+    guest: bool | None = None
+    fname: str | None = None
+    lname: str | None = None
+    name: str | None = None
+    email: str | None = None
+    inst: str | None = None
+    user: str | None = None
+    username: str | None = None
+    orcid_id: str | None = None
+    role: Literal["pi", "co_pi", "team_member", "guest"] | None = None
 
-    authorship: Optional[bool] = None
+    authorship: bool | None = None
 
     @classmethod
     def from_username(cls, username: str, role: str = "team_member", **kwargs):
@@ -66,7 +67,7 @@ class ProjectUser(MetadataModel):
         except user_model.DoesNotExist:
             try:
                 tas_client = TASClient()
-                tas_user: Optional[dict] = tas_client.get_user(username=username)
+                tas_user: dict | None = tas_client.get_user(username=username)
                 if not tas_user:
                     return cls(username=username, role=role, guest=False)
                 return cls(
@@ -88,12 +89,12 @@ class ProjectUser(MetadataModel):
 class GuestMember(MetadataModel):
     """Model for guest members."""
 
-    order: Optional[int] = None
+    order: int | None = None
     guest: bool = True
     fname: str
     lname: str
-    inst: Optional[str] = None
-    email: Optional[str] = None
+    inst: str | None = None
+    email: str | None = None
     user: str
 
 
@@ -105,7 +106,7 @@ class ProjectAward(MetadataModel):
         ""
     )
     number: str = ""
-    funding_source: Optional[str] = None
+    funding_source: str | None = None
 
 
 class AssociatedProject(MetadataModel):
@@ -114,11 +115,11 @@ class AssociatedProject(MetadataModel):
     # only title guaranteed
     type: str = "Linked Dataset"
     title: str
-    href: Optional[str] = ""
+    href: str | None = ""
     href_type: str = "URL"
-    order: Optional[int] = None
+    order: int | None = None
     # Some test projects have this weird attribute.
-    delete: Optional[bool] = None
+    delete: bool | None = None
     # Some legacy projects have a doi attribute.
     doi: str = ""
 
@@ -146,9 +147,9 @@ class ReferencedWork(MetadataModel):
 class FileTag(MetadataModel):
     """Model for file tags."""
 
-    file_uuid: Optional[str] = Field(default=None, exclude=True)
+    file_uuid: str | None = Field(default=None, exclude=True)
     tag_name: str
-    path: Optional[str] = None
+    path: str | None = None
 
 
 class FileObj(MetadataModel):
@@ -157,11 +158,11 @@ class FileObj(MetadataModel):
     system: str
     name: str
     path: str
-    legacy_path: Optional[str] = None
+    legacy_path: str | None = None
     type: Literal["file", "dir"]
-    length: Optional[int] = None
-    last_modified: Optional[str] = None
-    uuid: Optional[str] = None
+    length: int | None = None
+    last_modified: str | None = None
+    uuid: str | None = None
 
 
 class HazmapperMap(MetadataModel):
@@ -171,7 +172,7 @@ class HazmapperMap(MetadataModel):
     uuid: str
     path: str
     deployment: str
-    href: Optional[str] = None
+    href: str | None = None
 
 
 class Ref(MetadataModel):
@@ -193,7 +194,7 @@ class NaturalHazardEvent(MetadataModel):
 
     event_name: str
     event_start: datetime
-    event_end: Optional[datetime] = None
+    event_end: datetime | None = None
     location: str
     latitude: str
     longitude: str

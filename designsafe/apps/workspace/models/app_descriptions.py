@@ -1,4 +1,5 @@
 import logging
+
 from django.db import models
 
 #pylint: disable=invalid-name

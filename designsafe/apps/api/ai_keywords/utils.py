@@ -1,9 +1,11 @@
 """Utility functions for AI keyword extraction and ChromaDB ingest."""
 
 import json
+
 from django.conf import settings
-from designsafe.apps.api.publications_v2.models import Publication
+
 from designsafe.apps.api.ai_keywords.views import RAG
+from designsafe.apps.api.publications_v2.models import Publication
 
 
 def _retrieve_keywords(pub: Publication) -> list[str]:

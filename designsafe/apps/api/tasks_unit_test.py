@@ -1,7 +1,6 @@
-from django.test import TestCase, RequestFactory
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+from django.test import TestCase
 
 TEST_PROJECT = {'uuid': '6262924605326814745-242ac11c-0001-012',
                 'schemaId': None, 
@@ -42,7 +41,7 @@ class TestProjectIndexer(TestCase):
         mock_connection = MagicMock()
         mock_index.Index.name = 'designsafe-test-projects'
         mock_index._get_connection.return_value = mock_connection
-        from designsafe.apps.api.tasks import index_projects_listing 
+        from designsafe.apps.api.tasks import index_projects_listing
         index_projects_listing([TEST_PROJECT])
 
         expected_doc = {**TEST_PROJECT}

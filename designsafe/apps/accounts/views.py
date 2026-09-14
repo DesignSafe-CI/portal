@@ -1,23 +1,28 @@
-from django.shortcuts import render
+import logging
+import re
+
+import requests
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
-from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from designsafe.apps.accounts import forms, integrations
-from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
-                                             NotificationPreferences)
-from designsafe.apps.accounts.tasks import create_report
 from pytas.http import TASClient
 from pytas.models import User as TASUser
-import logging
-import requests
-import re
 from termsandconditions.models import TermsAndConditions
+
+from designsafe.apps.accounts import forms, integrations
+from designsafe.apps.accounts.models import (
+    DesignSafeProfile,
+    NEESUser,
+    NotificationPreferences,
+)
+from designsafe.apps.accounts.tasks import create_report
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +49,7 @@ def manage_profile(request):
         demographics = django_user.profile
     except ObjectDoesNotExist as e:
         demographics = {}
-        logger.info('exception e:{} {}'.format(type(e), e))
+        logger.info(f'exception e:{type(e)} {e}')
 
     context = {
         'title': 'Manage Account',
@@ -217,7 +222,7 @@ def nees_migration(request, step=None):
                     return HttpResponseRedirect('/')
                 except Exception as e:
                     logger.exception('Error saving user!')
-                    logger.info('error: {}'.format(e))
+                    logger.info(f'error: {e}')
 
                     error_type = e.args[1] if len(e.args) > 1 else ''
 
@@ -327,7 +332,7 @@ def profile_edit(request):
                 ds_profile.nh_interests_primary = pro_data['nh_interests_primary']
 
             except ObjectDoesNotExist as e:
-                logger.info('exception e: {} {}'.format(type(e), e ))
+                logger.info(f'exception e: {type(e)} {e}')
                 ds_profile = DesignSafeProfile(
                     user=user,
                     bio=pro_data['bio'],
@@ -415,7 +420,7 @@ def _process_password_reset_request(request, form):
             logger.info('Processing password reset request for username: "%s"', username)
             resp = tas.request_password_reset(user['username'], source='DesignSafe')
             logger.debug(resp)
-        except Exception as e:
+        except Exception:
             logger.exception('Failed password reset request')
 
         return True
@@ -496,12 +501,11 @@ def mailing_list_subscription(request, list_name):
     try:
         su = get_user_model().objects.filter(
             Q(notification_preferences__isnull=True) |
-            Q(**{"notification_preferences__{}".format(list_name): True}))
-        subscribers += list('"{0}","{1}"'.format(u.get_full_name(),
-        u.email) for u in su)
+            Q(**{f"notification_preferences__{list_name}": True}))
+        subscribers += list(f'"{u.get_full_name()}","{u.email}"' for u in su)
 
-    except TypeError as e:
-        logger.warning('Invalid list name: {}'.format(list_name))
+    except TypeError:
+        logger.warning(f'Invalid list name: {list_name}')
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
 
 

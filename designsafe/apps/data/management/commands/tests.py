@@ -1,9 +1,7 @@
-from mock import Mock, patch, MagicMock, PropertyMock, call
-from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.conf import settings
+from unittest.mock import MagicMock, patch
+
 from django.core.management import call_command
-import datetime
+from django.test import TestCase
 
 
 class TestSwapReindex(TestCase):

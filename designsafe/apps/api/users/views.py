@@ -1,17 +1,19 @@
-import logging
 import json
+import logging
+
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict
+from django.http import HttpRequest, HttpResponseNotFound, JsonResponse
+from django.views.generic.base import View
+from elasticsearch_dsl import Q
+from pytas.http import TASClient
+
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.users import utils as users_utils
-from django.contrib.auth import get_user_model
-from django.forms.models import model_to_dict
-from django.http import HttpResponseNotFound, JsonResponse, HttpRequest
-from django.views.generic.base import View
-from django.core.exceptions import ObjectDoesNotExist
-from pytas.http import TASClient
-from designsafe.apps.api.views import BaseApiView, ApiException
+from designsafe.apps.api.views import ApiException, BaseApiView
 from designsafe.apps.data.models.elasticsearch import IndexedFile, IndexedPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
-from elasticsearch_dsl import Q
 
 logger = logging.getLogger(__name__)
 

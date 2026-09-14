@@ -1,16 +1,13 @@
 import csv
 import io
 import logging
-from django.conf import settings
+
 # from agavepy.agave import Agave, AgaveException
 from celery import shared_task
-from requests import HTTPError
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from pytas.models import User as TASUser
-from django.db.models import Q
-from designsafe.apps.accounts.models import (DesignSafeProfile,
-                                             NotificationPreferences)
-
+from requests import HTTPError
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +82,7 @@ def create_report(username, list_name):
         User = get_user_model().objects.get(username=username)
         client = User.agave_oauth.client
 
-        setattr(csv_file, 'name', 'user_report.csv')
+        csv_file.name = 'user_report.csv'
         client.files.importData(
            filePath=username,
            fileName='user_report.csv',

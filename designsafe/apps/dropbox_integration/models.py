@@ -1,6 +1,6 @@
-from dropbox import Dropbox
 from django.conf import settings
 from django.db import models
+from dropbox import Dropbox
 
 
 class DropboxUserToken(models.Model):

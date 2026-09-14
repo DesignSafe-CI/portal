@@ -1,18 +1,19 @@
 """System Access Step for Onboarding."""
 
 import logging
+
 from tapipy.errors import (
-    NotFoundError,
     BaseTapyException,
     ForbiddenError,
+    NotFoundError,
     UnauthorizedError,
 )
-from designsafe.apps.onboarding.steps.abstract import AbstractStep
-from designsafe.apps.onboarding.state import SetupState
+
 from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
 from designsafe.apps.api.tasks import agave_indexer
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
 from designsafe.libs.common.decorators import retry
-
 
 logger = logging.getLogger(__name__)
 

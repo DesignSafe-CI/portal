@@ -23,7 +23,7 @@ class ApiException(RequestException):
 
     """
     def __init__(self, message = None, status = None, extra = {}, *args, **kwargs):
-        super(ApiException, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         response = self.response or Response()
         response.status_code = status or response.status_code
         response.reason = message or response.reason

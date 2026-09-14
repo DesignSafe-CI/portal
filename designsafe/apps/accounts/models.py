@@ -1,16 +1,16 @@
-from django.conf import settings
-from django.db import models
-from django.db import connections, DatabaseError
-from django.utils.translation import gettext_lazy as _
-from django.core.mail import send_mail
-from pytas.http import TASClient
 import logging
+
 import six
+from django.conf import settings
+from django.core.mail import send_mail
+from django.db import DatabaseError, connections, models
+from django.utils.translation import gettext_lazy as _
+from pytas.http import TASClient
 
 logger = logging.getLogger(__name__)
 
 
-class NEESUser(object):
+class NEESUser:
 
     def __init__(self, **kwargs):
         for k, v in six.iteritems(kwargs):

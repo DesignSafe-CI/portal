@@ -1,7 +1,13 @@
 from django.urls import re_path as url
-from designsafe.apps.api.publications.views import PublicationListingView, PublicationDetailView, PublicationDataCiteView, PublicationDataCiteEventsView, PublicationClarivateView
-from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
+
+from designsafe.apps.api.publications.views import (
+    PublicationClarivateView,
+    PublicationDataCiteEventsView,
+    PublicationDataCiteView,
+    PublicationDetailView,
+    PublicationListingView,
+)
 
 urlpatterns = [
 

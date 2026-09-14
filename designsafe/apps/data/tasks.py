@@ -1,8 +1,9 @@
 import logging
+
 from celery import shared_task
-from django.conf import settings
-from designsafe.apps.api.agave import get_tg458981_client, get_service_account_client
-from designsafe.libs.elasticsearch.utils import index_level, walk_levels, index_listing
+
+from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
+from designsafe.libs.elasticsearch.utils import index_level, index_listing, walk_levels
 
 logger = logging.getLogger(__name__)
 

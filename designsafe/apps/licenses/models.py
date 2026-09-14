@@ -1,6 +1,7 @@
+import logging
+
 from django.conf import settings
 from django.db import models
-import logging
 
 logger = logging.getLogger(__name__)
 

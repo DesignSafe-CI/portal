@@ -2,14 +2,14 @@
 Utils for parsing mkdocs documentation for ingestion into a vector DB.
 """
 
-import re
 import logging
 import os
+import re
 from pathlib import Path
-from typing import List, Dict
 from urllib.parse import urljoin
-from pydantic import BaseModel
+
 import yaml
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +23,14 @@ class Document(BaseModel):
     metadata: dict
 
 
-def parse_mkdocs_config(config_path: str) -> Dict:
+def parse_mkdocs_config(config_path: str) -> dict:
     """Parse MkDocs configuration to understand the site structure."""
     with open(config_path, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
     return config
 
 
-def extract_nav_structure(nav: List, parent_path: str = "") -> List[Dict]:
+def extract_nav_structure(nav: list, parent_path: str = "") -> list[dict]:
     """Extract navigation structure from MkDocs nav configuration."""
     pages = []
 
@@ -81,7 +81,7 @@ def build_url(md_file: str) -> str:
 
 
 # pylint: disable=too-many-locals
-def extract_sections_from_markdown(content: str, file_info: Dict) -> List[Document]:
+def extract_sections_from_markdown(content: str, file_info: dict) -> list[Document]:
     """Extract sections from markdown content with proper metadata."""
     documents = []
 

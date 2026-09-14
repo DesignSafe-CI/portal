@@ -4,16 +4,17 @@
     we should create an agave.utils or agave.libs module for these to live in.
 """
 import logging
+from urllib.parse import urlparse
+
 import requests
 from agavepy.agave import Agave, load_resource
-from tapipy.tapis import Tapis
 from django.conf import settings
-from urllib.parse import urlparse
+from tapipy.tapis import Tapis
 
 logger = logging.getLogger(__name__)
 
-AGAVE_RESOURCES = load_resource(getattr(settings, 'AGAVE_TENANT_BASEURL'))
-tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
+AGAVE_RESOURCES = load_resource(settings.AGAVE_TENANT_BASEURL)
+tenant_id = urlparse(settings.TAPIS_TENANT_BASEURL).hostname.split(
             "."
         )[0]
 

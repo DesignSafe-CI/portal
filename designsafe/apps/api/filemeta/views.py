@@ -1,13 +1,14 @@
 """File Meta view"""
 
-import logging
 import json
-from django.http import JsonResponse, HttpRequest
+import logging
+
+from django.http import HttpRequest, JsonResponse
+
 from designsafe.apps.api.datafiles.operations.tapis_operations import listing
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.filemeta.models import FileMetaModel
 from designsafe.apps.api.views import AuthenticatedAllowJwtApiView
-
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ def check_access(request, system_id: str, path: str, check_for_writable_access=F
         listing(request.user.tapis_oauth.client, system_id, path)
     except Exception as exc:  # pylint:disable=broad-exception-caught
         logger.error(
-            f"user cannot access any related metadata as listing failed for {system_id}/{path} with error {str(exc)}."
+            f"user cannot access any related metadata as listing failed for {system_id}/{path} with error {exc!s}."
         )
         raise ApiException("User forbidden to access metadata", status=403) from exc
 

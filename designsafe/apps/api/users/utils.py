@@ -1,14 +1,15 @@
 """Utility functions for user API"""
 
-import logging
 import json
-from pytas.http import TASClient
-from django.conf import settings
-from django.db.models import Q
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import get_user_model
-from designsafe.apps.workspace.models.allocations import UserAllocations
+import logging
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from pytas.http import TASClient
+
+from designsafe.apps.workspace.models.allocations import UserAllocations
 
 logger = logging.getLogger(__name__)
 

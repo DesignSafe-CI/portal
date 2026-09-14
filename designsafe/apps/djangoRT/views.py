@@ -1,18 +1,24 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
-from django.core.exceptions import PermissionDenied
-from django.urls import reverse
-from designsafe.apps.djangoRT import rtUtil, forms, rtModels
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.core.files.base import ContentFile
+import json
+import logging
+
+import requests
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.core.files.base import ContentFile
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+    JsonResponse,
+)
+from django.shortcuts import render
+from django.urls import reverse
+
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.views import BaseApiView
-import logging
-import mimetypes
-import json
-import requests
+from designsafe.apps.djangoRT import forms, rtModels, rtUtil
 
 logger = logging.getLogger(__name__)
 
@@ -224,7 +230,7 @@ class FeedbackView(BaseApiView):
         """
         data = json.loads(request.body)
         email = request.user.email if request.user.is_authenticated else data['email']
-        name = "{} {}".format(request.user.first_name, request.user.last_name) if request.user.is_authenticated else data['name']
+        name = f"{request.user.first_name} {request.user.last_name}" if request.user.is_authenticated else data['name']
         subject = data['subject']
         body = data['body']
         project_id = data['projectId']

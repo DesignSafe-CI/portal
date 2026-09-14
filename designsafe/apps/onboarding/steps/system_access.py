@@ -1,8 +1,10 @@
 """System Allocation Access Step for Onboarding."""
 
 import logging
-from designsafe.apps.onboarding.state import SetupState
+
 from designsafe.apps.api.users.utils import get_allocations
+from designsafe.apps.onboarding.state import SetupState
+
 from .project_membership import ProjectMembershipStep
 
 logger = logging.getLogger(__name__)

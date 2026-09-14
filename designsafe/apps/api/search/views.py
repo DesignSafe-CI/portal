@@ -5,18 +5,23 @@
    access.
 """
 import logging
-import operator
-from elasticsearch_dsl import Q, Search, Index
-from elasticsearch import TransportError, ConnectionTimeout
-from django.http import (HttpResponseBadRequest,
-                         JsonResponse)
-from django.conf import settings
-from designsafe.apps.api.views import BaseApiView
 
-from designsafe.apps.api.search.searchmanager.community import CommunityDataSearchManager
-from designsafe.apps.api.search.searchmanager.published_files import PublishedDataSearchManager
+from django.conf import settings
+from django.http import HttpResponseBadRequest, JsonResponse
+from elasticsearch import ConnectionTimeout, TransportError
+from elasticsearch_dsl import Index, Search
+
 from designsafe.apps.api.search.searchmanager.cms import CMSSearchManager
-from designsafe.apps.api.search.searchmanager.publications_site_search import PublicationsSiteSearchManager
+from designsafe.apps.api.search.searchmanager.community import (
+    CommunityDataSearchManager,
+)
+from designsafe.apps.api.search.searchmanager.publications_site_search import (
+    PublicationsSiteSearchManager,
+)
+from designsafe.apps.api.search.searchmanager.published_files import (
+    PublishedDataSearchManager,
+)
+from designsafe.apps.api.views import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +89,7 @@ class SearchView(BaseApiView):
                 users = r.users
                 pi = r.project.value.pi
                 pi_user = [x for x in users if x.username==pi][0]
-                d["piLabel"] = "{}, {}".format(pi_user.last_name, pi_user.first_name)
+                d["piLabel"] = f"{pi_user.last_name}, {pi_user.first_name}"
             hits.append(d)
 
         out['hits'] = hits

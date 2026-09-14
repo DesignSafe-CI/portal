@@ -4,21 +4,21 @@
     :synopsis: Nco projects manager. Should only do read actions.
     Unless it is to update the mongo database.
 """
-from __future__ import unicode_literals, absolute_import
-import six
+import calendar
 import logging
 from datetime import datetime, timedelta
-import calendar
-from dateutil.parser import parse as datetime_parse
-from designsafe.libs.mongo.load_projects import MongoProjectsHelper
-from designsafe.apps.projects.managers.base import ProjectsManager
-from designsafe.apps.api.agave import service_account
 
+import six
+from dateutil.parser import parse as datetime_parse
+
+from designsafe.apps.api.agave import service_account
+from designsafe.apps.projects.managers.base import ProjectsManager
+from designsafe.libs.mongo.load_projects import MongoProjectsHelper
 
 logger = logging.getLogger(__name__)
 
 
-class NcoProjectsManager(object):
+class NcoProjectsManager:
     """Nco Projects Manager."""
 
     def __init__(self, user):

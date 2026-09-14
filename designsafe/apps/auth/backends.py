@@ -2,17 +2,19 @@
 
 import logging
 import re
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
-from tapipy.tapis import Tapis
+from django.core.exceptions import ValidationError
+from pytas.http import TASClient
 from tapipy.errors import BaseTapyException
+from tapipy.tapis import Tapis
+
 from designsafe.apps.accounts.models import DesignSafeProfile, NotificationPreferences
 from designsafe.apps.api.users.utils import get_user_data
 from designsafe.apps.auth.models import TapisOAuthToken
-from django.core.exceptions import ValidationError
 from designsafe.apps.auth.tasks import update_institution_from_tas
-from pytas.http import TASClient
 
 logger = logging.getLogger(__name__)
 

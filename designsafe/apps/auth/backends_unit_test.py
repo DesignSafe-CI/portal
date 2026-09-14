@@ -1,8 +1,10 @@
+from unittest.mock import Mock
+
 import pytest
 from django.contrib.auth import get_user_model
-from mock import Mock
-from tapipy.tapis import TapisResult
 from tapipy.errors import BaseTapyException
+from tapipy.tapis import TapisResult
+
 from designsafe.apps.auth.backends import TapisOAuthBackend
 from designsafe.apps.auth.views import launch_setup_checks
 

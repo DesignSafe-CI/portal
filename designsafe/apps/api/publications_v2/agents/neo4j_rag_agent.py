@@ -1,6 +1,7 @@
 """RAG agent using Neo4J to construct queries."""
 
 from pydantic_ai import Agent
+
 from designsafe.apps.api.publications_v2.agents.docs_rag_agent import (
     documentation_lookup as documentation_search,
 )
@@ -10,7 +11,6 @@ from designsafe.apps.api.publications_v2.agents.tools.neo4j_hybrid_search import
 from designsafe.apps.api.publications_v2.agents.tools.text2cypher_tool import (
     publication_graph_search,
 )
-
 
 AGENT_INSTRUCTIONS = """
     You are an agent that routes user requests to exactly one first tool. Choose the single best tool using the priority order below, then answer using tool output.

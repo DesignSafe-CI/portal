@@ -2,12 +2,15 @@
 
 import logging
 from datetime import datetime, timedelta
+
+from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
-from celery import shared_task
 from pytas.http import TASClient
+
 from designsafe.apps.api.notifications.models import Notification
+
 logger = logging.getLogger(__name__)
 
 

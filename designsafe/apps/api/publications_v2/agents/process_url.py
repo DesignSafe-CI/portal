@@ -7,19 +7,15 @@ Scrapes documentation directly from live websites:
 - SimCenter Tools (quoFEM, EE-UQ, Hydro, WE-UQ, PBE, R2D)
 """
 
-import time
 import logging
-from typing import List, Set, Optional
-from urllib.parse import urljoin, urlparse
-
+import time
 from collections import deque
-
-
-from pydantic import BaseModel
+from urllib.parse import urljoin, urlparse
 
 # Web scraping imports
 import requests
 from bs4 import BeautifulSoup
+from pydantic import BaseModel
 
 # Configure logging
 logging.basicConfig(
@@ -162,7 +158,7 @@ class WebScraper:
             {"User-Agent": "DesignSafe-RAG-Bot/1.0 (Educational/Research Purpose)"}
         )
 
-    def fetch_page(self, url: str) -> Optional[BeautifulSoup]:
+    def fetch_page(self, url: str) -> BeautifulSoup | None:
         """Fetch and parse a single page, following redirects."""
         try:
             response = self.session.get(url, timeout=30, allow_redirects=True)
@@ -187,7 +183,7 @@ class WebScraper:
 
     def get_links(
         self, soup: BeautifulSoup, base_url: str, current_url: str
-    ) -> Set[str]:
+    ) -> set[str]:
         """Extract all internal documentation links from a page."""
         links = set()
         parsed_base = urlparse(base_url)
@@ -248,7 +244,7 @@ class WebScraper:
 
     def extract_mkdocs_content(
         self, soup: BeautifulSoup, url: str, source_name: str
-    ) -> List[Document]:
+    ) -> list[Document]:
         """Extract content from MkDocs-style pages (DesignSafe uses ReadTheDocs theme)."""
         documents = []
 
@@ -351,7 +347,7 @@ class WebScraper:
 
     def extract_sphinx_content(
         self, soup: BeautifulSoup, url: str, source_name: str
-    ) -> List[Document]:
+    ) -> list[Document]:
         """Extract content from Sphinx-style pages (SimCenter)."""
         documents = []
 
@@ -443,7 +439,7 @@ class WebScraper:
 
     def extract_jupyter_book_content(
         self, soup: BeautifulSoup, url: str, source_name: str
-    ) -> List[Document]:
+    ) -> list[Document]:
         """Extract content from Jupyter Book / Sphinx Book Theme pages."""
         documents = []
 
@@ -575,7 +571,7 @@ class WebScraper:
             url = url[:-10]
         return url
 
-    def scrape_site(self, source_key: str) -> List[Document]:
+    def scrape_site(self, source_key: str) -> list[Document]:
         """Scrape an entire documentation site."""
         source = DOC_SOURCES[source_key]
         base_url = source["base_url"]

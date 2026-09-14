@@ -5,10 +5,12 @@
 
 
 import logging
+
+from django.conf import settings
+from elasticsearch_dsl import Index, Q
+
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedFile
-from elasticsearch_dsl import Q, search, Index
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +27,7 @@ class SharedDataSearchManager(BaseSearchManager):
             self.query_string = kwargs.get('query_string').replace("/", "\\/")
             self.username = kwargs.get('username')
 
-        super(SharedDataSearchManager, self).__init__(
+        super().__init__(
             IndexedFile, IndexedFile.search())
 
     def construct_query(self, system, file_path=None):
@@ -71,7 +73,7 @@ class SharedDataSearchManager(BaseSearchManager):
         
         search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '/'+user_context}})]))
         search = search.filter("term", system=system)
-        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': '{}/.Trash'.format(user_context)}})]))
+        search = search.query(Q('bool', must_not=[Q({'prefix': {'path._exact': f'{user_context}/.Trash'}})]))
         res = search.execute()
 
         children = []

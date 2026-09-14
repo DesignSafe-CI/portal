@@ -1,18 +1,19 @@
 # from agavepy.agave import Agave, AgaveException, load_resource
-from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
-from designsafe.apps.notifications.views import get_number_unread_notifications
-from designsafe.libs.common.decorators import profile as profile_fn
-from designsafe.apps.api.tasks import index_or_update_project
+import json
+import logging
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from requests import HTTPError
-from designsafe.apps.api.utils import get_client_ip
-import json
-import logging
 
+from designsafe.apps.api.tasks import index_or_update_project
+from designsafe.apps.api.utils import get_client_ip
+from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
+from designsafe.apps.notifications.views import get_number_unread_notifications
+from designsafe.libs.common.decorators import profile as profile_fn
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -23,7 +24,7 @@ metrics = logging.getLogger('metrics')
 @login_required
 def index(request):
     context = {}
-    token_key = getattr(settings, 'AGAVE_TOKEN_SESSION_ID')
+    token_key = settings.AGAVE_TOKEN_SESSION_ID
     if token_key in request.session:
         context['session'] = {
             'agave': json.dumps(request.session[token_key])
@@ -439,7 +440,7 @@ def call_api(request, service):
                 appId = request.GET.get('appId')
                 query = request.GET.get('q')
 
-                ds_admin_client = Agave(api_server=getattr(settings, 'AGAVE_TENANT_BASEURL'), token=getattr(settings, 'AGAVE_SUPER_TOKEN'))
+                ds_admin_client = Agave(api_server=settings.AGAVE_TENANT_BASEURL, token=settings.AGAVE_SUPER_TOKEN)
 
                 if request.method == 'GET':
                     if appId and pems:
@@ -488,8 +489,7 @@ def call_api(request, service):
             else:
                 return HttpResponse('Unexpected service: %s' % service, status=400)
         except AgaveException as e:
-            logger.error('Failed to execute {0} API call due to AgaveException={1}'.format(
-                service, e))
+            logger.error(f'Failed to execute {service} API call due to AgaveException={e}')
             return HttpResponse(json.dumps(e), content_type='application/json',
                                 status=400)
         except HTTPError as e:
@@ -515,8 +515,7 @@ def call_api(request, service):
                         status=400)
 
         except Exception as e:
-            metrics.info('Failed to execute {0} API call due to Exception={1}'.format(
-                service, e), extra={
+            metrics.info(f'Failed to execute {service} API call due to Exception={e}', extra={
                     'agent': request.META.get('HTTP_USER_AGENT'),
                     'ip': get_client_ip(request),
                     'operation': 'agave.meta.listMetadata',
@@ -524,14 +523,13 @@ def call_api(request, service):
                     'user': request.user.username,
                     'info': {}
                 })
-            logger.error('Failed to execute {0} API call due to Exception={1}'.format(
-                service, e), extra={
+            logger.error(f'Failed to execute {service} API call due to Exception={e}', extra={
                     'agent': request.META.get('HTTP_USER_AGENT'),
                     'ip': get_client_ip(request),
                     'user': request.user.username
                 })
             return HttpResponse(
-                json.dumps({'status': 'error', 'message': '{}'.format(e)}),
+                json.dumps({'status': 'error', 'message': f'{e}'}),
                 content_type='application/json', status=400)
 
         return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder),

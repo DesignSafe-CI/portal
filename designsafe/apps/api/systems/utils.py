@@ -4,13 +4,14 @@
 """
 
 import logging
+
 from paramiko.ssh_exception import (
     AuthenticationException,
     ChannelException,
     SSHException,
 )
-from .ssh_keys_manager import KeysManager, KeyCannotBeAdded
 
+from .ssh_keys_manager import KeyCannotBeAdded, KeysManager
 
 logger = logging.getLogger(__name__)
 

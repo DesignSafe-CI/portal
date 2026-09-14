@@ -2,21 +2,20 @@
     django specific utils or try and make it as general as possible.
 """
 import logging
-from functools import wraps
 from base64 import b64decode
+from functools import wraps
 from urllib.parse import urlparse
-from django.conf import settings
-from django.http import HttpRequest
-from django.contrib.auth import get_user_model
-from django.contrib.auth import login
-from django.core.exceptions import ObjectDoesNotExist
+
 import jwt as pyjwt
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.serialization import load_der_public_key
 from cryptography.exceptions import UnsupportedAlgorithm
-from tapipy.tapis import Tapis
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import load_der_public_key
+from django.conf import settings
+from django.contrib.auth import get_user_model, login
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpRequest
 from tapipy.errors import BaseTapyException
+from tapipy.tapis import Tapis
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -74,7 +73,7 @@ def tapis_jwt_login(func):
     #pylint: disable=missing-docstring
     @wraps(func)
     def decorated_function(request: HttpRequest, *args, **kwargs):
-        tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
+        tenant_id = urlparse(settings.TAPIS_TENANT_BASEURL).hostname.split(
             "."
         )[0]
         if request.user.is_authenticated:

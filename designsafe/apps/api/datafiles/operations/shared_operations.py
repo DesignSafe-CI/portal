@@ -1,15 +1,12 @@
-import urllib
-import os
-import datetime
-import io
-from django.conf import settings
-from requests.exceptions import HTTPError
 import logging
-import json
+
 from elasticsearch_dsl import Q
-import magic
+
+from designsafe.apps.api.datafiles.operations.tapis_operations import (
+    listing as agave_listing,
+)
 from designsafe.apps.data.models.elasticsearch import IndexedFile
-from designsafe.apps.api.datafiles.operations.tapis_operations import preview, copy, download, download_bytes, listing as agave_listing
+
 # from portal.libs.elasticsearch.indexes import IndexedFile
 # from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 

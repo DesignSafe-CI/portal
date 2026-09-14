@@ -1,9 +1,11 @@
 """Utilities for adding, removing, and reordering nodes in the project graph."""
 
-import uuid
 import copy
+import uuid
+
 import networkx as nx
 from django.db import transaction
+
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.models import ProjectMetadata
 
@@ -116,7 +118,7 @@ def initialize_project_graph(project_id: str):
         # type Other projects have a "null" parent node above the project root, to
         # support multiple versions.
         project_graph.add_node(
-            root_node_id, **{"uuid": None, "name": None, "projectType": project_type}
+            root_node_id, uuid=None, name=None, projectType=project_type
         )
         base_node_id = f"NODE_project_{uuid.uuid4()}"
         project_graph.add_node(base_node_id, **base_node_data)

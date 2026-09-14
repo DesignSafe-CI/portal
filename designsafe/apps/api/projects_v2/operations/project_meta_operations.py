@@ -2,20 +2,21 @@
 
 import operator
 import re
-from typing import Optional
+
 import requests
 from django.db import models, transaction
 from pydantic import BaseModel
-from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
-from designsafe.apps.api.projects_v2.schema_models.base import (
-    FileObj,
-    FileTag,
-    PartialEntityWithFiles,
-    BaseProject,
-)
+
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.models import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations import graph_operations
+from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
+from designsafe.apps.api.projects_v2.schema_models.base import (
+    BaseProject,
+    FileObj,
+    FileTag,
+    PartialEntityWithFiles,
+)
 
 
 def create_project_metdata(value):
@@ -84,10 +85,10 @@ def get_changed_users(old_value: BaseProject, new_value: BaseProject):
     need permissions to be added/removed via Tapis.
     """
     old_users = set(
-        (u.username for u in old_value.users if u.username and u.role != "guest")
+        u.username for u in old_value.users if u.username and u.role != "guest"
     )
     new_users = set(
-        (u.username for u in new_value.users if u.username and u.role != "guest")
+        u.username for u in new_value.users if u.username and u.role != "guest"
     )
 
     users_to_add = list(new_users - old_users)
@@ -276,8 +277,8 @@ class GithubReleaseParams(BaseModel):
     org: str
     repo: str
     tag: str
-    description: Optional[str]
-    title: Optional[str]
+    description: str | None
+    title: str | None
 
 
 def validate_github_release(github_url: str) -> GithubReleaseParams:

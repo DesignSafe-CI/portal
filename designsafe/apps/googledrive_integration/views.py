@@ -1,21 +1,22 @@
+import logging
+
 import google_auth_oauthlib.flow
 import requests
-import os
-from django.db import IntegrityError
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.contrib import messages
-from django.urls import reverse
-from django.http import (HttpResponse, HttpResponseRedirect, HttpResponseBadRequest,
-                         Http404)
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
+from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
+from django.http import (
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+)
 from django.shortcuts import render
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+
 from designsafe.apps.googledrive_integration.models import GoogleDriveUserToken
 from designsafe.apps.googledrive_integration.tasks import check_connection
 
-import logging
 logger = logging.getLogger(__name__)
 
 CLIENT_CONFIG = {'web': {
@@ -36,7 +37,7 @@ def index(request):
             context['googledrive_connection'] = googledrive_user
         except Exception as e:
             # authentication failed
-            logger.exception('google drive failed to authenticate: {}'.format(e))
+            logger.exception(f'google drive failed to authenticate: {e}')
             logger.warning('Google Drive oauth token for user=%s failed to authenticate' %
                            request.user.username)
             context['googledrive_connection'] = False
@@ -104,7 +105,7 @@ def oauth2_callback(request):
 
         token.save()
 
-    except IntegrityError as e:
+    except IntegrityError:
         # Auth flow completed previously, and no refresh_token granted. Need to disconnect to get
         # another refresh_token.
 
@@ -134,7 +135,7 @@ def disconnect(request):
                 params={'token': googledrive_user_token.credential.token},
                 headers = {'content-type': 'application/x-www-form-urlencoded'})
 
-            status_code = getattr(revoke, 'status_code')
+            status_code = revoke.status_code
 
             googledrive_user_token.delete()
 
@@ -145,18 +146,18 @@ def disconnect(request):
             else:
                 logger.error('Disconnect Google Drive; google drive account revoke error.',
                          extra={'user': request.user})
-                logger.debug('status code:{}'.format(status_code))
+                logger.debug(f'status code:{status_code}')
 
                 return HttpResponseRedirect(reverse('googledrive_integration:index'))
 
         except GoogleDriveUserToken.DoesNotExist:
-            logger.warn('Disconnect Google Drive; GoogleDriveUserToken does not exist.',
+            logger.warning('Disconnect Google Drive; GoogleDriveUserToken does not exist.',
                         extra={'user': request.user})
 
         except Exception as e:
             logger.error('Disconnect Google Drive; GoogleDriveUserToken delete error.',
                          extra={'user': request.user})
-            logger.exception('google drive delete error: {}'.format(e))
+            logger.exception(f'google drive delete error: {e}')
 
         messages.success(request, 'Your Google Drive account has been disconnected from DesignSafe.')
 

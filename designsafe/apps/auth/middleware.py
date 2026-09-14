@@ -3,12 +3,14 @@ Auth middleware
 """
 
 import logging
+
 from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from tapipy.errors import BaseTapyException
+
 from designsafe.apps.auth.models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)

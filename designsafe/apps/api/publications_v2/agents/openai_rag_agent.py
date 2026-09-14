@@ -1,21 +1,19 @@
 """RAG agent for retrieving publications from the OpenAI document store."""
 
-from typing import Literal
 from collections.abc import Callable
-from asgiref.sync import sync_to_async
+from typing import Literal
+
 import networkx as nx
 import openai
-
+from asgiref.sync import sync_to_async
+from django.conf import settings
+from elasticsearch_dsl import Q
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
-from elasticsearch_dsl import Q
-
-from django.conf import settings
 from designsafe.apps.api.publications_v2.elasticsearch import IndexedPublication
-
 
 OAI_VECTOR_STORE_ID = "vs_68891f2f54948191bd1053afdf542987"
 
@@ -150,7 +148,7 @@ async def vector_lookup(
     """Look up publications in the OpenAI vector store."""
 
     await ctx.deps.response_callback(
-        f"Performing lookup with the following parameters: {str(search_params)}"
+        f"Performing lookup with the following parameters: {search_params!s}"
     )
 
     vector_results: list[PublicationRagResult] = []
@@ -174,13 +172,13 @@ async def vector_lookup(
         "Publication lookup complete. Constructing your response..."
     )
 
-    recovered_project_ids = set((res.project_id for res in vector_results))
+    recovered_project_ids = set(res.project_id for res in vector_results)
 
     _, es_search_results = await sync_to_async(get_es_results)(
         search_params, max_num_results=ctx.deps.result_size
     )
 
-    es_project_ids = set((hit.meta.id for hit in es_search_results.hits))
+    es_project_ids = set(hit.meta.id for hit in es_search_results.hits)
 
     hits_in_both = recovered_project_ids.intersection(es_project_ids)
     es_only = es_project_ids - recovered_project_ids

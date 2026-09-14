@@ -1,12 +1,14 @@
 """Models for representing project metadata"""
 import uuid
-from django.utils import timezone
-from django.db import models
-from django.core.validators import MinLengthValidator
-from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.auth import get_user_model
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.validators import MinLengthValidator
+from django.db import models
 from django.dispatch import receiver
+from django.utils import timezone
+
 from designsafe.apps.api.projects_v2 import constants
 
 user_model = get_user_model()

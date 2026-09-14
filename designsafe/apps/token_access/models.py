@@ -1,7 +1,8 @@
-from django.db import models
-from django.conf import settings
 import binascii
 import os
+
+from django.conf import settings
+from django.db import models
 
 
 class Token(models.Model):
@@ -17,7 +18,7 @@ class Token(models.Model):
     def save(self, *args, **kwargs):
         if not self.token:
             self.token = Token.generate_token()
-        return super(Token, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @staticmethod
     def generate_token():
@@ -25,7 +26,7 @@ class Token(models.Model):
 
     @property
     def header(self):
-        return 'Token {0}'.format(self.token)
+        return f'Token {self.token}'
 
     def __str__(self):
         return self.token

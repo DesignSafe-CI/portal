@@ -1,57 +1,57 @@
 """Placeholder views module"""
 
-import logging
 import json
+import logging
+
 import networkx as nx
-from django.http import HttpRequest, JsonResponse
 from django.conf import settings
+from django.db import models
+from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.db import models
-from designsafe.libs.common.utils import check_group_membership
-from designsafe.apps.api.views import BaseApiView, ApiException
-from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
-from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
-from designsafe.apps.api.projects_v2.tasks import alert_sensitive_data
+
+from designsafe.apps.api.decorators import tapis_jwt_login
+from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
     ALLOWED_RELATIONS,
 )
-from designsafe.apps.api.projects_v2 import constants
+from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.graph_operations import (
-    reorder_project_nodes,
     add_node_to_project,
-    remove_nodes_from_project,
     initialize_project_graph,
     remove_nodes_for_entity,
+    remove_nodes_from_project,
+    reorder_project_nodes,
 )
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
-    patch_metadata,
-    add_file_associations,
-    set_file_associations,
-    create_entity_metadata,
-    delete_entity,
-    remove_file_associations,
-    set_file_tags,
-    change_project_type,
-    create_project_metdata,
-    get_changed_users,
-    validate_github_release,
     MissingGithubFile,
+    add_file_associations,
+    change_project_type,
+    create_entity_metadata,
+    create_project_metdata,
+    delete_entity,
+    get_changed_users,
+    patch_metadata,
+    remove_file_associations,
+    set_file_associations,
+    set_file_tags,
+    validate_github_release,
 )
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     add_values_to_tree,
     validate_entity_selection,
 )
 from designsafe.apps.api.projects_v2.operations.project_system_operations import (
-    increment_workspace_count,
-    setup_project_file_system,
     add_users_to_project_async,
+    increment_workspace_count,
     remove_users_from_project_async,
+    setup_project_file_system,
 )
-from designsafe.apps.api.projects_v2.schema_models.base import FileObj
-from designsafe.apps.api.decorators import tapis_jwt_login
+from designsafe.apps.api.projects_v2.schema_models.base import BaseProject, FileObj
+from designsafe.apps.api.projects_v2.tasks import alert_sensitive_data
 from designsafe.apps.api.utils import get_client_ip
-
+from designsafe.apps.api.views import ApiException, BaseApiView
+from designsafe.libs.common.utils import check_group_membership
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger("metrics")

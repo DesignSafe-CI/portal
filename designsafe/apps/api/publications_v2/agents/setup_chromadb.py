@@ -4,17 +4,19 @@ Util for populating the ChromaDB database.
 
 import os
 import uuid
+
 import chromadb
-from chromadb.config import Settings as ChromaSettings
 from chromadb.api import ClientAPI
+from chromadb.config import Settings as ChromaSettings
 from chromadb.utils import embedding_functions
+
 from designsafe.apps.api.publications_v2.agents.process_mkdocs import (
-    process_markdown_files,
     Document,
+    process_markdown_files,
 )
 from designsafe.apps.api.publications_v2.agents.process_url import (
-    WebScraper,
     DOC_SOURCES,
+    WebScraper,
 )
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")

@@ -11,9 +11,10 @@ projects from Tapis V2 to Tapis V3.
 import logging
 import os
 
-from tapipy.tapis import Tapis
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from tapipy.tapis import Tapis
+
 from designsafe.apps.api.projects_v2.tests.schema_integration import iterate_entities
 
 try:

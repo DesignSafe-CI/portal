@@ -1,15 +1,16 @@
-from boxsdk import OAuth2, Client
-from boxsdk.exception import BoxOAuthException, BoxException
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.urls import reverse
-from django.http import (HttpResponseRedirect, HttpResponseBadRequest)
-from django.shortcuts import render
-from designsafe.apps.box_integration.models import BoxUserToken
-from designsafe.apps.box_integration.tasks import check_connection
 import logging
 
+from boxsdk import Client, OAuth2
+from boxsdk.exception import BoxException, BoxOAuthException
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+
+from designsafe.apps.box_integration.models import BoxUserToken
+from designsafe.apps.box_integration.tasks import check_connection
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,7 @@ def disconnect(request):
             box_user_token = request.user.box_user_token
             box_user_token.delete()
         except BoxUserToken.DoesNotExist:
-            logger.warn('Disconnect Box; BoxUserToken does not exist.',
+            logger.warning('Disconnect Box; BoxUserToken does not exist.',
                         extra={'user': request.user})
         except:
             logger.error('Disconnect Box; BoxUserToken delete error.',

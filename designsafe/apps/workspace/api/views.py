@@ -3,32 +3,32 @@
    :synopsys: Views to handle Workspace API
 """
 
-import logging
 import json
+import logging
 from urllib.parse import urlparse
-from django.http import JsonResponse
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import F, Count
+from django.db.models import Count, F
 from django.db.models.lookups import GreaterThan
+from django.http import JsonResponse
 from django.urls import reverse
+from tapipy.errors import BaseTapyException, InternalServerError, UnauthorizedError
 from tapipy.tapis import TapisResult
-from tapipy.errors import InternalServerError, UnauthorizedError, BaseTapyException
+
 from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.api.users.utils import get_user_data
-from designsafe.apps.api.views import AuthenticatedApiView
+from designsafe.apps.api.users.utils import get_allocations, get_user_data
 from designsafe.apps.api.utils import get_client_ip
+from designsafe.apps.api.views import AuthenticatedApiView
 from designsafe.apps.licenses.models import LICENSE_TYPES, get_license_info
-from designsafe.libs.tapis.serializers import BaseTapisResultSerializer
+from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
+from designsafe.apps.workspace.api.utils import check_job_for_timeout
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from designsafe.apps.workspace.models.app_entries import (
     AppTrayCategory,
     AppVariant,
 )
-from designsafe.apps.api.users.utils import get_allocations
-from designsafe.apps.workspace.api.utils import check_job_for_timeout
-from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials
-
+from designsafe.libs.tapis.serializers import BaseTapisResultSerializer
 
 logger = logging.getLogger(__name__)
 METRICS = logging.getLogger(f"metrics.{__name__}")

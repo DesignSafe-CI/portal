@@ -1,10 +1,10 @@
-from menus.base import NavigationNode
-from cms.menu_bases import CMSAttachMenu
-from menus.menu_pool import menu_pool
-from django.conf import settings
-from importlib import import_module
-from django.utils.translation import gettext_lazy as _
 import logging
+from importlib import import_module
+
+from cms.menu_bases import CMSAttachMenu
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+from menus.base import NavigationNode
 
 logger = logging.getLogger(__name__)
 

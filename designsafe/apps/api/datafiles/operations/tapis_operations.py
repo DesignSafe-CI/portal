@@ -4,18 +4,22 @@ import logging
 import os
 import urllib
 from pathlib import Path
+
+import httpx
+import requests
 import tapipy
-from designsafe.apps.api.datafiles.utils import *
-from designsafe.apps.data.models.elasticsearch import IndexedFile
-from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
-from designsafe.apps.api.filemeta.models import FileMetaModel
-from designsafe.apps.api.filemeta.tasks import move_file_meta_async, copy_file_meta_async
-from designsafe.apps.api.datafiles.models import PublicationSymlink
 from django.conf import settings
 from elasticsearch_dsl import Q
-import requests
-import httpx
-from requests.exceptions import HTTPError
+
+from designsafe.apps.api.datafiles.models import PublicationSymlink
+from designsafe.apps.api.datafiles.utils import *
+from designsafe.apps.api.filemeta.models import FileMetaModel
+from designsafe.apps.api.filemeta.tasks import (
+    copy_file_meta_async,
+    move_file_meta_async,
+)
+from designsafe.apps.data.models.elasticsearch import IndexedFile
+from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +57,7 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
         return search(client, system, path, offset=0, limit=100, query_string=q, **kwargs)
     raw_listing = client.files.listFiles(
         systemId=system,
-        path=urllib.parse.quote((path or '/')),
+        path=urllib.parse.quote(path or '/'),
         offset=int(offset),
         limit=int(limit),
         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")}
@@ -611,15 +615,14 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
         file_type = 'object'
     elif file_ext in settings.SUPPORTED_MS_OFFICE:
         file_type = 'ms-office'
-        url = 'https://view.officeapps.live.com/op/view.aspx?src={}'.\
-            format(url)
+        url = f'https://view.officeapps.live.com/op/view.aspx?src={url}'
     elif file_ext in settings.SUPPORTED_VIDEO_EXTS:
         file_type = 'video'
         # url = '/api/datafiles/media/agave/private/{}/{}'.format(system, path)
     elif file_ext in settings.SUPPORTED_IPYNB_PREVIEW_EXTS:
         file_type = 'ipynb'
         tmp = url.replace('https://', '')
-        url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
+        url = f'https://nbviewer.jupyter.org/urls/{tmp}'
     else:
         file_type = 'other'
 

@@ -1,13 +1,11 @@
-import urllib
-import os
 import io
-import magic
-import datetime
-from django.conf import settings
-from requests.exceptions import HTTPError
 import logging
-from elasticsearch_dsl import Q
-from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
+import os
+
+import magic
+from django.conf import settings
+from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
+
 # from portal.libs.elasticsearch.indexes import IndexedFile
 # from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 
@@ -19,8 +17,8 @@ def listing(client, system, path, offset=None, limit=100, nextPageToken=None, *a
         path = 'root'
 
     fields = "mimeType, name, id, modifiedTime, fileExtension, size, parents, webViewLink"
-    listing_call = client.files().list(q="'{}' in parents and trashed=False".format(path),
-                                       fields="files({}), nextPageToken".format(fields), pageSize=limit, pageToken=nextPageToken)\
+    listing_call = client.files().list(q=f"'{path}' in parents and trashed=False",
+                                       fields=f"files({fields}), nextPageToken", pageSize=limit, pageToken=nextPageToken)\
         .execute()
     listing = listing_call.get('files')
     scroll_token = listing_call.get('nextPageToken')
@@ -125,7 +123,7 @@ def preview(client, system, path, *args, **kwargs):
     file_name = path.strip('/').split('/')[-1]
     file_ext = os.path.splitext(file_name)[1].lower()
 
-    url = '/api/datafiles/media/googledrive/private/googledrive/{}'.format(path)
+    url = f'/api/datafiles/media/googledrive/private/googledrive/{path}'
 
     if file_ext in settings.SUPPORTED_TEXT_PREVIEW_EXTS:
         file_type = 'text'
@@ -133,25 +131,27 @@ def preview(client, system, path, *args, **kwargs):
         file_type = 'image'
     elif file_ext in settings.SUPPORTED_OBJECT_PREVIEW_EXTS:
         file_type = 'object'
-        url = 'https://docs.google.com/gview?url={}&embedded=true'.format(url)
+        url = f'https://docs.google.com/gview?url={url}&embedded=true'
     elif file_ext in settings.SUPPORTED_MS_OFFICE:
         file_type = 'ms-office'
-        url = 'https://view.officeapps.live.com/op/view.aspx?src={}'.\
-            format(url)
+        url = f'https://view.officeapps.live.com/op/view.aspx?src={url}'
     elif file_ext in settings.SUPPORTED_VIDEO_EXTS:
         file_type = 'video'
         # url = '/api/datafiles/media/agave/private/{}/{}'.format(system, path)
     elif file_ext in settings.SUPPORTED_IPYNB_PREVIEW_EXTS:
         file_type = 'ipynb'
         tmp = url.replace('https://', '')
-        url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
+        url = f'https://nbviewer.jupyter.org/urls/{tmp}'
     else:
         file_type = 'other'
     return {'href': url, 'fileType': file_type}
 
 
 def copy(client, src_system, src_path, dest_system, dest_path, filename, filetype='file', *args, **kwargs):
-    from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
+    from designsafe.apps.api.datafiles.operations.transfer_operations import (
+        transfer,
+        transfer_folder,
+    )
     if not src_path:
         src_path = 'root'
     # Google drive doesn't have a robust copy API, so this endpoint uses generic transfer methods.

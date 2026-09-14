@@ -6,23 +6,21 @@
 import json
 import logging
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
-
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from requests import HTTPError
 from tapipy.errors import BaseTapyException
 
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.tasks import agave_indexer
 from designsafe.apps.api.views import BaseApiView
-from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.workspace.api.utils import check_job_for_timeout
-
 
 logger = logging.getLogger(__name__)
 

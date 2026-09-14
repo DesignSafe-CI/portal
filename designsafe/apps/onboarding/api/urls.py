@@ -1,8 +1,8 @@
 """ URL routing for the onboarding API. """
 
 from django.urls import path
-from designsafe.apps.onboarding.api import views
 
+from designsafe.apps.onboarding.api import views
 
 app_name = "onboarding_api"
 urlpatterns = [

@@ -1,19 +1,23 @@
-import re
 import logging
+import re
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.utils.translation import gettext as _
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
+from django.utils.translation import gettext as _
+from pytas.http import TASClient
 from snowpenguin.django.recaptcha2.fields import ReCaptchaField
 from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
-
-from .models import (DesignSafeProfile, NotificationPreferences,
-                     DesignSafeProfileNHInterests, DesignSafeProfileResearchActivities,
-                     DesignSafeProfileNHTechnicalDomains)
 from termsandconditions.models import TermsAndConditions, UserTermsAndConditions
-from pytas.http import TASClient
+
+from .models import (
+    DesignSafeProfile,
+    DesignSafeProfileNHInterests,
+    DesignSafeProfileNHTechnicalDomains,
+    DesignSafeProfileResearchActivities,
+    NotificationPreferences,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -161,7 +165,7 @@ class ChangePasswordForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self._username = kwargs.pop('username')
-        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -244,7 +248,7 @@ class UserProfileForm(forms.Form):
     gender = forms.ChoiceField(label='Gender', choices=GENDER_OPTIONS)
 
     def __init__(self, *args, **kwargs):
-        super(UserProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class TasUserProfileAdminForm(forms.Form):
@@ -380,7 +384,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
                   'bio', 'website', 'orcid_id', 'professional_level', 'research_activities']
 
     def __init__(self, *args, **kwargs):
-        super(UserRegistrationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['institutionId'].choices = get_institution_choices()
         self.fields['institutionId'].choices += (('-1', 'My Institution is not listed'),)
         self.fields['countryId'].choices = get_country_choices()

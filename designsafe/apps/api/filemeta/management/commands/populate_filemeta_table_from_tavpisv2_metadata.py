@@ -5,9 +5,9 @@ This module contains a Django management command which populates filemeta table
 
 # pylint: disable=logging-fstring-interpolation
 # pylint: disable=no-member
-import os
-import logging
 import json
+import logging
+import os
 
 from django.core.management.base import BaseCommand
 

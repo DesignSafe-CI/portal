@@ -4,16 +4,17 @@
 """
 
 
+import json
 import logging
+import urllib
+from functools import reduce
+
+from django.conf import settings
+from elasticsearch_dsl import Index, Q, Search
+
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
-from elasticsearch_dsl import Q, Search, Index
-from django.conf import settings
-import urllib
-import json
-from functools import reduce
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class PublicationsSearchManager(BaseSearchManager):
         else:
             self.query_string = kwargs.get('query_string').replace("/", "\\/")
 
-        super(PublicationsSearchManager, self).__init__(
+        super().__init__(
             IndexedPublication, Search())
     
     def experimental_facility_query(self, facility_name):

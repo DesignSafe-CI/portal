@@ -1,19 +1,19 @@
 """ Base field classes  """
-import six
-import datetime
-import dateutil.parser
 import collections
-from decimal import Decimal
-from designsafe.apps.data.models.agave.base import register_lazy_rel
-
+import datetime
 import logging
+from decimal import Decimal
+
+import dateutil.parser
+
+from designsafe.apps.data.models.agave.base import register_lazy_rel
 
 logger = logging.getLogger(__name__)
 
-class NOT_PROVIDED(object):
+class NOT_PROVIDED:
     pass
 
-class BaseField(object):
+class BaseField:
     """ Base field class """
     related_model = None
 
@@ -78,7 +78,7 @@ class BaseField(object):
 class CharField(BaseField):
     """ Char Field """
     def __init__(self, *args, **kwargs):
-        super(CharField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         return str(value)
@@ -90,12 +90,12 @@ class UuidField(CharField):
     """ Uuid Field """
     def __init__(self, *args, **kwargs):
         kwargs['schema_field'] = True
-        super(UuidField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 class DateTimeField(BaseField):
     """ Date Time Field """
     def __init__(self, *args, **kwargs):
-        super(DateTimeField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         if not isinstance(value, datetime):
@@ -110,7 +110,7 @@ class DateTimeField(BaseField):
 class IntField(BaseField):
     """ Int Field """
     def __init__(self, *args, **kwargs):
-        super(IntField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         return int(value)
@@ -121,7 +121,7 @@ class IntField(BaseField):
 class DecimalField(BaseField):
     """ Decimal Field """
     def __init__(self, *args, **kwargs):
-        super(DecimalField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         return Decimal(value)
@@ -136,7 +136,7 @@ class ListField(BaseField):
         kwargs['default'] = kwargs.get('default', [])
         kwargs['list_cls'] = list_cls
         kwargs['verbose_name'] = verbose_name
-        super(ListField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         try:
@@ -183,7 +183,7 @@ class NestedObjectField(BaseField):
     def __init__(self, nested_cls, *args, **kwargs):
         kwargs['nested_cls'] = nested_cls
         kwargs['default'] = kwargs.get('default', {})
-        super(NestedObjectField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def serialize(self, value):
         return value.to_body_dict()
@@ -193,11 +193,11 @@ class RelatedObjectField(BaseField):
     def __init__(self, related, multiple=False, related_name=None, *args, **kwargs):
         kwargs['related_name'] = related_name
         kwargs['related'] = related
-        super(RelatedObjectField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.multiple = multiple
 
     def contribute_to_class(self, cls, name):
         """ Register the field with the model class it belongs to. """
-        super(RelatedObjectField, self).contribute_to_class(cls, name)
+        super().contribute_to_class(cls, name)
         related_name = self.related_name or '%s_set' % cls.__name__.lower()
         register_lazy_rel(self.related, related_name, cls.model_name, self.multiple, cls)

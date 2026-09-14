@@ -2,7 +2,9 @@
 
 import json
 import logging
+
 from channels.generic.websocket import AsyncWebsocketConsumer
+
 from designsafe.apps.api.publications_v2.agents.neo4j_rag_agent import (
     combined_agent as HybridSearchAgent,
 )
@@ -43,7 +45,7 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                     "ip": ip_addr,
                     "operation": "chat.feedback",
                     "sessionId": getattr(session, "session_key", ""),
-                    "user": getattr(user, "username"),
+                    "user": user.username,
                     "info": {"value": payload, "history": json_data.get("history")},
                 },
             )
@@ -77,7 +79,7 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                         "ip": ip_addr,
                         "operation": "chat.response",
                         "sessionId": getattr(session, "session_key", ""),
-                        "user": getattr(user, "username"),
+                        "user": user.username,
                         "info": {"query": event["payload"], "response": res},
                     },
                 )

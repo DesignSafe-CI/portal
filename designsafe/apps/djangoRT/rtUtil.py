@@ -1,8 +1,9 @@
-import rt
-import pytz
-from django.conf import settings
-from datetime import datetime
 import logging
+from datetime import datetime
+
+import pytz
+import rt
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 

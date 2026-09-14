@@ -1,11 +1,12 @@
 import json
 import logging
 from unittest import skip
-from elasticsearch_dsl import Q
+
+from django.contrib.auth import get_user_model
 from django.test import TestCase
-from django.contrib.auth import get_user_model, signals
-from django.contrib.auth.models import Permission
 from django.urls import reverse
+from elasticsearch_dsl import Q
+
 from designsafe.apps.data.models.elasticsearch import IndexedFile
 
 logger = logging.getLogger(__name__)

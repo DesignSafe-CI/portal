@@ -1,6 +1,7 @@
 """Utilities for APIs
 """
 import logging
+
 from django.conf import settings
 
 #pylint: disable=invalid-name

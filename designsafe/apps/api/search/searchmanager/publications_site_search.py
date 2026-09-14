@@ -5,12 +5,16 @@
 
 
 import logging
+
+from django.conf import settings
+from elasticsearch_dsl import Index, Q, Search
+
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
-from elasticsearch_dsl import Q, Search, Index
-from django.conf import settings
+from designsafe.libs.elasticsearch.docs.publication_legacy import (
+    BaseESPublicationLegacy,
+)
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +29,7 @@ class PublicationsSiteSearchManager(BaseSearchManager):
         else:
             self.query_string = kwargs.get('query_string').replace("/", "\\/")
 
-        super(PublicationsSiteSearchManager, self).__init__(
+        super().__init__(
             IndexedPublication, Search())
 
     def construct_query(self, system=None, file_path=None, **kwargs):
@@ -102,7 +106,7 @@ class PublicationsSiteSearchManager(BaseSearchManager):
         children = []
         for hit in res:
             try:
-                getattr(hit, 'projectId')
+                hit.projectId
                 hit_to_file = BaseESPublication.hit_to_file(hit)
                 children.append(hit_to_file)
             except AttributeError:

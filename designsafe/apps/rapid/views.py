@@ -1,31 +1,31 @@
 # pylint: disable=invalid-name
 
-import uuid
-import os
-import json
 import io
-from datetime import datetime
-from PIL import Image
-from elasticsearch import TransportError, ConnectionTimeout
-from django.urls import reverse
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import get_user_model, models
-from django.db.models import Q
-from tapipy.tapis import Tapis
-from django.views.decorators.cache import cache_page
-
-
+import json
 import logging
-from designsafe.apps.rapid.models import RapidNHEventType, RapidNHEvent
-from designsafe.apps.rapid import forms as rapid_forms
+import os
+import uuid
+from datetime import datetime
+
 import requests
-from django.http import JsonResponse
+from django.contrib.auth import get_user_model, models
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import (
+    HttpResponseBadRequest,
+    HttpResponseNotFound,
+    HttpResponseRedirect,
+    JsonResponse,
+)
+from django.shortcuts import render
+from django.urls import reverse
+from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
-from django.core.cache import cache
-import threading
+from elasticsearch import ConnectionTimeout, TransportError
+from PIL import Image
+
+from designsafe.apps.rapid import forms as rapid_forms
+from designsafe.apps.rapid.models import RapidNHEvent, RapidNHEventType
 
 logger = logging.getLogger(__name__)
 metrics_logger = logging.getLogger('metrics')
@@ -98,7 +98,7 @@ def opentopo_data(request):
         response_data = response.json()
         return JsonResponse(response_data, safe=False, status=response.status_code)
     except requests.RequestException as e:
-        logger.error(f"Error fetching URL {OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD}: {str(e)}")
+        logger.error(f"Error fetching URL {OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD}: {e!s}")
         return JsonResponse({'error': str(e)}, status=500)
 
 

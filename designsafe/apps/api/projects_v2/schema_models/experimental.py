@@ -1,28 +1,30 @@
 """Pydantic models for Experimental entities"""
 
 import itertools
-from typing import Optional, Annotated
-from pydantic import BeforeValidator, Field, ConfigDict, model_validator, AliasChoices
-from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
+from typing import Annotated
+
+from pydantic import AliasChoices, BeforeValidator, ConfigDict, Field, model_validator
+
+from designsafe.apps.api.projects_v2.constants import (
+    EQUIPMENT_TYPES,
+    EXPERIMENT_TYPES,
+    FACILITY_OPTIONS,
+)
 from designsafe.apps.api.projects_v2.schema_models._field_models import (
     AssociatedProject,
     DropdownValue,
     FileObj,
     FileTag,
+    MetadataModel,
     ProjectUser,
     Ref,
     ReferencedWork,
 )
 from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
-    handle_legacy_authors,
     handle_dropdown_value,
     handle_keywords,
-)
-from designsafe.apps.api.projects_v2.constants import (
-    FACILITY_OPTIONS,
-    EQUIPMENT_TYPES,
-    EXPERIMENT_TYPES,
+    handle_legacy_authors,
 )
 
 equipment_type_options = list(itertools.chain(*EQUIPMENT_TYPES.values()))
@@ -41,7 +43,7 @@ class Experiment(MetadataModel):
     keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
 
     facility: Annotated[
-        Optional[DropdownValue],
+        DropdownValue | None,
         BeforeValidator(lambda v: handle_dropdown_value(v, FACILITY_OPTIONS)),
         Field(
             validation_alias=AliasChoices("facility", "experimentalFacility"),
@@ -50,19 +52,19 @@ class Experiment(MetadataModel):
     experimental_facility_other: str = Field(default="", exclude=True)
 
     experiment_type: Annotated[
-        Optional[DropdownValue],
+        DropdownValue | None,
         BeforeValidator(lambda v: handle_dropdown_value(v, experiment_type_options)),
     ] = None
     experiment_type_other: str = Field(default="", exclude=True)
 
     equipment_type: Annotated[
-        Optional[DropdownValue],
+        DropdownValue | None,
         BeforeValidator(lambda v: handle_dropdown_value(v, equipment_type_options)),
     ] = None
     equipment_type_other: str = Field(default="", exclude=True)
 
-    procedure_start: Optional[str] = None
-    procedure_end: Optional[str] = None
+    procedure_start: str | None = None
+    procedure_end: str | None = None
 
     authors: Annotated[list[ProjectUser], BeforeValidator(handle_legacy_authors)] = []
     project: list[str] = []
@@ -140,16 +142,16 @@ class ExperimentModelConfig(MetadataModel):
     file_objs: list[FileObj] = []
 
     # Deprecated/legacy fields
-    drawing: Optional[list[str]] = Field(
+    drawing: list[str] | None = Field(
         default=None, exclude=True, alias="modelDrawing"
     )
-    tags: Optional[dict] = Field(default=None, exclude=True)
-    image: Optional[dict] = Field(default=None, exclude=True)
-    lat: Optional[str] = Field(default=None, exclude=True)
-    lon: Optional[str] = Field(default=None, exclude=True)
-    video: Optional[dict] = Field(default=None, exclude=True)
-    spatial: Optional[str] = Field(default=None, exclude=True)
-    coverage: Optional[str] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
+    image: dict | None = Field(default=None, exclude=True)
+    lat: str | None = Field(default=None, exclude=True)
+    lon: str | None = Field(default=None, exclude=True)
+    video: dict | None = Field(default=None, exclude=True)
+    spatial: str | None = Field(default=None, exclude=True)
+    coverage: str | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -175,18 +177,18 @@ class ExperimentSensor(MetadataModel):
     file_objs: list[FileObj] = []
 
     # Deprecated legacy fields
-    sensor_list_type: Optional[str] = None
-    sensor_drawing: Optional[list[str]] = None
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    sensor_list_type: str | None = None
+    sensor_drawing: list[str] | None = None
+    tags: dict | None = Field(default=None, exclude=True)
 
-    sensor_lists: Optional[list[str]] = Field(default=None, exclude=True)
-    event_type: Optional[str] = None
+    sensor_lists: list[str] | None = Field(default=None, exclude=True)
+    event_type: str | None = None
 
     # This field is ONLY present on pub PRJ-1649
-    analysis: Optional[list[str]] = None
+    analysis: list[str] | None = None
 
     # This field ONLY Present on sensor 8078182091498319385-242ac11c-0001-012
-    load: Optional[list[str]] = Field(default=None, exclude=True)
+    load: list[str] | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -215,8 +217,8 @@ class ExperimentEvent(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
-    load: Optional[list[str]] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
+    load: list[str] | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -242,9 +244,9 @@ class ExperimentAnalysis(MetadataModel):
 
     dois: list[str] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
-    reference: Optional[str] = Field(default=None, exclude=True)
-    referencedoi: Optional[str] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
+    reference: str | None = Field(default=None, exclude=True)
+    referencedoi: str | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""

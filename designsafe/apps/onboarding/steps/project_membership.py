@@ -1,13 +1,14 @@
 """Project Membership Step for Onboarding."""
 
 import logging
-from requests.auth import HTTPBasicAuth
+
 from django.conf import settings
 from pytas.http import TASClient
+from requests.auth import HTTPBasicAuth
 from rt import Rt
-from designsafe.apps.onboarding.steps.abstract import AbstractStep
-from designsafe.apps.onboarding.state import SetupState
 
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
 
 logger = logging.getLogger(__name__)
 
@@ -144,7 +145,7 @@ class ProjectMembershipStep(AbstractStep):
             if event.data and "ticket" in event.data:
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
-        request_text = f"""Your request for access to DesignSafe Computation and Data Resources has been
+        request_text = """Your request for access to DesignSafe Computation and Data Resources has been
         denied. You can still access the publicly available web pages and data. If you believe this is an error, please submit a help ticket.
         """
         if tracker.login():

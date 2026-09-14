@@ -1,5 +1,10 @@
 from django.urls import re_path as url
-from designsafe.apps.api.datafiles.views import DataFilesView, TransferFilesView, MicrosurveyView
+
+from designsafe.apps.api.datafiles.views import (
+    DataFilesView,
+    MicrosurveyView,
+    TransferFilesView,
+)
 
 urlpatterns = [
     url(r'^transfer/(?P<format>[\w.-]+)/$', TransferFilesView.as_view(), name='file_transfer'),

@@ -1,12 +1,12 @@
 """Data app config."""
 import logging
 import socket
-from urllib3.connection import HTTPConnection
+
 from django.apps import AppConfig
 from django.conf import settings
-from elasticsearch_dsl.connections import connections
 from elasticsearch import Urllib3HttpConnection
-
+from elasticsearch_dsl.connections import connections
+from urllib3.connection import HTTPConnection
 
 # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class KeepAliveConnection(Urllib3HttpConnection):
     Solution from Github issue: https://github.com/elastic/elasticsearch-py/issues/966#issuecomment-819823632
     """
     def __init__(self, *args, **kwargs):
-        super(KeepAliveConnection, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not (settings.DEBUG or getattr(settings, "TEST", False)):
             self.pool.conn_kw['socket_options'] = HTTPConnection.default_socket_options + [
                 (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
@@ -58,24 +58,39 @@ class DataConfig(AppConfig):
         # We need to import every class so we can later setup the reverse
         # reverse relations.
         # pylint: disable=unused-import
+        from designsafe.apps.data.models.agave.base import set_lazy_rels
         from designsafe.apps.projects.models.agave.experimental import (  # noqa: F401
-            ExperimentalProject, FileModel as ExpFileModel, DataTag as ExpDataTag,
-            Experiment, Analysis, ModelConfig, SensorList, Event, Report as ExpReport
-        )
-        from designsafe.apps.projects.models.agave.simulation import (  # noqa: F401
-            SimulationProject, FileModel as SimFileModel, DataTag as SimDataTag,
-            Simulation, Model, Input, Output, Analysis as SimAnalysis, Report as SimReport
+            Analysis,
+            Event,
+            Experiment,
+            ExperimentalProject,
+            ModelConfig,
+            SensorList,
         )
         from designsafe.apps.projects.models.agave.hybrid_simulation import (  # noqa: F401
-            HybridSimulationProject, FileModel as HybFileModel, DataTag as HybDataTag,
-            HybridSimulation, GlobalModel, Coordinator, SimSubstructure, ExpSubstructure,
-            CoordinatorOutput, SimOutput, ExpOutput, Analysis as HybAnalysis,
-            Report as HybReport
+            Coordinator,
+            CoordinatorOutput,
+            ExpOutput,
+            ExpSubstructure,
+            GlobalModel,
+            HybridSimulation,
+            HybridSimulationProject,
+            SimOutput,
+            SimSubstructure,
         )
         from designsafe.apps.projects.models.agave.rapid import (  # noqa: F401
-            FieldReconProject, FileModel as FRFileModel, DataTag as FRDataTag,
-            Mission, Instrument, ReferencedData, Collection, Report as FRReport
+            Collection,
+            FieldReconProject,
+            Instrument,
+            Mission,
+            ReferencedData,
         )
-        from designsafe.apps.data.models.agave.base import set_lazy_rels
+        from designsafe.apps.projects.models.agave.simulation import (  # noqa: F401
+            Input,
+            Model,
+            Output,
+            Simulation,
+            SimulationProject,
+        )
         set_lazy_rels()
-        super(DataConfig, self).ready()
+        super().ready()

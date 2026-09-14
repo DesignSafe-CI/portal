@@ -4,8 +4,8 @@
 """
 
 import logging
-import paramiko
 
+import paramiko
 
 logger = logging.getLogger(__name__)
 
@@ -98,9 +98,9 @@ class KeysManager:
             'if [ ! -f "~/.ssh/authorized_keys" ]; then '
             "mkdir -p ~/.ssh/ && touch ~/.ssh/authorized_keys "
             "&& chmod 0600 ~/.ssh/authorized_keys; fi && "
-            'grep -q -F "{string}" ~/.ssh/authorized_keys || '
-            'echo "{string}" >> ~/.ssh/authorized_keys'
-        ).format(string=string)
+            f'grep -q -F "{string}" ~/.ssh/authorized_keys || '
+            f'echo "{string}" >> ~/.ssh/authorized_keys'
+        )
         return command
 
     def add_public_key(

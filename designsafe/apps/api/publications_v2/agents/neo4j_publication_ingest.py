@@ -2,13 +2,14 @@
 
 import os
 from urllib import parse
-import neo4j
-from neo4j import Transaction
-from django.conf import settings
-import networkx as nx
+
 import httpx
+import neo4j
+import networkx as nx
 import openai
 from celery import shared_task
+from django.conf import settings
+from neo4j import Transaction
 from pydantic_ai.format_prompt import format_as_xml
 
 SUMMARIZE_PROMPT = """

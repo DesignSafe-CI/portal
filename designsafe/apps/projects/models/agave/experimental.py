@@ -1,9 +1,13 @@
 """Experimental project models"""
 import logging
-import six
-from designsafe.apps.data.models.agave.base import Model as MetadataModel
+
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
+from designsafe.apps.data.models.agave.base import Model as MetadataModel
+from designsafe.apps.projects.models.agave.base import (
+    FileObjModel,
+    Project,
+    RelatedEntity,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +69,7 @@ class Experiment(RelatedEntity):
 
     def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
-        attributes = super(Experiment, self).to_datacite_json()
+        attributes = super().to_datacite_json()
         if hasattr(self, 'experimental_facility') and len(self.experimental_facility) and ('None' not in self.experimental_facility):
             attributes["subjects"] = attributes.get("subjects", []) + [
                 {"subject": self.experimental_facility.title(), }
@@ -103,9 +107,7 @@ class Experiment(RelatedEntity):
                     'awardNumber': award['number'],
                     "funderName": award.get("fundingSource", "N/A"),
                     })
-        attributes['types']['resourceType'] = "Experiment/{experiment_type}".format(
-            experiment_type=self.experiment_type.title()
-        )
+        attributes['types']['resourceType'] = f"Experiment/{self.experiment_type.title()}"
         # related works are not required, so they can be missing...
         attributes['relatedIdentifiers'] = []
         for r_work in self.related_work:
@@ -131,7 +133,7 @@ class Experiment(RelatedEntity):
 
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
-        attributes = super(Experiment, self).to_dataset_json()
+        attributes = super().to_dataset_json()
         attributes["subjects"] = attributes.get("subjects", []) + [
             {"subject": self.experimental_facility.title(), }
         ]
@@ -142,9 +144,7 @@ class Experiment(RelatedEntity):
                 "name": self.experimental_facility,
             }
         ]
-        attributes['types']['resourceType'] = "Experiment/{experiment_type}".format(
-            experiment_type=self.experiment_type.title()
-        )
+        attributes['types']['resourceType'] = f"Experiment/{self.experiment_type.title()}"
         return attributes
 
 class Analysis(RelatedEntity):
