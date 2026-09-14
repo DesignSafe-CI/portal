@@ -43,6 +43,9 @@ from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
 from designsafe.libs.common.context_managers import AsyncTaskContext
 from designsafe.apps.api.ai_keywords.utils import add_publications_to_chroma
+from designsafe.apps.api.publications_v2.agents.neo4j_publication_ingest import (
+    neo4j_ingest_publication_async,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -646,6 +649,7 @@ def publish_project(
         ingest_pub_fedora_async.apply_async(
             args=[project_id, version, False], queue="default"
         )
+        neo4j_ingest_publication_async.apply_async(args=[project_id], queue="default")
 
     return pub_metadata
 
