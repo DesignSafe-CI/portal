@@ -1,3 +1,5 @@
+"""Utils for ingesting publications into Neo4j"""
+
 import os
 from urllib import parse
 import neo4j
@@ -361,6 +363,7 @@ def merge_dropdown_values(
         tx.run(merge_query, collection_id=collection_id, name=kv["name"])
 
 
+# pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def ingest_publication(client: neo4j.Driver, project_id: str):
     """
     Ingest a full publication into the graph db.
