@@ -129,6 +129,18 @@ DOC_SOURCES = {
         "type": "sphinx",
         "description": "Regional Resilience Determination Tool",
     },
+    "workflows": {
+        "name": "DesignSafe Workflows",
+        "base_url": "https://designsafe-ci.github.io/ds-workflows/",
+        "type": "jupyter-book",
+        "description": "A guide to running computational workflows on DesignSafe, from interactive exploration in a Jupyter notebook to production-scale simulations on TACC supercomputers.",
+    },
+    "dapi": {
+        "name": "DAPI",
+        "base_url": "https://designsafe-ci.github.io/dapi/",
+        "type": "jupyter-book",
+        "description": "dapi is a Python library for submitting, monitoring, and managing TAPIS v3 jobs on DesignSafe via Jupyter Notebooks or the command line. It also provides access to DesignSafe research databases.",
+    },
 }
 
 
