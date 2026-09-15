@@ -2,7 +2,7 @@
 name = "designsafe"
 version = "6.0"
 description = ""
-requires-python = ">=3.12"
+requires-python = ">=3.12,<4.0"
 readme = "README.md"
 
 dependencies = [
@@ -111,4 +111,10 @@ extend-select=["G"]
 ignore = ["E501", "RUF012"]
 
 [tool.ruff]
-extend-exclude = ["**/migrations/", "*test.py", "*tests.py", "designsafe/apps/projects", "designsafe/apps/api/projects", "designsafe/apps/api/publications"]
+extend-exclude = ["**/migrations/",
+                  "*test.py",
+                  "*tests.py",
+                  "designsafe/apps/projects",
+                  "designsafe/apps/api/projects",
+                  "designsafe/apps/api/publications"
+                  ]
