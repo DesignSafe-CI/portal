@@ -4,18 +4,22 @@ import logging
 import os
 import urllib
 from pathlib import Path
+
+import httpx
+import requests
 import tapipy
-from designsafe.apps.api.datafiles.utils import *
-from designsafe.apps.data.models.elasticsearch import IndexedFile
-from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
-from designsafe.apps.api.filemeta.models import FileMetaModel
-from designsafe.apps.api.filemeta.tasks import move_file_meta_async, copy_file_meta_async
-from designsafe.apps.api.datafiles.models import PublicationSymlink
 from django.conf import settings
 from elasticsearch_dsl import Q
-import requests
-import httpx
-from requests.exceptions import HTTPError
+
+from designsafe.apps.api.datafiles.models import PublicationSymlink
+from designsafe.apps.api.datafiles.utils import *
+from designsafe.apps.api.filemeta.models import FileMetaModel
+from designsafe.apps.api.filemeta.tasks import (
+    copy_file_meta_async,
+    move_file_meta_async,
+)
+from designsafe.apps.data.models.elasticsearch import IndexedFile
+from designsafe.apps.data.tasks import agave_indexer, agave_listing_indexer
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +57,7 @@ def listing(client, system, path, offset=0, limit=100, q=None, *args, **kwargs):
         return search(client, system, path, offset=0, limit=100, query_string=q, **kwargs)
     raw_listing = client.files.listFiles(
         systemId=system,
-        path=urllib.parse.quote((path or '/')),
+        path=urllib.parse.quote(path or '/'),
         offset=int(offset),
         limit=int(limit),
         headers={"X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", "")}
@@ -189,7 +193,7 @@ def search(client, system, path, offset=0, limit=100, query_string='', **kwargs)
         # check old publication files
         # stopgap until all /published-data paths are indexed
         if system == "designsafe.storage.published" and path.startswith("/published-data"):
-            legacy_pub_path = path.lstrip("/published-data")
+            legacy_pub_path = path.removeprefix("/published-data")
             legacy_path_filter  = Q('term', **{'path._comps': legacy_pub_path})
             path_comp_filter = path_comp_filter | legacy_path_filter
 
@@ -350,7 +354,8 @@ def copy(client, src_system, src_path, dest_system, dest_path, *args, **kwargs):
         client.files.listFiles(systemId=dest_system, path=os.path.join(dest_path, src_file_name))
         dst_file_name = rename_duplicate_path(src_file_name)
         full_dest_path = os.path.join(dest_path.strip('/'), dst_file_name)
-    except:
+    except Exception:
+        logger.exception("")
         dst_file_name = src_file_name
         full_dest_path = os.path.join(dest_path.strip('/'), src_file_name)
 
@@ -555,7 +560,8 @@ def upload(client, system, path, uploaded_file, webkit_relative_path=None, *args
                 meta=metadata
             )
         return dict(resp)
-    except:
+    except Exception:
+        logger.exception("")
         return dict(resp)
 
 
@@ -611,15 +617,14 @@ def preview(client, system, path, href="", max_uses=3, lifetime=600, *args, **kw
         file_type = 'object'
     elif file_ext in settings.SUPPORTED_MS_OFFICE:
         file_type = 'ms-office'
-        url = 'https://view.officeapps.live.com/op/view.aspx?src={}'.\
-            format(url)
+        url = f'https://view.officeapps.live.com/op/view.aspx?src={url}'
     elif file_ext in settings.SUPPORTED_VIDEO_EXTS:
         file_type = 'video'
         # url = '/api/datafiles/media/agave/private/{}/{}'.format(system, path)
     elif file_ext in settings.SUPPORTED_IPYNB_PREVIEW_EXTS:
         file_type = 'ipynb'
         tmp = url.replace('https://', '')
-        url = 'https://nbviewer.jupyter.org/urls/{tmp}'.format(tmp=tmp)
+        url = f'https://nbviewer.jupyter.org/urls/{tmp}'
     else:
         file_type = 'other'
 

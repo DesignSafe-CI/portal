@@ -3,12 +3,17 @@
    :synopsis: Systems views
 """
 
-import logging
 import json
+import logging
+
 from django.http import JsonResponse
+
 from designsafe.apps.api.views import AuthenticatedApiView
-from designsafe.apps.onboarding.steps.system_access_v3 import create_system_credentials_with_keys
+from designsafe.apps.onboarding.steps.system_access_v3 import (
+    create_system_credentials_with_keys,
+)
 from designsafe.utils.encryption import createKeyPair
+
 from .utils import add_pub_key_to_resource
 
 logger = logging.getLogger(__name__)
@@ -30,7 +35,7 @@ class SystemKeysView(AuthenticatedApiView):
         system_id = body["systemId"]
 
         logger.info(
-            f"Resetting credentials for user {request.user.username} on system {system_id}"
+            "Resetting credentials for user %s on system %s", request.user.username, system_id
         )
         (priv_key_str, publ_key_str) = createKeyPair()
 

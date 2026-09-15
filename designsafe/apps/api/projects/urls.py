@@ -11,15 +11,18 @@ operation: Can be any of these:
 
 """
 from django.urls import re_path as url
-from designsafe.apps.api.projects.views import (ProjectListingView,
+
+from designsafe.apps.api.projects.views import (
+                                                AmendPublicationView,
+                                                NeesPublicationView,
                                                 ProjectCollectionView,
                                                 ProjectDataView,
                                                 ProjectInstanceView,
+                                                ProjectListingView,
                                                 ProjectMetaView,
                                                 ProjectNotificationView,
                                                 PublicationView,
-                                                AmendPublicationView,
-                                                NeesPublicationView)
+)
 
 urlpatterns = [
     url(r'^publication/(?P<project_id>[A-Z\-]+-[0-9]+)?(v(?P<revision>[0-9]+))?/?', PublicationView.as_view(), name='publication'),

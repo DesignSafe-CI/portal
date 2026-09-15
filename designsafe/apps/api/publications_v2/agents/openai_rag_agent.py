@@ -1,21 +1,19 @@
 """RAG agent for retrieving publications from the OpenAI document store."""
 
-from typing import Literal
 from collections.abc import Callable
-from asgiref.sync import sync_to_async
+from typing import Literal
+
 import networkx as nx
 import openai
-
+from asgiref.sync import sync_to_async
+from django.conf import settings
+from elasticsearch_dsl import Q
 from pydantic import BaseModel
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
-from elasticsearch_dsl import Q
-
-from django.conf import settings
 from designsafe.apps.api.publications_v2.elasticsearch import IndexedPublication
-
 
 OAI_VECTOR_STORE_ID = "vs_68891f2f54948191bd1053afdf542987"
 
@@ -61,13 +59,13 @@ agent = Agent(
         "ALWAYS include links verbatim. Do not truncate them or alter their formatting. ",
         # "ALWAYS explain in detail why each referenced publication was chosen. ",
         "DO NOT use the legacyPath attribute on files to construct URLs. ",
-        "If the question relates to attributes of a publication, DO NOT discuss publications that aren't relevant to those attributes."
+        ("If the question relates to attributes of a publication, DO NOT discuss publications that aren't relevant to those attributes."
         """Construct keywords according to the following guidelines:
             1. Carefully read the entire query to understand its core topics and main ideas.
             2. Extract up to 6 relevant keywords or key phrases that accurately reflect the key concepts discussed in the query. ONLY use words or phrases directly mentioned in the query.
             3. If any keywords of key phrases are plural, add the singular form. If the keyword contains a number, include a version where the number is written out. For example if the keyword contains the character '1', write it out as 'one' and add it to the list.
             4. Key phrases can contain a maximum of 2 words separated by spaces.
-            5. Avoid common stop words like "the", "and", or "with". Also, avoid overly generic terms unless they are critical to the topic.""",
+            5. Avoid common stop words like "the", "and", or "with". Also, avoid overly generic terms unless they are critical to the topic."""),
         "Provide the full result link at the end so that users can access it to explore the full set of DesignSafe publications.",
     ),
 )
@@ -150,7 +148,7 @@ async def vector_lookup(
     """Look up publications in the OpenAI vector store."""
 
     await ctx.deps.response_callback(
-        f"Performing lookup with the following parameters: {str(search_params)}"
+        f"Performing lookup with the following parameters: {search_params!s}"
     )
 
     vector_results: list[PublicationRagResult] = []
@@ -174,13 +172,13 @@ async def vector_lookup(
         "Publication lookup complete. Constructing your response..."
     )
 
-    recovered_project_ids = set((res.project_id for res in vector_results))
+    recovered_project_ids = {res.project_id for res in vector_results}
 
     _, es_search_results = await sync_to_async(get_es_results)(
         search_params, max_num_results=ctx.deps.result_size
     )
 
-    es_project_ids = set((hit.meta.id for hit in es_search_results.hits))
+    es_project_ids = {hit.meta.id for hit in es_search_results.hits}
 
     hits_in_both = recovered_project_ids.intersection(es_project_ids)
     es_only = es_project_ids - recovered_project_ids
@@ -198,7 +196,7 @@ async def vector_lookup(
             n for n in project_dict["nodes"] if n["name"] == "designsafe.project"
         )
 
-        null_keys = [k for k in base_meta["value"].keys() if not base_meta["value"][k]]
+        null_keys = [k for k in base_meta["value"] if not base_meta["value"][k]]
         for null_key in null_keys:
             del base_meta["value"][null_key]
 
@@ -208,7 +206,7 @@ async def vector_lookup(
         for node in project_tree.successors("NODE_ROOT"):
             doi_entity = project_tree.nodes[node]
             null_keys = [
-                k for k in doi_entity["value"].keys() if not doi_entity["value"][k]
+                k for k in doi_entity["value"] if not doi_entity["value"][k]
             ]
             for null_key in null_keys:
                 del doi_entity["value"][null_key]

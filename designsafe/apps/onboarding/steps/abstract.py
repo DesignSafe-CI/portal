@@ -1,8 +1,10 @@
 """Abstract class for user setup steps."""
 
 from abc import ABCMeta, abstractmethod
-from six import add_metaclass
+
 from django.conf import settings
+from six import add_metaclass
+
 from designsafe.apps.onboarding.models import SetupEvent
 from designsafe.apps.onboarding.state import SetupState
 
@@ -102,7 +104,7 @@ class AbstractStep:
         Called when displaying this step in the client. Should return a string
         that displays a custom status
         """
-        return None
+        return
 
     @abstractmethod
     def prepare(self):

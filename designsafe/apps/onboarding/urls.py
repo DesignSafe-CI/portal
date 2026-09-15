@@ -1,6 +1,7 @@
 """URLs for the Onboarding app."""
 
-from django.urls import re_path, path
+from django.urls import path, re_path
+
 from designsafe.apps.onboarding.views import OnboardingView
 
 app_name = "workbench"

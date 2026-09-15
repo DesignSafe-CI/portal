@@ -1,9 +1,10 @@
 """Elasticsearch model for published works"""
 
-from elasticsearch_dsl import Document
-from elasticsearch.exceptions import NotFoundError
 import networkx as nx
 from django.conf import settings
+from elasticsearch.exceptions import NotFoundError
+from elasticsearch_dsl import Document
+
 from designsafe.apps.api.projects_v2.models import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     add_values_to_tree,

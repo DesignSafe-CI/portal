@@ -65,7 +65,7 @@ jobs:
       # Only run on new files for now-- for all changes, filter is ACMRTUXB
       # Check manage.py to prevent a crash if no files are selected.
       run: |
-        poetry run pylint $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py
+        poetry run ruff check designsafe/apps
 
     - name: Run Server-side formatting with black
       run: |

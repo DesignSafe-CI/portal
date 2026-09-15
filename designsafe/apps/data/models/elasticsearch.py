@@ -1,17 +1,27 @@
 
-import logging
-import json
 import datetime
+import logging
+
 from django.conf import settings
-from django.db import models
-from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import (Search, Document, Date, Nested,
-                               analyzer, Object, Text, Long,
-                               Boolean, Keyword,
-                               GeoPoint, MetaField, Index)
+from elasticsearch_dsl import (
+    Boolean,
+    Date,
+    Document,
+    Keyword,
+    Long,
+    MetaField,
+    Nested,
+    Object,
+    Text,
+)
 from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError, ConnectionTimeout
-from designsafe.libs.elasticsearch.analyzers import path_analyzer, file_analyzer, file_pattern_analyzer, reverse_file_analyzer
+
+from designsafe.libs.elasticsearch.analyzers import (
+    file_analyzer,
+    file_pattern_analyzer,
+    path_analyzer,
+    reverse_file_analyzer,
+)
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
 from designsafe.libs.elasticsearch.utils import file_uuid_sha256
 
@@ -66,15 +76,15 @@ class IndexedFile(Document):
         """
         Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.save()
         """
-        self.lastUpdated = datetime.datetime.now()
-        return super(IndexedFile, self).save(*args, **kwargs)
+        self.lastUpdated = datetime.datetime.now(tz=datetime.UTC)
+        return super().save(*args, **kwargs)
 
     def update(self, *args, **kwargs):
         """
         Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.update()
         """
-        lastUpdated = datetime.datetime.now()
-        return super(IndexedFile, self).update(lastUpdated=lastUpdated, *args, **kwargs)
+        lastUpdated = datetime.datetime.now(tz=datetime.UTC)
+        return super().update(*args, **kwargs, lastUpdated=lastUpdated)
 
     @classmethod
     def from_path(cls, system, path):
@@ -361,19 +371,20 @@ class IndexedPublication(Document):
             raise DocumentNotFound()
 
         if revision:
-            revision_filter = Q('match', **{'revision': revision})
+            revision_filter = Q('match', revision=revision)
         else:
             # Search for documents where revision is not specified.
-            revision_filter = ~Q('exists', **{'field': 'revision'})
+            revision_filter = ~Q('exists', field='revision')
 
         id_filter = Q('term', **{'projectId._exact': project_id})
         search = cls.search(using=using).filter(id_filter & revision_filter)
         try:
             res = search.execute()
-        except Exception as e:
-            raise e
+        except Exception:
+            logger.exception("")
+            raise
         if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id})
+            id_filter = Q('term', _id=res[0].meta.id)
             # Delete all files indexed with the same system/path, except the first result
             delete_query = id_filter & ~id_filter
             cls.search(using=using).filter(delete_query).delete()
@@ -382,7 +393,7 @@ class IndexedPublication(Document):
             return cls.get(res[0].meta.id, using=using)
         else:
             raise DocumentNotFound("No document found for "
-                                   "{}".format(project_id))
+                                   f"{project_id}")
 
     @classmethod
     def max_revision(cls, project_id, using='default'):
@@ -509,10 +520,11 @@ class IndexedPublicationLegacy(Document):
         search = cls.search().filter(id_filter)
         try:
             res = search.execute()
-        except Exception as e:
-            raise e
+        except Exception:
+            logger.exception("")
+            raise
         if res.hits.total.value > 1:
-            id_filter = Q('term', **{'_id': res[0].meta.id})
+            id_filter = Q('term', _id=res[0].meta.id)
             # Delete all files indexed with the same system/path, except the first result
             delete_query = id_filter & ~id_filter
             cls.search().filter(delete_query).delete()
@@ -521,7 +533,7 @@ class IndexedPublicationLegacy(Document):
             return cls.get(res[0].meta.id)
         else:
             raise DocumentNotFound("No document found for "
-                                   "{}".format(project_id))
+                                   f"{project_id}")
 
     class Index:
         name = settings.ES_INDICES['publications_legacy']['alias']

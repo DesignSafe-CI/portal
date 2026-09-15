@@ -1,19 +1,20 @@
 import logging
 import re
-from haystack import indexes
+
+from cms.models import CMSPlugin, Title
+
+# from cms.toolbar.toolbar import CMSToolbar
+from django.conf import settings
 from django.db.models import Q
 from django.template import RequestContext
-from django.utils import timezone
+
 #rom djangocms_text_ckeditor.models import Text
 #from django.utils.text import smart_split
 from django.test import RequestFactory
-
-from django.utils.html import strip_tags
+from django.utils import timezone
 from django.utils.encoding import force_str
-
-from cms.models import Title, CMSPlugin, Page
-# from cms.toolbar.toolbar import CMSToolbar
-from django.conf import settings
+from django.utils.html import strip_tags
+from haystack import indexes
 
 logger = logging.getLogger(__name__)
 
@@ -57,14 +58,15 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         request = rf.get("/")
         request.session = {}
         request.LANGUAGE_CODE = settings.LANGUAGE_CODE
-        self.prepared_data = super(TextPluginIndex, self).prepare(page)
+        self.prepared_data = super().prepare(page)
         plugins = CMSPlugin.objects.filter(placeholder__in=obj.page.placeholders.all())
         text = ''
         for base_plugin in plugins:
             try:
                 instance, plugin_type = base_plugin.get_plugin_instance()
             except Exception as e:
-                logger.debug(f"{type(e)}: {e}")
+                logger.exception("")
+                logger.debug("%s: %s", type(e), {e})
                 continue
             if instance is None:
                 # this is an empty plugin

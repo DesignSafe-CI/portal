@@ -5,10 +5,10 @@
 """
 import json
 import logging
+
 from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.nco.managers import NcoProjectsManager, NcoTtcGrantsManager
 from designsafe.libs.mongo.response import MongoJsonResponse
-
 
 logger = logging.getLogger(__name__)
 

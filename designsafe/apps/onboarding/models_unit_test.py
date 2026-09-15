@@ -1,8 +1,8 @@
-from designsafe.apps.onboarding.state import SetupState
-from designsafe.apps.onboarding.models import SetupEvent
-from django.db.models import signals
 import pytest
+from django.db.models import signals
 
+from designsafe.apps.onboarding.models import SetupEvent
+from designsafe.apps.onboarding.state import SetupState
 
 pytestmark = pytest.mark.django_db
 

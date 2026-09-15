@@ -1,28 +1,22 @@
-import shutil
-import logging
-import re
-import os
-import sys
 import json
-import urllib.request, urllib.parse, urllib.error
-from datetime import datetime
-from celery import shared_task
-from django.urls import reverse
-from django.contrib.auth import get_user_model
-from pytas.models import User as TASUser
-from django.conf import settings
-from requests.exceptions import HTTPError
+import logging
+import os
+import shutil
 
-from designsafe.apps.api.notifications.models import Notification, Broadcast
+from celery import shared_task
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.urls import reverse
+from elasticsearch.helpers import bulk
+
+from designsafe.apps.accounts.models import DesignSafeProfile
 from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.notifications.models import Notification
+from designsafe.apps.data.tasks import agave_indexer
 from designsafe.apps.projects.models.elasticsearch import IndexedProject
-from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
-from designsafe.apps.data.tasks import agave_indexer
-from elasticsearch_dsl.query import Q
-from elasticsearch.helpers import bulk
-from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -44,12 +38,12 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                  src_resource, src_file_id, username, dest_resource, dest_file_id)
 
     try:
-        target_path = reverse('designsafe_data:data_depot',
+        reverse('designsafe_data:data_depot',
                               args=[src_resource, src_file_id])
         n = Notification(event_type='data',
                          status=Notification.INFO,
                          operation='box_download_start',
-                         message='Starting download of file %s from box.' % (src_file_id,),
+                         message=f'Starting download of file {src_file_id} from box.',
                          user=username,
                          # extra={'target_path': target_path})
                          extra={'id': dest_file_id}
@@ -58,7 +52,7 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
 
         user = get_user_model().objects.get(username=username)
 
-        from designsafe.apps.api.data import BoxFileManager, AgaveFileManager
+        from designsafe.apps.api.data import AgaveFileManager, BoxFileManager
         agave_fm = AgaveFileManager(user)
         dest_real_path = agave_fm.get_file_real_path(dest_file_id)
 
@@ -80,24 +74,24 @@ def box_download(self, username, src_resource, src_file_id, dest_resource, dest_
                                    pems_indexing=True, index_full_path=True,
                                    levels=levels)
 
-        target_path = reverse('designsafe_data:data_depot',
+        reverse('designsafe_data:data_depot',
                               args=[dest_resource, dest_file_id])
         n = Notification(event_type='data',
                          status=Notification.SUCCESS,
                          operation='box_download_end',
-                         message='File %s was copied from box successfully!' % (src_file_id, ),
+                         message=f'File {src_file_id} was copied from box successfully!',
                          user=username,
                          extra={'id': dest_file_id}
                          )
         n.save()
-    except:
+    except Exception:
         logger.exception('Unexpected task failure: box_download', extra={
             'username': username,
             'box_file_id': src_file_id,
             'to_resource': dest_resource,
             'dest_file_id': dest_file_id
         })
-        target_path = reverse('designsafe_data:data_depot',
+        reverse('designsafe_data:data_depot',
                               args=[src_resource, src_file_id])
         n = Notification(event_type='data',
                          status=Notification.ERROR,
@@ -184,14 +178,13 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
     :param dest_file_id: the box id of the destination folder
     :return:
     """
-    logger.debug('Importing file %s://%s for user %s to %s://%s' % (
-        src_resource, src_file_id, username, dest_resource, dest_file_id))
+    logger.debug('Importing file %s://%s for user %s to %s://%s', src_resource, src_file_id, username, dest_resource, dest_file_id)
 
     try:
         n = Notification(event_type = 'data',
                          status = Notification.INFO,
                          operation = 'box_upload_start',
-                         message = 'Starting import of file %s into box.' % src_file_id,
+                         message = f'Starting import of file {src_file_id} into box.',
                          user = username,
                          # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), src_resource, src_file_id)})
                          extra={'id': src_file_id})
@@ -203,7 +196,8 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
         file_type, file_id = box_fm.parse_file_id(dest_file_id)
 
         if file_type != 'folder':
-            logger.warn('Cannot import to a file destination!')
+            logger.warning('Cannot import to a file destination!')
+            # ruff: disable [TRY002]
             raise Exception('You can only import files to a folder!', status=400,
                             extra={
                                 'src_resource': src_resource,
@@ -225,7 +219,7 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
                 else:
                     logger.error('Unable to upload %s: file does not exist!',
                                  file_real_path)
-            except:
+            except Exception:
                 logger.exception('Upload to Box failed!')
 
         logger.debug('Box upload task complete.')
@@ -233,12 +227,12 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
         n = Notification(event_type = 'data',
                          status = Notification.SUCCESS,
                          operation = 'box_upload_end',
-                         message = 'File(s) %s succesfully uploaded into box!' % src_file_id,
+                         message = f'File(s) {src_file_id} succesfully uploaded into box!',
                          user = username,
                          extra={'id': src_file_id})
                          # extra = {'target_path': '%s%s/%s' %(reverse('designsafe_data:data_depot'), dest_resource, dest_file_id)})
         n.save()
-    except:
+    except Exception:
         logger.exception('Unexpected task failure: box_upload', extra={
             'username': username,
             'src_resource': src_resource,
@@ -262,7 +256,7 @@ def box_upload(self, username, src_resource, src_file_id, dest_resource, dest_fi
 
 
 def box_upload_file(box_file_manager, box_folder_id, file_real_path):
-    file_path, file_name = os.path.split(file_real_path)
+    _file_path, file_name = os.path.split(file_real_path)
     with open(file_real_path, 'rb') as file_handle:
         box_folder = box_file_manager.box_api.folder(box_folder_id)
         uploaded_file = box_folder.upload_stream(file_handle, file_name)
@@ -281,7 +275,7 @@ def box_upload_directory(box_file_manager, box_parent_folder_id, dir_real_path):
     :return: The new box folder.
     """
 
-    dirparentpath, dirname = os.path.split(dir_real_path)
+    _dirparentpath, dirname = os.path.split(dir_real_path)
     box_parent_folder = box_file_manager.box_api.folder(box_parent_folder_id)
     logger.info('Create directory %s in box folder/%s', dirname, box_parent_folder_id)
     box_folder = box_parent_folder.create_subfolder(dirname)
@@ -313,7 +307,7 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
         n = Notification(event_type = 'data',
                          status = 'INFO',
                          operation = 'copy_public_to_mydata_start',
-                         message = 'Copying folder/files %s from public data to your private data. Please wait...' % (src_file_id, ),
+                         message = f'Copying folder/files {src_file_id} from public data to your private data. Please wait...',
                          user = username,
                          extra={
                                 'system': dest_resource,
@@ -372,7 +366,7 @@ def copy_public_to_mydata(self, username, src_resource, src_file_id, dest_resour
                             })
                              # extra = {})
             n.save()
-    except:
+    except Exception:
         logger.exception('Unexpected task failure')
 
         n = Notification(event_type = 'data',
@@ -415,21 +409,21 @@ def set_project_id(self, project_uuid):
     id_metas = service.meta.listMetadata(q='{"name": "designsafe.project.id"}')
     logger.debug(json.dumps(id_metas, indent=4))
     if not len(id_metas):
-        raise Exception('No project Id found')
+        raise Exception('No project Id found') # noqa
 
     id_meta = id_metas[0]
     project_id = int(id_meta['value']['id'])
     project_id = project_id + 1
     for i in range(10):
-        _projs = service.meta.listMetadata(q='{{"name": "designsafe.project", "value.projectId": {} }}'.format(project_id))
+        _projs = service.meta.listMetadata(q=f'{{"name": "designsafe.project", "value.projectId": {project_id} }}')
         if len(_projs):
             project_id = project_id + 1
     
-    project.project_id = 'PRJ-{}'.format(str(project_id))
+    project.project_id = f'PRJ-{project_id!s}'
     project.save(service)
     logger.debug('updated project id=%s', project.uuid)
     id_meta['value']['id'] = project_id
-    new_metadata = service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
+    service.meta.updateMetadata(body=id_meta, uuid=id_meta['uuid'])
     logger.debug('updated id record=%s', id_meta['uuid'])
 
     index_or_update_project.apply_async(args=[project.uuid], queue='api')
@@ -462,7 +456,6 @@ def index_projects_listing(projects):
     -------
     Void
     """
-    from designsafe.apps.projects.models.elasticsearch import IndexedProject
     idx = IndexedProject.Index.name
     client = IndexedProject._get_connection()
     ops = []
@@ -555,8 +548,8 @@ def reindex_projects(self):
     for listing in list_all_projects():
         try:
             index_projects_listing(listing)
-        except Exception as e:
-            logger.exception(e)
+        except Exception:
+            logger.exception("")
 
 
 @shared_task(bind=True, max_retries=5)
@@ -583,18 +576,18 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
 
     filepaths = list(set(filepaths))
     filepaths = sorted(filepaths)
-    base_path = ''.join(['/', publication.projectId])
+    f'/{publication.projectId}'
     os.chmod('/corral-repl/tacc/NHERI/published', 0o755)
-    prefix_dest = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
+    prefix_dest = f'/corral-repl/tacc/NHERI/published/{project_id}'
     if revision:
-        prefix_dest += 'v{}'.format(revision)
+        prefix_dest += f'v{revision}'
     if not os.path.isdir(prefix_dest):
         os.mkdir(prefix_dest)
 
     prefix_src = '/corral-repl/tacc/NHERI/projects/{}'.format(publication.project['uuid'])
     for filepath in filepaths:
-        local_src_path = '{}/{}'.format(prefix_src, filepath)
-        local_dst_path = '{}/{}'.format(prefix_dest, filepath)
+        local_src_path = f'{prefix_src}/{filepath}'
+        local_dst_path = f'{prefix_dest}/{filepath}'
         logger.info('Trying to copy: %s to %s', local_src_path, local_dst_path)
         if os.path.isdir(local_src_path):
             try:
@@ -610,8 +603,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
                 os.chmod(local_dst_path, 0o555)
             except OSError as exc:
                 logger.info(exc)
-            except IOError as exc:
-                logger.info(exc)
+
         else:
             try:
                 if not os.path.isdir(os.path.dirname(local_dst_path)):
@@ -626,8 +618,6 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
                 os.chmod(local_dst_path, 0o444)
             except OSError as exc:
                 logger.info(exc)
-            except IOError as exc:
-                logger.info(exc)
 
     os.chmod(prefix_dest, 0o555)
     os.chmod('/corral-repl/tacc/NHERI/published', 0o555)
@@ -636,7 +626,7 @@ def copy_publication_files_to_corral(self, project_id, revision=None, selected_f
 
     index_path = '/' + project_id
     if revision:
-        index_path += 'v{}'.format(revision)
+        index_path += f'v{revision}'
     agave_indexer.apply_async(kwargs={'systemId': 'designsafe.storage.published', 'filePath': index_path, 'recurse':True}, queue='indexing')
 
 
@@ -656,7 +646,7 @@ def freeze_publication_meta(self, project_id, entity_uuids=None, revision=None, 
             revised_authors
         )
     except Exception as exc:
-        logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
+        logger.exception('Proj Id: %s.', project_id)
         raise self.retry(exc=exc)
 
 
@@ -670,10 +660,13 @@ def amend_publication_data(self, project_id, amendments=None, authors=None, revi
     :param list of entity_uuid strings: Main entity uuid.
     """
     from designsafe.apps.projects.managers import publication as PublicationManager
-    from designsafe.libs.fedora.fedora_operations import amend_project_fedora, ingest_project_experimental
-    from designsafe.libs.fedora.sim_operations import ingest_project_sim
+    from designsafe.libs.fedora.fedora_operations import (
+        amend_project_fedora,
+        ingest_project_experimental,
+    )
     from designsafe.libs.fedora.fr_operations import ingest_project_fr
     from designsafe.libs.fedora.hyb_sim_operations import ingest_project_hyb_sim
+    from designsafe.libs.fedora.sim_operations import ingest_project_sim
     try:
         amended_pub = PublicationManager.amend_publication(project_id, amendments, authors, revision)
         PublicationManager.amend_datacite_doi(amended_pub)
@@ -689,7 +682,7 @@ def amend_publication_data(self, project_id, amendments=None, authors=None, revi
         if amended_pub.project.value.projectType == 'field_recon':
             ingest_project_fr(project_id, version=revision, amend=True)
     except Exception as exc:
-        logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
+        logger.exception('Proj Id: %s.', project_id)
         raise self.retry(exc=exc)
 
 
@@ -719,7 +712,7 @@ def save_publication(self, project_id, entity_uuids=None, revision=None, revised
             revised_authors=revised_authors
         )
     except Exception as exc:
-        logger.error('Proj Id: %s. %s', project_id, exc, exc_info=True)
+        logger.exception('Proj Id: %s.', project_id)
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
@@ -728,7 +721,7 @@ def zip_publication_files(self, project_id, revision=None):
     try:
         PublicationManager.archive(project_id=project_id, revision=revision)
     except Exception as exc:
-        logger.error('Zip Proj Id: %s. %s', project_id, exc, exc_info=True)
+        logger.exception('Zip Proj Id: %s.', project_id)
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
@@ -744,7 +737,7 @@ def swap_file_tag_uuids(self, project_id, revision=None):
     try:
         PublicationManager.fix_file_tags(project_id, revision=revision)
     except Exception as exc:
-        logger.error('File Tag Correction Error: %s. %s', project_id, exc, exc_info=True)
+        logger.exception('File Tag Correction Error: %s', project_id)
         raise self.retry(exc=exc)
 
 @shared_task(bind=True)
@@ -768,9 +761,7 @@ def fedora_ingest_other(self, project_id):
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def save_to_fedora(self, project_id, revision=None):
-    import requests
-    import magic
-    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication 
+    from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
     try:
         es_client = new_es_client()
         pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
@@ -781,7 +772,9 @@ def save_to_fedora(self, project_id, revision=None):
            ingest_project(project_id, version=revision)
            return
         if pub.project.value.projectType == 'experimental':
-            from designsafe.libs.fedora.fedora_operations import ingest_project_experimental
+            from designsafe.libs.fedora.fedora_operations import (
+                ingest_project_experimental,
+            )
             ingest_project_experimental(project_id, version=revision)
             return
         if pub.project.value.projectType == 'simulation':
@@ -798,6 +791,7 @@ def save_to_fedora(self, project_id, revision=None):
             return
 
     except Exception as exc:
+        logger.exception("")
         logger.error('Proj Id: %s. %s', project_id, exc)
         raise self.retry(exc=exc)
 
@@ -808,41 +802,41 @@ def set_facl_project(self, project_uuid, usernames):
         job_body = {
             'parameters': {
                 'username': username,
-                'directory': 'projects/{}'.format(project_uuid)
+                'directory': f'projects/{project_uuid}'
             },
             'name': 'setfacl',
             'appId': 'setfacl_corral3-0.1'
         }
         res = client.jobs.submit(body=job_body)
-        logger.debug('set facl project: {}'.format(res))
+        logger.debug('set facl project: %s', res)
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def email_project_admins(self, project_id, project_uuid, project_title, project_url, username):
     #contact project admins regarding publication of sensitive information
-    service = get_service_account_client()
+    get_service_account_client()
     admins = settings.PROJECT_ADMINS_EMAIL
     user = get_user_model().objects.get(username=username)
 
     for admin in admins:
-        email_body = """
+        email_body = f"""
             <p>Hello,</p>
             <p>
                 The following Field Research project has been created with the intent of publishing sensitive information:
                 <br>
-                <b>{prjID} - {title}</b>
+                <b>{project_id} - {project_title}</b>
             </p>
             <p>
                 Contact PI:
                 <br>
-                {name} - {email}
+                {user.get_full_name()} - {user.email}
             </p>
             <p>
                 Link to Project:
                 <br>
-                <a href=\"{url}\">{url}</a>.
+                <a href=\"{project_url}\">{project_url}</a>.
             </p>
             This is a programmatically generated message. Do NOT reply to this message.
-            """.format(name=user.get_full_name(), email=user.email, title=project_title, prjID=project_id, url=project_url)
+            """
 
         send_mail(
             "DesignSafe PII Alert",
@@ -853,31 +847,31 @@ def email_project_admins(self, project_id, project_uuid, project_title, project_
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def email_collaborator_added_to_project(self, project_id, project_uuid, project_title, project_url, team_members_to_add, co_pis_to_add):
-    service = get_service_account_client()
+    get_service_account_client()
     for username in team_members_to_add + co_pis_to_add:
         collab_users = get_user_model().objects.filter(username=username)
         if collab_users:
             for collab_user in collab_users:
-                email_body = """
-                        <p>Hi {name},</p><br>
-                        <p>You have been added to the project <b>{title} (ID: {prjID})</b>.</p><br>
-                        <p>You can visit the project using the url <a href=\"{url}\">{url}</a>.</p>
+                email_body = f"""
+                        <p>Hi {collab_user.get_full_name()},</p><br>
+                        <p>You have been added to the project <b>{project_title} (ID: {project_id})</b>.</p><br>
+                        <p>You can visit the project using the url <a href=\"{project_url}\">{project_url}</a>.</p>
                         <p>You must log in to view this project.</p>
                         <p>You can now start working on the project. Please use your TACC account to access the DesignSafe-CI website or to ask for help.</p>
                         <p>Thanks,<br>
                         The DesignSafe-CI Team.<br><br>
                         This is a programmatically generated message. Do NOT reply to this message.
-                        """.format(name=collab_user.get_full_name(), title=project_title, prjID=project_id, url=project_url)
+                        """
                 try:
                     collab_user.profile.send_mail("You have been added to a DesignSafe project!", email_body)
-                except DesignSafeProfile.DoesNotExist as err:
-                    logger.info("Could not send email to user {}".format(collab_user))
+                except DesignSafeProfile.DoesNotExist:
+                    logger.info("Could not send email to user %s", collab_user)
                     send_mail(
                         "You have been added to a project!",
                         email_body,
                         settings.DEFAULT_FROM_EMAIL,
                         [collab_user.email],
-                        html_message=body)
+                        html_message=body) # noqa
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def email_user_publication_request_confirmation(self, username):
@@ -894,8 +888,8 @@ def email_user_publication_request_confirmation(self, username):
     """.format(pub_url="https://www.designsafe-ci.org/data/browser/public/", ticket_url="https://www.designsafe-ci.org/help/new-ticket/")
     try:
         user.profile.send_mail(email_subject, email_body)
-    except Exception as e:
-        logger.info("Could not send email to user {}".format(user))
+    except Exception: # noqa
+        logger.info(f"Could not send email to user {user}") # noqa
         send_mail(
             email_subject,
             email_body,
@@ -930,9 +924,9 @@ def check_published_files(self, project_id, revision=None, selected_files=None):
             file_path.strip('/') for file_path in filepaths if (file_path != '.Trash')
         ]
 
-    pub_directory = '/corral-repl/tacc/NHERI/published/{}'.format(project_id)
+    pub_directory = f'/corral-repl/tacc/NHERI/published/{project_id}'
     if revision:
-        pub_directory += 'v{}'.format(revision)
+        pub_directory += f'v{revision}'
 
     #navigate through publication files paths and
     #compare to the previous list of files
@@ -956,34 +950,34 @@ def check_published_files(self, project_id, revision=None, selected_files=None):
     #send email if there are files/folders missing/empty
     if(missing_files or empty_folders):
         #log for potential later queries
-        logger.info("check_published_files missing files: " + project_id + " " + str(missing_files))
-        logger.info("check_published_files empty folders: " + project_id + " " + str(empty_folders))
+        logger.info("check_published_files missing files: %s %s", project_id, str(missing_files))
+        logger.info("check_published_files empty folders: %s %s", project_id, str(empty_folders))
 
         #send email to dev admins
-        service = get_service_account_client()
+        get_service_account_client()
         prj_admins = settings.DEV_PROJECT_ADMINS_EMAIL
         for admin in prj_admins:
-            email_body = """
+            email_body = f"""
                 <p>Hello,</p>
                 <p>
                     The following project has been published with either missing files/folders or empty folders:
                     <br>
-                    <b>{prjID} - revision {revision}</b>
+                    <b>{project_id} - revision {revision}</b>
                     <br>
-                    Path to publication files: {pubFiles}
+                    Path to publication files: {pub_directory}
                 </p>
                 <p>
                     These are the missing files/folders for this publication:
                     <br>
-                    {missingFiles}
+                    {missing_files}
                 </p>
                 <p>
                     These are the empty folders for this publication:
                     <br>
-                    {emptyFolders}
+                    {empty_folders}
                 </p>
                 This is a programmatically generated message. Do NOT reply to this message.
-                """.format(pubFiles=pub_directory, prjID=project_id, missingFiles=missing_files, emptyFolders = empty_folders,revision=revision)
+                """
 
             send_mail(
                 "DesignSafe Alert: Published Project has missing files/folders",

@@ -1,8 +1,9 @@
 """Operations to format published data in accordance with the project structure"""
 
-import shutil
 import os
+import shutil
 from pathlib import Path
+
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
     transform_pub_entities,
 )
@@ -21,11 +22,11 @@ def format_publication_data(
     pub_graph, path_mappings = transform_pub_entities(project_id, version)
 
     base_project = next(
-        (
+        
             node
             for node in pub_graph
             if pub_graph.nodes[node]["name"] == "designsafe.project"
-        )
+        
     )
     prj_value = pub_graph.nodes[base_project]
 

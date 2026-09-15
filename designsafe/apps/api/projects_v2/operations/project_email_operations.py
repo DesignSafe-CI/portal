@@ -1,11 +1,11 @@
 """Utilities to email users/staff in response to project lifecycle changes."""
 
-from typing import Optional
+
 from django.conf import settings
 from django.core.mail import send_mail
 
 
-def send_project_permissions_alert(project_id: str, version: Optional[int], error: str):
+def send_project_permissions_alert(project_id: str, version: int | None, error: str):
     """
     Alert dev team when a project has encountered a permission error during publication.
     """

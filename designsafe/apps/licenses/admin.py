@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from designsafe.apps.licenses import models
 
 

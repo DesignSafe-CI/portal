@@ -1,5 +1,7 @@
-from elasticsearch_dsl import Q
 import logging
+
+from elasticsearch_dsl import Q
+
 logger = logging.getLogger(__name__)
 
 def experimental_facility_query(facility):

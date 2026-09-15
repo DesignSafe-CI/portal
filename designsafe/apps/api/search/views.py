@@ -5,18 +5,23 @@
    access.
 """
 import logging
-import operator
-from elasticsearch_dsl import Q, Search, Index
-from elasticsearch import TransportError, ConnectionTimeout
-from django.http import (HttpResponseBadRequest,
-                         JsonResponse)
-from django.conf import settings
-from designsafe.apps.api.views import BaseApiView
 
-from designsafe.apps.api.search.searchmanager.community import CommunityDataSearchManager
-from designsafe.apps.api.search.searchmanager.published_files import PublishedDataSearchManager
+from django.conf import settings
+from django.http import HttpResponseBadRequest, JsonResponse
+from elasticsearch import ConnectionTimeout, TransportError
+from elasticsearch_dsl import Index, Search
+
 from designsafe.apps.api.search.searchmanager.cms import CMSSearchManager
-from designsafe.apps.api.search.searchmanager.publications_site_search import PublicationsSiteSearchManager
+from designsafe.apps.api.search.searchmanager.community import (
+    CommunityDataSearchManager,
+)
+from designsafe.apps.api.search.searchmanager.publications_site_search import (
+    PublicationsSiteSearchManager,
+)
+from designsafe.apps.api.search.searchmanager.published_files import (
+    PublishedDataSearchManager,
+)
+from designsafe.apps.api.views import BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +30,17 @@ class SearchView(BaseApiView):
     """Main view to handle sitewise search requests"""
     def get(self, request):
         """GET handler."""
-        q = request.GET.get('query_string')
+        request.GET.get('query_string')
         offset = int(request.GET.get('offset', 0))
         limit = int(request.GET.get('limit', 10))
         if limit > 500:
             return HttpResponseBadRequest("limit must not exceed 500")
         type_filter = request.GET.get('type_filter', 'all')
         doc_type_map = {
-            list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]: 'publication',
-            list(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys())[0]: 'publication',
-            list(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys())[0]: 'file',
-            list(Index(settings.ES_INDEX_PREFIX.format('cms')).get_alias().keys())[0]: 'modelresult'
+            next(iter(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())): 'publication',
+            next(iter(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys())): 'publication',
+            next(iter(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys())): 'file',
+            next(iter(Index(settings.ES_INDEX_PREFIX.format('cms')).get_alias().keys())): 'modelresult'
         }
 
         public_files_query = CommunityDataSearchManager(request).construct_query() | PublishedDataSearchManager(request).construct_query()
@@ -83,8 +88,8 @@ class SearchView(BaseApiView):
             if r.meta.doc_type == 'publication' and hasattr(r, 'users'):
                 users = r.users
                 pi = r.project.value.pi
-                pi_user = [x for x in users if x.username==pi][0]
-                d["piLabel"] = "{}, {}".format(pi_user.last_name, pi_user.first_name)
+                pi_user = next(x for x in users if x.username==pi)
+                d["piLabel"] = f"{pi_user.last_name}, {pi_user.first_name}"
             hits.append(d)
 
         out['hits'] = hits

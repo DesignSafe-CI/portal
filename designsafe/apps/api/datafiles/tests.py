@@ -1,6 +1,12 @@
-import pytest
 import json
-from designsafe.apps.api.datafiles.models import DataFilesSurveyResult, DataFilesSurveyCounter
+
+import pytest
+
+from designsafe.apps.api.datafiles.models import (
+    DataFilesSurveyCounter,
+    DataFilesSurveyResult,
+)
+
 
 @pytest.mark.django_db
 def test_survey_post(client, regular_user):

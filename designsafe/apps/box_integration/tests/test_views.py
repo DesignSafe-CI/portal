@@ -1,10 +1,11 @@
-from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from unittest import skip
+from unittest import mock, skip
+
 from boxsdk.object.user import User
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
+
 from designsafe.apps.box_integration.models import BoxUserToken
-import mock
 
 
 @skip('This test is not working')

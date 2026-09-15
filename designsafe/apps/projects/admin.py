@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from designsafe.apps.projects.models.categories import Category, CategoryOrder
 
 

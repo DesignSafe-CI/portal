@@ -3,12 +3,11 @@ from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.schema_models import (
     base,
     experimental,
+    field_recon,
     hybrid_sim,
     simulation,
-    field_recon,
 )
 from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
-
 
 SCHEMA_MAPPING: dict[str, MetadataModel] = {
     constants.PROJECT: base.BaseProject,

@@ -1,5 +1,5 @@
-from django.conf import settings
 from django.db import models
+
 
 class DataFilesSurveyResult(models.Model):
     project_id = models.CharField(max_length=255)

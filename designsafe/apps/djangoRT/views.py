@@ -1,18 +1,24 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
-from django.core.exceptions import PermissionDenied
-from django.urls import reverse
-from designsafe.apps.djangoRT import rtUtil, forms, rtModels
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.core.files.base import ContentFile
+import json
+import logging
+
+import requests
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.core.files.base import ContentFile
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+    JsonResponse,
+)
+from django.shortcuts import render
+from django.urls import reverse
+
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.views import BaseApiView
-import logging
-import mimetypes
-import json
-import requests
+from designsafe.apps.djangoRT import forms, rtModels, rtUtil
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +78,7 @@ def ticketcreate(request):
         form = form_cls(request.POST, request.FILES)
 
         if form.is_valid():
-            requestor_meta = '%s %s <%s>' % (
+            requestor_meta = '{} {} <{}>'.format(
                 form.cleaned_data['first_name'],
                 form.cleaned_data['last_name'],
                 request.user.email
@@ -89,8 +95,8 @@ def ticketcreate(request):
                     ('HTTP Referer', form.cleaned_data['http_referer']),
                 )
 
-            header = '\n'.join('[%s] %s' % m for m in meta)
-            ticket_body = '%s\n\n%s\n\n---\n%s' % (
+            header = '\n'.join('[{}] {}'.format(*m) for m in meta)
+            ticket_body = '{}\n\n{}\n\n---\n{}'.format(
                 header,
                 form.cleaned_data['problem_description'],
                 requestor_meta
@@ -101,7 +107,7 @@ def ticketcreate(request):
                                      requestor=request.user.email,
                                      cc=form.cleaned_data.get('cc', ''))
 
-            logger.debug('Creating ticket for user: %s' % form.cleaned_data)
+            logger.debug('Creating ticket for user: %s', form.cleaned_data)
 
             rt = rtUtil.DjangoRt()
             ticket_id = rt.createTicket(ticket)
@@ -192,11 +198,14 @@ def ticketclose(request, ticketId):
 
     if request.method == 'POST':
         form = forms.CloseForm(request.POST)
-        if form.is_valid():
-            if (rt.commentOnTicket(ticketId, text=form.cleaned_data['reply']) and
-                    rt.closeTicket(ticketId)):
-                return HttpResponseRedirect(reverse('djangoRT:ticketdetail',
-                                                    args=[ticketId]))
+        if (
+            form.is_valid()
+            and rt.commentOnTicket(ticketId, text=form.cleaned_data["reply"])
+            and rt.closeTicket(ticketId)
+        ):
+            return HttpResponseRedirect(
+                reverse("djangoRT:ticketdetail", args=[ticketId])
+            )
     else:
         form = forms.CloseForm(initial=data)
     return render(request, 'djangoRT/ticketClose.html', {
@@ -224,7 +233,7 @@ class FeedbackView(BaseApiView):
         """
         data = json.loads(request.body)
         email = request.user.email if request.user.is_authenticated else data['email']
-        name = "{} {}".format(request.user.first_name, request.user.last_name) if request.user.is_authenticated else data['name']
+        name = f"{request.user.first_name} {request.user.last_name}" if request.user.is_authenticated else data['name']
         subject = data['subject']
         body = data['body']
         project_id = data['projectId']
@@ -278,10 +287,7 @@ class FeedbackView(BaseApiView):
         if subject is None or email is None or body is None:
             return HttpResponseBadRequest()
 
-        requestor_meta = '%s <%s>' % (
-            name,
-            email
-        )
+        requestor_meta = f'{name} <{email}>'
 
         meta = (
             ('Opened by', request.user.username),
@@ -291,20 +297,16 @@ class FeedbackView(BaseApiView):
             ('Project Title', project_title),
         )
 
-        header = '\n'.join('[%s] %s' % m for m in meta)
+        header = '\n'.join('[{}] {}'.format(*m) for m in meta)
 
-        ticket_body = '%s\n\n%s\n\n---\n%s' % (
-            header,
-            body,
-            requestor_meta
-        )
+        ticket_body = f'{header}\n\n{body}\n\n---\n{requestor_meta}'
 
         ticket = rtModels.Ticket(subject=subject,
                                  problem_description="\n  ".join(ticket_body.splitlines()),
                                  requestor=email,
                                  cc='')
 
-        logger.debug(f'Creating ticket for user: {name} email: {email}')
+        logger.debug('Creating ticket for user: %s email: %s', name, email)
 
         ticket_id = rt.createTicket(ticket)
 
