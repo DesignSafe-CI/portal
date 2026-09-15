@@ -104,7 +104,7 @@ def spinal_to_camelcase(string):
     else:
         first = comps[0]
     camel = ''.join(x.capitalize() or '_' for x in comps[1:])
-    camel = ''.join([first, camel])
+    camel = f'{first}{camel}'
     return camel
 
 class Manager:
@@ -225,7 +225,7 @@ class BaseModel(type):
     def _prepare(cls):
         opts = cls._meta
         if cls.__doc__ is None:
-            cls.__doc__ = "%s(%s)" % (cls.__name__, ", ".join(f.name for f in opts._fields))
+            cls.__doc__ = "{}({})".format(cls.__name__, ", ".join(f.name for f in opts._fields))
             
             #if not opts.manager:
             #    if any(f.name == 'objects' for f in opts.fields):
@@ -240,7 +240,7 @@ class BaseModel(type):
             cls._meta.model_manager = Manager(cls)
 
         if not isinstance(opts.model_manager, Manager):
-            raise ValueError("Model Manager must be a Manager class.")
+            raise ValueError("Model Manager must be a Manager class.") # noqa
 
 
 class Model(metaclass=BaseModel):
@@ -261,13 +261,10 @@ class Model(metaclass=BaseModel):
         self.name = None
         self.parent = None
         #logger.debug('kwargs: %s', json.dumps(kwargs, indent=4))
-        cls = self.__class__
-        opts = self._meta
         #logger.debug('_is_nested: %s', self._is_nested) 
         self.update(**kwargs)
 
     def update(self, **kwargs):
-        cls = self.__class__
         opts = self._meta
         _setattr = setattr
         if self._is_nested:

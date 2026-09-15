@@ -142,7 +142,6 @@ class ProjectsView(BaseApiView):
 
     def post(self, request: HttpRequest):
         """Create a new project."""
-        user = request.user
         if not request.user.is_authenticated:
             raise ApiException("Unauthenticated user", status=401)
         req_body = json.loads(request.body)
@@ -284,7 +283,7 @@ class ProjectInstanceView(BaseApiView):
             },
         )
 
-        if "githubUrl" in request_body.keys():
+        if "githubUrl" in request_body:
             try:
                 request_body["githubUrl"] = request_body["githubUrl"].strip()
                 github_params = validate_github_release(request_body["githubUrl"])

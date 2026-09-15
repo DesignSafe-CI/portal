@@ -50,7 +50,8 @@ class TapisTokenRefreshMiddleware:
             return
 
         logger.info(
-            f"Tapis OAuth token expired for user {request.user.username}. Refreshing token"
+            "Tapis OAuth token expired for user %s. Refreshing token",
+            request.user.username
         )
         with transaction.atomic():
             # Get a lock on this user's token row in db.

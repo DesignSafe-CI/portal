@@ -35,15 +35,14 @@ def index(request):
         try:
             googledrive_user = check_connection(request.user.username)
             context['googledrive_connection'] = googledrive_user
-        except Exception as e:
+        except Exception:
             # authentication failed
-            logger.exception(f'google drive failed to authenticate: {e}')
-            logger.warning('Google Drive oauth token for user=%s failed to authenticate' %
-                           request.user.username)
+            logger.exception('google drive failed to authenticate')
+            logger.warning('Google Drive oauth token for user=%s failed to authenticate', request.user.username)
             context['googledrive_connection'] = False
 
-    except:
-        logger.debug('GoogleDriveUserToken does not exist for user=%s' % request.user.username)
+    except Exception:
+        logger.exception('GoogleDriveUserToken does not exist for user=%s', request.user.username)
 
     return render(request, 'designsafe/apps/googledrive_integration/index.html', context)
 
@@ -79,7 +78,7 @@ def oauth2_callback(request):
     else:
         return HttpResponseBadRequest('Unexpected request')
 
-    if not (state == googledrive['state']):
+    if state != googledrive['state']:
         return HttpResponseBadRequest('Request expired')
 
     try:
@@ -110,14 +109,14 @@ def oauth2_callback(request):
         # another refresh_token.
 
         logger.debug('GoogleDriveUserToken refresh_token cannot be null, revoking previous access and restart flow.')
-        revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
+        requests.post('https://accounts.google.com/o/oauth2/revoke',
                 params={'token': credentials.token},
                 headers = {'content-type': 'application/x-www-form-urlencoded'})
 
         HttpResponseRedirect(reverse('googledrive_integration:initialize_token'))
 
-    except Exception as e:
-        logger.exception('Unable to complete Google Drive integration setup: %s' % e)
+    except Exception:
+        logger.exception('Unable to complete Google Drive integration setup')
         messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
                                 'up the Google Drive application. Please try again.')
 
@@ -146,7 +145,7 @@ def disconnect(request):
             else:
                 logger.error('Disconnect Google Drive; google drive account revoke error.',
                          extra={'user': request.user})
-                logger.debug(f'status code:{status_code}')
+                logger.debug('status code: %s', status_code)
 
                 return HttpResponseRedirect(reverse('googledrive_integration:index'))
 
@@ -154,10 +153,10 @@ def disconnect(request):
             logger.warning('Disconnect Google Drive; GoogleDriveUserToken does not exist.',
                         extra={'user': request.user})
 
-        except Exception as e:
+        except Exception:
             logger.error('Disconnect Google Drive; GoogleDriveUserToken delete error.',
                          extra={'user': request.user})
-            logger.exception(f'google drive delete error: {e}')
+            logger.exception('google drive delete error:')
 
         messages.success(request, 'Your Google Drive account has been disconnected from DesignSafe.')
 

@@ -186,8 +186,8 @@ class ChangePasswordForm(forms.Form):
             err_msg = mark_safe(
                 'The current password you provided is incorrect. Please try again. '
                 'If you do not remember your current password you can '
-                '<a href="%s" tabindex="-1">reset your password</a> with an email '
-                'confirmation.' % reset_link)
+                f'<a href="{reset_link}" tabindex="-1">reset your password</a> with an email '
+                'confirmation.')
             self.add_error('current_password', err_msg)
 
     def save(self):
@@ -222,7 +222,8 @@ class PasswordResetConfirmForm(forms.Form):
         try:
             tas = TASClient()
             user = tas.get_user(username=username)
-        except:
+        except Exception:
+            LOGGER.exception("")
             msg = 'The username provided does not match an existing user.'
             self.add_error('username', msg)
             raise forms.ValidationError(msg)
@@ -442,7 +443,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
         safe_data = tas_data.copy()
         safe_data['password'] = safe_data['confirmPassword'] = '********'
 
-        LOGGER.info('Attempting new user registration: %s' % safe_data)
+        LOGGER.info('Attempting new user registration: %s', safe_data)
         tas_user = TASClient().save_user(None, tas_data)
 
         # create local user
@@ -451,7 +452,7 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
             # the user should not exist
             user = UserModel.objects.get(username=data['username'])
             LOGGER.warning('On TAS registration, local user already existed? '
-                           'user=%s' % user)
+                           'user=%s', user)
         except UserModel.DoesNotExist:
             user = UserModel.objects.create_user(
                 username=data['username'],
@@ -490,13 +491,13 @@ class UserRegistrationForm(UserProfileForm, ProfessionalProfileForm):
         pro_profile.save()
 
         # terms of use
-        LOGGER.info('Prior to Registration, %s %s <%s> agreed to Terms of Use' % (
-            data['firstName'], data['lastName'], data['email']))
+        LOGGER.info('Prior to Registration, %s %s <%s> agreed to Terms of Use', 
+            data['firstName'], data['lastName'], data['email'])
         try:
             terms = TermsAndConditions.get_active()
             user_terms = UserTermsAndConditions(user=user, terms=terms)
             user_terms.save()
-        except:
+        except Exception:
             LOGGER.exception('Error saving UserTermsAndConditions for user=%s', user)
 
         return tas_user

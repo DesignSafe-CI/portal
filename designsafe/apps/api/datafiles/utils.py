@@ -42,7 +42,7 @@ def rename_duplicate_path(file_name):
     """
     _ext = os.path.splitext(file_name)[1].lower()
     _name = os.path.splitext(file_name)[0]
-    now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
+    now = datetime.datetime.utc().strftime('%Y-%m-%d %H-%M-%S')
     return f'{_name}_{now}{_ext}'
 
 

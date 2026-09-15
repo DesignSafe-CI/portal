@@ -23,12 +23,12 @@ class BaseSystemResource(BaseAgaveResource):
             'username': username,
             'role': role
         }
-        logger.info(f'Granting system role on {self.id}: {role_body}')
+        logger.info('Granting system role on %s: %s', self.id, role_body)
         self._agave.systems.updateRole(systemId=self.id, body=role_body)
         return self
 
     def remove_role(self, username):
-        logger.info(f'Revoking system roles on {self.id} for user {username}')
+        logger.info('Revoking system roles on %s for user %s', self.id, username)
         self._agave.systems.deleteRoleForUser(systemId=self.id, username=username)
         return self
 

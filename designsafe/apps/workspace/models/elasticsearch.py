@@ -5,6 +5,7 @@ import logging
 from django.conf import settings
 from elasticsearch_dsl import (
     Date,
+    Document,
     Keyword,
     MetaField,
     Nested,

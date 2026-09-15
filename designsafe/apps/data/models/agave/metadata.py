@@ -52,17 +52,17 @@ class BaseMetadataResource(BaseAgaveResource):
         :rtype: :class:`BaseMetadataResource`
         """
         if self.uuid is None:
-            logger.info(f'Saving "{self.name}" metadata: {self.request_body}')
+            logger.info('Saving "%s" metadata: %s', self.name, self.request_body)
             result = self._agave.meta.addMetadata(body=self.request_body)
         else:
-            logger.info(f'Updating "{self.name}" metadata {self.uuid}: {self.request_body}')
+            logger.info('Updating "%s" metadata %s: %s', self.name, self.uuid, self.request_body)
             result = self._agave.meta.updateMetadata(uuid=self.uuid,
                                                      body=self.request_body)
         self._wrapped.update(**result)
         return self
 
     def delete(self):
-        logger.info(f'Deleting "{self.name}" metadata {self.uuid}')
+        logger.info('Deleting "%s" metadata %s', self.name, self.uuid)
         self._agave.meta.deleteMetadata(uuid=self.uuid)
         return self
 
@@ -144,7 +144,7 @@ class BaseMetadataPermissionResource(BaseAgaveResource):
         :return: self
         :rtype: :class:`BaseMetadataPermissionResource`
         """
-        logger.info(f'Updating metadata permissions: {self.metadata_uuid} {self.request_body}')
+        logger.info('Updating metadata permissions: %s %s', self.metadata_uuid, self.request_body)
         result = self._agave.meta.updateMetadataPermissions(uuid=self.metadata_uuid,
                                                             body=self.request_body)
         self._wrapped.update(**result)

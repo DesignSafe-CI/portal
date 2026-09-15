@@ -51,7 +51,7 @@ class KeywordsView(BaseApiView):
             resp_list = _parse_keywords_response(resp["answer"])
         except (AttributeError, TypeError, ValueError):
             logger.exception("Error decoding answer")
-            logger.debug(f"Raw answer: {resp['answer']}")
+            logger.debug("Raw answer: %s", resp['answer'])
             resp_list = []
 
         return JsonResponse({"response": resp_list})
@@ -126,9 +126,9 @@ class RAG:
                 top_p=0.1,
             )
 
-        except Exception as e:
+        except Exception:
             logger.exception("Error initializing RAG")
-            raise e
+            raise
 
     def retrieve(self, state: State):
         """Retrieve relevant documents from vector store based on the question."""

@@ -20,7 +20,7 @@ def get_number_unread_notifications(request):
     # nondeleted = JobNotification.objects.filter(deleted=False, user=str(request.user)).count()
     unread = Notification.objects.filter(deleted=False, read=False, user=str(request.user)).count()
     # LOGGER.info('nondeleted: {}'.format(nondeleted))
-    LOGGER.info(f'unread: {unread}')
+    LOGGER.info('unread: %s', unread)
     return unread
 
 
@@ -47,7 +47,7 @@ def notifications(request):
 def delete_notification(request):
     body = json.loads(request.body)
     pk = body['pk']
-    LOGGER.info(f'pk: {pk}')
+    LOGGER.info('pk: %s', pk)
     if pk == 'all':
         items = Notification.objects.filter(deleted=False, user=str(request.user))
         for i in items:

@@ -32,17 +32,17 @@ class BaseApiView(View):
         """
         try:
             return super().dispatch(request, *args, **kwargs)
-        except (PermissionDenied, Http404) as e:
+        except (PermissionDenied, Http404):
             # log information but re-raise exception to let django handle response
-            logger.error(e, exc_info=True)
-            raise e
+            logger.exception("")
+            raise
         except ApiException as e:
             status = e.response.status_code or 400
             message = e.response.reason
             extra = e.extra
             if status != 404:
-                logger.error(
-                    "%s: %s", message, e.response.text, exc_info=True, extra=extra
+                logger.exception(
+                    "%s: %s", message, e.response.text, extra=extra
                 )
             else:
                 logger.info("Error %s", message, exc_info=True, extra=extra)
@@ -72,20 +72,17 @@ class BaseApiView(View):
                         },
                     )
                 else:
-                    logger.error(
+                    logger.exception(
                         "%s: %s",
                         message,
                         e.response.text,
-                        exc_info=True,
                         extra={
                             "username": request.user.username,
                             "session_key": request.session.session_key,
                         },
                     )
             else:
-                logger.error(
-                    e,
-                    exc_info=True,
+                logger.exception(
                     extra={
                         "username": request.user.username,
                         "session_key": request.session.session_key,
@@ -93,8 +90,8 @@ class BaseApiView(View):
                 )
                 message = str(e)
             return JsonResponse({"message": message}, status=status)
-        except Exception as e:  # pylint: disable=broad-except
-            logger.error(e, exc_info=True)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("")
             return JsonResponse({"message": "Something went wrong here..."}, status=500)
 
 
@@ -179,7 +176,7 @@ class SystemQueueProxyApi(BaseApiView):
                 "status": "success"
             })
         except requests.exceptions.RequestException as e:
-            logger.exception("Proxy API Error:", str(e)) 
+            logger.exception("Proxy API Error") 
             return JsonResponse({
                 "response": None,
                 "status": "error",
@@ -204,7 +201,7 @@ class SystemOverviewProxyApi(BaseApiView):
             }, status=200)
              
         except requests.exceptions.RequestException as e:
-            logger.exception("Proxy API Error:", str(e)) 
+            logger.exception("Proxy API Error") 
             return JsonResponse({
                 "response": None,
                 "status": "error",

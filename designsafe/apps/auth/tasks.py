@@ -1,7 +1,7 @@
 """ Celery tasks for user onboarding and other user-related tasks. """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from celery import shared_task
 from django.conf import settings
@@ -51,7 +51,7 @@ def new_user_alert(username):
 @shared_task()
 def clear_old_notifications():
     """Delete notifications older than 30 days to prevent them cluttering the db."""
-    time_cutoff = datetime.now() - timedelta(days=30)
+    time_cutoff = datetime.now(tz=UTC) - timedelta(days=30)
     Notification.objects.filter(datetime__lte=time_cutoff).delete()
 
 
@@ -61,6 +61,7 @@ def update_institution_from_tas(self, username):
     try:
         tas_model = TASClient().get_user(username=username)
     except Exception as exc:
+        logger.exception("")
         raise self.retry(exc=exc)
     user_model.profile.institution = tas_model.get("institution", None)
     user_model.profile.orcid_id = tas_model.get("orcidId", None)

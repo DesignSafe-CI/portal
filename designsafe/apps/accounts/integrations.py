@@ -11,15 +11,19 @@ def get_integrations():
 
     for app in settings.INSTALLED_APPS:
         try:
-            mod = import_module('%s.integrations' % app)
+            mod = import_module(f"{app}.integrations")
             try:
                 app_integrations += mod.provide_integrations()
             except AttributeError:
                 continue
-            except:
-                logger.warning('Call to module.provide_integrations fail for module: %s' % mod.__name__)
-        except:
+            except Exception:
+                logger.exception("")
+                logger.warning(
+                    "Call to module.provide_integrations fail for module: %s",
+                    mod.__name__,
+                )
+        except Exception:
+            logger.exception("")
             continue
 
     return app_integrations
-

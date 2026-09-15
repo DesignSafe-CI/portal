@@ -32,8 +32,10 @@ def check_access(request, system_id: str, path: str, check_for_writable_access=F
     try:
         listing(request.user.tapis_oauth.client, system_id, path)
     except Exception as exc:  # pylint:disable=broad-exception-caught
-        logger.error(
-            f"user cannot access any related metadata as listing failed for {system_id}/{path} with error {exc!s}."
+        logger.exception(
+            "user cannot access any related metadata as listing failed for %s/%s",
+            system_id,
+            path,
         )
         raise ApiException("User forbidden to access metadata", status=403) from exc
 
@@ -50,7 +52,7 @@ class FileMetaView(AuthenticatedAllowJwtApiView):
 
         result = {}
         try:
-            logger.debug(f"Get file metadata. system:{system_id} path:{path}")
+            logger.debug("Get file metadata. system:%s path:%s", system_id, path)
             file_meta = FileMetaModel.get_by_path_and_system(
                 system=system_id, path=path
             )
@@ -74,7 +76,8 @@ class CreateFileMetaView(AuthenticatedAllowJwtApiView):
         value = json.loads(request.body)
         if "system" not in value or "path" not in value:
             logger.error(
-                f"Unable to create or update file metadata as system and path not in payload: {value}"
+                "Unable to create or update file metadata as system and path not in payload: %s",
+                value,
             )
             raise ApiException("System and path are required in payload", status=400)
 
@@ -87,14 +90,14 @@ class CreateFileMetaView(AuthenticatedAllowJwtApiView):
 
         try:
             logger.info(
-                f"Creating or updating file metadata. system:{system_id} path:{path}"
+                "Creating or updating file metadata. system:%s path:%s", system_id, path
             )
 
             FileMetaModel.create_or_update_file_meta(value)
             return JsonResponse({"result": "OK"})
         except Exception as exc:
             logger.exception(
-                f"Unable to create or update file metadata: {system_id}/{path}"
+                "Unable to create or update file metadata: %s/%s", system_id, path
             )
             raise ApiException(
                 "Unable to create or update file metadata", status=500

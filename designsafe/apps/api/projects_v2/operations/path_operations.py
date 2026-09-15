@@ -248,9 +248,9 @@ def generate_manifests_for_project(project_id: str):
             subprocess.CalledProcessError,
             subprocess.SubprocessError,
             FileNotFoundError,
-        ) as exc:
+        ):
             logger.debug("Failed to generate manifest at %s", path)
-            raise exc
+            raise
     logger.debug("Finished generating manifests for publication %s", project_id)
 
 

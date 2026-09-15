@@ -194,7 +194,7 @@ class BaseFileResource(BaseAgaveResource):
 
     @property
     def id(self):
-        return '/'.join([self.system, self.path])
+        return f'{self.system}/{self.path}'
 
     @property
     def children(self):
@@ -260,6 +260,7 @@ class BaseFileResource(BaseAgaveResource):
 
             return self._metadata
         except Exception as exc:
+            logger.exception("")
             logger.debug('Couldn\'t get metadata %s', exc)
 
     @property
@@ -283,6 +284,7 @@ class BaseFileResource(BaseAgaveResource):
                     return meta_q.get('associationIds')
             return None
         except Exception as exc:
+            logger.exception("")
             logger.debug('Couldn\'t get uuid %s', exc)
 
     def to_dict(self):
@@ -325,7 +327,7 @@ class BaseFileResource(BaseAgaveResource):
         if file_name is None:
             file_name = self.name
 
-        body = {'action': 'copy', 'path': '/'.join([dest_path, file_name])}
+        body = {'action': 'copy', 'path': f'{dest_path}/{file_name}'}
         copy_result = self._agave.files.manage(systemId=self.system,
                                                filePath=urllib.parse.quote(self.path),
                                                body=body)
@@ -481,7 +483,7 @@ class BaseFileResource(BaseAgaveResource):
         """
         if file_name is None:
             file_name = self.name
-        body = {'action': 'move', 'path': '/'.join([dest_path, file_name])}
+        body = {'action': 'move', 'path': f'{dest_path}/{file_name}'}
         move_result = self._agave.files.manage(systemId=self.system,
                                                filePath=urllib.parse.quote(self.path),
                                                body=body)
@@ -512,7 +514,7 @@ class BaseFileResource(BaseAgaveResource):
         permission_body = {'username': username,
                            'permission': permission,
                            'recursive': recursive}
-        logger.info(f'Updating file permissions on {self.agave_uri}: {permission_body}')
+        logger.info('Updating file permissions on %s: %s', self.agave_uri, permission_body)
         self._agave.files.updatePermissions(
             systemId=self.system,
             filePath=urllib.parse.quote(self.path),

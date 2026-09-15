@@ -104,6 +104,7 @@ class SearchView(View):
                 user_tas = TASClient().get_user(username=q)
                 res_dict["profile"] = {"institution": user_tas["institution"]}
             except Exception:
+                logger.exception("")
                 logger.info("No Profile.")
 
             return JsonResponse(res_dict)

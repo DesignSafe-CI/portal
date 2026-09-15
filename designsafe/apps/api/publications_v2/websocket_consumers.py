@@ -84,8 +84,8 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                     },
                 )
         # pylint:disable=broad-exception-caught
-        except Exception as exc:
-            logger.debug(exc)
+        except Exception:
+            logger.exception("")
             await self.send(
                 json.dumps(
                     {

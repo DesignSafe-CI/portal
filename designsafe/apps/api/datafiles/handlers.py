@@ -48,7 +48,9 @@ def datafiles_get_handler(api, client, scheme, system, path, operation, username
         system_needs_keys = test_system_needs_keys(client, username, system, path)
         if system_needs_keys:
             logger.error(
-                f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
+                "Keys for user %s must be manually pushed to system: %s",
+                username,
+                system_needs_keys.id,
             )
         raise
     except BaseTapyException as exc:
@@ -68,9 +70,9 @@ def datafiles_post_handler(api, username, client, scheme, system,
         result = op(client, system, path, tapis_tracking_id=tapis_tracking_id, **body)
         operation in notify_actions and notify(username, operation, f'{operation.capitalize()} operation was successful.', 'SUCCESS', result)
         return result
-    except Exception as exc:
+    except Exception:
         operation in notify_actions and notify(username, operation, f'File operation {operation.capitalize()} could not be completed.', 'ERROR', {})
-        raise exc
+        raise
 
 
 def datafiles_put_handler(api, username, client, scheme, system,
@@ -88,9 +90,9 @@ def datafiles_put_handler(api, username, client, scheme, system,
         else:
             operation in notify_actions and notify(username, operation, f'{operation.capitalize()} operation was successful.', 'SUCCESS', result)
         return result
-    except Exception as exc:
+    except Exception:
         operation in notify_actions and notify(username, operation, f'File operation {operation.capitalize()} could not be completed.', 'ERROR', {})
-        raise exc
+        raise
 
 
 def resource_unconnected_handler(api):
@@ -121,21 +123,21 @@ def resource_expired_handler(api):
     if api == 'googledrive':
         message = 'While you previously granted this application access to Google Drive, ' \
             'that grant appears to be no longer valid. Please ' \
-            '<a href="%s">disconnect and reconnect your Google Drive account</a> ' \
-            'to continue using Google Drive data.' % reverse('googledrive_integration:index')
+            '<a href="{}">disconnect and reconnect your Google Drive account</a> ' \
+            'to continue using Google Drive data.'.format(reverse('googledrive_integration:index'))
         return ApiException(status=403, message=message)
     if api == 'dropbox':
         message = 'While you previously granted this application access to Dropbox, ' \
             'that grant appears to be no longer valid. Please ' \
-            '<a href="%s">disconnect and reconnect your Dropbox.com account</a> ' \
-            'to continue using Dropbox data.' % reverse('dropbox_integration:index')
+            '<a href="{}">disconnect and reconnect your Dropbox.com account</a> ' \
+            'to continue using Dropbox data.'.format(reverse('dropbox_integration:index'))
         raise ApiException(status=403, message=message)
     if api == 'box':
         # user needs to reconnect with Box
         message = 'While you previously granted this application access to Box, ' \
             'that grant appears to be no longer valid. Please ' \
-            '<a href="%s">disconnect and reconnect your Box.com account</a> ' \
-            'to continue using Box data.' % reverse('box_integration:index')
+            '<a href="{}">disconnect and reconnect your Box.com account</a> ' \
+            'to continue using Box data.'.format(reverse('box_integration:index'))
         raise ApiException(status=403, message=message)
     else:
         message = 'There was an error accessing this storage system.'

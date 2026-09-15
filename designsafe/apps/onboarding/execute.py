@@ -63,6 +63,7 @@ def load_setup_step(user, step):
         raise ValueError(f"Setup step {step} is not a class")
     setup_step = call(user)
     if not isinstance(setup_step, AbstractStep):
+        # ruff: disable[TRY004]
         raise ValueError(f"Setup step {step} is not a subclass of AbstractStep")
     return setup_step
 

@@ -6,7 +6,7 @@
 """
 import calendar
 import logging
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 import six
 from dateutil.parser import parse as datetime_parse
@@ -34,7 +34,7 @@ class NcoProjectsManager:
 
     def _process_time_filter(self, value):
         """Convert from time filter value to date range."""
-        date = datetime.utcnow()
+        date = datetime.now(tz=UTC)
 
         def this_week():
             """Get this week range."""

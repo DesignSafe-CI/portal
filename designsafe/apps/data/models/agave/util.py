@@ -25,7 +25,7 @@ class AgaveJSONEncoder(DjangoJSONEncoder):
     def default(self, o):
         """Serializer function"""
 
-        if isinstance(o, BaseAgaveResource) or isinstance(o, BaseModel):
+        if isinstance(o, (BaseAgaveResource, BaseModel)):
             return o.to_dict()
 
         return super().default(o)

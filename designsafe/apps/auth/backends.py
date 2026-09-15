@@ -32,25 +32,26 @@ class TASBackend(ModelBackend):
             tas_user = None
             if request is not None:
                 self.logger.info(
-                    'Attempting login via TAS for user "%s" from IP "%s"'
-                    % (username, request.META.get("REMOTE_ADDR"))
-                )
+                    'Attempting login via TAS for user "%s" from IP "%s"', username, request.META.get("REMOTE_ADDR")
+                    )
+                
             else:
                 self.logger.info(
-                    'Attempting login via TAS for user "%s" from IP "%s"'
-                    % (username, "unknown")
-                )
+                    'Attempting login via TAS for user "%s" from IP "%s"', username, "unknown"
+                    )
+                
             try:
                 # Check if this user is valid on the mail server
                 if self.tas.authenticate(username, password):
                     tas_user = self.tas.get_user(username=username)
-                    self.logger.info('Login successful for user "%s"' % username)
+                    self.logger.info('Login successful for user "%s"', username)
                 else:
                     raise ValidationError(
                         "Authentication Error",
                         "Your username or password is incorrect.",
                     )
             except Exception as e:
+                self.logger.exception("")
                 self.logger.warning(e.args)
                 if re.search(r"PendingEmailConfirmation", e.args[1]):
                     raise ValidationError(
@@ -72,8 +73,8 @@ class TASBackend(ModelBackend):
                 except UserModel.DoesNotExist:
                     # Create a user in Django's local database
                     self.logger.info(
-                        'Creating local user record for "%s" from TAS Profile'
-                        % username
+                        'Creating local user record for "%s" from TAS Profile',
+                        username
                     )
                     user = UserModel.objects.create_user(
                         username=username,
@@ -108,8 +109,8 @@ class TapisOAuthBackend(ModelBackend):
             token = kwargs["token"]
 
             logger.info(
-                'Attempting login via Tapis with token "%s"'
-                % TapisOAuthToken().get_masked_token(token)
+                'Attempting login via Tapis with token "%s"',
+                TapisOAuthToken().get_masked_token(token),
             )
             client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL, access_token=token)
 

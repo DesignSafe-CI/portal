@@ -14,7 +14,7 @@ def _menu_nodes_for_apps(menu_type):
     node_id = 1
     for app in settings.INSTALLED_APPS:
         try:
-            mod = import_module('%s.urls' % app)
+            mod = import_module(f'{app}.urls')
             try:
                 items = mod.menu_items(type=menu_type)
                 if items is not None:
@@ -34,10 +34,12 @@ def _menu_nodes_for_apps(menu_type):
             except AttributeError:
                 continue
             except TypeError:
-                logger.warning('Call to %s.cms_menu_nodes should return an iterable!')
-            except:
-                logger.warning('Call to %s.cms_menu_nodes failed!' % mod.__name__)
-        except:
+                logger.warning('Call to %s.cms_menu_nodes should return an iterable!', mod.__name__)
+            except Exception:
+                logger.exception("")
+                logger.warning('Call to %s.cms_menu_nodes failed!', mod.__name__)
+        except Exception:
+            logger.exception("")
             continue
     return nodes
 

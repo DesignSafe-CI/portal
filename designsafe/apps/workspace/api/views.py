@@ -79,7 +79,7 @@ def _get_user_app_license(license_type, user):
 
 
 def _get_systems(
-    user: object, can_exec: bool, systems: list = None, list_type: str = "ALL"
+    user: object, can_exec: bool, systems: list | None = None, list_type: str = "ALL"
 ) -> list:
     """List of all enabled systems of the specified can_exec type available for the user."""
     tapis = user.tapis_oauth.client
@@ -163,7 +163,9 @@ def test_system_needs_keys(
                 return False
             except (InternalServerError, UnauthorizedError):
                 logger.exception(
-                    f"TMS_KEYS credential generation failed for system: {system_id}, user: {username}"
+                    "TMS_KEYS credential generation failed for system: %s, user: %s",
+                    system_id,
+                    username,
                 )
                 raise
 
@@ -309,9 +311,7 @@ class AppsTrayView(AuthenticatedApiView):
             listType="MINE",
             limit=-1,
         )
-        my_apps = list(
-            map(
-                lambda app: {
+        my_apps = [{
                     "app_id": app.id,
                     "app_type": "tapis",
                     "bundle_id": None,
@@ -322,10 +322,7 @@ class AppsTrayView(AuthenticatedApiView):
                     "label": getattr(app.notes, "label", app.id),
                     "shortLabel": getattr(app.notes, "shortLabel", None),
                     "version": app.version,
-                },
-                apps_listing,
-            )
-        )
+                } for app in apps_listing]
 
         return my_apps
 
@@ -739,13 +736,13 @@ class JobsView(AuthenticatedApiView):
             # job_post['parameterSet']['envVariables'] = job_post['parameterSet'].get('envVariables', []) + [license_var]
 
         # Test file listing on relevant systems to determine whether keys need to be pushed manually
-        for system_id in list(
-            set([job_post["archiveSystemId"], job_post["execSystemId"]])
-        ):
+        for system_id in {job_post["archiveSystemId"], job_post["execSystemId"]}:
             system_needs_keys = test_system_needs_keys(tapis, username, system_id)
             if system_needs_keys:
                 logger.info(
-                    f"Keys for user {username} must be manually pushed to system: {system_needs_keys.id}"
+                    "Keys for user %s must be manually pushed to system: %s",
+                    username,
+                    system_needs_keys.id,
                 )
                 return {"execSys": system_needs_keys}
 
@@ -826,7 +823,7 @@ class JobsView(AuthenticatedApiView):
             }
         ]
 
-        logger.info(f"user: {username} is submitting job: {job_post}")
+        logger.info("user: %s is submitting job: %s", username, job_post)
         response = tapis.jobs.submitJob(
             **job_post,
             headers={"X-Tapis-Tracking-ID": f"portals.{request.session.session_key}"},

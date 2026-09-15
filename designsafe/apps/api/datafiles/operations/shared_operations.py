@@ -47,7 +47,6 @@ def listing(client, system, path, username, offset=0, limit=100, *args, **kwargs
     nested_filter.path = 'legacyPermissions'
     nested_filter.query = pems_filter
 
-    file_path = '/'
     home_filter = Q('prefix', **{'path._exact': '/' + username})
     system_filter = Q('term', **{'system._exact': 'designsafe.storage.default'})
     query = Q('bool', must_not=home_filter, filter=[nested_filter, system_filter])

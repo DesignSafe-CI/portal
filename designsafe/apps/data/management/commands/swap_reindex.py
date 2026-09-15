@@ -47,11 +47,11 @@ class Command(BaseCommand):
             setup_index(index_config, force=True, reindex=True)
 
         try:
-            default_index_name = list(Index(default_index_alias, using=es_client).get_alias().keys())[0]
-            reindex_index_name = list(Index(reindex_index_alias, using=es_client).get_alias().keys())[0]
-        except Exception:
+            default_index_name = next(iter(Index(default_index_alias, using=es_client).get_alias().keys()))
+            reindex_index_name = next(iter(Index(reindex_index_alias, using=es_client).get_alias().keys()))
+        except Exception as exc:
             self.stdout.write('Unable to lookup required indices by alias. Have you set up both a default and a reindexing index?')
-            raise SystemExit
+            raise SystemExit from exc
 
         if not swap_only:
             # Reindex file metadata from the default index to the reindexing index
@@ -70,5 +70,5 @@ class Command(BaseCommand):
 
         # Re-initialize the new reindexing index to save space.
         if cleanup:
-            reindex_index_name = list(Index(reindex_index_alias, using=es_client).get_alias().keys())[0]
+            reindex_index_name = next(iter(Index(reindex_index_alias, using=es_client).get_alias().keys()))
             Index(reindex_index_name, using=es_client).delete(ignore=404)

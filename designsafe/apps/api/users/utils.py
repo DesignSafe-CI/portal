@@ -126,7 +126,7 @@ def get_allocations(user, force=False):
     username = user.username
     try:
         if force:
-            logger.info(f"Forcing TAS allocation retrieval for user:{username}")
+            logger.info("Forcing TAS allocation retrieval for user:%s", username)
             raise ObjectDoesNotExist
         result = {"hosts": {}}
         result.update(UserAllocations.objects.get(user=user).value)

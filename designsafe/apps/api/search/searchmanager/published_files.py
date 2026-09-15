@@ -30,7 +30,7 @@ class PublishedDataSearchManager(BaseSearchManager):
 
     def construct_query(self, system=None, file_path=None):
 
-        files_index_name = list(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys())[0]
+        files_index_name = next(iter(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()))
         ngram_query = Q("query_string", query=self.query_string,
                         fields=["name"],
                         minimum_should_match='80%',

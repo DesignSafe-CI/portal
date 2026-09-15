@@ -60,12 +60,14 @@ def populate_filemeta_table(dry_run, do_not_update_existing):
     Update the filemeta table from Tapisv2-based metadata.
     """
     logger.info(
-        f"Updating filemeta table from tapisv2-based metadata."
-        f" dry_run={dry_run} do_not_update_existing={do_not_update_existing}"
+        "Updating filemeta table from tapisv2-based metadata."
+        " dry_run=%s do_not_update_existing=%s",
+        dry_run,
+        do_not_update_existing,
     )
 
     v2_file_meta_data = get_all_v2_file_meta()
-    logger.info(f"Processing {len(v2_file_meta_data)} tapisv2-based metadata entries")
+    logger.info("Processing %s tapisv2-based metadata entries", len(v2_file_meta_data))
 
     updated = 0
     already_exists = 0
@@ -92,9 +94,11 @@ def populate_filemeta_table(dry_run, do_not_update_existing):
 
     logger.info(
         "Successfully updated filemeta table from tapisv2-based metadata"
-        f"\n  {len(v2_file_meta_data)} tapisv2-based metadata entries."
-        f"\n  {already_exists} entries already existed in filemeta table."
-        f"\n  {updated} entries were updated/created in filemeta table"
+        "\n  {len(v2_file_meta_data)} tapisv2-based metadata entries."
+        "\n  %s entries already existed in filemeta table."
+        "\n %s entries were updated/created in filemeta table",
+        already_exists,
+        updated,
     )
 
 

@@ -93,7 +93,7 @@ class KeysManager:
         :return str: command
         """
         comment = self._get_pub_key_comment(system_id)
-        string = " ".join([public_key, comment])
+        string = f"{public_key} {comment}"
         command = (
             'if [ ! -f "~/.ssh/authorized_keys" ]; then '
             "mkdir -p ~/.ssh/ && touch ~/.ssh/authorized_keys "
@@ -135,7 +135,7 @@ class KeysManager:
         if status == -1:
             logger.info("No response from the server")
         elif status == 0:
-            logger.info(f"Public key added successfully to {hostname}")
+            logger.info("Public key added successfully to %s", hostname)
         elif status > 0:
             error_lines = ""
             for line in stderr.readlines():

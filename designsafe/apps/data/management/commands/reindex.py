@@ -49,7 +49,7 @@ class Command(BaseCommand):
         from_index = options.get('from_index')
         to_index = options.get('to_index')
         doc_type = options.get('doc_type')
-        all_docs = options.get('all_docs')
+        options.get('all_docs')
         remote_host = options.get('remote_host')
         sample = options.get('sample')
         size = options.get('size')
@@ -80,8 +80,7 @@ class Command(BaseCommand):
 
 
         if remote_host:
-            if remote_host.startswith('http://') \
-                or remote_host.startswith('https://'):
+            if remote_host.startswith(('http://', 'https://')):
                 hosts = [remote_host]
                 body['source']['remote'] = {'host': f'{hosts[0]}:9200'}
             else:
@@ -95,29 +94,29 @@ class Command(BaseCommand):
 
         if doc_type:
             body['source']['type'] = doc_type
-            self.stdout.write('doc_type: %s' % doc_type)
+            self.stdout.write(f'doc_type: {doc_type}')
         es_local = elasticsearch.Elasticsearch(
             settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
             request_timeout=120)
         es_remote = elasticsearch.Elasticsearch(hosts, request_timeout=120)
-        self.stdout.write('local conn: %s' % settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'])
-        self.stdout.write('remote conn: %s' % hosts)
+        self.stdout.write('local conn: {}'.format(settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts']))
+        self.stdout.write(f'remote conn: {hosts}')
         remote_index = es_remote.indices.get(from_index)
         try:
-            local_index = es_local.indices.get(to_index)
+            es_local.indices.get(to_index)
         except TransportError as err:
             if err.status_code == 404:
-                self.stdout.write('Creating index: %s' % to_index)
+                self.stdout.write(f'Creating index: {to_index}')
                 index_mapping = remote_index[from_index]['mappings']
                 index_settings = remote_index[from_index]['settings']
-                self.stdout.write('Using Settings: %s' % json.dumps(index_settings))
+                self.stdout.write(f'Using Settings: {json.dumps(index_settings)}')
                 index_settings['index'].pop('uuid', None)
                 index_settings['index'].pop('creation_date')
                 index_settings['index'].pop('version')
                 index_settings['index'].pop('provided_name', None)
                 self.remove_fielddata(index_mapping)
-                self.stdout.write('Using mapping: %s' % json.dumps(index_mapping))
-                local_index = es_local.indices.create(
+                self.stdout.write(f'Using mapping: {json.dumps(index_mapping)}')
+                es_local.indices.create(
                     to_index,
                     body={
                         "settings": index_settings,
@@ -125,6 +124,6 @@ class Command(BaseCommand):
                     })
             else:
                 raise
-        self.stdout.write('body to use: %s' % body)
+        self.stdout.write(f'body to use: {body}')
         resp = es_local.reindex(body=body, request_timeout=options.get('timeout', 120))
         self.stdout.write(json.dumps(resp))

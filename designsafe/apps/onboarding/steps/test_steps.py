@@ -149,7 +149,7 @@ class MockErrorStep(AbstractStep):
         return "Long description of a mock step that results in error upon processing"
 
     def process(self):
-        raise Exception("MockErrorStep")
+        raise Exception("MockErrorStep") # noqa
 
 
 class MockInvalidStepClass:

@@ -44,7 +44,10 @@ def validate_tapis_job(job_uuid, job_owner, disallowed_states=None):
     # Validate the job UUID against the owner
     if job_data.owner != job_owner:
         logger.error(
-            f"Tapis job (owner='{job_data.owner}', status='{job_data.status}) for this event (owner='{job_owner}') is not valid"
+            "Tapis job (owner='%s', status='%s) for this event (owner='%s') is not valid",
+            job_data.owner,
+            job_data.status,
+            job_owner,
         )
         raise ApiException("Unable to find a related valid job for this notification.")
 
@@ -90,7 +93,10 @@ class JobsWebhookView(BaseApiView):
             # Do nothing on job status not in portal notification states
             if job_status not in settings.PORTAL_JOB_NOTIFICATION_STATES:
                 logger.info(
-                    f"Job UUID {job_uuid} for owner {username} entered {job_status} state (no notification sent)"
+                    "Job UUID %s for owner %s entered %s state (no notification sent)",
+                    job_uuid,
+                    username,
+                    job_status,
                 )
                 return HttpResponse("OK")
 
@@ -98,7 +104,7 @@ class JobsWebhookView(BaseApiView):
             if job_status == job_old_status:
                 return HttpResponse("OK")
 
-            logger.info(f"JOB STATUS CHANGE: UUID={job_uuid} status={job_status}")
+            logger.info("JOB STATUS CHANGE: UUID=%s status=%s", job_uuid, job_status)
 
             event_data = {
                 Notification.EVENT_TYPE: "job",
@@ -141,7 +147,7 @@ class JobsWebhookView(BaseApiView):
             return HttpResponse("OK")
 
         except (ObjectDoesNotExist, BaseTapyException, ApiException) as exc:
-            logger.exception(exc)
+            logger.exception("")
             return HttpResponseBadRequest(f"ERROR: {exc}")
 
 
@@ -191,7 +197,7 @@ class InteractiveWebhookView(BaseApiView):
             }
 
         except (HTTPError, BaseTapyException, ApiException) as exc:
-            logger.exception(exc)
+            logger.exception("")
             return HttpResponseBadRequest(f"ERROR: {exc}")
 
         Notification.objects.create(**event_data)

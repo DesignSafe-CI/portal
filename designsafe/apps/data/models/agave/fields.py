@@ -64,7 +64,7 @@ class BaseField:
         if not isinstance(self.default, NOT_PROVIDED):
             return self.default
         else:
-            raise ValueError('No default set')
+            raise ValueError('No default set') # noqa
 
     def to_python(self, value):
         return value
@@ -199,5 +199,5 @@ class RelatedObjectField(BaseField):
     def contribute_to_class(self, cls, name):
         """ Register the field with the model class it belongs to. """
         super().contribute_to_class(cls, name)
-        related_name = self.related_name or '%s_set' % cls.__name__.lower()
+        related_name = self.related_name or f'{cls.__name__.lower()}_set'
         register_lazy_rel(self.related, related_name, cls.model_name, self.multiple, cls)

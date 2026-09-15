@@ -23,9 +23,7 @@ def listing(
     else:
         files = client.files_list_folder_continue(nextPageToken)
 
-    listing = list(
-        map(
-            lambda f: {
+    listing = [{
                 "system": "dropbox",
                 "type": ("dir" if isinstance(f, FolderMetadata) else "file"),
                 "format": ("folder" if isinstance(f, FolderMetadata) else "raw"),
@@ -36,10 +34,7 @@ def listing(
                 "lastModified": (
                     None if isinstance(f, FolderMetadata) else f.server_modified
                 ),
-            },
-            files.entries,
-        )
-    )
+            } for f in files.entries]
 
     nextPageToken = files.cursor if files.has_more else None
 
@@ -150,7 +145,7 @@ def copy(
 
 
 def download(client: Dropbox, system, path, *args, **kwargs):
-    logger.debug(f"Downloading file from Dropbox: {path}")
+    logger.debug("Downloading file from Dropbox: %s", path)
     if not path.startswith("/"):
         path = "/" + path
     (meta, response) = client.files_download(path)

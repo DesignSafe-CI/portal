@@ -173,12 +173,12 @@ class WebScraper:
                 if "url=" in content.lower():
                     redirect_url = content.split("url=")[-1].strip()
                     full_redirect = urljoin(url, redirect_url)
-                    logger.info(f"    Following redirect to {full_redirect}")
+                    logger.info("    Following redirect to %s", full_redirect)
                     return self.fetch_page(full_redirect)
 
             return soup
-        except Exception as e:
-            logger.error(f"Error fetching {url}: {e}")
+        except Exception:
+            logger.exception("Error fetching %s", url)
             return None
 
     def get_links(
@@ -192,11 +192,7 @@ class WebScraper:
             href = a["href"]
 
             # Skip anchors, external links, and special links
-            if (
-                href.startswith("#")
-                or href.startswith("mailto:")
-                or href.startswith("javascript:")
-            ):
+            if href.startswith(("#", "mailto:", "javascript:")):
                 continue
 
             # Resolve relative URLs
@@ -390,7 +386,7 @@ class WebScraper:
 
         if sections:
             for section in sections:
-                section_id = section.get("id", "")
+                section.get("id", "")
                 header = section.find(["h1", "h2", "h3", "h4"])
                 section_title = header.get_text(strip=True) if header else page_title
 
@@ -477,7 +473,7 @@ class WebScraper:
 
         if sections:
             for section in sections:
-                section_id = section.get("id", "")
+                section.get("id", "")
                 header = section.find(["h1", "h2", "h3", "h4"])
                 section_title = header.get_text(strip=True) if header else page_title
 
@@ -578,7 +574,7 @@ class WebScraper:
         source_name = source["name"]
         doc_type = source["type"]
 
-        logger.info(f"Scraping {source_name} from {base_url}")
+        logger.info("Scraping %s from %s", source_name, base_url)
 
         all_documents = []
         visited = set()
@@ -595,7 +591,7 @@ class WebScraper:
 
             visited.add(normalized_url)
             limit_str = str(self.max_pages) if self.max_pages > 0 else "unlimited"
-            logger.info(f"  [{len(visited)}/{limit_str}] {url}")
+            logger.info("  [%s/%s] %s", len(visited), limit_str, url)
 
             soup = self.fetch_page(url)
             if not soup:
@@ -622,6 +618,8 @@ class WebScraper:
             time.sleep(self.delay)
 
         logger.info(
-            f"  Scraped {len(visited)} pages, extracted {len(all_documents)} document chunks"
+            "Scraped %s pages, extracted %s document chunks",
+            len(visited),
+            len(all_documents),
         )
         return all_documents

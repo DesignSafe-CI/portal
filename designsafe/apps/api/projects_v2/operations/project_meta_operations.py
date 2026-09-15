@@ -84,12 +84,12 @@ def get_changed_users(old_value: BaseProject, new_value: BaseProject):
     Diff users between incoming and existing project metadata to determine which users
     need permissions to be added/removed via Tapis.
     """
-    old_users = set(
+    old_users = {
         u.username for u in old_value.users if u.username and u.role != "guest"
-    )
-    new_users = set(
+    }
+    new_users = {
         u.username for u in new_value.users if u.username and u.role != "guest"
-    )
+    }
 
     users_to_add = list(new_users - old_users)
     users_to_remove = list(old_users - new_users)

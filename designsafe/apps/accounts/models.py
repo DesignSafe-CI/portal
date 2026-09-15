@@ -123,6 +123,6 @@ class NotificationPreferences(models.Model):
 
     class Meta:
         permissions = (
-            ('view_notification_subscribers', 'Can view list of users subscribed to a '
-                                              'notification type'),
+            ('view_notification_subscribers', ('Can view list of users subscribed to a '
+                                              'notification type')),
         )

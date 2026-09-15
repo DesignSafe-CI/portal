@@ -150,11 +150,11 @@ def get_datacite_json(
 
         datacite_json["titles"] = [
             {"title": f"{title}, in {base_meta['title']}"}
-            for title in set([entity_meta["title"]])
+            for title in {entity_meta["title"]}
         ]
     else:
         datacite_json["titles"] = [
-            {"title": title} for title in set([entity_meta["title"]])
+            {"title": title} for title in {entity_meta["title"]}
         ]
     datacite_json["publisher"] = "Designsafe-CI"
 
@@ -193,7 +193,7 @@ def get_datacite_json(
             "description": desc,
             "lang": "en-Us",
         }
-        for desc in set([base_meta["description"], entity_meta["description"]])
+        for desc in {base_meta["description"], entity_meta["description"]}
     ]
 
     if not is_other:

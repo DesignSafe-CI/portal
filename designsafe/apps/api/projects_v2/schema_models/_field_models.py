@@ -1,5 +1,6 @@
 """Utiity models used in multiple field types"""
 
+import logging
 from datetime import datetime
 from functools import partial
 from typing import Annotated, Literal
@@ -8,6 +9,8 @@ from django.contrib.auth import get_user_model
 from pydantic import AliasChoices, BaseModel, BeforeValidator, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 from pytas.http import TASClient
+
+logger = logging.getLogger(__name__)
 
 
 class MetadataModel(BaseModel):
@@ -80,9 +83,9 @@ class ProjectUser(MetadataModel):
                     **kwargs,
                 )
             # pylint:disable=broad-exception-caught
-            except Exception as _:
-                print(username)
-                print("unrecoverable username")
+            except Exception:
+                logger.exception("Unrecoverable username: %s", username)
+
             return cls(username=username, role=role, guest=False)
 
 

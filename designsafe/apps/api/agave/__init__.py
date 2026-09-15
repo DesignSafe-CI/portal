@@ -72,7 +72,7 @@ def impersonate_service_account(username):
 
     :param str username: Username to impersonate.
     """
-    url = '/'.join([settings.AGAVE_TENANT_BASEURL, 'token'])
+    url = f"{settings.AGAVE_TENANT_BASEURL}/token"
     cred = (settings.AGAVE_CLIENT_KEY, settings.AGAVE_CLIENT_SECRET)
 
     if getattr(settings, 'AGAVE_USE_SANDBOX', False):
@@ -82,7 +82,7 @@ def impersonate_service_account(username):
         'grant_type': 'admin_password',
         'username': settings.DS_ADMIN_USERNAME,
         'password': settings.DS_ADMIN_PASSWORD,
-        'token_username': '/'.join([settings.AGAVE_USER_STORE_ID, username]),
+        'token_username': f"{settings.AGAVE_USER_STORE_ID}/{username}",
         'scope': 'PRODUCTION',
     }
     response = requests.post(url, data=body, auth=cred)

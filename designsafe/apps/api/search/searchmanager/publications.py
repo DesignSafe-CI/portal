@@ -138,7 +138,7 @@ class PublicationsSearchManager(BaseSearchManager):
         simulation_type = self.query_dict['advancedFilters']['simulation']['simulationType']
         facility_name = self.query_dict['advancedFilters']['simulation']['facility']
         if facility_name:
-            expt_query = expt_query & self.facility_query(facility_name)
+            expt_query & self.facility_query(facility_name) # noqa
         if not self.query_dict['typeFilters']['simulation'] and not simulation_type:
             return None
         sim_query = Q('term', **{'project.value.projectType._exact': 'simulation'}) 
@@ -152,7 +152,7 @@ class PublicationsSearchManager(BaseSearchManager):
         nh_event = self.query_dict['advancedFilters']['field_recon']['naturalHazardEvent']
         facility_name = self.query_dict['advancedFilters']['field_recon']['facility']
         if facility_name:
-            expt_query = expt_query & self.facility_query(facility_name)
+            expt_query & self.facility_query(facility_name) # noqa
         if not self.query_dict['typeFilters']['field_recon'] and not (nh_type or nh_event):
             return None
         fr_query = Q('term', **{'project.value.projectType._exact': 'field_recon'}) 
@@ -176,10 +176,10 @@ class PublicationsSearchManager(BaseSearchManager):
         return q
 
     def hybrid_sim_query(self):
-        sim_type = data_type = self.query_dict['advancedFilters']['hybrid_simulation']['hybridSimulationType']
+        sim_type = self.query_dict['advancedFilters']['hybrid_simulation']['hybridSimulationType']
         facility_name = self.query_dict['advancedFilters']['hybrid_simulation']['facility'] 
         if facility_name:
-            expt_query = expt_query & self.facility_query(facility_name)
+            expt_query & self.facility_query(facility_name) # noqa
         if not self.query_dict['typeFilters']['hybrid_simulation'] and not sim_type:
             return None 
         q = Q('term', **{'project.value.projectType._exact': 'hybrid_simulation'}) 
@@ -271,11 +271,11 @@ class PublicationsSearchManager(BaseSearchManager):
             "authors.lname",
             "name"
             ]
-        published_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]
-        legacy_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys())[0]
+        published_index_name = next(iter(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys()))
+        next(iter(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys()))
 
 
-        ds_user_query = Q({"nested":
+        Q({"nested":
                         {"path": "users",
                          "ignore_unmapped": True,
                          "query": {"query_string":
@@ -285,7 +285,7 @@ class PublicationsSearchManager(BaseSearchManager):
                                                "user.username"],
                                     "lenient": True}}}
                         })
-        nees_pi_query = Q({"nested":
+        Q({"nested":
                         {"path": "pis",
                          "ignore_unmapped": True,
                          "query": {"query_string":
@@ -294,7 +294,7 @@ class PublicationsSearchManager(BaseSearchManager):
                                                "pis.lastName"],
                                     "lenient": True}}}
                         })
-        pub_query = Q('query_string', query=self.query_string, default_operator='and', fields=project_query_fields)
+        Q('query_string', query=self.query_string, default_operator='and', fields=project_query_fields)
         published_query = Q(
             'bool',
             must=[

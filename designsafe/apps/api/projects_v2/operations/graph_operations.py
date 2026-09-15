@@ -78,7 +78,7 @@ def _reorder_nodes(graph: nx.DiGraph, node_id: str, new_index: int):
     old_index = _graph.nodes[node_id]["order"]
 
     sorted_siblings: list[str] = sorted(
-        list(_graph.successors(parent)), key=lambda n: _graph.nodes[n]["order"]
+        _graph.successors(parent), key=lambda n: _graph.nodes[n]["order"]
     )
 
     if new_index > old_index:

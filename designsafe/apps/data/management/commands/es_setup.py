@@ -51,10 +51,10 @@ class Command(BaseCommand):
                     target_index=target_index,
                     query=query,
                 )
-                logger.info(f"Reindexed {response} documents from {source_index} to {target_index}")
+                logger.info("Reindexed %s documents from %s to %s", response, source_index, target_index)
             except elasticsearch.helpers.BulkIndexError as e:
-                logger.error(f"BulkIndexError: {e.errors}")
-                logger.error(f"Failed to reindex documents from {source_index} to {target_index}")
+                logger.error("BulkIndexError: %s", e.errors)
+                logger.error("Failed to reindex documents from %s to %s", source_index, target_index)
                 return False
             return response
 
@@ -78,7 +78,12 @@ class Command(BaseCommand):
                 failed_indexes.append(index.format(local))
         logger.info("Finished indexing.")
         if failed_indexes:
-            logger.error(f"Successfully reindex {len(indexes) - len(failed_indexes)}"
-                         f" of {len(indexes)} indexes\n"
-                         f"failed indexes are: {', '.join(failed_indexes)}\n"
-                         f"(check logs above for errors related to failures)")
+            logger.error(
+                "Successfully reindex %s"
+                " of %s indexes\n"
+                "failed indexes are: %s\n"
+                "(check logs above for errors related to failures)",
+                len(indexes) - len(failed_indexes),
+                len(indexes),
+                ", ".join(failed_indexes),
+            )

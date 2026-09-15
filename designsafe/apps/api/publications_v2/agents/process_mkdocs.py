@@ -216,7 +216,7 @@ def process_markdown_files(docs_dir: str = "/docs"):
             file_path = docs_path / page_info["file"]
 
             if file_path.exists():
-                logger.info(f"Processing: {page_info['file']}")
+                logger.info("Processing: %s", page_info["file"])
 
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -226,10 +226,12 @@ def process_markdown_files(docs_dir: str = "/docs"):
                 all_documents.extend(documents)
 
                 logger.info(
-                    f"  Extracted {len(documents)} sections from {page_info['file']}"
+                    "  Extracted  %s sections from %s",
+                    len(documents),
+                    page_info["file"],
                 )
             else:
-                logger.warning(f"File not found: {file_path}")
+                logger.warning("File not found: %s", file_path)
 
-    logger.info(f"Total documents extracted: {len(all_documents)}")
+    logger.info("Total documents extracted: %s", len(all_documents))
     return all_documents

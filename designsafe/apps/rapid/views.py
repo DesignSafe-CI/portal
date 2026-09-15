@@ -5,7 +5,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 import requests
 from django.contrib.auth import get_user_model, models
@@ -98,7 +98,7 @@ def opentopo_data(request):
         response_data = response.json()
         return JsonResponse(response_data, safe=False, status=response.status_code)
     except requests.RequestException as e:
-        logger.error(f"Error fetching URL {OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD}: {e!s}")
+        logger.error("Error fetching URL %s: %s,", OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD, e)
         return JsonResponse({'error': str(e)}, status=500)
 
 
@@ -155,7 +155,7 @@ def admin_create_event(request):
             ev.event_date = form.cleaned_data["event_date"]
             ev.event_type = form.cleaned_data["event_type"]
             ev.title = form.cleaned_data["title"]
-            ev.created_date = datetime.utcnow()
+            ev.created_date = datetime.now(tz=UTC)
             if request.FILES:
                 try:
                     image_uuid = str(uuid.uuid1())
@@ -163,7 +163,8 @@ def admin_create_event(request):
                     thumb = thumbnail_image(f)
                     handle_uploaded_image(thumb, image_uuid)
                     ev.main_image_uuid = image_uuid
-                except:
+                except Exception:
+                    logger.exception("")
                     return HttpResponseBadRequest("Hmm, a bad file perhaps?")
             try:
                 ev.save(refresh=True)
@@ -188,7 +189,8 @@ def admin_create_event(request):
 def admin_edit_event(request, event_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except Exception:
+        logger.exception("")
         return HttpResponseNotFound()
 
     metrics_logger.info('Rapid Admin edit event',
@@ -232,7 +234,8 @@ def admin_edit_event(request, event_id):
                     thumb = thumbnail_image(f)
                     handle_uploaded_image(thumb, image_uuid)
                     event.main_image_uuid = image_uuid
-                except:
+                except Exception:
+                    logger.exception("")
                     return HttpResponseBadRequest("Hmm, a bad file perhaps?")
                 if old_image_uuid:
                     os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', old_image_uuid))
@@ -268,14 +271,15 @@ def admin_delete_event(request, event_id):
 
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except Exception:
+        logger.exception("")
         return HttpResponseNotFound()
     if request.method == 'POST':
         image_uuid = event.main_image_uuid
         try:
             os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', image_uuid))
-        except:
-            pass
+        except Exception:
+            logger.exception("")
         event.delete(refresh=True)
         return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
 
@@ -285,7 +289,8 @@ def admin_delete_event(request, event_id):
 def admin_event_datasets(request, event_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except Exception:
+        logger.exception("")
         return HttpResponseNotFound()
 
     context = {
@@ -299,7 +304,8 @@ def admin_event_datasets(request, event_id):
 def admin_event_add_dataset(request, event_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except Exception:
+        logger.exception("")
         return HttpResponseNotFound()
 
     form = rapid_forms.RapidNHEventDatasetForm(request.POST or None)
@@ -333,7 +339,8 @@ def admin_event_add_dataset(request, event_id):
 def admin_event_edit_dataset(request, event_id, dataset_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except Exception:
+        logger.exception("")
         return HttpResponseNotFound()
 
     dataset = next((d for d in event.datasets if d.id == dataset_id), None)
@@ -375,7 +382,8 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
 def admin_event_delete_dataset(request, event_id, dataset_id):
     try:
         event = RapidNHEvent.get(event_id)
-    except:
+    except Exception:
+        logger.exception("")
         return HttpResponseNotFound()
     if request.method == 'POST':
         event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]

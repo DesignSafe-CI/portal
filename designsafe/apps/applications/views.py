@@ -1,3 +1,4 @@
+# ruff: noqa
 # from agavepy.agave import Agave, AgaveException, load_resource
 import json
 import logging
@@ -90,7 +91,7 @@ def call_api(request, service):
                             }
                             if lic_type is not None:
                                 _, license_models = get_license_info()
-                                license_model = [x for x in license_models if x.license_type == lic_type][0]
+                                license_model = next(x for x in license_models if x.license_type == lic_type)
                                 lic = license_model.objects.filter(user=request.user).first()
                                 data['license']['enabled'] = lic is not None
                     else:
@@ -487,7 +488,7 @@ def call_api(request, service):
                         data = ds_admin_client.meta.updateMetadataPermissionsForUser(body=body, uuid=uuid, username=username)
 
             else:
-                return HttpResponse('Unexpected service: %s' % service, status=400)
+                return HttpResponse(f'Unexpected service: {service}', status=400)
         except AgaveException as e:
             logger.error(f'Failed to execute {service} API call due to AgaveException={e}')
             return HttpResponse(json.dumps(e), content_type='application/json',
@@ -495,7 +496,7 @@ def call_api(request, service):
         except HTTPError as e:
             try:
                 json_response = e.response.json()
-                metrics.info('Failed to execute {0} API call due to HTTPError={1}'.format(
+                metrics.info('Failed to execute {} API call due to HTTPError={}'.format(
                 service, json_response.get('message')), extra={
                     'agent': request.META.get('HTTP_USER_AGENT'),
                     'ip': get_client_ip(request),
@@ -504,17 +505,19 @@ def call_api(request, service):
                     'user': request.user.username,
                     'info': {}
                 })
-                logger.error('Failed to execute {0} API call due to HTTPError={1}'.format(
-                service, json_response.get('message')))
+                logger.error('Failed to execute %s API call due to HTTPError=%s', 
+                service, json_response.get('message'))
                 return HttpResponse(json.dumps(json_response.get('message')),
                         content_type='application/json',
                         status=400)
             except Exception as e:
+                logger.exception("")
                 return HttpResponse(json.dumps(e),
                         content_type='application/json',
                         status=400)
 
         except Exception as e:
+            logger.exception("")
             metrics.info(f'Failed to execute {service} API call due to Exception={e}', extra={
                     'agent': request.META.get('HTTP_USER_AGENT'),
                     'ip': get_client_ip(request),
@@ -523,7 +526,7 @@ def call_api(request, service):
                     'user': request.user.username,
                     'info': {}
                 })
-            logger.error(f'Failed to execute {service} API call due to Exception={e}', extra={
+            logger.error('Failed to execute %s API call due to Exception=%s', service, e, extra={
                     'agent': request.META.get('HTTP_USER_AGENT'),
                     'ip': get_client_ip(request),
                     'user': request.user.username

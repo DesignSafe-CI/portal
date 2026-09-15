@@ -14,7 +14,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
 
     items = folder.get_items(limit=limit, offset=offset, fields=['name', 'size', 'type', 'modified_at', 'id'])
 
-    mapped_items = map(lambda f: {
+    mapped_items = ({
         'system': None,
         'type': 'dir' if f.type == 'folder' else 'file',
         'format': 'folder' if f.type == 'folder' else 'raw',
@@ -24,7 +24,7 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
         'length': f.size if f.type != 'web_link' else '',
         'lastModified': f.modified_at,
 
-    }, items)
+    } for f in items)
 
     return {'listing': list(mapped_items)}
 
@@ -54,7 +54,7 @@ def copy(client, src_system, src_path, dest_system, dest_path, filetype='file', 
     elif filetype == 'dir':
         file_to_copy = client.folder(src_path)
 
-    file_copy = file_to_copy.copy(destination_folder)
+    file_to_copy.copy(destination_folder)
 
     return {}
 

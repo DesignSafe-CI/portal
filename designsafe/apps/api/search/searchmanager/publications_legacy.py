@@ -42,8 +42,8 @@ class LegacyPublicationsSearchManager(BaseSearchManager):
             "pis",
             "name"
             ]
-        published_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys())[0]
-        legacy_index_name = list(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys())[0]
+        next(iter(Index(settings.ES_INDEX_PREFIX.format('publications')).get_alias().keys()))
+        legacy_index_name = next(iter(Index(settings.ES_INDEX_PREFIX.format('publications-legacy')).get_alias().keys()))
         filter_queries = []
         if kwargs.get('type_filters'):
             for type_filter in kwargs['type_filters']:
@@ -99,7 +99,7 @@ class LegacyPublicationsSearchManager(BaseSearchManager):
         children = []
         for hit in res:
             try:
-                hit.projectId
+                hit.projectId # noqa
                 hit_to_file = BaseESPublication.hit_to_file(hit)
                 children.append(hit_to_file)
             except AttributeError:

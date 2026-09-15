@@ -1,3 +1,4 @@
+# ruff: disable [N999]
 import logging
 from datetime import datetime
 
@@ -27,9 +28,9 @@ class DjangoRt:
 
     def getUserTickets(self, userEmail, show_resolved=False):
         if show_resolved:
-            query = 'Requestor="%s"' % userEmail
+            query = f'Requestor="{userEmail}"'
         else:
-            query = 'Requestor="%s" AND Status!="resolved" AND Status!="closed"' % userEmail
+            query = f'Requestor="{userEmail}" AND Status!="resolved" AND Status!="closed"'
 
         ticket_list = self.tracker.search(
             Queue=rt.ALL_QUEUES,
@@ -40,7 +41,7 @@ class DjangoRt:
         for ticket in ticket_list:
             ticket['id'] = ticket['id'].replace('ticket/', '')
             ticket['LastUpdated'] = datetime.strptime(ticket['LastUpdated'],
-                                                      '%a %b %d %X %Y',)
+                                                      '%a %b %d %X %Y',).astimezone()
 
         return ticket_list
 
@@ -49,7 +50,7 @@ class DjangoRt:
 
         ticket['id'] = ticket['id'].replace('ticket/', '')
         ticket['LastUpdated'] = datetime.strptime(ticket['LastUpdated'],
-                                                  '%a %b %d %X %Y',)
+                                                  '%a %b %d %X %Y',).astimezone()
 
         return ticket
 
@@ -58,7 +59,7 @@ class DjangoRt:
 
         local_tz = pytz.timezone('US/Central')
         for ticket in ticketHistory:
-            ticket['Created'] = datetime.strptime(ticket['Created'], '%Y-%m-%d %X')
+            ticket['Created'] = datetime.strptime(ticket['Created'], '%Y-%m-%d %X').astimezone()
             ticket['Created'] = ticket['Created'].replace(tzinfo=pytz.UTC)
             ticket['Created'] = ticket['Created'].astimezone(local_tz)
 
@@ -74,7 +75,9 @@ class DjangoRt:
             Subject=ticket.subject, Requestor=ticket.requestor, Cc=",".join(ticket.cc),
             Text=ticket.problem_description.replace('\n', '\n '))
 
-    def replyToTicket(self, ticket_id, text='', files=[]):
+    def replyToTicket(self, ticket_id, text='', files=None):
+        if files is None:
+            files = []
         return self.tracker.reply(ticket_id, text=text, files=files)
 
     def commentOnTicket(self, ticket_id, text=''):

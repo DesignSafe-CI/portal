@@ -36,7 +36,7 @@ class TestProjectIndexer(TestCase):
         self.assertEqual(prj_result, [TEST_PROJECT])
 
     @patch('designsafe.apps.api.tasks.bulk')
-    @patch('designsafe.apps.projects.models.elasticsearch.IndexedProject')
+    @patch('designsafe.apps.api.tasks.IndexedProject')
     def test_project_indexer(self, mock_index, mock_bulk):
         mock_connection = MagicMock()
         mock_index.Index.name = 'designsafe-test-projects'

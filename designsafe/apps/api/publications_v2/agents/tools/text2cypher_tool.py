@@ -40,6 +40,7 @@ async def raise_if_write_attempted(client: AsyncDriver, query: str) -> None:
     :param query: Query string to sanitize
     :type query: str
     """
+    # ruff: disable[SIM117]
     async with client.session() as sess:
         async with await sess.begin_transaction(timeout=30) as tx:
             result = await tx.run(query)

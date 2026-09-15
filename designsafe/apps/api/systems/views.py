@@ -35,7 +35,7 @@ class SystemKeysView(AuthenticatedApiView):
         system_id = body["systemId"]
 
         logger.info(
-            f"Resetting credentials for user {request.user.username} on system {system_id}"
+            "Resetting credentials for user %s on system %s", request.user.username, system_id
         )
         (priv_key_str, publ_key_str) = createKeyPair()
 

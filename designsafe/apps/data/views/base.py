@@ -198,7 +198,7 @@ class DataBrowserTestView(BasePublicTemplate):
             else:
                 resource = 'public'
 
-        fm_cls = lookup_file_manager(resource)
+        fm_cls = lookup_file_manager(resource) # noqa
         if fm_cls is None:
             raise Http404('Unknown resource')
 
@@ -231,7 +231,7 @@ class DataBrowserTestView(BasePublicTemplate):
                 },
             }
 
-        sources_api = SourcesApi()
+        sources_api = SourcesApi() # noqa
         source_id = resource
         if source_id == 'agave':
             if fm is not None and fm.is_shared(file_path):
@@ -304,7 +304,7 @@ class DataDepotPublishedView(TemplateView):
             context['citation_title'] = f"{kwargs['project_id']} | {title}"
         except Exception:
             # If we can't generate DataCite JSON, render the page without meta tags.
-            pass
+            logger.exception("")
 
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({

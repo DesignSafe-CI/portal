@@ -29,7 +29,7 @@ def convert_v1_user(user):
     }
 
 
-def get_user_info(username: str, role: str = None) -> dict:
+def get_user_info(username: str, role: str | None = None) -> dict:
     """Construct a user object from info in the db."""
     try:
         user_obj = user_model.objects.get(username=username)
@@ -143,7 +143,7 @@ def convert_legacy_tags(entity: dict) -> list[FileTagDict]:
         return file_obj
 
     for inner_dict in tags.values():
-        for key in inner_dict.keys():
+        for key in inner_dict:
             tag_name = next(
                 (tag["label"] for tag in tag_options if tag["name"] == key), None
             )

@@ -65,7 +65,8 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
             try:
                 instance, plugin_type = base_plugin.get_plugin_instance()
             except Exception as e:
-                logger.debug(f"{type(e)}: {e}")
+                logger.exception("")
+                logger.debug("%s: %s", type(e), {e})
                 continue
             if instance is None:
                 # this is an empty plugin

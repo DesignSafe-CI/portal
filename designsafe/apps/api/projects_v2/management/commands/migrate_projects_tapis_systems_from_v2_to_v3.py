@@ -7,7 +7,6 @@ projects from Tapis V2 to Tapis V3.
 # pylint: disable=logging-fstring-interpolation
 # pylint: disable=no-member
 
-
 import logging
 import os
 
@@ -50,7 +49,7 @@ def set_workspace_permissions(client: Tapis, username: str, system_id: str, role
 
     files_pems = {"reader": "READ", "writer": "MODIFY"}
 
-    logger.info(f"Adding {username} permissions to Tapis system {system_id}")
+    logger.info("Adding %s, permissions to Tapis system %s", username, system_id)
     client.systems.grantUserPerms(
         systemId=system_id, userName=username, permissions=system_pems[role]
     )
@@ -141,9 +140,7 @@ class Command(BaseCommand):
             "ensuring they are synchronized with their V2 counterparts.",
         )
 
-    def handle(
-        self, *args, **options
-    ):  # pylint: disable=too-many-statements disable=too-many-locals
+    def handle(self, *args, **options):  # pylint: disable=too-many-statements disable=too-many-locals
         dry_run = options["dry_run"]
         update_existing = options["update_existing"]
 
@@ -167,23 +164,11 @@ class Command(BaseCommand):
                 else "/corral-repl/projects/NHERI/community"  # community data system has as a special path
             )
             title = project["value"]["title"]
-            description = (
-                project["value"]["description"]
-                if "description" in project["value"]
-                else ""
-            )
+            description = project["value"].get("description", "")
             pi = project["value"]["pi"]  # pylint: disable=invalid-name
-            co_pis = project["value"]["coPis"] if "coPis" in project["value"] else []
-            team_members = (
-                project["value"]["teamMembers"]
-                if "teamMembers" in project["value"]
-                else []
-            )
-            guest_members = (
-                project["value"]["guestMembers"]
-                if ("guestMembers" in project["value"])
-                else []
-            )
+            co_pis = project["value"].get("coPis", [])
+            team_members = project["value"].get("teamMembers", [])
+            guest_members = project["value"].get("guestMembers", [])
             guest_members = [u["user"] for u in guest_members if u is not None]
 
             all_writers = (
@@ -196,7 +181,7 @@ class Command(BaseCommand):
                 )
             except Exception:  # pylint: disable=broad-exception-caught:
                 tapis_v2_system_roles = []
-                logger.error(f"Unable to get roles on uuid:{uuid}")
+                logger.exception("Unable to get roles on uuid: %s", uuid)
             users_from_roles = [u["username"] for u in tapis_v2_system_roles]
             users_from_roles_not_listed_elsewhere = [
                 u for u in users_from_roles if u not in all_writers
@@ -220,6 +205,7 @@ class Command(BaseCommand):
             try:
                 client.systems.getSystem(systemId=system)
             except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("")
                 system_exists = False
 
             if not dry_run:
@@ -234,7 +220,7 @@ class Command(BaseCommand):
                         all_users
                     )
                     for user in user_to_remove:
-                        logger.info(f"removing user: {user}")
+                        logger.info("removing user: %s", user)
                         remove_user(client, system, user)
 
                 create = not system_exists
@@ -258,7 +244,7 @@ class Command(BaseCommand):
                     for user in all_readers:
                         set_workspace_permissions(client, user, system, "reader")
                 except Exception:  # pylint: disable=broad-exception-caught
-                    logger.exception(f"Error for system:{system}")
+                    logger.exception("Error for system: %s", system)
             else:
                 system_exists_text = (
                     "System already exists"
@@ -266,8 +252,7 @@ class Command(BaseCommand):
                     else "System does not exist"
                 )
                 logger.info(
-                    f"Running in dry-run mode. No changes will be made. "
-                    f""
-                    f"Note: {system_exists_text}"
+                    "Running in dry-run mode. No changes will be made. Note: %s",
+                    system_exists_text,
                 )
         logger.info("Successfully migrated systems")

@@ -11,7 +11,7 @@ class AppDescription(models.Model):
     appdescription = models.TextField(help_text='App dropdown description text for apps that have a dropdown.')
 
     def __str__(self):
-        return "%s" % (self.appid)
+        return f"{self.appid}"
 
     def desc_to_dict(self):
         return {'appId': self.appid, 'appDescription': self.appdescription}

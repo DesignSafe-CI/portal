@@ -23,19 +23,19 @@ def listing(client, system, path, offset=None, limit=100, nextPageToken=None, *a
     listing = listing_call.get('files')
     scroll_token = listing_call.get('nextPageToken')
     reached_end = not bool(scroll_token)
-    listing = list(map(lambda f: {
+    listing = [{
         'system': None,
         'type': 'dir' if f['mimeType'] == 'application/vnd.google-apps.folder' else 'file',
         'format': 'folder' if f['mimeType'] == 'application/vnd.google-apps.folder' else 'raw',
         'mimeType': f['mimeType'],
         'path': f['id'],
         'name': f['name'],
-        'length': int(f['size']) if 'size' in f.keys() else 0,
+        'length': int(f['size']) if 'size' in f else 0,
         'lastModified': f['modifiedTime'],
         '_links': {
             'self': {'href': f['webViewLink']}
         }
-    }, listing))
+    } for f in listing]
 
     return {'listing': listing, 'nextPageToken': scroll_token, 'reachedEnd': reached_end}
 
@@ -66,7 +66,7 @@ def walk_all(client, system, path, limit=100):
 def upload(client, system, path, uploaded_file, *args, **kwargs):
     if not path:
         path = 'root'
-    filename = os.path.basename(uploaded_file.name)
+    os.path.basename(uploaded_file.name)
     mimetype = magic.from_buffer(uploaded_file.getvalue(), mime=True)
     media = MediaIoBaseUpload(uploaded_file, mimetype=mimetype)
     file_meta = {
@@ -111,7 +111,7 @@ def download(client, system, path, *args, **kwargs):
     downloader = MediaIoBaseDownload(fh, request)
     done = False
     while done is False:
-        status, done = downloader.next_chunk()
+        _status, done = downloader.next_chunk()
 
     fh.name = file_name
     return fh

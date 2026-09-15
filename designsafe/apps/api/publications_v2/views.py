@@ -253,6 +253,7 @@ class PublicationDetailView(BaseApiView):
             for (_, node) in pub_tree.nodes.data()
         ]:
             for tag in file_tag_arr:
+                # ruff: disable[PERF402]
                 file_tags.append(tag)
 
         tree_json = nx.tree_data(pub_tree, "NODE_ROOT")

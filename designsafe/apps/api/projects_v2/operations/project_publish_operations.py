@@ -295,7 +295,6 @@ def get_publication_subtree(
     add version information if relevant. The subtree includes the root node and any
     nodes associated with the UUID.
     """
-    project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
     tree_with_values = add_values_to_tree(project_id)
     pub_root = next(
         (
@@ -413,7 +412,7 @@ class PipelineAmendFailure(Exception):
 
 
 def copy_publication_files(
-    path_mapping: dict,
+    path_mapping: dict[str, dict[str, str]],
     project_id: str,
     project_uuid: str,
     dirs_to_lock: list[str] | None = None,
@@ -427,12 +426,10 @@ def copy_publication_files(
     logger.debug("Copying publication files for %s", project_id)
     os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
     try:
-
         # pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
 
-        for node_id in path_mapping:
-            for src_path in path_mapping[node_id]:
-
+        for src_to_dest_map in path_mapping.values():
+            for src_path in src_to_dest_map:
                 # Convert root path from Tapis system root to Corral mount root
                 src_path_obj = (
                     Path(settings.DESIGNSAFE_PROJECTS_PATH)
@@ -443,7 +440,7 @@ def copy_publication_files(
                     raise ProjectFileNotFound(f"File not found: {src_path}")
 
                 dest_path_obj = Path(settings.DESIGNSAFE_PUBLISHED_PATH) / Path(
-                    path_mapping[node_id][src_path].lstrip("/")
+                    src_to_dest_map[src_path].lstrip("/")
                 )
                 os.makedirs(dest_path_obj.parent, exist_ok=True)
 
@@ -476,7 +473,7 @@ def copy_publication_files(
         logger.debug("Alerting due to data transfer failure for %s", project_id)
         logger.error(exc)
         send_project_permissions_alert(project_id, version, str(exc))
-        raise exc
+        raise
 
     finally:
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
@@ -486,12 +483,10 @@ def copy_github_release(tree: nx.DiGraph, version: int = 1):
     """Download GitHub release archive to Corral."""
 
     gh_node = next(
-        
-            node
-            for node in tree.nodes
-            if tree.nodes[node]["name"] == "designsafe.project"
-            and tree.nodes[node]["version"] == version
-        
+        node
+        for node in tree.nodes
+        if tree.nodes[node]["name"] == "designsafe.project"
+        and tree.nodes[node]["version"] == version
     )
     base_path = tree.nodes[gh_node]["basePath"]
     corral_path = f"/corral-repl/tacc/NHERI/published{base_path}/data"
@@ -504,7 +499,6 @@ def copy_github_release(tree: nx.DiGraph, version: int = 1):
 
     os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
     try:
-
         os.makedirs(corral_path, exist_ok=True)
         repo_zip_url = (
             requests.get(github_release_url, timeout=10).json().get("zipball_url")
@@ -545,7 +539,6 @@ def create_publication_manifests(
         generate_sha512_manifest(path)
 
 
-# pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def publish_project(
     project_id: str,
     entity_uuids: list[str],
@@ -578,12 +571,10 @@ def publish_project(
     project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
 
     base_meta_node = next(
-        
-            node
-            for node in pub_tree.nodes
-            if pub_tree.nodes[node]["name"] == constants.PROJECT
-            and pub_tree.nodes[node].get("version", version) == version
-        
+        node
+        for node in pub_tree.nodes
+        if pub_tree.nodes[node]["name"] == constants.PROJECT
+        and pub_tree.nodes[node].get("version", version) == version
     )
 
     project_type = pub_tree.nodes[base_meta_node]["value"]["projectType"]
@@ -674,8 +665,10 @@ def publish_project_async(
             )
             try:
                 add_publications_to_chroma(publications=[meta])
-            except Exception as e:  # pylint: disable=broad-except
-                logger.error("Error adding publication to Chroma vector store: %s", e)
+            except Exception:
+                logger.exception(
+                    "Error adding publication %s to Chroma vector store", project_id
+                )
         except Exception as exc:
             raise PipelinePublishFailure(
                 f"""Publication of {project_id} failed with {type(exc).__name__}: {exc}

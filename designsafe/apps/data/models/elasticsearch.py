@@ -76,15 +76,15 @@ class IndexedFile(Document):
         """
         Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.save()
         """
-        self.lastUpdated = datetime.datetime.now()
+        self.lastUpdated = datetime.datetime.now(tz=datetime.UTC)
         return super().save(*args, **kwargs)
 
     def update(self, *args, **kwargs):
         """
         Sets `lastUpdated` attribute on save. Otherwise see elasticsearch_dsl.Document.update()
         """
-        lastUpdated = datetime.datetime.now()
-        return super().update(lastUpdated=lastUpdated, *args, **kwargs)
+        lastUpdated = datetime.datetime.now(tz=datetime.UTC)
+        return super().update(*args, **kwargs, lastUpdated=lastUpdated)
 
     @classmethod
     def from_path(cls, system, path):
@@ -380,8 +380,9 @@ class IndexedPublication(Document):
         search = cls.search(using=using).filter(id_filter & revision_filter)
         try:
             res = search.execute()
-        except Exception as e:
-            raise e
+        except Exception:
+            logger.exception("")
+            raise
         if res.hits.total.value > 1:
             id_filter = Q('term', _id=res[0].meta.id)
             # Delete all files indexed with the same system/path, except the first result
@@ -519,8 +520,9 @@ class IndexedPublicationLegacy(Document):
         search = cls.search().filter(id_filter)
         try:
             res = search.execute()
-        except Exception as e:
-            raise e
+        except Exception:
+            logger.exception("")
+            raise
         if res.hits.total.value > 1:
             id_filter = Q('term', _id=res[0].meta.id)
             # Delete all files indexed with the same system/path, except the first result

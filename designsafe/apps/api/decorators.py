@@ -40,8 +40,8 @@ def _decode_jwt(jwt):
 
     try:
         decoded = pyjwt.decode(jwt, key, issuer=settings.AGAVE_JWT_ISSUER)
-    except pyjwt.exceptions.DecodeError as exc:
-        logger.exception('Could not decode JWT. %s', exc)
+    except pyjwt.exceptions.DecodeError:
+        logger.exception('Could not decode JWT.')
         return {}
     return decoded
 

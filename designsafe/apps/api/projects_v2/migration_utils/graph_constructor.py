@@ -88,7 +88,7 @@ def get_entities_by_project_id(project_id: str) -> list[dict]:
 def get_path(graph: nx.DiGraph, node_id: str):
     """Iterate through all predecessors in the graph (inclusive)"""
     shortest_path = nx.shortest_path(graph, "NODE_ROOT", node_id)
-    path_uuids = map(lambda node: graph.nodes[node]["uuid"], shortest_path)
+    path_uuids = (graph.nodes[node]["uuid"] for node in shortest_path)
 
     return list(path_uuids)
 
@@ -358,7 +358,7 @@ def transform_pub_entities(project_id: str, version: int | None = None):
     )
     path_mappings = []
 
-    for _, node_data in pub_graph.nodes.items():
+    for node_data in pub_graph.nodes.values():
         node_entity = next(
             (e for e in entity_listing if e["uuid"] == node_data["uuid"]), None
         )

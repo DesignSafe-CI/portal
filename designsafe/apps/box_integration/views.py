@@ -25,17 +25,15 @@ def index(request):
             context['box_connection'] = box_user
         except BoxOAuthException:
             # authentication failed
-            logger.warning('Box oauth token for user=%s failed to authenticate' %
-                           request.user.username)
+            logger.warning('Box oauth token for user=%sfailed to authenticate', request.user.username)
             context['box_connection'] = False
         except BoxException:
             # session layer exception
-            logger.warning('Box API error when testing oauth token for user=%s' %
-                           request.user.username)
+            logger.warning('Box API error when testing oauth token for user=%s', request.user.username)
             context['box_connection'] = False
 
     except BoxUserToken.DoesNotExist:
-        logger.debug('BoxUserToken does not exist for user=%s' % request.user.username)
+        logger.debug('BoxUserToken does not exist for user=%s', request.user.username)
 
     return render(request, 'designsafe/apps/box_integration/index.html', context)
 
@@ -64,7 +62,7 @@ def oauth2_callback(request):
     else:
         return HttpResponseBadRequest('Unexpected request')
 
-    if not (state == box['state']):
+    if state != box['state']:
         return HttpResponseBadRequest('Request expired')
 
     try:
@@ -84,8 +82,8 @@ def oauth2_callback(request):
             box_user_id=box_user.id,
         )
         token.save()
-    except BoxException as e:
-        logger.exception('Unable to complete Box integration setup: %s' % e)
+    except BoxException:
+        logger.exception('Unable to complete Box integration setup')
         messages.error(request, 'Oh no! An unexpected error occurred while trying to set '
                                 'up the Box.com application. Please try again.')
 
@@ -102,7 +100,8 @@ def disconnect(request):
         except BoxUserToken.DoesNotExist:
             logger.warning('Disconnect Box; BoxUserToken does not exist.',
                         extra={'user': request.user})
-        except:
+        except Exception:
+            logger.exception("")
             logger.error('Disconnect Box; BoxUserToken delete error.',
                          extra={'user': request.user})
         messages.success(

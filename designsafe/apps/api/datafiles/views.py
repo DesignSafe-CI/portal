@@ -186,17 +186,17 @@ class TransferFilesView(BaseApiView):
         notify(request.user.username, 'transfer', 'Copy operation has started.', 'INFO', {})
         try:
             if format == 'folder':
-                resp = transfer_folder(src_client, dest_client, **body)
+                transfer_folder(src_client, dest_client, **body)
                 notify(request.user.username, 'transfer', 'Files were successfully copied.', 'SUCCESS', {})
                 return JsonResponse({'success': True})
             else:
-                resp = transfer(src_client, dest_client, **body)
+                transfer(src_client, dest_client, **body)
                 notify(request.user.username, 'transfer', 'Files were successfully copied.', 'SUCCESS', {})
                 return JsonResponse({'success': True})
         except Exception as exc:
             notify(request.user.username, 'transfer', 'Copy operation has failed.', 'ERROR', {})
             logger.info(exc)
-            raise exc
+            raise
 
 
 class MicrosurveyView(BaseApiView):

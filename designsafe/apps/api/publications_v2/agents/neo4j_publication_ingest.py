@@ -144,7 +144,7 @@ def merge_files(
     project_id: str,
     collection_id: str,
     file_objs: list[dict],
-    file_tags: list[dict] = None,
+    file_tags: list[dict] | None = None,
 ):
     """Merge files and tags into the graph db."""
     if not file_tags:

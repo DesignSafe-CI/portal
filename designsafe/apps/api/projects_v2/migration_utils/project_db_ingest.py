@@ -80,9 +80,9 @@ def ingest_entities_by_name(name):
             ]
         try:
             value_model = schema_model.model_validate(entity["value"])
-        except ValidationError as err:
+        except ValidationError:
             print(entity)
-            raise err
+            raise
         try:
             prj = ProjectMetadata.objects.get(
                 name="designsafe.project", uuid__in=entity["associationIds"]
