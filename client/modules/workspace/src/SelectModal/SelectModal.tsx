@@ -108,13 +108,13 @@ const getSystemRootPath = (
   user: TUser | undefined
 ): string => {
   if (storageSystem?.notes?.isMyData) {
-    return encodeURIComponent('/' + user?.username);
+    return '/' + user?.username;
   }
   if (storageSystem?.id === 'designsafe.storage.published') {
-    return encodeURIComponent('/published-data');
+    return '/published-data';
   }
   if (storageSystem?.notes?.hasWork) {
-    return encodeURIComponent('/work/' + user?.homedir);
+    return '/work/' + user?.homedir;
   }
   return '';
 };
