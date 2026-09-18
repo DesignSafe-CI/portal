@@ -1,14 +1,12 @@
 {
-  "ignorePatterns": ["!**/*"],
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx"],
-      "rules": {}
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "rules": {}
-    }
+  "extends": [
+    "./.eslintrc.base.json",
+    "eslint:recommended",
+    "plugin:react-hooks/recommended",
+    "prettier"
   ],
-  "extends": ["plugin:@nx/react", "./.eslintrc.base.json"]
+  "rules": {
+    "no-undef": "off",
+    "no-unused-vars": "off"
+  }
 }

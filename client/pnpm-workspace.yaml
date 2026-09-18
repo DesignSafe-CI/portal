@@ -1,0 +1,6 @@
+packages:
+  - 'modules/*'
+
+allowBuilds:
+  esbuild: true
+  msw: true
