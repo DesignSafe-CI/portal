@@ -1,12 +1,15 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  root: __dirname,
+  root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/modules/workspace',
 
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react()],
+
+  resolve: {
+    tsconfigPaths: true,
+  },
 
   test: {
     globals: true,

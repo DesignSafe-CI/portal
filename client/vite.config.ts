@@ -1,11 +1,10 @@
 /// <reference types='vitest' />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
 export default defineConfig({
-  root: __dirname,
+  root: import.meta.dirname,
   base: '/static/react-assets',
   cacheDir: './node_modules/.vite/.',
 
@@ -22,7 +21,11 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react()],
+
+  resolve: {
+    tsconfigPaths: true,
+  },
 
   build: {
     outDir: './dist/client',
@@ -32,7 +35,7 @@ export default defineConfig({
     },
     rollupOptions: {
       input: {
-        imports: path.resolve(__dirname, 'react-assets.html'),
+        imports: path.resolve(import.meta.dirname, 'react-assets.html'),
       },
     },
   },

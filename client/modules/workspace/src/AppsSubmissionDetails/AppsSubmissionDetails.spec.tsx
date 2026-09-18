@@ -5,6 +5,11 @@ import { AppsSubmissionDetails } from './AppsSubmissionDetails';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
+vi.mock('react-hook-form', () => ({
+  useFormContext: vi.fn(),
+  useWatch: vi.fn(),
+}));
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
@@ -50,11 +55,6 @@ describe('AppsSubmissionDetails', () => {
       isInteractive: false,
     },
   };
-
-  vi.mock('react-hook-form', () => ({
-    useFormContext: vi.fn(),
-    useWatch: vi.fn(),
-  }));
 
   it('should render successfully', () => {
     const baseElement = (props = {}) =>

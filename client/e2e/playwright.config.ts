@@ -27,6 +27,6 @@ export default defineConfig({
     command: 'pnpm preview',
     url: 'http://localhost:4300',
     reuseExistingServer: !process.env.CI,
-    cwd: path.resolve(__dirname, '..'),
+    cwd: path.resolve(import.meta.dirname, '..'),
   },
 });
