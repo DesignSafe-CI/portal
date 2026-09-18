@@ -49,9 +49,7 @@ const OnboardingWebsocketHandler = () => {
     queryClient.setQueriesData<TOnboardingAdminList>(
       { queryKey: ['onboarding', 'adminList'], exact: false },
       (oldData: TOnboardingAdminList | undefined) =>
-        oldData?.users
-          ? updateAdminUsersFromEvent(oldData, event)
-          : oldData
+        oldData?.users ? updateAdminUsersFromEvent(oldData, event) : oldData
     );
     queryClient.setQueryData(
       ['onboarding', 'user', event.username],

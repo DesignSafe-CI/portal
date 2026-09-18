@@ -11,6 +11,8 @@
     "test": "vitest run",
     "test:workspaces": "pnpm --recursive --if-present test",
     "typecheck": "tsc --build",
+    "format:check": "prettier --check .",
+    "format:write": "prettier . --write",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "e2e": "playwright test --config=e2e/playwright.config.ts"
   },
