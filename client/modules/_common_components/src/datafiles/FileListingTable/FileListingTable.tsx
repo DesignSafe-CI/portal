@@ -159,7 +159,11 @@ export const FileListingTable: React.FC<
               renderCell: (checked, _rc, _idx, node) => (
                 <FileListingTableCheckbox
                   checked={checked}
-                  onChange={(node as React.ReactElement)?.props.onChange}
+                  onChange={
+                    (node as React.ReactElement<{
+                      onChange: React.ChangeEventHandler;
+                    }>).props.onChange
+                  }
                 />
               ),
             }

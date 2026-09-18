@@ -19,7 +19,7 @@
     "@client/workspace": "workspace:*",
     "antd": "^5.16.4",
     "html-react-parser": "^5.1.10",
-    "react": "18.3.1",
+    "react": "19.3.0",
     "react-router-dom": "^6.21.1"
   }
 }
