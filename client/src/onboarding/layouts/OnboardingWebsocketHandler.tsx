@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import useWebSocket from 'react-use-websocket';
+import { useWebSocket} from 'react-use-websocket/src/lib/use-websocket';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   TSetupStepEvent,
