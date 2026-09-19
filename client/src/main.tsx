@@ -1,122 +1,21 @@
 import './styles.css';
-import '@ant-design/v5-patch-for-react-19';
-import { StrictMode } from 'react';
-import * as ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import workspaceRouter from './workspace/workspaceRouter';
-import datafilesRouter from './datafiles/datafilesRouter';
-import reconportalRouter from './reconportal/reconportalRouter';
-import onboardingRouter from './onboarding/onboardingRouter';
-import { ConfigProvider, ThemeConfig } from 'antd';
-import { AIChatButton } from '@client/workspace';
+import type { ComponentType } from 'react';
 
-const queryClient = new QueryClient();
-const themeConfig: ThemeConfig = {
-  token: {
-    borderRadius: 0,
-    colorPrimary: '#337ab7',
-    colorError: '#d9534f',
-    colorPrimaryTextHover: 'black',
-    colorBorderSecondary: '#b7b7b7',
-  },
-  components: {
-    Table: {
-      cellPaddingBlock: 8,
-      headerBg: 'transparent',
-      headerColor: '#333333',
-      headerSplitColor: 'transparent',
-      rowHoverBg: 'rgb(230, 246, 255)',
-      borderColor: 'rgb(215, 215, 215)',
-      colorText: 'rgb(112, 112, 112)',
-    },
-    Layout: {
-      bodyBg: 'transparent',
-      siderBg: 'transparent',
-    },
-    Steps: {
-      colorPrimary: '#1cb500',
-    },
-    Menu: {
-      itemHeight: 45,
-      itemMarginInline: 0,
-      itemSelectedColor: 'black',
-      itemHoverBg: '#cbdded',
-      itemSelectedBg: '#cbdded',
-    },
-    Form: {
-      itemMarginBottom: 16,
-      verticalLabelPadding: 0,
-    },
-  },
+type AppModule = { default: ComponentType };
+type AppLoader = () => Promise<AppModule>;
+
+const mountApp = (rootId: string, loadApp: AppLoader) => {
+  const element = document.getElementById(rootId);
+
+  if (element) {
+    void Promise.all([import('./renderApp'), loadApp()]).then(
+      ([{ renderApp }, { default: App }]) => renderApp(element, App)
+    );
+  }
 };
 
-const appsElement = document.getElementById('apps-root');
-if (appsElement) {
-  const appsRoot = ReactDOM.createRoot(appsElement as HTMLElement);
-  appsRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={workspaceRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const datafilesElement = document.getElementById('datafiles-root');
-if (datafilesElement) {
-  const datafilesRoot = ReactDOM.createRoot(datafilesElement as HTMLElement);
-  datafilesRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={datafilesRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const onboardingElement = document.getElementById('onboarding-root');
-if (onboardingElement) {
-  const onboardingRoot = ReactDOM.createRoot(onboardingElement as HTMLElement);
-  onboardingRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={onboardingRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const navAiElement = document.getElementById('nav-ai-root');
-if (navAiElement) {
-  const navAiRoot = ReactDOM.createRoot(navAiElement as HTMLElement);
-  navAiRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <AIChatButton />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const reconElement = document.getElementById('recon-root');
-if (reconElement) {
-  const reconRoot = ReactDOM.createRoot(reconElement as HTMLElement);
-  reconRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={reconportalRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
+mountApp('apps-root', () => import('./workspace/workspaceRouter'));
+mountApp('datafiles-root', () => import('./datafiles/datafilesRouter'));
+mountApp('onboarding-root', () => import('./onboarding/onboardingRouter'));
+mountApp('nav-ai-root', () => import('./navAI'));
+mountApp('recon-root', () => import('./reconportal/reconportalRouter'));

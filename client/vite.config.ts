@@ -37,6 +37,27 @@ export default defineConfig({
       input: {
         imports: path.resolve(import.meta.dirname, 'react-assets.html'),
       },
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              // Split only third-party code: grouping application modules would
+              // collapse the independently loaded roots back together.
+              name: 'vendor',
+              test: /node_modules[\\/]/,
+              // Keep packages separated by the app roots that consume them so,
+              // for example, Leaflet is never fetched by an onboarding page.
+              entriesAware: true,
+              entriesAwareMergeThreshold: 100_000,
+              // Rolldown measures source bytes here. These limits currently
+              // produce 40-450 kB minified chunks with no size warnings.
+              minSize: 100_000,
+              maxSize: 1_250_000,
+              includeDependenciesRecursively: false,
+            },
+          ],
+        },
+      },
     },
   },
 

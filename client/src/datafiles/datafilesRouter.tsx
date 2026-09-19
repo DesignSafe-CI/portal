@@ -7,6 +7,7 @@ import {
   useParams,
   NavigateProps,
   generatePath,
+  RouterProvider,
   useLocation,
 } from 'react-router-dom';
 import { ProjectPreviewLayout } from './layouts/projects/ProjectPreviewLayout';
@@ -244,4 +245,6 @@ const datafilesRouter = createBrowserRouter(
   { basename: '/data/browser/' }
 );
 
-export default datafilesRouter;
+export default function DataFilesRouter() {
+  return <RouterProvider router={datafilesRouter} />;
+}

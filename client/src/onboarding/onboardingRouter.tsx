@@ -1,6 +1,10 @@
 import { Suspense } from 'react';
 import { Layout } from 'antd';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
 import { Spinner } from '@client/common-components';
 import OnboardingAdminLayout from './layouts/OnboardingAdminLayout';
 import { OnboardingUserLayout } from './layouts/OnboardingUserLayout';
@@ -46,4 +50,6 @@ const onboardingRouter = createBrowserRouter(
   { basename: '/onboarding' }
 );
 
-export default onboardingRouter;
+export default function OnboardingRouter() {
+  return <RouterProvider router={onboardingRouter} />;
+}

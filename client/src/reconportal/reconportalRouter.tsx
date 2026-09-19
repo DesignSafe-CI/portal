@@ -1,4 +1,8 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
 import ReconPortalBaseLayout from './layouts/ReconPortalBaseLayout';
 
 const reconportalRouter = createBrowserRouter(
@@ -22,4 +26,6 @@ const reconportalRouter = createBrowserRouter(
   { basename: '/recon-portal' }
 );
 
-export default reconportalRouter;
+export default function ReconPortalRouter() {
+  return <RouterProvider router={reconportalRouter} />;
+}
