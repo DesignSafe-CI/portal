@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bubble, Sender, Actions } from '@ant-design/x';
 import { UserOutlined, RobotOutlined } from '@ant-design/icons';
 import { Layout, Flex, Button } from 'antd';
-import { useWebSocket} from 'react-use-websocket/src/lib/use-websocket';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 import parse from 'html-react-parser';
 import markdownit from 'markdown-it';
 import { Icon } from '@client/common-components';

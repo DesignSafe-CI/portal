@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
-import { useWebSocket} from 'react-use-websocket/src/lib/use-websocket';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 import { TableProps, Row, Flex, Button as AntButton } from 'antd';
 import type { ButtonSize } from 'antd/es/button';
 import { useQueryClient } from '@tanstack/react-query';
