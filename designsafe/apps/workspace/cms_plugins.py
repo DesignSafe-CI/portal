@@ -1,6 +1,7 @@
 """CMS plugins for Tools & Applications pages."""
 
 import logging
+from typing import Optional, Union
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from designsafe.apps.workspace.models.app_entries import (
@@ -10,9 +11,28 @@ from designsafe.apps.workspace.models.app_cms_plugins import (
     AppCategoryListingPlugin,
     RelatedAppsPlugin,
     AppVariantsPlugin,
+    AppUserGuideLinkPlugin,
 )
+from designsafe.apps.workspace.forms import AppUserGuideLinkPluginForm
 
 logger = logging.getLogger(__name__)
+
+
+def get_entry_instance(url):
+    """Helper function to get an AppListingEntry instance based on URL."""
+
+    app_listing_entries = AppListingEntry.objects.filter(enabled=True)
+    for entry in app_listing_entries:
+        if entry.href in url:
+            return entry
+
+    return None
+
+def is_editing_text(url):
+    """Helper function to determine if the current context is editing text."""
+
+    # e.g. /…/page/edit-plugin/123/, /…/page/plugin/text_plugin/render-plugin/
+    return 'admin/cms/page' in url
 
 
 class AppCategoryListing(CMSPluginBase):
@@ -53,6 +73,7 @@ plugin_pool.register_plugin(AppCategoryListing)
 
 class RelatedApps(CMSPluginBase):
     """CMS plugin to render related apps."""
+    # IDEA: Use get_entry_instance if model field is empty (i.e. auto value)
 
     model = RelatedAppsPlugin
     name = "Related Apps"
@@ -89,6 +110,7 @@ plugin_pool.register_plugin(RelatedApps)
 
 class AppVariants(CMSPluginBase):
     """CMS plugin to render an apps versions/variants."""
+    # IDEA: Use get_entry_instance if model field is empty (i.e. auto value)
 
     model = AppVariantsPlugin
     name = "App Version Selection"
@@ -105,3 +127,36 @@ class AppVariants(CMSPluginBase):
 
 
 plugin_pool.register_plugin(AppVariants)
+
+
+class AppUserGuideLink(CMSPluginBase):
+    """CMS plugin to render the user guide link."""
+
+    model = AppUserGuideLinkPlugin
+    form = AppUserGuideLinkPluginForm
+    name = "App User Guide Link"
+    module = "Tools & Applications"
+    render_template = "designsafe/apps/workspace/app_user_guide_link_plugin.html"
+    text_enabled = True
+    cache = False
+
+    def render(
+        self,
+        context,
+        instance: Optional[Union[AppUserGuideLinkPlugin, AppListingEntry]] = None,
+        placeholder=None,
+    ):
+        context = super().render(context, instance, placeholder)
+        instance_app = None
+
+        if isinstance(instance, AppUserGuideLinkPlugin):
+            instance_app = getattr(instance, "app", None)
+        if instance_app is None:
+            instance_app = get_entry_instance(context.get("request").path)
+
+        context["user_guide_link"] = getattr(instance_app, "user_guide_link", None)
+        context["is_editing_text"] = is_editing_text(context.get("request").path)
+        return context
+
+
+plugin_pool.register_plugin(AppUserGuideLink)
