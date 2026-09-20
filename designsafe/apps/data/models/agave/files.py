@@ -1,17 +1,23 @@
 import json
 import logging
-import re
 import os
-import six
-import urllib.request, urllib.parse, urllib.error
+import re
+import urllib.error
 import urllib.parse
+import urllib.request
+
+import six
 from requests.exceptions import HTTPError
-from designsafe.apps.data.models.agave.base import BaseAgaveResource
-from designsafe.apps.data.models.agave.metadata import BaseMetadataResource, BaseMetadataPermissionResource
-from designsafe.apps.data.models.agave.systems import roles as system_roles_list
+
 # from agavepy.agave import AgaveException
 #  from agavepy.async import AgaveAsyncResponse, TimeoutError, Error
 from designsafe.apps.api import tasks
+from designsafe.apps.data.models.agave.base import BaseAgaveResource
+from designsafe.apps.data.models.agave.metadata import (
+    BaseMetadataPermissionResource,
+    BaseMetadataResource,
+)
+from designsafe.apps.data.models.agave.systems import roles as system_roles_list
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +30,7 @@ class BaseFileMetadata(BaseMetadataResource):
     def __init__(self, agave_client, file_obj=None, **kwargs):
         meta_objs = []
         if file_obj:
-            query = '{{"associationIds": "{}", "name": "designsafe.file"}}'.format(file_obj.uuid)
+            query = f'{{"associationIds": "{file_obj.uuid}", "name": "designsafe.file"}}'
             meta_objs = agave_client.meta.listMetadata(q=query)
             logger.info(meta_objs)
             if meta_objs:
@@ -43,7 +49,7 @@ class BaseFileMetadata(BaseMetadataResource):
                 defaults['associationIds'].append(project_uuid)
         else:
             defaults = kwargs
-        super(BaseFileMetadata, self).__init__(agave_client, **defaults)
+        super().__init__(agave_client, **defaults)
 
     @classmethod
     def search(cls, agave_client, q):
@@ -104,7 +110,7 @@ class BaseFileMetadata(BaseMetadataResource):
         if not project_uuid:
             return self
 
-        project_roles = self._agave.systems.listRoles(systemId='project-{}'.format(project_uuid))
+        project_roles = self._agave.systems.listRoles(systemId=f'project-{project_uuid}')
         project_roles = [x for x in project_roles if x['username'] != 'ds_admin']
         meta_pems = BaseMetadataPermissionResource.list_permissions(self.uuid, self._agave)
         meta_pems_users = self._update_pems_with_system_roles(project_roles, meta_pems)
@@ -115,12 +121,12 @@ class BaseFileMetadata(BaseMetadataResource):
 
     def save(self):
         if self.uuid is None:
-            super(BaseFileMetadata, self).save()
+            super().save()
             #self.match_pems_to_project()
             if self.value.get('projectUUID'):
                 tasks.check_project_meta_pems.apply_async(args=[self.uuid], queue='api')
         else:
-            super(BaseFileMetadata, self).save()
+            super().save()
 
 class BaseFileResource(BaseAgaveResource):
     """Represents an Agave Files API Resource"""
@@ -170,7 +176,7 @@ class BaseFileResource(BaseAgaveResource):
                                     SUPPORTED_MS_OFFICE)
 
     def __init__(self, agave_client, system, path, **kwargs):
-        super(BaseFileResource, self).__init__(agave_client, system=system, path=path,
+        super().__init__(agave_client, system=system, path=path,
                                                **kwargs)
         self._children = None
         self._metadata = None
@@ -184,11 +190,11 @@ class BaseFileResource(BaseAgaveResource):
 
     @property
     def agave_uri(self):
-        return 'agave://{}/{}'.format(self.system, self.path)
+        return f'agave://{self.system}/{self.path}'
 
     @property
     def id(self):
-        return '/'.join([self.system, self.path])
+        return f'{self.system}/{self.path}'
 
     @property
     def children(self):
@@ -239,7 +245,7 @@ class BaseFileResource(BaseAgaveResource):
         trail_comps = [{'name': path_comps[i] or '/',
                         'system': self.system,
                         'path': '/'.join(path_comps[0:i+1]) or '/',
-                        } for i in range(0, len(path_comps))]
+                        } for i in range(len(path_comps))]
         return trail_comps
 
     @trail.setter
@@ -254,6 +260,7 @@ class BaseFileResource(BaseAgaveResource):
 
             return self._metadata
         except Exception as exc:
+            logger.exception("")
             logger.debug('Couldn\'t get metadata %s', exc)
 
     @property
@@ -277,10 +284,11 @@ class BaseFileResource(BaseAgaveResource):
                     return meta_q.get('associationIds')
             return None
         except Exception as exc:
+            logger.exception("")
             logger.debug('Couldn\'t get uuid %s', exc)
 
     def to_dict(self):
-        ser = super(BaseFileResource, self).to_dict()
+        ser = super().to_dict()
         if self._children is not None:
             ser['children'] = [c.to_dict() for c in self._children]
 
@@ -319,7 +327,7 @@ class BaseFileResource(BaseAgaveResource):
         if file_name is None:
             file_name = self.name
 
-        body = {'action': 'copy', 'path': '/'.join([dest_path, file_name])}
+        body = {'action': 'copy', 'path': f'{dest_path}/{file_name}'}
         copy_result = self._agave.files.manage(systemId=self.system,
                                                filePath=urllib.parse.quote(self.path),
                                                body=body)
@@ -475,7 +483,7 @@ class BaseFileResource(BaseAgaveResource):
         """
         if file_name is None:
             file_name = self.name
-        body = {'action': 'move', 'path': '/'.join([dest_path, file_name])}
+        body = {'action': 'move', 'path': f'{dest_path}/{file_name}'}
         move_result = self._agave.files.manage(systemId=self.system,
                                                filePath=urllib.parse.quote(self.path),
                                                body=body)
@@ -506,8 +514,7 @@ class BaseFileResource(BaseAgaveResource):
         permission_body = {'username': username,
                            'permission': permission,
                            'recursive': recursive}
-        logger.info('Updating file permissions on {}: {}'.format(self.agave_uri,
-                                                                 permission_body))
+        logger.info('Updating file permissions on %s: %s', self.agave_uri, permission_body)
         self._agave.files.updatePermissions(
             systemId=self.system,
             filePath=urllib.parse.quote(self.path),
@@ -555,7 +562,7 @@ class BaseFileResource(BaseAgaveResource):
 class BaseAgaveFileHistoryRecord(BaseAgaveResource):
 
     def __init__(self, agave_client, **kwargs):
-        super(BaseAgaveFileHistoryRecord, self).__init__(agave_client)
+        super().__init__(agave_client)
         self.status = None
         self.description = None
         self.createdBy = None
@@ -575,7 +582,7 @@ class BaseAgaveFileHistoryRecord(BaseAgaveResource):
                                          self.description)
 
     def __repr__(self):
-        return '<BaseAgaveFileHistoryRecord: {}>'.format(str(self))
+        return f'<BaseAgaveFileHistoryRecord: {self!s}>'
 
 
 class BaseFilePermissionResource(BaseAgaveResource):
@@ -601,7 +608,7 @@ class BaseFilePermissionResource(BaseAgaveResource):
             'username': None
         }
         defaults.update(**kwargs)
-        super(BaseFilePermissionResource, self).__init__(agave_client, **defaults)
+        super().__init__(agave_client, **defaults)
 
         self.agave_file = agave_file
 

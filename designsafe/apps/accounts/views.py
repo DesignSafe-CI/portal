@@ -1,23 +1,28 @@
-from django.shortcuts import render
+import logging
+import re
+
+import requests
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
-from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from designsafe.apps.accounts import forms, integrations
-from designsafe.apps.accounts.models import (NEESUser, DesignSafeProfile,
-                                             NotificationPreferences)
-from designsafe.apps.accounts.tasks import create_report
 from pytas.http import TASClient
 from pytas.models import User as TASUser
-import logging
-import requests
-import re
 from termsandconditions.models import TermsAndConditions
+
+from designsafe.apps.accounts import forms, integrations
+from designsafe.apps.accounts.models import (
+    DesignSafeProfile,
+    NEESUser,
+    NotificationPreferences,
+)
+from designsafe.apps.accounts.tasks import create_report
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +47,9 @@ def manage_profile(request):
 
     try:
         demographics = django_user.profile
-    except ObjectDoesNotExist as e:
+    except ObjectDoesNotExist:
         demographics = {}
-        logger.info('exception e:{} {}'.format(type(e), e))
+        logger.exception("")
 
     context = {
         'title': 'Manage Account',
@@ -144,10 +149,9 @@ def nees_migration(request, step=None):
             if len(nees_user_match) == 0:
                 messages.error(request,
                                'We were unable to locate a NEEShub account for the email '
-                               'address <b>%s</b>. Please confirm that you entered the '
+                               f'address <b>{email_address}</b>. Please confirm that you entered the '
                                'email address correctly and try again. If you feel this '
-                               'is in error, please submit a support ticket.' %
-                               email_address)
+                               'is in error, please submit a support ticket.')
                 return HttpResponseRedirect(reverse('designsafe_accounts:nees_migration'))
             else:
                 tas_by_username = None
@@ -156,11 +160,11 @@ def nees_migration(request, step=None):
                 tas_api = TASClient()
                 try:
                     tas_by_username = tas_api.get_user(username=nees_user_match[0].username)
-                except:
+                except Exception:
                     logger.exception('Error checking for existing TAS users')
                 try:
                     tas_by_email = tas_api.get_user(email=nees_user_match[0].email)
-                except:
+                except Exception:
                     logger.exception('Error checking for existing TAS users')
 
                 context = {
@@ -217,7 +221,7 @@ def nees_migration(request, step=None):
                     return HttpResponseRedirect('/')
                 except Exception as e:
                     logger.exception('Error saving user!')
-                    logger.info('error: {}'.format(e))
+                    logger.info('error: %s', e)
 
                     error_type = e.args[1] if len(e.args) > 1 else ''
 
@@ -232,7 +236,7 @@ def nees_migration(request, step=None):
                             'This email is already registered. If you already have an '
                             'account with TACC, please log in using those credentials.')
                         form._errors.setdefault('email', [err_msg])
-                        err_msg = '%s <a href="%s">Did you forget your password?</a>' % (
+                        err_msg = '{} <a href="{}">Did you forget your password?</a>'.format(
                             err_msg,
                             reverse('designsafe_accounts:password_reset'))
                     elif 'PasswordInvalidException' in error_type:
@@ -326,8 +330,8 @@ def profile_edit(request):
                 ds_profile.professional_level = pro_data['professional_level']
                 ds_profile.nh_interests_primary = pro_data['nh_interests_primary']
 
-            except ObjectDoesNotExist as e:
-                logger.info('exception e: {} {}'.format(type(e), e ))
+            except ObjectDoesNotExist:
+                logger.exception("")
                 ds_profile = DesignSafeProfile(
                     user=user,
                     bio=pro_data['bio'],
@@ -415,7 +419,7 @@ def _process_password_reset_request(request, form):
             logger.info('Processing password reset request for username: "%s"', username)
             resp = tas.request_password_reset(user['username'], source='DesignSafe')
             logger.debug(resp)
-        except Exception as e:
+        except Exception:
             logger.exception('Failed password reset request')
 
         return True
@@ -496,12 +500,11 @@ def mailing_list_subscription(request, list_name):
     try:
         su = get_user_model().objects.filter(
             Q(notification_preferences__isnull=True) |
-            Q(**{"notification_preferences__{}".format(list_name): True}))
-        subscribers += list('"{0}","{1}"'.format(u.get_full_name(),
-        u.email) for u in su)
+            Q(**{f"notification_preferences__{list_name}": True}))
+        subscribers += [f'"{u.get_full_name()}","{u.email}"' for u in su]
 
-    except TypeError as e:
-        logger.warning('Invalid list name: {}'.format(list_name))
+    except TypeError:
+        logger.warning('Invalid list name: %s', list_name)
     return HttpResponse('\n'.join(subscribers), content_type='text/csv')
 
 

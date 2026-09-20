@@ -1,25 +1,26 @@
 """Tests for operations that create/update project metadata."""
-import pytest
 import networkx as nx
+import pytest
 from django import db
+
 from designsafe.apps.api.projects_v2 import constants
-from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
-    create_project_metdata,
-    create_entity_metadata,
-    change_project_type,
-    add_file_associations,
-    remove_file_associations,
-    add_file_tags,
-    remove_file_tags,
-    ProjectMetadata,
-    FileObj,
-    FileTag,
-)
 from designsafe.apps.api.projects_v2.operations.graph_operations import (
-    initialize_project_graph,
     add_node_to_project,
+    initialize_project_graph,
     remove_nodes_from_project,
     reorder_project_nodes,
+)
+from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
+    FileObj,
+    FileTag,
+    ProjectMetadata,
+    add_file_associations,
+    add_file_tags,
+    change_project_type,
+    create_entity_metadata,
+    create_project_metdata,
+    remove_file_associations,
+    remove_file_tags,
 )
 
 

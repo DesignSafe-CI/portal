@@ -1,20 +1,17 @@
-from designsafe.apps.api.views import BaseApiView
-from django.http import JsonResponse, HttpResponseForbidden
-from designsafe.apps.api.agave import get_service_account_client
-from django.conf import settings
+import logging
+
+import requests
+from django.http import JsonResponse
 from requests.exceptions import HTTPError
+
+from designsafe.apps.api.agave import get_service_account_client
 from designsafe.apps.api.publications import operations
 from designsafe.apps.api.publications.operations import (
+    build_citation_json,
     clarivate_single_api,
     clarivate_wos_exp_single_api_basic,
-    build_citation_json,
 )
-from designsafe.apps.projects.managers import datacite as DataciteManager
-from django.utils.decorators import method_decorator
-import json
-import logging
-import requests
-
+from designsafe.apps.api.views import BaseApiView
 
 logger = logging.getLogger(__name__)
 

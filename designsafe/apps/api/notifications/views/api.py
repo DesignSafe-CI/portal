@@ -1,10 +1,11 @@
-import logging
 import json
+import logging
+
 from django.http import HttpResponse, JsonResponse
+
+from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.views import BaseApiView
-from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
-
 
 logger = logging.getLogger(__name__)
 

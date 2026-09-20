@@ -4,21 +4,21 @@
     :synopsis: Nco projects manager. Should only do read actions.
     Unless it is to update the mongo database.
 """
-from __future__ import unicode_literals, absolute_import
-import six
-import logging
-from datetime import datetime, timedelta
 import calendar
-from dateutil.parser import parse as datetime_parse
-from designsafe.libs.mongo.load_projects import MongoProjectsHelper
-from designsafe.apps.projects.managers.base import ProjectsManager
-from designsafe.apps.api.agave import service_account
+import logging
+from datetime import UTC, datetime, timedelta
 
+import six
+from dateutil.parser import parse as datetime_parse
+
+from designsafe.apps.api.agave import service_account
+from designsafe.apps.projects.managers.base import ProjectsManager
+from designsafe.libs.mongo.load_projects import MongoProjectsHelper
 
 logger = logging.getLogger(__name__)
 
 
-class NcoProjectsManager(object):
+class NcoProjectsManager:
     """Nco Projects Manager."""
 
     def __init__(self, user):
@@ -34,7 +34,7 @@ class NcoProjectsManager(object):
 
     def _process_time_filter(self, value):
         """Convert from time filter value to date range."""
-        date = datetime.utcnow()
+        date = datetime.now(tz=UTC)
 
         def this_week():
             """Get this week range."""

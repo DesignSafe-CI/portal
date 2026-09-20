@@ -2,19 +2,21 @@
 
 import json
 import os
-from typing import Iterator
+from collections.abc import Iterator
+
 import requests
-from urllib3.util import Retry
-from requests import Session
-from requests.exceptions import RetryError
-from requests.adapters import HTTPAdapter
 from django.conf import settings
+from requests import Session
+from requests.adapters import HTTPAdapter
+from requests.exceptions import RetryError
+from urllib3.util import Retry
+
 from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
-from designsafe.apps.api.projects_v2.schema_models._field_models import FileObj
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     add_file_associations,
 )
+from designsafe.apps.api.projects_v2.schema_models._field_models import FileObj
 
 
 def iterate_entities(name="designsafe.project") -> Iterator[dict]:

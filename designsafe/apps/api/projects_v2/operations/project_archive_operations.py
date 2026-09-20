@@ -2,16 +2,17 @@
 Utility to create a ZIP archive of a publication and its metadata.
 """
 
-import os
 import json
 import logging
-from typing import Optional
+import os
+
 import requests
-from requests.auth import HTTPBasicAuth
-from django.conf import settings
 from celery import shared_task
-from designsafe.libs.common.context_managers import AsyncTaskContext
+from django.conf import settings
+from requests.auth import HTTPBasicAuth
+
 from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.libs.common.context_managers import AsyncTaskContext
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ def ranch_archive_webhook(project_id: str):
 
 
 @shared_task
-def archive_publication_async(project_id: str, version: Optional[str] = 1):
+def archive_publication_async(project_id: str, version: str | None = 1):
     """async wrapper around archive"""
     with AsyncTaskContext():
         create_metadata_file(project_id, version)

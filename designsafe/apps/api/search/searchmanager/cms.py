@@ -4,9 +4,9 @@
 """
 
 
-import logging
-from elasticsearch_dsl import Q, Index
 from django.conf import settings
+from elasticsearch_dsl import Index, Q
+
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 
 
@@ -27,10 +27,10 @@ class CMSSearchManager(BaseSearchManager):
             'date': 'date'
         }
 
-        super(CMSSearchManager, self).__init__(cms_index, cms_index.search())
+        super().__init__(cms_index, cms_index.search())
 
     def construct_query(self, system=None, file_path=None):
-        cms_index_name = list(Index(settings.ES_INDEX_PREFIX.format('cms')).get_alias().keys())[0]
+        cms_index_name = next(iter(Index(settings.ES_INDEX_PREFIX.format('cms')).get_alias().keys()))
         cms_query = Q(
             'bool',
             must=[

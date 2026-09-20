@@ -22,7 +22,7 @@ class MultiEmailField(forms.Field):
         """ Check if value consists only of valid emails. """
 
         # Use the parent's handling of required fields, etc.
-        super(MultiEmailField, self).validate(value)
+        super().validate(value)
 
         for email in value:
             validate_email(email.strip())
@@ -60,7 +60,6 @@ class TicketGuestForm(BaseTicketForm):
     Anonymous users ticket form. Adds a CAPTCHA to reduce spam submissions.
     """
     captcha = ReCaptchaField(widget=ReCaptchaWidget)
-    pass
 
 class ReplyForm(forms.Form):
     """

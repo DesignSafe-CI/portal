@@ -1,16 +1,21 @@
-from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
-from designsafe.apps.api.publications import search_utils
-from designsafe.apps.api.agave import get_service_account_client
-from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
-from designsafe.libs.elasticsearch.utils import new_es_client
-from django.contrib.auth import get_user_model
-from elasticsearch_dsl import Q
-import os
-import requests
 import datetime
 import json
-import urllib
 import logging
+import os
+import urllib
+
+import requests
+from django.contrib.auth import get_user_model
+from elasticsearch_dsl import Q
+
+from designsafe.apps.api.agave import get_service_account_client
+from designsafe.apps.api.publications import search_utils
+from designsafe.apps.data.models.elasticsearch import (
+    IndexedPublication,
+    IndexedPublicationLegacy,
+)
+from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
+from designsafe.libs.elasticsearch.utils import new_es_client
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +25,7 @@ def _get_user_by_username(hit, username):
     if not users:
         try:
             user_obj = get_user_model().objects.get(username=username)
-            return "{}, {}".format(user_obj.last_name, user_obj.first_name)
+            return f"{user_obj.last_name}, {user_obj.first_name}"
         except:
             return username
     user = next(_user for _user in users if _user['username'] == username)
@@ -164,7 +169,7 @@ def metrics(project_id, *args, **kwargs):
     """retrieve metrics for a given project ID"""
 
     client = get_service_account_client()
-    query = {'name': 'designsafe.metrics.{}'.format(project_id)}
+    query = {'name': f'designsafe.metrics.{project_id}'}
     metrics_meta = client.meta.listMetadata(q=json.dumps(query))[0]
     return metrics_meta
 
