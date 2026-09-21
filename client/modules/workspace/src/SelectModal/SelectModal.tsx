@@ -130,12 +130,12 @@ const getBackPath = (
     clearSearchTerm();
     return encodedPath;
   }
-  const pathParts = encodedPath.split('/');
+  const pathParts = decodeURIComponent(encodedPath).split('/');
   const isRootPath = pathParts.join('/') === getSystemRootPath(system, user);
   if (!isRootPath) {
     pathParts.pop();
   }
-  return pathParts.join('/');
+  return encodeURIComponent(pathParts.join('/'));
 };
 
 const getParentFolder = (
