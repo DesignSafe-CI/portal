@@ -258,7 +258,7 @@ function getFilesColumns(
               const lastPartOfPath = record.path.split('/').pop() ?? '';
               const filePath =
                 appFileSettings.fileNameRepresentation === 'FullTapisPath'
-                  ? `${api}://${record.system}/${record.path}`
+                  ? `${api}://${record.system}${record.path}`
                   : lastPartOfPath;
 
               selectionCallback(filePath);
