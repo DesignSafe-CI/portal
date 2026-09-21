@@ -209,7 +209,7 @@ function getFilesColumns(
           return (
             <Button
               style={commonStyle}
-              onClick={() => navCallback(record.path)}
+              onClick={() => navCallback(encodeURIComponent(record.path))}
               type="link"
             >
               <i
@@ -411,13 +411,17 @@ export const SelectModal: React.FC<{
     }
   }, [system, isModalOpen]);
 
-  const navCallback = useCallback((path: string) => {
-    if (path === 'PROJECT_LISTING') {
-      setShowProjects(true);
-      return;
-    }
-    setSelection((prev) => ({ ...prev, selectedPath: path }));
-  }, []);
+  const navCallback = useCallback(
+    (path: string) => {
+      if (path === 'PROJECT_LISTING') {
+        setShowProjects(true);
+        return;
+      }
+      const newPath = path.split('/').slice(-1)[0];
+      setSelection({ ...selection, selectedPath: decodeURIComponent(newPath) });
+    },
+    [selection]
+  );
 
   const selectCallback = useCallback(
     (path: string) => {
