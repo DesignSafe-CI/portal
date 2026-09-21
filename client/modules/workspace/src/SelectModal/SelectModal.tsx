@@ -130,12 +130,12 @@ const getBackPath = (
     clearSearchTerm();
     return encodedPath;
   }
-  const pathParts = decodeURIComponent(encodedPath).split('/');
+  const pathParts = encodedPath.split('/');
   const isRootPath = pathParts.join('/') === getSystemRootPath(system, user);
   if (!isRootPath) {
     pathParts.pop();
   }
-  return encodeURIComponent(pathParts.join('/'));
+  return pathParts.join('/');
 };
 
 const getParentFolder = (
@@ -151,7 +151,7 @@ const getParentFolder = (
     mimeType: '',
     name: name,
     permissions: '',
-    path: decodeURIComponent(path),
+    path: path,
     system: system,
   };
 };
@@ -209,7 +209,7 @@ function getFilesColumns(
           return (
             <Button
               style={commonStyle}
-              onClick={() => navCallback(encodeURIComponent(record.path))}
+              onClick={() => navCallback(record.path)}
               type="link"
             >
               <i
@@ -258,7 +258,7 @@ function getFilesColumns(
               const lastPartOfPath = record.path.split('/').pop() ?? '';
               const filePath =
                 appFileSettings.fileNameRepresentation === 'FullTapisPath'
-                  ? `${api}://${record.system}${record.path}`
+                  ? `${api}://${record.system}/${record.path}`
                   : lastPartOfPath;
 
               selectionCallback(filePath);
@@ -411,17 +411,13 @@ export const SelectModal: React.FC<{
     }
   }, [system, isModalOpen]);
 
-  const navCallback = useCallback(
-    (path: string) => {
-      if (path === 'PROJECT_LISTING') {
-        setShowProjects(true);
-        return;
-      }
-      const newPath = path.split('/').slice(-1)[0];
-      setSelection({ ...selection, selectedPath: newPath });
-    },
-    [selection]
-  );
+  const navCallback = useCallback((path: string) => {
+    if (path === 'PROJECT_LISTING') {
+      setShowProjects(true);
+      return;
+    }
+    setSelection((prev) => ({ ...prev, selectedPath: path }));
+  }, []);
 
   const selectCallback = useCallback(
     (path: string) => {
@@ -489,7 +485,7 @@ export const SelectModal: React.FC<{
                 className={styles.breadCrumbItem}
                 api={selectedApi}
                 system={selectedSystemId}
-                path={decodeURIComponent(selectedPath)}
+                path={selectedPath}
                 systemRootAlias={selection.projectId}
                 initialBreadcrumbs={
                   selectedSystemId.startsWith(projectPrefix)
