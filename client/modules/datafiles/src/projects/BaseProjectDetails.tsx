@@ -382,21 +382,20 @@ export const BaseProjectDetails: React.FC<{
               </td>
             </tr>
           )}
-          {projectValue.githubUrl &&
-            projectValue.projectType !== 'software' && (
-              <tr className={styles['prj-row']}>
-                <td>Software Release</td>
-                <td style={{ fontWeight: 'bold' }}>
-                  <a
-                    href={projectValue.githubUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {projectValue.githubUrl}
-                  </a>
-                </td>
-              </tr>
-            )}
+          {projectValue.githubUrl && (
+            <tr className={styles['prj-row']}>
+              <td>Software Release</td>
+              <td style={{ fontWeight: 'bold' }}>
+                <a
+                  href={projectValue.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {projectValue.githubUrl}
+                </a>
+              </td>
+            </tr>
+          )}
 
           {projectValue.dois && projectValue.dois[0] && (
             <tr className={styles['prj-row']}>
