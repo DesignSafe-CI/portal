@@ -107,6 +107,9 @@ export const ProjectPipelineSelectLayout: React.FC = () => {
                 <li>
                   Any changes to published files/data requires a new version.
                 </li>
+                {projectType === 'software' && (
+                  <li>Changes to the GitHub release require a new version.</li>
+                )}
                 <li>
                   Change the files/data in the curation directory before this
                   step.
