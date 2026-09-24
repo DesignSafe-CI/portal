@@ -52,6 +52,7 @@ interface Message {
 
 interface AIChatProps {
   closed?: boolean;
+  senderRef?: React.Ref<React.ElementRef<typeof Sender>>;
 }
 
 interface WSMessage {
@@ -60,7 +61,7 @@ interface WSMessage {
   key: string;
 }
 
-export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
+export const AIChat: React.FC<AIChatProps> = ({ closed, senderRef }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       key: 'welcome',
@@ -298,6 +299,7 @@ export const AIChat: React.FC<AIChatProps> = ({ closed }) => {
       >
         <div className={styles.sender}>
           <Sender
+            ref={senderRef}
             onSubmit={handleSendMessage}
             placeholder="Ask me anything about DesignSafe publications and documentation..."
             loading={loading}
