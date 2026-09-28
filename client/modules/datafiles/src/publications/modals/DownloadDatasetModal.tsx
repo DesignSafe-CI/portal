@@ -282,7 +282,9 @@ export const DownloadDatasetModal: React.FC<{
                       lastModified: '',
                       length: 0,
                       permissions: '',
-                      name: encodeURIComponent(p.title),
+                      name: p.title
+                        .replace(/\s/g, '-')
+                        .replace(/[^a-zA-Z0-9-]/g, ''),
                       path: p.path,
                       doi: p.doi,
                     },

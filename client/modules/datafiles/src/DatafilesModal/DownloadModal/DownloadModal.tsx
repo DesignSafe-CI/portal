@@ -2,7 +2,6 @@ import { Modal } from 'antd';
 import React, { useState } from 'react';
 import { TModalChildren } from '../DatafilesModal';
 import { TFileListing, apiClient } from '@client/hooks';
-import { MicrosurveyModal } from '../MicrosurveyModal';
 
 export const DownloadModal: React.FC<{
   api: string;
@@ -12,7 +11,6 @@ export const DownloadModal: React.FC<{
   children: TModalChildren;
 }> = ({ api, system, scheme, selectedFiles, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMicrosurveyOpen, setIsMicrosurveyOpen] = useState(false);
 
   const doiArray = selectedFiles.filter((f) => f.doi).map((f) => f.doi);
 
@@ -40,14 +38,6 @@ export const DownloadModal: React.FC<{
   }
 
   const handleDownload = () => {
-    if (system === 'designsafe.storage.published') {
-      apiClient.put('/api/datafiles/microsurvey/').then((resp) => {
-        if (resp.data.show) {
-          setIsMicrosurveyOpen(true);
-        }
-      });
-    }
-
     const putBody =
       api === 'tapis' ? { paths: selectedFiles.map((f) => f.path) } : {};
 
@@ -115,10 +105,6 @@ export const DownloadModal: React.FC<{
           </p>
         </div>
       </Modal>
-      <MicrosurveyModal
-        isModalOpen={isMicrosurveyOpen}
-        setIsModalOpen={setIsMicrosurveyOpen}
-      />
     </>
   );
 };
