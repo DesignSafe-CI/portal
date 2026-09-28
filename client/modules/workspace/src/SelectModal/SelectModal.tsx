@@ -108,13 +108,13 @@ const getSystemRootPath = (
   user: TUser | undefined
 ): string => {
   if (storageSystem?.notes?.isMyData) {
-    return encodeURIComponent('/' + user?.username);
+    return '/' + user?.username;
   }
   if (storageSystem?.id === 'designsafe.storage.published') {
-    return encodeURIComponent('/published-data');
+    return '/published-data';
   }
   if (storageSystem?.notes?.hasWork) {
-    return encodeURIComponent('/work/' + user?.homedir);
+    return '/work/' + user?.homedir;
   }
   return '';
 };
@@ -151,7 +151,7 @@ const getParentFolder = (
     mimeType: '',
     name: name,
     permissions: '',
-    path: decodeURIComponent(path),
+    path: path,
     system: system,
   };
 };
@@ -418,7 +418,7 @@ export const SelectModal: React.FC<{
         return;
       }
       const newPath = path.split('/').slice(-1)[0];
-      setSelection({ ...selection, selectedPath: newPath });
+      setSelection({ ...selection, selectedPath: decodeURIComponent(newPath) });
     },
     [selection]
   );
@@ -489,7 +489,7 @@ export const SelectModal: React.FC<{
                 className={styles.breadCrumbItem}
                 api={selectedApi}
                 system={selectedSystemId}
-                path={decodeURIComponent(selectedPath)}
+                path={selectedPath}
                 systemRootAlias={selection.projectId}
                 initialBreadcrumbs={
                   selectedSystemId.startsWith(projectPrefix)

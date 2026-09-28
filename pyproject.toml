@@ -19,7 +19,7 @@ dependencies = [
     "django-filer (>=3.0, <4.0.0)",
     "django-formtools == 2.2",
     "django-haystack == 3.2.1",
-    "django-impersonate == 1.9.1",
+    "django-impersonate (==1.9.5)",
     "django-treebeard (>=4.4, <5.0.0)",
     "django-termsandconditions >= 2.0.12",
     "google-api-python-client (>= 2.33.0, <3.0.0)",
