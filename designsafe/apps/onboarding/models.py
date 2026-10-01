@@ -1,8 +1,8 @@
 """Onboarding models."""
 
-from django.db import models
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
 
 
 class SetupEvent(models.Model):

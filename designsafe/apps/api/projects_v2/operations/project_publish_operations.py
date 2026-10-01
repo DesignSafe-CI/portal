@@ -1,26 +1,33 @@
 """Utils for generating published metadata"""
 
-from typing import Optional, Literal
-import subprocess
-import os
-import shutil
 import copy
 import datetime
-from pathlib import Path
 import logging
+import os
+import shutil
+import subprocess
+from pathlib import Path
+from typing import Literal
+
+import networkx as nx
 import requests
+from celery import shared_task
 from django.conf import settings
 from django.db import close_old_connections
-import networkx as nx
-from celery import shared_task
-from designsafe.apps.api.projects_v2 import constants
 
+from designsafe.apps.api.ai_keywords.utils import add_publications_to_chroma
+from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.datacite_operations import (
     get_datacite_json,
+    get_doi_publication_date,
     publish_datacite_doi,
     upsert_datacite_json,
-    get_doi_publication_date,
+)
+from designsafe.apps.api.projects_v2.operations.path_operations import (
+    construct_entity_filepaths,
+    generate_sha512_manifest,
+    update_path_mappings,
 )
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
     create_metadata_file,
@@ -29,23 +36,17 @@ from designsafe.apps.api.projects_v2.operations.project_archive_operations impor
 from designsafe.apps.api.projects_v2.operations.project_email_operations import (
     send_project_permissions_alert,
 )
-from designsafe.apps.api.projects_v2.operations.path_operations import (
-    construct_entity_filepaths,
-    update_path_mappings,
-    generate_sha512_manifest,
-)
 from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
     validate_github_release,
 )
-from designsafe.apps.api.publications_v2.models import Publication
-from designsafe.apps.api.publications_v2.elasticsearch import index_publication
-from designsafe.apps.data.tasks import agave_indexer
-from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
-from designsafe.libs.common.context_managers import AsyncTaskContext
-from designsafe.apps.api.ai_keywords.utils import add_publications_to_chroma
 from designsafe.apps.api.publications_v2.agents.neo4j_publication_ingest import (
     neo4j_ingest_publication_async,
 )
+from designsafe.apps.api.publications_v2.elasticsearch import index_publication
+from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.apps.api.publications_v2.tasks import ingest_pub_fedora_async
+from designsafe.apps.data.tasks import agave_indexer
+from designsafe.libs.common.context_managers import AsyncTaskContext
 
 logger = logging.getLogger(__name__)
 
@@ -286,15 +287,14 @@ def _update_path_mappings(pub_graph: nx.DiGraph, project_uuid: str):
 def get_publication_subtree(
     project_id: str,
     entity_uuid: str,
-    version: Optional[int] = None,
-    version_info: Optional[int] = None,
+    version: int | None = None,
+    version_info: int | None = None,
 ) -> tuple[str, nx.DiGraph]:
     """
     Obtain the subtree for a single publishable entity (experiment/simulation/etc) and
     add version information if relevant. The subtree includes the root node and any
     nodes associated with the UUID.
     """
-    project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
     tree_with_values = add_values_to_tree(project_id)
     pub_root = next(
         (
@@ -366,8 +366,8 @@ def fix_publication_dates(incoming_tree: nx.DiGraph):
 def get_publication_full_tree(
     project_id: str,
     entity_uuids: list[str],
-    version: Optional[int] = None,
-    version_info: Optional[str] = None,
+    version: int | None = None,
+    version_info: str | None = None,
 ):
     """Combine subtrees to create the full publishable metadata object."""
     full_path_mapping = {}
@@ -412,11 +412,11 @@ class PipelineAmendFailure(Exception):
 
 
 def copy_publication_files(
-    path_mapping: dict,
+    path_mapping: dict[str, dict[str, str]],
     project_id: str,
     project_uuid: str,
-    dirs_to_lock: Optional[list[str]] = None,
-    version: Optional[int] = None,
+    dirs_to_lock: list[str] | None = None,
+    version: int | None = None,
 ):
     """
     Copy files from My Projects to the published area on Corral.
@@ -426,12 +426,10 @@ def copy_publication_files(
     logger.debug("Copying publication files for %s", project_id)
     os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
     try:
-
         # pub_root_dir = str(Path(f"{settings.DESIGNSAFE_PUBLISHED_PATH}") / pub_dirname)
 
-        for node_id in path_mapping:
-            for src_path in path_mapping[node_id]:
-
+        for src_to_dest_map in path_mapping.values():
+            for src_path in src_to_dest_map:
                 # Convert root path from Tapis system root to Corral mount root
                 src_path_obj = (
                     Path(settings.DESIGNSAFE_PROJECTS_PATH)
@@ -442,7 +440,7 @@ def copy_publication_files(
                     raise ProjectFileNotFound(f"File not found: {src_path}")
 
                 dest_path_obj = Path(settings.DESIGNSAFE_PUBLISHED_PATH) / Path(
-                    path_mapping[node_id][src_path].lstrip("/")
+                    src_to_dest_map[src_path].lstrip("/")
                 )
                 os.makedirs(dest_path_obj.parent, exist_ok=True)
 
@@ -475,7 +473,7 @@ def copy_publication_files(
         logger.debug("Alerting due to data transfer failure for %s", project_id)
         logger.error(exc)
         send_project_permissions_alert(project_id, version, str(exc))
-        raise exc
+        raise
 
     finally:
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
@@ -485,12 +483,10 @@ def copy_github_release(tree: nx.DiGraph, version: int = 1):
     """Download GitHub release archive to Corral."""
 
     gh_node = next(
-        (
-            node
-            for node in tree.nodes
-            if tree.nodes[node]["name"] == "designsafe.project"
-            and tree.nodes[node]["version"] == version
-        )
+        node
+        for node in tree.nodes
+        if tree.nodes[node]["name"] == "designsafe.project"
+        and tree.nodes[node]["version"] == version
     )
     base_path = tree.nodes[gh_node]["basePath"]
     corral_path = f"/corral-repl/tacc/NHERI/published{base_path}/data"
@@ -503,15 +499,13 @@ def copy_github_release(tree: nx.DiGraph, version: int = 1):
 
     os.chmod("/corral-repl/tacc/NHERI/published", 0o755)
     try:
-
         os.makedirs(corral_path, exist_ok=True)
         repo_zip_url = (
             requests.get(github_release_url, timeout=10).json().get("zipball_url")
         )
         repo_zip_contents = requests.get(repo_zip_url, stream=True, timeout=600)
         with open(full_corral_path, "wb") as file:
-            for chunk in repo_zip_contents.iter_content(chunk_size=10 * 1024):
-                file.write(chunk)
+            file.writelines(repo_zip_contents.iter_content(chunk_size=10 * 1024))
 
     finally:
         os.chmod("/corral-repl/tacc/NHERI/published", 0o555)
@@ -545,12 +539,11 @@ def create_publication_manifests(
         generate_sha512_manifest(path)
 
 
-# pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def publish_project(
     project_id: str,
     entity_uuids: list[str],
-    version: Optional[int] = 1,
-    version_info: Optional[str] = None,
+    version: int | None = 1,
+    version_info: str | None = None,
     dry_run: bool = False,
 ):
     """
@@ -578,12 +571,10 @@ def publish_project(
     project_uuid = ProjectMetadata.get_project_by_id(project_id).uuid
 
     base_meta_node = next(
-        (
-            node
-            for node in pub_tree.nodes
-            if pub_tree.nodes[node]["name"] == constants.PROJECT
-            and pub_tree.nodes[node].get("version", version) == version
-        )
+        node
+        for node in pub_tree.nodes
+        if pub_tree.nodes[node]["name"] == constants.PROJECT
+        and pub_tree.nodes[node].get("version", version) == version
     )
 
     project_type = pub_tree.nodes[base_meta_node]["value"]["projectType"]
@@ -658,8 +649,8 @@ def publish_project(
 def publish_project_async(
     project_id: str,
     entity_uuids: list[str],
-    version: Optional[int] = 1,
-    version_info: Optional[str] = None,
+    version: int | None = 1,
+    version_info: str | None = None,
     dry_run: bool = False,
 ):
     """Async wrapper around publication"""
@@ -674,8 +665,10 @@ def publish_project_async(
             )
             try:
                 add_publications_to_chroma(publications=[meta])
-            except Exception as e:  # pylint: disable=broad-except
-                logger.error("Error adding publication to Chroma vector store: %s", e)
+            except Exception:
+                logger.exception(
+                    "Error adding publication %s to Chroma vector store", project_id
+                )
         except Exception as exc:
             raise PipelinePublishFailure(
                 f"""Publication of {project_id} failed with {type(exc).__name__}: {exc}

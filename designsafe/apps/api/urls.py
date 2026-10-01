@@ -1,9 +1,10 @@
 # pylint: disable=missing-docstring
-from django.urls import re_path as url, include, path
+from django.urls import include, path
+from django.urls import re_path as url
+
 from designsafe.apps.api.views import LoggerApi
-from django.http import JsonResponse
-from .views import SystemQueueProxyApi
-from .views import SystemOverviewProxyApi
+
+from .views import SystemOverviewProxyApi, SystemQueueProxyApi
 
 urlpatterns = [
     path("projects/v2", include('designsafe.apps.api.projects_v2.urls')),

@@ -1,40 +1,44 @@
 """Views"""
 import copy
-import logging
 import json
-from celery import group, chain
-from django.urls import reverse
+import logging
+
+from celery import chain, group
 from django.conf import settings
-from django.http.response import HttpResponseForbidden
-from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
-from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from designsafe.apps.api.decorators import agave_jwt_login
+from django.http import HttpResponseBadRequest, JsonResponse
+from django.http.response import HttpResponseForbidden
+from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 from designsafe.apps.api import tasks
-from designsafe.apps.api.views import BaseApiView
+from designsafe.apps.api.agave import (
+    get_service_account_client,
+    to_camel_case,
+)
+from designsafe.apps.api.decorators import agave_jwt_login
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.projects.models import Project
-from designsafe.apps.projects.models.agave.base import Project as BaseProject
-from designsafe.apps.projects.models.categories import Category
-from designsafe.apps.api.agave import get_service_account_client, service_account, to_camel_case
-from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
+from designsafe.apps.api.publications.operations import initilize_publication
+from designsafe.apps.api.utils import get_client_ip
+from designsafe.apps.api.views import BaseApiView
 from designsafe.apps.data.models.agave.files import BaseFileResource
+from designsafe.apps.data.models.agave.metadata import BaseMetadataPermissionResource
 from designsafe.apps.data.models.agave.util import AgaveJSONEncoder
-from designsafe.apps.accounts.models import DesignSafeProfile
+from designsafe.apps.data.models.elasticsearch import IndexedPublication
+from designsafe.apps.projects.models.agave.base import Project as BaseProject
 from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 from designsafe.libs.common.decorators import profile as profile_fn
-from designsafe.apps.api.publications.operations import initilize_publication
+from designsafe.libs.elasticsearch.docs.publication_legacy import (
+    BaseESPublicationLegacy,
+)
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
-from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
-from django.views.decorators.csrf import csrf_exempt
-from elasticsearch_dsl import Q
-from designsafe.apps.api.utils import get_client_ip
+
 logger = logging.getLogger(__name__)
-metrics = logging.getLogger('metrics.{name}'.format(name=__name__))
+metrics = logging.getLogger(f'metrics.{__name__}')
 
 
 def template_project_storage_system(project):
@@ -251,22 +255,22 @@ class ProjectCollectionView(SecureMixin, BaseApiView):
         offset = request.GET.get('offset', 0)
         limit = request.GET.get('limit', 100)
         if query_string is not None:
-            projects = Project.ES_search(agave_client=client, query_string=query_string, **{'offset': offset, 'limit': limit})
+            projects = Project.ES_search(agave_client=client, query_string=query_string, offset=offset, limit=limit)
             data = {'projects': projects}
             return JsonResponse(data, encoder=AgaveJSONEncoder)
         # Add metadata fields to project listings for workspace browser
         if system_id:
-            projects = Project.list_projects(agave_client=client, **{'path': '', 'type': 'dir', 'system': system_id})
+            projects = Project.list_projects(agave_client=client, path='', type='dir', system=system_id)
             for p in projects:
                 p.path = ''
                 p.name = p.value['title']
-                p.system = 'project-{}'.format(p.uuid)
+                p.system = f'project-{p.uuid}'
             data = {
                 'children': projects,
                 'path': 'Projects',
             }
         else:
-            projects = Project.list_projects(agave_client=client, **{'offset': offset, 'limit': limit})
+            projects = Project.list_projects(agave_client=client, offset=offset, limit=limit)
             data = {'projects': projects}
 
         return JsonResponse(data, encoder=AgaveJSONEncoder)

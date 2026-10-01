@@ -1,11 +1,10 @@
-import logging 
-from django.core.management import BaseCommand, CommandError
-from django.conf import settings
 import elasticsearch
-from elasticsearch import TransportError
+from django.conf import settings
+from django.core.management import BaseCommand
 from elasticsearch_dsl import Index
-from elasticsearch_dsl.connections import connections
+
 from designsafe.libs.elasticsearch.indices import setup_index
+
 
 class Command(BaseCommand):
     """
@@ -41,18 +40,18 @@ class Command(BaseCommand):
         reindex_index_alias = default_index_alias + '-reindex'
 
         if not swap_only:
-            confirm = input('This will delete any documents in the index "{}" and recreate the index. Continue? (Y/n) '.format(reindex_index_alias))
+            confirm = input(f'This will delete any documents in the index "{reindex_index_alias}" and recreate the index. Continue? (Y/n) ')
             if confirm != 'Y':
                 raise SystemExit
             # Set up a fresh reindexing alias.
             setup_index(index_config, force=True, reindex=True)
 
         try:
-            default_index_name = list(Index(default_index_alias, using=es_client).get_alias().keys())[0]
-            reindex_index_name = list(Index(reindex_index_alias, using=es_client).get_alias().keys())[0]
-        except Exception as e:
+            default_index_name = next(iter(Index(default_index_alias, using=es_client).get_alias().keys()))
+            reindex_index_name = next(iter(Index(reindex_index_alias, using=es_client).get_alias().keys()))
+        except Exception as exc:
             self.stdout.write('Unable to lookup required indices by alias. Have you set up both a default and a reindexing index?')
-            raise SystemExit
+            raise SystemExit from exc
 
         if not swap_only:
             # Reindex file metadata from the default index to the reindexing index
@@ -71,5 +70,5 @@ class Command(BaseCommand):
 
         # Re-initialize the new reindexing index to save space.
         if cleanup:
-            reindex_index_name = list(Index(reindex_index_alias, using=es_client).get_alias().keys())[0]
+            reindex_index_name = next(iter(Index(reindex_index_alias, using=es_client).get_alias().keys()))
             Index(reindex_index_name, using=es_client).delete(ignore=404)

@@ -1,12 +1,10 @@
+from unittest import skip
+
+import pytest
+from django.contrib.auth import get_user_model, models
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model, models, signals
-from designsafe.apps.rapid.models import RapidNHEvent
-from unittest import skip
-import mock
-import requests_mock
-import pytest
-import os, settings
+
 
 class RapidTests(TestCase):
     """

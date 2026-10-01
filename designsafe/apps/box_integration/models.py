@@ -1,7 +1,7 @@
+
 from boxsdk import Client, OAuth2
-from django.db import models
 from django.conf import settings
-import json
+from django.db import models
 
 
 class BoxUserToken(models.Model):

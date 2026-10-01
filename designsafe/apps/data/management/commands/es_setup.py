@@ -1,9 +1,10 @@
-import logging
-from django.core.management import BaseCommand, CommandError
-from six.moves import input
-from django.conf import settings
-import elasticsearch
 import getpass
+import logging
+
+import elasticsearch
+from django.conf import settings
+from django.core.management import BaseCommand
+
 logger = logging.getLogger(__name__)
 from designsafe.libs.elasticsearch.indices import init
 
@@ -39,7 +40,7 @@ class Command(BaseCommand):
         local_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[local]['hosts'],
                                                       timeout=300)
         remote_es_client = elasticsearch.Elasticsearch(settings.ES_CONNECTIONS[remote]['hosts'],
-            **{'http_auth': "designsafe_{}:{}".format(remote, password)},
+            http_auth=f"designsafe_{remote}:{password}",
                                                        timeout=300)
         def reindex(source_index, target_index, query=None):
             try:
@@ -50,10 +51,10 @@ class Command(BaseCommand):
                     target_index=target_index,
                     query=query,
                 )
-                logger.info(f"Reindexed {response} documents from {source_index} to {target_index}")
+                logger.info("Reindexed %s documents from %s to %s", response, source_index, target_index)
             except elasticsearch.helpers.BulkIndexError as e:
-                logger.error(f"BulkIndexError: {e.errors}")
-                logger.error(f"Failed to reindex documents from {source_index} to {target_index}")
+                logger.error("BulkIndexError: %s", e.errors)
+                logger.error("Failed to reindex documents from %s to %s", source_index, target_index)
                 return False
             return response
 
@@ -67,7 +68,7 @@ class Command(BaseCommand):
 
         failed_indexes = []
         for index in indexes:
-            query = {"query": {"prefix": {"path._exact": "/{}".format(username)}}} if "files" in index else None
+            query = {"query": {"prefix": {"path._exact": f"/{username}"}}} if "files" in index else None
             result = reindex(
                 source_index=index.format(remote),
                 target_index=index.format(local),
@@ -77,7 +78,12 @@ class Command(BaseCommand):
                 failed_indexes.append(index.format(local))
         logger.info("Finished indexing.")
         if failed_indexes:
-            logger.error(f"Successfully reindex {len(indexes) - len(failed_indexes)}"
-                         f" of {len(indexes)} indexes\n"
-                         f"failed indexes are: {', '.join(failed_indexes)}\n"
-                         f"(check logs above for errors related to failures)")
+            logger.error(
+                "Successfully reindex %s"
+                " of %s indexes\n"
+                "failed indexes are: %s\n"
+                "(check logs above for errors related to failures)",
+                len(indexes) - len(failed_indexes),
+                len(indexes),
+                ", ".join(failed_indexes),
+            )

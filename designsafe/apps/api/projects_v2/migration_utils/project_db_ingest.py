@@ -1,22 +1,24 @@
 """Utilities for ingesting projects using the ProjectMetadata db model."""
 
-from datetime import datetime, timezone
-from pydantic import ValidationError
-from elasticsearch_dsl import Q
+from datetime import UTC, datetime
+
 import networkx as nx
-from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from elasticsearch_dsl import Q
+from pydantic import ValidationError
+
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
-    get_entities_by_project_id,
-    construct_graph_from_db,
     combine_pub_versions,
+    construct_graph_from_db,
+    get_entities_by_project_id,
+)
+from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from designsafe.apps.api.projects_v2.operations.graph_operations import (
+    _renormalize_ordering,
 )
 from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING
 from designsafe.apps.api.projects_v2.tests.schema_integration import (
     iterate_entities,
     iterate_pubs,
-)
-from designsafe.apps.api.projects_v2.operations.graph_operations import (
-    _renormalize_ordering,
 )
 from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
@@ -78,9 +80,9 @@ def ingest_entities_by_name(name):
             ]
         try:
             value_model = schema_model.model_validate(entity["value"])
-        except ValidationError as err:
+        except ValidationError:
             print(entity)
-            raise err
+            raise
         try:
             prj = ProjectMetadata.objects.get(
                 name="designsafe.project", uuid__in=entity["associationIds"]
@@ -177,7 +179,7 @@ def fix_guest_members():
             print(prj.project_id)
             for guest in legacy_guests:
                 already_added = any(
-                    (
+                    
                         u
                         for u in existing_users
                         if (
@@ -186,7 +188,7 @@ def fix_guest_members():
                             and u["lname"] == guest["lname"]
                             and u.get("email", "") == guest.get("email", "")
                         )
-                    )
+                    
                 )
                 if not already_added:
                     prj.value["users"].append(
@@ -250,7 +252,7 @@ def ingest_publications():
                 project_id=pub["projectId"],
                 defaults={
                     "created": datetime.fromisoformat(pub["created"]).replace(
-                        tzinfo=timezone.utc
+                        tzinfo=UTC
                     ),
                     "tree": pub_graph_json,
                     "value": pub_base,
@@ -312,7 +314,7 @@ def ingest_tombstones():
                 defaults={
                     "is_published": False,
                     "created": datetime.fromisoformat(pub["created"]).replace(
-                        tzinfo=timezone.utc
+                        tzinfo=UTC
                     ),
                     "tree": pub_graph_json,
                     "value": pub_base,

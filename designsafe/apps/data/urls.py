@@ -1,12 +1,13 @@
 from django.urls import re_path as url
-from designsafe.apps.data.views.base import (
-    DataDepotView,
-    FileMediaView,
-    DataDepotPublishedView,
-    DataDepotLegacyPublishedView
-)
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+from designsafe.apps.data.views.base import (
+    DataDepotLegacyPublishedView,
+    DataDepotPublishedView,
+    DataDepotView,
+    FileMediaView,
+)
 
 urlpatterns = [
     url(

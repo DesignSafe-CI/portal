@@ -1,7 +1,9 @@
 """Utils for bulk move/copy of file metadata objects."""
 
 import os
+
 from celery import shared_task
+
 from designsafe.apps.api.filemeta.models import FileMetaModel
 
 

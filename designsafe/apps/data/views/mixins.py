@@ -1,21 +1,15 @@
-from django.views.generic.base import View as BaseView
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, StreamingHttpResponse
-# from agavepy.agave import Agave, AgaveException
-from django.contrib.auth import get_user_model
-from django.conf import settings
-import datetime
-import copy
 import json
 import logging
-import requests
-from requests.exceptions import ConnectionError, HTTPError
+
+# from agavepy.agave import Agave, AgaveException
+from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 
 logger = logging.getLogger(__name__)
 
-class JSONResponseMixin(object):
+class JSONResponseMixin:
     """
     View mixin to return a JSON response.
     We're building one so we can put any extra code in here.
@@ -26,10 +20,10 @@ class JSONResponseMixin(object):
         response_kwargs['content_type'] = 'application/json'
         return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder), **response_kwargs)
 
-class SecureMixin(object):
+class SecureMixin:
     """
     View mixin to use login_required
     """
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(SecureMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)

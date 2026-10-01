@@ -3,17 +3,19 @@
 import os
 import subprocess
 from pathlib import Path
+
 import networkx as nx
 from django.conf import settings
-from designsafe.libs.common.context_managers import Workdir
-from designsafe.apps.api.publications_v2.models import Publication
+
+from designsafe.apps.api.datafiles.models import PublicationSymlink
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.operations.path_operations import (
     construct_entity_filepaths,
     construct_published_path_mappings,
     update_path_mappings,
 )
-from designsafe.apps.api.datafiles.models import PublicationSymlink
+from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.libs.common.context_managers import Workdir
 
 published_path = settings.DESIGNSAFE_PUBLISHED_PATH
 dataset_path = settings.PUBLISHED_DATASET_PATH
@@ -111,12 +113,12 @@ def migrate_publication_metadata(project_id):
         latest_version = 1
 
     base_meta_node = next(
-        (
+        
             node
             for node in pub_tree.nodes
             if pub_tree.nodes[node]["name"] == constants.PROJECT
             and pub_tree.nodes[node].get("version", latest_version) == latest_version
-        )
+        
     )
     base_meta_value = pub_tree.nodes[base_meta_node]["value"]
     pub.value = base_meta_value

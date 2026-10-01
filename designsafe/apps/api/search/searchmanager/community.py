@@ -5,10 +5,12 @@
 
 
 import logging
+
+from django.conf import settings
+from elasticsearch_dsl import Index, Q, Search
+
 from designsafe.apps.api.search.searchmanager.base import BaseSearchManager
 from designsafe.apps.data.models.elasticsearch import IndexedFile
-from elasticsearch_dsl import Q, Search, Index
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +31,12 @@ class CommunityDataSearchManager(BaseSearchManager):
                 split_query[i] = "*" + c + "*"
         self.query_string = " ".join(split_query)
 
-        super(CommunityDataSearchManager, self).__init__(
+        super().__init__(
             IndexedFile, IndexedFile.search())
 
     def construct_query(self, system=None, file_path=None):
 
-        files_index_name = list(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys())[0]
+        files_index_name = next(iter(Index(settings.ES_INDEX_PREFIX.format('files')).get_alias().keys()))
 
         ngram_query = Q("query_string", query=self.query_string,
                         fields=["name"],

@@ -1,6 +1,7 @@
 """Utilities for APIs
 """
 import logging
+
 from django.conf import settings
 
 #pylint: disable=invalid-name
@@ -18,10 +19,7 @@ def is_jwt(request):
     decorate protected views.
     """
     val = request.META.get(settings.AGAVE_JWT_HEADER)
-    if val:
-        return True
-
-    return False
+    return bool(val)
 
 
 def get_client_ip(request):

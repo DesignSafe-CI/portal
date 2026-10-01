@@ -3,11 +3,12 @@ Agent tool for constructing and executing a Cypher query
 """
 
 import logging
-from neo4j import GraphDatabase, AsyncGraphDatabase, Query, AsyncDriver
+
+from django.conf import settings
+from neo4j import AsyncDriver, AsyncGraphDatabase, GraphDatabase, Query
 from neo4j.exceptions import Neo4jError
 from openai import AsyncOpenAI
 from pydantic_ai import Agent, RunContext
-from django.conf import settings
 
 from designsafe.apps.api.publications_v2.agents.tools.schema_utils import get_schema
 
@@ -39,6 +40,7 @@ async def raise_if_write_attempted(client: AsyncDriver, query: str) -> None:
     :param query: Query string to sanitize
     :type query: str
     """
+    # ruff: disable[SIM117]
     async with client.session() as sess:
         async with await sess.begin_transaction(timeout=30) as tx:
             result = await tx.run(query)

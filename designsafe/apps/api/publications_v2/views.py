@@ -1,18 +1,20 @@
 """Views for published data"""
 
-import logging
 import json
+import logging
+
 import networkx as nx
 from django.http import HttpRequest, JsonResponse
-from designsafe.apps.api.views import BaseApiView, ApiException
-from designsafe.apps.api.publications_v2.models import Publication
-from designsafe.apps.api.publications_v2.elasticsearch import IndexedPublication
+
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
-    publish_project_async,
     amend_publication_async,
+    publish_project_async,
 )
 from designsafe.apps.api.projects_v2.views import get_project_for_user
+from designsafe.apps.api.publications_v2.elasticsearch import IndexedPublication
+from designsafe.apps.api.publications_v2.models import Publication
 from designsafe.apps.api.utils import get_client_ip
+from designsafe.apps.api.views import ApiException, BaseApiView
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger("metrics")
@@ -251,6 +253,7 @@ class PublicationDetailView(BaseApiView):
             for (_, node) in pub_tree.nodes.data()
         ]:
             for tag in file_tag_arr:
+                # ruff: disable[PERF402]
                 file_tags.append(tag)
 
         tree_json = nx.tree_data(pub_tree, "NODE_ROOT")

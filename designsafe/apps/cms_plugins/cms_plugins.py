@@ -1,13 +1,14 @@
 try:
     import urllib.parse
 except ImportError:
-    from urllib import parse as urlparse
+    pass
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from designsafe.apps.cms_plugins.models import ResponsiveEmbedPlugin
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+from designsafe.apps.cms_plugins.models import ResponsiveEmbedPlugin
 
 
 class CMSResponsiveEmbedPlugin(CMSPluginBase):

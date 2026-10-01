@@ -1,9 +1,16 @@
-from django.conf import settings
-from datetime import datetime
 import logging
-from elasticsearch_dsl import (Document, Text, Date, Nested,
-                               Boolean, GeoPoint, MetaField, Text,
-                               Keyword)
+
+from django.conf import settings
+from elasticsearch_dsl import (
+    Date,
+    Document,
+    GeoPoint,
+    Keyword,
+    MetaField,
+    Nested,
+    Text,
+)
+
 #from designsafe.connections import connections
 logger = logging.getLogger(__name__)
 
@@ -65,4 +72,4 @@ class RapidNHEvent(Document):
 
     def save(self, **kwargs):
         # self.created_date = datetime.utcnow()
-        return super(RapidNHEvent, self).save(**kwargs)
+        return super().save(**kwargs)

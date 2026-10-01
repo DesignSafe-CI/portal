@@ -1,15 +1,16 @@
-from django.test import TestCase, RequestFactory
-from django.conf import settings
-from django.contrib.auth import get_user_model
-
-from designsafe.apps.projects.models.agave.experimental import ExperimentalProject, ModelConfig, FileModel
+import json
+import logging
 
 # from agavepy.agave import Agave
-import mock
-import json
-
-import logging
 import pytest
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+
+from designsafe.apps.projects.models.agave.experimental import (
+    ExperimentalProject,
+    FileModel,
+    ModelConfig,
+)
 
 pytestmark = pytest.mark.django_db
 

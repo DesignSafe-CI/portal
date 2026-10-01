@@ -3,6 +3,7 @@ Utils for extracting publication schema from Neo4j.
 """
 
 from typing import Any
+
 import neo4j
 
 NODE_PROPERTIES_QUERY = """

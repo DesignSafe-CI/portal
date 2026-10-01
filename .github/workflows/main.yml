@@ -61,15 +61,15 @@ jobs:
       run:  |
         poetry sync
 
-    - name: Run Server-side linting with pytest
+    - name: Run Server-side linting with Ruff
+      run: |
+        poetry run ruff check designsafe/apps
+
+    - name: Run Server-side formatting with Ruff
       # Only run on new files for now-- for all changes, filter is ACMRTUXB
       # Check manage.py to prevent a crash if no files are selected.
       run: |
-        poetry run pylint $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py
-
-    - name: Run Server-side formatting with black
-      run: |
-        poetry run black $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py --check
+        poetry run ruff format $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py --check
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04

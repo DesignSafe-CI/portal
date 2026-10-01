@@ -1,15 +1,12 @@
-import urllib
-import os
-import datetime
-import io
-from django.conf import settings
-from requests.exceptions import HTTPError
 import logging
-import json
+
 from elasticsearch_dsl import Q
-import magic
+
+from designsafe.apps.api.datafiles.operations.tapis_operations import (
+    listing as agave_listing,
+)
 from designsafe.apps.data.models.elasticsearch import IndexedFile
-from designsafe.apps.api.datafiles.operations.tapis_operations import preview, copy, download, download_bytes, listing as agave_listing
+
 # from portal.libs.elasticsearch.indexes import IndexedFile
 # from portal.apps.search.tasks import agave_indexer, agave_listing_indexer
 
@@ -50,7 +47,6 @@ def listing(client, system, path, username, offset=0, limit=100, *args, **kwargs
     nested_filter.path = 'legacyPermissions'
     nested_filter.query = pems_filter
 
-    file_path = '/'
     home_filter = Q('prefix', **{'path._exact': '/' + username})
     system_filter = Q('term', **{'system._exact': 'designsafe.storage.default'})
     query = Q('bool', must_not=home_filter, filter=[nested_filter, system_filter])

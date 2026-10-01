@@ -1,7 +1,7 @@
 """Workspace API Utils"""
 
 import json
-from typing import Union
+
 from tapipy.tapis import TapisResult
 
 
@@ -13,7 +13,7 @@ def get_tapis_timeout_error_messages(job_id):
     ]
 
 
-def _get_job_notes(job_notes: Union[str, TapisResult]):
+def _get_job_notes(job_notes: str | TapisResult):
     """
     Normalize `job.notes` as in older version of Tapis `notes` is a JSON-formatted string
     but this is being changed to a TapisResult object. Once all tenants are migrated to

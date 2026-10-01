@@ -1,15 +1,16 @@
 """Signal receivers for notifications"""
 
-import logging
 import json
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.contrib.auth import get_user_model
+import logging
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from designsafe.apps.api.notifications.models import Notification, Broadcast
-from designsafe.apps.onboarding.models import SetupEvent
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
+from designsafe.apps.api.notifications.models import Broadcast, Notification
+from designsafe.apps.onboarding.models import SetupEvent
 
 logger = logging.getLogger(__name__)
 

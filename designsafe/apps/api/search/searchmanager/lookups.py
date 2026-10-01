@@ -2,9 +2,11 @@
    :synopsis: Function to lookup manager classes
 """
 
-from importlib import import_module
 import logging
+from importlib import import_module
+
 from django.conf import settings
+
 from designsafe.apps.api.exceptions import ApiException
 
 #pylint: disable=invalid-name

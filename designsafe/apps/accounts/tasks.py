@@ -1,16 +1,13 @@
 import csv
 import io
 import logging
-from django.conf import settings
+
 # from agavepy.agave import Agave, AgaveException
 from celery import shared_task
-from requests import HTTPError
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from pytas.models import User as TASUser
-from django.db.models import Q
-from designsafe.apps.accounts.models import (DesignSafeProfile,
-                                             NotificationPreferences)
-
+from requests import HTTPError
 
 logger = logging.getLogger(__name__)
 
@@ -59,14 +56,14 @@ def create_report(username, list_name):
                     research_activities = [activity['description'] for activity in activities]
 
                     # order of items as required by user
-                    writer.writerow([user_profile.lastName if user_profile.lastName else user_profile.lastName,
-                        user_profile.firstName if user_profile.firstName else user_profile.firstName,
+                    writer.writerow([user_profile.lastName,
+                        user_profile.firstName,
                         user_profile.email,
                         user_profile.phone,
                         user_profile.institution,
                         user_profile.title,
                         designsafe_user.profile.professional_level,
-                        designsafe_user.profile.bio if designsafe_user.profile.bio else designsafe_user.profile.bio,
+                        designsafe_user.profile.bio,
                         nh_interests if nh_interests else None,
                         research_activities if research_activities else None,
                         user_profile,
@@ -79,13 +76,14 @@ def create_report(username, list_name):
                 else:
                     writer.writerow(['Unable to find user data for username "' +
                                      user.username + '"', ])
-            except:
+            except Exception:
+                logger.exception("")
                 continue
 
         User = get_user_model().objects.get(username=username)
         client = User.agave_oauth.client
 
-        setattr(csv_file, 'name', 'user_report.csv')
+        csv_file.name = 'user_report.csv'
         client.files.importData(
            filePath=username,
            fileName='user_report.csv',
@@ -95,7 +93,7 @@ def create_report(username, list_name):
 
         csv_file.close()
 
-    except (HTTPError, AgaveException):
+    except (HTTPError, AgaveException): # noqa
         logger.exception('Failed to create user report.',
                          extra={'user': username,
                                 'systemId': settings.AGAVE_STORAGE_SYSTEM})

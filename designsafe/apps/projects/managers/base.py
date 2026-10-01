@@ -3,17 +3,16 @@
 .. :module: designsafe.apps.projects.managers.base
     :synopsis: Base manager for projects.
 """
-from __future__ import unicode_literals, absolute_import
-import logging
 import json
-from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
+import logging
 
+from designsafe.apps.projects.models.utils import lookup_model as project_lookup_model
 
 LOG = logging.getLogger(__name__)
 
 
 
-class ProjectsManager(object):
+class ProjectsManager:
     """Base projects manager."""
 
     def __init__(self, agave_client=None, user=None):
@@ -44,17 +43,15 @@ class ProjectsManager(object):
         metas = self._ac.meta.listMetadata(
             q=json.dumps({"value.projectId": project_id})
         )
-        assert metas, "No project with id: {project_id} found.".format(
-            project_id=project_id
-        )
+        assert metas, f"No project with id: {project_id} found."
         if len(metas) > 1:
             affected_uuids = []
             for meta in metas:
                 affected_uuids.append(meta['uuid'])
             LOG.info(
-                "More than one record with project id: {prj_id} found. "
-                "Affected project UUIDs: {uuids}"
-                .format(prj_id=project_id, uuids=affected_uuids)
+                f"More than one record with project id: {project_id} found. "
+                f"Affected project UUIDs: {affected_uuids}"
+                
             )
 
         prj_json = metas[0]

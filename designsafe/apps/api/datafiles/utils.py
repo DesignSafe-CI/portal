@@ -2,12 +2,13 @@ import datetime
 import json
 import logging
 import os
-import re
 from copy import deepcopy
+
 import exifread
 from celery import shared_task
-from designsafe.apps.api.agave import service_account
 from PIL import Image
+
+from designsafe.apps.api.agave import service_account
 
 logger = logging.getLogger(__name__)
 
@@ -41,8 +42,8 @@ def rename_duplicate_path(file_name):
     """
     _ext = os.path.splitext(file_name)[1].lower()
     _name = os.path.splitext(file_name)[0]
-    now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H-%M-%S')
-    return '{}_{}{}'.format(_name, now, _ext)
+    now = datetime.datetime.utc().strftime('%Y-%m-%d %H-%M-%S')
+    return f'{_name}_{now}{_ext}'
 
 
 def query_file_meta(system, path):

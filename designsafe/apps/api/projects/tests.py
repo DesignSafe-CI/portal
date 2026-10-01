@@ -1,5 +1,12 @@
-from designsafe.apps.api.projects.fixtures import exp_instance_meta, exp_instance_resp, exp_entity_meta, exp_entity_json
 import pytest
+
+from designsafe.apps.api.projects.fixtures import (
+    exp_entity_json,
+    exp_entity_meta,
+    exp_instance_meta,
+    exp_instance_resp,
+)
+
 
 @pytest.mark.skip(reason="TODOv3: Update projects with Tapisv3")
 @pytest.mark.django_db

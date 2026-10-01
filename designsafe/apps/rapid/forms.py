@@ -1,8 +1,7 @@
-from django import forms
-from django.core.validators import MinValueValidator, MaxValueValidator
-from designsafe.apps.rapid.models import RapidNHEvent, RapidNHEventType
 import logging
 
+from django import forms
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 logger = logging.getLogger(__name__)
 

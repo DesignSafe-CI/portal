@@ -1,9 +1,13 @@
 """Rapid project models"""
 import logging
-import json
-from designsafe.apps.data.models.agave.base import Model as MetadataModel
+
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
+from designsafe.apps.data.models.agave.base import Model as MetadataModel
+from designsafe.apps.projects.models.agave.base import (
+    FileObjModel,
+    Project,
+    RelatedEntity,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +23,7 @@ class FieldReconProject(Project):
             kwargs['value']['nhTypes'] = [nh_type]
         if nh_type_other:
             kwargs['value']['nhTypes'] = [nh_type_other]
-        super(FieldReconProject, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     model_name = 'designsafe.project'
     team_members = fields.ListField('Team Members')
@@ -79,10 +83,8 @@ class Mission(RelatedEntity):
 
     def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
-        attributes = super(Mission, self).to_datacite_json()
-        attributes['types']['resourceType'] = "Mission/{location}".format(
-            location=self.location.title()
-        )
+        attributes = super().to_datacite_json()
+        attributes['types']['resourceType'] = f"Mission/{self.location.title()}"
         if self.facility:
             attributes["subjects"] = attributes.get("subjects", []) + [
                 {"subject": self.facility["name"], }
@@ -145,7 +147,7 @@ class Mission(RelatedEntity):
 
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
-        attributes = super(Mission, self).to_dataset_json()
+        attributes = super().to_dataset_json()
         attributes["subjects"] = attributes.get("subjects", []) + [
             {"subject": self.facility.title(), }
         ]
@@ -156,9 +158,7 @@ class Mission(RelatedEntity):
                 "name": self.facility,
             }
         ]
-        attributes['types']['resourceType'] = "Mission/{location}".format(
-            location=self.location.title()
-        )
+        attributes['types']['resourceType'] = f"Mission/{self.location.title()}"
         return attributes
 
 
@@ -270,7 +270,7 @@ class Report(RelatedEntity):
 
     def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
-        attributes = super(Report, self).to_datacite_json()
+        attributes = super().to_datacite_json()
         attributes['types']['resourceType'] = "Project/Report"
         if self.facility:
             attributes["subjects"] = attributes.get("subjects", []) + [
@@ -334,7 +334,7 @@ class Report(RelatedEntity):
 
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
-        attributes = super(Report, self).to_dataset_json()
+        attributes = super().to_dataset_json()
         attributes["subjects"] = attributes.get("subjects", []) + [
             {"subject": self.facility.title(), }
         ]

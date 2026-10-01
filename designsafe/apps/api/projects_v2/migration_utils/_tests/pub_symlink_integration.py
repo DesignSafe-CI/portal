@@ -14,7 +14,6 @@ def symlink_mapping_integration_test():
         mapping = construct_symlink_mapping(pub.project_id)
         for value in mapping.values():
             for path in value:
-                if len(path) > max_len:
-                    max_len = len(path)
+                max_len = max(max_len, len(path))
 
     print(max_len)

@@ -2,30 +2,31 @@
 in the directory structure. UNUSED for now, pending stakeholder approval.
 """
 
-from typing import Optional
 import copy
-import tempfile
-import subprocess
-import shutil
-from pathlib import Path
 import logging
+import shutil
+import subprocess
+import tempfile
+from pathlib import Path
+
 import networkx as nx
 from celery import shared_task
-from django.utils.text import slugify
 from django.conf import settings
-from designsafe.libs.common.context_managers import Workdir, AsyncTaskContext
-from designsafe.apps.api.publications_v2.models import Publication
-from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
+from django.utils.text import slugify
+
 from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
     ranch_archive_webhook,
 )
+from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
+from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.libs.common.context_managers import AsyncTaskContext, Workdir
 
 logger = logging.getLogger(__name__)
 
 
 def construct_entity_filepaths(
     pub_graph: nx.DiGraph,
-    version: Optional[int] = None,
+    version: int | None = None,
     dataset_root=None,
     strip_legacy_versions=False,
 ):
@@ -247,9 +248,9 @@ def generate_manifests_for_project(project_id: str):
             subprocess.CalledProcessError,
             subprocess.SubprocessError,
             FileNotFoundError,
-        ) as exc:
+        ):
             logger.debug("Failed to generate manifest at %s", path)
-            raise exc
+            raise
     logger.debug("Finished generating manifests for publication %s", project_id)
 
 

@@ -2,23 +2,25 @@
 
 import os
 import urllib
+
 import networkx as nx
 from fido.fido import Fido
-from designsafe.libs.common.context_managers import AsyncTaskContext
-from designsafe.apps.api.publications_v2.models import Publication
-from designsafe.apps.api.projects_v2.schema_models import SCHEMA_MAPPING, PATH_SLUGS
-from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
+
 from designsafe.apps.api.projects_v2 import constants
+from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS, SCHEMA_MAPPING
+from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
+from designsafe.apps.api.publications_v2.models import Publication
+from designsafe.libs.common.context_managers import AsyncTaskContext
 from designsafe.libs.fedora.fedora_operations import (
+    PUBLICATIONS_MOUNT_ROOT,
     create_fc_version,
-    upload_manifest,
     fedora_post,
     fedora_update,
-    get_sha1_hash,
-    get_fido_output,
-    get_child_paths,
     generate_manifest,
-    PUBLICATIONS_MOUNT_ROOT,
+    get_child_paths,
+    get_fido_output,
+    get_sha1_hash,
+    upload_manifest,
 )
 
 prov_predecessor_mapping = {
@@ -321,11 +323,11 @@ def generate_manifest_other(project_id, version=1):
 
     pub_tree = nx.node_link_graph(pub.tree)
     version_node = next(
-        (
+        
             node
             for node in pub_tree.successors("NODE_ROOT")
             if pub_tree.nodes[node]["version"] == version
-        )
+        
     )
 
     version_meta = pub_tree.nodes[version_node]
@@ -334,7 +336,7 @@ def generate_manifest_other(project_id, version=1):
     file_tags = version_meta["value"].get("fileTags", [])
 
     if version and version > 1:
-        project_id = f"{project_id}v{str(version)}"
+        project_id = f"{project_id}v{version!s}"
     manifest = []
     archive_path = os.path.join(PUBLICATIONS_MOUNT_ROOT, base_path.lstrip("/"))
     for path in get_child_paths(archive_path):

@@ -1,15 +1,17 @@
-from django.test import TestCase, RequestFactory
+from unittest.mock import ANY, patch
+
+import pytest
 from django.contrib.auth import get_user_model
-from mock import patch, ANY
+from django.test import RequestFactory, TestCase
+
 from designsafe.apps.onboarding.state import SetupState
 from designsafe.apps.onboarding.steps.access import RequestAccessStep
-import pytest
 
 
 @pytest.mark.django_db(transaction=True)
 class TestRequestAccessStep(TestCase):
     def setUp(self):
-        super(TestRequestAccessStep, self).setUp()
+        super().setUp()
 
         # Create a test user
         User = get_user_model()
@@ -19,7 +21,7 @@ class TestRequestAccessStep(TestCase):
         self.staff.is_staff = True
 
     def tearDown(self):
-        super(TestRequestAccessStep, self).tearDown()
+        super().tearDown()
 
     @patch("designsafe.apps.onboarding.steps.access.RequestAccessStep.log")
     def test_prepare(self, mock_log):

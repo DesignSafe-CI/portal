@@ -1,24 +1,26 @@
 """Pydantic schema models for Hybrid Simulation entities"""
 
-from typing import Annotated, Optional
+from typing import Annotated
+
 from pydantic import BeforeValidator, Field, model_validator
-from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
+
+from designsafe.apps.api.projects_v2.constants import HYBRID_SIM_TYPES
 from designsafe.apps.api.projects_v2.schema_models._field_models import (
     AssociatedProject,
     DropdownValue,
     FileObj,
     FileTag,
+    MetadataModel,
     ProjectUser,
     Ref,
     ReferencedWork,
 )
 from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
-    handle_legacy_authors,
     handle_dropdown_value,
     handle_keywords,
+    handle_legacy_authors,
 )
-from designsafe.apps.api.projects_v2.constants import HYBRID_SIM_TYPES
 
 
 class HybridSimulation(MetadataModel):
@@ -30,9 +32,9 @@ class HybridSimulation(MetadataModel):
         DropdownValue,
         BeforeValidator(lambda v: handle_dropdown_value(v, HYBRID_SIM_TYPES)),
     ]
-    simulation_type_other: Optional[str] = Field(exclude=True, default=None)
-    procedure_start: Optional[str] = None
-    procedure_end: Optional[str] = None
+    simulation_type_other: str | None = Field(exclude=True, default=None)
+    procedure_start: str | None = None
+    procedure_end: str | None = None
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
     keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
@@ -40,7 +42,7 @@ class HybridSimulation(MetadataModel):
     project: list[str] = []
     dois: list[str] = []
 
-    facility: Optional[DropdownValue] = None
+    facility: DropdownValue | None = None
 
     tombstone: bool = False
 
@@ -96,7 +98,7 @@ class HybridSimGlobalModel(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -121,7 +123,7 @@ class HybridSimCoordinator(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -147,7 +149,7 @@ class HybridSimSimSubstructure(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -172,7 +174,7 @@ class HybridSimExpSubstructure(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -197,7 +199,7 @@ class HybridSimCoordinatorOutput(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -223,7 +225,7 @@ class HybridSimSimOutput(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -249,7 +251,7 @@ class HybridSimExpOutput(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -273,9 +275,9 @@ class HybridSimAnalysis(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
-    reference: Optional[str] = None
-    referencedoi: Optional[str] = None
+    tags: dict | None = Field(default=None, exclude=True)
+    reference: str | None = None
+    referencedoi: str | None = None
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -298,7 +300,7 @@ class HybridSimReport(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    tags: Optional[dict] = Field(default=None, exclude=True)
+    tags: dict | None = Field(default=None, exclude=True)
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""

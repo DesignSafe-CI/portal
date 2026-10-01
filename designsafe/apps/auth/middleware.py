@@ -3,12 +3,14 @@ Auth middleware
 """
 
 import logging
+
 from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from tapipy.errors import BaseTapyException
+
 from designsafe.apps.auth.models import TapisOAuthToken
 
 logger = logging.getLogger(__name__)
@@ -48,7 +50,8 @@ class TapisTokenRefreshMiddleware:
             return
 
         logger.info(
-            f"Tapis OAuth token expired for user {request.user.username}. Refreshing token"
+            "Tapis OAuth token expired for user %s. Refreshing token",
+            request.user.username
         )
         with transaction.atomic():
             # Get a lock on this user's token row in db.

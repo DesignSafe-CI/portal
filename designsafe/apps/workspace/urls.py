@@ -1,6 +1,7 @@
 """Workspace URLs
 """
 from django.urls import re_path
+
 from designsafe.apps.workspace import views
 
 urlpatterns = [

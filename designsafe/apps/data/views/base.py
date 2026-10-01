@@ -1,26 +1,23 @@
 import json
 import logging
+
 import networkx as nx
-from designsafe.apps.api.exceptions import ApiException
-from designsafe.apps.notifications.views import get_number_unread_notifications
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.urls import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import resolve_url
+from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic.base import TemplateView, View
 from django.views.decorators.csrf import ensure_csrf_cookie
-from designsafe.libs.common.decorators import profile
+from django.views.generic.base import TemplateView, View
 
-from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
-from designsafe.libs.elasticsearch.docs.publication_legacy import BaseESPublicationLegacy
-
-from designsafe.apps.projects.managers.base import ProjectsManager
-from designsafe.apps.api.agave import service_account
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.publications_v2.models import Publication
-from designsafe.apps.api.projects_v2.operations.datacite_operations import get_datacite_json
-import json
+from designsafe.apps.notifications.views import get_number_unread_notifications
+from designsafe.libs.common.decorators import profile
+from designsafe.libs.elasticsearch.docs.publication_legacy import (
+    BaseESPublicationLegacy,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +128,7 @@ def get_google_scholar_context(project_id):
 
 class  BasePublicTemplate(TemplateView):
     def get_context_data(self, **kwargs):
-        context = super(BasePublicTemplate, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['unreadNotifications'] = 0
         return context
 
@@ -153,12 +150,12 @@ class DataDepotView(BasePublicTemplate):
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
         try:
-            return super(DataDepotView, self).dispatch(request, *args, **kwargs)
+            return super().dispatch(request, *args, **kwargs)
         except PermissionDenied:
             return DataDepotView.login_redirect(request)
 
     def get_context_data(self, **kwargs):
-        context = super(DataDepotView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         logger.info('Get context Data')
 
         if self.request.user.is_authenticated:
@@ -189,7 +186,7 @@ class DataBrowserTestView(BasePublicTemplate):
             return self.login_rediect(request)
 
     def get_context_data(self, **kwargs):
-        context = super(DataBrowserTestView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         logger.info('Get context Data')
 
         context['unreadNotifications'] = get_number_unread_notifications(self.request)
@@ -201,7 +198,7 @@ class DataBrowserTestView(BasePublicTemplate):
             else:
                 resource = 'public'
 
-        fm_cls = lookup_file_manager(resource)
+        fm_cls = lookup_file_manager(resource) # noqa
         if fm_cls is None:
             raise Http404('Unknown resource')
 
@@ -234,7 +231,7 @@ class DataBrowserTestView(BasePublicTemplate):
                 },
             }
 
-        sources_api = SourcesApi()
+        sources_api = SourcesApi() # noqa
         source_id = resource
         if source_id == 'agave':
             if fm is not None and fm.is_shared(file_path):
@@ -267,7 +264,7 @@ class FileMediaView(View):
         dirname = self.systems_mappings.get(system_id)
         if dirname is None and system_id.startswith('project-'):
             prjuuid = system_id.replace('project-', '')
-            dirname = 'projects/{prjuuid}'.format(prjuuid=prjuuid)
+            dirname = f'projects/{prjuuid}'
 
         return dirname
 
@@ -277,12 +274,10 @@ class FileMediaView(View):
             raise Http404('Resource not Found')
 
         filename = file_path.rsplit('/', 1)[1]
-        filepath = '{corral}/{sys_dirname}/{file_path}'.format(
-            corral=self.corral, sys_dirname=self.get_system_dirname(system_id),
-            file_path=file_path)
+        filepath = f'{self.corral}/{self.get_system_dirname(system_id)}/{file_path}'
         response = HttpResponse()
-        response['Content-Disposition'] = 'attachment; filename={filename}'.format(filename=filename)
-        response['X-Accel-Redirect'] = '/internal-resource/{filepath}'.format(filepath=filepath)
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        response['X-Accel-Redirect'] = f'/internal-resource/{filepath}'
         return response
 
 
@@ -295,13 +290,13 @@ class DataDepotPublishedView(TemplateView):
 
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
-        return super(DataDepotPublishedView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
         Update context data to add publication.
         """
-        context = super(DataDepotPublishedView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         try:
             scholar_context, datacite_context, title = get_google_scholar_context(kwargs['project_id'])
             context['dc_context'] = [json.dumps(ctx) for ctx in datacite_context]
@@ -309,7 +304,7 @@ class DataDepotPublishedView(TemplateView):
             context['citation_title'] = f"{kwargs['project_id']} | {title}"
         except Exception:
             # If we can't generate DataCite JSON, render the page without meta tags.
-            pass
+            logger.exception("")
 
         if self.request.user.is_authenticated:
             context['angular_init'] = json.dumps({
@@ -331,11 +326,11 @@ class DataDepotLegacyPublishedView(TemplateView):
 
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
-        return super(DataDepotLegacyPublishedView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Update context data to add publication."""
-        context = super(DataDepotLegacyPublishedView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         logger.info('Get context Data')
         nees_id = kwargs['project_id'].strip('.groups').strip('/')
         logger.debug('nees_id: %s', nees_id)
@@ -344,7 +339,7 @@ class DataDepotLegacyPublishedView(TemplateView):
         context['neesId'] = nees_id.split('/')[0]
         context['citation_title'] = pub.title
         context['citation_date'] = getattr(pub, 'startDate', '')
-        experiments = getattr(pub, 'experiments')
+        experiments = pub.experiments
         if experiments and len(experiments):
             context['doi'] = getattr(pub.experiments[0], 'doi', '')
             exp_users = [getattr(exp, 'creators', []) for exp in experiments]

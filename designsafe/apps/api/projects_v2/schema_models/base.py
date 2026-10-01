@@ -1,27 +1,29 @@
 """Pydantic schema models for base-level project entities."""
 
 from datetime import datetime
-from typing import Literal, Optional, Annotated
+from typing import Annotated, Literal
+
 from pydantic import (
-    BeforeValidator,
     AliasChoices,
+    BeforeValidator,
     ConfigDict,
-    model_validator,
     Field,
+    model_validator,
 )
+
 from designsafe.apps.api.projects_v2.constants import (
-    NATURAL_HAZARD_TYPES,
     FIELD_RESEARCH_TYPES,
+    NATURAL_HAZARD_TYPES,
     OTHER_DATA_TYPES,
 )
-from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
 from designsafe.apps.api.projects_v2.schema_models._field_models import (
     AssociatedProject,
     DropdownValue,
-    FileTag,
     FileObj,
+    FileTag,
     GuestMember,
     HazmapperMap,
+    MetadataModel,
     NaturalHazardEvent,
     ProjectAward,
     ProjectUser,
@@ -69,10 +71,10 @@ class BaseProject(MetadataModel):
     guest_members: Annotated[
         list[GuestMember], BeforeValidator(handle_array_of_none)
     ] = []
-    pi: Optional[str] = None
+    pi: str | None = None
     co_pis: list[str] = []
     data_type: Annotated[
-        Optional[DropdownValue],
+        DropdownValue | None,
         BeforeValidator(
             lambda v: handle_dropdown_value(
                 v, OTHER_DATA_TYPES, fallback={"id": "other", "name": v}
@@ -94,15 +96,15 @@ class BaseProject(MetadataModel):
     ] = []
     associated_projects: list[AssociatedProject] = []
     referenced_data: list[ReferencedWork] = []
-    ef: Optional[str] = None
+    ef: str | None = None
     keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
 
     nh_event: str = ""
     nh_event_start: Annotated[
-        Optional[datetime], BeforeValidator(lambda v: v or None)
+        datetime | None, BeforeValidator(lambda v: v or None)
     ] = None
     nh_event_end: Annotated[
-        Optional[datetime], BeforeValidator(lambda v: v or None)
+        datetime | None, BeforeValidator(lambda v: v or None)
     ] = None
     nh_location: str = ""
     nh_latitude: str = ""
@@ -119,7 +121,7 @@ class BaseProject(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_values(v, FIELD_RESEARCH_TYPES)),
     ] = []
     dois: list[str] = []
-    license: Optional[str] = None
+    license: str | None = None
 
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
@@ -128,15 +130,15 @@ class BaseProject(MetadataModel):
     facilities: list[DropdownValue] = []
 
     # These fields are ONLY present on publication PRJ-1665
-    natural_hazard_type: Optional[str] = None
-    natural_hazard_event: Optional[str] = None
-    coverage_temporal: Optional[str] = None
-    lat_long_name: Optional[str] = None
+    natural_hazard_type: str | None = None
+    natural_hazard_event: str | None = None
+    coverage_temporal: str | None = None
+    lat_long_name: str | None = None
 
     tombstone: bool = False
-    tombstone_message: Optional[str] = None
+    tombstone_message: str | None = None
 
-    github_url: Optional[str] = None
+    github_url: str | None = None
 
     def construct_users(self) -> list[ProjectUser]:
         """Fill in missing user information from the database."""

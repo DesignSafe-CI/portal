@@ -1,5 +1,6 @@
-from menus.menu_pool import MenuPool
 import logging
+
+from menus.menu_pool import MenuPool
 
 logger = logging.getLogger(__name__)
 
