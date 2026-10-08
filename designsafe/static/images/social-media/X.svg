@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: #262626;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+    <circle class="cls-2" cx="256" cy="256" r="251"/>
+    <g>
+      <polygon class="cls-1" points="355.89 99 409.16 99 292.78 232.01 429.69 413 322.49 413 238.54 303.23 142.47 413 89.17 413 213.64 270.73 82.31 99 192.22 99 268.11 199.33 355.89 99 355.89 99"/>
+      <polygon class="cls-2" points="337.2 381.12 366.71 381.12 176.19 129.21 144.51 129.21 337.2 381.12 337.2 381.12"/>
+    </g>
+  </g>
+</svg>
