@@ -21,7 +21,8 @@
       "@client/onboarding": ["modules/onboarding/src/index.ts"],
       "@client/reconportal": ["modules/reconportal/src/index.ts"],
       "@client/test-fixtures": ["modules/_test-fixtures/src/index.ts"],
-      "@client/workspace": ["modules/workspace/src/index.ts"]
+      "@client/workspace": ["modules/workspace/src/index.ts"],
+      "@client/nco": ["modules/nco/src/index.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]
