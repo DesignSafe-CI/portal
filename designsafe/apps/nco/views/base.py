@@ -19,4 +19,5 @@ class NcoIndexView(TemplateView):
 
 class NcoTtcGrantsView(TemplateView):
     """NCO TTC Grants view."""
+
     pass

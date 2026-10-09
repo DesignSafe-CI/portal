@@ -7,6 +7,7 @@ import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
 import reconportalRouter from './reconportal/reconportalRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
+import ncoRouter from './nco/ncoRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { AIChatButton } from '@client/workspace';
 
@@ -118,4 +119,18 @@ if (reconElement) {
       </QueryClientProvider>
     </StrictMode>
   );
+}
+
+const ncoElement = document.getElementById('nco-root');
+if (ncoElement) {
+  const ncoRoot = ReactDOM.createRoot(ncoElement as HTMLElement);
+  ncoRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <RouterProvider router={ncoRouter} />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  )
 }
