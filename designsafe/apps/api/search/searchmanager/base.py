@@ -1,6 +1,7 @@
-from elasticsearch import TransportError, ConnectionTimeout
+from elasticsearch import ConnectionTimeout, TransportError
 
-class BaseSearchManager(object):
+
+class BaseSearchManager:
     """ Wraps elastic search result object
 
         This class wraps the elasticsearch result object
@@ -72,8 +73,7 @@ class BaseSearchManager(object):
     def results(self, offset):
         res = self._search.execute()
         limit = offset + self._page_size
-        if res.hits.total.value < limit:
-            limit = res.hits.total.value
+        limit = min(limit, res.hits.total.value)
 
         if offset > limit:
             offset = 0
@@ -101,4 +101,4 @@ class BaseSearchManager(object):
             return val
         else:
             raise AttributeError(
-                'Search class has no attribute \'{}\''.format(name))
+                f'Search class has no attribute \'{name}\'')

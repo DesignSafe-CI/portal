@@ -4,13 +4,14 @@
 """
 
 import logging
+
 from paramiko.ssh_exception import (
     AuthenticationException,
     ChannelException,
     SSHException,
 )
-from .ssh_keys_manager import KeysManager, KeyCannotBeAdded
 
+from .ssh_keys_manager import KeyCannotBeAdded, KeysManager
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ def add_pub_key_to_resource(
     mgr = KeysManager(user, password, token)
     message = "add_pub_key_to_resource"
 
-    logger.info(f"Adding public key for user {user.username} on system {system_id}")
+    logger.info("Adding public key for user %s on system %s", user.username, system_id)
     try:
         if hostname is None:
             sys = user.tapis_oauth.client.systems.getSystem(systemId=system_id)

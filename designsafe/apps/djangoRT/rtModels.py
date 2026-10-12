@@ -1,4 +1,4 @@
-
+# ruff:disable[N999]
 
 
 class Ticket:

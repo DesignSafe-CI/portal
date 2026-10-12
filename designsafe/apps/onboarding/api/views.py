@@ -1,29 +1,31 @@
 """"API views for the Onboarding app."""
 
-import logging
 import json
+import logging
 import math
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import (
     Http404,
-    JsonResponse,
     HttpResponseBadRequest,
+    JsonResponse,
 )
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth import get_user_model
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.utils.decorators import method_decorator
-from designsafe.libs.common.utils import check_onboarding_admin, check_group_membership
-from designsafe.apps.api.views import AuthenticatedApiView, ApiException
+
 from designsafe.apps.api.users.utils import q_to_model_queries
-from designsafe.apps.onboarding.models import SetupEvent, SetupEventEncoder
+from designsafe.apps.api.views import ApiException, AuthenticatedApiView
 from designsafe.apps.onboarding.execute import (
-    log_setup_state,
-    load_setup_step,
-    execute_single_step,
     execute_setup_steps,
+    execute_single_step,
+    load_setup_step,
+    log_setup_state,
 )
+from designsafe.apps.onboarding.models import SetupEvent, SetupEventEncoder
 from designsafe.apps.onboarding.state import SetupState
+from designsafe.libs.common.utils import check_group_membership, check_onboarding_admin
 
 logger = logging.getLogger(__name__)
 
@@ -307,7 +309,7 @@ class SetupAdminView(AuthenticatedApiView):
 
         total = math.ceil(len(results) / limit)
         offset = (page - 1) * limit
-        users_in_page = results[offset : limit * page]  # noqa: E203
+        users_in_page = results[offset : limit * page]
         account_setup_steps = getattr(settings, "PORTAL_USER_ACCOUNT_SETUP_STEPS", [])
 
         # Assemble an array with the User data we care about

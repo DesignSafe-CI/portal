@@ -3,8 +3,8 @@ Model linking django db user to their TAS allocations + corresponding hosts
 
 """
 
-from django.db import models
 from django.conf import settings
+from django.db import models
 
 
 class UserAllocations(models.Model):

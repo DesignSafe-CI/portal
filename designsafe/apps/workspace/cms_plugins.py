@@ -1,15 +1,17 @@
 """CMS plugins for Tools & Applications pages."""
 
 import logging
+
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from designsafe.apps.workspace.models.app_entries import (
-    AppListingEntry,
-)
+
 from designsafe.apps.workspace.models.app_cms_plugins import (
     AppCategoryListingPlugin,
-    RelatedAppsPlugin,
     AppVariantsPlugin,
+    RelatedAppsPlugin,
+)
+from designsafe.apps.workspace.models.app_entries import (
+    AppListingEntry,
 )
 
 logger = logging.getLogger(__name__)

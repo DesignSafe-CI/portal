@@ -1,18 +1,16 @@
 
 
 import logging
-import json
+
 from django.conf import settings
-from django.db import models
-from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import (Search, DocType, Date, Nested,
-                               analyzer, Object, Text, Long,
-                               Boolean, Keyword,
-                               GeoPoint, MetaField)
-from elasticsearch_dsl.query import Q
-from elasticsearch import TransportError
-from designsafe.libs.elasticsearch.analyzers import path_analyzer
-from designsafe.libs.elasticsearch.utils import get_sha256_hash, new_es_client
+from elasticsearch_dsl import (
+    Date,
+    Document,
+    Keyword,
+    MetaField,
+    Nested,
+    Text,
+)
 
 #pylint: disable=invalid-name
 logger = logging.getLogger(__name__)

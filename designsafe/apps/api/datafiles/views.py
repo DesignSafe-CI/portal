@@ -1,20 +1,34 @@
 import json
 import logging
 from hashlib import sha256
+
 from boxsdk.exception import BoxOAuthException
-from django.http import JsonResponse
 from django.conf import settings
+from django.http import JsonResponse
 from dropbox.exceptions import AuthError as DropboxAuthError
 from google.auth.exceptions import GoogleAuthError
 from requests.exceptions import HTTPError
-from designsafe.libs.common.utils import check_group_membership
-from designsafe.apps.api.datafiles.handlers import datafiles_get_handler, datafiles_post_handler, datafiles_put_handler, resource_unconnected_handler, resource_expired_handler
-from designsafe.apps.api.datafiles.operations.transfer_operations import transfer, transfer_folder
-from designsafe.apps.api.datafiles.notifications import notify
-from designsafe.apps.api.datafiles.models import DataFilesSurveyResult, DataFilesSurveyCounter
-from designsafe.apps.api.views import BaseApiView
+
 from designsafe.apps.api.agave import service_account
+from designsafe.apps.api.datafiles.handlers import (
+    datafiles_get_handler,
+    datafiles_post_handler,
+    datafiles_put_handler,
+    resource_expired_handler,
+    resource_unconnected_handler,
+)
+from designsafe.apps.api.datafiles.models import (
+    DataFilesSurveyCounter,
+    DataFilesSurveyResult,
+)
+from designsafe.apps.api.datafiles.notifications import notify
+from designsafe.apps.api.datafiles.operations.transfer_operations import (
+    transfer,
+    transfer_folder,
+)
 from designsafe.apps.api.utils import get_client_ip
+from designsafe.apps.api.views import BaseApiView
+from designsafe.libs.common.utils import check_group_membership
 
 logger = logging.getLogger(__name__)
 metrics = logging.getLogger('metrics')
@@ -172,17 +186,17 @@ class TransferFilesView(BaseApiView):
         notify(request.user.username, 'transfer', 'Copy operation has started.', 'INFO', {})
         try:
             if format == 'folder':
-                resp = transfer_folder(src_client, dest_client, **body)
+                transfer_folder(src_client, dest_client, **body)
                 notify(request.user.username, 'transfer', 'Files were successfully copied.', 'SUCCESS', {})
                 return JsonResponse({'success': True})
             else:
-                resp = transfer(src_client, dest_client, **body)
+                transfer(src_client, dest_client, **body)
                 notify(request.user.username, 'transfer', 'Files were successfully copied.', 'SUCCESS', {})
                 return JsonResponse({'success': True})
         except Exception as exc:
             notify(request.user.username, 'transfer', 'Copy operation has failed.', 'ERROR', {})
             logger.info(exc)
-            raise exc
+            raise
 
 
 class MicrosurveyView(BaseApiView):

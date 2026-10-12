@@ -1,8 +1,10 @@
-from django.conf import settings
-from designsafe.apps.onboarding.steps.system_access import SystemAccessStep
-import pytest
 import json
 import os
+
+import pytest
+from django.conf import settings
+
+from designsafe.apps.onboarding.steps.system_access import SystemAccessStep
 
 
 @pytest.fixture

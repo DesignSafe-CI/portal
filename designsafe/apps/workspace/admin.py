@@ -9,9 +9,9 @@ from designsafe.apps.workspace.forms import AppVariantForm
 from designsafe.apps.workspace.models.app_descriptions import AppDescription
 from designsafe.apps.workspace.models.app_entries import (
     AppListingEntry,
-    AppVariant,
-    AppTrayCategory,
     AppTag,
+    AppTrayCategory,
+    AppVariant,
 )
 
 admin.site.register(AppDescription)

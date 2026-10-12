@@ -1,7 +1,8 @@
-import pytest
 import json
+
+import pytest
 from django.db import IntegrityError
-from django.test import Client
+
 from designsafe.apps.api.filemeta.models import FileMetaModel
 
 

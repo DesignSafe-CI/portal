@@ -1,20 +1,21 @@
+from unittest.mock import MagicMock
+
 import pytest
-from mock import MagicMock
 from django.db.models import signals
-from designsafe.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
+
 from designsafe.apps.accounts.models import DesignSafeProfile
-from designsafe.apps.onboarding.models import SetupEvent
-from designsafe.apps.onboarding.state import SetupState
 from designsafe.apps.onboarding.execute import (
+    StepExecuteException,
     execute_setup_steps,
     execute_single_step,
-    prepare_setup_steps,
     load_setup_step,
     log_setup_state,
     new_user_setup_check,
-    StepExecuteException,
+    prepare_setup_steps,
 )
-
+from designsafe.apps.onboarding.models import SetupEvent
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.test_steps import MockProcessingCompleteStep
 
 pytestmark = pytest.mark.django_db
 

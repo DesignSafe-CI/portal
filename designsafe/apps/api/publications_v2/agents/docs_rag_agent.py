@@ -4,9 +4,10 @@ Agent for documentation RAG
 
 import os
 from collections.abc import Callable
+
 import chromadb
-from chromadb.config import Settings as ChromaSettings
 import pydantic
+from chromadb.config import Settings as ChromaSettings
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIResponsesModel
 from pydantic_ai.providers.openai import OpenAIProvider

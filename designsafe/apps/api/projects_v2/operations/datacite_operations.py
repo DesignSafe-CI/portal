@@ -1,16 +1,17 @@
 """Operations to format and manage Datacite DOIs"""
 
 import datetime
-from typing import Optional
 import json
-import requests
+
 import networkx as nx
+import requests
 from django.conf import settings
+
 from designsafe.apps.api.projects_v2 import constants
 from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
 
 
-def format_datacite_date_range(date_start: str, date_end: Optional[str]):
+def format_datacite_date_range(date_start: str, date_end: str | None):
     """Convert a date range to datacite JSON"""
     date_string = date_start
     if date_end:
@@ -33,7 +34,7 @@ def dedup_collectors(collectors: list[dict]) -> list[dict]:
 
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def get_datacite_json(
-    pub_graph: nx.DiGraph, entity_uuid: str, version: Optional[int] = 1
+    pub_graph: nx.DiGraph, entity_uuid: str, version: int | None = 1
 ):
     """
     Generate datacite payload for a publishable entity. `pub_graph` is the output of
@@ -149,11 +150,11 @@ def get_datacite_json(
 
         datacite_json["titles"] = [
             {"title": f"{title}, in {base_meta['title']}"}
-            for title in set([entity_meta["title"]])
+            for title in {entity_meta["title"]}
         ]
     else:
         datacite_json["titles"] = [
-            {"title": title} for title in set([entity_meta["title"]])
+            {"title": title} for title in {entity_meta["title"]}
         ]
     datacite_json["publisher"] = "Designsafe-CI"
 
@@ -192,7 +193,7 @@ def get_datacite_json(
             "description": desc,
             "lang": "en-Us",
         }
-        for desc in set([base_meta["description"], entity_meta["description"]])
+        for desc in {base_meta["description"], entity_meta["description"]}
     ]
 
     if not is_other:
@@ -293,7 +294,7 @@ def get_datacite_json(
     return datacite_json
 
 
-def upsert_datacite_json(datacite_json: dict, doi: Optional[str] = None):
+def upsert_datacite_json(datacite_json: dict, doi: str | None = None):
     """
     Create a draft DOI in datacite with the specified metadata. If a DOI is specified,
     the metadata for that DOI is updated instead.

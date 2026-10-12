@@ -1,6 +1,6 @@
 import logging
+
 from designsafe.apps.data.models.agave.base import BaseAgaveResource
-from . import roles
 
 logger = logging.getLogger(__name__)
 
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class BaseSystemResource(BaseAgaveResource):
 
     def __init__(self, agave_client, **kwargs):
-        super(BaseSystemResource, self).__init__(agave_client, **kwargs)
+        super().__init__(agave_client, **kwargs)
 
     @property
     def request_body(self):
@@ -23,12 +23,12 @@ class BaseSystemResource(BaseAgaveResource):
             'username': username,
             'role': role
         }
-        logger.info('Granting system role on {}: {}'.format(self.id, role_body))
+        logger.info('Granting system role on %s: %s', self.id, role_body)
         self._agave.systems.updateRole(systemId=self.id, body=role_body)
         return self
 
     def remove_role(self, username):
-        logger.info('Revoking system roles on {} for user {}'.format(self.id, username))
+        logger.info('Revoking system roles on %s for user %s', self.id, username)
         self._agave.systems.deleteRoleForUser(systemId=self.id, username=username)
         return self
 

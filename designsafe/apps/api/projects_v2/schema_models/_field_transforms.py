@@ -1,5 +1,5 @@
 """Transforms for converting legacy metadata to fit our Pydantic schemas."""
-from typing import Optional, TypedDict
+from typing import TypedDict
 
 
 def handle_award_number(award: list[dict] | list[str] | str) -> list[dict]:
@@ -25,10 +25,7 @@ def handle_legacy_authors(author_list: list):
     if not bool(author_list):
         return []
     if isinstance(author_list[0], str):
-        author_map = map(
-            lambda author: {"name": author, "guest": False, "authorship": True},
-            author_list,
-        )
+        author_map = ({"name": author, "guest": False, "authorship": True} for author in author_list)
         return list(author_map)
     return author_list
 
@@ -52,10 +49,10 @@ class DropdownValueDict(TypedDict):
 
 
 def handle_dropdown_value(
-    dropdown_value: Optional[str | DropdownValueDict],
+    dropdown_value: str | DropdownValueDict | None,
     options: list[DropdownValueDict],
-    fallback: Optional[DropdownValueDict] = None,
-) -> Optional[DropdownValueDict]:
+    fallback: DropdownValueDict | None = None,
+) -> DropdownValueDict | None:
     """Look up value if a string id/value is passed."""
     if not dropdown_value:
         return None

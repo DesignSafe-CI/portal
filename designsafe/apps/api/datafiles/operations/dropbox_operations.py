@@ -1,11 +1,12 @@
-import os
 import io
 import logging
-from dropbox import Dropbox
-from dropbox.files import FolderMetadata
+import os
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import TemporaryUploadedFile
+from dropbox import Dropbox
+from dropbox.files import FolderMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +23,7 @@ def listing(
     else:
         files = client.files_list_folder_continue(nextPageToken)
 
-    listing = list(
-        map(
-            lambda f: {
+    listing = [{
                 "system": "dropbox",
                 "type": ("dir" if isinstance(f, FolderMetadata) else "file"),
                 "format": ("folder" if isinstance(f, FolderMetadata) else "raw"),
@@ -35,10 +34,7 @@ def listing(
                 "lastModified": (
                     None if isinstance(f, FolderMetadata) else f.server_modified
                 ),
-            },
-            files.entries,
-        )
-    )
+            } for f in files.entries]
 
     nextPageToken = files.cursor if files.has_more else None
 
@@ -83,14 +79,14 @@ def preview(client: Dropbox, system, path, *args, **kwargs):
         file_type = "object"
     elif file_ext in settings.SUPPORTED_MS_OFFICE:
         file_type = "ms-office"
-        url = "https://view.officeapps.live.com/op/view.aspx?src={}".format(url)
+        url = f"https://view.officeapps.live.com/op/view.aspx?src={url}"
     elif file_ext in settings.SUPPORTED_VIDEO_EXTS:
         file_type = "video"
         # url = '/api/datafiles/media/agave/private/{}/{}'.format(system, path)
     elif file_ext in settings.SUPPORTED_IPYNB_PREVIEW_EXTS:
         file_type = "ipynb"
         tmp = url.replace("https://", "")
-        url = "https://nbviewer.jupyter.org/urls/{tmp}".format(tmp=tmp)
+        url = f"https://nbviewer.jupyter.org/urls/{tmp}"
     else:
         file_type = "other"
     return {"href": url, "fileType": file_type}
@@ -110,10 +106,10 @@ def copy(
     src_file_name = os.path.basename(src_path)
     if src_system != dest_system:
 
+        from designsafe.apps.api.datafiles.handlers import resource_unconnected_handler
         from designsafe.apps.api.datafiles.operations.transfer_operations import (
             transfer,
         )
-        from designsafe.apps.api.datafiles.handlers import resource_unconnected_handler
         from designsafe.apps.api.datafiles.views import get_client
 
         user = get_user_model().objects.get(username=username)
@@ -141,7 +137,7 @@ def copy(
             src_path = "/" + src_path
         if dest_path and not dest_path.startswith("/"):
             dest_path = "/" + dest_path
-        dest_path = "{}/{}".format(dest_path, src_file_name)
+        dest_path = f"{dest_path}/{src_file_name}"
 
         src_client.files_copy(src_path, dest_path, autorename=True)
 
@@ -149,7 +145,7 @@ def copy(
 
 
 def download(client: Dropbox, system, path, *args, **kwargs):
-    logger.debug("Downloading file from Dropbox: {}".format(path))
+    logger.debug("Downloading file from Dropbox: %s", path)
     if not path.startswith("/"):
         path = "/" + path
     (meta, response) = client.files_download(path)
@@ -169,7 +165,7 @@ def upload(
 ):
     if path and not path.startswith("/"):
         path = "/" + path
-    upload_path = "{}/{}".format(path, uploaded_file.name).replace("//", "/")
+    upload_path = f"{path}/{uploaded_file.name}".replace("//", "/")
     client.files_upload(uploaded_file.read(), upload_path, autorename=True)
     return {"result": "OK"}
 
@@ -177,7 +173,7 @@ def upload(
 def mkdir(client, system, path, dir_name, *args, **kwargs):
     if path and not path.startswith("/"):
         path = "/" + path
-    folder_path = "{}/{}".format(path, dir_name).replace("//", "/")
+    folder_path = f"{path}/{dir_name}".replace("//", "/")
     client.files_create_folder(folder_path)
     return {"name": dir_name, "path": folder_path}
 

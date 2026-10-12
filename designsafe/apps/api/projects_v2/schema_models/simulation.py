@@ -1,24 +1,26 @@
 """Pydantic models for Simulation entities."""
 
-from typing import Optional, Annotated
+from typing import Annotated
+
 from pydantic import BeforeValidator, ConfigDict, Field, model_validator
-from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
+
+from designsafe.apps.api.projects_v2.constants import SIMULATION_TYPES
 from designsafe.apps.api.projects_v2.schema_models._field_models import (
     AssociatedProject,
     DropdownValue,
     FileObj,
     FileTag,
+    MetadataModel,
     ProjectUser,
     Ref,
     ReferencedWork,
 )
 from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
-    handle_legacy_authors,
     handle_dropdown_value,
     handle_keywords,
+    handle_legacy_authors,
 )
-from designsafe.apps.api.projects_v2.constants import SIMULATION_TYPES
 
 
 class Simulation(MetadataModel):
@@ -30,7 +32,7 @@ class Simulation(MetadataModel):
         DropdownValue,
         BeforeValidator(lambda v: handle_dropdown_value(v, SIMULATION_TYPES)),
     ]
-    simulation_type_other: Optional[str] = Field(exclude=True, default=None)
+    simulation_type_other: str | None = Field(exclude=True, default=None)
     referenced_data: list[ReferencedWork] = []
     related_work: list[AssociatedProject] = []
     keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
@@ -38,7 +40,7 @@ class Simulation(MetadataModel):
     project: list[str] = []
     dois: list[str] = []
 
-    facility: Optional[DropdownValue] = None
+    facility: DropdownValue | None = None
     tombstone: bool = False
 
     @model_validator(mode="after")
@@ -172,8 +174,8 @@ class SimulationAnalysis(MetadataModel):
     file_tags: list[FileTag] = []
     file_objs: list[FileObj] = []
 
-    reference: Optional[str] = None
-    referencedoi: Optional[str] = None
+    reference: str | None = None
+    referencedoi: str | None = None
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""

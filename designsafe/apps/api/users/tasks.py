@@ -1,6 +1,7 @@
 """ Celery tasks for users api """
 
 from celery import shared_task
+
 from .utils import _get_latest_allocations
 
 

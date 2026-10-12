@@ -1,7 +1,6 @@
-from django.urls import include, re_path as url, path
-from django.urls import reverse
-from designsafe.apps.rapid import views
+from django.urls import re_path as url
 
+from designsafe.apps.rapid import views
 
 urlpatterns = [
     url(r'^event-types/?$', views.get_event_types, name="get_event_types"),

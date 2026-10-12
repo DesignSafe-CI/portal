@@ -1,7 +1,9 @@
-from designsafe.apps.api.datafiles.operations import tapis_operations
-from designsafe.apps.api.datafiles.operations import googledrive_operations
-from designsafe.apps.api.datafiles.operations import dropbox_operations
-from designsafe.apps.api.datafiles.operations import box_operations
+from designsafe.apps.api.datafiles.operations import (
+    box_operations,
+    dropbox_operations,
+    googledrive_operations,
+    tapis_operations,
+)
 
 api_mapping = {
     'googledrive': {
@@ -39,7 +41,6 @@ def transfer(src_client, dest_client, src_api, dest_api, src_system, dest_system
     file_bytes = _download(src_client, src_system, src_path)
     _upload(dest_client, dest_system, dest_path, file_bytes)
 
-    return
 
 
 def transfer_folder(src_client, dest_client, src_api, dest_api, src_system, dest_system, src_path, dest_path, dirname, *args, **kwargs):

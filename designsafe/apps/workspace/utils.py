@@ -23,13 +23,10 @@ def setup_identity_file(username, agave, system, dir_path):
 
     # Create .Identity file with user's username
     identity_file = io.StringIO(username)
-    setattr(identity_file, 'name', '.Identity')
+    identity_file.name = '.Identity'
     return agave.files.importData(
         systemId=system,
-        filePath='/{username}/{dir_path}'.format(
-            username=username,
-            dir_path=dir_path
-        ),
+        filePath=f'/{username}/{dir_path}',
         fileToUpload=identity_file,
         fileName='.Identity'
     )

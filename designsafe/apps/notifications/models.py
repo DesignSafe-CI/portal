@@ -1,10 +1,13 @@
-from django.db import models
-from django.dispatch import receiver
-from designsafe.apps.signals.signals import generic_event
-from .apps import Event
+import cgi
 import datetime
 import json
-import cgi
+
+from django.db import models
+from django.dispatch import receiver
+
+from designsafe.apps.signals.signals import generic_event
+
+from .apps import Event
 
 
 class Notification(models.Model):

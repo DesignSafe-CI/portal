@@ -1,15 +1,17 @@
 import json
 import os
+from unittest.mock import MagicMock, patch
 from urllib.parse import urlencode
-from mock import patch, MagicMock
-from django.test import TestCase, TransactionTestCase, override_settings
+
 from django.contrib.auth import get_user_model
 from django.db.models import signals
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from tapipy.tapis import TapisResult
+
+from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.notifications.receivers import send_notification_ws
-from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.webhooks.views import validate_tapis_job
 
 
@@ -33,7 +35,6 @@ class TestValidateTapisJob(TestCase):
 
     def tearDown(self):
         self.user_model_patcher.stop()
-        pass
 
     def test_valid_job(self):
         job = validate_tapis_job("id", "ds_user")

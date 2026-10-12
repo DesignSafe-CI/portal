@@ -1,23 +1,25 @@
 """Utils for constructing project trees from legacy association IDs."""
 
-import json
-from typing import TypedDict, Optional
-from uuid import uuid4
 import copy
+import json
 from pathlib import Path
+from typing import TypedDict
+from uuid import uuid4
+
 import networkx as nx
 from django.utils.text import slugify
+
 from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
+from designsafe.apps.api.projects_v2 import constants as names
+from designsafe.apps.api.projects_v2.migration_utils.publication_transforms import (
+    construct_users,
+    transform_entity,
+)
+from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
 from designsafe.apps.data.models.elasticsearch import IndexedPublication
 from designsafe.apps.projects.managers.publication import FIELD_MAP
-from designsafe.apps.api.projects_v2.schema_models import PATH_SLUGS
 from designsafe.apps.projects.models.categories import Category
-from designsafe.apps.api.projects_v2 import constants as names
-from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
-from designsafe.apps.api.projects_v2.migration_utils.publication_transforms import (
-    transform_entity,
-    construct_users,
-)
 
 # map metadata 'name' field to allowed (direct) children
 ALLOWED_RELATIONS = {
@@ -86,7 +88,7 @@ def get_entities_by_project_id(project_id: str) -> list[dict]:
 def get_path(graph: nx.DiGraph, node_id: str):
     """Iterate through all predecessors in the graph (inclusive)"""
     shortest_path = nx.shortest_path(graph, "NODE_ROOT", node_id)
-    path_uuids = map(lambda node: graph.nodes[node]["uuid"], shortest_path)
+    path_uuids = (graph.nodes[node]["uuid"] for node in shortest_path)
 
     return list(path_uuids)
 
@@ -134,7 +136,7 @@ def construct_graph_from_db(project_id) -> nx.DiGraph:
         # support multiple versions.
         project_graph.add_node(
             root_node_id,
-            **{"uuid": None, "name": None, "projectType": "other", "order": 0},
+            uuid=None, name=None, projectType="other", order=0,
         )
         base_node_id = f"NODE_project_{uuid4()}"
         project_graph.add_node(base_node_id, **base_node_data)
@@ -277,7 +279,7 @@ def construct_publication_graph(
 
 
 def construct_entity_filepaths(
-    entity_listing: list[dict], pub_graph: nx.DiGraph, version: Optional[int] = None
+    entity_listing: list[dict], pub_graph: nx.DiGraph, version: int | None = None
 ):
     """
     Walk the publication graph and construct base file paths for each node.
@@ -309,7 +311,7 @@ def construct_entity_filepaths(
 
 
 def construct_entity_filepaths_legacy(
-    pub_graph: nx.DiGraph, version: Optional[int] = None
+    pub_graph: nx.DiGraph, version: int | None = None
 ):
     """
     Walk the publication graph and construct base file paths for each node.
@@ -345,7 +347,7 @@ def get_entity_orders(
     return prj_orders.to_dict().get("orders", [])
 
 
-def transform_pub_entities(project_id: str, version: Optional[int] = None):
+def transform_pub_entities(project_id: str, version: int | None = None):
     """Validate publication entities against their corresponding model."""
     entity_listing = get_entities_from_publication(project_id, version=version)
     base_pub_meta = IndexedPublication.from_id(project_id, revision=version).to_dict()
@@ -356,7 +358,7 @@ def transform_pub_entities(project_id: str, version: Optional[int] = None):
     )
     path_mappings = []
 
-    for _, node_data in pub_graph.nodes.items():
+    for node_data in pub_graph.nodes.values():
         node_entity = next(
             (e for e in entity_listing if e["uuid"] == node_data["uuid"]), None
         )

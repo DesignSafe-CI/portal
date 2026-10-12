@@ -1,9 +1,13 @@
 """Simulation project models"""
 import logging
-import six
-from designsafe.apps.data.models.agave.base import Model as MetadataModel
+
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.projects.models.agave.base import RelatedEntity, Project, FileObjModel
+from designsafe.apps.data.models.agave.base import Model as MetadataModel
+from designsafe.apps.projects.models.agave.base import (
+    FileObjModel,
+    Project,
+    RelatedEntity,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -60,15 +64,11 @@ class Simulation(RelatedEntity):
 
     def to_datacite_json(self, project=None):
         """Serialize object to datacite JSON."""
-        attributes = super(Simulation, self).to_datacite_json()
+        attributes = super().to_datacite_json()
         if self.simulation_type_other:
-            attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
-                simulation_type=self.simulation_type_other.title()
-            )
+            attributes['types']['resourceType'] = f"Simulation/{self.simulation_type_other.title()}"
         else:
-            attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
-                simulation_type=self.simulation_type.title()
-            )
+            attributes['types']['resourceType'] = f"Simulation/{self.simulation_type.title()}"
         if self.facility:
             attributes["subjects"] = attributes.get("subjects", []) + [
                 {"subject": self.facility["name"], }
@@ -131,7 +131,7 @@ class Simulation(RelatedEntity):
 
     def to_dataset_json(self):
         """Serialize object to dataset JSON."""
-        attributes = super(Simulation, self).to_dataset_json()
+        attributes = super().to_dataset_json()
         attributes["subjects"] = attributes.get("subjects", []) + [
             {"subject": self.facility.title(), }
         ]
@@ -143,13 +143,9 @@ class Simulation(RelatedEntity):
             }
         ]
         if self.simulation_type_other:
-            attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
-                simulation_type=self.simulation_type_other.title()
-            )
+            attributes['types']['resourceType'] = f"Simulation/{self.simulation_type_other.title()}"
         else:
-            attributes['types']['resourceType'] = "Simulation/{simulation_type}".format(
-                simulation_type=self.simulation_type.title()
-            )
+            attributes['types']['resourceType'] = f"Simulation/{self.simulation_type.title()}"
         return attributes
 
 

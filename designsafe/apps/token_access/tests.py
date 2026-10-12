@@ -1,7 +1,8 @@
+import requests_mock
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+
 from .models import Token
-import requests_mock
 
 
 class TokenAccessTest(TestCase):
@@ -17,7 +18,7 @@ class TokenAccessTest(TestCase):
 
     def test_model_header(self):
         token = Token.objects.get(user__username='ds_user')
-        expected_header = 'Token {0}'.format(token.token)
+        expected_header = f'Token {token.token}'
         self.assertEqual(expected_header, token.header)
 
     def test_token_access_middleware(self):

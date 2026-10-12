@@ -1,6 +1,7 @@
 from django.http import HttpResponseForbidden
-from .models import Token
 from django.utils.deprecation import MiddlewareMixin
+
+from .models import Token
 
 
 class TokenAuthenticationMiddleware(MiddlewareMixin):

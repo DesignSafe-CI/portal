@@ -1,8 +1,9 @@
 import logging
+
 from celery import shared_task
-from django.conf import settings
-from designsafe.apps.api.agave import get_tg458981_client, get_service_account_client
-from designsafe.libs.elasticsearch.utils import index_level, walk_levels, index_listing
+
+from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
+from designsafe.libs.elasticsearch.utils import index_level, index_listing, walk_levels
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ def agave_indexer(self, systemId, filePath='/', recurse=True, update_pems=False,
         filePath, folders, files = walk_levels(client, systemId, filePath, ignore_hidden=ignore_hidden).__next__()
         index_level(filePath, folders, files, systemId, reindex=reindex)
     except Exception as exc:
-        logger.debug(exc)
+        logger.exception("")
         raise self.retry(exc=exc)
 
     if recurse:
