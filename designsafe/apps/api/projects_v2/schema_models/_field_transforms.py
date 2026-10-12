@@ -1,4 +1,5 @@
 """Transforms for converting legacy metadata to fit our Pydantic schemas."""
+
 from typing import TypedDict
 
 
@@ -25,7 +26,10 @@ def handle_legacy_authors(author_list: list):
     if not bool(author_list):
         return []
     if isinstance(author_list[0], str):
-        author_map = ({"name": author, "guest": False, "authorship": True} for author in author_list)
+        author_map = (
+            {"name": author, "guest": False, "authorship": True}
+            for author in author_list
+        )
         return list(author_map)
     return author_list
 

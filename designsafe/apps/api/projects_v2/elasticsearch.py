@@ -32,7 +32,7 @@ def index_project(project_id):
             **project_json,
             uuid=project_meta.uuid,
             value=project_meta.value,
-            created=project_meta.created
+            created=project_meta.created,
         )
 
     except NotFoundError:
@@ -40,7 +40,7 @@ def index_project(project_id):
             **project_json,
             uuid=project_meta.uuid,
             value=project_meta.value,
-            created=project_meta.created
+            created=project_meta.created,
         )
         pub_es.meta["id"] = project_id
         pub_es.save()

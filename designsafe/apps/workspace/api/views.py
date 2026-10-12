@@ -311,18 +311,21 @@ class AppsTrayView(AuthenticatedApiView):
             listType="MINE",
             limit=-1,
         )
-        my_apps = [{
-                    "app_id": app.id,
-                    "app_type": "tapis",
-                    "bundle_id": None,
-                    "bundle_label": None,
-                    "html": None,
-                    "icon": getattr(app.notes, "icon", None),
-                    "is_bundled": False,
-                    "label": getattr(app.notes, "label", app.id),
-                    "shortLabel": getattr(app.notes, "shortLabel", None),
-                    "version": app.version,
-                } for app in apps_listing]
+        my_apps = [
+            {
+                "app_id": app.id,
+                "app_type": "tapis",
+                "bundle_id": None,
+                "bundle_label": None,
+                "html": None,
+                "icon": getattr(app.notes, "icon", None),
+                "is_bundled": False,
+                "label": getattr(app.notes, "label", app.id),
+                "shortLabel": getattr(app.notes, "shortLabel", None),
+                "version": app.version,
+            }
+            for app in apps_listing
+        ]
 
         return my_apps
 
@@ -404,7 +407,8 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
                     bundle_user_guide_link=F("bundle__user_guide_link"),
-                ).values(*values)
+                )
+                .values(*values)
             )
 
             html_apps = list(
@@ -426,7 +430,8 @@ class AppsTrayView(AuthenticatedApiView):
                     bundle_label=F("bundle__label"),
                     bundle_license_type=F("bundle__license_type"),
                     bundle_user_guide_link=F("bundle__user_guide_link"),
-                ).values(*values)
+                )
+                .values(*values)
             )
 
             valid_tapis_apps = self._get_valid_apps(apps_listing, tapis_apps)

@@ -28,21 +28,23 @@ from designsafe.apps.rapid import forms as rapid_forms
 from designsafe.apps.rapid.models import RapidNHEvent, RapidNHEventType
 
 logger = logging.getLogger(__name__)
-metrics_logger = logging.getLogger('metrics')
+metrics_logger = logging.getLogger("metrics")
 
 from designsafe import settings
 
 
 def thumbnail_image(fobj, size=(400, 400)):
     im = Image.open(fobj)
-    im.thumbnail( (400, 400), Image.ANTIALIAS)
+    im.thumbnail((400, 400), Image.ANTIALIAS)
     file_buffer = io.StringIO()
-    im.save(file_buffer, format='JPEG')
+    im.save(file_buffer, format="JPEG")
     return file_buffer
 
 
 def handle_uploaded_image(f, file_id):
-    with open(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', file_id), 'wb+') as destination:
+    with open(
+        os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, "RAPID", "images", file_id), "wb+"
+    ) as destination:
         destination.write(f.getvalue())
 
 
@@ -51,24 +53,26 @@ def rapid_admin_check(user):
 
 
 def index(request):
-    metrics_logger.info('Rapid Index',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_index_view'
-                 })
-    return render(request, 'designsafe/apps/rapid/index.html')
+    metrics_logger.info(
+        "Rapid Index",
+        extra={
+            "user": request.user.username,
+            "sessionId": getattr(request.session, "session_key", ""),
+            "operation": "rapid_index_view",
+        },
+    )
+    return render(request, "designsafe/apps/rapid/index.html")
 
 
 def get_event_types(request):
     s = RapidNHEventType.search()
-    s = s.extra(size=40) # Allows up to 40 event types
+    s = s.extra(size=40)  # Allows up to 40 event types
     try:
-        results  = s.execute(ignore_cache=True)
+        results = s.execute(ignore_cache=True)
     except (TransportError, ConnectionTimeout) as err:
-        if getattr(err, 'status_code', 500) == 404:
+        if getattr(err, "status_code", 500) == 404:
             raise
-        results  = s.execute(ignore_cache=True)
+        results = s.execute(ignore_cache=True)
 
     out = [h.to_dict() for h in results.hits]
     return JsonResponse(out, safe=False)
@@ -90,7 +94,7 @@ def opentopo_data(request):
     Get open topo data for entire world.
     """
     # detail=true allows us to get coordinates for each dataset
-    OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD = 'https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false'
+    OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD = "https://portal.opentopography.org/API/otCatalog?productFormat=PointCloud&minx=-180&miny=-90&maxx=180&maxy=90&detail=true&outputFormat=json&include_federated=false"
     try:
         logger.debug("Requesting opentopo data")
         response = requests.get(OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD)
@@ -99,19 +103,21 @@ def opentopo_data(request):
         return JsonResponse(response_data, safe=False, status=response.status_code)
     except requests.RequestException as e:
         logger.error("Error fetching URL %s: %s,", OPEN_TOPO_REQUEST_FOR_WHOLE_WORLD, e)
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 @user_passes_test(rapid_admin_check)
 @login_required
 def admin(request):
 
-    metrics_logger.info('Rapid Admin index',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_index_view'
-                 })
+    metrics_logger.info(
+        "Rapid Admin index",
+        extra={
+            "user": request.user.username,
+            "sessionId": getattr(request.session, "session_key", ""),
+            "operation": "rapid_admin_index_view",
+        },
+    )
 
     s = RapidNHEvent.search()
     s = s.sort("-event_date")
@@ -119,7 +125,7 @@ def admin(request):
     results = [h for h in s[0:total]]
     context = {}
     context["rapid_events"] = results
-    return render(request, 'designsafe/apps/rapid/admin.html', context)
+    return render(request, "designsafe/apps/rapid/admin.html", context)
 
 
 @user_passes_test(rapid_admin_check)
@@ -130,27 +136,29 @@ def admin_create_event(request):
     try:
         event_types = q.execute(ignore_cache=True)
     except (TransportError, ConnectionTimeout) as err:
-        if getattr(err, 'status_code', 500) == 404:
+        if getattr(err, "status_code", 500) == 404:
             raise
         event_types = q.execute(ignore_cache=True)
 
     options = [(et.name, et.display_name) for et in event_types]
     form.fields["event_type"].choices = options
 
-    metrics_logger.info('Rapid Admin create event',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_create_event'
-                 })
+    metrics_logger.info(
+        "Rapid Admin create event",
+        extra={
+            "user": request.user.username,
+            "sessionId": getattr(request.session, "session_key", ""),
+            "operation": "rapid_admin_create_event",
+        },
+    )
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             ev = RapidNHEvent()
             ev.location_description = form.cleaned_data["location_description"]
             ev.location = {
                 "lat": form.cleaned_data["lat"],
-                "lon":form.cleaned_data["lon"]
+                "lon": form.cleaned_data["lon"],
             }
             ev.event_date = form.cleaned_data["event_date"]
             ev.event_type = form.cleaned_data["event_type"]
@@ -169,19 +177,21 @@ def admin_create_event(request):
             try:
                 ev.save(refresh=True)
             except (TransportError, ConnectionTimeout) as err:
-                if getattr(err, 'status_code', 500) == 404:
+                if getattr(err, "status_code", 500) == 404:
                     raise
                 ev.save(refresh=True)
 
-            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+            return HttpResponseRedirect(reverse("designsafe_rapid:admin"))
         else:
             context = {}
             context["form"] = form
-            return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
+            return render(
+                request, "designsafe/apps/rapid/admin_create_event.html", context
+            )
     else:
         context = {}
         context["form"] = form
-        return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
+        return render(request, "designsafe/apps/rapid/admin_create_event.html", context)
 
 
 @user_passes_test(rapid_admin_check)
@@ -193,12 +203,14 @@ def admin_edit_event(request, event_id):
         logger.exception("")
         return HttpResponseNotFound()
 
-    metrics_logger.info('Rapid Admin edit event',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_edit_event'
-                 })
+    metrics_logger.info(
+        "Rapid Admin edit event",
+        extra={
+            "user": request.user.username,
+            "sessionId": getattr(request.session, "session_key", ""),
+            "operation": "rapid_admin_edit_event",
+        },
+    )
 
     data = event.to_dict()
     data["lat"] = event.location.lat
@@ -208,20 +220,20 @@ def admin_edit_event(request, event_id):
     try:
         event_types = q.execute()
     except (TransportError, ConnectionTimeout) as err:
-        if getattr(err, 'status_code', 500) == 404:
+        if getattr(err, "status_code", 500) == 404:
             raise
         event_types = q.execute(ignore_cache=True)
 
     options = [(et.name, et.display_name) for et in event_types]
     form.fields["event_type"].choices = options
-    form.fields['lat'].initial = event.location["lat"]
-    form.fields['lon'].initial = event.location["lon"]
-    if request.method == 'POST':
+    form.fields["lat"].initial = event.location["lat"]
+    form.fields["lon"].initial = event.location["lon"]
+    if request.method == "POST":
         if form.is_valid():
             event.event_date = form.cleaned_data["event_date"]
             event.location = {
                 "lat": form.cleaned_data["lat"],
-                "lon": form.cleaned_data["lon"]
+                "lon": form.cleaned_data["lon"],
             }
             event.title = form.cleaned_data["title"]
             event.location_description = form.cleaned_data["location_description"]
@@ -238,50 +250,65 @@ def admin_edit_event(request, event_id):
                     logger.exception("")
                     return HttpResponseBadRequest("Hmm, a bad file perhaps?")
                 if old_image_uuid:
-                    os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', old_image_uuid))
+                    os.remove(
+                        os.path.join(
+                            settings.DESIGNSAFE_UPLOAD_PATH,
+                            "RAPID",
+                            "images",
+                            old_image_uuid,
+                        )
+                    )
             try:
                 event.save(refresh=True)
             except (TransportError, ConnectionTimeout) as err:
-                if getattr(err, 'status_code', 500) == 404:
+                if getattr(err, "status_code", 500) == 404:
                     raise
                 event.save(refresh=True)
 
-            return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+            return HttpResponseRedirect(reverse("designsafe_rapid:admin"))
         else:
             context = {}
             context["form"] = form
-            return render(request, 'designsafe/apps/rapid/admin_create_event.html', context)
+            return render(
+                request, "designsafe/apps/rapid/admin_create_event.html", context
+            )
     else:
         context = {}
         context["form"] = form
         context["event"] = event
-        return render(request, 'designsafe/apps/rapid/admin_edit_event.html', context)
+        return render(request, "designsafe/apps/rapid/admin_edit_event.html", context)
 
 
 @user_passes_test(rapid_admin_check)
 @login_required
 def admin_delete_event(request, event_id):
 
-    metrics_logger.info('Rapid Admin delete event',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_delete_event'
-                 })
+    metrics_logger.info(
+        "Rapid Admin delete event",
+        extra={
+            "user": request.user.username,
+            "sessionId": getattr(request.session, "session_key", ""),
+            "operation": "rapid_admin_delete_event",
+        },
+    )
 
     try:
         event = RapidNHEvent.get(event_id)
     except Exception:
         logger.exception("")
         return HttpResponseNotFound()
-    if request.method == 'POST':
+    if request.method == "POST":
         image_uuid = event.main_image_uuid
         try:
-            os.remove(os.path.join(settings.DESIGNSAFE_UPLOAD_PATH, 'RAPID', 'images', image_uuid))
+            os.remove(
+                os.path.join(
+                    settings.DESIGNSAFE_UPLOAD_PATH, "RAPID", "images", image_uuid
+                )
+            )
         except Exception:
             logger.exception("")
         event.delete(refresh=True)
-        return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+        return HttpResponseRedirect(reverse("designsafe_rapid:admin"))
 
 
 @user_passes_test(rapid_admin_check)
@@ -293,10 +320,8 @@ def admin_event_datasets(request, event_id):
         logger.exception("")
         return HttpResponseNotFound()
 
-    context = {
-        "event": event
-    }
-    return render(request, 'designsafe/apps/rapid/admin_event_datasets.html', context)
+    context = {"event": event}
+    return render(request, "designsafe/apps/rapid/admin_event_datasets.html", context)
 
 
 @user_passes_test(rapid_admin_check)
@@ -310,7 +335,7 @@ def admin_event_add_dataset(request, event_id):
 
     form = rapid_forms.RapidNHEventDatasetForm(request.POST or None)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             data = form.cleaned_data
             data["id"] = str(uuid.uuid1())
@@ -318,20 +343,22 @@ def admin_event_add_dataset(request, event_id):
             try:
                 event.save(refresh=True)
             except (TransportError, ConnectionTimeout) as err:
-                if getattr(err, 'status_code', 500) == 404:
+                if getattr(err, "status_code", 500) == 404:
                     raise
                 event.save(refresh=True)
-            
-            context = {
-                "event": event
-            }
 
-            return render(request, 'designsafe/apps/rapid/admin_event_datasets.html', context)
+            context = {"event": event}
+
+            return render(
+                request, "designsafe/apps/rapid/admin_event_datasets.html", context
+            )
     else:
         context = {}
         context["event"] = event
         context["form"] = form
-        return render(request, 'designsafe/apps/rapid/admin_event_add_dataset.html', context)
+        return render(
+            request, "designsafe/apps/rapid/admin_event_add_dataset.html", context
+        )
 
 
 @user_passes_test(rapid_admin_check)
@@ -349,7 +376,7 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
 
     form = rapid_forms.RapidNHEventDatasetForm(request.POST or dataset.to_dict())
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if form.is_valid():
             dataset["doi"] = form.cleaned_data["doi"]
             dataset["title"] = form.cleaned_data["title"]
@@ -360,21 +387,23 @@ def admin_event_edit_dataset(request, event_id, dataset_id):
             try:
                 event.save(refresh=True)
             except (TransportError, ConnectionTimeout) as err:
-                if getattr(err, 'status_code', 500) == 404:
+                if getattr(err, "status_code", 500) == 404:
                     raise
                 event.save(refresh=True)
-            
-            context = {
-                "event": event
-            }
-            
-            return render(request, 'designsafe/apps/rapid/admin_event_datasets.html', context)
+
+            context = {"event": event}
+
+            return render(
+                request, "designsafe/apps/rapid/admin_event_datasets.html", context
+            )
 
     else:
         context = {}
         context["event"] = event
         context["form"] = form
-        return render(request, 'designsafe/apps/rapid/admin_event_edit_dataset.html', context)
+        return render(
+            request, "designsafe/apps/rapid/admin_event_edit_dataset.html", context
+        )
 
 
 @user_passes_test(rapid_admin_check)
@@ -385,42 +414,44 @@ def admin_event_delete_dataset(request, event_id, dataset_id):
     except Exception:
         logger.exception("")
         return HttpResponseNotFound()
-    if request.method == 'POST':
+    if request.method == "POST":
         event.datasets = [ds for ds in event.datasets if ds.id != dataset_id]
         try:
             event.save(refresh=True)
         except (TransportError, ConnectionTimeout) as err:
-            if getattr(err, 'status_code', 500) == 404:
+            if getattr(err, "status_code", 500) == 404:
                 raise
             event.save(refresh=True)
 
-        return HttpResponseRedirect(reverse('designsafe_rapid:admin'))
+        return HttpResponseRedirect(reverse("designsafe_rapid:admin"))
 
 
 @user_passes_test(rapid_admin_check)
 @login_required
 def admin_users(request):
-    return render(request, 'designsafe/apps/rapid/index.html')
+    return render(request, "designsafe/apps/rapid/index.html")
 
 
 @user_passes_test(rapid_admin_check)
 @login_required
 def admin_user_permissions(request):
     """
-        Request payload must be
-        {
-            username: 'bob'
-            action: 'grant' //or 'revoke'
-        }
+    Request payload must be
+    {
+        username: 'bob'
+        action: 'grant' //or 'revoke'
+    }
 
     """
-    metrics_logger.info('Rapid Admin user perms',
-                 extra = {
-                     'user': request.user.username,
-                     'sessionId': getattr(request.session, 'session_key', ''),
-                     'operation': 'rapid_admin_user_perms'
-                 })
-    if request.method=='POST':
+    metrics_logger.info(
+        "Rapid Admin user perms",
+        extra={
+            "user": request.user.username,
+            "sessionId": getattr(request.session, "session_key", ""),
+            "operation": "rapid_admin_user_perms",
+        },
+    )
+    if request.method == "POST":
         payload = json.loads(request.body.decode("utf-8"))
         logger.info(payload)
         username = payload["username"]
@@ -431,12 +462,12 @@ def admin_user_permissions(request):
         if not user:
             return HttpResponseNotFound()
         if action == "grant":
-            g = models.Group.objects.get(name='Rapid Admin')
+            g = models.Group.objects.get(name="Rapid Admin")
             user.groups.add(g)
             user.save()
             return JsonResponse("ok", safe=False)
         elif action == "revoke":
-            g = models.Group.objects.get(name='Rapid Admin')
+            g = models.Group.objects.get(name="Rapid Admin")
             user.groups.remove(g)
             user.save()
             return JsonResponse("ok", safe=False)

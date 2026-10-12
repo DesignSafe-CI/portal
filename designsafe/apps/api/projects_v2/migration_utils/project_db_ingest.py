@@ -179,16 +179,14 @@ def fix_guest_members():
             print(prj.project_id)
             for guest in legacy_guests:
                 already_added = any(
-                    
-                        u
-                        for u in existing_users
-                        if (
-                            u["role"] == "guest"
-                            and u["fname"] == guest["fname"]
-                            and u["lname"] == guest["lname"]
-                            and u.get("email", "") == guest.get("email", "")
-                        )
-                    
+                    u
+                    for u in existing_users
+                    if (
+                        u["role"] == "guest"
+                        and u["fname"] == guest["fname"]
+                        and u["lname"] == guest["lname"]
+                        and u.get("email", "") == guest.get("email", "")
+                    )
                 )
                 if not already_added:
                     prj.value["users"].append(

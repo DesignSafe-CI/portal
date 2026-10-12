@@ -41,9 +41,7 @@ class BaseApiView(View):
             message = e.response.reason
             extra = e.extra
             if status != 404:
-                logger.exception(
-                    "%s: %s", message, e.response.text, extra=extra
-                )
+                logger.exception("%s: %s", message, e.response.text, extra=extra)
             else:
                 logger.info("Error %s", message, exc_info=True, extra=extra)
             return JsonResponse({"message": message}, status=status)
@@ -117,9 +115,7 @@ class AuthenticatedAllowJwtApiView(AuthenticatedApiView):
     @method_decorator(tapis_jwt_login)
     def dispatch(self, request, *args, **kwargs):
         """Returns 401 if user is not authenticated like AuthenticatedApiView but allows JWT access."""
-        return super().dispatch(
-            request, *args, **kwargs
-        )
+        return super().dispatch(request, *args, **kwargs)
 
 
 class LoggerApi(BaseApiView):
@@ -157,55 +153,44 @@ class LoggerApi(BaseApiView):
             },
         )
         return HttpResponse("OK", status=202)
-    
 
 
 class SystemQueueProxyApi(BaseApiView):
-    """"
-    Proxy API for fetching system queue data from TAP. 
+    """ "
+    Proxy API for fetching system queue data from TAP.
     """
 
     def get(self, request, hostname):
         url = f"{settings.TAP_API_STATUS}/{hostname}"
-        
+
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
-            return JsonResponse({
-                "response": response.json(),
-                "status": "success"
-            })
+            return JsonResponse({"response": response.json(), "status": "success"})
         except requests.exceptions.RequestException as e:
-            logger.exception("Proxy API Error") 
-            return JsonResponse({
-                "response": None,
-                "status": "error",
-                "error": str(e)
-            }, status=500)
+            logger.exception("Proxy API Error")
+            return JsonResponse(
+                {"response": None, "status": "error", "error": str(e)}, status=500
+            )
 
-            
 
 class SystemOverviewProxyApi(BaseApiView):
     """
     Proxy API for fetching system monitor overview data from TAP. (Load%, Running, Waiting Jobs)
     """
+
     def get(self, request):
         url = settings.TAP_API_STATUS
 
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
-            return JsonResponse({
-                "response": response.json(),
-                "status": "success"
-            }, status=200)
-             
-        except requests.exceptions.RequestException as e:
-            logger.exception("Proxy API Error") 
-            return JsonResponse({
-                "response": None,
-                "status": "error",
-                "error": str(e)
-            }, status=500)
-        
+            return JsonResponse(
+                {"response": response.json(), "status": "success"}, status=200
+            )
 
+        except requests.exceptions.RequestException as e:
+            logger.exception("Proxy API Error")
+            return JsonResponse(
+                {"response": None, "status": "error", "error": str(e)}, status=500
+            )

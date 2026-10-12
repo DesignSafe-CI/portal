@@ -8,8 +8,8 @@ from django.conf import settings
 from django.db.models import Q
 from django.template import RequestContext
 
-#rom djangocms_text_ckeditor.models import Text
-#from django.utils.text import smart_split
+# rom djangocms_text_ckeditor.models import Text
+# from django.utils.text import smart_split
 from django.test import RequestFactory
 from django.utils import timezone
 from django.utils.encoding import force_str
@@ -18,6 +18,7 @@ from haystack import indexes
 
 logger = logging.getLogger(__name__)
 
+
 def _strip_tags(value):
     """
     Returns the given HTML with all tags stripped.
@@ -25,7 +26,7 @@ def _strip_tags(value):
     whitespace in between replaced tags to make sure words are not erroneously
     concatenated.
     """
-    return re.sub(r'<[^>]*?>', ' ', force_str(value))
+    return re.sub(r"<[^>]*?>", " ", force_str(value))
 
 
 class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
@@ -41,18 +42,25 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         return Title
 
     def index_queryset(self, using=None):
-        queryset = Title.objects.public().filter(
-            Q(page__publication_date__lt=timezone.now()) | Q(page__publication_date__isnull=True),
-            Q(page__publication_end_date__gte=timezone.now()) | Q(page__publication_end_date__isnull=True),
-            Q(redirect__exact='') | Q(redirect__isnull=True)
-        ).select_related('page').distinct()
+        queryset = (
+            Title.objects.public()
+            .filter(
+                Q(page__publication_date__lt=timezone.now())
+                | Q(page__publication_date__isnull=True),
+                Q(page__publication_end_date__gte=timezone.now())
+                | Q(page__publication_end_date__isnull=True),
+                Q(redirect__exact="") | Q(redirect__isnull=True),
+            )
+            .select_related("page")
+            .distinct()
+        )
 
         # queryset = Title.objects.public().all()
         # queryset = Page.objects.published().filter(publisher_is_draft=False).distinct()
         return queryset
 
     def prepare(self, obj):
-        #logger.info(self.prepared_data)
+        # logger.info(self.prepared_data)
         page = obj.page
         rf = RequestFactory()
         request = rf.get("/")
@@ -60,7 +68,7 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
         request.LANGUAGE_CODE = settings.LANGUAGE_CODE
         self.prepared_data = super().prepare(page)
         plugins = CMSPlugin.objects.filter(placeholder__in=obj.page.placeholders.all())
-        text = ''
+        text = ""
         for base_plugin in plugins:
             try:
                 instance, plugin_type = base_plugin.get_plugin_instance()
@@ -71,17 +79,25 @@ class TextPluginIndex(indexes.SearchIndex, indexes.Indexable):
             if instance is None:
                 # this is an empty plugin
                 continue
-            if hasattr(instance, 'search_fields'):
-                text += ' '.join(force_str(strip_tags(getattr(instance, field, ''))) for field in instance.search_fields)
-            if getattr(instance, 'search_fulltext', False) or getattr(plugin_type, 'search_fulltext', False):
-                text += _strip_tags(instance.render_plugin(context=RequestContext(request))) + ' '
-        text += page.get_meta_description() or ''
-        text += ' '
+            if hasattr(instance, "search_fields"):
+                text += " ".join(
+                    force_str(strip_tags(getattr(instance, field, "")))
+                    for field in instance.search_fields
+                )
+            if getattr(instance, "search_fulltext", False) or getattr(
+                plugin_type, "search_fulltext", False
+            ):
+                text += (
+                    _strip_tags(instance.render_plugin(context=RequestContext(request)))
+                    + " "
+                )
+        text += page.get_meta_description() or ""
+        text += " "
         # text += obj.get_meta_keywords() or u''
-        self.prepared_data['text'] = text
+        self.prepared_data["text"] = text
         self.prepared_data["body"] = text
         self.prepared_data["slug"] = obj.slug
-        self.prepared_data["url"] = "https://designsafe-ci.org" + '/' + obj.path
+        self.prepared_data["url"] = "https://designsafe-ci.org" + "/" + obj.path
         self.prepared_data["title"] = obj.title
 
         # self.prepared_data['language'] = self._language

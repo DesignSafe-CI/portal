@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 
 class TASBackend(ModelBackend):
-
     def __init__(self):
         self.tas = TASClient()
 
@@ -32,14 +31,18 @@ class TASBackend(ModelBackend):
             tas_user = None
             if request is not None:
                 self.logger.info(
-                    'Attempting login via TAS for user "%s" from IP "%s"', username, request.META.get("REMOTE_ADDR")
-                    )
-                
+                    'Attempting login via TAS for user "%s" from IP "%s"',
+                    username,
+                    request.META.get("REMOTE_ADDR"),
+                )
+
             else:
                 self.logger.info(
-                    'Attempting login via TAS for user "%s" from IP "%s"', username, "unknown"
-                    )
-                
+                    'Attempting login via TAS for user "%s" from IP "%s"',
+                    username,
+                    "unknown",
+                )
+
             try:
                 # Check if this user is valid on the mail server
                 if self.tas.authenticate(username, password):
@@ -73,8 +76,7 @@ class TASBackend(ModelBackend):
                 except UserModel.DoesNotExist:
                     # Create a user in Django's local database
                     self.logger.info(
-                        'Creating local user record for "%s" from TAS Profile',
-                        username
+                        'Creating local user record for "%s" from TAS Profile', username
                     )
                     user = UserModel.objects.create_user(
                         username=username,
@@ -101,7 +103,6 @@ class TASBackend(ModelBackend):
 
 
 class TapisOAuthBackend(ModelBackend):
-
     def authenticate(self, *args, **kwargs):
         user = None
 

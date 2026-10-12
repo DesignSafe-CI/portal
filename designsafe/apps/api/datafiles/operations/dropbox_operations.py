@@ -23,18 +23,21 @@ def listing(
     else:
         files = client.files_list_folder_continue(nextPageToken)
 
-    listing = [{
-                "system": "dropbox",
-                "type": ("dir" if isinstance(f, FolderMetadata) else "file"),
-                "format": ("folder" if isinstance(f, FolderMetadata) else "raw"),
-                "mimeType": None,
-                "path": f.path_display,
-                "name": f.name,
-                "length": 0 if isinstance(f, FolderMetadata) else f.size,
-                "lastModified": (
-                    None if isinstance(f, FolderMetadata) else f.server_modified
-                ),
-            } for f in files.entries]
+    listing = [
+        {
+            "system": "dropbox",
+            "type": ("dir" if isinstance(f, FolderMetadata) else "file"),
+            "format": ("folder" if isinstance(f, FolderMetadata) else "raw"),
+            "mimeType": None,
+            "path": f.path_display,
+            "name": f.name,
+            "length": 0 if isinstance(f, FolderMetadata) else f.size,
+            "lastModified": (
+                None if isinstance(f, FolderMetadata) else f.server_modified
+            ),
+        }
+        for f in files.entries
+    ]
 
     nextPageToken = files.cursor if files.has_more else None
 
@@ -105,7 +108,6 @@ def copy(
 ):
     src_file_name = os.path.basename(src_path)
     if src_system != dest_system:
-
         from designsafe.apps.api.datafiles.handlers import resource_unconnected_handler
         from designsafe.apps.api.datafiles.operations.transfer_operations import (
             transfer,

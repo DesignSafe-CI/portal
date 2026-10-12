@@ -1,4 +1,5 @@
 """Async tasks related to published work"""
+
 from celery import shared_task
 
 from designsafe.apps.api.publications_v2.operations.fedora_graph_operations import (

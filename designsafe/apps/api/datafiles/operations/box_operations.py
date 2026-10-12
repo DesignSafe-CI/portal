@@ -3,6 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     offset = int(offset)
     limit = int(limit)
@@ -12,51 +13,68 @@ def listing(client, system, path, offset=0, limit=100, *args, **kwargs):
     else:
         folder = client.folder(folder_id=path)
 
-    items = folder.get_items(limit=limit, offset=offset, fields=['name', 'size', 'type', 'modified_at', 'id'])
+    items = folder.get_items(
+        limit=limit, offset=offset, fields=["name", "size", "type", "modified_at", "id"]
+    )
 
-    mapped_items = ({
-        'system': None,
-        'type': 'dir' if f.type == 'folder' else 'file',
-        'format': 'folder' if f.type == 'folder' else 'raw',
-        'mimeType': f.type,
-        'path': f.id,
-        'name': f.name,
-        'length': f.size if f.type != 'web_link' else '',
-        'lastModified': f.modified_at,
+    mapped_items = (
+        {
+            "system": None,
+            "type": "dir" if f.type == "folder" else "file",
+            "format": "folder" if f.type == "folder" else "raw",
+            "mimeType": f.type,
+            "path": f.id,
+            "name": f.name,
+            "length": f.size if f.type != "web_link" else "",
+            "lastModified": f.modified_at,
+        }
+        for f in items
+    )
 
-    } for f in items)
+    return {"listing": list(mapped_items)}
 
-    return {'listing': list(mapped_items)}
 
 def iterate_listing(client, system, path, limit=100):
     offset = 0
 
     while True:
-        page = listing(client, system, path, offset, limit)['listing']
+        page = listing(client, system, path, offset, limit)["listing"]
         yield from page
         offset += limit
         if len(page) != limit:
             # Break out of the loop if the listing is exhausted.
             break
 
+
 def preview(client, system, path, *args, **kwargs):
     embed_url = client.file(path).get_embed_url()
-    return {'href': embed_url, 'fileType': 'box'}
+    return {"href": embed_url, "fileType": "box"}
 
-def copy(client, src_system, src_path, dest_system, dest_path, filetype='file', *args, **kwargs):
+
+def copy(
+    client,
+    src_system,
+    src_path,
+    dest_system,
+    dest_path,
+    filetype="file",
+    *args,
+    **kwargs,
+):
     if not dest_path:
         destination_folder = client.root_folder()
     else:
         destination_folder = client.folder(dest_path)
 
-    if filetype == 'file':
+    if filetype == "file":
         file_to_copy = client.file(src_path)
-    elif filetype == 'dir':
+    elif filetype == "dir":
         file_to_copy = client.folder(src_path)
 
     file_to_copy.copy(destination_folder)
 
     return {}
+
 
 def download_bytes(client, system, path, *args, **kwargs):
     filename = client.file(path).get().name
@@ -64,6 +82,7 @@ def download_bytes(client, system, path, *args, **kwargs):
     result = io.BytesIO(resp)
     result.name = filename
     return result
+
 
 def upload(client, system, path, uploaded_file, *args, **kwargs):
     if not path:
@@ -74,6 +93,7 @@ def upload(client, system, path, uploaded_file, *args, **kwargs):
     folder.upload_stream(uploaded_file, file_name=uploaded_file.name)
     return {}
 
+
 def mkdir(client, system, path, dirname, *args, **kwargs):
     if not path:
         folder = client.root_folder()
@@ -82,7 +102,4 @@ def mkdir(client, system, path, dirname, *args, **kwargs):
 
     newdir = folder.create_subfolder(dirname)
 
-    return {'name': dirname, 'path': newdir.id}
-
-
-
+    return {"name": dirname, "path": newdir.id}

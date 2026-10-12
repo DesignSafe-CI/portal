@@ -1,4 +1,5 @@
 """Data app config."""
+
 import logging
 import socket
 
@@ -18,42 +19,47 @@ class KeepAliveConnection(Urllib3HttpConnection):
     TCP Keepalive connection.
     Solution from Github issue: https://github.com/elastic/elasticsearch-py/issues/966#issuecomment-819823632
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not (settings.DEBUG or getattr(settings, "TEST", False)):
-            self.pool.conn_kw['socket_options'] = HTTPConnection.default_socket_options + [
-                (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
-                (socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60),
-                (socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 30),
-                (socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3),
-            ]
+            self.pool.conn_kw["socket_options"] = (
+                HTTPConnection.default_socket_options
+                + [
+                    (socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1),
+                    (socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60),
+                    (socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 30),
+                    (socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3),
+                ]
+            )
 
 
 class DataConfig(AppConfig):
     """Data config."""
 
-    name = 'designsafe.apps.data'
-    verbose_name = 'Designsafe Data'
+    name = "designsafe.apps.data"
+    verbose_name = "Designsafe Data"
 
     def ready(self):  # pylint:disable=too-many-locals
         """Run stuff when app is ready."""
-        enable_sniffing = (settings.DESIGNSAFE_ENVIRONMENT != 'dev')
+        enable_sniffing = settings.DESIGNSAFE_ENVIRONMENT != "dev"
         try:
-            connections.create_connection('default',
-                                          hosts=settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]['hosts'],
-                                          http_auth=settings.ES_AUTH,
-                                          max_retries=3,
-                                          retry_on_timeout=True,
-                                          connection_class=KeepAliveConnection,
-                                          use_ssl=enable_sniffing,
-                                          # sniff_on_start=enable_sniffing,
-                                          # refresh nodes after a node fails to respond
-                                          # sniff_on_connection_fail=enable_sniffing,
-                                          # and also every 60 seconds
-                                          # sniffer_timeout=60
-                                          )
+            connections.create_connection(
+                "default",
+                hosts=settings.ES_CONNECTIONS[settings.DESIGNSAFE_ENVIRONMENT]["hosts"],
+                http_auth=settings.ES_AUTH,
+                max_retries=3,
+                retry_on_timeout=True,
+                connection_class=KeepAliveConnection,
+                use_ssl=enable_sniffing,
+                # sniff_on_start=enable_sniffing,
+                # refresh nodes after a node fails to respond
+                # sniff_on_connection_fail=enable_sniffing,
+                # and also every 60 seconds
+                # sniffer_timeout=60
+            )
         except AttributeError as exc:
-            logger.error('Missing ElasticSearch config. %s', exc)
+            logger.error("Missing ElasticSearch config. %s", exc)
             raise
         # We need to import every class so we can later setup the reverse
         # reverse relations.
@@ -92,5 +98,6 @@ class DataConfig(AppConfig):
             Simulation,
             SimulationProject,
         )
+
         set_lazy_rels()
         super().ready()

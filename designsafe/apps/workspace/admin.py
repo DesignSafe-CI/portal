@@ -1,5 +1,4 @@
-"""Admin layout for Tools & Applications workspace models.
-"""
+"""Admin layout for Tools & Applications workspace models."""
 
 from django.contrib import admin
 from django.db import models
@@ -55,7 +54,10 @@ class AppVariantInline(admin.StackedInline):
                 "HTML or External app",
                 {
                     "classes": ["collapse"],
-                    "fields": ["external_href", "html",],
+                    "fields": [
+                        "external_href",
+                        "html",
+                    ],
                     "description": "Defines link on CMS app page and display content in Workspace",
                 },
             ),
