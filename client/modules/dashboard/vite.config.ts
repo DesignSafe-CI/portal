@@ -14,6 +14,15 @@ export default defineConfig({
   // },
 
   test: {
+    deps: {
+      optimizer: {
+        web: {
+          enabled: true,
+          // Ant Design X imports antd/es internals that need Vite's resolver.
+          include: ['antd', '@ant-design/x'],
+        },
+      },
+    },
     globals: true,
     cache: { dir: '../../node_modules/.vitest' },
     passWithNoTests: true,
