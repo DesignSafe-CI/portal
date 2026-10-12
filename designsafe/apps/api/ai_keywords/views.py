@@ -6,9 +6,9 @@ import logging
 from chromadb import HttpClient, Settings
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
-from langchain.prompts import PromptTemplate
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langgraph.graph import START, StateGraph
 from typing_extensions import TypedDict
@@ -51,7 +51,7 @@ class KeywordsView(BaseApiView):
             resp_list = _parse_keywords_response(resp["answer"])
         except (AttributeError, TypeError, ValueError):
             logger.exception("Error decoding answer")
-            logger.debug("Raw answer: %s", resp['answer'])
+            logger.debug("Raw answer: %s", resp["answer"])
             resp_list = []
 
         return JsonResponse({"response": resp_list})

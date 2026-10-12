@@ -55,7 +55,7 @@ Guidelines:
 - Cite ALL relevant sources using the provide URL.
 """
 
-agent = Agent(rag_model, instrument=False, instructions=DOCS_RAG_INSTRUCTIONS)
+agent = Agent(rag_model, instructions=DOCS_RAG_INSTRUCTIONS)
 
 
 # @agent.tool_plain

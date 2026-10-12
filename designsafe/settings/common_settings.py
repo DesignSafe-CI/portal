@@ -203,8 +203,13 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.environ.get('WS_BACKEND_HOST'),
-                       os.environ.get('WS_BACKEND_PORT'))],
+            "hosts": [
+                {
+                    "host": os.environ.get("WS_BACKEND_HOST"),
+                    "port": int(os.environ.get("WS_BACKEND_PORT", "6379")),
+                    "socket_timeout": None,
+                },
+            ],
         },
     },
 }

@@ -174,9 +174,9 @@ See the [DesignSafe Styles Reference][7] for style reference and custom CSS docu
 
 ### Updating Python dependencies
 
-This project uses [Python Poetry](https://python-poetry.org/docs/) to manage dependencies. To add a new dependency:
+This project uses [uv](https://docs.astral.sh/uv/) ([installation link](https://docs.astral.sh/uv/getting-started/installation/)) to manage dependencies. To add a new dependency:
 
-1. Run `poetry add $NEW_DEPENDENCY`.
+1. Run `uv add $NEW_DEPENDENCY`.
 2. Rebuild the dev image with `make build-dev`
 
 ## Testing

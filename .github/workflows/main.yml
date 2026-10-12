@@ -3,134 +3,136 @@ name: CI
 # Controls when the action will run. Triggers the workflow on pushes to main or on pull request events
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ '**' ]
+    branches: ["**"]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   Server_Side_Unit_Tests:
     runs-on: ubuntu-22.04
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Fetch base and install Poetry
-      run: |
-        git fetch origin ${{github.base_ref}}
-        pipx install poetry~=2.1.3
+      - name: Setup uv and Python
+        uses: astral-sh/setup-uv@v10.1.0
+        with:
+          version: 0.12.15
+          python-version: "3.12"
+          enable-cache: true
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-        cache: 'poetry'
+      - name: Copy base.html for use in unit tests
+        run: |
+          cp --force designsafe/templates/base.j2 designsafe/templates/base.html
 
-    - name: Copy base.html for use in unit tests
-      run: |
-        cp --force designsafe/templates/base.j2 designsafe/templates/base.html
+      - name: Ensure react-assets template exists for use in unit tests
+        run: |
+          touch designsafe/templates/base.j2 designsafe/templates/react-assets.html
 
-    - name: Ensure react-assets template exists for use in unit tests
-      run: |
-        touch designsafe/templates/base.j2 designsafe/templates/react-assets.html
+      - name: Install Python packages
+        run: uv sync --locked --dev
 
-    - run: |
-        poetry sync
-
-    - name: Run Server-side unit tests and generate coverage report
-      run: |
-        poetry run pytest --cov-config=.coveragerc --cov=designsafe --cov-report=xml -ra designsafe
+      - name: Run Server-side unit tests and generate coverage report
+        run: |
+          uv run --no-sync python -m pytest \
+            -c pytest.ini \
+            --cov-config=.coveragerc \
+            --cov=designsafe \
+            --cov-report=xml \
+            -ra designsafe
 
   Server_Side_Linting:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Fetch base and install Poetry
-      run: |
-        git fetch origin ${{github.base_ref}}
-        pipx install poetry~=2.1.3
+      - name: Fetch base branch
+        env:
+          BASE_BRANCH: ${{ github.base_ref || 'main' }}
+        run: |
+          git fetch origin \
+            "$BASE_BRANCH:refs/remotes/origin/$BASE_BRANCH"
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-        cache: 'poetry'
+      - name: Setup uv and Python
+        uses: astral-sh/setup-uv@v10.1.0
+        with:
+          version: 0.12.15
+          python-version: "3.12"
+          enable-cache: true
 
-    - name: Install Python Packages
-      run:  |
-        poetry sync
+      - name: Install Python packages
+        run: uv sync --locked --dev
 
-    - name: Run Server-side linting with Ruff
-      run: |
-        poetry run ruff check designsafe/apps
+      - name: Run Server-side linting with Ruff
+        run: |
+          uv run ruff check designsafe/apps
 
-    - name: Run Server-side formatting with Ruff
-      # Only run on new files for now-- for all changes, filter is ACMRTUXB
-      # Check manage.py to prevent a crash if no files are selected.
-      run: |
-        poetry run ruff format $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py --check
+      - name: Run Server-side formatting with Ruff
+        # Only run on new files for now-- for all changes, filter is ACMRTUXB
+        # Check manage.py to prevent a crash if no files are selected.
+        run: |
+          uv run ruff format $(git diff --name-only --diff-filter=A origin/${{github.base_ref}} | grep -E "(.py$)") manage.py --check
 
   Client_Side_Unit_Tests:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v4
-      with:
-        node-version: 16.x
-        cache: npm
+      - uses: actions/checkout@v4
+      - name: Setup Node.js for use with actions
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16.x
+          cache: npm
 
-    - run: npm ci
-    - run: npm run test
+      - run: npm ci
+      - run: npm run test
 
   React_NX_unit_tests:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: npm
+      - name: Setup Node.js for use with actions
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
-    - run: npm ci
-      working-directory: client
+      - run: npm ci
+        working-directory: client
 
-    - uses: nrwl/nx-set-shas@v3
+      - uses: nrwl/nx-set-shas@v3
 
-    # Test/build any apps and libs that have been impacted by the diff.
-    - run: npx nx affected --target=test --parallel=3 --ci --code-coverage
-      working-directory: client
-    - run: npx nx affected --target=build --parallel=3
-      working-directory: client
+      # Test/build any apps and libs that have been impacted by the diff.
+      - run: npx nx affected --target=test --parallel=3 --ci --code-coverage
+        working-directory: client
+      - run: npx nx affected --target=build --parallel=3
+        working-directory: client
 
   React_NX_linting:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: npm
-        cache-dependency-path: client/package-lock.json
+      - name: Setup Node.js for use with actions
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
 
-    - run: npm ci
-      working-directory: client
+      - run: npm ci
+        working-directory: client
 
-    - uses: nrwl/nx-set-shas@v3
+      - uses: nrwl/nx-set-shas@v3
 
-    # Check linting/formatting of workspace files.
-    - run: npx nx format:check
-      working-directory: client
+      # Check linting/formatting of workspace files.
+      - run: npx nx format:check
+        working-directory: client
 
-    # Lint any apps and libs that have been impacted by the diff.
-    - run: npx nx affected --target=lint --parallel=3
-      working-directory: client
+      # Lint any apps and libs that have been impacted by the diff.
+      - run: npx nx affected --target=lint --parallel=3
+        working-directory: client
