@@ -50,6 +50,17 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                 },
             )
 
+        if message_type == "ping": # used for liveness checks
+            await self.send(
+                json.dumps(
+                    {
+                        "type": "chat.ping",
+                        "key": f"ping-{key}",
+                        "payload": "pong",
+                    }
+                )
+            )
+
     async def chat_message(self, event):
         """Handle receipt of a chat message."""
 
