@@ -1,5 +1,4 @@
-"""Webhooks URLs
-"""
+"""Webhooks URLs"""
 
 from django.urls import path
 

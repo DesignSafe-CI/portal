@@ -37,7 +37,6 @@ def check_public_availability(username):
 
 
 class UsageView(SecureMixin, View):
-
     def get(self, request):
         current_user = request.user
         q = (
@@ -56,7 +55,6 @@ class UsageView(SecureMixin, View):
 
 
 class AuthenticatedView(View):
-
     def get(self, request):
         if request.user.is_authenticated:
             u = request.user
@@ -77,7 +75,6 @@ class AuthenticatedView(View):
 
 
 class SearchView(View):
-
     def get(self, request):
         resp_fields = ["first_name", "last_name", "email", "username"]
         model = get_user_model()
@@ -146,8 +143,9 @@ class ProjectUserView(BaseApiView):
             raise ApiException(message="Authentication required", status=401)
 
         username_query = request.GET.get("q")
-        user_match = get_user_model().objects.filter(is_active=True,
-                                                     username__iexact=username_query)
+        user_match = get_user_model().objects.filter(
+            is_active=True, username__iexact=username_query
+        )
         user_resp = [
             {
                 "fname": u.first_name,
@@ -164,7 +162,6 @@ class ProjectUserView(BaseApiView):
 
 
 class PublicView(View):
-
     def get(self, request):
         model = get_user_model()
         nl = json.loads(request.GET.get("usernames"))

@@ -113,12 +113,10 @@ def migrate_publication_metadata(project_id):
         latest_version = 1
 
     base_meta_node = next(
-        
-            node
-            for node in pub_tree.nodes
-            if pub_tree.nodes[node]["name"] == constants.PROJECT
-            and pub_tree.nodes[node].get("version", latest_version) == latest_version
-        
+        node
+        for node in pub_tree.nodes
+        if pub_tree.nodes[node]["name"] == constants.PROJECT
+        and pub_tree.nodes[node].get("version", latest_version) == latest_version
     )
     base_meta_value = pub_tree.nodes[base_meta_node]["value"]
     pub.value = base_meta_value

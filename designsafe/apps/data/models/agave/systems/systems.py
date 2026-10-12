@@ -6,29 +6,25 @@ logger = logging.getLogger(__name__)
 
 
 class BaseSystemResource(BaseAgaveResource):
-
     def __init__(self, agave_client, **kwargs):
         super().__init__(agave_client, **kwargs)
 
     @property
     def request_body(self):
         system_body = self._wrapped.copy()
-        system_body.pop('lastModified')
-        system_body.pop('revision')
-        system_body.pop('_links')
+        system_body.pop("lastModified")
+        system_body.pop("revision")
+        system_body.pop("_links")
         return system_body
 
     def add_role(self, username, role):
-        role_body = {
-            'username': username,
-            'role': role
-        }
-        logger.info('Granting system role on %s: %s', self.id, role_body)
+        role_body = {"username": username, "role": role}
+        logger.info("Granting system role on %s: %s", self.id, role_body)
         self._agave.systems.updateRole(systemId=self.id, body=role_body)
         return self
 
     def remove_role(self, username):
-        logger.info('Revoking system roles on %s for user %s', self.id, username)
+        logger.info("Revoking system roles on %s for user %s", self.id, username)
         self._agave.systems.deleteRoleForUser(systemId=self.id, username=username)
         return self
 

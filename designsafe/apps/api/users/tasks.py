@@ -1,4 +1,4 @@
-""" Celery tasks for users api """
+"""Celery tasks for users api"""
 
 from celery import shared_task
 

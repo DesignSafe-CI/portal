@@ -13,24 +13,26 @@ LOGGER = logging.getLogger(__name__)
 
 
 def index(request):
-    return render(request, 'designsafe/apps/notifications/index.html')
+    return render(request, "designsafe/apps/notifications/index.html")
 
 
 def get_number_unread_notifications(request):
     # nondeleted = JobNotification.objects.filter(deleted=False, user=str(request.user)).count()
-    unread = Notification.objects.filter(deleted=False, read=False, user=str(request.user)).count()
+    unread = Notification.objects.filter(
+        deleted=False, read=False, user=str(request.user)
+    ).count()
     # LOGGER.info('nondeleted: {}'.format(nondeleted))
-    LOGGER.info('unread: %s', unread)
+    LOGGER.info("unread: %s", unread)
     return unread
 
 
 def notifications(request):
-    items = Notification.objects.filter(
-        deleted=False,
-        user=str(request.user)).order_by('-datetime')
+    items = Notification.objects.filter(deleted=False, user=str(request.user)).order_by(
+        "-datetime"
+    )
     legacy_items = LegacyNotification.objects.filter(
-        deleted=False,
-        user=str(request.user)).order_by('-notification_time')
+        deleted=False, user=str(request.user)
+    ).order_by("-notification_time")
     unread = 0
     for i in items:
         if not i.read:
@@ -38,17 +40,17 @@ def notifications(request):
             i.mark_read()
     items = list(chain(items, legacy_items))
     try:
-        items = serializers.serialize('json', items)
+        items = serializers.serialize("json", items)
     except TypeError:
         items = []
-    return HttpResponse(items, content_type='application/json')
+    return HttpResponse(items, content_type="application/json")
 
 
 def delete_notification(request):
     body = json.loads(request.body)
-    pk = body['pk']
-    LOGGER.info('pk: %s', pk)
-    if pk == 'all':
+    pk = body["pk"]
+    LOGGER.info("pk: %s", pk)
+    if pk == "all":
         items = Notification.objects.filter(deleted=False, user=str(request.user))
         for i in items:
             i.mark_deleted()
@@ -56,4 +58,4 @@ def delete_notification(request):
         x = Notification.objects.get(pk=pk)
         x.mark_deleted()
 
-    return HttpResponse('OK')
+    return HttpResponse("OK")

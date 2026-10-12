@@ -323,11 +323,9 @@ def generate_manifest_other(project_id, version=1):
 
     pub_tree = nx.node_link_graph(pub.tree)
     version_node = next(
-        
-            node
-            for node in pub_tree.successors("NODE_ROOT")
-            if pub_tree.nodes[node]["version"] == version
-        
+        node
+        for node in pub_tree.successors("NODE_ROOT")
+        if pub_tree.nodes[node]["version"] == version
     )
 
     version_meta = pub_tree.nodes[version_node]
