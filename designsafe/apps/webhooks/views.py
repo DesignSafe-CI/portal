@@ -127,9 +127,9 @@ class JobsWebhookView(BaseApiView):
                 job_uuid, username, disallowed_states=non_terminal_states
             )
             if job_details:
-                event_data[Notification.EXTRA][
-                    "remoteOutcome"
-                ] = job_details.remoteOutcome
+                event_data[Notification.EXTRA]["remoteOutcome"] = (
+                    job_details.remoteOutcome
+                )
                 event_data[Notification.EXTRA]["status"] = job_details.status
 
                 agave_indexer.apply_async(

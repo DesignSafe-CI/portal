@@ -3,6 +3,7 @@
 .. module:: designsafe.apps.nco.views
     :synopsis: Views for NCO app.
 """
+
 import logging
 
 from django.views.generic.base import TemplateView

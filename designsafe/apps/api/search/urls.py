@@ -5,5 +5,5 @@ from designsafe.apps.api.search.views import SearchView
 """
 """
 urlpatterns = [
-    url("", SearchView.as_view(), name='search'),
+    url("", SearchView.as_view(), name="search"),
 ]

@@ -1,5 +1,4 @@
-"""Auth models
-"""
+"""Auth models"""
 
 import logging
 import time
@@ -14,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 TOKEN_EXPIRY_THRESHOLD = 600
 
-tenant_id = urlparse(settings.TAPIS_TENANT_BASEURL).hostname.split(
-            "."
-        )[0]
+tenant_id = urlparse(settings.TAPIS_TENANT_BASEURL).hostname.split(".")[0]
 
 
 class TapisOAuthToken(models.Model):

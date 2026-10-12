@@ -6,15 +6,23 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 logger = logging.getLogger(__name__)
 
 
-
 class RapidNHEventForm(forms.Form):
-
     event_date = forms.DateField(label="Date of hazard event", required=True)
     title = forms.CharField(label="Event Title")
     event_type = forms.ChoiceField(label="Hazard Event Type", required=True)
-    location_description = forms.CharField(label="Brief location description", required=True)
-    lat = forms.FloatField(validators=[MinValueValidator(-90), MaxValueValidator(90)], label="Latitude", required=True)
-    lon = forms.FloatField(validators=[MinValueValidator(-180), MaxValueValidator(180)],label="Longitude", required=True)
+    location_description = forms.CharField(
+        label="Brief location description", required=True
+    )
+    lat = forms.FloatField(
+        validators=[MinValueValidator(-90), MaxValueValidator(90)],
+        label="Latitude",
+        required=True,
+    )
+    lon = forms.FloatField(
+        validators=[MinValueValidator(-180), MaxValueValidator(180)],
+        label="Longitude",
+        required=True,
+    )
     image = forms.FileField(label="Banner image for detail", required=False)
 
     # def clean(self):

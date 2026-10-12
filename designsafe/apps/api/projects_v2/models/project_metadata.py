@@ -1,4 +1,5 @@
 """Models for representing project metadata"""
+
 import uuid
 
 from django.conf import settings

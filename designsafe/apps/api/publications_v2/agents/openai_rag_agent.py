@@ -59,13 +59,15 @@ agent = Agent(
         "ALWAYS include links verbatim. Do not truncate them or alter their formatting. ",
         # "ALWAYS explain in detail why each referenced publication was chosen. ",
         "DO NOT use the legacyPath attribute on files to construct URLs. ",
-        ("If the question relates to attributes of a publication, DO NOT discuss publications that aren't relevant to those attributes."
-        """Construct keywords according to the following guidelines:
+        (
+            "If the question relates to attributes of a publication, DO NOT discuss publications that aren't relevant to those attributes."
+            """Construct keywords according to the following guidelines:
             1. Carefully read the entire query to understand its core topics and main ideas.
             2. Extract up to 6 relevant keywords or key phrases that accurately reflect the key concepts discussed in the query. ONLY use words or phrases directly mentioned in the query.
             3. If any keywords of key phrases are plural, add the singular form. If the keyword contains a number, include a version where the number is written out. For example if the keyword contains the character '1', write it out as 'one' and add it to the list.
             4. Key phrases can contain a maximum of 2 words separated by spaces.
-            5. Avoid common stop words like "the", "and", or "with". Also, avoid overly generic terms unless they are critical to the topic."""),
+            5. Avoid common stop words like "the", "and", or "with". Also, avoid overly generic terms unless they are critical to the topic."""
+        ),
         "Provide the full result link at the end so that users can access it to explore the full set of DesignSafe publications.",
     ),
 )
@@ -205,9 +207,7 @@ async def vector_lookup(
         dois = []
         for node in project_tree.successors("NODE_ROOT"):
             doi_entity = project_tree.nodes[node]
-            null_keys = [
-                k for k in doi_entity["value"] if not doi_entity["value"][k]
-            ]
+            null_keys = [k for k in doi_entity["value"] if not doi_entity["value"][k]]
             for null_key in null_keys:
                 del doi_entity["value"][null_key]
             dois += doi_entity["value"].get("dois", [])

@@ -13,13 +13,16 @@ logger = logging.getLevelName(__name__)
 
 class JSONResponseMixin:
     """
-    View mixin to return a JSON response. 
+    View mixin to return a JSON response.
     We're building one so we can put any extra code in here.
     """
+
     def render_to_json_response(self, context, **response_kwargs):
-        response_kwargs['status'] = response_kwargs.get('status', 200)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder), **response_kwargs)
+        response_kwargs["status"] = response_kwargs.get("status", 200)
+        response_kwargs["content_type"] = "application/json"
+        return HttpResponse(
+            json.dumps(context, cls=DjangoJSONEncoder), **response_kwargs
+        )
 
 
 class SecureMixin:
@@ -30,7 +33,8 @@ class SecureMixin:
     Either way the request will be correctly authenticated. This way we can easily
     use the same API endpoints and put them behind WSO2.
     """
+
     @method_decorator(agave_jwt_login)
-    @method_decorator(login_required, name='dispatch')
+    @method_decorator(login_required, name="dispatch")
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)

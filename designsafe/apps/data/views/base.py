@@ -43,35 +43,41 @@ def get_google_scholar_context(project_id):
     """Get context info for Google Scholar/Datacite"""
     pub = Publication.objects.get(project_id=project_id)
     pub_tree = nx.node_link_graph(pub.tree)
-    published_ents = [node for node in pub_tree.successors("NODE_ROOT") 
-                    if not pub_tree.nodes[node]["value"].get("tombstoned")]
-
+    published_ents = [
+        node
+        for node in pub_tree.successors("NODE_ROOT")
+        if not pub_tree.nodes[node]["value"].get("tombstoned")
+    ]
 
     scholar_meta = {}
     scholar_meta["keywords"] = ", ".join(pub.value.get("keywords", []))
     scholar_meta["citation_keywords"] = pub.value.get("keywords", [])
     scholar_meta["entities"] = []
 
-    pi_members = [u for u in pub.value.get("users", []) if u.get("role") in ("pi", "co_pi")]
-    dataset_creators = [{
-        "@type": "Person",
-        "givenName": u.get("fname"),
-        "familyName": u.get("lname"),
-        "name": f"{u.get('fname')} {u.get('lname')}"
-
-    } for u in pi_members]
+    pi_members = [
+        u for u in pub.value.get("users", []) if u.get("role") in ("pi", "co_pi")
+    ]
+    dataset_creators = [
+        {
+            "@type": "Person",
+            "givenName": u.get("fname"),
+            "familyName": u.get("lname"),
+            "name": f"{u.get('fname')} {u.get('lname')}",
+        }
+        for u in pi_members
+    ]
 
     dataset_json_ld = {
-       "@context": "https://schema.org/",
-       "@type": "Dataset",
-       "name": pub.value.get("title"),
-       "description": pub.value.get("description"),
-       "url": f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{pub.project_id}",
-       "isAccessibleForFree" : True,
-       "license": LICENSE_MAP.get(pub.value.get("license"), pub.value.get("license")),
-       "keywords": pub.value.get("keywords"),
-       "creator": dataset_creators,
-       "hasPart": []
+        "@context": "https://schema.org/",
+        "@type": "Dataset",
+        "name": pub.value.get("title"),
+        "description": pub.value.get("description"),
+        "url": f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{pub.project_id}",
+        "isAccessibleForFree": True,
+        "license": LICENSE_MAP.get(pub.value.get("license"), pub.value.get("license")),
+        "keywords": pub.value.get("keywords"),
+        "creator": dataset_creators,
+        "hasPart": [],
     }
 
     for ent in published_ents:
@@ -81,55 +87,57 @@ def get_google_scholar_context(project_id):
             "description": ent_meta["value"].get("description"),
             "doi": next(iter(ent_meta["value"].get("dois", [])), None),
             "authors": ent_meta["value"].get("authors", []),
-            "publication_date": ent_meta["publicationDate"]
+            "publication_date": ent_meta["publicationDate"],
         }
         scholar_meta["entities"].append(entity_scholar_data)
-
 
         part_json_ld = {"@type": "Dataset"}
         part_json_ld["name"] = ent_meta["value"].get("title")
         part_json_ld["description"] = ent_meta["value"].get("description")
         part_json_ld["keywords"] = ent_meta["value"].get("keywords")
         part_json_ld["version"] = ent_meta.get("version")
-        part_json_ld["license"] = LICENSE_MAP.get(pub.value.get("license"), pub.value.get("license"))
-        part_json_ld["url"] = f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{pub.project_id}/#detail-f{ent_meta['uuid']}"
+        part_json_ld["license"] = LICENSE_MAP.get(
+            pub.value.get("license"), pub.value.get("license")
+        )
+        part_json_ld["url"] = (
+            f"https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{pub.project_id}/#detail-f{ent_meta['uuid']}"
+        )
         part_json_ld["funder"] = []
         for funder in ent_meta["value"].get("fundingReferences", []):
-            part_json_ld["funder"].append({
-                "@type": "Organization",
-                "name": funder.get("name")
-            })
+            part_json_ld["funder"].append(
+                {"@type": "Organization", "name": funder.get("name")}
+            )
 
         part_json_ld["creator"] = []
         institutions = set()
         for author in ent_meta["value"].get("authors", []):
-            part_json_ld["creator"].append({
-                "@type": "Person",
-                "givenName": author.get("fname"),
-                "familyName": author.get("lname"),
-                "name": f"{author.get('fname')} {author.get('lname')}"
-            })
+            part_json_ld["creator"].append(
+                {
+                    "@type": "Person",
+                    "givenName": author.get("fname"),
+                    "familyName": author.get("lname"),
+                    "name": f"{author.get('fname')} {author.get('lname')}",
+                }
+            )
             institutions.add(author.get("inst"))
 
         for inst in institutions:
-            part_json_ld["creator"].append({
-                "@type": "Organization",
-                "name": inst
-            })
+            part_json_ld["creator"].append({"@type": "Organization", "name": inst})
         if ent_meta["value"].get("dois"):
-            part_json_ld["citation"] = f"https://doi.org/{ent_meta["value"].get("dois")[0]}"
+            part_json_ld["citation"] = (
+                f"https://doi.org/{ent_meta['value'].get('dois')[0]}"
+            )
 
         dataset_json_ld["hasPart"].append(part_json_ld)
-
 
     pub_title = pub.value["title"]
     return scholar_meta, [dataset_json_ld], pub_title
 
 
-class  BasePublicTemplate(TemplateView):
+class BasePublicTemplate(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['unreadNotifications'] = 0
+        context["unreadNotifications"] = 0
         return context
 
 
@@ -143,8 +151,8 @@ class DataDepotView(BasePublicTemplate):
         path = request.get_full_path()
         resolved_login_url = resolve_url(settings.LOGIN_URL)
         from django.contrib.auth.views import redirect_to_login
-        return redirect_to_login(
-            path, resolved_login_url)
+
+        return redirect_to_login(path, resolved_login_url)
 
     @profile
     @method_decorator(ensure_csrf_cookie)
@@ -156,27 +164,31 @@ class DataDepotView(BasePublicTemplate):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        logger.info('Get context Data')
+        logger.info("Get context Data")
 
         if self.request.user.is_authenticated:
-            context['angular_init'] = json.dumps({
-                'authenticated': True,
-            })
+            context["angular_init"] = json.dumps(
+                {
+                    "authenticated": True,
+                }
+            )
         else:
-            context['angular_init'] = json.dumps({
-                'authenticated': False,
-            })
+            context["angular_init"] = json.dumps(
+                {
+                    "authenticated": False,
+                }
+            )
 
         return context
 
-class DataBrowserTestView(BasePublicTemplate):
 
+class DataBrowserTestView(BasePublicTemplate):
     def login_rediect(self, request):
         path = request.get_full_path()
         resolved_login_url = resolve_url(settings.LOGIN_URL)
         from django.contrib.auth.views import redirect_to_login
-        return redirect_to_login(
-            path, resolved_login_url)
+
+        return redirect_to_login(path, resolved_login_url)
 
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
@@ -187,22 +199,22 @@ class DataBrowserTestView(BasePublicTemplate):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        logger.info('Get context Data')
+        logger.info("Get context Data")
 
-        context['unreadNotifications'] = get_number_unread_notifications(self.request)
+        context["unreadNotifications"] = get_number_unread_notifications(self.request)
 
-        resource = kwargs.pop('resource', None)
+        resource = kwargs.pop("resource", None)
         if resource is None:
             if self.request.user.is_authenticated:
-                resource = 'agave'
+                resource = "agave"
             else:
-                resource = 'public'
+                resource = "public"
 
-        fm_cls = lookup_file_manager(resource) # noqa
+        fm_cls = lookup_file_manager(resource)  # noqa
         if fm_cls is None:
-            raise Http404('Unknown resource')
+            raise Http404("Unknown resource")
 
-        file_path = kwargs.pop('file_path', None)
+        file_path = kwargs.pop("file_path", None)
         try:
             fm = fm_cls(self.request.user)
             if not fm.is_search(file_path):
@@ -215,69 +227,73 @@ class DataBrowserTestView(BasePublicTemplate):
 
         except ApiException as e:
             fm = None
-            action_url = e.extra.get('action_url', None)
-            action_label = e.extra.get('action_label', None)
+            action_url = e.extra.get("action_url", None)
+            action_label = e.extra.get("action_label", None)
             if action_url is None and e.response.status_code == 403:
-                action_url = '{}?next={}'.format(reverse('login'), self.request.path)
-                action_label = 'Log in'
+                action_url = "{}?next={}".format(reverse("login"), self.request.path)
+                action_label = "Log in"
             listing = {
-                'source': resource,
-                'id': file_path,
-                '_error': {
-                    'status': e.response.status_code,
-                    'message': e.response.reason,
-                    'action_url': action_url,
-                    'action_label': action_label
+                "source": resource,
+                "id": file_path,
+                "_error": {
+                    "status": e.response.status_code,
+                    "message": e.response.reason,
+                    "action_url": action_url,
+                    "action_label": action_label,
                 },
             }
 
-        sources_api = SourcesApi() # noqa
+        sources_api = SourcesApi()  # noqa
         source_id = resource
-        if source_id == 'agave':
+        if source_id == "agave":
             if fm is not None and fm.is_shared(file_path):
-                source_id = '$share'
+                source_id = "$share"
             else:
-                source_id = 'mydata'
+                source_id = "mydata"
         current_source = sources_api.get(source_id)
         sources_list = sources_api.list()
-        context['angular_init'] = json.dumps({
-            'currentSource': current_source,
-            'sources': sources_list,
-            'listing': listing,
-            'state': {
-                'search': fm.is_search(file_path) if fm is not None else False
+        context["angular_init"] = json.dumps(
+            {
+                "currentSource": current_source,
+                "sources": sources_list,
+                "listing": listing,
+                "state": {
+                    "search": fm.is_search(file_path) if fm is not None else False
+                },
             }
-        })
+        )
         return context
 
 
 class FileMediaView(View):
     systems_mappings = {
-        'designsafe.storage.default': 'shared',
-        'designsafe.storage.published': 'published',
-        'designsafe.storage.community': 'community',
-        'nees.public': 'public/projects'
+        "designsafe.storage.default": "shared",
+        "designsafe.storage.published": "published",
+        "designsafe.storage.community": "community",
+        "nees.public": "public/projects",
     }
-    corral = '/corral-repl/tacc/NHERI/'
+    corral = "/corral-repl/tacc/NHERI/"
 
     def get_system_dirname(self, system_id):
         dirname = self.systems_mappings.get(system_id)
-        if dirname is None and system_id.startswith('project-'):
-            prjuuid = system_id.replace('project-', '')
-            dirname = f'projects/{prjuuid}'
+        if dirname is None and system_id.startswith("project-"):
+            prjuuid = system_id.replace("project-", "")
+            dirname = f"projects/{prjuuid}"
 
         return dirname
 
     def get(self, request, file_mgr_name, system_id, file_path):
-        if file_mgr_name not in ['public', 'community'] and \
-            not request.user.is_authenticated:
-            raise Http404('Resource not Found')
+        if (
+            file_mgr_name not in ["public", "community"]
+            and not request.user.is_authenticated
+        ):
+            raise Http404("Resource not Found")
 
-        filename = file_path.rsplit('/', 1)[1]
-        filepath = f'{self.corral}/{self.get_system_dirname(system_id)}/{file_path}'
+        filename = file_path.rsplit("/", 1)[1]
+        filepath = f"{self.corral}/{self.get_system_dirname(system_id)}/{file_path}"
         response = HttpResponse()
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        response['X-Accel-Redirect'] = f'/internal-resource/{filepath}'
+        response["Content-Disposition"] = f"attachment; filename={filename}"
+        response["X-Accel-Redirect"] = f"/internal-resource/{filepath}"
         return response
 
 
@@ -286,7 +302,8 @@ class DataDepotPublishedView(TemplateView):
 
     This view will be used when a user goes directly to a published project.
     """
-    template_name = 'data/data_depot.html'
+
+    template_name = "data/data_depot.html"
 
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
@@ -298,22 +315,28 @@ class DataDepotPublishedView(TemplateView):
         """
         context = super().get_context_data(**kwargs)
         try:
-            scholar_context, datacite_context, title = get_google_scholar_context(kwargs['project_id'])
-            context['dc_context'] = [json.dumps(ctx) for ctx in datacite_context]
-            context['scholar_context'] = scholar_context
-            context['citation_title'] = f"{kwargs['project_id']} | {title}"
+            scholar_context, datacite_context, title = get_google_scholar_context(
+                kwargs["project_id"]
+            )
+            context["dc_context"] = [json.dumps(ctx) for ctx in datacite_context]
+            context["scholar_context"] = scholar_context
+            context["citation_title"] = f"{kwargs['project_id']} | {title}"
         except Exception:
             # If we can't generate DataCite JSON, render the page without meta tags.
             logger.exception("")
 
         if self.request.user.is_authenticated:
-            context['angular_init'] = json.dumps({
-                'authenticated': True,
-            })
+            context["angular_init"] = json.dumps(
+                {
+                    "authenticated": True,
+                }
+            )
         else:
-            context['angular_init'] = json.dumps({
-                'authenticated': False,
-            })
+            context["angular_init"] = json.dumps(
+                {
+                    "authenticated": False,
+                }
+            )
         return context
 
 
@@ -322,7 +345,8 @@ class DataDepotLegacyPublishedView(TemplateView):
 
     This view will be used when a user goes directly to a legacy published project.
     """
-    template_name = 'data/data_depot.html'
+
+    template_name = "data/data_depot.html"
 
     @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
@@ -331,35 +355,42 @@ class DataDepotLegacyPublishedView(TemplateView):
     def get_context_data(self, **kwargs):
         """Update context data to add publication."""
         context = super().get_context_data(**kwargs)
-        logger.info('Get context Data')
-        nees_id = kwargs['project_id'].strip('.groups').strip('/')
-        logger.debug('nees_id: %s', nees_id)
+        logger.info("Get context Data")
+        nees_id = kwargs["project_id"].strip(".groups").strip("/")
+        logger.debug("nees_id: %s", nees_id)
         pub = BaseESPublicationLegacy(nees_id=nees_id)
-        logger.debug('pub: %s', pub.to_dict())
-        context['neesId'] = nees_id.split('/')[0]
-        context['citation_title'] = pub.title
-        context['citation_date'] = getattr(pub, 'startDate', '')
+        logger.debug("pub: %s", pub.to_dict())
+        context["neesId"] = nees_id.split("/")[0]
+        context["citation_title"] = pub.title
+        context["citation_date"] = getattr(pub, "startDate", "")
         experiments = pub.experiments
         if experiments and len(experiments):
-            context['doi'] = getattr(pub.experiments[0], 'doi', '')
-            exp_users = [getattr(exp, 'creators', []) for exp in experiments]
-            users  = [user for users in exp_users for user in users]
-            context['authors'] = [{
-                'full_name': '{last_name}, {first_name}'.format(
-                    last_name=getattr(user, 'lastName', ''),
-                    first_name=getattr(user, 'firstName', ''),
-                ),
-                'institution': ''
-            } for user in users]
-        context['publication'] = pub
-        context['description'] = pub.description
+            context["doi"] = getattr(pub.experiments[0], "doi", "")
+            exp_users = [getattr(exp, "creators", []) for exp in experiments]
+            users = [user for users in exp_users for user in users]
+            context["authors"] = [
+                {
+                    "full_name": "{last_name}, {first_name}".format(
+                        last_name=getattr(user, "lastName", ""),
+                        first_name=getattr(user, "firstName", ""),
+                    ),
+                    "institution": "",
+                }
+                for user in users
+            ]
+        context["publication"] = pub
+        context["description"] = pub.description
 
         if self.request.user.is_authenticated:
-            context['angular_init'] = json.dumps({
-                'authenticated': True,
-            })
+            context["angular_init"] = json.dumps(
+                {
+                    "authenticated": True,
+                }
+            )
         else:
-            context['angular_init'] = json.dumps({
-                'authenticated': False,
-            })
+            context["angular_init"] = json.dumps(
+                {
+                    "authenticated": False,
+                }
+            )
         return context

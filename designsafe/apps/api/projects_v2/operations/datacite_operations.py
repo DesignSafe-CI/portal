@@ -33,9 +33,7 @@ def dedup_collectors(collectors: list[dict]) -> list[dict]:
 
 
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-def get_datacite_json(
-    pub_graph: nx.DiGraph, entity_uuid: str, version: int | None = 1
-):
+def get_datacite_json(pub_graph: nx.DiGraph, entity_uuid: str, version: int | None = 1):
     """
     Generate datacite payload for a publishable entity. `pub_graph` is the output of
     either `get_publication_subtree` or `get_publication_full_tree`.
@@ -128,7 +126,7 @@ def get_datacite_json(
             author_meta["nameIdentifiers"] = [
                 {
                     "schemeUri": "https://orcid.org",
-                    "nameIdentifier": f"https://orcid.org/{author.get("orcidId")}",
+                    "nameIdentifier": f"https://orcid.org/{author.get('orcidId')}",
                     "nameIdentifierScheme": "ORCID",
                 }
             ]
@@ -147,15 +145,12 @@ def get_datacite_json(
     datacite_json["creators"] = author_attr
 
     if not is_other:
-
         datacite_json["titles"] = [
             {"title": f"{title}, in {base_meta['title']}"}
             for title in {entity_meta["title"]}
         ]
     else:
-        datacite_json["titles"] = [
-            {"title": title} for title in {entity_meta["title"]}
-        ]
+        datacite_json["titles"] = [{"title": title} for title in {entity_meta["title"]}]
     datacite_json["publisher"] = "Designsafe-CI"
 
     if version == 1 or not version:

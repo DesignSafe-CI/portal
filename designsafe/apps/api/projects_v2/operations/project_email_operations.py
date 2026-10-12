@@ -1,6 +1,5 @@
 """Utilities to email users/staff in response to project lifecycle changes."""
 
-
 from django.conf import settings
 from django.core.mail import send_mail
 

@@ -17,4 +17,4 @@ __all__ = [
     "TtcGrantTypesView",
     "TtcGrantsView",
     "TtcHazardTypesView",
-    ]
+]

@@ -136,7 +136,10 @@ def construct_graph_from_db(project_id) -> nx.DiGraph:
         # support multiple versions.
         project_graph.add_node(
             root_node_id,
-            uuid=None, name=None, projectType="other", order=0,
+            uuid=None,
+            name=None,
+            projectType="other",
+            order=0,
         )
         base_node_id = f"NODE_project_{uuid4()}"
         project_graph.add_node(base_node_id, **base_node_data)
