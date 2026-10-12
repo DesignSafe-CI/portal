@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@client/common-components": ["modules/_common_components/src/index.ts"],
+      "@client/dashboard": ["modules/dashboard/src/index.ts"],
       "@client/datafiles": ["modules/datafiles/src/index.ts"],
       "@client/hooks": ["modules/_hooks/src/index.ts"],
       "@client/onboarding": ["modules/onboarding/src/index.ts"],
