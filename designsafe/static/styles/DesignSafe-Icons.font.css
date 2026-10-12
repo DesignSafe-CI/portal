@@ -1,11 +1,9 @@
 @font-face {
     font-family: 'DesignSafe-Icons';
-    src: url('/static/fonts/DesignSafe-Icons.eot?nvbv6c');
-    src: url('/static/fonts/DesignSafe-Icons.eot?nvbv6c#iefix') format('embedded-opentype'),
-        url('/static/fonts/DesignSafe-Icons.ttf?nvbv6c') format('truetype'),
+    src: url('/static/fonts/DesignSafe-Icons.ttf?p001py') format('truetype'),
         url('/static/fonts/DesignSafe-Icons.woff2') format('woff2'),
-        url('/static/fonts/DesignSafe-Icons.woff?nvbv6c') format('woff'),
-        url('/static/fonts/DesignSafe-Icons.svg?nvbv6c#DesignSafe-Icons') format('svg');
+        url('/static/fonts/DesignSafe-Icons.woff?p001py') format('woff'),
+        url('/static/fonts/DesignSafe-Icons.svg?p001py#DesignSafe-Icons') format('svg');
     font-weight: normal;
     font-style: normal;
     font-display: block;
@@ -125,4 +123,7 @@
 }
 .ds-icon-New-Tab:before {
     content: '\ea7e';
+}
+.ds-icon-Python:before {
+    content: '\f001';
 }

@@ -30,6 +30,7 @@ APP_ICONS = [
     ("OpenSees", "OpenSees"),
     ("Paraview", "Paraview"),
     ("Potree", "Potree"),
+    ("Python", "Python"),
     ("QGIS", "QGIS"),
     ("rWHALE", "rWHALE"),
     ("STKO", "STKO"),
