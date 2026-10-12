@@ -16,12 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 oai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-oai_client.models.list()
 NEO4J_URI = settings.NEO4J_URL
 neo4j_driver_sync = GraphDatabase.driver(NEO4J_URI, auth=("neo4j", settings.NEO4J_PASS))
-
-
-SCHEMA = get_schema(driver=neo4j_driver_sync)
 
 
 async def raise_if_write_attempted(client: AsyncDriver, query: str) -> None:
@@ -190,6 +186,9 @@ async def publication_graph_search(ctx: RunContext) -> str:
     neo4j_driver = AsyncGraphDatabase.driver(
         NEO4J_URI, auth=("neo4j", settings.NEO4J_PASS)
     )
+
+    SCHEMA = get_schema(driver=neo4j_driver_sync)
+
     text2cypher_prompt = PROMPT_TEMPLATE.format(
         schema=SCHEMA, question=ctx.prompt, terminology=None, examples=examples
     )
