@@ -217,6 +217,14 @@ export const AppsSubmissionForm: React.FC = () => {
     string | undefined
   >(undefined);
   useEffect(() => {
+    console.log(missingAllocation);
+    console.log(!hasDefaultStorageAllocation);
+    console.log(hasStorageSystems);
+    console.log(isAppTypeBATCH(definition));
+    console.log(!allocations.length);
+    console.log(!noExecAllocationRequired);
+    console.log(getSystemName(defaultExecSystem?.host ?? ''));
+
     if (!hasDefaultStorageAllocation && hasStorageSystems) {
       // User does not have default storage allocation
       setMissingAllocation(getSystemName(defaultStorageHost));
@@ -230,7 +238,11 @@ export const AppsSubmissionForm: React.FC = () => {
     } else {
       setMissingAllocation(undefined);
     }
+
   }, [allocations]);
+  useEffect(() => {
+    console.log('missingAllocation changed:', missingAllocation);
+  }, [missingAllocation]);
 
   const [schema, setSchema] = useState<TAppFieldSchema>({
     inputs: z.object(fileInputs.schema),
