@@ -1,12 +1,3 @@
-/*
- * Replace this with your own classes
- *
- * e.g.
- * .container {
- * }
-*/
-/*Dashboard styling*/
-
 .dashboardContainer {
   display: flex;
   gap: 2rem;
