@@ -130,7 +130,7 @@ const FavoriteTools: React.FC = () => {
                       loading={removingIds.has(key)}
                       onClick={() => handleRemove(key)}
                       aria-label={`Remove favorite ${app.label}`}
-                      style={{ color: '#FAAD14' }}
+                      style={{ color: 'var(--ds-warning-color)' }}
                     >
                       ★
                     </Button>,
