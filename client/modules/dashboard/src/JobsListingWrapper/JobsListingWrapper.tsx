@@ -60,9 +60,9 @@ export const JobsListingWrapper: React.FC<JobsListingWrapperProps> = ({
         dataIndex: 'appId' as keyof TTapisJob,
         width: '10%',
         render: (appId: string, job: TTapisJob) => {
-          const appNotes = JSON.parse(job.notes);
+          const appNotes = job.notes;
           return (
-            appNotes.label || appId.charAt(0).toUpperCase() + appId.slice(1)
+            appNotes?.label || appId.charAt(0).toUpperCase() + appId.slice(1)
           );
         },
       },
