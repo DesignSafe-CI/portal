@@ -7,7 +7,7 @@ import RecentProjects from '../RecentProjects/RecentProjects';
 import { TicketList } from '../TicketList/TicketList';
 import { SystemStatus } from '../SystemStatus/SystemStatus';
 import JobStatus from '../JobStatus/JobStatus';
-import SUAllocationsCard from '../SUAllocationsCard/SUAllocationsCard';
+// import SUAllocationsCard from '../SUAllocationsCard/SUAllocationsCard';
 import UserGuides from '../UserGuides/UserGuides';
 import styles from './Dashboard.module.css';
 
@@ -17,7 +17,7 @@ export function Dashboard() {
   const [showJobs, setShowJobs] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
   const [showTickets, setShowTickets] = useState(false);
-  const [showAllocations, setShowAllocations] = useState(false);
+  // const [showAllocations, setShowAllocations] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -76,16 +76,17 @@ export function Dashboard() {
           </div>
 
           {/* Allocations */}
-          <div className={styles.section}>
-            <h3
-              className={styles.sectionHeader}
-              onClick={() => setShowAllocations(!showAllocations)}
-            >
-              {showAllocations ? <DownOutlined /> : <RightOutlined />}{' '}
-              Allocations
-            </h3>
-            {showAllocations && <SUAllocationsCard />}
-          </div>
+          {/* TODO: Hidden until the User Allocations endpoint exists on the backend */}
+          {/* <div className={styles.section}>
+  <h3
+    className={styles.sectionHeader}
+    onClick={() => setShowAllocations(!showAllocations)}
+  >
+    {showAllocations ? <DownOutlined /> : <RightOutlined />}{' '}
+    Allocations
+  </h3>
+  {showAllocations && <SUAllocationsCard />}
+</div> */}
         </div>
 
         {/* Vertical Divider */}
