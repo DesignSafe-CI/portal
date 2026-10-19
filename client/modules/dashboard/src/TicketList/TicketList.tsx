@@ -197,7 +197,7 @@ export const TicketList: React.FC = () => {
   ];
 
   return (
-    <div className={styles.ticketListContainer}>
+    <div className={styles.ticketListContainer} style={{ paddingTop: 16 }}>
       <div className={styles.ticketListHeader} style={{ marginBottom: 16 }}>
         <Button
           type="primary"
