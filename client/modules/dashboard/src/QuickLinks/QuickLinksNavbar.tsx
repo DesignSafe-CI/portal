@@ -1,5 +1,5 @@
 import styles from './QuickLinksNavbar.module.css';
-import FavoriteTools from '../FavoriteTools/FavoriteTools';
+// import FavoriteTools from '../FavoriteTools/FavoriteTools';
 // import { NavLink } from 'react-router-dom';
 import { UserOutlined, ToolOutlined, BookOutlined } from '@ant-design/icons';
 
@@ -9,9 +9,10 @@ const QuickLinks: React.FC = () => {
     <nav className={styles.sidebar}>
       <div className={styles.sidebarTitle}>Quick Links</div>
 
-      <div style={{ marginBottom: '1rem' }}>
-        <FavoriteTools />
-      </div>
+      {/* Hidden until workspace implementation */}
+      {/* <div style={{ marginBottom: '1rem' }}>
+  <FavoriteTools />
+</div> */}
 
       <a href="/account" className={styles.sidebarLink}>
         <UserOutlined className={styles.sidebarIcon} />
