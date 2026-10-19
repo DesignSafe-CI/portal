@@ -142,9 +142,7 @@ class ExperimentModelConfig(MetadataModel):
     file_objs: list[FileObj] = []
 
     # Deprecated/legacy fields
-    drawing: list[str] | None = Field(
-        default=None, exclude=True, alias="modelDrawing"
-    )
+    drawing: list[str] | None = Field(default=None, exclude=True, alias="modelDrawing")
     tags: dict | None = Field(default=None, exclude=True)
     image: dict | None = Field(default=None, exclude=True)
     lat: str | None = Field(default=None, exclude=True)

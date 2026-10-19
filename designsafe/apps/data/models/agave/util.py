@@ -1,4 +1,5 @@
-""" Agave models util module."""
+"""Agave models util module."""
+
 import logging
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class AgaveJSONEncoder(DjangoJSONEncoder):
-    """ Agave json encoder class.
+    """Agave json encoder class.
 
     This class is used when using :class:`django.http.JsonResponse` to serialize
     an agave object.

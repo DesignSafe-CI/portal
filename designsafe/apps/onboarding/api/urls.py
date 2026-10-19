@@ -1,4 +1,4 @@
-""" URL routing for the onboarding API. """
+"""URL routing for the onboarding API."""
 
 from django.urls import path
 

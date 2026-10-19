@@ -100,12 +100,12 @@ class BaseProject(MetadataModel):
     keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
 
     nh_event: str = ""
-    nh_event_start: Annotated[
-        datetime | None, BeforeValidator(lambda v: v or None)
-    ] = None
-    nh_event_end: Annotated[
-        datetime | None, BeforeValidator(lambda v: v or None)
-    ] = None
+    nh_event_start: Annotated[datetime | None, BeforeValidator(lambda v: v or None)] = (
+        None
+    )
+    nh_event_end: Annotated[datetime | None, BeforeValidator(lambda v: v or None)] = (
+        None
+    )
     nh_location: str = ""
     nh_latitude: str = ""
     nh_longitude: str = ""

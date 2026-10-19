@@ -103,9 +103,7 @@ class KeysManager:
         )
         return command
 
-    def add_public_key(
-        self, system_id, hostname, public_key, port=22, transport=None
-    ):  # pylint: disable=too-many-arguments, arguments-differ
+    def add_public_key(self, system_id, hostname, public_key, port=22, transport=None):  # pylint: disable=too-many-arguments, arguments-differ
         """Adds public key to `authorized_keys`
 
         :param str sytem_id: System Id

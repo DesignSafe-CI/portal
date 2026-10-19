@@ -1,5 +1,4 @@
-"""Workpace API Urls
-"""
+"""Workpace API Urls"""
 
 from django.urls import path, re_path
 

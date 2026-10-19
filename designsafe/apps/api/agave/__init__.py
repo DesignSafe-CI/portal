@@ -1,8 +1,9 @@
-""" Utils for agave API.
+"""Utils for agave API.
 
-    ..todo:: These should not live in __init__.py
-    we should create an agave.utils or agave.libs module for these to live in.
+..todo:: These should not live in __init__.py
+we should create an agave.utils or agave.libs module for these to live in.
 """
+
 import logging
 from urllib.parse import urlparse
 
@@ -14,9 +15,8 @@ from tapipy.tapis import Tapis
 logger = logging.getLogger(__name__)
 
 AGAVE_RESOURCES = load_resource(settings.AGAVE_TENANT_BASEURL)
-tenant_id = urlparse(settings.TAPIS_TENANT_BASEURL).hostname.split(
-            "."
-        )[0]
+tenant_id = urlparse(settings.TAPIS_TENANT_BASEURL).hostname.split(".")[0]
+
 
 def get_service_account_client_v2():
     """Return service account agave client.
@@ -26,9 +26,11 @@ def get_service_account_client_v2():
              There might be some issues because of permissionas,
              but it might be a bit safer."""
 
-    return Agave(api_server=settings.AGAVE_TENANT_BASEURL,
-                 token=settings.AGAVE_SUPER_TOKEN,
-                 resources=AGAVE_RESOURCES)
+    return Agave(
+        api_server=settings.AGAVE_TENANT_BASEURL,
+        token=settings.AGAVE_SUPER_TOKEN,
+        resources=AGAVE_RESOURCES,
+    )
 
 
 def get_service_account_client():
@@ -40,7 +42,8 @@ def get_service_account_client():
     return Tapis(
         base_url=settings.TAPIS_TENANT_BASEURL,
         tenant_id=tenant_id,
-        access_token=settings.TAPIS_ADMIN_JWT)
+        access_token=settings.TAPIS_ADMIN_JWT,
+    )
 
 
 def get_tg458981_client():
@@ -49,7 +52,8 @@ def get_tg458981_client():
     return Tapis(
         base_url=settings.TAPIS_TENANT_BASEURL,
         tenant_id=tenant_id,
-        access_token=settings.TAPIS_TG458981_JWT)
+        access_token=settings.TAPIS_TG458981_JWT,
+    )
 
 
 # TODOV3: Remove sandbox account code
@@ -58,14 +62,17 @@ def get_sandbox_service_account_client():
     return Tapis(
         base_url=settings.TAPIS_TENANT_BASEURL,
         tenant_id=tenant_id,
-        access_token=settings.TAPIS_ADMIN_JWT)
+        access_token=settings.TAPIS_ADMIN_JWT,
+    )
+
 
 def service_account():
     """Return prod or sandbox service client depending on setting.AGAVE_USE_SANDBOX"""
-    if getattr(settings, 'AGAVE_USE_SANDBOX', False):
+    if getattr(settings, "AGAVE_USE_SANDBOX", False):
         return get_sandbox_service_account_client()
 
     return get_service_account_client()
+
 
 def impersonate_service_account(username):
     """Return agave client as username.
@@ -75,15 +82,15 @@ def impersonate_service_account(username):
     url = f"{settings.AGAVE_TENANT_BASEURL}/token"
     cred = (settings.AGAVE_CLIENT_KEY, settings.AGAVE_CLIENT_SECRET)
 
-    if getattr(settings, 'AGAVE_USE_SANDBOX', False):
+    if getattr(settings, "AGAVE_USE_SANDBOX", False):
         cred = (settings.AGAVE_SANDBOX_CLIENT_KEY, settings.AGAVE_SANDBOX_CLIENT_SECRET)
 
     body = {
-        'grant_type': 'admin_password',
-        'username': settings.DS_ADMIN_USERNAME,
-        'password': settings.DS_ADMIN_PASSWORD,
-        'token_username': f"{settings.AGAVE_USER_STORE_ID}/{username}",
-        'scope': 'PRODUCTION',
+        "grant_type": "admin_password",
+        "username": settings.DS_ADMIN_USERNAME,
+        "password": settings.DS_ADMIN_PASSWORD,
+        "token_username": f"{settings.AGAVE_USER_STORE_ID}/{username}",
+        "scope": "PRODUCTION",
     }
     response = requests.post(url, data=body, auth=cred)
     response.raise_for_status()
@@ -92,9 +99,9 @@ def impersonate_service_account(username):
         api_server=settings.AGAVE_TENANT_BASEURL,
         api_key=cred[0],
         api_secret=cred[1],
-        token=token_data['access_token'],
+        token=token_data["access_token"],
         resources=AGAVE_RESOURCES,
-        refresh_token=token_data['access_token']
+        refresh_token=token_data["access_token"],
     )
 
 
@@ -106,9 +113,9 @@ def to_camel_case(snake_str):
     :rtype: str
     """
     underscore_prefix_len = 0
-    while snake_str[underscore_prefix_len] == '_':
+    while snake_str[underscore_prefix_len] == "_":
         underscore_prefix_len += 1
 
-    parts = snake_str[underscore_prefix_len:].split('_')
-    camel_case = parts[0] + ''.join(p.title() for p in parts[1:])
-    return camel_case.rjust(len(camel_case) + underscore_prefix_len, '_')
+    parts = snake_str[underscore_prefix_len:].split("_")
+    camel_case = parts[0] + "".join(p.title() for p in parts[1:])
+    return camel_case.rjust(len(camel_case) + underscore_prefix_len, "_")

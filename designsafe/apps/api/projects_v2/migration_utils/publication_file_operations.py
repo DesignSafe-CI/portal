@@ -22,11 +22,9 @@ def format_publication_data(
     pub_graph, path_mappings = transform_pub_entities(project_id, version)
 
     base_project = next(
-        
-            node
-            for node in pub_graph
-            if pub_graph.nodes[node]["name"] == "designsafe.project"
-        
+        node
+        for node in pub_graph
+        if pub_graph.nodes[node]["name"] == "designsafe.project"
     )
     prj_value = pub_graph.nodes[base_project]
 

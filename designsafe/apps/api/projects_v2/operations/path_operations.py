@@ -176,9 +176,9 @@ def update_path_mappings(pub_graph: nx.DiGraph, legacy_other_pubs=False):
                 updated_tags = []
                 version = node_data.get("version", 1)
                 base_data_path = f"{node_data['basePath']}/data"
-                tag_path_prefix = f'/{node_data["value"]["projectId"]}'
+                tag_path_prefix = f"/{node_data['value']['projectId']}"
                 if version:
-                    tag_path_prefix = f'/{node_data["value"]["projectId"]}v{version}'
+                    tag_path_prefix = f"/{node_data['value']['projectId']}v{version}"
                 for tag in tags:
                     updated_tags.append(
                         {

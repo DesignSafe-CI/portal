@@ -97,10 +97,8 @@ FACILITY_OPTIONS = [
     {
         "id": "niche",
         "name": (
-            
-                "National Full-Scale Testing Infrastructure for Community Hardening "
-                "in Extreme Wind, Surge, and Wave Events (NICHE)"
-            
+            "National Full-Scale Testing Infrastructure for Community Hardening "
+            "in Extreme Wind, Surge, and Wave Events (NICHE)"
         ),
     },
     {

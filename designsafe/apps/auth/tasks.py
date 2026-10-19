@@ -1,4 +1,4 @@
-""" Celery tasks for user onboarding and other user-related tasks. """
+"""Celery tasks for user onboarding and other user-related tasks."""
 
 import logging
 from datetime import UTC, datetime, timedelta

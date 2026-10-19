@@ -3,6 +3,7 @@
 .. module:: designsafe.apps.nco.managers.ttc_grants
     :synopsis: Nco ttc_grants manager. Should only do read actions.
 """
+
 import logging
 
 from designsafe.apps.api.agave import service_account
@@ -28,23 +29,26 @@ class NcoTtcGrantsManager:
         """Return ttc grants list."""
         query = {}
 
-        #turn facility and category selection into query
-        if params['facility']:
-            query['NheriFacility'] = params['facility']
-        if params['hazard_type']:
-            query['Hazard'] = params['hazard_type']
-        if params['grant_type']:
-            query['Type'] = params['grant_type']
-        if params['text_search']:
-            query['$or'] = [
-                {'Title': {'$regex': params['text_search'], '$options': 'i'}},
-                {'Abstract': {'$regex': params['text_search'], '$options': 'i'}},
-                {'PiName': {'$regex': params['text_search'], '$options': 'i'}},
-                {'CoPiNames': {'$regex': params['text_search'], '$options': 'i'}},
+        # turn facility and category selection into query
+        if params["facility"]:
+            query["NheriFacility"] = params["facility"]
+        if params["hazard_type"]:
+            query["Hazard"] = params["hazard_type"]
+        if params["grant_type"]:
+            query["Type"] = params["grant_type"]
+        if params["text_search"]:
+            query["$or"] = [
+                {"Title": {"$regex": params["text_search"], "$options": "i"}},
+                {"Abstract": {"$regex": params["text_search"], "$options": "i"}},
+                {"PiName": {"$regex": params["text_search"], "$options": "i"}},
+                {"CoPiNames": {"$regex": params["text_search"], "$options": "i"}},
             ]
 
-        #get the grants list
-        grants = [grant for grant in self._mttc.get_ttc_grants(query=query,sort=params['sort'])]
+        # get the grants list
+        grants = [
+            grant
+            for grant in self._mttc.get_ttc_grants(query=query, sort=params["sort"])
+        ]
         return grants
 
     def ttc_facilities(self):
@@ -54,7 +58,9 @@ class NcoTtcGrantsManager:
 
     def ttc_hazard_types(self):
         """Return list of hazard types in ttc_grant collection"""
-        hazard_types = [hazard_type for hazard_type in self._mttc.get_ttc_hazard_types()]
+        hazard_types = [
+            hazard_type for hazard_type in self._mttc.get_ttc_hazard_types()
+        ]
         return hazard_types
 
     def ttc_grant_types(self):
