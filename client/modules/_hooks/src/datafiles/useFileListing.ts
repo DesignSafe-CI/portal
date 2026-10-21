@@ -10,10 +10,10 @@ export type TFileListing = {
   path: string;
   format: 'folder' | 'raw';
   type: 'dir' | 'file';
-  mimeType: string;
+  mimeType: string | null;
   lastModified: string;
   length: number;
-  permissions: string;
+  permissions?: string;
   doi?: string;
   isPreviewable?: boolean;
 };
