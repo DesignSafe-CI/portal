@@ -7,7 +7,7 @@ import RecentProjects from '../RecentProjects/RecentProjects';
 import { TicketList } from '../TicketList/TicketList';
 import { SystemStatus } from '../SystemStatus/SystemStatus';
 import JobStatus from '../JobStatus/JobStatus';
-// import SUAllocationsCard from '../SUAllocationsCard/SUAllocationsCard';
+// import UserAllocationsCard from '../UserAllocationsCard/UserAllocationsCard';
 import UserGuides from '../UserGuides/UserGuides';
 import styles from './Dashboard.module.css';
 
@@ -76,8 +76,7 @@ export function Dashboard() {
           </div>
 
           {/* Allocations */}
-          {/* TODO: Hidden until the User Allocations endpoint exists on the backend */}
-          {/* <div className={styles.section}>
+{/* <div className={styles.section}>
   <h3
     className={styles.sectionHeader}
     onClick={() => setShowAllocations(!showAllocations)}
@@ -85,7 +84,7 @@ export function Dashboard() {
     {showAllocations ? <DownOutlined /> : <RightOutlined />}{' '}
     Allocations
   </h3>
-  {showAllocations && <SUAllocationsCard />}
+  {showAllocations && <UserAllocationsCard />}
 </div> */}
         </div>
 

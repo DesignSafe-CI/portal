@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGetSUAllocations, useAuthenticatedUser } from '@client/hooks';
+import { useGetUserAllocations, useAuthenticatedUser } from '@client/hooks';
 import styles from '../Dashboard/Dashboard.module.css';
 const HOST_LABELS: Record<string, string> = {
   'ls6.tacc.utexas.edu': 'Lonestar6 (HPC)',
@@ -9,9 +9,9 @@ const HOST_LABELS: Record<string, string> = {
   'data.tacc.utexas.edu': 'Corral (Storage)',
 };
 
-const SUAllocationsCard = () => {
+const UsersAllocationsCard = () => {
   const { user } = useAuthenticatedUser();
-  const { data, isLoading, error } = useGetSUAllocations();
+  const { data, isLoading, error } = useGetUserAllocations();
 
   if (isLoading) return <div>Loading SU allocations...</div>;
   if (error) return <div>Error loading SU allocations</div>;
@@ -70,4 +70,4 @@ const SUAllocationsCard = () => {
   );
 };
 
-export default SUAllocationsCard;
+export default UsersAllocationsCard;
