@@ -19,4 +19,4 @@ export * from './usePostJobs';
 export * from './types';
 export * from './useGetAllocations';
 export * from './useInteractiveModalContext';
-export * from './useSUAllocations';
+export * from './useUserAllocations';
