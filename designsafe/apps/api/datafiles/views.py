@@ -2,6 +2,7 @@ import json
 import logging
 from hashlib import sha256
 
+from asgiref.sync import sync_to_async
 from boxsdk.exception import BoxOAuthException
 from django.conf import settings
 from django.http import JsonResponse
@@ -12,6 +13,7 @@ from requests.exceptions import HTTPError
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.api.datafiles.handlers import (
     datafiles_get_handler,
+    datafiles_get_handler_tapis_async,
     datafiles_post_handler,
     datafiles_put_handler,
     resource_expired_handler,
@@ -59,7 +61,9 @@ def get_client(user, api, system=""):
 
 
 class DataFilesView(BaseApiView):
-    def get(self, request, api, operation=None, scheme="private", system=None, path=""):
+    async def get(
+        self, request, api, operation=None, scheme="private", system=None, path=""
+    ):
 
         doi = request.GET.get("doi", None)
 
@@ -101,7 +105,12 @@ class DataFilesView(BaseApiView):
             session_key_hash = sha256(
                 (request.session.session_key or "").encode()
             ).hexdigest()
-            response = datafiles_get_handler(
+            if api == "tapis":
+                handler = datafiles_get_handler_tapis_async
+            else:
+                handler = sync_to_async(datafiles_get_handler)
+
+            response = await handler(
                 api,
                 client,
                 scheme,
@@ -118,7 +127,7 @@ class DataFilesView(BaseApiView):
         except HTTPError as e:
             return JsonResponse({"message": str(e)}, status=e.response.status_code)
 
-    def put(
+    async def put(
         self, request, api, operation=None, scheme="private", system=None, path="/"
     ):
 
@@ -155,7 +164,7 @@ class DataFilesView(BaseApiView):
             session_key_hash = sha256(
                 (request.session.session_key or "").encode()
             ).hexdigest()
-            response = datafiles_put_handler(
+            response = await sync_to_async(datafiles_put_handler)(
                 api,
                 request.user.username,
                 client,
@@ -172,7 +181,7 @@ class DataFilesView(BaseApiView):
         return JsonResponse(response)
 
     # uploads come through here...
-    def post(
+    async def post(
         self, request, api, operation=None, scheme="private", system=None, path="/"
     ):
         post_files = request.FILES.dict()
@@ -204,7 +213,7 @@ class DataFilesView(BaseApiView):
         session_key_hash = sha256(
             (request.session.session_key or "").encode()
         ).hexdigest()
-        response = datafiles_post_handler(
+        response = await sync_to_async(datafiles_post_handler)(
             api,
             request.user.username,
             client,
