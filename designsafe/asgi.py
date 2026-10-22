@@ -15,6 +15,8 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 from django.urls import re_path
 
+from designsafe.celery import app as celery_app  # noqa
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "designsafe.settings")
 asgi_app = get_asgi_application()
 
