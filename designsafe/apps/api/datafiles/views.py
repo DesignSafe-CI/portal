@@ -87,7 +87,7 @@ class DataFilesView(BaseApiView):
 
         if request.user.is_authenticated:
             try:
-                client = get_client(request.user, api, system)
+                client = await sync_to_async(get_client)(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
         elif api in ("agave", "tapis") and system in (
@@ -156,7 +156,7 @@ class DataFilesView(BaseApiView):
         client = None
         if request.user.is_authenticated:
             try:
-                client = get_client(request.user, api, system)
+                client = await sync_to_async(get_client)(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
 
@@ -206,7 +206,7 @@ class DataFilesView(BaseApiView):
 
         if request.user.is_authenticated:
             try:
-                client = get_client(request.user, api, system)
+                client = await sync_to_async(get_client)(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
 
