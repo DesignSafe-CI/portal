@@ -841,6 +841,7 @@ dependencies = [
     { name = "google-api-python-client" },
     { name = "google-auth-httplib2" },
     { name = "google-auth-oauthlib" },
+    { name = "httpx2" },
     { name = "importlib-resources" },
     { name = "ipdb" },
     { name = "ipython" },
@@ -871,6 +872,7 @@ dependencies = [
     { name = "stone" },
     { name = "tapipy" },
     { name = "urllib3" },
+    { name = "uvicorn" },
     { name = "uwsgi" },
     { name = "uwsgitop" },
 ]
@@ -933,6 +935,7 @@ requires-dist = [
     { name = "google-api-python-client", specifier = ">=2.33.0,<3.0.0" },
     { name = "google-auth-httplib2", specifier = ">=0.1.0,<1.0.0" },
     { name = "google-auth-oauthlib", specifier = ">=0.4.6,<1.0.0" },
+    { name = "httpx2", specifier = ">=2.13.1" },
     { name = "importlib-resources", specifier = ">=5.4.0" },
     { name = "ipdb", specifier = ">=0.13.13" },
     { name = "ipython", specifier = ">=8.16.1,<9.0.0" },
@@ -963,6 +966,7 @@ requires-dist = [
     { name = "stone", specifier = ">=3.2.1" },
     { name = "tapipy", specifier = ">=1.8.1,<2.0.0" },
     { name = "urllib3", specifier = "==1.26.20" },
+    { name = "uvicorn", specifier = ">=0.54.0" },
     { name = "uwsgi", specifier = ">=2.0.20,<3.0.0" },
     { name = "uwsgitop", specifier = ">=0.11" },
 ]
@@ -3097,7 +3101,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess" },
+    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
