@@ -23,6 +23,7 @@ export type TJobStatusNotification = {
     remoteOutcome?: string;
     status: string;
     uuid: string;
+    path?: string;
   };
   message: string;
   operation: string;
@@ -68,11 +69,30 @@ async function readNotifications(body: { eventTypes?: TPortalEventType[] }) {
   return res.data;
 }
 
+async function deleteNotifications(pk: number | string) {
+  const res = await apiClient.delete(`/api/notifications/delete/${pk}`);
+  return res.data;
+}
+
 export function useReadNotifications() {
   return useMutation({
     mutationFn: (body: { eventTypes?: TPortalEventType[] }) => {
       return readNotifications(body);
     },
+  });
+}
+
+export function useDeleteNotifications() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (pk: number | string) => {
+      return deleteNotifications(pk);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['workspace','notifications'],
+      });
+    }
   });
 }
 
