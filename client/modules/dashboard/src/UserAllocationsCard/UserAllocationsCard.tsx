@@ -13,8 +13,8 @@ const UsersAllocationsCard = () => {
   const { user } = useAuthenticatedUser();
   const { data, isLoading, error } = useGetUserAllocations();
 
-  if (isLoading) return <div>Loading SU allocations...</div>;
-  if (error) return <div>Error loading SU allocations</div>;
+  if (isLoading) return <div>Loading user allocations...</div>;
+  if (error) return <div>Error loading user allocations</div>;
   if (!data || data.length === 0) return <div>No allocation data found.</div>;
 
   const validData = data.filter((alloc) => Number(alloc.awarded) > 0);
