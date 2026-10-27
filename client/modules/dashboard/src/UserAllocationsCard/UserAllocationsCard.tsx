@@ -9,7 +9,7 @@ const HOST_LABELS: Record<string, string> = {
   'data.tacc.utexas.edu': 'Corral (Storage)',
 };
 
-const UsersAllocationsCard = () => {
+const UserAllocationsCard = () => {
   const { user } = useAuthenticatedUser();
   const { data, isLoading, error } = useGetUserAllocations();
 
@@ -70,4 +70,4 @@ const UsersAllocationsCard = () => {
   );
 };
 
-export default UsersAllocationsCard;
+export default UserAllocationsCard;
