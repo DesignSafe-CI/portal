@@ -15,11 +15,6 @@ from designsafe.apps.api.publications_v2.agents.tools.schema_utils import get_sc
 logger = logging.getLogger(__name__)
 
 
-oai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-NEO4J_URI = settings.NEO4J_URL
-neo4j_driver_sync = GraphDatabase.driver(NEO4J_URI, auth=("neo4j", settings.NEO4J_PASS))
-
-
 async def raise_if_write_attempted(client: AsyncDriver, query: str) -> None:
     """
     Open a transaction using the provided query, in order to determine whether it would
@@ -182,7 +177,11 @@ async def publication_graph_search(ctx: RunContext) -> str:
     """
     Construct and execute a graph query against a Neo4j database.
     """
-
+    oai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+    NEO4J_URI = settings.NEO4J_URL
+    neo4j_driver_sync = GraphDatabase.driver(
+        NEO4J_URI, auth=("neo4j", settings.NEO4J_PASS)
+    )
     neo4j_driver = AsyncGraphDatabase.driver(
         NEO4J_URI, auth=("neo4j", settings.NEO4J_PASS)
     )

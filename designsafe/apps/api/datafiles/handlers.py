@@ -11,6 +11,7 @@ from designsafe.apps.api.datafiles.operations import (
     googledrive_operations,
     shared_operations,
     tapis_operations,
+    tapis_operations_async,
 )
 from designsafe.apps.api.exceptions import ApiException
 from designsafe.apps.workspace.api.views import test_system_needs_keys
@@ -62,6 +63,48 @@ operations_mapping = {
     "dropbox": dropbox_operations,
     "shared": shared_operations,
 }
+
+
+@retry(UnauthorizedError, tries=3, max_time=15)
+async def datafiles_get_handler_tapis_async(
+    api,
+    client,
+    scheme,
+    system,
+    path,
+    operation,
+    username=None,
+    tapis_tracking_id=None,
+    **kwargs,
+):
+    """
+    Handler for Tapis GET operations.
+    """
+    if operation not in allowed_actions[scheme]:
+        raise PermissionDenied()
+
+    op = getattr(tapis_operations_async, operation)
+
+    try:
+        return await op(
+            client,
+            system,
+            path,
+            username=username,
+            tapis_tracking_id=tapis_tracking_id,
+            **kwargs,
+        )
+    except (InternalServerError, UnauthorizedError):
+        system_needs_keys = test_system_needs_keys(client, username, system, path)
+        if system_needs_keys:
+            logger.error(
+                "Keys for user %s must be manually pushed to system: %s",
+                username,
+                system_needs_keys.id,
+            )
+        raise
+    except BaseTapyException as exc:
+        raise ApiException(message=exc.message, status=500) from exc
 
 
 @retry(UnauthorizedError, tries=3, max_time=15)

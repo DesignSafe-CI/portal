@@ -6,15 +6,7 @@ import neo4j
 import openai
 from django.conf import settings
 
-openai_client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-
-openai_client_async = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-
-
 NEO4J_URI = settings.NEO4J_URL
-neo4j_client = neo4j.GraphDatabase.driver(
-    NEO4J_URI, auth=("neo4j", settings.NEO4J_PASS)
-)
 
 
 NODE_VECTOR_INDEX_QUERY = (
@@ -60,6 +52,7 @@ async def publication_vector_search(query: str):
     neo4j_client_async = neo4j.AsyncGraphDatabase.driver(
         NEO4J_URI, auth=("neo4j", settings.NEO4J_PASS)
     )
+    openai_client_async = openai.AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
     _embedding = await openai_client_async.embeddings.create(
         model="text-embedding-ada-002", input=[query]
     )
