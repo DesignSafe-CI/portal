@@ -2,6 +2,7 @@ import json
 import logging
 from hashlib import sha256
 
+import httpx2
 from asgiref.sync import sync_to_async
 from boxsdk.exception import BoxOAuthException
 from django.conf import settings
@@ -124,7 +125,7 @@ class DataFilesView(BaseApiView):
             return JsonResponse(response)
         except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
             raise resource_expired_handler(api)
-        except HTTPError as e:
+        except (HTTPError, httpx2.HTTPStatusError) as e:
             return JsonResponse({"message": str(e)}, status=e.response.status_code)
 
     async def put(

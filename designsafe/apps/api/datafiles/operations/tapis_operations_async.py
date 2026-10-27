@@ -69,6 +69,7 @@ async def listing(
             params={"offset": offset, "limit": limit},
             timeout=30,
         )
+        res.raise_for_status()
         res_json = res.json()
 
     listing_resp = []
@@ -124,6 +125,7 @@ async def detail(client, system, path, *args, **kwargs):
             params={"offset": 0, "limit": 1},
             timeout=30,
         )
+        _listing.raise_for_status()
         f = _listing.json()["result"][0]
 
     listing_res = {
