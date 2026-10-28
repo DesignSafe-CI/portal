@@ -5,7 +5,7 @@ import os
 import urllib
 from pathlib import Path
 
-import httpx2
+import httpx
 import requests
 import tapipy
 from django.conf import settings
@@ -577,7 +577,7 @@ def upload(
         "X-Tapis-Tracking-ID": kwargs.get("tapis_tracking_id", ""),
     }
 
-    res = httpx2.post(
+    res = httpx.post(
         upload_url, headers=headers, files={"file": uploaded_file}, timeout=600
     )
     res.raise_for_status()

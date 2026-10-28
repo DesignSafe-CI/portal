@@ -221,7 +221,6 @@ if os.environ.get("DATABASE_HOST"):
             "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
         },
     }
-    DATABASES["default"]["CONN_MAX_AGE"] = 0
 else:
     DATABASES = {
         "default": {
