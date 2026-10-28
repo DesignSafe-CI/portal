@@ -219,9 +219,18 @@ if os.environ.get("DATABASE_HOST"):
             "PORT": os.environ.get("DATABASE_PORT"),
             "USER": os.environ.get("DATABASE_USER"),
             "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
+            "CONN_MAX_AGE": 0,
+            "OPTIONS": {
+                "pool": {
+                    "min_size": 4,  # Keeps connections warm
+                    "max_size": 16,  # Handles traffic spikes
+                    "timeout": 10,  # Fails fast under extreme load
+                    "max_lifetime": 1800,  # 30 minutes maximum connection age
+                    "max_idle": 300,  # Close idle connections after 5 minutes
+                },
+            },
         },
     }
-    DATABASES["default"]["CONN_MAX_AGE"] = 0
 else:
     DATABASES = {
         "default": {
