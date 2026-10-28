@@ -2,8 +2,6 @@ import json
 import logging
 from hashlib import sha256
 
-import httpx2
-from asgiref.sync import sync_to_async
 from boxsdk.exception import BoxOAuthException
 from django.conf import settings
 from django.http import JsonResponse
@@ -14,7 +12,6 @@ from requests.exceptions import HTTPError
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.api.datafiles.handlers import (
     datafiles_get_handler,
-    datafiles_get_handler_tapis_async,
     datafiles_post_handler,
     datafiles_put_handler,
     resource_expired_handler,
@@ -62,9 +59,7 @@ def get_client(user, api, system=""):
 
 
 class DataFilesView(BaseApiView):
-    async def get(
-        self, request, api, operation=None, scheme="private", system=None, path=""
-    ):
+    def get(self, request, api, operation=None, scheme="private", system=None, path=""):
 
         doi = request.GET.get("doi", None)
 
@@ -88,7 +83,7 @@ class DataFilesView(BaseApiView):
 
         if request.user.is_authenticated:
             try:
-                client = await sync_to_async(get_client)(request.user, api, system)
+                client = get_client(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
         elif api in ("agave", "tapis") and system in (
@@ -106,12 +101,7 @@ class DataFilesView(BaseApiView):
             session_key_hash = sha256(
                 (request.session.session_key or "").encode()
             ).hexdigest()
-            if api == "tapis":
-                handler = datafiles_get_handler_tapis_async
-            else:
-                handler = sync_to_async(datafiles_get_handler)
-
-            response = await handler(
+            response = datafiles_get_handler(
                 api,
                 client,
                 scheme,
@@ -125,10 +115,10 @@ class DataFilesView(BaseApiView):
             return JsonResponse(response)
         except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
             raise resource_expired_handler(api)
-        except (HTTPError, httpx2.HTTPStatusError) as e:
+        except HTTPError as e:
             return JsonResponse({"message": str(e)}, status=e.response.status_code)
 
-    async def put(
+    def put(
         self, request, api, operation=None, scheme="private", system=None, path="/"
     ):
 
@@ -157,7 +147,7 @@ class DataFilesView(BaseApiView):
         client = None
         if request.user.is_authenticated:
             try:
-                client = await sync_to_async(get_client)(request.user, api, system)
+                client = get_client(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
 
@@ -165,7 +155,7 @@ class DataFilesView(BaseApiView):
             session_key_hash = sha256(
                 (request.session.session_key or "").encode()
             ).hexdigest()
-            response = await sync_to_async(datafiles_put_handler)(
+            response = datafiles_put_handler(
                 api,
                 request.user.username,
                 client,
@@ -182,7 +172,7 @@ class DataFilesView(BaseApiView):
         return JsonResponse(response)
 
     # uploads come through here...
-    async def post(
+    def post(
         self, request, api, operation=None, scheme="private", system=None, path="/"
     ):
         post_files = request.FILES.dict()
@@ -207,14 +197,14 @@ class DataFilesView(BaseApiView):
 
         if request.user.is_authenticated:
             try:
-                client = await sync_to_async(get_client)(request.user, api, system)
+                client = get_client(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
 
         session_key_hash = sha256(
             (request.session.session_key or "").encode()
         ).hexdigest()
-        response = await sync_to_async(datafiles_post_handler)(
+        response = datafiles_post_handler(
             api,
             request.user.username,
             client,
