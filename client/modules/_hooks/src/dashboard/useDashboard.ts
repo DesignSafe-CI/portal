@@ -3,17 +3,13 @@ import { TUserUsage, TUserTicket } from './types';
 import apiClient from '../apiClient';
 
 async function getUserUsage() {
-  const res = await apiClient.get<TUserUsage>(
-        `api/users/usage/`
-  );
+  const res = await apiClient.get<TUserUsage>(`api/users/usage/`);
   return res.data;
 }
 
 async function getUserTickets() {
-    const res = await apiClient.get<TUserTicket[]>(
-        `help/tickets?fmt=json`
-    );
-    return res.data;
+  const res = await apiClient.get<TUserTicket[]>(`help/tickets?fmt=json`);
+  return res.data;
 }
 
 const getUserUsageQuery = () => ({
@@ -21,8 +17,8 @@ const getUserUsageQuery = () => ({
   queryFn: () => getUserUsage(),
 });
 const getUserTicketsQuery = () => ({
-    queryKey: ['users', 'tickets'],
-    queryFn: () => getUserTickets(),
+  queryKey: ['users', 'tickets'],
+  queryFn: () => getUserTickets(),
 });
 
 export function useGetUserUsage() {

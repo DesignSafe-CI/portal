@@ -1,24 +1,23 @@
 .dropdown-toggle-button {
-    display: flex;
-    align-items: center;
-    background-color: transparent !important;
-    border-color: transparent !important;
-    outline: none !important;
-    color:#337ab7 !important;
-    box-shadow: none !important;
-    gap: 0px;
+  display: flex;
+  align-items: center;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  outline: none !important;
+  color: #337ab7 !important;
+  box-shadow: none !important;
+  gap: 0px;
 }
 
 .dropdown-toggle-button:focus,
 .dropdown-toggle-button:hover,
 .dropdown-toggle-button:active {
-    background-color: transparent !important;
-    border-color: transparent !important;
-    outline: none !important;
-    box-shadow: none !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .dropdown-toggle-button:hover {
-      color: #23527c !important;
+  color: #23527c !important;
 }
-

@@ -90,9 +90,9 @@ export function useDeleteNotifications() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['workspace','notifications'],
+        queryKey: ['workspace', 'notifications'],
       });
-    }
+    },
   });
 }
 

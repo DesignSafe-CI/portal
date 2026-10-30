@@ -10,7 +10,7 @@ import onboardingRouter from './onboarding/onboardingRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { AIChatButton } from '@client/workspace';
 import { Dashboard } from '@client/dashboard';
-import { NotificationBadge } from '@client/notification-badge'
+import { NotificationBadge } from '@client/notification-badge';
 
 const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
@@ -129,7 +129,7 @@ if (dashboardElement) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
-            <Dashboard />
+          <Dashboard />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
@@ -143,7 +143,7 @@ if (notifBadgeElement) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
-            <NotificationBadge />
+          <NotificationBadge />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
