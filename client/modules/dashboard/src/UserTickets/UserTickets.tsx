@@ -14,7 +14,7 @@ export const UserTickets = ({ userTickets }: { userTickets: TUserTicket[] | unde
                     {userTickets?.map((ticket) => 
                         <li className="list-group-item">
                             <a href={`/help/tickets/${ticket.id}`}>
-                                {ticket.id}
+                                {ticket.id}&nbsp;
                             </a> 
                             {ticket.Subject}
                         </li>

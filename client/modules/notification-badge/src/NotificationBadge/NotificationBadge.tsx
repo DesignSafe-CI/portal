@@ -13,15 +13,13 @@ export function NotificationBadge() {
         {
             key: 'open-history',
             label:
-            <>
-                <h3 className="menu-title"></h3>
                 <a href="/workspace/history">
                     <h3 className="menu-title pull-right">
                         View all Jobs
                         <i className="glyphicon glyphicon-circle-arrow-right"></i>
                     </h3>
                 </a>
-            </>,
+            ,
             className: "notification-heading"
         },
         {
@@ -33,7 +31,7 @@ export function NotificationBadge() {
         <div className="notification-item" onClick={(e) => e?.stopPropagation()}>
             <a 
                 className="content"
-                href={`${notif.event_type == 'job' ? '/workspace/history' : notif.event_type == 'data_depot' ? '/data/browser' : ''}`} 
+                href={`${notif.event_type === 'job' ? '/workspace/history' : notif.event_type === 'data_depot' ? '/data/browser' : ''}`} 
                 target={`${notif.event_type === 'interactive_session_ready' ? '_blank' : '_self' }`}
             >
                 <dl className="dl-horizontal">
@@ -66,7 +64,7 @@ export function NotificationBadge() {
         </div>
     );
 
-    let notifContents: ItemType[] = userNotifications?.notifs.length === 0 ? 
+    const notifContents: ItemType[] = userNotifications?.notifs.length === 0 ? 
         [
             {
                 key: 'no-notifs',
@@ -115,7 +113,6 @@ export function NotificationBadge() {
                         {userNotifications?.unread}
                     </span>
                     <h3 className="menu-title">Job Status</h3>
-                    <div className="arrow-up"></div>
                 </Button>
             </Dropdown>
         </ConfigProvider>
