@@ -9,10 +9,10 @@ const QuickLinks: React.FC = () => {
     <nav className={styles.sidebar}>
       <div className={styles.sidebarTitle}>Quick Links</div>
 
-      {/* Hidden until workspace implementation */}
+      {/* TODO: Re-enable Favorite Tools after it's implemented in the workspace */}
       {/* <div style={{ marginBottom: '1rem' }}>
-  <FavoriteTools />
-</div> */}
+        <FavoriteTools />
+      </div> */}
 
       <a href="/account" className={styles.sidebarLink}>
         <UserOutlined className={styles.sidebarIcon} />

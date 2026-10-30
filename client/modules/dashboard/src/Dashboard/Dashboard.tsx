@@ -75,17 +75,17 @@ export function Dashboard() {
             )}
           </div>
 
-          {/* Allocations */}
-{/* <div className={styles.section}>
-  <h3
-    className={styles.sectionHeader}
-    onClick={() => setShowAllocations(!showAllocations)}
-  >
-    {showAllocations ? <DownOutlined /> : <RightOutlined />}{' '}
-    Allocations
-  </h3>
-  {showAllocations && <UserAllocationsCard />}
-</div> */}
+          {/* TODO: Re-enable Allocations section after building backend connection */}
+          {/* <div className={styles.section}>
+            <h3
+              className={styles.sectionHeader}
+              onClick={() => setShowAllocations(!showAllocations)}
+            >
+              {showAllocations ? <DownOutlined /> : <RightOutlined />}{' '}
+              Allocations
+            </h3>
+            {showAllocations && <UserAllocationsCard />}
+          </div> */}
         </div>
 
         {/* Vertical Divider */}
