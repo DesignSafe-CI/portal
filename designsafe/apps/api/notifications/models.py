@@ -46,13 +46,13 @@ class BaseNotify(models.Model):
             extra = {}
         d = {
             "event_type": self.event_type,
-            "datetime": self.datetime.strftime("%s"),
+            "datetime": self.datetime.isoformat(),
             "status": self.status,
             "operation": self.operation,
             "message": self.message,
             "extra": extra,
             "pk": self.pk,
-            "action_link": self.action_link,
+            "action_link": self.action_link
         }
         return d
 

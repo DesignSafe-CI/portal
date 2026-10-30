@@ -9,6 +9,8 @@ import reconportalRouter from './reconportal/reconportalRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { AIChatButton } from '@client/workspace';
+import { Dashboard } from '@client/dashboard';
+import { NotificationBadge } from '@client/notification-badge';
 
 const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
@@ -114,6 +116,34 @@ if (reconElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={reconportalRouter} />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
+const dashboardElement = document.getElementById('dashboard-root');
+if (dashboardElement) {
+  const dashboardRoot = ReactDOM.createRoot(dashboardElement as HTMLElement);
+  dashboardRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <Dashboard />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
+const notifBadgeElement = document.getElementById('notification-badge-root');
+if (notifBadgeElement) {
+  const notifBadgeRoot = ReactDOM.createRoot(notifBadgeElement as HTMLElement);
+  notifBadgeRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <NotificationBadge />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
