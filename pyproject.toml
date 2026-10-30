@@ -50,7 +50,7 @@ dependencies = [
     "djangocms-forms-maintained",
     "djangocms-googlemap==2.0.0",
     "oauth2client>=4.1.2,<5.0.0",
-    "psycopg[binary]>=3.3.6,<4.0.0",
+    "psycopg[binary,pool]>=3.3.6,<4.0.0",
     "jsonpickle>=3.0.2,<4.0.0",
     "stone>=3.2.1",
     "pymemcache>=4.0.0",
@@ -80,6 +80,8 @@ dependencies = [
     "langchain>=1.4.4",
     "uvicorn>=0.54.0",
     "httpx2>=2.13.1",
+    "gunicorn>=26.2.0",
+    "redis[hiredis]>=8.1.0",
 ]
 
 [tool.uv]

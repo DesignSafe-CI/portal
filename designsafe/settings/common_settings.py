@@ -124,13 +124,9 @@ LOGOUT_REDIRECT_URL = os.environ.get("LOGOUT_REDIRECT_URL", "/auth/logged-out/")
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "memcached:11211",
-        "OPTIONS": {
-            "no_delay": True,
-            "ignore_exc": True,
-        },
-    },
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379",
+    }
 }
 
 MIDDLEWARE = (
