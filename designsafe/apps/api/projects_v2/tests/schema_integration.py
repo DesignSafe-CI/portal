@@ -1,22 +1,24 @@
 """Integration-type tests to confirm that Pydantic schemas are exhaustive."""
 
 import json
-from typing import Iterator
+from collections.abc import Iterator
+
 import networkx as nx
 from pydantic import BaseModel, ValidationError
-from designsafe.apps.api.projects_v2.operations.datacite_operations import (
-    get_datacite_json,
-)
-from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
+
+from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
 from designsafe.apps.api.projects_v2.migration_utils.graph_constructor import (
     transform_pub_entities,
 )
-from designsafe.apps.api.agave import get_service_account_client_v2 as service_account
-from designsafe.apps.api.publications.operations import listing as list_pubs
 from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+from designsafe.apps.api.projects_v2.operations.datacite_operations import (
+    get_datacite_json,
+)
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     get_publication_full_tree,
 )
+from designsafe.apps.api.projects_v2.schema_models.base import BaseProject
+from designsafe.apps.api.publications.operations import listing as list_pubs
 
 
 def update_project(uuid, new_value):

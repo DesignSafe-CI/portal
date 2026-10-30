@@ -1,16 +1,16 @@
-import logging
 import json
+import logging
+
 from django.http import HttpResponse, JsonResponse
+
+from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
 from designsafe.apps.api.notifications.models import Notification
 from designsafe.apps.api.views import BaseApiView
-from designsafe.apps.api.mixins import JSONResponseMixin, SecureMixin
-
 
 logger = logging.getLogger(__name__)
 
 
 class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
-
     def get(self, request, *args, **kwargs):
         """List all notifications of a certain event type."""
         limit = request.GET.get("limit", 0)
@@ -30,7 +30,7 @@ class ManageNotificationsView(SecureMixin, JSONResponseMixin, BaseApiView):
                 event_type__in=event_types,
                 deleted=False,
                 user=request.user.username,
-                **query_params
+                **query_params,
             ).order_by("-datetime")
             total = Notification.objects.filter(
                 event_type__in=event_types, deleted=False, user=request.user.username

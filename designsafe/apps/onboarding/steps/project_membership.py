@@ -1,13 +1,14 @@
 """Project Membership Step for Onboarding."""
 
 import logging
-from requests.auth import HTTPBasicAuth
+
 from django.conf import settings
 from pytas.http import TASClient
+from requests.auth import HTTPBasicAuth
 from rt import Rt
-from designsafe.apps.onboarding.steps.abstract import AbstractStep
-from designsafe.apps.onboarding.state import SetupState
 
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +77,7 @@ class ProjectMembershipStep(AbstractStep):
         tracker = self.get_tracker()
         ticket_text = f"""
             User {self.user.username} is requesting access to DesignSafe Computation and Data Resources.
-            System administrator please visit {request.build_absolute_uri(f'/onboarding/setup/{self.user.username}')}
+            System administrator please visit {request.build_absolute_uri(f"/onboarding/setup/{self.user.username}")}
             to complete this request.
         """
 
@@ -92,9 +93,8 @@ class ProjectMembershipStep(AbstractStep):
                 tracker.logout()
 
                 if not result:
-                    raise Exception(  # pylint: disable=broad-exception-raised
-                        "Could not create ticket"
-                    )
+                    # ruff: disable[TRY002]
+                    raise Exception("Could not create ticket")
 
                 self.state = SetupState.STAFFWAIT
                 self.log(
@@ -102,9 +102,8 @@ class ProjectMembershipStep(AbstractStep):
                     data={"ticket": result},
                 )
             else:
-                raise Exception(  # pylint: disable=broad-exception-raised
-                    "Could not log in to RT"
-                )
+                # ruff: disable[TRY002]
+                raise Exception("Could not log in to RT")
         except Exception as err:  # pylint: disable=broad-except
             logger.exception(
                 msg="Could not create ticket on behalf of user during ProjectMembershipStep"
@@ -135,7 +134,7 @@ class ProjectMembershipStep(AbstractStep):
                 self.fail(
                     f"{self.user.username} could not be added to {self.project['title']} due to error {reason}"
                 )
-                raise exc
+                raise
 
     def deny_project_request(self):
         """Deny a project request and close the ticket"""
@@ -144,7 +143,7 @@ class ProjectMembershipStep(AbstractStep):
             if event.data and "ticket" in event.data:
                 ticket_id = event.data["ticket"]
         tracker = self.get_tracker()
-        request_text = f"""Your request for access to DesignSafe Computation and Data Resources has been
+        request_text = """Your request for access to DesignSafe Computation and Data Resources has been
         denied. You can still access the publicly available web pages and data. If you believe this is an error, please submit a help ticket.
         """
         if tracker.login():
@@ -202,9 +201,7 @@ class ProjectMembershipStep(AbstractStep):
                     f"Portal access request approved by {request.user.username}"
                 )
             except Exception as err:  # pylint: disable=broad-except
-                logger.exception(
-                    msg=f"Error during staff_approve on {self.step_name()}"
-                )
+                logger.exception("Error during staff_approve on %s", self.step_name())
                 logger.error(err.args)
                 self.fail(
                     "An error occurred while trying to add this user to the project"

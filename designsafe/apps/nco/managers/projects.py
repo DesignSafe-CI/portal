@@ -4,21 +4,22 @@
     :synopsis: Nco projects manager. Should only do read actions.
     Unless it is to update the mongo database.
 """
-from __future__ import unicode_literals, absolute_import
-import six
-import logging
-from datetime import datetime, timedelta
-import calendar
-from dateutil.parser import parse as datetime_parse
-from designsafe.libs.mongo.load_projects import MongoProjectsHelper
-from designsafe.apps.projects.managers.base import ProjectsManager
-from designsafe.apps.api.agave import service_account
 
+import calendar
+import logging
+from datetime import UTC, datetime, timedelta
+
+import six
+from dateutil.parser import parse as datetime_parse
+
+from designsafe.apps.api.agave import service_account
+from designsafe.apps.projects.managers.base import ProjectsManager
+from designsafe.libs.mongo.load_projects import MongoProjectsHelper
 
 logger = logging.getLogger(__name__)
 
 
-class NcoProjectsManager(object):
+class NcoProjectsManager:
     """Nco Projects Manager."""
 
     def __init__(self, user):
@@ -34,7 +35,7 @@ class NcoProjectsManager(object):
 
     def _process_time_filter(self, value):
         """Convert from time filter value to date range."""
-        date = datetime.utcnow()
+        date = datetime.now(tz=UTC)
 
         def this_week():
             """Get this week range."""
@@ -51,18 +52,22 @@ class NcoProjectsManager(object):
 
         def last_n_days(days):
             """Last N days range."""
+
             def last_range():
                 start = date - timedelta(days=days)
                 end = date
                 return {"dateStart": {"$gt": start, "$lt": end}}
+
             return last_range
 
         def in_n_days(days):
             """In N days range."""
+
             def in_range():
                 start = date + timedelta(days=days)
                 end = date
                 return {"dateStart": {"$gt": start, "$lt": end}}
+
             return in_range
 
         def no_history():
@@ -120,9 +125,7 @@ class NcoProjectsManager(object):
             "Facility": ("facility", 1),
             "PI Name": ("piName", 1),
         }
-        return [
-            sort_switch[val] for val in sorts
-        ]
+        return [sort_switch[val] for val in sorts]
 
     def projects(self, filters=None, page_number=0, sorts=None, page_size=10):
         """Return projects list."""
@@ -131,11 +134,12 @@ class NcoProjectsManager(object):
         sorts = sorts or []
         query = self._process_filters(filters)
         sort = self._process_sort(sorts)
-        prjs = [prj for prj in self._mp.list_events(
-            query=query,
-            sort=sort,
-            page_number=page_number,
-            page_size=page_size)]
+        prjs = [
+            prj
+            for prj in self._mp.list_events(
+                query=query, sort=sort, page_number=page_number, page_size=page_size
+            )
+        ]
         total = self._mp.count_events(query)
         return total, prjs
 
@@ -172,22 +176,19 @@ class NcoProjectsManager(object):
         prj = self._pm.get_project_by_id(prj_id)
         entities = []
         related = None
-        if prj.project_type == 'experimental':
+        if prj.project_type == "experimental":
             related = prj.experiment_set
-        if prj.project_type == 'simulation':
+        if prj.project_type == "simulation":
             related = prj.simulation_set
-        if prj.project_type == 'hybrid_simulation':
+        if prj.project_type == "hybrid_simulation":
             related = prj.hybridsimulation_set
-        if prj.project_type == 'field_recon':
+        if prj.project_type == "field_recon":
             related = prj.mission_set
 
         if related:
-            entities = [
-                self._process_entity(ent)
-                for ent in related(self._ac)
-            ]
-        prj_dict = prj.to_body_dict()['value']
-        prj_dict['entities'] = entities
+            entities = [self._process_entity(ent) for ent in related(self._ac)]
+        prj_dict = prj.to_body_dict()["value"]
+        prj_dict["entities"] = entities
         return prj_dict
 
     def _process_entity(self, entity):

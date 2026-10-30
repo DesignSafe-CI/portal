@@ -1,10 +1,12 @@
 import json
-from mock import patch
-from django.test import TestCase
-from .models.app_descriptions import AppDescription
 from unittest import skip
-from django.urls import reverse
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
+
+from .models.app_descriptions import AppDescription
 
 
 @skip("TODOv3: Update apps api with Tapisv3")
@@ -39,7 +41,7 @@ class TestAppsApiViews(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestAppsApiViews, cls).setUpClass()
+        super().setUpClass()
         cls.mock_client_patcher = patch(
             "designsafe.apps.auth.models.TapisOAuthToken.client"
         )
@@ -48,7 +50,7 @@ class TestAppsApiViews(TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.mock_client_patcher.stop()
-        super(TestAppsApiViews, cls).tearDownClass()
+        super().tearDownClass()
 
     def setUp(self):
         user = get_user_model().objects.get(pk=2)

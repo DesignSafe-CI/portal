@@ -1,26 +1,27 @@
-""" Decorators used for the api TODO: This is Django specific. We should either move this into some kind of
-    django specific utils or try and make it as general as possible.
+"""Decorators used for the api TODO: This is Django specific. We should either move this into some kind of
+django specific utils or try and make it as general as possible.
 """
-import logging
-from functools import wraps
-from base64 import b64decode
-from urllib.parse import urlparse
-from django.conf import settings
-from django.http import HttpRequest
-from django.contrib.auth import get_user_model
-from django.contrib.auth import login
-from django.core.exceptions import ObjectDoesNotExist
-import jwt as pyjwt
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.serialization import load_der_public_key
-from cryptography.exceptions import UnsupportedAlgorithm
-from tapipy.tapis import Tapis
-from tapipy.errors import BaseTapyException
 
-#pylint: disable=invalid-name
+import logging
+from base64 import b64decode
+from functools import wraps
+from urllib.parse import urlparse
+
+import jwt as pyjwt
+from cryptography.exceptions import UnsupportedAlgorithm
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import load_der_public_key
+from django.conf import settings
+from django.contrib.auth import get_user_model, login
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpRequest
+from tapipy.errors import BaseTapyException
+from tapipy.tapis import Tapis
+
+# pylint: disable=invalid-name
 logger = logging.getLogger(__name__)
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
+
 
 def _decode_jwt(jwt):
     """Verified signature on a jwt
@@ -30,19 +31,19 @@ def _decode_jwt(jwt):
     :param str jwt: JWT string
     :return: base64-decoded message
     """
-    #pubkey = settings.AGAVE_JWT_PUBKEY
-    pubkey = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzO\nM4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe\n0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXn\nRS4HrKGJTzxaCcU7OQIDAQAB'
+    # pubkey = settings.AGAVE_JWT_PUBKEY
+    pubkey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzO\nM4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe\n0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXn\nRS4HrKGJTzxaCcU7OQIDAQAB"
     try:
         key_der = b64decode(pubkey)
         key = load_der_public_key(key_der, backend=default_backend())
     except (TypeError, ValueError, UnsupportedAlgorithm):
-        logger.exception('Could not load public key.')
+        logger.exception("Could not load public key.")
         return {}
 
     try:
         decoded = pyjwt.decode(jwt, key, issuer=settings.AGAVE_JWT_ISSUER)
-    except pyjwt.exceptions.DecodeError as exc:
-        logger.exception('Could not decode JWT. %s', exc)
+    except pyjwt.exceptions.DecodeError:
+        logger.exception("Could not decode JWT.")
         return {}
     return decoded
 
@@ -57,7 +58,7 @@ def _get_jwt_payload(request):
     payload = request.META.get(settings.AGAVE_JWT_HEADER)
     if payload and isinstance(payload, str):
         # Header encoding (see RFC5987)
-        payload = payload.encode('iso-8859-1')
+        payload = payload.encode("iso-8859-1")
 
     return payload
 
@@ -71,34 +72,33 @@ def tapis_jwt_login(func):
         header IS present then it will continue executing the wrapped function passing
         the request object with the correct user logged-in.
     """
-    #pylint: disable=missing-docstring
+
+    # pylint: disable=missing-docstring
     @wraps(func)
     def decorated_function(request: HttpRequest, *args, **kwargs):
-        tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
-            "."
-        )[0]
+        tenant_id = urlparse(settings.TAPIS_TENANT_BASEURL).hostname.split(".")[0]
         if request.user.is_authenticated:
             return func(request, *args, **kwargs)
 
-        tapis_jwt = request.headers.get('X-Tapis-Token')
+        tapis_jwt = request.headers.get("X-Tapis-Token")
         if not tapis_jwt:
-            logger.debug('No JWT payload found. Falling back')
+            logger.debug("No JWT payload found. Falling back")
             return func(request, *args, **kwargs)
 
-        tapis_client = Tapis(base_url=settings.TAPIS_TENANT_BASEURL,
-                             tenant_id=tenant_id
-                             )
+        tapis_client = Tapis(
+            base_url=settings.TAPIS_TENANT_BASEURL, tenant_id=tenant_id
+        )
         try:
             validation_response = tapis_client.validate_token(tapis_jwt)
         except BaseTapyException:
             return func(request, *args, **kwargs)
- 
-        tapis_username = validation_response['tapis/username']
+
+        tapis_username = validation_response["tapis/username"]
 
         try:
             user = get_user_model().objects.get(username=tapis_username)
         except ObjectDoesNotExist:
-            logger.exception('Could not find JWT user: %s', tapis_username)
+            logger.exception("Could not find JWT user: %s", tapis_username)
             user = None
 
         if user is not None:
@@ -107,7 +107,7 @@ def tapis_jwt_login(func):
         return func(request, *args, **kwargs)
 
     return decorated_function
-    #pylint: enable=missing-docstring
+    # pylint: enable=missing-docstring
 
 
 def agave_jwt_login(func):
@@ -128,7 +128,8 @@ def agave_jwt_login(func):
         requesting a user's projects listing on their behalf, via the
         `user` url parameter.
     """
-    #pylint: disable=missing-docstring
+
+    # pylint: disable=missing-docstring
     @wraps(func)
     def decorated_function(request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -136,23 +137,23 @@ def agave_jwt_login(func):
 
         payload = _get_jwt_payload(request)
         if not payload:
-            logger.debug('No JWT payload found. Falling back')
+            logger.debug("No JWT payload found. Falling back")
             return func(request, *args, **kwargs)
 
         jwt_payload = _decode_jwt(payload)
         if not jwt_payload:
             return None
 
-        jwt_username = jwt_payload.get(settings.AGAVE_JWT_USER_CLAIM_FIELD, '')
+        jwt_username = jwt_payload.get(settings.AGAVE_JWT_USER_CLAIM_FIELD, "")
         if jwt_username == settings.AGAVE_JWT_SERVICE_ACCOUNT:
-            username = request.GET.get('user', jwt_username)
+            username = request.GET.get("user", jwt_username)
         else:
             username = jwt_username
 
         try:
             user = get_user_model().objects.get(username=username)
         except ObjectDoesNotExist:
-            logger.exception('Could not find JWT user: %s', username)
+            logger.exception("Could not find JWT user: %s", username)
             user = None
 
         if user is not None:
@@ -161,4 +162,4 @@ def agave_jwt_login(func):
         return func(request, *args, **kwargs)
 
     return decorated_function
-    #pylint: enable=missing-docstring
+    # pylint: enable=missing-docstring

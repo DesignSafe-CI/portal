@@ -1,16 +1,17 @@
 """Placeholder API routes"""
 
 from django.urls import path
+
 from designsafe.apps.api.projects_v2.views import (
-    ProjectsView,
-    ProjectInstanceView,
-    ProjectEntityView,
+    ProjectEntityAssociationsView,
     ProjectEntityOrderView,
     ProjectEntityValidateView,
-    ProjectEntityAssociationsView,
+    ProjectEntityView,
     ProjectFileAssociationsView,
     ProjectFileTagsView,
+    ProjectInstanceView,
     ProjectPreviewView,
+    ProjectsView,
 )
 
 urlpatterns = [

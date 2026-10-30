@@ -5,14 +5,15 @@
         Visit: https://support.datacite.org/docs/api for more info.
 """
 
-from html.entities import entitydefs
-import os
 import json
-import zipfile
 import logging
+import os
+import zipfile
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
+
 from designsafe import settings
 from designsafe.apps.api.agave import service_account
 from designsafe.apps.data.models.agave.files import BaseFileResource
@@ -22,7 +23,6 @@ from designsafe.apps.projects.managers.base import ProjectsManager
 from designsafe.apps.projects.models.utils import lookup_model
 from designsafe.libs.elasticsearch.docs.publications import BaseESPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
-
 
 logger = logging.getLogger(__name__)
 TARGET_BASE = 'https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/{project_id}'
@@ -146,7 +146,7 @@ def draft_publication(
             if entity:
                 if revision:
                     entity_url = ENTITY_TARGET_BASE.format(
-                        project_id='{}v{}'.format(project_id, revision),
+                        project_id=f'{project_id}v{revision}',
                         entity_uuid=ent_uuid
                     )
                     original_entities = getattr(pub, FIELD_MAP[entity.name])
@@ -192,7 +192,7 @@ def draft_publication(
         if revision:
             # Versions should not update certain fields
             # Add version number to DataCite info
-            prj_url = TARGET_BASE.format(project_id='{}v{}'.format(project_id, revision))
+            prj_url = TARGET_BASE.format(project_id=f'{project_id}v{revision}')
             pub = BaseESPublication(project_id=project_id, revision=revision)
             prj.title = pub.project.value.title
             prj.team_order = pub.project.value.teamOrder
@@ -204,7 +204,7 @@ def draft_publication(
             # append links to previous versions in DOI...
             relatedIdentifiers = []
             for ver in range(1, revision):
-                id = '{}v{}'.format(project_id, ver) if ver!=1 else project_id
+                id = f'{project_id}v{ver}' if ver!=1 else project_id
                 relatedIdentifiers.append(
                     {
                     'relatedIdentifierType': 'URL',
@@ -535,7 +535,7 @@ def fix_file_tags(project_id, revision=None):
     def fix_tags_path(entity):
         for tag in entity['value']['fileTags']:
             try:
-                pub_base = "{}v{}".format(project_id, revision) if revision else project_id
+                pub_base = f"{project_id}v{revision}" if revision else project_id
                 pub_file = BaseFileResource.listing(
                     service_account(),
                     system="designsafe.storage.published",
@@ -543,7 +543,7 @@ def fix_file_tags(project_id, revision=None):
                 )
                 tag['fileUuid'] = pub_file.uuid
             except Exception as err:
-                logger.info('error: {}'.format(err))
+                logger.info(f'error: {err}')
                 continue
 
     def fix_tags_no_path(entity):
@@ -551,20 +551,20 @@ def fix_file_tags(project_id, revision=None):
             proj_other = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path="")
             for child in proj_other.children:
                 try:
-                    pub_base = "{}v{}".format(project_id, revision) if revision else project_id
-                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(pub_base, child.path))
+                    pub_base = f"{project_id}v{revision}" if revision else project_id
+                    pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path=f"{pub_base}{child.path}")
                     proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(entity['uuid']), path=child.path)
                     for tag in entity['value']['fileTags']:
                         if tag['fileUuid'] == proj_file.uuid:
                             tag['fileUuid'] = pub_file.uuid
                     
                 except Exception as err:
-                    logger.info('error: {}'.format(err))
+                    logger.info(f'error: {err}')
                     continue
         else:
             for fobj in entity['fileObjs']:
                 try:
-                    pub_base = "{}v{}".format(project_id, revision) if revision else project_id
+                    pub_base = f"{project_id}v{revision}" if revision else project_id
                     pub_file = BaseFileResource.listing(service_account(), system="designsafe.storage.published", path="{}{}".format(pub_base, fobj['path']))
                     proj_file = BaseFileResource.listing(service_account(), system="project-{}".format(pub_dict['project']['uuid']), path=fobj['path'])
                     for tag in entity['value']['fileTags']:
@@ -572,7 +572,7 @@ def fix_file_tags(project_id, revision=None):
                             tag['fileUuid'] = pub_file.uuid
                     
                 except Exception as err:
-                    logger.info('error: {}'.format(err))
+                    logger.info(f'error: {err}')
                     continue
 
     for entname in entities_to_check:
@@ -603,11 +603,11 @@ def archive(project_id, revision=None):
     es_client = new_es_client()
     pub = BaseESPublication(project_id=project_id, revision=revision, using=es_client)
     if revision:
-        archive_prefix = '{}v{}'.format(pub.projectId, revision)
+        archive_prefix = f'{pub.projectId}v{revision}'
     else:
         archive_prefix = pub.projectId
-    archive_name = '{}_archive.zip'.format(archive_prefix)
-    metadata_name = '{}_metadata.json'.format(archive_prefix)
+    archive_name = f'{archive_prefix}_archive.zip'
+    metadata_name = f'{archive_prefix}_metadata.json'
     pub_dir = settings.DESIGNSAFE_PUBLISHED_PATH
     arc_dir = os.path.join(pub_dir, 'archives/')
     archive_path = os.path.join(arc_dir, archive_name)
@@ -625,8 +625,8 @@ def archive(project_id, revision=None):
                         os.chmod(os.path.join(root, d), octal)
                     for f in files:
                         os.chmod(os.path.join(root, f), octal)
-        except Exception as e:
-            logger.exception("Failed to set permissions for {}".format(dir))
+        except Exception:
+            logger.exception(f"Failed to set permissions for {dir}")
             os.chmod(dir, 0o555)
 
     # compress published files into a zip archive
@@ -634,7 +634,7 @@ def archive(project_id, revision=None):
         arc_source = os.path.join(pub_dir, archive_prefix)
 
         try:
-            logger.debug("Creating archive for {}".format(archive_prefix))
+            logger.debug(f"Creating archive for {archive_prefix}")
             zf = zipfile.ZipFile(archive_path, mode='w', allowZip64=True)
             for dirs, _, files in os.walk(arc_source):
                 for f in files:
@@ -643,8 +643,8 @@ def archive(project_id, revision=None):
                     zf.write(os.path.join(dirs, f), os.path.join(dirs.replace(pub_dir, ''), f))
             zf.write(metadata_path, metadata_name)
             zf.close()
-        except Exception as e:
-            logger.exception("Archive creation failed for {}".format(arc_source))
+        except Exception:
+            logger.exception(f"Archive creation failed for {arc_source}")
         finally:
             set_perms(pub_dir, 0o555, arc_source)
             set_perms(arc_dir, 0o555)
@@ -665,7 +665,7 @@ def archive(project_id, revision=None):
 
         project_uuid = pub_dict['project']['uuid']
         try:
-            logger.debug("Creating metadata for {}".format(archive_prefix))
+            logger.debug(f"Creating metadata for {archive_prefix}")
             if pub_dict['project']['value']['projectType'] in entity_type_map:
                 ent_type = entity_type_map[pub_dict['project']['value']['projectType']]
                 entity_uuids = []
@@ -699,7 +699,7 @@ def archive(project_id, revision=None):
         set_perms(arc_dir, 0o755)
         create_metadata()
         create_archive()
-    except Exception as e:
+    except Exception:
         logger.exception('Failed to archive publication!')
 
 

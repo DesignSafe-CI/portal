@@ -1,9 +1,10 @@
 """Elasticsearch model for published works"""
 
-from elasticsearch_dsl import Document
-from elasticsearch.exceptions import NotFoundError
 import networkx as nx
 from django.conf import settings
+from elasticsearch.exceptions import NotFoundError
+from elasticsearch_dsl import Document
+
 from designsafe.apps.api.projects_v2.models import ProjectMetadata
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
     add_values_to_tree,
@@ -31,7 +32,7 @@ def index_project(project_id):
             **project_json,
             uuid=project_meta.uuid,
             value=project_meta.value,
-            created=project_meta.created
+            created=project_meta.created,
         )
 
     except NotFoundError:
@@ -39,7 +40,7 @@ def index_project(project_id):
             **project_json,
             uuid=project_meta.uuid,
             value=project_meta.value,
-            created=project_meta.created
+            created=project_meta.created,
         )
         pub_es.meta["id"] = project_id
         pub_es.save()

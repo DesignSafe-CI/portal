@@ -1,0 +1,81 @@
+{
+    "contributors": [
+        {
+            "contributorType": "HostingInstitution",
+            "nameType": "Organizational",
+            "name": "University of Central Florida (ucf.edu)"
+        }
+    ],
+    "creators": [
+        {
+            "name": "Rafi, Md Nafees Fuad",
+            "givenName": "Md Nafees Fuad",
+            "familyName": "Rafi",
+            "affiliation": [
+                {
+                    "name": "University of Central Florida (ucf.edu)",
+                    "schemeUri": null,
+                    "affiliationIdentifier": null,
+                    "affiliationIdentifierScheme": null
+                }
+            ]
+        },
+        {
+            "name": "Hasan, Samiul",
+            "givenName": "Samiul",
+            "familyName": "Hasan",
+            "affiliation": [
+                {
+                    "name": "University of Central Florida (ucf.edu)",
+                    "schemeUri": null,
+                    "affiliationIdentifier": null,
+                    "affiliationIdentifierScheme": null
+                }
+            ]
+        }
+    ],
+    "titles": [
+        {
+            "title": "Evacuation Traffic Prediction for Dynamic Transportation Networks over Multiple Hurricanes: A Generalized Graph Learning Approach"
+        }
+    ],
+    "publisher": "Designsafe-CI",
+    "publicationYear": 2026,
+    "types": { "resourceType": "Project", "resourceTypeGeneral": "Dataset" },
+    "version": 1,
+    "descriptions": [
+        {
+            "descriptionType": "Abstract",
+            "description": "This project contains the dataset used for the study titled \u201cEvacuation Traffic Prediction for Dynamic Transportation Networks over Multiple Hurricanes: A Generalized Graph Learning Approach.\u201d The study develops a Dynamic Graph Learning (DGL) framework to predict traffic conditions during unseen hurricane evacuation periods. The project focuses on evacuation traffic flow prediction using detector-based traffic data, dynamic transportation network representation, evacuation order information, and spatial attributes related to hurricane events. It also introduces a modular training approach to show the incremental learning of the DGL framework from multiple hurricanes.\nThe dataset includes processed traffic detector (MVDS) observations from multiple historical hurricanes in Florida, along with multiple evacuation-related features used for model training and evaluation. The dynamic graph structure represents changes in the active transportation sensor network over time, allowing the model to account for real-time detector availability and evolving roadway conditions during evacuation events.\nThis project is unique because it supports network-wide generalized evacuation traffic prediction across multiple hurricanes rather than training and evaluating a model on a single event. The data can be reused by researchers, transportation agencies, and emergency management practitioners to develop, compare, or validate traffic prediction models for hurricane evacuation planning and real-time operational decision support. The project may also support future studies on dynamic graph learning, traffic forecasting, transportation resilience, and disaster response modeling.\nThe intended audience includes researchers in transportation engineering, artificial intelligence, disaster resilience, emergency management, and infrastructure systems, as well as practitioners interested in evacuation traffic forecasting and network-wide traffic monitoring during hurricane events.",
+            "lang": "en-Us"
+        }
+    ],
+    "subjects": [
+        { "subject": "evacuation traffic prediction" },
+        { "subject": "transportation networks" },
+        { "subject": "emergency management" },
+        { "subject": "dynamic graph learning" }
+    ],
+    "language": "English",
+    "identifiers": [{ "identifierType": "Project ID", "identifier": "PRJ-6362" }],
+    "fundingReferences": [
+        {
+            "awardTitle": "EAGER-SAI: Exploring Pathways of Adaptive Infrastructure Management with Rapidly Intensifying Hurricanes",
+            "awardNumber": "2122135",
+            "funderName": "NSF"
+        }
+    ],
+    "relatedIdentifiers": [],
+    "rightsList": [
+        {
+            "lang": "en",
+            "rights": "Open Data Commons Attribution",
+            "rightsUri": null,
+            "schemeUri": null,
+            "rightsIdentifier": null,
+            "rightsIdentifierScheme": null
+        }
+    ],
+    "url": "https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published/PRJ-6362",
+    "prefix": "doi:10.17603/DS2"
+}

@@ -1,14 +1,16 @@
-""" Agave models util module."""
+"""Agave models util module."""
+
 import logging
+
 from django.core.serializers.json import DjangoJSONEncoder
-from designsafe.apps.data.models.agave.base import BaseAgaveResource
-from designsafe.apps.data.models.agave.base import BaseModel
+
+from designsafe.apps.data.models.agave.base import BaseAgaveResource, BaseModel
 
 logger = logging.getLogger(__name__)
 
 
 class AgaveJSONEncoder(DjangoJSONEncoder):
-    """ Agave json encoder class.
+    """Agave json encoder class.
 
     This class is used when using :class:`django.http.JsonResponse` to serialize
     an agave object.
@@ -24,7 +26,7 @@ class AgaveJSONEncoder(DjangoJSONEncoder):
     def default(self, o):
         """Serializer function"""
 
-        if isinstance(o, BaseAgaveResource) or isinstance(o, BaseModel):
+        if isinstance(o, (BaseAgaveResource, BaseModel)):
             return o.to_dict()
 
-        return super(AgaveJSONEncoder, self).default(o)
+        return super().default(o)

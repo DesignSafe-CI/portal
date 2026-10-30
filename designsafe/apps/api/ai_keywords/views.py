@@ -2,16 +2,18 @@
 
 import json
 import logging
+
 from chromadb import HttpClient, Settings
-from typing_extensions import TypedDict
-from langchain_core.documents import Document
-from langgraph.graph import START, StateGraph
-from langchain_chroma import Chroma
-from langchain.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from django.http import HttpRequest, JsonResponse
 from django.conf import settings
-from designsafe.apps.api.views import BaseApiView, ApiException
+from django.http import HttpRequest, JsonResponse
+from langchain_chroma import Chroma
+from langchain_core.documents import Document
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langgraph.graph import START, StateGraph
+from typing_extensions import TypedDict
+
+from designsafe.apps.api.views import ApiException, BaseApiView
 
 logger = logging.getLogger(__name__)
 
@@ -42,14 +44,14 @@ class KeywordsView(BaseApiView):
         graph = graph_builder.compile()
         resp = graph.invoke(
             {
-                "question": f"project title: {title}, description: {description} {f', hazard types: {hazard_types}' if hazard_types else '' }"
+                "question": f"project title: {title}, description: {description} {f', hazard types: {hazard_types}' if hazard_types else ''}"
             }
         )
         try:
             resp_list = _parse_keywords_response(resp["answer"])
         except (AttributeError, TypeError, ValueError):
             logger.exception("Error decoding answer")
-            logger.debug(f"Raw answer: {resp['answer']}")
+            logger.debug("Raw answer: %s", resp["answer"])
             resp_list = []
 
         return JsonResponse({"response": resp_list})
@@ -124,9 +126,9 @@ class RAG:
                 top_p=0.1,
             )
 
-        except Exception as e:
+        except Exception:
             logger.exception("Error initializing RAG")
-            raise e
+            raise
 
     def retrieve(self, state: State):
         """Retrieve relevant documents from vector store based on the question."""

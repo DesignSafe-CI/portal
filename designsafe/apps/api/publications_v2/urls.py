@@ -1,11 +1,12 @@
 """Publication API routes"""
 
 from django.urls import path, re_path
+
 from designsafe.apps.api.publications_v2.views import (
-    PublicationListingView,
-    PublicationDetailView,
-    PublicationPublishView,
     PublicationAmendView,
+    PublicationDetailView,
+    PublicationListingView,
+    PublicationPublishView,
     PublicationVersionView,
 )
 

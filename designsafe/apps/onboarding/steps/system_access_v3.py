@@ -1,18 +1,19 @@
 """System Access Step for Onboarding."""
 
 import logging
+
 from tapipy.errors import (
-    NotFoundError,
     BaseTapyException,
     ForbiddenError,
+    NotFoundError,
     UnauthorizedError,
 )
-from designsafe.apps.onboarding.steps.abstract import AbstractStep
-from designsafe.apps.onboarding.state import SetupState
+
 from designsafe.apps.api.agave import get_service_account_client, get_tg458981_client
 from designsafe.apps.api.tasks import agave_indexer
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
 from designsafe.libs.common.decorators import retry
-
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,9 @@ def create_system_credentials_with_keys(  # pylint: disable=too-many-arguments
     """
     Set an RSA key pair as the user's auth credential on a Tapis system.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id}")
+    logger.info(
+        "Creating user credential for %s on Tapis system %s", username, system_id
+    )
     data = {"privateKey": private_key, "publicKey": public_key}
     client.systems.createUserCredential(
         systemId=system_id,
@@ -54,7 +57,11 @@ def create_system_credentials(  # pylint: disable=too-many-arguments
     """
     Setup user's auth credential on a Tapis system using TMS.
     """
-    logger.info(f"Creating user credential for {username} on Tapis system {system_id} using TMS")
+    logger.info(
+        "Creating user credential for %s on Tapis system %s using TMS",
+        username,
+        system_id,
+    )
     client.systems.createUserCredential(
         systemId=system_id,
         userName=username,
@@ -65,7 +72,7 @@ def create_system_credentials(  # pylint: disable=too-many-arguments
 
 def set_user_permissions(user, system_id):
     """Apply read/write/execute permissions to files and read permissions on the system."""
-    logger.info(f"Adding {user.username} permissions to Tapis system {system_id}")
+    logger.info("Adding %s permissions to Tapis system %s", user.username, system_id)
     client = get_service_account_client()
     client.systems.grantUserPerms(
         systemId=system_id, userName=user.username, permissions=["READ"]
@@ -138,7 +145,10 @@ class SystemAccessStepV3(AbstractStep):
 
             try:
                 create_system_credentials(
-                    self.user.tapis_oauth.client, self.user.username, system, createTmsKeys=True
+                    self.user.tapis_oauth.client,
+                    self.user.username,
+                    system,
+                    createTmsKeys=True,
                 )
                 self.log(f"Successfully created credentials for system: {system}")
             except BaseTapyException as exc:

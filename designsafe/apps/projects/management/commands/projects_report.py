@@ -1,13 +1,12 @@
 """Command to print NSF report"""
-import six
-import json
 import csv
+import json
 import logging
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from requests.exceptions import HTTPError
+from django.core.management.base import BaseCommand
+
 from designsafe.apps.api.agave import get_service_account_client
 
 logger = logging.getLogger(__name__)
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     """Returns a csv file with necessary details for report"""
     def __init__(self, *args, **kwargs):
-        super(Command, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.client = None
 
     def add_arguments(self, parser):
