@@ -215,6 +215,9 @@ if os.environ.get("DATABASE_HOST"):
             "PORT": os.environ.get("DATABASE_PORT"),
             "USER": os.environ.get("DATABASE_USER"),
             "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
+            "OPTIONS": {
+                "sslmode": os.environ.get("DATABASE_SSL_MODE", "prefer"),
+            },
         },
     }
     DATABASES["default"]["CONN_MAX_AGE"] = 0
