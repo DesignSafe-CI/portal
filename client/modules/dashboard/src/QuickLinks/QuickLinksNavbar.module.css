@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: #f5f7fa;
+  background-color: var(--global-color-primary--x-light);
   color: #333;
   padding: 1.5rem;
   border-radius: 8px;
@@ -15,7 +15,7 @@
   font-weight: 600;
   margin-bottom: 1.2rem;
   color: #2c3e50;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--global-color-primary--light);
   padding-bottom: 0.4rem;
 }
 

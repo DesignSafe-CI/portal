@@ -120,7 +120,7 @@ const FavoriteTools: React.FC = () => {
               size="small"
               dataSource={resolvedFavorites}
               bordered
-              style={{ background: '#fff' }}
+              style={{ background: 'var(--global-color-primary--xx-light)' }}
               renderItem={({ app, key }) => (
                 <List.Item
                   key={key}

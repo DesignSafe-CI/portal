@@ -9,7 +9,7 @@
   text-align: left;
   vertical-align: middle;
   white-space: normal;
-  border-bottom: 1px solid #707070;
+  border-bottom: 1px solid var(--global-color-primary--dark);
   font-size: 0.85em;
 }
 
@@ -41,15 +41,15 @@
 }
 
 .systemTable tbody tr:nth-child(even) {
-  background-color: #f4f4f4;
+  background-color: var(--global-color-primary--x-light);
 }
 
 .systemTable tbody tr:nth-child(odd) {
-  background-color: #ffffff;
+  background-color: var(--global-color-primary--xx-light);
 }
 
 .systemTable th {
-  border-bottom: 1px solid #707070;
+  border-bottom: 1px solid var(--global-color-primary--dark);
 }
 
 .systemTable td {
