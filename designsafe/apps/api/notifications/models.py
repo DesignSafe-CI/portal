@@ -45,14 +45,14 @@ class BaseNotify(models.Model):
             logger.debug("extra: %s, id: %s", self.extra, self.id)
             extra = {}
         d = {
-            'event_type': self.event_type,
-            'datetime': self.datetime.isoformat(),
-            'status': self.status,
-            'operation': self.operation,
-            'message': self.message,
-            'extra': extra,
-            'pk': self.pk,
-            'action_link': self.action_link
+            "event_type": self.event_type,
+            "datetime": self.datetime.isoformat(),
+            "status": self.status,
+            "operation": self.operation,
+            "message": self.message,
+            "extra": extra,
+            "pk": self.pk,
+            "action_link": self.action_link
         }
         return d
 
