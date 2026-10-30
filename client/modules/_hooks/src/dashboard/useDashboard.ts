@@ -1,13 +1,6 @@
-import { useQuery, useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { TUserUsage, TUserTicket, TUserNotification } from './types';
-import apiClient, { type TApiError } from '../apiClient';
-
-export type TUserNotificationsResponse = {
-    notifs: TUserNotification[] | undefined;
-    page: number;
-    total: number;
-    unread: number;
-}
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { TUserUsage, TUserTicket } from './types';
+import apiClient from '../apiClient';
 
 async function getUserUsage() {
   const res = await apiClient.get<TUserUsage>(
@@ -23,13 +16,6 @@ async function getUserTickets() {
     return res.data;
 }
 
-async function getUserNotifications() {
-    const res = await apiClient.get<TUserNotificationsResponse>(
-        `api/notifications/`
-    );
-    return res.data;
-}
-
 const getUserUsageQuery = () => ({
   queryKey: ['users', 'usage'],
   queryFn: () => getUserUsage(),
@@ -37,10 +23,6 @@ const getUserUsageQuery = () => ({
 const getUserTicketsQuery = () => ({
     queryKey: ['users', 'tickets'],
     queryFn: () => getUserTickets(),
-});
-const getUserNotificationsQuery = () => ({
-    queryKey: ['users', 'notifications'],
-    queryFn: () => getUserNotifications(),
 });
 
 export function useGetUserUsage() {
@@ -55,6 +37,3 @@ export function useGetUserTickets() {
 export const useGetUserTicketsSuspense = () => {
   return useSuspenseQuery(getUserTicketsQuery());
 };
-export function useGetUserNotifications() {
-    return useQuery(getUserNotificationsQuery());
-}
