@@ -26,12 +26,14 @@ export type TNcoGrantsListing = {
 }
 
 async function getNcoGrantsListing({
+    searchString,
     signal,
 }: {
+    searchString: string;
     signal: AbortSignal;
 }) {
     const resp = await apiClient.get<TNcoGrantsListing>(
-        `/nco/api/ttc_grants`,
+        `/nco/api/ttc_grants${searchString ? '?' + searchString : ''}`,
         {
             signal,
         }
@@ -40,10 +42,12 @@ async function getNcoGrantsListing({
 }
 
 export function useNcoGrantsListing() {
+    const [searchParams] = useSearchParams();
+    const searchString = searchParams.toString();
     
     return useQuery({
-        queryKey: ['nco', 'listing',],
+        queryKey: ['nco', 'listing', 'grants', searchString],
         queryFn: ({signal}) => 
-            getNcoGrantsListing({ signal }),
+            getNcoGrantsListing({ searchString, signal }),
     });
 }

@@ -32,6 +32,32 @@ class NcoProjectsManager(object):
         self._mp = MongoProjectsHelper(self._ac)
         self._pm = ProjectsManager(self._ac)
 
+    def sched_events(self, params=None):
+        """Return scheduler list"""
+        query = {}
+
+        #turn params into query
+        if params['facility']:
+            query['facility'] = params['facility']
+
+        if (params['history'] and params['history'] == 'Current Events') or (not params['history']):
+            date = datetime.utcnow()
+            yesterday = date - timedelta(days=1)
+            query["dateEnd"]= {"$gt": yesterday}
+
+        #get the list of events
+        events = [event for event in self._mp.get_sched_listing(query=query,sort=params['sort'])]
+        return events
+    
+    def sched_facilities(self):
+        """Return list of distinct facilities in ttc_grant collection"""
+        facilities = [facility for facility in self._mp.get_sched_facilities()]
+        return facilities
+
+    """ Previous Implementation Functions
+    These are here for posterity
+    not currently being used
+    """
     def _process_time_filter(self, value):
         """Convert from time filter value to date range."""
         date = datetime.utcnow()
@@ -136,7 +162,7 @@ class NcoProjectsManager(object):
             sort=sort,
             page_number=page_number,
             page_size=page_size)]
-        total = self._mp.count_events(query)
+        total = self._mp.get_sched_listing(query)
         return total, prjs
 
     def update_saved_projects(self):
@@ -212,3 +238,4 @@ class NcoProjectsManager(object):
     def filters(self):
         """Return a list of possible filters."""
         return self._mp.filters()
+        
