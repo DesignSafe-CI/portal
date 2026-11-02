@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 from boxsdk.exception import BoxOAuthException
 from django.conf import settings
 from django.http import JsonResponse
+from django.views import View
 from dropbox.exceptions import AuthError as DropboxAuthError
 from google.auth.exceptions import GoogleAuthError
 from requests.exceptions import HTTPError
@@ -61,72 +62,72 @@ def get_client(user, api, system=""):
     return getattr(user, client_mappings[api]).client
 
 
-class DataFilesView(BaseApiView):
+class DataFilesView(View):
     async def get(
         self, request, api, operation=None, scheme="private", system=None, path=""
     ):
-
-        doi = request.GET.get("doi", None)
-
-        metrics.info(
-            "Data Depot",
-            extra={
-                "user": request.user.username,
-                "sessionId": getattr(request.session, "session_key", ""),
-                "operation": operation,
-                "agent": request.META.get("HTTP_USER_AGENT"),
-                "ip": get_client_ip(request),
-                "info": {
-                    "api": api,
-                    "systemId": system,
-                    "filePath": path,
-                    "doi": doi,
-                    "query": request.GET.dict(),
-                },
-            },
-        )
-
-        if request.user.is_authenticated:
-            try:
-                client = await sync_to_async(get_client)(request.user, api, system)
-            except AttributeError:
-                raise resource_unconnected_handler(api)
-        elif api in ("agave", "tapis") and system in (
-            settings.COMMUNITY_SYSTEM,
-            settings.PUBLISHED_SYSTEM,
-            settings.NEES_PUBLIC_SYSTEM,
-        ):
-            client = service_account()
-        else:
-            return JsonResponse(
-                {"message": "Please log in to access this feature."}, status=403
-            )
-
         try:
-            session_key_hash = sha256(
-                (request.session.session_key or "").encode()
-            ).hexdigest()
-            if api == "tapis":
-                handler = datafiles_get_handler_tapis_async
-            else:
-                handler = sync_to_async(datafiles_get_handler)
+            doi = request.GET.get("doi", None)
 
-            response = await handler(
-                api,
-                client,
-                scheme,
-                system,
-                path,
-                operation,
-                tapis_tracking_id=f"portals.{session_key_hash}",
-                username=request.user.username,
-                **request.GET.dict(),
+            metrics.info(
+                "Data Depot",
+                extra={
+                    "user": request.user.username,
+                    "sessionId": getattr(request.session, "session_key", ""),
+                    "operation": operation,
+                    "agent": request.META.get("HTTP_USER_AGENT"),
+                    "ip": get_client_ip(request),
+                    "info": {
+                        "api": api,
+                        "systemId": system,
+                        "filePath": path,
+                        "doi": doi,
+                        "query": request.GET.dict(),
+                    },
+                },
             )
-            return JsonResponse(response)
-        except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
-            raise resource_expired_handler(api)
-        except (HTTPError, httpx2.HTTPStatusError) as e:
-            return JsonResponse({"message": str(e)}, status=e.response.status_code)
+
+            if request.user.is_authenticated:
+                try:
+                    client = await sync_to_async(get_client)(request.user, api, system)
+                except AttributeError:
+                    raise resource_unconnected_handler(api)
+            elif api in ("agave", "tapis") and system in (
+                settings.COMMUNITY_SYSTEM,
+                settings.PUBLISHED_SYSTEM,
+                settings.NEES_PUBLIC_SYSTEM,
+            ):
+                client = service_account()
+            else:
+                return JsonResponse(
+                    {"message": "Please log in to access this feature."}, status=403
+                )
+
+            try:
+                session_key_hash = sha256(
+                    (request.session.session_key or "").encode()
+                ).hexdigest()
+                if api == "tapis":
+                    handler = datafiles_get_handler_tapis_async
+                else:
+                    handler = sync_to_async(datafiles_get_handler)
+
+                response = await handler(
+                    api,
+                    client,
+                    scheme,
+                    system,
+                    path,
+                    operation,
+                    tapis_tracking_id=f"portals.{session_key_hash}",
+                    username=request.user.username,
+                    **request.GET.dict(),
+                )
+                return JsonResponse(response)
+            except (BoxOAuthException, DropboxAuthError, GoogleAuthError):
+                raise resource_expired_handler(api)
+            except (HTTPError, httpx2.HTTPStatusError) as e:
+                return JsonResponse({"message": str(e)}, status=e.response.status_code)
         except Exception as exc:
             logger.exception("unhandled exception in datafiles view", stack_info=True)
             return JsonResponse({"message": str(exc)}, status=500)
