@@ -127,6 +127,9 @@ class DataFilesView(BaseApiView):
             raise resource_expired_handler(api)
         except (HTTPError, httpx2.HTTPStatusError) as e:
             return JsonResponse({"message": str(e)}, status=e.response.status_code)
+        except Exception as exc:
+            logger.exception("unhandled exception in datafiles view", stack_info=True)
+            return JsonResponse({"message": str(exc)}, status=500)
 
     async def put(
         self, request, api, operation=None, scheme="private", system=None, path="/"
