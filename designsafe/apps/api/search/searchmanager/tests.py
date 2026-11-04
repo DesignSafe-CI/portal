@@ -1,26 +1,29 @@
-import os
-import json
-import datetime
 from unittest import skip
-from mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.conf import settings
-from datetime import timedelta
-from elasticsearch_dsl import Search 
+from elasticsearch_dsl import Search
 
+from designsafe.apps.api.search.searchmanager.community import (
+    CommunityDataSearchManager,
+)
 from designsafe.apps.api.search.searchmanager.lookups import SearchLookupManager
-
-from designsafe.apps.api.search.searchmanager.private_data import PrivateDataSearchManager
-from designsafe.apps.api.search.searchmanager.community import CommunityDataSearchManager
-from designsafe.apps.api.search.searchmanager.published_files import PublishedDataSearchManager
+from designsafe.apps.api.search.searchmanager.private_data import (
+    PrivateDataSearchManager,
+)
+from designsafe.apps.api.search.searchmanager.publications import (
+    PublicationsSearchManager,
+)
+from designsafe.apps.api.search.searchmanager.published_files import (
+    PublishedDataSearchManager,
+)
 from designsafe.apps.api.search.searchmanager.shared_data import SharedDataSearchManager
-from designsafe.apps.api.search.searchmanager.publications import PublicationsSearchManager
+from designsafe.apps.data.models.elasticsearch import (
+    IndexedFile,
+    IndexedPublication,
+    IndexedPublicationLegacy,
+)
 
-from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
-from designsafe.apps.data.models.elasticsearch import IndexedFile
-
-from designsafe.apps.api.exceptions import ApiException
 
 @skip("Need to mock Elasticsearch calls")
 class TestLookupManager(TestCase):
@@ -176,7 +179,7 @@ class TestPublicationSearchMgr(TestCase):
         mock_pub().to_file.return_value = {'type': 'pub'}
         mock_leg_pub().to_file.return_value = {'type': 'leg_pub'}
 
-        res = fm.listing(**{'type_filters': []})
+        res = fm.listing(type_filters=[])
         expected_result = {
             'trail': [{'name': '$SEARCH', 'path': '/$SEARCH'}],
             'name': '$SEARCH',

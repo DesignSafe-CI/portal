@@ -1,4 +1,5 @@
 from django.urls import re_path as url
+
 from designsafe.apps.nco.views import (
     ProjectsListView,
     SchedEventsView,
@@ -6,6 +7,7 @@ from designsafe.apps.nco.views import (
     SchedFacilitiesView,
     TtcGrantsView,
     TtcFacilitiesView,
+    TtcGrantsView,
     TtcGrantTypesView,
     TtcHazardTypesView,
 )

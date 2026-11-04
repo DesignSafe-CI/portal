@@ -5,20 +5,10 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 
-# pylint: disable=unused-import
-from designsafe.apps.api.projects_v2.operations.project_system_operations import (
-    add_users_to_project_async,
-    remove_users_from_project_async,
-)
-from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
-from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
-    publish_project_async,
-    amend_publication_async,
-)
-from designsafe.apps.api.projects_v2.operations.project_archive_operations import (
-    archive_publication_async,
-)
 from designsafe.apps.api.projects_v2.elasticsearch import reindex_projects
+from designsafe.apps.api.projects_v2.models.project_metadata import ProjectMetadata
+
+# pylint: disable=unused-import
 from designsafe.libs.common.context_managers import AsyncTaskContext
 
 

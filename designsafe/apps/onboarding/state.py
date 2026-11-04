@@ -1,4 +1,4 @@
-""" State definitions for onboarding steps """
+"""State definitions for onboarding steps"""
 
 
 # pylint: disable=too-few-public-methods

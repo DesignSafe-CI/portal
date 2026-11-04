@@ -1,14 +1,18 @@
 from boxsdk import Client, OAuth2
-from django.db import models
 from django.conf import settings
-import json
+from django.db import models
 
 
 class BoxUserToken(models.Model):
     """
     Represents an OAuth Token for a Box.com user
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='box_user_token', on_delete=models.CASCADE)
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="box_user_token",
+        on_delete=models.CASCADE,
+    )
     box_user_id = models.CharField(max_length=48)
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)
@@ -41,9 +45,11 @@ class BoxUserToken(models.Model):
 
     @property
     def client(self):
-        oauth = OAuth2(client_id=settings.BOX_APP_CLIENT_ID,
-                       client_secret=settings.BOX_APP_CLIENT_SECRET,
-                       access_token=self.access_token,
-                       refresh_token=self.refresh_token,
-                       store_tokens=self.update_tokens)
+        oauth = OAuth2(
+            client_id=settings.BOX_APP_CLIENT_ID,
+            client_secret=settings.BOX_APP_CLIENT_SECRET,
+            access_token=self.access_token,
+            refresh_token=self.refresh_token,
+            store_tokens=self.update_tokens,
+        )
         return Client(oauth)

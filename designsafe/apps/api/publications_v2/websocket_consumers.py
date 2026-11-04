@@ -2,7 +2,9 @@
 
 import json
 import logging
+
 from channels.generic.websocket import AsyncWebsocketConsumer
+
 from designsafe.apps.api.publications_v2.agents.neo4j_rag_agent import (
     combined_agent as HybridSearchAgent,
 )
@@ -43,9 +45,20 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                     "ip": ip_addr,
                     "operation": "chat.feedback",
                     "sessionId": getattr(session, "session_key", ""),
-                    "user": getattr(user, "username"),
+                    "user": user.username,
                     "info": {"value": payload, "history": json_data.get("history")},
                 },
+            )
+
+        if message_type == "ping":  # used for liveness checks
+            await self.send(
+                json.dumps(
+                    {
+                        "type": "chat.ping",
+                        "key": f"ping-{key}",
+                        "payload": "pong",
+                    }
+                )
             )
 
     async def chat_message(self, event):
@@ -56,7 +69,7 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
 
             async with stream_response as result:
                 res = ""
-                async for text in result.stream(debounce_by=1):
+                async for text in result.stream_text(debounce_by=1):
                     res = text
                     await self.send(
                         json.dumps(
@@ -77,13 +90,13 @@ class PublicationsRAGWebsocketConsumer(AsyncWebsocketConsumer):
                         "ip": ip_addr,
                         "operation": "chat.response",
                         "sessionId": getattr(session, "session_key", ""),
-                        "user": getattr(user, "username"),
+                        "user": user.username,
                         "info": {"query": event["payload"], "response": res},
                     },
                 )
         # pylint:disable=broad-exception-caught
-        except Exception as exc:
-            logger.debug(exc)
+        except Exception:
+            logger.exception("")
             await self.send(
                 json.dumps(
                     {

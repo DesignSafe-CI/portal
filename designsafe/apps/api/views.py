@@ -1,17 +1,20 @@
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
-from django.http import JsonResponse, HttpResponse, Http404
-from django.core.exceptions import PermissionDenied
-from django.utils.decorators import method_decorator
-from django.conf import settings
-from requests.exceptions import HTTPError
-from .exceptions import ApiException
+import json
 import logging
 from logging import getLevelName
-import json
-from designsafe.apps.api.decorators import tapis_jwt_login
-from tapipy.errors import BaseTapyException
+
 import requests
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
+from django.http import Http404, HttpResponse, JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
+from requests.exceptions import HTTPError
+from tapipy.errors import BaseTapyException
+
+from designsafe.apps.api.decorators import tapis_jwt_login
+
+from .exceptions import ApiException
 
 logger = logging.getLogger(__name__)
 
@@ -29,18 +32,16 @@ class BaseApiView(View):
         """
         try:
             return super().dispatch(request, *args, **kwargs)
-        except (PermissionDenied, Http404) as e:
+        except (PermissionDenied, Http404):
             # log information but re-raise exception to let django handle response
-            logger.error(e, exc_info=True)
-            raise e
+            logger.exception("")
+            raise
         except ApiException as e:
             status = e.response.status_code or 400
             message = e.response.reason
             extra = e.extra
             if status != 404:
-                logger.error(
-                    "%s: %s", message, e.response.text, exc_info=True, extra=extra
-                )
+                logger.exception("%s: %s", message, e.response.text, extra=extra)
             else:
                 logger.info("Error %s", message, exc_info=True, extra=extra)
             return JsonResponse({"message": message}, status=status)
@@ -69,20 +70,17 @@ class BaseApiView(View):
                         },
                     )
                 else:
-                    logger.error(
+                    logger.exception(
                         "%s: %s",
                         message,
                         e.response.text,
-                        exc_info=True,
                         extra={
                             "username": request.user.username,
                             "session_key": request.session.session_key,
                         },
                     )
             else:
-                logger.error(
-                    e,
-                    exc_info=True,
+                logger.exception(
                     extra={
                         "username": request.user.username,
                         "session_key": request.session.session_key,
@@ -90,8 +88,8 @@ class BaseApiView(View):
                 )
                 message = str(e)
             return JsonResponse({"message": message}, status=status)
-        except Exception as e:  # pylint: disable=broad-except
-            logger.error(e, exc_info=True)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("")
             return JsonResponse({"message": "Something went wrong here..."}, status=500)
 
 
@@ -105,7 +103,7 @@ class AuthenticatedApiView(BaseApiView):
 
         if not request.user.is_authenticated:
             return JsonResponse({"message": "Unauthenticated user"}, status=401)
-        return super(AuthenticatedApiView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class AuthenticatedAllowJwtApiView(AuthenticatedApiView):
@@ -117,9 +115,7 @@ class AuthenticatedAllowJwtApiView(AuthenticatedApiView):
     @method_decorator(tapis_jwt_login)
     def dispatch(self, request, *args, **kwargs):
         """Returns 401 if user is not authenticated like AuthenticatedApiView but allows JWT access."""
-        return super(AuthenticatedAllowJwtApiView, self).dispatch(
-            request, *args, **kwargs
-        )
+        return super().dispatch(request, *args, **kwargs)
 
 
 class LoggerApi(BaseApiView):
@@ -157,55 +153,44 @@ class LoggerApi(BaseApiView):
             },
         )
         return HttpResponse("OK", status=202)
-    
 
 
 class SystemQueueProxyApi(BaseApiView):
-    """"
-    Proxy API for fetching system queue data from TAP. 
+    """ "
+    Proxy API for fetching system queue data from TAP.
     """
 
     def get(self, request, hostname):
         url = f"{settings.TAP_API_STATUS}/{hostname}"
-        
+
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
-            return JsonResponse({
-                "response": response.json(),
-                "status": "success"
-            })
+            return JsonResponse({"response": response.json(), "status": "success"})
         except requests.exceptions.RequestException as e:
-            logger.exception("Proxy API Error:", str(e)) 
-            return JsonResponse({
-                "response": None,
-                "status": "error",
-                "error": str(e)
-            }, status=500)
+            logger.exception("Proxy API Error")
+            return JsonResponse(
+                {"response": None, "status": "error", "error": str(e)}, status=500
+            )
 
-            
 
 class SystemOverviewProxyApi(BaseApiView):
     """
     Proxy API for fetching system monitor overview data from TAP. (Load%, Running, Waiting Jobs)
     """
+
     def get(self, request):
         url = settings.TAP_API_STATUS
 
         try:
             response = requests.get(url, timeout=10)
             response.raise_for_status()
-            return JsonResponse({
-                "response": response.json(),
-                "status": "success"
-            }, status=200)
-             
-        except requests.exceptions.RequestException as e:
-            logger.exception("Proxy API Error:", str(e)) 
-            return JsonResponse({
-                "response": None,
-                "status": "error",
-                "error": str(e)
-            }, status=500)
-        
+            return JsonResponse(
+                {"response": response.json(), "status": "success"}, status=200
+            )
 
+        except requests.exceptions.RequestException as e:
+            logger.exception("Proxy API Error")
+            return JsonResponse(
+                {"response": None, "status": "error", "error": str(e)}, status=500
+            )

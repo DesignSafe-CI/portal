@@ -4,9 +4,10 @@ Agent for documentation RAG
 
 import os
 from collections.abc import Callable
+
 import chromadb
-from chromadb.config import Settings as ChromaSettings
 import pydantic
+from chromadb.config import Settings as ChromaSettings
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIResponsesModel
 from pydantic_ai.providers.openai import OpenAIProvider
@@ -54,7 +55,7 @@ Guidelines:
 - Cite ALL relevant sources using the provide URL.
 """
 
-agent = Agent(rag_model, instrument=False, instructions=DOCS_RAG_INSTRUCTIONS)
+agent = Agent(rag_model, instructions=DOCS_RAG_INSTRUCTIONS)
 
 
 # @agent.tool_plain

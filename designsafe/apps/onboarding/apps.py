@@ -1,4 +1,4 @@
-""" Django app configuration for onboarding app. """
+"""Django app configuration for onboarding app."""
 
 from django.apps import AppConfig
 

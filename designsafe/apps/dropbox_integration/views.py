@@ -1,18 +1,18 @@
 """Views for Dropbox integration in DesignSafe."""
 
 import logging
-from dropbox.oauth import DropboxOAuth2Flow, BadRequestException, BadStateException
-from dropbox.exceptions import AuthError
-from dropbox import Dropbox
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.urls import reverse
-from django.http import HttpResponseRedirect
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
-from designsafe.apps.dropbox_integration.models import DropboxUserToken
 
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from dropbox.exceptions import AuthError
+from dropbox.oauth import BadRequestException, BadStateException, DropboxOAuth2Flow
+
+from designsafe.apps.dropbox_integration.models import DropboxUserToken
 
 logger = logging.getLogger(__name__)
 

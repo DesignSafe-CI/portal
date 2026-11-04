@@ -1,6 +1,7 @@
 from django.contrib.staticfiles.storage import StaticFilesStorage
 from django.core.files.storage import FileSystemStorage
 
+
 class CustomPipelineCachedStorage(StaticFilesStorage):
     def url(self, name, force=False):
         """
@@ -8,6 +9,6 @@ class CustomPipelineCachedStorage(StaticFilesStorage):
         with their webpack setup
         """
 
-        if name.startswith('cms/'):
+        if name.startswith("cms/"):
             return FileSystemStorage.url(self, name)
         return super(CustomPipelineCachedStorage, self).url(name)

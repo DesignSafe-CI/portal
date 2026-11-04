@@ -1,12 +1,12 @@
 """DesignSafe Auth Tapis OAuth flow view tests"""
 
 import pytest
-from django.contrib.auth import get_user
 from django.conf import settings
-from django.urls import reverse
+from django.contrib.auth import get_user
 from django.http import HttpResponseRedirect
-from designsafe.apps.auth.views import launch_setup_checks
+from django.urls import reverse
 
+from designsafe.apps.auth.views import launch_setup_checks
 
 TEST_STATE = "ABCDEFG123456"
 

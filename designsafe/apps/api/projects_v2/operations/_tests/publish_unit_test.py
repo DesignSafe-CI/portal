@@ -1,24 +1,19 @@
 """Tests for operations to convert metadata for publication"""
 
 import pytest
-import networkx as nx
-from django import db
+
 from designsafe.apps.api.projects_v2 import constants
-from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
-    create_project_metdata,
-    create_entity_metadata,
-    add_file_associations,
-    set_file_tags,
-    FileObj,
-)
 from designsafe.apps.api.projects_v2.operations.graph_operations import (
-    initialize_project_graph,
     add_node_to_project,
 )
-
+from designsafe.apps.api.projects_v2.operations.project_meta_operations import (
+    FileObj,
+    add_file_associations,
+    create_entity_metadata,
+)
 from designsafe.apps.api.projects_v2.operations.project_publish_operations import (
-    get_publication_subtree,
     get_publication_full_tree,
+    get_publication_subtree,
 )
 
 
@@ -51,9 +46,9 @@ def test_publication_subtree(project_with_associations):
     assert expected_tag_path_1 in entity_tag_paths
     assert expected_tag_path_2 in entity_tag_paths
     assert path_mapping[mc_node] == {
-        f"/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1",
-        f"/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1(1)",
-        f"/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/dir1",
+        "/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1",
+        "/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1(1)",
+        "/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/dir1",
     }
 
 
@@ -87,9 +82,9 @@ def test_publication_subtree_with_version(project_with_associations):
     assert expected_tag_path_2 in entity_tag_paths
 
     assert path_mapping[mc_node] == {
-        f"/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1",
-        f"/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1(1)",
-        f"/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/dir1",
+        "/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1",
+        "/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/file1(1)",
+        "/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment--V2/data/Model-config--test-entity/data/dir1",
     }
 
 
@@ -155,13 +150,13 @@ def test_tree_multiple_experiments(project_with_associations):
     )
 
     assert full_path_mapping[mc_node_1] == {
-        f"/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1",
-        f"/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1(1)",
-        f"/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/dir1",
+        "/path/to/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1",
+        "/path/to/other/file1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/file1(1)",
+        "/path/to/dir1": "/published-data-test/PRJ-1234/Experiment--test-experiment/data/Model-config--test-entity/data/dir1",
     }
 
     assert full_path_mapping[mc_node_2] == {
-        f"/path/to/file3": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/file3",
-        f"/path/to/other/file3": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/file3(1)",
-        f"/path/to/dir2": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/dir2",
+        "/path/to/file3": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/file3",
+        "/path/to/other/file3": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/file3(1)",
+        "/path/to/dir2": "/published-data-test/PRJ-1234/Experiment--test-experiment-2/data/Model-config--test-entity-2/data/dir2",
     }

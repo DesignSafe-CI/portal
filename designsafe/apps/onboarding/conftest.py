@@ -1,6 +1,7 @@
 """ Pytest fixtures for the onboarding app. """
 
 import pytest
+
 from designsafe.apps.onboarding.models import SetupEvent
 from designsafe.apps.onboarding.state import SetupState
 

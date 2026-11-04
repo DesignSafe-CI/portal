@@ -1,8 +1,8 @@
 """Model for published works."""
 
-from django.utils import timezone
-from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
+from django.utils import timezone
 
 
 class Publication(models.Model):

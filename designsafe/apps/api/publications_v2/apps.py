@@ -1,4 +1,5 @@
 """Publications V2 API"""
+
 from django.apps import AppConfig
 
 

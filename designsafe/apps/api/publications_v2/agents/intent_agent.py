@@ -1,16 +1,13 @@
 """RAG agent for retrieving publications from the OpenAI document store."""
 
 from typing import Literal
-import openai
 
+import openai
+from django.conf import settings
 from pydantic import BaseModel
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
-
-
-from django.conf import settings
-
 
 oai_rag_client = openai.AsyncOpenAI(
     base_url=settings.OPENAI_API_URL, api_key=settings.OPENAI_API_KEY
