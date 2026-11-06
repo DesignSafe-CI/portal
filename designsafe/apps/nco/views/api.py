@@ -58,26 +58,26 @@ class ProjectsListView(BaseApiView):
             }
         )
 
+
 class SchedEventsView(BaseApiView):
     """NCO Scheduler Events List View."""
 
-    def get(self,request):
+    def get(self, request):
         mgr = NcoProjectsManager(request.user)
-        facility = request.GET.get('facility')
-        sort = request.GET.get('sort')
-        history = request.GET.get('history')
+        facility = request.GET.get("facility")
+        sort = request.GET.get("sort")
+        history = request.GET.get("history")
 
-        params = {
-            'facility': facility,
-            'sort': sort,
-            'history': history
-        }
+        params = {"facility": facility, "sort": sort, "history": history}
 
         events = mgr.sched_events(params)
-        return MongoJsonResponse({
-            "status": "OK",
-            "response": events,
-        })
+        return MongoJsonResponse(
+            {
+                "status": "OK",
+                "response": events,
+            }
+        )
+
 
 class FiltersListView(BaseApiView):
     """Nco Scheduler Filters List view."""
@@ -97,13 +97,16 @@ class FiltersListView(BaseApiView):
 class SchedFacilitiesView(BaseApiView):
     """NCO Scheduler Facilities View."""
 
-    def get(self,request):
+    def get(self, request):
         mgr = NcoProjectsManager(request.user)
         facilities = mgr.sched_facilities()
-        return MongoJsonResponse({
-            "status": "OK",
-            "response": facilities,
-        })
+        return MongoJsonResponse(
+            {
+                "status": "OK",
+                "response": facilities,
+            }
+        )
+
 
 class TtcGrantsView(BaseApiView):
     """NCO TTC Grants View."""

@@ -50,24 +50,22 @@ class MongoProjectsHelper(object):
         """
         query = query or {}
 
-        #set sorting option
+        # set sorting option
         final_sort = []
-        if sort == 'Start Date - newest first':
+        if sort == "Start Date - newest first":
             final_sort = [("dateStart", DESCENDING)]
-        elif sort == 'Start Date - oldest first':
+        elif sort == "Start Date - oldest first":
             final_sort = [("dateStart", ASCENDING)]
-        elif sort == 'Award Number':
-            final_sort = [('awardNumber', ASCENDING)]
-        elif sort == 'Facility':
-            final_sort = [('facility', ASCENDING)]
-        elif sort == 'PI Name':
-            final_sort = [('piName', ASCENDING)]
+        elif sort == "Award Number":
+            final_sort = [("awardNumber", ASCENDING)]
+        elif sort == "Facility":
+            final_sort = [("facility", ASCENDING)]
+        elif sort == "PI Name":
+            final_sort = [("piName", ASCENDING)]
         else:
             final_sort = [("dateStart", ASCENDING)]
-        
-        LOG.warn(final_sort)
 
-        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
+        mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
         cursor = mongo_db.projects_v2.find(query).sort(final_sort)
         results = list(cursor)
         for event in results:
@@ -76,17 +74,17 @@ class MongoProjectsHelper(object):
     def get_sched_facilities(self):
         """Get unique facilities in the scheduler-projects db"""
 
-        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-        cursor = mongo_db.projects_v2.distinct('facility')
+        mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
+        cursor = mongo_db.projects_v2.distinct("facility")
         results = list(cursor)
         for facility in results:
             yield facility
-
 
     """ Previous Implementation Functions
     These are here for posterity
     not currently being used
     """
+    
     def import_project_to_mongo(self, prj_dict):
         """Insert a project from agave metadata to mongo.
 
