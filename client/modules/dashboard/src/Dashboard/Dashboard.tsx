@@ -7,6 +7,7 @@ import RecentProjects from '../RecentProjects/RecentProjects';
 import { TicketList } from '../TicketList/TicketList';
 import { SystemStatus } from '../SystemStatus/SystemStatus';
 import JobStatus from '../JobStatus/JobStatus';
+// TODO: Re-enable Allocations section after building backend connection
 // import UserAllocationsCard from '../UserAllocationsCard/UserAllocationsCard';
 import UserGuides from '../UserGuides/UserGuides';
 import styles from './Dashboard.module.css';
