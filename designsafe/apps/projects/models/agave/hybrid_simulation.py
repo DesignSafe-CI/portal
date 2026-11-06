@@ -190,6 +190,11 @@ class Coordinator(RelatedEntity):
         max_length=1024,
         default=''
     )
+    substructure_middleware = fields.CharField(
+        'Substructure Middleware',
+        max_length=1024,
+        default=''
+    )
     hybrid_simulations = fields.RelatedObjectField(HybridSimulation)
     global_models = fields.RelatedObjectField(GlobalModel)
     files = fields.RelatedObjectField(FileModel, multiple=True)
