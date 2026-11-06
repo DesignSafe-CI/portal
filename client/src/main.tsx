@@ -132,5 +132,5 @@ if (ncoElement) {
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
-  )
+  );
 }

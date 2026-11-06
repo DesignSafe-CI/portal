@@ -7,13 +7,13 @@ export type { TNcoGrantsItem } from './useGrantsListing';
 export { useNcoSchedFacilityListing } from './useSchedFilters';
 export type { TNcoSchedFacilityList } from './useSchedFilters';
 
-export { 
-    useNcoGrantsFacilityListing,
-    useNcoGrantsGrantTypeListing,
-    useNcoGrantsHazardTypeListing,
+export {
+  useNcoGrantsFacilityListing,
+  useNcoGrantsGrantTypeListing,
+  useNcoGrantsHazardTypeListing,
 } from './useGrantsFilters';
 export type {
-    TNcoGrantsFacilityList,
-    TNcoGrantsGrantTypeList,
-    TNcoGrantsHazardTypeList,
+  TNcoGrantsFacilityList,
+  TNcoGrantsGrantTypeList,
+  TNcoGrantsHazardTypeList,
 } from './useGrantsFilters';

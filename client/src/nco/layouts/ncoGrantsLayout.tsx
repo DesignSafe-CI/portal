@@ -3,9 +3,9 @@ import { Layout } from 'antd';
 import { NcoGrantsListing } from '@client/nco';
 
 export const NCOGrantsLayout: React.FC = () => {
-    return (
-        <Layout>
-            <NcoGrantsListing />
-        </Layout>
-    )
+  return (
+    <Layout>
+      <NcoGrantsListing />
+    </Layout>
+  );
 };
