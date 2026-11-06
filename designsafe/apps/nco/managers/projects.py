@@ -42,7 +42,7 @@ class NcoProjectsManager:
             query['facility'] = params['facility']
 
         if (params['history'] and params['history'] == 'Current Events') or (not params['history']):
-            date = datetime.utcnow()
+            date = datetime.now(tz=UTC)
             yesterday = date - timedelta(days=1)
             query["dateEnd"]= {"$gt": yesterday}
 

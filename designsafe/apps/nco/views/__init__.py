@@ -1,9 +1,8 @@
 from designsafe.apps.nco.views.api import (
+    FiltersListView,
     ProjectsListView,
     SchedEventsView,
-    FiltersListView,
     SchedFacilitiesView,
-    TtcGrantsView,
     TtcFacilitiesView,
     TtcGrantsView,
     TtcGrantTypesView,
@@ -12,13 +11,12 @@ from designsafe.apps.nco.views.api import (
 from designsafe.apps.nco.views.base import NcoIndexView, NcoTtcGrantsView
 
 __all__ = [
-    "NcoIndexView",
-    "ProjectsListView",
-    "SchedEventsView",
     "FiltersListView",
-    "SchedFacilitiesView",
+    "NcoIndexView",
     "NcoTtcGrantsView",
     "ProjectsListView",
+    "SchedEventsView",
+    "SchedFacilitiesView",
     "TtcFacilitiesView",
     "TtcGrantTypesView",
     "TtcGrantsView",
