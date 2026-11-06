@@ -18,6 +18,7 @@ export function Dashboard() {
   const [showJobs, setShowJobs] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
   const [showTickets, setShowTickets] = useState(false);
+  // TODO: Re-enable Allocations section after building backend connection 
   // const [showAllocations, setShowAllocations] = useState(false);
 
   return (
