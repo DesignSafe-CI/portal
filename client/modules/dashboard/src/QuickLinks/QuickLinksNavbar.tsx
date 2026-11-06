@@ -1,4 +1,5 @@
 import styles from './QuickLinksNavbar.module.css';
+//  TODO: Re-enable Favorite Tools after it's implemented in the workspace
 // import FavoriteTools from '../FavoriteTools/FavoriteTools';
 // import { NavLink } from 'react-router-dom';
 import { UserOutlined, ToolOutlined, BookOutlined } from '@ant-design/icons';
