@@ -52,7 +52,7 @@ class BaseNotify(models.Model):
             "message": self.message,
             "extra": extra,
             "pk": self.pk,
-            "action_link": self.action_link
+            "action_link": self.action_link,
         }
         return d
 
