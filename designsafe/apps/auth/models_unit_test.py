@@ -1,6 +1,8 @@
-import pytest
 import time
 from datetime import timedelta
+
+import pytest
+
 from designsafe.apps.auth.models import TapisOAuthToken
 
 pytestmark = pytest.mark.django_db

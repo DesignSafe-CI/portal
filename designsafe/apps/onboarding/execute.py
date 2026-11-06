@@ -1,15 +1,17 @@
 """Methods for executing setup steps for a user."""
 
 import logging
-from inspect import isclass
 from importlib import import_module
+from inspect import isclass
+
 from celery import shared_task
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from designsafe.apps.onboarding.state import SetupState
-from designsafe.apps.onboarding.models import SetupEvent
-from designsafe.apps.onboarding.steps.abstract import AbstractStep
+
 from designsafe.apps.accounts.models import DesignSafeProfile
+from designsafe.apps.onboarding.models import SetupEvent
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +63,7 @@ def load_setup_step(user, step):
         raise ValueError(f"Setup step {step} is not a class")
     setup_step = call(user)
     if not isinstance(setup_step, AbstractStep):
+        # ruff: disable[TRY004]
         raise ValueError(f"Setup step {step} is not a subclass of AbstractStep")
     return setup_step
 
@@ -85,7 +88,7 @@ def process_setup_step(setup_step):
     except Exception as err:  # pylint: disable=broad-except
         logger.exception("Problem processing setup step")
         setup_step.state = SetupState.ERROR
-        setup_step.log(f"Exception: {str(err)}")
+        setup_step.log(f"Exception: {err!s}")
 
 
 @shared_task()

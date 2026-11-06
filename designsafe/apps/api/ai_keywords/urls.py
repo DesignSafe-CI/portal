@@ -1,6 +1,7 @@
 """URLs for RAG-based keyword suggestions."""
 
 from django.urls import path
+
 from .views import KeywordsView
 
 urlpatterns = [

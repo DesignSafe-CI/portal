@@ -3,20 +3,16 @@
 .. module:: designsafe.apps.nco.managers.ttc_grants
     :synopsis: Nco ttc_grants manager. Should only do read actions.
 """
-from __future__ import unicode_literals, absolute_import
-import six
-import logging
-from datetime import datetime, timedelta
-import calendar
-from dateutil.parser import parse as datetime_parse
-from designsafe.libs.mongo.load_ttc_grants import MongoTTCHelper
-from designsafe.apps.api.agave import service_account
 
+import logging
+
+from designsafe.apps.api.agave import service_account
+from designsafe.libs.mongo.load_ttc_grants import MongoTTCHelper
 
 logger = logging.getLogger(__name__)
 
 
-class NcoTtcGrantsManager(object):
+class NcoTtcGrantsManager:
     """Nco TTC Grants Manager."""
 
     def __init__(self, user):
@@ -33,23 +29,26 @@ class NcoTtcGrantsManager(object):
         """Return ttc grants list."""
         query = {}
 
-        #turn facility and category selection into query
-        if params['facility']:
-            query['NheriFacility'] = params['facility']
-        if params['hazard_type']:
-            query['Hazard'] = params['hazard_type']
-        if params['grant_type']:
-            query['Type'] = params['grant_type']
-        if params['text_search']:
-            query['$or'] = [
-                {'Title': {'$regex': params['text_search'], '$options': 'i'}},
-                {'Abstract': {'$regex': params['text_search'], '$options': 'i'}},
-                {'PiName': {'$regex': params['text_search'], '$options': 'i'}},
-                {'CoPiNames': {'$regex': params['text_search'], '$options': 'i'}},
+        # turn facility and category selection into query
+        if params["facility"]:
+            query["NheriFacility"] = params["facility"]
+        if params["hazard_type"]:
+            query["Hazard"] = params["hazard_type"]
+        if params["grant_type"]:
+            query["Type"] = params["grant_type"]
+        if params["text_search"]:
+            query["$or"] = [
+                {"Title": {"$regex": params["text_search"], "$options": "i"}},
+                {"Abstract": {"$regex": params["text_search"], "$options": "i"}},
+                {"PiName": {"$regex": params["text_search"], "$options": "i"}},
+                {"CoPiNames": {"$regex": params["text_search"], "$options": "i"}},
             ]
 
-        #get the grants list
-        grants = [grant for grant in self._mttc.get_ttc_grants(query=query,sort=params['sort'])]
+        # get the grants list
+        grants = [
+            grant
+            for grant in self._mttc.get_ttc_grants(query=query, sort=params["sort"])
+        ]
         return grants
 
     def ttc_facilities(self):
@@ -59,7 +58,9 @@ class NcoTtcGrantsManager(object):
 
     def ttc_hazard_types(self):
         """Return list of hazard types in ttc_grant collection"""
-        hazard_types = [hazard_type for hazard_type in self._mttc.get_ttc_hazard_types()]
+        hazard_types = [
+            hazard_type for hazard_type in self._mttc.get_ttc_hazard_types()
+        ]
         return hazard_types
 
     def ttc_grant_types(self):

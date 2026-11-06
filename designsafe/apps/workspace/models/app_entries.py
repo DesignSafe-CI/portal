@@ -1,5 +1,4 @@
-"""Models for the Tools & Applications workspace.
-"""
+"""Models for the Tools & Applications workspace."""
 
 from django.db import models
 from django.db.models.functions import Coalesce, Lower
@@ -207,7 +206,9 @@ class AppVariant(models.Model):
     )
     external_href = models.CharField(
         verbose_name="external HREF",
-        help_text="Path or URL to external access for this app variant.", max_length=128, blank=True
+        help_text="Path or URL to external access for this app variant.",
+        max_length=128,
+        blank=True,
     )
 
     description = models.TextField(

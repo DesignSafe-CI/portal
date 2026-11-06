@@ -1,2 +1,11 @@
 User-agent: *
 Disallow: /admin/
+
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: Baiduspider-image
+Disallow: /
+
+User-agent: Baiduspider-video
+Disallow: /

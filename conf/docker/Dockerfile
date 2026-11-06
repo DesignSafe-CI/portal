@@ -16,49 +16,35 @@ RUN npm ci
 COPY client/ /designsafe/client/
 RUN npm run build
 
-FROM python:3.12-bookworm AS python-base
+FROM python:3.12-slim AS python-base
 
 LABEL maintainer="DesignSafe-CI <designsafe-ci@tacc.utexas.edu>"
-
 ARG DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 8000
 
 # Install locales for en_us.utf-8
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    dialog \
-    apt-utils \
-    locales \
-    && rm -rf /var/lib/apt/lists/* \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-
-ENV LC_ALL en_US.utf-8
-ENV LANG en_US.utf-8
-
-# https://python-poetry.org/docs/configuration/#using-environment-variables
-ENV POETRY_VERSION=2.1.3 \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv" \
-    PIPX_ROOT_PATH="/root/.local/bin"
-
-# Install pipx and poetry
-RUN python3 -m pip install --user pipx && python3 -m pipx ensurepath
-ENV PATH="${PIPX_ROOT_PATH}:${VENV_PATH}/bin:$PATH"
-RUN pipx install poetry~=${POETRY_VERSION}
-
+RUN apt-get update && apt-get install -y git gcc build-essential libmagic-dev ldap-utils libldap2-dev libsasl2-dev
 RUN groupadd --gid 816877 G-816877 && \
     useradd --uid 458981 --gid G-816877 -m --shell /bin/bash tg458981 -d /home/tg458981
 
-# Copy project requirement files here to ensure they will be cached.
+# Ensure that system pip is not using compromised certifi bundle [https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576]
+RUN python -m pip install "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+
+COPY --from=ghcr.io/astral-sh/uv:0.13.5 /uv /uvx /bin/
+ENV PYSETUP_PATH="/opt/pysetup"
+ENV PATH="$PYSETUP_PATH/.venv/bin:$PATH"
+
 WORKDIR $PYSETUP_PATH
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml uv.lock ./
+# install runtime deps
+RUN --mount=type=cache,id=uv-ds-prod,target=/uv/sync-prod uv sync --locked --no-dev
 
 ##############
 # `development` image target is used for local development
 FROM python-base AS development
 
-RUN poetry sync
+RUN --mount=type=cache,id=uv-core-ds-dev,target=/uv/sync-dev uv sync --locked --dev
 
 # Copy in base project directory without built client assets for local development
 COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
@@ -71,10 +57,6 @@ WORKDIR /srv/www/designsafe
 ##############
 # `production` image target is used for deployed runtime environments
 FROM python-base AS production
-
-# Install runtime dependencies
-RUN poetry sync --without=dev
-
 
 # Copy user guide material for populating RAG
 COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/

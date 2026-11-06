@@ -1,17 +1,21 @@
 """Base"""
 import datetime
-import logging
-import six
 import json
-import os
+import logging
+
+import six
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from pytas.http import TASClient
-from designsafe.apps.data.models.agave.base import Model as MetadataModel
+
 from designsafe.apps.data.models.agave import fields
-from designsafe.apps.data.models.elasticsearch import IndexedPublication, IndexedPublicationLegacy
+from designsafe.apps.data.models.agave.base import Model as MetadataModel
+from designsafe.apps.data.models.elasticsearch import (
+    IndexedPublication,
+)
 from designsafe.libs.elasticsearch.exceptions import DocumentNotFound
+
 logger = logging.getLogger(__name__)
 
 class FileObjModel(MetadataModel):
@@ -30,7 +34,7 @@ class RelatedEntity(MetadataModel):
 
     def to_body_dict(self):
         """Serialize to Agave's REST API payload JSON."""
-        body_dict = super(RelatedEntity, self).to_body_dict()
+        body_dict = super().to_body_dict()
         body_dict['_relatedFields'] = []
         for attrname, field in six.iteritems(self._meta._related_fields):
             body_dict['_relatedFields'].append(attrname)
@@ -127,7 +131,7 @@ class Project(MetadataModel):
 
     @property
     def system(self):
-        return 'project-{uuid}'.format(uuid=self.uuid)
+        return f'project-{self.uuid}'
 
     @property
     def collaborators(self):
@@ -138,7 +142,7 @@ class Project(MetadataModel):
         }
 
     def to_body_dict(self):
-        body_dict = super(Project, self).to_body_dict()
+        body_dict = super().to_body_dict()
         body_dict['_related'] = {}
         for attrname, field in six.iteritems(self._meta._related_fields):
             body_dict['_related'][attrname] = field.rel_cls.model_name
@@ -227,7 +231,7 @@ class Project(MetadataModel):
             prj = self.manager().get(ag, self.uuid)
             if prj.project_id and prj.project_id != 'None':
                 self.project_id = prj.project_id
-        super(Project, self).save(ag)
+        super().save(ag)
 
     def related_entities(self, offset=0, limit=300):
         from designsafe.apps.projects.models.utils import lookup_model
@@ -418,7 +422,7 @@ class Project(MetadataModel):
         )
 
         if getattr(self, 'data_type', False):
-            attributes['types']['resourceType'] += '/{}'.format(self.data_type)
+            attributes['types']['resourceType'] += f'/{self.data_type}'
 
         attributes['types']['resourceTypeGeneral'] = 'Dataset'
         attributes['descriptions'] = [
@@ -534,7 +538,7 @@ def generate_creators(authors):
             details = {}
 
         if user_obj and user_tas:
-            author_name = "{} {}".format(user_obj.first_name, user_obj.last_name)
+            author_name = f"{user_obj.first_name} {user_obj.last_name}"
             details.update({
                 "@type": "Person",
                 'name': author_name,

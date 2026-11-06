@@ -1,5 +1,6 @@
-from django.contrib.auth import get_user_model
 import logging
+
+from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -20,5 +21,5 @@ def check_connection(username):
     """
     user = get_user_model().objects.get(username=username)
     client = user.box_user_token.client
-    box_user = client.user(user_id='me').get()
+    box_user = client.user(user_id="me").get()
     return box_user

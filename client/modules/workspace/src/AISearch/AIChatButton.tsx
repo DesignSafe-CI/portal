@@ -1,10 +1,12 @@
 import { Button, Drawer } from 'antd';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { Sender } from '@ant-design/x';
 import { AIChat } from './AIChat';
 import styles from './AIChatButton.module.css';
 
 export const AIChatButton: React.FC = () => {
   const [showDrawer, setShowDrawer] = useState(false);
+  const senderRef = useRef<React.ElementRef<typeof Sender>>(null);
 
   return (
     <div id="nav-ai-root">
@@ -31,11 +33,14 @@ export const AIChatButton: React.FC = () => {
         placement="bottom"
         height="var(--ai-chat-drawer-height)"
         open={showDrawer}
+        afterOpenChange={(open) => {
+          if (open) senderRef.current?.focus();
+        }}
         onClose={() => setShowDrawer(false)}
         maskClosable={true}
         rootClassName={styles.drawer}
       >
-        <AIChat closed={!showDrawer} />
+        <AIChat closed={!showDrawer} senderRef={senderRef} />
       </Drawer>
     </div>
   );
