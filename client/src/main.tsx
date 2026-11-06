@@ -1,12 +1,13 @@
 import './styles.css';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
+import { BrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import workspaceRouter from './workspace/workspaceRouter';
 import datafilesRouter from './datafiles/datafilesRouter';
 import reconportalRouter from './reconportal/reconportalRouter';
 import onboardingRouter from './onboarding/onboardingRouter';
+import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { AIChatButton } from '@client/workspace';
 
@@ -114,6 +115,22 @@ if (reconElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={reconportalRouter} />
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
+const dashboardElement = document.getElementById('dashboard-root');
+if (dashboardElement) {
+  const dashboardRoot = ReactDOM.createRoot(dashboardElement as HTMLElement);
+  dashboardRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <BrowserRouter>
+            <Dashboard />
+          </BrowserRouter>
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
