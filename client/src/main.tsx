@@ -10,6 +10,7 @@ import onboardingRouter from './onboarding/onboardingRouter';
 import { Dashboard } from '@client/dashboard';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { AIChatButton } from '@client/workspace';
+import { NotificationBadge } from '@client/notification-badge';
 
 const queryClient = new QueryClient();
 const themeConfig: ThemeConfig = {
@@ -131,6 +132,20 @@ if (dashboardElement) {
           <BrowserRouter>
             <Dashboard />
           </BrowserRouter>
+        </ConfigProvider>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+}
+
+const notifBadgeElement = document.getElementById('notification-badge-root');
+if (notifBadgeElement) {
+  const notifBadgeRoot = ReactDOM.createRoot(notifBadgeElement as HTMLElement);
+  notifBadgeRoot.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={themeConfig}>
+          <NotificationBadge />
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>

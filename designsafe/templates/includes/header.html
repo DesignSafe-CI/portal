@@ -36,7 +36,7 @@
       </li>
     </ul>
     {% if user.is_authenticated %}
-   <notification-badge></notification-badge>
+    <div id="notification-badge-root"></div>
     <div class="btn-group">
       <a href="{% url 'designsafe_dashboard:index' %}" class="btn btn-link-alt">Welcome, {{ user.first_name }}!</a>
       <button type="button" class="btn btn-link-alt dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
