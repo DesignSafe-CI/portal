@@ -7,19 +7,15 @@ Scrapes documentation directly from live websites:
 - SimCenter Tools (quoFEM, EE-UQ, Hydro, WE-UQ, PBE, R2D)
 """
 
-import time
 import logging
-from typing import List, Set, Optional
-from urllib.parse import urljoin, urlparse
-
+import time
 from collections import deque
-
-
-from pydantic import BaseModel
+from urllib.parse import urljoin, urlparse
 
 # Web scraping imports
 import requests
 from bs4 import BeautifulSoup
+from pydantic import BaseModel
 
 # Configure logging
 logging.basicConfig(
@@ -162,7 +158,7 @@ class WebScraper:
             {"User-Agent": "DesignSafe-RAG-Bot/1.0 (Educational/Research Purpose)"}
         )
 
-    def fetch_page(self, url: str) -> Optional[BeautifulSoup]:
+    def fetch_page(self, url: str) -> BeautifulSoup | None:
         """Fetch and parse a single page, following redirects."""
         try:
             response = self.session.get(url, timeout=30, allow_redirects=True)
@@ -177,17 +173,17 @@ class WebScraper:
                 if "url=" in content.lower():
                     redirect_url = content.split("url=")[-1].strip()
                     full_redirect = urljoin(url, redirect_url)
-                    logger.info(f"    Following redirect to {full_redirect}")
+                    logger.info("    Following redirect to %s", full_redirect)
                     return self.fetch_page(full_redirect)
 
             return soup
-        except Exception as e:
-            logger.error(f"Error fetching {url}: {e}")
+        except Exception:
+            logger.exception("Error fetching %s", url)
             return None
 
     def get_links(
         self, soup: BeautifulSoup, base_url: str, current_url: str
-    ) -> Set[str]:
+    ) -> set[str]:
         """Extract all internal documentation links from a page."""
         links = set()
         parsed_base = urlparse(base_url)
@@ -196,11 +192,7 @@ class WebScraper:
             href = a["href"]
 
             # Skip anchors, external links, and special links
-            if (
-                href.startswith("#")
-                or href.startswith("mailto:")
-                or href.startswith("javascript:")
-            ):
+            if href.startswith(("#", "mailto:", "javascript:")):
                 continue
 
             # Resolve relative URLs
@@ -248,7 +240,7 @@ class WebScraper:
 
     def extract_mkdocs_content(
         self, soup: BeautifulSoup, url: str, source_name: str
-    ) -> List[Document]:
+    ) -> list[Document]:
         """Extract content from MkDocs-style pages (DesignSafe uses ReadTheDocs theme)."""
         documents = []
 
@@ -351,7 +343,7 @@ class WebScraper:
 
     def extract_sphinx_content(
         self, soup: BeautifulSoup, url: str, source_name: str
-    ) -> List[Document]:
+    ) -> list[Document]:
         """Extract content from Sphinx-style pages (SimCenter)."""
         documents = []
 
@@ -394,7 +386,7 @@ class WebScraper:
 
         if sections:
             for section in sections:
-                section_id = section.get("id", "")
+                section.get("id", "")
                 header = section.find(["h1", "h2", "h3", "h4"])
                 section_title = header.get_text(strip=True) if header else page_title
 
@@ -443,7 +435,7 @@ class WebScraper:
 
     def extract_jupyter_book_content(
         self, soup: BeautifulSoup, url: str, source_name: str
-    ) -> List[Document]:
+    ) -> list[Document]:
         """Extract content from Jupyter Book / Sphinx Book Theme pages."""
         documents = []
 
@@ -481,7 +473,7 @@ class WebScraper:
 
         if sections:
             for section in sections:
-                section_id = section.get("id", "")
+                section.get("id", "")
                 header = section.find(["h1", "h2", "h3", "h4"])
                 section_title = header.get_text(strip=True) if header else page_title
 
@@ -575,14 +567,14 @@ class WebScraper:
             url = url[:-10]
         return url
 
-    def scrape_site(self, source_key: str) -> List[Document]:
+    def scrape_site(self, source_key: str) -> list[Document]:
         """Scrape an entire documentation site."""
         source = DOC_SOURCES[source_key]
         base_url = source["base_url"]
         source_name = source["name"]
         doc_type = source["type"]
 
-        logger.info(f"Scraping {source_name} from {base_url}")
+        logger.info("Scraping %s from %s", source_name, base_url)
 
         all_documents = []
         visited = set()
@@ -599,7 +591,7 @@ class WebScraper:
 
             visited.add(normalized_url)
             limit_str = str(self.max_pages) if self.max_pages > 0 else "unlimited"
-            logger.info(f"  [{len(visited)}/{limit_str}] {url}")
+            logger.info("  [%s/%s] %s", len(visited), limit_str, url)
 
             soup = self.fetch_page(url)
             if not soup:
@@ -626,6 +618,8 @@ class WebScraper:
             time.sleep(self.delay)
 
         logger.info(
-            f"  Scraped {len(visited)} pages, extracted {len(all_documents)} document chunks"
+            "Scraped %s pages, extracted %s document chunks",
+            len(visited),
+            len(all_documents),
         )
         return all_documents

@@ -1,26 +1,28 @@
 """Pydantic schema models for Field Recon entities"""
 
-from typing import Annotated, Optional
 import itertools
-from pydantic import BeforeValidator, Field, AliasChoices
-from designsafe.apps.api.projects_v2.schema_models._field_models import MetadataModel
+from typing import Annotated
+
+from pydantic import AliasChoices, BeforeValidator, Field
+
+from designsafe.apps.api.projects_v2.constants import (
+    FR_EQUIPMENT_TYPES,
+    FR_OBSERVATION_TYPES,
+)
 from designsafe.apps.api.projects_v2.schema_models._field_models import (
     AssociatedProject,
     DropdownValue,
     FileObj,
     FileTag,
+    MetadataModel,
     ProjectUser,
     ReferencedWork,
 )
 from designsafe.apps.api.projects_v2.schema_models._field_transforms import (
     handle_array_of_none,
-    handle_legacy_authors,
     handle_dropdown_values,
     handle_keywords,
-)
-from designsafe.apps.api.projects_v2.constants import (
-    FR_EQUIPMENT_TYPES,
-    FR_OBSERVATION_TYPES,
+    handle_legacy_authors,
 )
 
 equipment_type_options = list(itertools.chain(*FR_EQUIPMENT_TYPES.values()))
@@ -38,8 +40,8 @@ class Mission(MetadataModel):
     keywords: Annotated[list[str], BeforeValidator(handle_keywords)] = []
 
     event: str = ""
-    date_start: Optional[str] = None
-    date_end: Optional[str] = None
+    date_start: str | None = None
+    date_end: str | None = None
     location: str = ""
     latitude: str = ""
     longitude: str = ""
@@ -51,7 +53,7 @@ class Mission(MetadataModel):
     tombstone: bool = False
 
     # Deprecate these later
-    facility: Optional[DropdownValue] = None
+    facility: DropdownValue | None = None
 
     def to_fedora_json(self):
         """Metadata representation for the Fedora repository"""
@@ -114,7 +116,7 @@ class FieldReconReport(MetadataModel):
     dois: list[str] = []
 
     # deprecated, only appears in test projects
-    facility: Optional[DropdownValue] = None
+    facility: DropdownValue | None = None
     missions: list[str] = Field(default=[], exclude=True)
     referenced_datas: list[ReferencedWork] = Field(default=[], exclude=True)
 
@@ -166,8 +168,8 @@ class FieldReconCollection(MetadataModel):
         list[DropdownValue],
         BeforeValidator(lambda v: handle_dropdown_values(v, FR_OBSERVATION_TYPES)),
     ] = []
-    date_start: Optional[str] = None
-    date_end: Optional[str] = None
+    date_start: str | None = None
+    date_end: str | None = None
 
     data_collectors: list[ProjectUser] = []
     guest_data_collectors: list[str] = []
@@ -198,7 +200,7 @@ class SocialScienceCollection(MetadataModel):
     sample_approach: Annotated[list[str], BeforeValidator(handle_array_of_none)] = []
     sample_size: str = ""
     date_start: str
-    date_end: Optional[str] = None
+    date_end: str | None = None
     data_collectors: list[ProjectUser] = []
     location: str = ""
     latitude: str = ""
@@ -300,7 +302,7 @@ class GeoscienceCollection(MetadataModel):
         BeforeValidator(lambda v: handle_dropdown_values(v, FR_OBSERVATION_TYPES)),
     ] = []
     date_start: str
-    date_end: Optional[str] = None
+    date_end: str | None = None
     location: str = ""
     latitude: str = ""
     longitude: str = ""

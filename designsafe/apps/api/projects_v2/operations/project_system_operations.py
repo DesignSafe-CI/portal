@@ -3,13 +3,14 @@
 # from portal.utils.encryption import createKeyPair
 import logging
 from typing import Literal
+
 from celery import shared_task
-from tapipy.tapis import Tapis
 from django.conf import settings
+from tapipy.errors import BaseTapyException
+from tapipy.tapis import Tapis
+
 from designsafe.apps.api.agave import service_account
 from designsafe.libs.common.context_managers import AsyncTaskContext
-from tapipy.errors import BaseTapyException
-
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ def set_workspace_permissions(
 
     files_pems = {"reader": "READ", "writer": "MODIFY"}
 
-    logger.info(f"Adding {username} permissions to Tapis system {system_id}")
+    logger.info("Adding %s permissions to Tapis system %s", username, system_id)
     client.systems.grantUserPerms(
         systemId=system_id, userName=username, permissions=system_pems[role]
     )
@@ -100,7 +101,9 @@ def create_workspace_dir(project_uuid: str) -> str:
     return path
 
 
-def create_workspace_system(client, project_uuid: str, project_id: str = None) -> str:
+def create_workspace_system(
+    client, project_uuid: str, project_id: str | None = None
+) -> str:
     system_id = f"project-{project_uuid}"
     system_args = {
         "id": system_id,
@@ -145,7 +148,7 @@ def increment_workspace_count(force=None) -> int:
 
 
 def setup_project_file_system(
-    project_uuid: str, users: list[str], project_id: str = None
+    project_uuid: str, users: list[str], project_id: str | None = None
 ):
     """
     Create a workspace system owned by user whose client is passed.

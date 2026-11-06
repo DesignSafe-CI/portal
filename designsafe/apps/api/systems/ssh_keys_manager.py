@@ -4,8 +4,8 @@
 """
 
 import logging
-import paramiko
 
+import paramiko
 
 logger = logging.getLogger(__name__)
 
@@ -93,19 +93,17 @@ class KeysManager:
         :return str: command
         """
         comment = self._get_pub_key_comment(system_id)
-        string = " ".join([public_key, comment])
+        string = f"{public_key} {comment}"
         command = (
             'if [ ! -f "~/.ssh/authorized_keys" ]; then '
             "mkdir -p ~/.ssh/ && touch ~/.ssh/authorized_keys "
             "&& chmod 0600 ~/.ssh/authorized_keys; fi && "
-            'grep -q -F "{string}" ~/.ssh/authorized_keys || '
-            'echo "{string}" >> ~/.ssh/authorized_keys'
-        ).format(string=string)
+            f'grep -q -F "{string}" ~/.ssh/authorized_keys || '
+            f'echo "{string}" >> ~/.ssh/authorized_keys'
+        )
         return command
 
-    def add_public_key(
-        self, system_id, hostname, public_key, port=22, transport=None
-    ):  # pylint: disable=too-many-arguments, arguments-differ
+    def add_public_key(self, system_id, hostname, public_key, port=22, transport=None):  # pylint: disable=too-many-arguments, arguments-differ
         """Adds public key to `authorized_keys`
 
         :param str sytem_id: System Id
@@ -135,7 +133,7 @@ class KeysManager:
         if status == -1:
             logger.info("No response from the server")
         elif status == 0:
-            logger.info(f"Public key added successfully to {hostname}")
+            logger.info("Public key added successfully to %s", hostname)
         elif status > 0:
             error_lines = ""
             for line in stderr.readlines():

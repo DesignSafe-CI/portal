@@ -1,9 +1,8 @@
-"""Workpace API Urls
-"""
+"""Workpace API Urls"""
 
 from django.urls import path, re_path
-from designsafe.apps.workspace.api import views
 
+from designsafe.apps.workspace.api import views
 
 app_name = "workspace_api"
 urlpatterns = [

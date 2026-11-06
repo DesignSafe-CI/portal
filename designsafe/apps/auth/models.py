@@ -1,11 +1,11 @@
-"""Auth models
-"""
+"""Auth models"""
 
 import logging
 import time
 from urllib.parse import urlparse
-from django.db import models
+
 from django.conf import settings
+from django.db import models
 from tapipy.tapis import Tapis
 
 logger = logging.getLogger(__name__)
@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 TOKEN_EXPIRY_THRESHOLD = 600
 
-tenant_id = urlparse(getattr(settings, "TAPIS_TENANT_BASEURL")).hostname.split(
-            "."
-        )[0]
+tenant_id = urlparse(settings.TAPIS_TENANT_BASEURL).hostname.split(".")[0]
 
 
 class TapisOAuthToken(models.Model):
@@ -80,10 +78,10 @@ class TapisOAuthToken(models.Model):
         :rtype: :class:Tapis
         """
         return Tapis(
-            base_url=getattr(settings, "TAPIS_TENANT_BASEURL"),
+            base_url=settings.TAPIS_TENANT_BASEURL,
             tenant_id=tenant_id,
-            client_id=getattr(settings, "TAPIS_CLIENT_ID"),
-            client_key=getattr(settings, "TAPIS_CLIENT_KEY"),
+            client_id=settings.TAPIS_CLIENT_ID,
+            client_key=settings.TAPIS_CLIENT_KEY,
             access_token=self.access_token,
             refresh_token=self.refresh_token,
         )

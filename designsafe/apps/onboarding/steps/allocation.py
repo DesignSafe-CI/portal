@@ -1,8 +1,8 @@
 """Allocation step for Onboarding."""
 
-from designsafe.apps.onboarding.steps.abstract import AbstractStep
-from designsafe.apps.onboarding.state import SetupState
 from designsafe.apps.api.users.utils import get_allocations
+from designsafe.apps.onboarding.state import SetupState
+from designsafe.apps.onboarding.steps.abstract import AbstractStep
 
 
 class AllocationStep(AbstractStep):

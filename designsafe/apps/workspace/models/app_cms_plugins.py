@@ -2,9 +2,10 @@
 
 from cms.models.pluginmodel import CMSPlugin
 from django.db import models
+
 from designsafe.apps.workspace.models.app_entries import (
-    AppTrayCategory,
     AppListingEntry,
+    AppTrayCategory,
 )
 
 

@@ -1,24 +1,22 @@
-from mock import Mock, patch, MagicMock, PropertyMock, call
-from django.test import TestCase
-from django.contrib.auth import get_user_model
-from django.conf import settings
+from unittest.mock import MagicMock, patch
+
 from django.core.management import call_command
-import datetime
+from django.test import TestCase
 
 
 class TestSwapReindex(TestCase):
 
     def setUp(self):
         self.patch_setup = patch('designsafe.apps.data.management.commands.swap_reindex.setup_index')
-        self.patch_connections = patch('designsafe.apps.data.management.commands.swap_reindex.connections')
+        #self.patch_connections = patch('designsafe.apps.data.management.commands.swap_reindex.connections')
         self.patch_elasticsearch = patch('designsafe.apps.data.management.commands.swap_reindex.elasticsearch')
 
         self.mock_setup = self.patch_setup.start()
-        self.mock_connections = self.patch_connections.start()
+        #self.mock_connections = self.patch_connections.start()
         self.mock_elasticsearch = self.patch_elasticsearch.start()
 
         self.addCleanup(self.patch_setup.stop)
-        self.addCleanup(self.patch_connections.stop)
+        # self.addCleanup(self.patch_connections.stop)
         self.addCleanup(self.patch_elasticsearch.stop)
 
     @patch('designsafe.apps.data.management.commands.swap_reindex.Command.handle')

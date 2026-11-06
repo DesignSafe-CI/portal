@@ -1,27 +1,43 @@
-""" Base field classes  """
-import six
-import datetime
-import dateutil.parser
-import collections
-from decimal import Decimal
-from designsafe.apps.data.models.agave.base import register_lazy_rel
+"""Base field classes"""
 
+import collections
+import datetime
 import logging
+from decimal import Decimal
+
+import dateutil.parser
+
+from designsafe.apps.data.models.agave.base import register_lazy_rel
 
 logger = logging.getLogger(__name__)
 
-class NOT_PROVIDED(object):
+
+class NOT_PROVIDED:
     pass
 
-class BaseField(object):
-    """ Base field class """
+
+class BaseField:
+    """Base field class"""
+
     related_model = None
 
-    def __init__(self, verbose_name=None, name=None,
-                 max_length=None, blank=False, null=False,
-                 related=None, default=None, choices=None,
-                 help_text='', validators=(), error_messages=None,
-                 nested_cls=None, related_name=None, list_cls=None):
+    def __init__(
+        self,
+        verbose_name=None,
+        name=None,
+        max_length=None,
+        blank=False,
+        null=False,
+        related=None,
+        default=None,
+        choices=None,
+        help_text="",
+        validators=(),
+        error_messages=None,
+        nested_cls=None,
+        related_name=None,
+        list_cls=None,
+    ):
         self.verbose_name = verbose_name
         self.name = name
         self.max_length = max_length
@@ -37,26 +53,26 @@ class BaseField(object):
         self.attname = None
         self.related_name = related_name
         self.list_cls = list_cls
-        
+
         if not isinstance(self.choices, collections.abc.Iterator):
             self.choices = []
         else:
-            self.choices = list( self.choices)
+            self.choices = list(self.choices)
 
         if not self.name and self.verbose_name:
             self.name = self.verbose_name.lower()
-            self.name = self.name.replace(' ', '_')
+            self.name = self.name.replace(" ", "_")
 
         self.choices = self.choices or []
 
     def contribute_to_class(self, cls, name):
-        """ Register the field with the model class it belongs to. """
+        """Register the field with the model class it belongs to."""
         if not self.name:
             self.name = name
 
         self.attname = name
         if self.verbose_name is None:
-            self.verbose_name = name.replace('_', ' ')
+            self.verbose_name = name.replace("_", " ")
         self.model = cls
         cls._meta.add_field(self)
 
@@ -64,7 +80,7 @@ class BaseField(object):
         if not isinstance(self.default, NOT_PROVIDED):
             return self.default
         else:
-            raise ValueError('No default set')
+            raise ValueError("No default set")  # noqa
 
     def to_python(self, value):
         return value
@@ -73,12 +89,14 @@ class BaseField(object):
         return value
 
     def clean(self, value):
-            return self.to_python(value)            
+        return self.to_python(value)
+
 
 class CharField(BaseField):
-    """ Char Field """
+    """Char Field"""
+
     def __init__(self, *args, **kwargs):
-        super(CharField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         return str(value)
@@ -86,16 +104,20 @@ class CharField(BaseField):
     def serialize(self, value):
         return self.to_python(value)
 
+
 class UuidField(CharField):
-    """ Uuid Field """
+    """Uuid Field"""
+
     def __init__(self, *args, **kwargs):
-        kwargs['schema_field'] = True
-        super(UuidField, self).__init__(*args, **kwargs)
+        kwargs["schema_field"] = True
+        super().__init__(*args, **kwargs)
+
 
 class DateTimeField(BaseField):
-    """ Date Time Field """
+    """Date Time Field"""
+
     def __init__(self, *args, **kwargs):
-        super(DateTimeField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         if not isinstance(value, datetime):
@@ -107,10 +129,12 @@ class DateTimeField(BaseField):
         val = self.to_python(value)
         return val.isoformat()
 
+
 class IntField(BaseField):
-    """ Int Field """
+    """Int Field"""
+
     def __init__(self, *args, **kwargs):
-        super(IntField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         return int(value)
@@ -118,10 +142,12 @@ class IntField(BaseField):
     def serialize(self, value):
         return self.to_python(value)
 
+
 class DecimalField(BaseField):
-    """ Decimal Field """
+    """Decimal Field"""
+
     def __init__(self, *args, **kwargs):
-        super(DecimalField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         return Decimal(value)
@@ -130,13 +156,15 @@ class DecimalField(BaseField):
         val = self.to_python(value)
         return str(val)
 
+
 class ListField(BaseField):
-    """ List Field """
+    """List Field"""
+
     def __init__(self, verbose_name, list_cls=None, *args, **kwargs):
-        kwargs['default'] = kwargs.get('default', [])
-        kwargs['list_cls'] = list_cls
-        kwargs['verbose_name'] = verbose_name
-        super(ListField, self).__init__(*args, **kwargs)
+        kwargs["default"] = kwargs.get("default", [])
+        kwargs["list_cls"] = list_cls
+        kwargs["verbose_name"] = verbose_name
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         try:
@@ -157,12 +185,12 @@ class ListField(BaseField):
             [deduped_list.append(v) for v in val if v not in deduped_list]
             return deduped_list
         except TypeError:
-            #We cannot create a set out of this list.
+            # We cannot create a set out of this list.
             pass
         try:
             val_list = [o.to_body_dict() for o in val]
         except AttributeError:
-            #objects do not have `to_body_dict` attribute
+            # objects do not have `to_body_dict` attribute
             val_list = val
         try:
             seen = set()
@@ -173,31 +201,37 @@ class ListField(BaseField):
                     seen.add(_tuple)
                     resp.append(obj)
         except TypeError:
-            #dict is a bit more complicated, let's just return it.
+            # dict is a bit more complicated, let's just return it.
             resp = val_list
 
         return resp
 
+
 class NestedObjectField(BaseField):
-    """ Nested Object Field """
+    """Nested Object Field"""
+
     def __init__(self, nested_cls, *args, **kwargs):
-        kwargs['nested_cls'] = nested_cls
-        kwargs['default'] = kwargs.get('default', {})
-        super(NestedObjectField, self).__init__(*args, **kwargs)
+        kwargs["nested_cls"] = nested_cls
+        kwargs["default"] = kwargs.get("default", {})
+        super().__init__(*args, **kwargs)
 
     def serialize(self, value):
         return value.to_body_dict()
 
+
 class RelatedObjectField(BaseField):
-    """ Related Object Field """
+    """Related Object Field"""
+
     def __init__(self, related, multiple=False, related_name=None, *args, **kwargs):
-        kwargs['related_name'] = related_name
-        kwargs['related'] = related
-        super(RelatedObjectField, self).__init__(*args, **kwargs)
+        kwargs["related_name"] = related_name
+        kwargs["related"] = related
+        super().__init__(*args, **kwargs)
         self.multiple = multiple
 
     def contribute_to_class(self, cls, name):
-        """ Register the field with the model class it belongs to. """
-        super(RelatedObjectField, self).contribute_to_class(cls, name)
-        related_name = self.related_name or '%s_set' % cls.__name__.lower()
-        register_lazy_rel(self.related, related_name, cls.model_name, self.multiple, cls)
+        """Register the field with the model class it belongs to."""
+        super().contribute_to_class(cls, name)
+        related_name = self.related_name or f"{cls.__name__.lower()}_set"
+        register_lazy_rel(
+            self.related, related_name, cls.model_name, self.multiple, cls
+        )

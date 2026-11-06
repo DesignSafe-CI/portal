@@ -1,13 +1,14 @@
 try:
     import urllib.parse
 except ImportError:
-    from urllib import parse as urlparse
+    pass
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from designsafe.apps.cms_plugins.models import ResponsiveEmbedPlugin
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+from designsafe.apps.cms_plugins.models import ResponsiveEmbedPlugin
 
 
 class CMSResponsiveEmbedPlugin(CMSPluginBase):
@@ -18,11 +19,13 @@ class CMSResponsiveEmbedPlugin(CMSPluginBase):
     render_template = "cms_plugins/responsive_embed_plugin.html"
 
     def render(self, context, instance, placeholder):
-        context.update({'instance': instance})
+        context.update({"instance": instance})
         return context
 
     def icon_src(self, instance):
         return urllib.parse.urljoin(
-            settings.STATIC_URL, "cms/img/icons/plugins/image.png")
+            settings.STATIC_URL, "cms/img/icons/plugins/image.png"
+        )
+
 
 plugin_pool.register_plugin(CMSResponsiveEmbedPlugin)  # register the plugin

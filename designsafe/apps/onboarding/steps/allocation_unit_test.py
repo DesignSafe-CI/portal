@@ -1,6 +1,8 @@
-from designsafe.apps.onboarding.steps.allocation import AllocationStep
-from mock import ANY
+from unittest.mock import ANY
+
 import pytest
+
+from designsafe.apps.onboarding.steps.allocation import AllocationStep
 
 
 @pytest.fixture
