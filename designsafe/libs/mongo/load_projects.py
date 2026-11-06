@@ -84,7 +84,7 @@ class MongoProjectsHelper(object):
     These are here for posterity
     not currently being used
     """
-    
+
     def import_project_to_mongo(self, prj_dict):
         """Insert a project from agave metadata to mongo.
 
