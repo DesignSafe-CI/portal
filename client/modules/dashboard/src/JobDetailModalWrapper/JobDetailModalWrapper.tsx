@@ -46,7 +46,7 @@ export const JobDetailModalWrapper: React.FC<JobDetailModalWrapperProps> = ({
               <dt>Job UUID: </dt>
               <dd>{jobData.uuid}</dd>
               <dt>Application: </dt>
-              <dd>{JSON.parse(jobData.notes).label || jobData.appId}</dd>
+              <dd>{jobData.notes.label || jobData.appId}</dd>
               <dt>System: </dt>
               <dd>{jobData.execSystemId}</dd>
             </dl>
