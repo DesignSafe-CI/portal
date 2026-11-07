@@ -10,3 +10,4 @@ export * from './notifications';
 export * from './reconportal';
 export * from './onboarding';
 export * from './nco';
+export * from './favouritesApi';
