@@ -1,0 +1,41 @@
+.topRowSched {
+  display: flex;
+  align-self: center;
+  width: 80%;
+}
+
+.topRowGrants {
+  align-self: center;
+  width: 80%;
+}
+
+.titleIntroBox {
+  flex: 1;
+}
+
+.titleIntroBox h1 {
+  margin-bottom: 5px;
+}
+
+.titleIntroBox h3 {
+  margin-top: 0px;
+  margin-bottom: 25px;
+}
+
+.footer {
+  align-self: center;
+  width: 80%;
+}
+
+.filterRow {
+  display: flex;
+  align-self: center;
+  width: 80%;
+  padding: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.filterItem {
+  width: 33%;
+}
