@@ -1,22 +1,26 @@
 import './styles.css';
 import type { ComponentType } from 'react';
+import { renderApp } from './renderApp';
+import {
+  WorkspaceApp,
+  DatafilesApp,
+  OnboardingApp,
+  NavAI,
+  ReconApp,
+  DashboardApp,
+} from './appRoots';
 
-type AppModule = { default: ComponentType };
-type AppLoader = () => Promise<AppModule>;
-
-const mountApp = (rootId: string, loadApp: AppLoader) => {
+const mountApp = (rootId: string, App: ComponentType) => {
   const element = document.getElementById(rootId);
 
   if (element) {
-    void Promise.all([import('./renderApp'), loadApp()]).then(
-      ([{ renderApp }, { default: App }]) => renderApp(element, App)
-    );
+    renderApp(element, App);
   }
 };
 
-mountApp('apps-root', () => import('./workspace/workspaceRouter'));
-mountApp('datafiles-root', () => import('./datafiles/datafilesRouter'));
-mountApp('onboarding-root', () => import('./onboarding/onboardingRouter'));
-mountApp('nav-ai-root', () => import('./navAI'));
-mountApp('recon-root', () => import('./reconportal/reconportalRouter'));
-mountApp('dashboard-root', () => import('./dashboard'))
+mountApp('apps-root', WorkspaceApp);
+mountApp('datafiles-root', DatafilesApp);
+mountApp('onboarding-root', OnboardingApp);
+mountApp('nav-ai-root', NavAI);
+mountApp('recon-root', ReconApp);
+mountApp('dashboard-root', DashboardApp);

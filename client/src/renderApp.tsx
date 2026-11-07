@@ -1,5 +1,5 @@
 import '@ant-design/v5-patch-for-react-19';
-import { StrictMode, type ComponentType } from 'react';
+import { StrictMode, Suspense, type ComponentType } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConfigProvider, type ThemeConfig } from 'antd';
@@ -49,7 +49,9 @@ export const renderApp = (element: HTMLElement, App: ComponentType) => {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
-          <App />
+          <Suspense fallback={null}>
+            <App />
+          </Suspense>
         </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
