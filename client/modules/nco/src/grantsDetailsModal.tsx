@@ -1,12 +1,11 @@
 import { TNcoGrantsItem } from '@client/hooks';
 import { Modal, Button } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export const GrantsDetailsModal: React.FC<{
   record: TNcoGrantsItem;
 }> = ({ record }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
 
   return (

@@ -130,12 +130,12 @@ if (ncoElement) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfig}>
           <RouterProvider router={ncoRouter} />
-         </ConfigProvider>
+        </ConfigProvider>
       </QueryClientProvider>
     </StrictMode>
   );
 }
-          
+
 const dashboardElement = document.getElementById('dashboard-root');
 if (dashboardElement) {
   const dashboardRoot = ReactDOM.createRoot(dashboardElement as HTMLElement);

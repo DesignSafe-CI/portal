@@ -70,7 +70,7 @@ export const NcoGrantsListing: React.FC = () => {
         [ttc-inquiry@designsafe-ci.org].
         <ul>
           <li>
-            <a href="https://www.designsafe-ci.org/community/ttc/">
+            <a href="https://www.designsafe-ci.org/facilities/nco/ttc/">
               TTC Webpage
             </a>
           </li>
