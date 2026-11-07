@@ -4,12 +4,9 @@ import DataFilesRoot from './layouts/DataFilesBaseLayout';
 import {
   createBrowserRouter,
   Navigate,
-  useParams,
-  NavigateProps,
-  generatePath,
   RouterProvider,
-  useLocation,
 } from 'react-router-dom';
+import { NavigateToUrlSafePath, RedirectAgaveToTapis } from './legacyRedirects';
 import { ProjectPreviewLayout } from './layouts/projects/ProjectPreviewLayout';
 import { NEESListingLayout } from './layouts/nees/NeesListingLayout';
 import { NeesDetailLayout } from './layouts/nees/NeesDetailLayout';
@@ -24,43 +21,6 @@ import { ProjectWorkdirLayout } from './layouts/projects/ProjectWorkdirLayout';
 import { ProjectPipelineSelectLayout } from './layouts/projects/ProjectPipelineSelectLayout';
 import { PublishedFileListingLayout } from './layouts/published/PublishedFileListingLayout';
 import { PublishedEntityListingLayout } from './layouts/published/PublishedEntityListingLayout';
-
-const NavigateToUrlSafePath: React.FC<NavigateProps & { to: string }> = ({
-  to,
-  relative,
-  replace,
-  state,
-}) => {
-  const { '*': splatPath, ...params } = useParams();
-
-  return (
-    <Navigate
-      to={generatePath(to, {
-        ...params,
-        path: encodeURIComponent(splatPath ?? ''),
-      })}
-      relative={relative}
-      replace={replace}
-      state={state}
-    />
-  );
-};
-
-const RedirectAgaveToTapis: React.FC<Omit<NavigateProps, 'to'>> = ({
-  relative,
-  replace,
-  state,
-}) => {
-  const location = useLocation();
-  return (
-    <Navigate
-      to={location.pathname.replace('agave', 'tapis')}
-      relative={relative}
-      replace={replace}
-      state={state}
-    />
-  );
-};
 
 const datafilesRouter = createBrowserRouter(
   [
@@ -88,13 +48,18 @@ const datafilesRouter = createBrowserRouter(
           ],
         },
         {
-          path: 'public/designsafe.storage.community/*',
-          element: (
-            <NavigateToUrlSafePath
-              to="/tapis/designsafe.storage.community/:path"
-              replace
-            />
-          ),
+          path: 'public/designsafe.storage.community',
+          children: [
+            {
+              path: '*',
+              element: (
+                <NavigateToUrlSafePath
+                  to="/tapis/designsafe.storage.community/:path"
+                  replace
+                />
+              ),
+            },
+          ],
         },
         {
           path: 'public',
@@ -123,7 +88,7 @@ const datafilesRouter = createBrowserRouter(
                 },
                 {
                   path: '*',
-                  element: <NavigateToUrlSafePath to=":path" replace />,
+                  element: <NavigateToUrlSafePath to="../:path" replace />,
                 },
               ],
             },
@@ -173,7 +138,9 @@ const datafilesRouter = createBrowserRouter(
                 },
                 {
                   path: '*',
-                  element: <NavigateToUrlSafePath to="workdir/:path" replace />,
+                  element: (
+                    <NavigateToUrlSafePath to="../workdir/:path" replace />
+                  ),
                 },
               ],
             },
@@ -189,7 +156,7 @@ const datafilesRouter = createBrowserRouter(
             },
             {
               path: '*',
-              element: <NavigateToUrlSafePath to=":path" replace />,
+              element: <NavigateToUrlSafePath to="../:path" replace />,
             },
           ],
         },
@@ -203,7 +170,7 @@ const datafilesRouter = createBrowserRouter(
             },
             {
               path: '*',
-              element: <NavigateToUrlSafePath to=":path" replace />,
+              element: <NavigateToUrlSafePath to="../:path" replace />,
             },
           ],
         },
@@ -217,13 +184,13 @@ const datafilesRouter = createBrowserRouter(
             },
             {
               path: '*',
-              element: <NavigateToUrlSafePath to=":path" replace />,
+              element: <NavigateToUrlSafePath to="../:path" replace />,
             },
           ],
         },
         {
-          path: 'agave/*',
-          element: <RedirectAgaveToTapis replace />,
+          path: 'agave',
+          children: [{ path: '*', element: <RedirectAgaveToTapis replace /> }],
         },
         {
           path: ':api/:system',
@@ -235,7 +202,7 @@ const datafilesRouter = createBrowserRouter(
             },
             {
               path: '*',
-              element: <NavigateToUrlSafePath to=":path" />,
+              element: <NavigateToUrlSafePath to="../:path" />,
             },
           ],
         },

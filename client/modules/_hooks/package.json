@@ -16,7 +16,7 @@
     "antd": "^5.16.4",
     "axios": "^1.6.3",
     "react": "19.3.0",
-    "react-router-dom": "^6.21.1"
+    "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
     "@testing-library/react": "16.1.0",

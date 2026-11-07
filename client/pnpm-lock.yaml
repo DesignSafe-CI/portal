@@ -209,8 +209,8 @@ importers:
         specifier: ^5.0.0-rc.0
         version: 5.0.0-rc.0(leaflet.markercluster@1.5.3(leaflet@1.9.4))(leaflet@1.9.4)(react-dom@19.3.0(react@19.3.0))(react-leaflet@5.0.0(leaflet@1.9.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
       react-router-dom:
-        specifier: ^6.21.1
-        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-use-websocket:
         specifier: ^4.8.1
         version: 4.13.0
@@ -348,8 +348,8 @@ importers:
         specifier: 19.3.0
         version: 19.3.0
       react-router-dom:
-        specifier: ^6.21.1
-        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/react':
         specifier: 16.1.0
@@ -373,8 +373,8 @@ importers:
         specifier: 19.3.0
         version: 19.3.0
       react-router-dom:
-        specifier: ^6.21.1
-        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
   modules/dashboard:
     dependencies:
@@ -400,8 +400,8 @@ importers:
         specifier: 19.3.0
         version: 19.3.0
       react-router-dom:
-        specifier: ^6.21.1
-        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@client/test-fixtures':
         specifier: workspace:*
@@ -443,8 +443,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(react@19.3.0)
       react-router-dom:
-        specifier: ^6.21.1
-        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/react':
         specifier: 16.1.0
@@ -477,8 +477,8 @@ importers:
         specifier: 19.3.0
         version: 19.3.0
       react-router-dom:
-        specifier: ^6.21.1
-        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
   modules/reconportal:
     dependencies:
@@ -586,8 +586,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.5(antd@5.29.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-dom@19.3.0(react@19.3.0))(react-hook-form@7.87.0(react@19.3.0))(react@19.3.0)
       react-router-dom:
-        specifier: ^6.21.1
-        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^7.18.5
+        version: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-use-websocket:
         specifier: ^4.8.1
         version: 4.13.0
@@ -985,10 +985,6 @@ packages:
       leaflet: ^1.9.0
       react: ^19.0.0
       react-dom: ^19.0.0
-
-  '@remix-run/router@1.23.4':
-    resolution: {integrity: sha512-q7j5geK7xs3UJSdm9/iytUNclBnLmYx1EnSeCFXHPeutdqgIMeFeHtUZgS3EhlKxdBEAu8OwtJCwmLrEzpSs7Q==}
-    engines: {node: '>=14.0.0'}
 
   '@rolldown/binding-android-arm-eabi@1.2.8':
     resolution: {integrity: sha512-tN5aztYkKCte4i5SIrrz5yK/HMjEuCqCSCJa418jOV8tZ1cBY3YF2otxB1ktPxzsLA1BeTqwapK0bfjxNvHJVw==}
@@ -3295,18 +3291,22 @@ packages:
   react-property@2.0.2:
     resolution: {integrity: sha512-+PbtI3VuDV0l6CleQMsx2gtK0JZbZKbpdu5ynr+lbsuvtmgbNcS3VM0tuY2QjFNOcWxvXeHjDpy42RO+4U2rug==}
 
-  react-router-dom@6.30.6:
-    resolution: {integrity: sha512-0RHKZz7wwffvkU+2MFVT2NnjK44ssLEV+m0CAJaS2Ksmorrwj7WxH00jO0SOCW26/tINUnJHToXblDs33I38YQ==}
-    engines: {node: '>=14.0.0'}
+  react-router-dom@7.18.5:
+    resolution: {integrity: sha512-9HcfDMU6JJ/fp6gJZYGwNE6RknVGS4kBjH1HkNw959mCJi70TVwdipQWv2FEol9uGpi+SZTFtVpJPtEQfayeOw==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=16.8'
-      react-dom: '>=16.8'
+      react: '>=18'
+      react-dom: '>=18'
 
-  react-router@6.30.6:
-    resolution: {integrity: sha512-5HfK7k5im7LTOB0EqCQmfvy4C13G92Ssj1VTmouTK3AJvyjKTnFuCV0vcMAD/JS+JC4DvDIBRrlAeJIFjh5VWg==}
-    engines: {node: '>=14.0.0'}
+  react-router@7.18.5:
+    resolution: {integrity: sha512-dTgvcXDOrLPrlLHrcZAqWveiK1hMSqN+rGAJzegP8HtmNkfRxOoshGWBNX3ZJ0cZjOHkRdlUJtaIhZMLLyGyPw==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=16.8'
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
 
   react-use-websocket@4.13.0:
     resolution: {integrity: sha512-anMuVoV//g2N76Wxqvqjjo1X48r9Np3y1/gMl7arX84tAPXdy5R7sB5lO5hvCzQRYjqXwV8XMAiEBOUbyrZFrw==}
@@ -3404,6 +3404,9 @@ packages:
     resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
     engines: {node: '>=10'}
     hasBin: true
+
+  set-cookie-parser@2.7.3:
+    resolution: {integrity: sha512-irZHtTqurLna57KQG/s+fzOwv/J6XSH4cs8M/vsrY3uCaQ3S6+QJguAH0WdN47SXlk82voMZ4naWMQf8fdEoIg==}
 
   set-cookie-parser@3.1.2:
     resolution: {integrity: sha512-5/r/lTwbJ3zQ+qwdUFZYeRNqda7P5HD8zQKqlSjdGt1/S0cjLAphHusj4Y58ahDtWn/g32xrIS58/ikOvwl0Lw==}
@@ -4317,8 +4320,6 @@ snapshots:
       leaflet: 1.9.4
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
-
-  '@remix-run/router@1.23.4': {}
 
   '@rolldown/binding-android-arm-eabi@1.2.8':
     optional: true
@@ -7670,17 +7671,19 @@ snapshots:
 
   react-property@2.0.2: {}
 
-  react-router-dom@6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  react-router-dom@7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
-      '@remix-run/router': 1.23.4
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
-      react-router: 6.30.6(react@19.3.0)
+      react-router: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
-  react-router@6.30.6(react@19.3.0):
+  react-router@7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
-      '@remix-run/router': 1.23.4
+      cookie: 1.1.1
       react: 19.3.0
+      set-cookie-parser: 2.7.3
+    optionalDependencies:
+      react-dom: 19.3.0(react@19.3.0)
 
   react-use-websocket@4.13.0: {}
 
@@ -7796,6 +7799,8 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.8.5: {}
+
+  set-cookie-parser@2.7.3: {}
 
   set-cookie-parser@3.1.2: {}
 

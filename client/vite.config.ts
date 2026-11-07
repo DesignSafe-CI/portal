@@ -62,6 +62,15 @@ export default defineConfig({
   },
 
   test: {
+    deps: {
+      optimizer: {
+        client: {
+          enabled: true,
+          // Match dashboard's test config for Ant Design X's antd/es imports.
+          include: ['antd', '@ant-design/x'],
+        },
+      },
+    },
     globals: true,
     setupFiles: ['./src/vitest.setup.ts'],
     environment: 'jsdom',

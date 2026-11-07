@@ -16,6 +16,6 @@
     "@testing-library/react": "16.1.0",
     "msw": "^2.0.11",
     "react": "19.3.0",
-    "react-router-dom": "^6.21.1"
+    "react-router-dom": "^7.18.5"
   }
 }
