@@ -31,9 +31,11 @@ export const NcoSchedListing: React.FC = () => {
         <>
           <p>{record.awardTitle}</p>
           <p>
-            <a href={`https://www.nsf.gov/awardsearch/showAward?AWD_ID=${record.awardNumber}`}>
-                NSF {record.directorate ? record.directorate : ''} #
-                {record.awardNumber}
+            <a
+              href={`https://www.nsf.gov/awardsearch/showAward?AWD_ID=${record.awardNumber}`}
+            >
+              NSF {record.directorate ? record.directorate : ''} #
+              {record.awardNumber}
             </a>
           </p>
           <p>PI: {record.piName ? record.piName : 'Not Reported'}</p>
