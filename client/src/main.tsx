@@ -19,3 +19,4 @@ mountApp('datafiles-root', () => import('./datafiles/datafilesRouter'));
 mountApp('onboarding-root', () => import('./onboarding/onboardingRouter'));
 mountApp('nav-ai-root', () => import('./navAI'));
 mountApp('recon-root', () => import('./reconportal/reconportalRouter'));
+mountApp('dashboard-root', () => import('./dashboard'))

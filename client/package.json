@@ -23,6 +23,7 @@
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@ant-design/x": "^1.6.0",
     "@client/common-components": "workspace:*",
+    "@client/dashboard": "workspace:*",
     "@client/datafiles": "workspace:*",
     "@client/hooks": "workspace:*",
     "@client/onboarding": "workspace:*",

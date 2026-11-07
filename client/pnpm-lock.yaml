@@ -121,6 +121,9 @@ importers:
       '@client/common-components':
         specifier: workspace:*
         version: link:modules/_common_components
+      '@client/dashboard':
+        specifier: workspace:*
+        version: link:modules/dashboard
       '@client/datafiles':
         specifier: workspace:*
         version: link:modules/datafiles
@@ -372,6 +375,40 @@ importers:
       react-router-dom:
         specifier: ^6.21.1
         version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+
+  modules/dashboard:
+    dependencies:
+      '@ant-design/icons':
+        specifier: ^5.6.1
+        version: 5.6.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@client/common-components':
+        specifier: workspace:*
+        version: link:../_common_components
+      '@client/hooks':
+        specifier: workspace:*
+        version: link:../_hooks
+      '@client/workspace':
+        specifier: workspace:*
+        version: link:../workspace
+      '@tanstack/react-query':
+        specifier: ^5.15.0
+        version: 5.102.8(react@19.3.0)
+      antd:
+        specifier: ^5.16.4
+        version: 5.29.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
+      react-router-dom:
+        specifier: ^6.21.1
+        version: 6.30.6(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+    devDependencies:
+      '@client/test-fixtures':
+        specifier: workspace:*
+        version: link:../_test-fixtures
+      '@testing-library/react':
+        specifier: 16.3.3
+        version: 16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
   modules/datafiles:
     dependencies:
