@@ -1,7 +1,13 @@
 {
   "extends": "./base.json",
   "compilerOptions": {
-    "types": ["vitest/globals", "vitest/importMeta", "vite/client", "node"]
+    "types": [
+      "vitest/globals",
+      "vitest/importMeta",
+      "vite/client",
+      "node",
+      "@testing-library/jest-dom/vitest"
+    ]
   },
   "include": [
     "${configDir}/vite.config.ts",
@@ -13,6 +19,8 @@
     "${configDir}/modules/*/vitest.config.ts",
     "${configDir}/modules/*/src/**/*.test.*",
     "${configDir}/modules/*/src/**/*.spec.*",
-    "${configDir}/modules/*/src/**/*.d.ts"
+    "${configDir}/modules/*/src/**/*.d.ts",
+    "${configDir}/src/vitest.setup.ts",
+    "${configDir}/modules/*/src/vitest.setup.ts"
   ]
 }

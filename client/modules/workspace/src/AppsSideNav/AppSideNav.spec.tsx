@@ -1,4 +1,5 @@
 import { render, appsListingJson } from '@client/test-fixtures';
+import { act, screen } from '@testing-library/react';
 
 import { AppsSideNav } from './AppsSideNav';
 import type { TAppCategory } from '@client/hooks';
@@ -16,13 +17,18 @@ const categories: TAppCategory[] = appsListingJson.categories.map(
 );
 
 describe('AppsSideNav', () => {
+  beforeEach(async () => {
+    // Ant Design's menu registers item paths in a microtask after rendering.
+    await act(async () => {
+      render(<AppsSideNav categories={categories} />);
+    });
+  });
+
   it('should render successfully', () => {
-    const { baseElement } = render(<AppsSideNav categories={categories} />);
-    expect(baseElement).toBeTruthy();
+    expect(screen.getByRole('menu')).toBeInTheDocument();
   });
 
   it('should have nav text', () => {
-    const { getAllByText } = render(<AppsSideNav categories={categories} />);
-    expect(getAllByText(/Applications:/gi)).toBeTruthy();
+    expect(screen.getByText('Applications:')).toBeInTheDocument();
   });
 });
