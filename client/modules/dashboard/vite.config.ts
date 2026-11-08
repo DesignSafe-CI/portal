@@ -7,10 +7,6 @@ export default defineConfig({
 
   plugins: [react()],
 
-  resolve: {
-    tsconfigPaths: true,
-  },
-
   test: {
     deps: {
       optimizer: {

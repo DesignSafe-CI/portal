@@ -16,5 +16,8 @@
     "antd": "^5.16.4",
     "html-react-parser": "^5.1.10",
     "react": "19.3.0"
+  },
+  "devDependencies": {
+    "@client/tsconfig": "workspace:*"
   }
 }

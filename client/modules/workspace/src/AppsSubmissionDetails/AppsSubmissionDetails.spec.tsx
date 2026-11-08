@@ -4,6 +4,16 @@ import { render, screen } from '@testing-library/react';
 import { AppsSubmissionDetails } from './AppsSubmissionDetails';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { z } from 'zod';
+import type { TTapisApp } from '@client/hooks';
+import type { TField } from '../AppsWizard/AppsFormSchema';
+
+const field = (name: string, label: string): TField => ({
+  name,
+  label,
+  key: name,
+  type: 'string',
+  required: true,
+});
 
 vi.mock('react-hook-form', () => ({
   useFormContext: vi.fn(),
@@ -38,16 +48,71 @@ describe('AppsSubmissionDetails', () => {
 
   const baseFields = {
     configuration: {
-      execSystemLogicalQueue: { label: 'Queue' },
-      allocation: { label: 'Allocation' },
-      reservation: { label: 'Reservation' },
+      execSystemLogicalQueue: field('execSystemLogicalQueue', 'Queue'),
+      allocation: field('allocation', 'Allocation'),
+      reservation: field('reservation', 'Reservation'),
     },
     inputs: {
-      file: { label: 'Input File' },
+      file: field('file', 'Input File'),
     },
   };
 
-  const baseDefinition = {
+  const baseDefinition: TTapisApp = {
+    sharedAppCtx: '',
+    isPublic: false,
+    sharedWithUsers: [],
+    tenant: 'test',
+    id: 'test.app',
+    version: '1.0',
+    description: '',
+    owner: 'test-user',
+    enabled: true,
+    locked: false,
+    runtime: 'SINGULARITY',
+    runtimeOptions: [],
+    containerImage: 'test.sif',
+    jobType: 'BATCH',
+    maxJobs: 1,
+    maxJobsPerUser: 1,
+    strictFileInputs: false,
+    jobAttributes: {
+      dynamicExecSystem: false,
+      execSystemId: 'test-system',
+      execSystemExecDir: '/exec',
+      execSystemInputDir: '/input',
+      execSystemOutputDir: '/output',
+      execSystemLogicalQueue: 'normal',
+      archiveSystemId: 'test-storage',
+      archiveSystemDir: '/archive',
+      archiveOnAppError: false,
+      isMpi: false,
+      mpiCmd: '',
+      parameterSet: {
+        appArgs: [],
+        containerArgs: [],
+        schedulerOptions: [],
+        envVariables: [],
+        archiveFilter: {
+          includes: [],
+          excludes: [],
+          includeLaunchFiles: false,
+        },
+        logConfig: { stdoutFilename: 'stdout', stderrFilename: 'stderr' },
+      },
+      fileInputs: [],
+      fileInputArrays: [],
+      nodeCount: 1,
+      coresPerNode: 1,
+      memoryMB: 1024,
+      maxMinutes: 10,
+      subscriptions: [],
+      tags: [],
+    },
+    tags: [],
+    uuid: 'test-app',
+    deleted: false,
+    created: '2026-01-01T00:00:00Z',
+    updated: '2026-01-01T00:00:00Z',
     notes: {
       hideQueue: false,
       hideAllocation: false,
@@ -64,6 +129,7 @@ describe('AppsSubmissionDetails', () => {
           fields={baseFields}
           isSubmitting={false}
           current="configuration"
+          setCurrent={vi.fn<(step: string) => void>()}
           definition={baseDefinition}
           {...props}
         />
@@ -94,17 +160,11 @@ describe('AppsSubmissionDetails', () => {
         fields={baseFields}
         isSubmitting={false}
         current="configuration"
-        setCurrent={vi.fn()}
-        definition={
-          {
-            notes: {
-              showReservation: false,
-              hideQueue: false,
-              hideAllocation: false,
-              isInteractive: false,
-            },
-          } as any
-        }
+        setCurrent={vi.fn<(step: string) => void>()}
+        definition={{
+          ...baseDefinition,
+          notes: { ...baseDefinition.notes, showReservation: false },
+        }}
       />
     );
 
@@ -135,7 +195,7 @@ describe('AppsSubmissionDetails', () => {
         fields={baseFields}
         isSubmitting={false}
         current="configuration"
-        setCurrent={vi.fn()}
+        setCurrent={vi.fn<(step: string) => void>()}
         definition={baseDefinition}
       />
     );

@@ -1,14 +1,9 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
     "allowJs": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "types": ["vite/client", "vitest"]
+    "resolveJsonModule": true
   },
   "files": [],
-  "include": [],
   "references": [
     {
       "path": "./tsconfig.app.json"
@@ -17,5 +12,5 @@
       "path": "./tsconfig.spec.json"
     }
   ],
-  "extends": "./tsconfig.base.json"
+  "extends": "@client/tsconfig/base.json"
 }

@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@client/test-fixtures": "workspace:*",
+    "@client/tsconfig": "workspace:*",
     "@testing-library/react": "16.3.3"
   }
 }

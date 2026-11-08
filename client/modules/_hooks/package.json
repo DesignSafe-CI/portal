@@ -19,6 +19,7 @@
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
+    "@client/tsconfig": "workspace:*",
     "@testing-library/react": "16.1.0",
     "@types/geojson": "^7946.0.16"
   }

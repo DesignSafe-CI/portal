@@ -23,10 +23,6 @@ export default defineConfig({
 
   plugins: [react()],
 
-  resolve: {
-    tsconfigPaths: true,
-  },
-
   build: {
     outDir: './dist/client',
     reportCompressedSize: true,

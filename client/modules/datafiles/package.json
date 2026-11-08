@@ -25,6 +25,7 @@
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
+    "@client/tsconfig": "workspace:*",
     "@testing-library/react": "16.1.0"
   }
 }

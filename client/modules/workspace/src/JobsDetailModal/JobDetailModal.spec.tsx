@@ -58,7 +58,7 @@ describe('JobsDetailModalBody', () => {
       appVersion: '1.0',
     } as unknown as TTapisJob;
 
-    render(<JobsDetailModalBody jobData={jobData} />);
+    render(<JobsDetailModalBody jobData={jobData} appData={undefined} />);
 
     expect(screen.queryByText('Reservation')).toBeTruthy();
     expect(screen.queryByText('my-reservation')).toBeTruthy();
