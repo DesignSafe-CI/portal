@@ -14,12 +14,6 @@
 <div>
     <div ui-view></div>
 </div>
-{% addtoblock "js" %}
-   <script src="<%= htmlWebpackPlugin.files.js %>"></script>
-{% endaddtoblock %}
 
-{% addtoblock "css" %}
-    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css %>" />
-{% endaddtoblock %}
 
 {% endblock %}
