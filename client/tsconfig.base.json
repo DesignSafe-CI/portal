@@ -19,6 +19,7 @@
       "@client/dashboard": ["modules/dashboard/src/index.ts"],
       "@client/datafiles": ["modules/datafiles/src/index.ts"],
       "@client/hooks": ["modules/_hooks/src/index.ts"],
+      "@client/nco": ["modules/nco/src/index.ts"],
       "@client/onboarding": ["modules/onboarding/src/index.ts"],
       "@client/reconportal": ["modules/reconportal/src/index.ts"],
       "@client/test-fixtures": ["modules/_test-fixtures/src/index.ts"],

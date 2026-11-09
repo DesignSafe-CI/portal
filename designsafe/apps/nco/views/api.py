@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class ProjectsListView(BaseApiView):
-    """Nco Projects List view."""
+    """Nco Scheduler Projects List view."""
 
     def get(self, request):
         """Return a list of all projects.
@@ -59,8 +59,28 @@ class ProjectsListView(BaseApiView):
         )
 
 
+class SchedEventsView(BaseApiView):
+    """NCO Scheduler Events List View."""
+
+    def get(self, request):
+        mgr = NcoProjectsManager(request.user)
+        facility = request.GET.get("facility")
+        sort = request.GET.get("sort")
+        history = request.GET.get("history")
+
+        params = {"facility": facility, "sort": sort, "history": history}
+
+        events = mgr.sched_events(params)
+        return MongoJsonResponse(
+            {
+                "status": "OK",
+                "response": events,
+            }
+        )
+
+
 class FiltersListView(BaseApiView):
-    """Nco Filters List view."""
+    """Nco Scheduler Filters List view."""
 
     def get(self, request):
         """Return a list of possible filters."""
@@ -70,6 +90,20 @@ class FiltersListView(BaseApiView):
             {
                 "status": "OK",
                 "response": filters,
+            }
+        )
+
+
+class SchedFacilitiesView(BaseApiView):
+    """NCO Scheduler Facilities View."""
+
+    def get(self, request):
+        mgr = NcoProjectsManager(request.user)
+        facilities = mgr.sched_facilities()
+        return MongoJsonResponse(
+            {
+                "status": "OK",
+                "response": facilities,
             }
         )
 
