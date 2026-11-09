@@ -148,13 +148,6 @@ urlpatterns = [
         ),
     ),
     url(
-        r"^geo/",
-        include(
-            ("designsafe.apps.geo.urls", "designsafe.apps.geo"),
-            namespace="designsafe_geo",
-        ),
-    ),
-    url(
         r"^recon-portal/",
         include(
             ("designsafe.apps.rapid.urls", "designsafe.apps.rapid"),
