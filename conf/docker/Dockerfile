@@ -32,7 +32,7 @@ WORKDIR $PYSETUP_PATH
 COPY pyproject.toml uv.lock ./
 # install runtime deps
 RUN --mount=type=cache,id=uv-ds-prod,target=/uv/sync-prod uv sync --locked --no-dev
-COPY . /srv/www/designsafe/
+COPY --chown=tg458981:G-816877 . /srv/www/designsafe
 
 ##############
 # `development` image target is used for local development
@@ -42,7 +42,6 @@ RUN --mount=type=cache,id=uv-core-ds-dev,target=/uv/sync-dev uv sync --locked --
 
 # Copy in base project directory without built client assets for local development
 COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
-COPY --chown=tg458981:G-816877 . /srv/www/designsafe
 
 USER tg458981
 
