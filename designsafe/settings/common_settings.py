@@ -262,52 +262,6 @@ STATIC_URL = "/static/"
 STATIC_ROOT = "/srv/www/designsafe/static/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "designsafe", "static"),
-    ("vendor/modernizr", os.path.join(BASE_DIR, "node_modules", "modernizr")),
-    ("vendor/jquery", os.path.join(BASE_DIR, "node_modules", "jquery")),
-    (
-        "vendor/bootstrap-datepicker",
-        os.path.join(BASE_DIR, "node_modules", "bootstrap-datepicker"),
-    ),
-    ("vendor/d3", os.path.join(BASE_DIR, "node_modules", "d3")),
-    ("vendor/angular", os.path.join(BASE_DIR, "node_modules", "angular")),
-    ("vendor/prismjs", os.path.join(BASE_DIR, "node_modules", "prismjs")),
-    ("vendor/marked", os.path.join(BASE_DIR, "node_modules", "marked")),
-    ("vendor/tv4", os.path.join(BASE_DIR, "node_modules", "tv4")),
-    ("vendor/objectpath", os.path.join(BASE_DIR, "node_modules", "objectpath")),
-    (
-        "vendor/angular-schema-form",
-        os.path.join(BASE_DIR, "node_modules", "angular-schema-form"),
-    ),
-    (
-        "vendor/angular-ui-bootstrap",
-        os.path.join(BASE_DIR, "node_modules", "angular-ui-bootstrap"),
-    ),
-    (
-        "vendor/angular-ui-codemirror",
-        os.path.join(BASE_DIR, "node_modules", "angular-ui-codemirror"),
-    ),
-    ("vendor/codemirror", os.path.join(BASE_DIR, "node_modules", "codemirror")),
-    (
-        "vendor/angular-material",
-        os.path.join(BASE_DIR, "node_modules", "angular-material"),
-    ),
-    ("vendor/font-awesome", os.path.join(BASE_DIR, "node_modules", "font-awesome")),
-    ("vendor/angular-toastr", os.path.join(BASE_DIR, "node_modules", "angular-toastr")),
-    ("vendor/slick-carousel", os.path.join(BASE_DIR, "node_modules", "slick-carousel")),
-    (
-        "vendor/angular-xeditable",
-        os.path.join(BASE_DIR, "node_modules", "angular-xeditable"),
-    ),
-    (
-        "vendor/leaflet-measure",
-        os.path.join(BASE_DIR, "node_modules", "leaflet-measure"),
-    ),
-    ("vendor/exif-js", os.path.join(BASE_DIR, "node_modules", "exif-js")),
-    (
-        "vendor/angular-native-dragdrop",
-        os.path.join(BASE_DIR, "node_modules", "angular-native-dragdrop"),
-    ),
-    ("vendor/d3plus", os.path.join(BASE_DIR, "node_modules", "d3plus")),
 ]
 
 STORAGES = {

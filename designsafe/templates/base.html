@@ -23,15 +23,14 @@
       {% block head_extra %}{% endblock %}
       <!-- styles -->
       <link href="{% static 'vendor/bootstrap-ds/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'vendor/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
       <!--<link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css"> -->
       <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/main.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
+      <link href="{% static 'styles/c-footer.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'styles/branding_logos.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/ng-designsafe.css' %}" rel="stylesheet">
       <link href="{% static 'styles/DesignSafe-Icons.css' %}" rel="stylesheet" type="text/css">
       {% block styles %}{% endblock %}
@@ -84,9 +83,8 @@
     <!-- scripts -->
     <script src="https://www.google.com/recaptcha/enterprise.js"></script>
 
-    <script src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap-ds/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 
     <script src="{% static 'scripts/utils.js' %}"></script>
 
@@ -96,8 +94,6 @@
     {% block scripts %}{% endblock %}
     {% render_block "js" %}
         <script type="text/javascript" src="{% static 'nbviewer/lib/nbv.js' %}"></script>
-        <script type="text/javascript" src="{% static 'vendor/prismjs/prism.js' %}"></script>
-        <script type="text/javascript" src="{% static 'vendor/marked/marked.min.js' %}"></script>
         <script src="{% static 'scripts/navbar.js' %}"></script>
 
 
