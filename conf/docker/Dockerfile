@@ -54,7 +54,6 @@ FROM python-base AS production
 # Copy user guide material for populating RAG
 COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
 # Copy in built client assets
-COPY --from=node_build --chown=tg458981:G-816877 /designsafe/ /srv/www/designsafe
 COPY --from=node_nx_build --chown=tg458981:G-816877 /designsafe/client/dist/client/. /srv/www/designsafe/designsafe/static/react-assets
 COPY --from=node_nx_build --chown=tg458981:G-816877 /designsafe/client/dist/client/react-assets.html /srv/www/designsafe/designsafe/templates/react-assets.html
 
