@@ -1,6 +1,25 @@
 {
-  "extends": ["./tsconfig.json", "@client/tsconfig/lib.json"],
+  "extends": "@client/tsconfig/base.json",
   "compilerOptions": {
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "types": ["node", "vite/client"],
     "tsBuildInfoFile": "./node_modules/.cache/typescript/tsconfig.app.tsbuildinfo"
-  }
+  },
+  "include": ["."],
+  "exclude": [
+    "**/node_modules",
+    "**/dist",
+    "**/out-tsc",
+    "**/tmp",
+    "**/coverage",
+    "**/e2e",
+    "**/test-results",
+    "**/playwright-report",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/vitest.setup.ts",
+    "**/vite.config.ts",
+    "**/vitest.config.ts"
+  ]
 }

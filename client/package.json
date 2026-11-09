@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:workspaces": "pnpm --recursive --if-present test",
-    "typecheck": "pnpm --recursive --include-workspace-root --filter '!@client/tsconfig' exec tsc --build",
+    "typecheck": "tsc --build",
     "format:check": "prettier --check .",
     "format:write": "prettier . --write",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
