@@ -131,7 +131,6 @@ dynamic_apps = {
     "designsafe_notifications": notifications_urls.urlpatterns,
     "designsafe_search": search_urls.urlpatterns,
     "djangoRT": help_urls.urlpatterns,
-    "designsafe_geo": geo_urls.urlpatterns,
     "designsafe_accounts": accounts_urls.urlpatterns,
     "designsafe_dashboard": dashboard_urls.urlpatterns,
     "box_integration": box_integration_urls.urlpatterns,
