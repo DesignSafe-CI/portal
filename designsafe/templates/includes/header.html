@@ -36,7 +36,12 @@
       </li>
     </ul>
     {% if user.is_authenticated %}
-   <notification-badge></notification-badge>
+    <div class="site-banner-right btn">
+      <a href="/workspace/history" id="dLabel" style="display: flex; align-items: center;" class="no-underline-on-hover" >
+        <i id="notification_bell" role="none" class="ds-icon-Job-Status"></i>
+        <h3 class="menu-title">Job Status</h3>
+      </a>
+    </div>
     <div class="btn-group">
       <a href="{% url 'designsafe_dashboard:index' %}" class="btn btn-link-alt">Welcome, {{ user.first_name }}!</a>
       <button type="button" class="btn btn-link-alt dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
