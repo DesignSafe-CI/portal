@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Layout, notification } from 'antd';
 import {
@@ -11,8 +11,15 @@ import {
   notifyContext,
   USER_MYDATA_SYSTEM,
 } from '@client/hooks';
+import useWebSocket from 'react-use-websocket';
 
 const { Sider } = Layout;
+
+type TDataFilesNotification = {
+  event_type: string;
+  status: string;
+  message: string;
+};
 
 const DataFilesRoot: React.FC = () => {
   const { user } = useAuthenticatedUser();
@@ -26,7 +33,44 @@ const DataFilesRoot: React.FC = () => {
     : '/public/designsafe.storage.published';
   const { pathname } = useLocation();
 
+  const { lastMessage } = useWebSocket(
+    `wss://${window.location.host}/ws/websockets/`
+  );
+
   const [notifyApi, contextHolder] = notification.useNotification();
+
+  useEffect(() => {
+    if (lastMessage?.data) {
+      try {
+        const messageJSON = JSON.parse(
+          lastMessage.data
+        ) as TDataFilesNotification;
+        if (messageJSON.event_type === 'data_depot') {
+          switch (messageJSON.status) {
+            case 'SUCCESS':
+              notifyApi.success({
+                message: messageJSON.message,
+                placement: 'bottomLeft',
+              });
+              break;
+            case 'ERROR':
+              notifyApi.error({
+                message: messageJSON.message,
+                placement: 'bottomLeft',
+              });
+              break;
+            default:
+              notifyApi.info({
+                message: messageJSON.message,
+                placement: 'bottomLeft',
+              });
+          }
+        }
+      } catch {
+        // pass
+      }
+    }
+  }, [lastMessage, notifyApi]);
 
   return (
     <notifyContext.Provider value={{ notifyApi, contextHolder }}>
