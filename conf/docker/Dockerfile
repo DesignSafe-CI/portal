@@ -1,12 +1,5 @@
 FROM --platform=linux/amd64 designsafeci/ds-user-guide AS ds-user-guide
 
-FROM node:16 AS node_build
-COPY package.json package-lock.json /designsafe/
-WORKDIR /designsafe
-RUN npm ci
-
-COPY . /designsafe/
-RUN npm run build
 
 FROM node:22 AS node_nx_build
 COPY client/package.json client/package-lock.json /designsafe/
