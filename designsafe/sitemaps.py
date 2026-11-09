@@ -180,7 +180,7 @@ class ProjectSitemap(sitemaps.Sitemap):
 
         # pefm - PublicElasticFileManager to grab public projects
 
-        projects = Publication.objects.all()
+        projects = Publication.objects.filter(is_published=True)
         for proj in projects:
             subpath = {
                 "root": reverse("designsafe_data:data_depot"),
