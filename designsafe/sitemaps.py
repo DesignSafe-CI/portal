@@ -51,7 +51,6 @@ from designsafe.apps.workspace import urls as workspace_urls
 from designsafe.apps.notifications import urls as notifications_urls
 from designsafe.apps.search import urls as search_urls
 from designsafe.apps.djangoRT import urls as help_urls
-from designsafe.apps.geo import urls as geo_urls
 from designsafe.apps.applications import urls as applications_urls
 from designsafe.apps.dashboard import urls as dashboard_urls
 from designsafe.apps.box_integration import urls as box_integration_urls
@@ -132,7 +131,6 @@ dynamic_apps = {
     "designsafe_notifications": notifications_urls.urlpatterns,
     "designsafe_search": search_urls.urlpatterns,
     "djangoRT": help_urls.urlpatterns,
-    "designsafe_geo": geo_urls.urlpatterns,
     "designsafe_accounts": accounts_urls.urlpatterns,
     "designsafe_dashboard": dashboard_urls.urlpatterns,
     "box_integration": box_integration_urls.urlpatterns,

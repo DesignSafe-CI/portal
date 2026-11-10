@@ -16,7 +16,6 @@ Subpackages
     designsafe.apps.data
     designsafe.apps.djangoRT
     designsafe.apps.dropbox_integration
-    designsafe.apps.geo
     designsafe.apps.licenses
     designsafe.apps.notifications
     designsafe.apps.rapid

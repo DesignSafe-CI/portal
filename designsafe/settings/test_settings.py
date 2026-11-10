@@ -101,7 +101,6 @@ INSTALLED_APPS = (
     "designsafe.apps.workspace",
     "designsafe.apps.token_access",
     "designsafe.apps.search",
-    "designsafe.apps.geo",
     "designsafe.apps.rapid",
     "designsafe.apps.onboarding",
     # haystack integration
@@ -638,13 +637,8 @@ WSGI_APPLICATION = "designsafe.wsgi.application"
 ASGI_APPLICATION = "designsafe.asgi.application"
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [
-                (os.environ.get("WS_BACKEND_HOST"), os.environ.get("WS_BACKEND_PORT"))
-            ],
-        },
-    },
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
 }
 
 

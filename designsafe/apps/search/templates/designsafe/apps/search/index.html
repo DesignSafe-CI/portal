@@ -1,0 +1,21 @@
+{% extends "base_angular.html" %}
+{% load sekizai_tags %}
+{% load static %}
+
+{% block head_extra %}
+    <base href="{% url 'designsafe_search:index' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="gcse-search"></div>
+  {{message}}
+  </div>
+</div>
+{% addtoblock "js" %}
+  <script async src="https://cse.google.com/cse.js?cx=7671a7caca0a643c1">
+</script>
+{% endaddtoblock %}
+
+{% endblock %}
+{% block footer %}{% include 'includes/footer.html' %}{% endblock footer %}
