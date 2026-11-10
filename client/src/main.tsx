@@ -8,6 +8,7 @@ import {
   NavAI,
   ReconApp,
   DashboardApp,
+  NcoApp,
 } from './appRoots';
 
 const mountApp = (rootId: string, App: ComponentType) => {
@@ -24,3 +25,4 @@ mountApp('onboarding-root', OnboardingApp);
 mountApp('nav-ai-root', NavAI);
 mountApp('recon-root', ReconApp);
 mountApp('dashboard-root', DashboardApp);
+mountApp('nco-rot', NcoApp);
