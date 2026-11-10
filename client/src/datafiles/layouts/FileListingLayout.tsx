@@ -50,20 +50,18 @@ export const FileListingLayout: React.FC = () => {
   return (
     <Layout style={{ gap: '5px', minWidth: '500px' }}>
       <DatafilesToolbar searchInput={<FileListingSearchBar />} />
-      {true && (
-        <BaseFileListingBreadcrumb
-          api={api}
-          system={system}
-          path={path}
-          itemRender={(obj) => {
-            return (
-              <Link className="breadcrumb-link" to={obj.path ?? '/'}>
-                {obj.title}
-              </Link>
-            );
-          }}
-        />
-      )}
+      <BaseFileListingBreadcrumb
+        api={api}
+        system={system}
+        path={path}
+        itemRender={(obj) => {
+          return (
+            <Link className="breadcrumb-link" to={obj.path ?? '/'}>
+              {obj.title}
+            </Link>
+          );
+        }}
+      />
       <Layout.Content className={styles['listing-main']}>
         <div className={styles['listing-container']}>
           {redirectHome && (

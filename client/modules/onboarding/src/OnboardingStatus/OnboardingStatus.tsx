@@ -4,7 +4,7 @@ import { TOnboardingStep } from '@client/hooks';
 import styles from './OnboardingStatus.module.css';
 
 const getContents = (step: TOnboardingStep) => {
-  let color = '';
+  let color: string;
   switch (step.state) {
     case 'processing':
     case 'pending':
