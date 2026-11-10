@@ -25,4 +25,4 @@ mountApp('onboarding-root', OnboardingApp);
 mountApp('nav-ai-root', NavAI);
 mountApp('recon-root', ReconApp);
 mountApp('dashboard-root', DashboardApp);
-mountApp('nco-rot', NcoApp);
+mountApp('nco-root', NcoApp);

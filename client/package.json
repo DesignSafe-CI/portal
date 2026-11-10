@@ -26,6 +26,7 @@
     "@client/dashboard": "workspace:*",
     "@client/datafiles": "workspace:*",
     "@client/hooks": "workspace:*",
+    "@client/nco": "workspace:*",
     "@client/onboarding": "workspace:*",
     "@client/reconportal": "workspace:*",
     "@client/test-fixtures": "workspace:*",

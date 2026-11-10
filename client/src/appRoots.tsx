@@ -9,3 +9,4 @@ export const OnboardingApp = lazy(
 export const NavAI = lazy(() => import('./navAI'));
 export const ReconApp = lazy(() => import('./reconportal/reconportalRouter'));
 export const DashboardApp = lazy(() => import('./dashboard/dashboard'));
+export const NcoApp = lazy(() => import('./nco/ncoRouter'));
