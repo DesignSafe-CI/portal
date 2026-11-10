@@ -1,25 +1,29 @@
 import js from '@eslint/js';
-import tsParser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import prettier from 'eslint-config-prettier/flat';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
 
-export default [
-  { ignores: ['**/node_modules/**', '**/dist/**', '**/coverage/**', '**/.*'] },
+export default defineConfig([
+  globalIgnores(['**/dist/**', '**/coverage/**', '**/.*']),
   {
     files: ['**/*.{js,jsx,mjs,cjs,ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      globals: { ...globals.browser, ...globals.es2021, ...globals.node },
+      globals: { ...globals.browser, ...globals.node },
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
-    settings: { react: { version: 'detect' } },
-    plugins: { 'react-hooks': reactHooks },
     rules: {
-      ...js.configs.recommended.rules,
-      // Keep the existing Hooks rules; compiler rules are a separate opt-in.
+      // Keep the existing Hooks rules without enabling compiler checks.
+      'react-refresh/only-export-components': 'warn',
+      'react-hooks/immutability': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'no-undef': 'off',
@@ -28,8 +32,6 @@ export default [
   },
   {
     files: ['**/*.{ts,tsx}'],
-    languageOptions: { parser: tsParser },
-    plugins: { '@typescript-eslint': tsPlugin },
+    extends: [tseslint.configs['flat/base']],
   },
-  prettier,
-];
+]);
