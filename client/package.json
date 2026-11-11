@@ -27,6 +27,7 @@
     "@client/datafiles": "workspace:*",
     "@client/hooks": "workspace:*",
     "@client/nco": "workspace:*",
+    "@client/notification-badge": "workspace:*",
     "@client/onboarding": "workspace:*",
     "@client/reconportal": "workspace:*",
     "@client/test-fixtures": "workspace:*",

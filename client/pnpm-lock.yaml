@@ -133,6 +133,9 @@ importers:
       '@client/nco':
         specifier: workspace:*
         version: link:modules/nco
+      '@client/notification-badge':
+        specifier: workspace:*
+        version: link:modules/notification-badge
       '@client/onboarding':
         specifier: workspace:*
         version: link:modules/onboarding
@@ -511,6 +514,31 @@ importers:
       react-router-dom:
         specifier: ^7.18.5
         version: 7.18.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+    devDependencies:
+      '@client/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+
+  modules/notification-badge:
+    dependencies:
+      '@ant-design/icons':
+        specifier: ^5.6.1
+        version: 5.6.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@client/common-components':
+        specifier: workspace:*
+        version: link:../_common_components
+      '@client/hooks':
+        specifier: workspace:*
+        version: link:../_hooks
+      '@client/test-fixtures':
+        specifier: workspace:*
+        version: link:../_test-fixtures
+      antd:
+        specifier: ^5.16.4
+        version: 5.29.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
     devDependencies:
       '@client/tsconfig':
         specifier: workspace:*
