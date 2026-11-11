@@ -16,7 +16,7 @@ export function NotificationBadge() {
       key: 'open-history',
       label: (
         <a href="/workspace/history">
-          <h3 className="menu-title pull-right">
+          <h3 className="menu-title pull-right" style={{ padding: '1rem' }}>
             View all Jobs
             <i className="glyphicon glyphicon-circle-arrow-right"></i>
           </h3>
@@ -90,15 +90,19 @@ export function NotificationBadge() {
           },
         ]
       : (userNotifications && [
-          ...userNotifications.notifs.map((notif) => ({
-            key: notif.pk,
-            label: <NotifLabel notif={notif} />,
-          })),
+          ...userNotifications.notifs
+            .filter((notif) => notif.event_type !== 'data_depot')
+            .slice(0, 5)
+            .map((notif) => ({
+              key: notif.pk,
+              label: <NotifLabel notif={notif} />,
+            })),
           {
             key: 'clear',
             label: (
               <h3
                 className="clear-notifs"
+                style={{ padding: '1rem' }}
                 onClick={(e) => {
                   deleteNotifications('all');
                   e?.stopPropagation();
