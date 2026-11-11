@@ -35,13 +35,15 @@ export function OpenInJupyterButton({ file }: { file: TFileListing }) {
 
   if (!user || !systemPathAlias || !file.path.endsWith('.ipynb')) return null;
 
-  const jupyterLink = `https://jupyter.designsafe-ci.org/user/${user.username}/lab/tree/${systemPathAlias}${file.path}`;
+  const jupyterLink = `https://jupyter.designsafe-ci.org/user/${
+    user.username
+  }/lab/tree/${systemPathAlias}/${encodeURIComponent(file.path)}`;
   return (
     <Button
       size="small"
       style={{ marginLeft: '1rem', textDecoration: 'none' }}
       type="default"
-      href={encodeURI(jupyterLink)}
+      href={jupyterLink}
       target="_blank"
       rel="noopener noreferrer"
     >

@@ -91,7 +91,7 @@ describe('OpenInJupyterButton', () => {
     global.window.__authenticatedUser__ = userData;
     render(<OpenInJupyterButton file={notebookInCommunity} />);
     expect(screen.getByRole('link').getAttribute('href')).toEqual(
-      'https://jupyter.designsafe-ci.org/user/testuser/lab/tree/CommunityData/Jupyter%20Notebooks%20for%20Civil%20Engineering%20Courses/Univ%20of%20Texas%20_%20FiniteElementAnalyses%20in%20GeotechnicalEngineering/notebooks/02-elastic_bar_linear_fem.ipynb'
+      'https://jupyter.designsafe-ci.org/user/testuser/lab/tree/CommunityData/%2FJupyter%20Notebooks%20for%20Civil%20Engineering%20Courses%2FUniv%20of%20Texas%20_%20FiniteElementAnalyses%20in%20GeotechnicalEngineering%2Fnotebooks%2F02-elastic_bar_linear_fem.ipynb'
     );
   });
 
@@ -99,7 +99,7 @@ describe('OpenInJupyterButton', () => {
     global.window.__authenticatedUser__ = userData;
     render(<OpenInJupyterButton file={notebookInPublished} />);
     expect(screen.getByRole('link').getAttribute('href')).toEqual(
-      'https://jupyter.designsafe-ci.org/user/testuser/lab/tree/NHERI-Published/Jupyter%20Notebooks%20for%20Civil%20Engineering%20Courses/Univ%20of%20Texas%20_%20FiniteElementAnalyses%20in%20GeotechnicalEngineering/notebooks/02-elastic_bar_linear_fem.ipynb'
+      'https://jupyter.designsafe-ci.org/user/testuser/lab/tree/NHERI-Published/%2FJupyter%20Notebooks%20for%20Civil%20Engineering%20Courses%2FUniv%20of%20Texas%20_%20FiniteElementAnalyses%20in%20GeotechnicalEngineering%2Fnotebooks%2F02-elastic_bar_linear_fem.ipynb'
     );
   });
 
