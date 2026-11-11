@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load cms_tags static sekizai_tags%}
+{% block title %}Applications{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h1 class="headline headline-research">
+        <a href="/applications" class="hl hl-research">Apps</a>
+    </h1>
+</div>
+
+<div class="container" role="main" id="applications">
+    <div ui-view="">
+    </div>
+</div>
+
+{% endblock %}

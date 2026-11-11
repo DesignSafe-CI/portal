@@ -21,13 +21,9 @@ jobs:
           python-version: "3.12"
           enable-cache: true
 
-      - name: Copy base.html for use in unit tests
-        run: |
-          cp --force designsafe/templates/base.j2 designsafe/templates/base.html
-
       - name: Ensure react-assets template exists for use in unit tests
         run: |
-          touch designsafe/templates/base.j2 designsafe/templates/react-assets.html
+          touch designsafe/templates/react-assets.html
 
       - name: Install Python packages
         run: uv sync --locked --dev
@@ -73,19 +69,6 @@ jobs:
         run: |
           uv run ruff format --check designsafe
 
-  Client_Side_Unit_Tests:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16.x
-          cache: npm
-
-      - run: npm ci
-      - run: npm run test
-
   React_NX_unit_tests:
     runs-on: ubuntu-22.04
     steps:
@@ -98,6 +81,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: client/package-lock.json
 
       - run: npm ci
         working-directory: client

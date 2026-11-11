@@ -3,14 +3,6 @@ import styles from '../Dashboard/Dashboard.module.css';
 
 const videos = [
   {
-    id: '1yWRGAdR3XU',
-    title: 'Overview Of The Dashboard',
-  },
-  {
-    id: 'BSCMzvb8O-M',
-    title: 'How To Mark Favorite Apps',
-  },
-  {
     id: '_wDIKMwqej8',
     title: 'Adding Users To Allocation',
   },
