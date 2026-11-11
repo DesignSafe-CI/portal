@@ -30,10 +30,14 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
+      preserveEntrySignatures: false,
       input: {
         imports: path.resolve(import.meta.dirname, 'react-assets.html'),
       },
       output: {
+        // Vendor groups can create circular chunks (e.g. Leaflet and its
+        // React bindings). Initialize modules in source order across chunks.
+        strictExecutionOrder: true,
         codeSplitting: {
           groups: [
             {
