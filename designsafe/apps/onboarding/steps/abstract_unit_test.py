@@ -1,8 +1,9 @@
+import pytest
+from django.db.models import signals
+
 from designsafe.apps.onboarding.models import SetupEvent
 from designsafe.apps.onboarding.state import SetupState
-from django.db.models import signals
 from designsafe.apps.onboarding.steps.test_steps import MockStep
-import pytest
 
 
 @pytest.fixture(autouse=True)

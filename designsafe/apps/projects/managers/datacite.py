@@ -4,11 +4,11 @@
     :synopsis: Python interface to Datacite's rest API.
         Visit: https://support.datacite.org/docs/api for more info.
 """
-from __future__ import unicode_literals, absolute_import
 import json
 import logging
-from django.conf import settings
+
 import requests
+from django.conf import settings
 from requests import HTTPError
 
 LOGGER = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ def get_doi(doi):
     :rtype: dict
     """
     res = requests.get(
-        '{api_url}/{doi}'.format(api_url=DOIS_URL, doi=doi),
+        f'{DOIS_URL}/{doi}',
         auth=(DATACITE_USER, DATACITE_PASS),
     )
     res.raise_for_status()
@@ -93,7 +93,7 @@ def create_or_update_doi(attributes=None, doi=None):
         datacite_attrs.update(attributes)
         attributes = datacite_attrs
         http_verb = requests.put
-        url = "{base_url}/{doi}".format(base_url=DOIS_URL, doi=doi)
+        url = f"{DOIS_URL}/{doi}"
         payload['data']['id'] = doi
         attributes.pop('prefix', None)
     else:
@@ -175,7 +175,7 @@ def delete_doi(doi):
     :param str doi: DOI to delete.
     """
     res = requests.delete(
-        "{base_url}/{doi}".format(base_url=DOIS_URL, doi=doi),
+        f"{DOIS_URL}/{doi}",
         auth=(DATACITE_USER, DATACITE_PASS)
     )
     res.raise_for_status()

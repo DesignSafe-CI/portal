@@ -1,11 +1,12 @@
 """Unit tests for the path_operations module"""
 
-import pytest
-import networkx as nx
 from pathlib import Path
+
+import networkx as nx
+
 from designsafe.apps.api.projects_v2.operations._tests.path_operations_fixtures import (
-    PUBLISHED_SIM_FIXTURE,
     PUBLISHED_OTHER_FIXTURE,
+    PUBLISHED_SIM_FIXTURE,
 )
 from designsafe.apps.api.projects_v2.operations.path_operations import (
     construct_entity_filepaths,
@@ -58,29 +59,29 @@ def test_path_mappings_added_to_graph_sim():
 
     # Assert that path mappings are applied to node metadata
     assert any(
-        (
+        
             fo
             for fo in updated_graph.nodes["NODE_401565e2-2271-4b2c-b822-f89935a5a15f"][
                 "value"
             ]["fileObjs"]
             if fo["path"]
             == "/test/PRJ-3462/Simulation--parameter-influence-on-tropical-cyclone-rainfall/data/Model--tcr-model/Input--simulation-input/Output--simulation-of-parameter-influence-on-tropical-cyclone-rainfall/data/spatial_important_update.mat"
-        )
+        
     )
     assert any(
-        (
+        
             fo
             for fo in updated_graph.nodes["NODE_401565e2-2271-4b2c-b822-f89935a5a15f"][
                 "value"
             ]["fileObjs"]
             if fo["path"]
             == "/test/PRJ-3462/Simulation--parameter-influence-on-tropical-cyclone-rainfall/data/Model--tcr-model/Input--simulation-input/Output--simulation-of-parameter-influence-on-tropical-cyclone-rainfall/data/spatial_important_update(1).mat"
-        )
+        
     )
 
     # Assert that file path mappings are reflected in file tags
     assert any(
-        (
+        
             tag
             for tag in updated_graph.nodes["NODE_401565e2-2271-4b2c-b822-f89935a5a15f"][
                 "value"
@@ -88,10 +89,10 @@ def test_path_mappings_added_to_graph_sim():
             if tag["tagName"] == "tropical cyclone"
             and tag["path"]
             == "/test/PRJ-3462/Simulation--parameter-influence-on-tropical-cyclone-rainfall/data/Model--tcr-model/Input--simulation-input/Output--simulation-of-parameter-influence-on-tropical-cyclone-rainfall/data/spatial_important_update.mat"
-        )
+        
     )
     assert any(
-        (
+        
             tag
             for tag in updated_graph.nodes["NODE_401565e2-2271-4b2c-b822-f89935a5a15f"][
                 "value"
@@ -99,7 +100,7 @@ def test_path_mappings_added_to_graph_sim():
             if tag["tagName"] == "tropical cyclone (duplicate filename)"
             and tag["path"]
             == "/test/PRJ-3462/Simulation--parameter-influence-on-tropical-cyclone-rainfall/data/Model--tcr-model/Input--simulation-input/Output--simulation-of-parameter-influence-on-tropical-cyclone-rainfall/data/spatial_important_update(1).mat"
-        )
+        
     )
 
 

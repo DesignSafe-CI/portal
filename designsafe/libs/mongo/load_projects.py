@@ -4,8 +4,9 @@
     :synopsis: utilities to load projects into mongo.
     These utilities should only be used for the NCO Scheduler.
 """
+
 import logging
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING, ASCENDING
 from django.conf import settings
 
 
@@ -16,15 +17,20 @@ class MongoProjectsHelper(object):
     """Class to abstract mongo calls."""
 
     def __init__(
-            self, agave_client, user=None, password=None,
-            host=None, port=None, database=None
+        self,
+        agave_client,
+        user=None,
+        password=None,
+        host=None,
+        port=None,
+        database=None,
     ):
         """Initialize instance."""
-        user = user or getattr(settings, 'MONGO_USER')
-        password = password or getattr(settings, 'MONGO_PASS')
-        host = host or getattr(settings, 'MONGO_HOST')
-        port = port or getattr(settings, 'MONGO_PORT', 27017)
-        database = database or getattr(settings, 'MONGO_DB', 'scheduler')
+        user = user or getattr(settings, "MONGO_USER")
+        password = password or getattr(settings, "MONGO_PASS")
+        host = host or getattr(settings, "MONGO_HOST")
+        port = port or getattr(settings, "MONGO_PORT", 27017)
+        database = database or getattr(settings, "MONGO_DB", "scheduler")
         self._ac = agave_client
         self._mc = self._mongo_client(user, password, host, port, database)
 
@@ -32,35 +38,74 @@ class MongoProjectsHelper(object):
         """Create mongo client."""
         return MongoClient(
             "mongodb://{user}:{password}@{host}:{port}/{database}".format(
-                user=user,
-                password=password,
-                host=host,
-                port=port,
-                database=database
+                user=user, password=password, host=host, port=port, database=database
             )
         )
+
+    def get_sched_listing(self, query=None, sort=None):
+        """List events from the scheduler stored in mongodb
+
+        :param dict query: a query string to pass to mongo.
+        :param sort: sort parameters
+        """
+        query = query or {}
+
+        # set sorting option
+        final_sort = []
+        if sort == "Start Date - newest first":
+            final_sort = [("dateStart", DESCENDING)]
+        elif sort == "Start Date - oldest first":
+            final_sort = [("dateStart", ASCENDING)]
+        elif sort == "Award Number":
+            final_sort = [("awardNumber", ASCENDING)]
+        elif sort == "Facility":
+            final_sort = [("facility", ASCENDING)]
+        elif sort == "PI Name":
+            final_sort = [("piName", ASCENDING)]
+        else:
+            final_sort = [("dateStart", ASCENDING)]
+
+        mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
+        cursor = mongo_db.projects_v2.find(query).sort(final_sort)
+        results = list(cursor)
+        for event in results:
+            yield event
+
+    def get_sched_facilities(self):
+        """Get unique facilities in the scheduler-projects db"""
+
+        mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
+        cursor = mongo_db.projects_v2.distinct("facility")
+        results = list(cursor)
+        for facility in results:
+            yield facility
+
+    """ Previous Implementation Functions
+    These are here for posterity
+    not currently being used
+    """
 
     def import_project_to_mongo(self, prj_dict):
         """Insert a project from agave metadata to mongo.
 
         :param dict prj_dict: Project dict.
         """
-        ents = prj_dict.pop('entities', [])
+        ents = prj_dict.pop("entities", [])
         results = []
         for ent in ents:
-            proc_start = ent.get('procedureStart')
-            date_start = ent.get('dateStart')
-            event_start = prj_dict.get('nhEventStart')
+            proc_start = ent.get("procedureStart")
+            date_start = ent.get("dateStart")
+            event_start = prj_dict.get("nhEventStart")
             date_start = proc_start or date_start or event_start
             if not date_start:
                 continue
-            proc_end = ent.get('procedureEnd')
-            date_end = ent.get('dateEnd')
-            event_end = ent.get('nhEventEnd')
+            proc_end = ent.get("procedureEnd")
+            date_end = ent.get("dateEnd")
+            event_end = ent.get("nhEventEnd")
             date_end = proc_end or date_end or event_end
             entity = {
                 "uuid": ent["uuid"],
-                "title": prj_dict['title'],
+                "title": prj_dict["title"],
                 "projectId": prj_dict["projectId"],
                 "prjDesc": prj_dict["description"],
                 "eventTitle": ent["title"],
@@ -72,12 +117,12 @@ class MongoProjectsHelper(object):
                 "project": prj_dict,
                 "event": ent,
             }
-            mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-            mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects_v2')]
+            mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
+            mongo_collection = mongo_db[
+                getattr(settings, "MONGO_PRJ_COLLECTION", "projects_v2")
+            ]
             result = mongo_collection.find_one_and_replace(
-                {"uuid": ent['uuid']},
-                entity,
-                upsert=True
+                {"uuid": ent["uuid"]}, entity, upsert=True
             )
             results.append(result)
         return results
@@ -91,8 +136,10 @@ class MongoProjectsHelper(object):
         """
         query = query or {}
         sort = sort or [("dateStart", -1)]
-        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-        mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects_v2')]
+        mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
+        mongo_collection = mongo_db[
+            getattr(settings, "MONGO_PRJ_COLLECTION", "projects_v2")
+        ]
         offset = page_size * page_number
         cursor = mongo_collection.find(query).sort(sort).skip(offset).limit(page_size)
         for event in cursor:
@@ -103,17 +150,19 @@ class MongoProjectsHelper(object):
 
         :param dict query: A mongo query.
         """
-        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
-        mongo_collection = mongo_db[getattr(settings, 'MONGO_PRJ_COLLECTION', 'projects_v2')]
+        mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
+        mongo_collection = mongo_db[
+            getattr(settings, "MONGO_PRJ_COLLECTION", "projects_v2")
+        ]
         return mongo_collection.count_documents(query)
 
     def filters(self):
         """Return all filters."""
-        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
+        mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
         cursor = mongo_db.filters_v2.find()
         filters = list(cursor)
         for f in filters:
-            f['value'].sort()
+            f["value"].sort()
         return filters
 
     def _update_filter(self, name, value):
@@ -122,17 +171,13 @@ class MongoProjectsHelper(object):
         :param str name: Name of the filter.
             One of: ["facilities", "places", "instruments"]
         """
-        mongo_db = self._mc[getattr(settings, 'MONGO_DB', 'scheduler')]
+        mongo_db = self._mc[getattr(settings, "MONGO_DB", "scheduler")]
         col = mongo_db.filters_v2
         filter_doc = {
             "name": name,
             "value": value,
         }
-        result = col.find_one_and_replace(
-            {"name": name},
-            filter_doc,
-            upsert=True
-        )
+        result = col.find_one_and_replace({"name": name}, filter_doc, upsert=True)
         return result
 
     def update_facilities_filter(self):

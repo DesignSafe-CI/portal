@@ -1,8 +1,10 @@
 """System Allocation Access Step for Onboarding."""
 
 import logging
-from designsafe.apps.onboarding.state import SetupState
+
 from designsafe.apps.api.users.utils import get_allocations
+from designsafe.apps.onboarding.state import SetupState
+
 from .project_membership import ProjectMembershipStep
 
 logger = logging.getLogger(__name__)
@@ -44,8 +46,8 @@ class SystemAccessStep(ProjectMembershipStep):
             # If the intersection of the set of systems and resources has
             # items, the user has the necessary allocation
             return len(set(systems).intersection(resources)) > 0
-        except Exception as exc:  # pylint: disable=broad-except
-            logger.error(exc)
+        except Exception:
+            logger.exception("")
             self.fail("We were unable to retrieve your allocations.")
             return False
 

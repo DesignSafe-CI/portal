@@ -1,10 +1,13 @@
 """Utilities for projects models."""
 import logging
-from designsafe.apps.projects.models.agave import base
-from designsafe.apps.projects.models.agave import experimental
-from designsafe.apps.projects.models.agave import simulation
-from designsafe.apps.projects.models.agave import hybrid_simulation
-from designsafe.apps.projects.models.agave import rapid
+
+from designsafe.apps.projects.models.agave import (
+    base,
+    experimental,
+    hybrid_simulation,
+    rapid,
+    simulation,
+)
 from designsafe.apps.projects.models.agave.base import Project
 
 logger = logging.getLogger(__name__)
@@ -67,7 +70,7 @@ def lookup_model(entity=None, name=None):
         if isinstance(entity, dict):
             ename = '{ptype}_project'.format(ptype=entity['value'].get('projectType', ''))
         else:
-            ename = '{ptype}_project'.format(ptype=entity.value.project_type)
+            ename = f'{entity.value.project_type}_project'
 
         modules = [base, experimental, simulation, hybrid_simulation, rapid]
     else:
@@ -91,6 +94,6 @@ def lookup_model(entity=None, name=None):
     if cls is None and ename.endswith('_project'):
         return Project
     elif cls is None:
-        raise AttributeError("Model '{model}' needed for '{name}' does not exist".format(model=name, name=ename))
+        raise AttributeError(f"Model '{name}' needed for '{ename}' does not exist")
 
     return cls

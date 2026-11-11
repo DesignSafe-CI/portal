@@ -1,11 +1,13 @@
 """Views for the licenses API."""
 
-from django.contrib.auth import get_user_model
-from django.http.response import HttpResponseForbidden, HttpResponseNotFound
-from django.http import JsonResponse
-from django.apps import apps
-from designsafe.apps.api.views import AuthenticatedAllowJwtApiView
 import logging
+
+from django.apps import apps
+from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+from django.http.response import HttpResponseForbidden, HttpResponseNotFound
+
+from designsafe.apps.api.views import AuthenticatedAllowJwtApiView
 
 logger = logging.getLogger(__name__)
 

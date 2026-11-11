@@ -1,17 +1,16 @@
-import six
 import json
 import logging
-import xml.etree.ElementTree as ET
 
-from designsafe.apps.data.models.agave.metadata import (BaseMetadataResource,
-                                                       BaseMetadataPermissionResource)
+import six
+
+from designsafe.apps.api.agave import to_camel_case
 from designsafe.apps.data.models.agave.files import BaseFileResource
+from designsafe.apps.data.models.agave.metadata import (
+    BaseMetadataPermissionResource,
+    BaseMetadataResource,
+)
 from designsafe.apps.data.models.agave.systems import BaseSystemResource
 from designsafe.apps.data.models.agave.systems import roles as system_roles
-from designsafe.apps.api.agave import to_camel_case
-from designsafe.apps.data.models.agave.base import Model as MetadataModel
-from designsafe.apps.data.models.agave import fields
-from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +32,7 @@ class Project(BaseMetadataResource):
             'name': Project.NAME
         }
         defaults.update(kwargs)
-        super(Project, self).__init__(agave_client, **defaults)
+        super().__init__(agave_client, **defaults)
 
         # initialize properties cache attributes
         self._project_directory = None
@@ -105,7 +104,7 @@ class Project(BaseMetadataResource):
         return [pem.username for pem in permissions]
 
     def add_collaborator(self, username):
-        logger.info('Adding collaborator "{}" to project "{}"'.format(username, self.uuid))
+        logger.info(f'Adding collaborator "{username}" to project "{self.uuid}"')
 
         # Set permissions on the metadata record
         pem = BaseMetadataPermissionResource(self.uuid, self._agave)
@@ -118,7 +117,7 @@ class Project(BaseMetadataResource):
         self.project_system.add_role(username, system_roles.USER)
 
     def remove_collaborator(self, username):
-        logger.info('Removing collaborator "{}" from project "{}"'.format(username, self.uuid))
+        logger.info(f'Removing collaborator "{username}" from project "{self.uuid}"')
 
         team_members = self.value.get('teamMembers', [])
         # logger.info(coPis)
@@ -176,7 +175,7 @@ class Project(BaseMetadataResource):
         return self.value.get('coPis', [])
 
     def add_co_pi(self, username):
-        logger.info('Adding Co PI "{}" to project "{}"'.format(username, self.uuid))
+        logger.info(f'Adding Co PI "{username}" to project "{self.uuid}"')
 
         coPis = self.value.get('coPis', [])
 
@@ -185,7 +184,7 @@ class Project(BaseMetadataResource):
         self.add_collaborator(username)
 
     def remove_co_pi(self, username):
-        logger.info('Removing Co PI "{}" from project "{}"'.format(username, self.uuid))
+        logger.info(f'Removing Co PI "{username}" from project "{self.uuid}"')
 
         coPis = self.value.get('coPis', [])
         # logger.info(coPis)
@@ -233,7 +232,7 @@ class Project(BaseMetadataResource):
 
     @property
     def project_system_id(self):
-        return 'project-{}'.format(self.uuid)
+        return f'project-{self.uuid}'
 
     @property
     def project_data_listing(self, path='/'):

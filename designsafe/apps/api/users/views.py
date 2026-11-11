@@ -1,17 +1,19 @@
-import logging
 import json
+import logging
+
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict
+from django.http import HttpRequest, HttpResponseNotFound, JsonResponse
+from django.views.generic.base import View
+from elasticsearch_dsl import Q
+from pytas.http import TASClient
+
 from designsafe.apps.api.mixins import SecureMixin
 from designsafe.apps.api.users import utils as users_utils
-from django.contrib.auth import get_user_model
-from django.forms.models import model_to_dict
-from django.http import HttpResponseNotFound, JsonResponse, HttpRequest
-from django.views.generic.base import View
-from django.core.exceptions import ObjectDoesNotExist
-from pytas.http import TASClient
-from designsafe.apps.api.views import BaseApiView, ApiException
+from designsafe.apps.api.views import ApiException, BaseApiView
 from designsafe.apps.data.models.elasticsearch import IndexedFile, IndexedPublication
 from designsafe.libs.elasticsearch.utils import new_es_client
-from elasticsearch_dsl import Q
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +37,6 @@ def check_public_availability(username):
 
 
 class UsageView(SecureMixin, View):
-
     def get(self, request):
         current_user = request.user
         q = (
@@ -54,7 +55,6 @@ class UsageView(SecureMixin, View):
 
 
 class AuthenticatedView(View):
-
     def get(self, request):
         if request.user.is_authenticated:
             u = request.user
@@ -75,7 +75,6 @@ class AuthenticatedView(View):
 
 
 class SearchView(View):
-
     def get(self, request):
         resp_fields = ["first_name", "last_name", "email", "username"]
         model = get_user_model()
@@ -102,6 +101,7 @@ class SearchView(View):
                 user_tas = TASClient().get_user(username=q)
                 res_dict["profile"] = {"institution": user_tas["institution"]}
             except Exception:
+                logger.exception("")
                 logger.info("No Profile.")
 
             return JsonResponse(res_dict)
@@ -143,8 +143,9 @@ class ProjectUserView(BaseApiView):
             raise ApiException(message="Authentication required", status=401)
 
         username_query = request.GET.get("q")
-        user_match = get_user_model().objects.filter(is_active=True,
-                                                     username__iexact=username_query)
+        user_match = get_user_model().objects.filter(
+            is_active=True, username__iexact=username_query
+        )
         user_resp = [
             {
                 "fname": u.first_name,
@@ -161,7 +162,6 @@ class ProjectUserView(BaseApiView):
 
 
 class PublicView(View):
-
     def get(self, request):
         model = get_user_model()
         nl = json.loads(request.GET.get("usernames"))

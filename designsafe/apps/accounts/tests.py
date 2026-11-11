@@ -1,10 +1,11 @@
-from django.test import TestCase
-from django.contrib.auth import get_user_model, signals
-from django.contrib.auth.models import Permission
-from django.urls import reverse
 from unittest import skip
-from mock import patch
+from unittest.mock import patch
+
 import pytest
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.test import TestCase
+from django.urls import reverse
 
 pytestmark = pytest.mark.django_db
 
@@ -64,7 +65,7 @@ class AccountsTests(TestCase):
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(
-            resp, '"{0}","{1}"'.format(ds_user.get_full_name(), ds_user.email))
+            resp, f'"{ds_user.get_full_name()}","{ds_user.email}"')
 
     def test_mailing_list_unsubscribe(self):
         """
@@ -83,7 +84,7 @@ class AccountsTests(TestCase):
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         self.assertNotContains(
-            resp, '"{0}","{1}"'.format(ds_user.get_full_name(), ds_user.email))
+            resp, f'"{ds_user.get_full_name()}","{ds_user.email}"')
 
     @skip("Need to mock celery call")
     def test_user_report_access(self):
