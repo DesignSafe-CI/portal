@@ -19,7 +19,10 @@ const QuickLinks: React.FC = () => {
         <UserOutlined className={styles.sidebarIcon} />
         Manage Account
       </a>
-      <a href="/workspace" className={styles.sidebarLink}>
+      <a
+        href="/use-designsafe/tools-applications"
+        className={styles.sidebarLink}
+      >
         <ToolOutlined className={styles.sidebarIcon} />
         Tools & Applications
       </a>
