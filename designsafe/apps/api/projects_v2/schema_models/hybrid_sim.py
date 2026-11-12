@@ -115,6 +115,7 @@ class HybridSimCoordinator(MetadataModel):
     title: str
     description: str = ""
     application_version: str = ""
+    substructure_middleware: str = ""
 
     project: list[str] = []
     hybrid_simulations: list[str] = []

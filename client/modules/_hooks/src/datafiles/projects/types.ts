@@ -132,6 +132,8 @@ export type TEntityValue = {
   procedureEnd?: string;
 
   simulationType?: TDropdownValue;
+  applicationVersion?: string;
+  substructureMiddleware?: string;
 
   observationTypes?: TDropdownValue[];
   equipment?: TDropdownValue[];
