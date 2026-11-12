@@ -130,7 +130,12 @@ export function NotificationBadge() {
         },
       }}
     >
-      <Dropdown menu={{ items }} className="btn" trigger={['click']}>
+      <Dropdown
+        menu={{ items }}
+        className="btn"
+        trigger={['click']}
+        disabled={!userNotifications}
+      >
         <Button
           id="dLabel"
           className={`${styles['dropdown-toggle-button']} no-underline-on-hover`}
