@@ -133,6 +133,7 @@ export function NotificationBadge() {
         menu={{ items }}
         className="btn"
         trigger={['click']}
+        overlayStyle={{ minWidth: '400px' }}
         disabled={!userNotifications}
       >
         <Button
