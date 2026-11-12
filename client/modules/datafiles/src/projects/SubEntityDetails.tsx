@@ -100,6 +100,24 @@ export const SubEntityDetails: React.FC<{
             </tr>
           )}
 
+          {entityValue.applicationVersion && (
+            <tr className={styles['prj-row']}>
+              <td>Application and Version</td>
+              <td style={{ fontWeight: 'bold' }}>
+                {entityValue.applicationVersion}
+              </td>
+            </tr>
+          )}
+
+          {entityValue.substructureMiddleware && (
+            <tr className={styles['prj-row']}>
+              <td>Substructure Middleware</td>
+              <td style={{ fontWeight: 'bold' }}>
+                {entityValue.substructureMiddleware}
+              </td>
+            </tr>
+          )}
+
           {(entityValue.dataCollectors ?? []).length > 0 && (
             <tr className={styles['prj-row']}>
               <td>Data Collectors</td>
