@@ -11,16 +11,11 @@
       <link rel="canonical" href="{{request.get_full_path}}">
       <!-- styles -->
       <link href="{% static 'vendor/bootstrap-ds/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/angular-toastr/dist/angular-toastr.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/slick-carousel/slick/slick.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" type="text/css">
+      <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/typekit.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/main-ef.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/corner-ribbon.css' %}" rel="stylesheet" type="text/css">
       <link href="{% static 'styles/base.css' %}" rel="stylesheet" type="text/css">
-      <link href="{% static 'vendor/angular-material/angular-material.css' %}" rel="stylesheet">
       <link href="{% static 'styles/ng-designsafe-ef.css' %}" rel="stylesheet">
       {% render_block "css" %}
   </head>
@@ -53,14 +48,10 @@
 
     {% include 'includes/footer.html' %}
     <!-- scripts -->
-    <script src="{% static 'vendor/modernizr/modernizr.js' %}"></script>
-    <script src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap-ds/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
-    <script src="{% static 'vendor/d3/dist/d3.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 
     <script src="{% static 'scripts/utils.js' %}"></script>
-    <script src="{% static 'scripts/dateinput.js' %}"></script>
     <script src="{% static 'scripts/navbar.js' %}"></script>
     {% render_block "js" %}
     {% block scripts %}{% endblock %}

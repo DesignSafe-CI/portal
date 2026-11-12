@@ -1,12 +1,5 @@
 FROM --platform=linux/amd64 designsafeci/ds-user-guide AS ds-user-guide
 
-FROM node:16 AS node_build
-COPY package.json package-lock.json /designsafe/
-WORKDIR /designsafe
-RUN npm ci
-
-COPY . /designsafe/
-RUN npm run build
 
 FROM node:22 AS node_nx_build
 COPY client/package.json client/package-lock.json /designsafe/
@@ -39,6 +32,7 @@ WORKDIR $PYSETUP_PATH
 COPY pyproject.toml uv.lock ./
 # install runtime deps
 RUN --mount=type=cache,id=uv-ds-prod,target=/uv/sync-prod uv sync --locked --no-dev
+COPY --chown=tg458981:G-816877 . /srv/www/designsafe
 
 ##############
 # `development` image target is used for local development
@@ -48,7 +42,6 @@ RUN --mount=type=cache,id=uv-core-ds-dev,target=/uv/sync-dev uv sync --locked --
 
 # Copy in base project directory without built client assets for local development
 COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
-COPY --chown=tg458981:G-816877 . /srv/www/designsafe
 
 USER tg458981
 
@@ -61,7 +54,6 @@ FROM python-base AS production
 # Copy user guide material for populating RAG
 COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
 # Copy in built client assets
-COPY --from=node_build --chown=tg458981:G-816877 /designsafe/ /srv/www/designsafe
 COPY --from=node_nx_build --chown=tg458981:G-816877 /designsafe/client/dist/client/. /srv/www/designsafe/designsafe/static/react-assets
 COPY --from=node_nx_build --chown=tg458981:G-816877 /designsafe/client/dist/client/react-assets.html /srv/www/designsafe/designsafe/templates/react-assets.html
 

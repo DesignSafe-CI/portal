@@ -46,8 +46,7 @@ class MongoTTCHelper(object):
         """List grants stored in mongodb.
 
         :param dict query: A query string to pass to mongo.
-        :param int page_size: Page size.
-        :param hex last_id: Last mongo id.
+        :param sort: sort parameters
         """
         query = query or {}
 

@@ -26,9 +26,7 @@ import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 import LegendControl from './LegendControl';
 
-/* no need to import leaflet css as already in base index
 import 'leaflet/dist/leaflet.css';
-*/
 
 import styles from './LeafletMap.module.css';
 import { ReconPortalPopupContent } from './ReconPortalPopUpContent';
