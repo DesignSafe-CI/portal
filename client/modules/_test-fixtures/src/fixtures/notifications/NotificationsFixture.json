@@ -1,0 +1,99 @@
+{
+  "notifs": [
+    {
+      "event_type": "job",
+      "datetime": "2026-11-07T16:56:21.230708+00:00",
+      "status": "INFO",
+      "operation": "",
+      "message": "Job 'jupyter-hpc-native-stampede3_2026-11-07T16:40:46' updated to FAILED",
+      "extra": {
+        "name": "jupyter-hpc-native-stampede3_2026-11-07T16:40:46",
+        "owner": "jarosenb",
+        "status": "FINISHED",
+        "uuid": "7410b321-bd09-43fb-b925-e4a110789a1e-007",
+        "remoteOutcome": "FINISHED"
+      },
+      "pk": 3228874,
+      "action_link": "",
+      "user": "jarosenb",
+      "read": true,
+      "deleted": false
+    },
+    {
+      "event_type": "job",
+      "datetime": "2026-11-07T16:56:21.146332+00:00",
+      "status": "INFO",
+      "operation": "",
+      "message": "Job 'jupyter-hpc-native-stampede3_2026-11-07T16:40:46' updated to ARCHIVING",
+      "extra": {
+        "name": "jupyter-hpc-native-stampede3_2026-11-07T16:40:46",
+        "owner": "jarosenb",
+        "status": "FINISHED",
+        "uuid": "7410b321-bd09-43fb-b925-e4a110789a1e-007",
+        "remoteOutcome": "FINISHED"
+      },
+      "pk": 3228873,
+      "action_link": "",
+      "user": "jarosenb",
+      "read": true,
+      "deleted": false
+    },
+    {
+      "event_type": "job",
+      "datetime": "2026-11-07T16:43:00.972955+00:00",
+      "status": "INFO",
+      "operation": "",
+      "message": "Job 'jupyter-hpc-native-stampede3_2026-11-07T16:40:46' updated to RUNNING",
+      "extra": {
+        "name": "jupyter-hpc-native-stampede3_2026-11-07T16:40:46",
+        "owner": "jarosenb",
+        "status": "RUNNING",
+        "uuid": "7410b321-bd09-43fb-b925-e4a110789a1e-007"
+      },
+      "pk": 3228871,
+      "action_link": "",
+      "user": "jarosenb",
+      "read": true,
+      "deleted": false
+    },
+    {
+      "event_type": "job",
+      "datetime": "2026-11-07T16:41:21.463296+00:00",
+      "status": "INFO",
+      "operation": "",
+      "message": "Job 'jupyter-hpc-native-stampede3_2026-11-07T16:40:46' updated to STAGING_INPUTS",
+      "extra": {
+        "name": "jupyter-hpc-native-stampede3_2026-11-07T16:40:46",
+        "owner": "jarosenb",
+        "status": "STAGING_INPUTS",
+        "uuid": "7410b321-bd09-43fb-b925-e4a110789a1e-007"
+      },
+      "pk": 3228870,
+      "action_link": "",
+      "user": "jarosenb",
+      "read": true,
+      "deleted": false
+    },
+    {
+      "event_type": "job",
+      "datetime": "2026-11-07T16:41:20.175502+00:00",
+      "status": "INFO",
+      "operation": "",
+      "message": "Job 'jupyter-hpc-native-stampede3_2026-11-07T16:40:46' updated to PENDING",
+      "extra": {
+        "name": "jupyter-hpc-native-stampede3_2026-11-07T16:40:46",
+        "owner": "jarosenb",
+        "status": "PENDING",
+        "uuid": "7410b321-bd09-43fb-b925-e4a110789a1e-007"
+      },
+      "pk": 3228869,
+      "action_link": "",
+      "user": "jarosenb",
+      "read": true,
+      "deleted": false
+    }
+  ],
+  "page": 0,
+  "total": 5,
+  "unread": 0
+}

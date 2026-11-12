@@ -111,6 +111,37 @@ export const ProjectCategoryForm: React.FC<{
         </Form.Item>
       </Form.Item>
 
+      {[
+        constants.HYBRID_SIM_COORDINATOR,
+        constants.HYBRID_SIM_SIM_SUBSTRUCTURE,
+      ].includes(selectedName ?? '') && (
+        <Form.Item label="Application and Version" required>
+          <Form.Item
+            name={['value', 'applicationVersion']}
+            className="inner-form-item"
+            rules={[
+              {
+                required: true,
+                message: 'Please enter an application and version',
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Form.Item>
+      )}
+
+      {selectedName === constants.HYBRID_SIM_COORDINATOR && (
+        <Form.Item label="Substructure Middleware">
+          <Form.Item
+            name={['value', 'substructureMiddleware']}
+            className="inner-form-item"
+          >
+            <Input />
+          </Form.Item>
+        </Form.Item>
+      )}
+
       {selectedName === constants.FIELD_RECON_PLANNING && (
         <Form.Item label="Data Collectors" required>
           Select data collectors for this collection.
