@@ -9,7 +9,9 @@ import { ItemType } from 'antd/es/menu/interface';
 import styles from './NotificationBadge.module.css';
 
 export function NotificationBadge() {
-  const { data: userNotifications } = useGetNotifications({});
+  const { data: userNotifications } = useGetNotifications({
+    eventTypes: ['interactive_session_ready', 'job'],
+  });
   const { mutate: deleteNotifications } = useDeleteNotifications();
   const baseItems: ItemType[] = [
     {
@@ -90,13 +92,10 @@ export function NotificationBadge() {
           },
         ]
       : (userNotifications && [
-          ...userNotifications.notifs
-            .filter((notif) => notif.event_type !== 'data_depot')
-            .slice(0, 5)
-            .map((notif) => ({
-              key: notif.pk,
-              label: <NotifLabel notif={notif} />,
-            })),
+          ...userNotifications.notifs.slice(0, 5).map((notif) => ({
+            key: notif.pk,
+            label: <NotifLabel notif={notif} />,
+          })),
           {
             key: 'clear',
             label: (
