@@ -1,11 +1,11 @@
 /// <reference types='vitest' />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import path from 'path';
 
 export default defineConfig({
-  root: __dirname,
+  root: import.meta.dirname,
+  base: '/static/react-assets',
   cacheDir: './node_modules/.vite/.',
 
   server: {
@@ -21,12 +21,7 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [react(), nxViteTsPaths()],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
+  plugins: [react()],
 
   build: {
     outDir: './dist/client',
@@ -35,20 +30,53 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
+      preserveEntrySignatures: false,
       input: {
-        imports: path.resolve(__dirname, 'react-assets.html'),
+        imports: path.resolve(import.meta.dirname, 'react-assets.html'),
+      },
+      output: {
+        // Vendor groups can create circular chunks (e.g. Leaflet and its
+        // React bindings). Initialize modules in source order across chunks.
+        strictExecutionOrder: true,
+        codeSplitting: {
+          groups: [
+            {
+              // Split only third-party code: grouping application modules would
+              // collapse the independently loaded roots back together.
+              name: 'vendor',
+              test: /node_modules[\\/]/,
+              // Keep packages separated by the app roots that consume them so,
+              // for example, Leaflet is never fetched by an onboarding page.
+              entriesAware: true,
+              entriesAwareMergeThreshold: 100_000,
+              // Rolldown measures source bytes here. These limits currently
+              // produce 40-450 kB minified chunks with no size warnings.
+              minSize: 100_000,
+              maxSize: 1_250_000,
+            },
+          ],
+        },
       },
     },
   },
 
   test: {
-    globals: true,
-    cache: {
-      dir: './node_modules/.vitest',
+    deps: {
+      optimizer: {
+        client: {
+          enabled: true,
+          // Match dashboard's test config for Ant Design X's antd/es imports.
+          include: ['antd', '@ant-design/x'],
+        },
+      },
     },
+    globals: true,
     setupFiles: ['./src/vitest.setup.ts'],
     environment: 'jsdom',
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: [
+      'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      'modules/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+    ],
 
     reporters: ['default'],
     coverage: {

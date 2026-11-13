@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import useWebSocket from 'react-use-websocket';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   TSetupStepEvent,
@@ -46,12 +46,10 @@ const OnboardingWebsocketHandler = () => {
   );
   const queryClient = useQueryClient();
   const processSetupEvent = (event: TSetupStepEvent) => {
-    queryClient.setQueriesData(
+    queryClient.setQueriesData<TOnboardingAdminList>(
       { queryKey: ['onboarding', 'adminList'], exact: false },
-      (oldData) =>
-        (oldData as TOnboardingAdminList)?.users
-          ? updateAdminUsersFromEvent(oldData as TOnboardingAdminList, event)
-          : oldData
+      (oldData: TOnboardingAdminList | undefined) =>
+        oldData?.users ? updateAdminUsersFromEvent(oldData, event) : oldData
     );
     queryClient.setQueryData(
       ['onboarding', 'user', event.username],

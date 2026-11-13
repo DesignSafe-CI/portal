@@ -218,6 +218,8 @@ if os.environ.get("DATABASE_HOST"):
             "PORT": os.environ.get("DATABASE_PORT"),
             "USER": os.environ.get("DATABASE_USER"),
             "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
+            "DISABLE_SERVER_SIDE_CURSORS": str(os.environ.get("DATABASE_PORT"))
+            == "6432",  # pgbouncer port for pooled connections
         },
     }
 else:

@@ -513,7 +513,7 @@ export const AppsSubmissionForm: React.FC = () => {
       title: string;
       nextPage?: string;
       prevPage?: string;
-      content: JSX.Element;
+      content: React.ReactElement;
     };
   }
 

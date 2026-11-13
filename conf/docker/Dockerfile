@@ -1,13 +1,15 @@
 FROM --platform=linux/amd64 designsafeci/ds-user-guide AS ds-user-guide
 
 
-FROM node:22 AS node_nx_build
-COPY client/package.json client/package-lock.json /designsafe/
-WORKDIR /designsafe/client
-RUN npm ci
+FROM ghcr.io/pnpm/pnpm:12 AS node_build
+RUN pnpm runtime set node 24 -g
 
 COPY client/ /designsafe/client/
-RUN npm run build
+WORKDIR /designsafe/client
+RUN --mount=type=cache,id=pnpm-ds,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
+RUN pnpm build
 
 FROM python:3.12-slim AS python-base
 
@@ -54,8 +56,8 @@ FROM python-base AS production
 # Copy user guide material for populating RAG
 COPY --from=ds-user-guide --chown=tg458981:G-816877 /docs/ /docs/
 # Copy in built client assets
-COPY --from=node_nx_build --chown=tg458981:G-816877 /designsafe/client/dist/client/. /srv/www/designsafe/designsafe/static/react-assets
-COPY --from=node_nx_build --chown=tg458981:G-816877 /designsafe/client/dist/client/react-assets.html /srv/www/designsafe/designsafe/templates/react-assets.html
+COPY --from=node_build --chown=tg458981:G-816877 /designsafe/client/dist/client/. /srv/www/designsafe/designsafe/static/react-assets
+COPY --from=node_build --chown=tg458981:G-816877 /designsafe/client/dist/client/react-assets.html /srv/www/designsafe/designsafe/templates/react-assets.html
 
 USER tg458981
 

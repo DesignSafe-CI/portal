@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Table, TableColumnType, TableProps } from 'antd';
-import useWebSocket from 'react-use-websocket';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 import {
   useJobsListing,
   TTapisJob,

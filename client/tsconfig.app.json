@@ -1,23 +1,25 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "@client/tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
-    "types": [
-      "node",
-      "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts",
-      "vite/client"
-    ]
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "types": ["node", "vite/client"],
+    "tsBuildInfoFile": "./node_modules/.cache/typescript/tsconfig.app.tsbuildinfo"
   },
+  "include": ["."],
   "exclude": [
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    "src/**/*.spec.tsx",
-    "src/**/*.test.tsx",
-    "src/**/*.spec.js",
-    "src/**/*.test.js",
-    "src/**/*.spec.jsx",
-    "src/**/*.test.jsx"
-  ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+    "**/node_modules",
+    "**/dist",
+    "**/out-tsc",
+    "**/tmp",
+    "**/coverage",
+    "**/e2e",
+    "**/test-results",
+    "**/playwright-report",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/vitest.setup.ts",
+    "**/vite.config.ts",
+    "**/vitest.config.ts"
+  ]
 }

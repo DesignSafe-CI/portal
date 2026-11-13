@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import useWebSocket from 'react-use-websocket';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 import { useQueryClient } from '@tanstack/react-query';
 import { notification, Flex } from 'antd';
 import { RightOutlined } from '@ant-design/icons';

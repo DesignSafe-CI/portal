@@ -1,7 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt';
 import { OpenTopoDataset } from '@client/hooks';
 import { Typography, Space } from 'antd';
 import styles from './OpenTopoPopupContent.module.css';

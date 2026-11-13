@@ -1,0 +1,8 @@
+{
+  "extends": "./base.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"]
+  },
+  "exclude": ["${configDir}/**/*.spec.*", "${configDir}/**/*.test.*"],
+  "include": ["${configDir}/src"]
+}
