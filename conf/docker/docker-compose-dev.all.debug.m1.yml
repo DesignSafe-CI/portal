@@ -10,9 +10,9 @@ services:
     hostname: des_redis
 
   rabbitmq:
-    image: arm64v8/rabbitmq:3.6.14-management
+    image: arm64v8/rabbitmq:4.4-management
     volumes:
-      - des_rabbitmq_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
+      - des_rabbitmq4_data:/var/lib/rabbitmq/mnesia/rabbit@des_rabbitmq
     env_file: ../env_files/rabbitmq.env
     ports:
       - 127.0.0.1:5672:5672
@@ -26,12 +26,15 @@ services:
     hostname: des_memcached
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.29
     platform: "linux/amd64"
     ulimits:
       memlock: -1
+    mem_limit: 1g
     environment:
-      - ES_HEAP_SIZE:2g
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      discovery.type: single-node
+      ingest.geoip.downloader.enabled: "false"
     volumes:
       - ../elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ../elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
@@ -52,7 +55,7 @@ services:
       - des_postgres_data:/var/lib/postgresql/data
     hostname: des_postgres
     ports:
-      -   127.0.0.1:5432:5432
+      - 127.0.0.1:5432:5432
     container_name: des_postgres
 
   nginx:
@@ -153,3 +156,4 @@ volumes:
   des_postgres_data:
   des_es_data:
   des_rabbitmq_data:
+  des_rabbitmq4_data:
