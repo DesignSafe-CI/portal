@@ -1,10 +1,9 @@
 import React, { useMemo, useState } from 'react';
 //import styles from './FileListing.module.css';
 import { Button } from 'antd';
-import { TFileListing, useAuthenticatedUser } from '@client/hooks';
+import { TFileListing } from '@client/hooks';
 
 export function OpenInJupyterButton({ file }: { file: TFileListing }) {
-  const { user } = useAuthenticatedUser();
   const systemPathAlias = {
     'designsafe.storage.community': 'CommunityData',
     'designsafe.storage.published': 'NHERI-Published',
@@ -15,11 +14,11 @@ export function OpenInJupyterButton({ file }: { file: TFileListing }) {
       ? file.path.replace('/published-data', '')
       : file.path;
 
-  if (!user || !systemPathAlias || !file.path.endsWith('.ipynb')) return null;
+  if (!systemPathAlias || !file.path.endsWith('.ipynb')) return null;
 
-  const jupyterLink = `https://jupyter.designsafe-ci.org/user/${
-    user.username
-  }/lab/tree/${systemPathAlias}/${encodeURIComponent(path)}`;
+  const jupyterLink = `https://jupyter.designsafe-ci.org/user-redirect/lab/tree/${systemPathAlias}/${encodeURIComponent(
+    path
+  )}`;
   return (
     <Button
       size="small"
