@@ -1,7 +1,7 @@
 # workspace
 
-This library was generated with [Nx](https://nx.dev).
+This package is part of the client pnpm workspace.
 
 ## Running unit tests
 
-Run `nx test workspace` to execute the unit tests via [Vitest](https://vitest.dev/).
+Run `pnpm --filter @client/workspace test` to execute its unit tests.

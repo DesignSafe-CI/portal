@@ -11,7 +11,7 @@ import {
   notifyContext,
   USER_MYDATA_SYSTEM,
 } from '@client/hooks';
-import useWebSocket from 'react-use-websocket';
+import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket';
 
 const { Sider } = Layout;
 

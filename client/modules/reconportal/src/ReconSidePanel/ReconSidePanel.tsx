@@ -28,7 +28,7 @@ import { formatDate } from '@client/workspace';
 import { CloseOutlined } from '@ant-design/icons';
 import { getReconEventColor } from '../utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons/faLocationDot';
 
 export const ReconSidePanel: React.FC<LayoutProps> = ({
   children,

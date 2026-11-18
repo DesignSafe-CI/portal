@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2018",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
+    "incremental": true,
+    "tsBuildInfoFile": "${configDir}/node_modules/.cache/typescript/tsconfig.tsbuildinfo"
+  },
+  "exclude": [
+    "${configDir}/**/node_modules",
+    "${configDir}/**/dist",
+    "${configDir}/**/tmp"
+  ]
+}

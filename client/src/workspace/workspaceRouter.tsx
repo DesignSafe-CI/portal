@@ -1,5 +1,9 @@
 import { Suspense } from 'react';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
 import { Layout } from 'antd';
 import { Spinner } from '@client/common-components';
 import WorkspaceRoot from './layouts/WorkspaceBaseLayout';
@@ -54,4 +58,6 @@ const workspaceRouter = createBrowserRouter(
   { basename: getBaseName() }
 );
 
-export default workspaceRouter;
+export default function WorkspaceRouter() {
+  return <RouterProvider router={workspaceRouter} />;
+}

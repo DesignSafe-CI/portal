@@ -31,7 +31,7 @@ export const AppsWizard: React.FC<{
     title: string;
     prevPage?: string;
     nextPage?: string;
-    content: JSX.Element;
+    content: React.ReactElement;
   };
   handlePreviousStep: SubmitHandler<FieldValues>;
   handleNextStep: SubmitHandler<FieldValues>;

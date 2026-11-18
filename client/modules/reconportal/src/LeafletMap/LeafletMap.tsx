@@ -7,7 +7,7 @@ import {
   Marker,
   Popup,
 } from 'react-leaflet';
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons/faLocationDot';
 import {
   createSvgMarkerIcon,
   ZoomConditionalLayerGroup,

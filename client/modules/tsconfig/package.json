@@ -1,0 +1,10 @@
+{
+  "name": "@client/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./base.json": "./base.json",
+    "./lib.json": "./lib.json",
+    "./spec.json": "./spec.json"
+  }
+}

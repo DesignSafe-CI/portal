@@ -1,168 +1,30 @@
 import './styles.css';
-import { StrictMode } from 'react';
-import * as ReactDOM from 'react-dom/client';
-import { BrowserRouter, RouterProvider } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import workspaceRouter from './workspace/workspaceRouter';
-import datafilesRouter from './datafiles/datafilesRouter';
-import reconportalRouter from './reconportal/reconportalRouter';
-import onboardingRouter from './onboarding/onboardingRouter';
-import ncoRouter from './nco/ncoRouter';
-import { Dashboard } from '@client/dashboard';
-import { ConfigProvider, ThemeConfig } from 'antd';
-import { AIChatButton } from '@client/workspace';
-import { NotificationBadge } from '@client/notification-badge';
+import type { ComponentType } from 'react';
+import { renderApp } from './renderApp';
+import {
+  WorkspaceApp,
+  DatafilesApp,
+  OnboardingApp,
+  NavAI,
+  ReconApp,
+  DashboardApp,
+  NcoApp,
+  NotificationBadge,
+} from './appRoots';
 
-const queryClient = new QueryClient();
-const themeConfig: ThemeConfig = {
-  token: {
-    borderRadius: 0,
-    colorPrimary: '#337ab7',
-    colorError: '#d9534f',
-    colorPrimaryTextHover: 'black',
-    colorBorderSecondary: '#b7b7b7',
-  },
-  components: {
-    Table: {
-      cellPaddingBlock: 8,
-      headerBg: 'transparent',
-      headerColor: '#333333',
-      headerSplitColor: 'transparent',
-      rowHoverBg: 'rgb(230, 246, 255)',
-      borderColor: 'rgb(215, 215, 215)',
-      colorText: 'rgb(112, 112, 112)',
-    },
-    Layout: {
-      bodyBg: 'transparent',
-      siderBg: 'transparent',
-    },
-    Steps: {
-      colorPrimary: '#1cb500',
-    },
-    Menu: {
-      itemHeight: 45,
-      itemMarginInline: 0,
-      itemSelectedColor: 'black',
-      itemHoverBg: '#cbdded',
-      itemSelectedBg: '#cbdded',
-    },
-    Form: {
-      itemMarginBottom: 16,
-      verticalLabelPadding: 0,
-    },
-  },
+const mountApp = (rootId: string, App: ComponentType) => {
+  const element = document.getElementById(rootId);
+
+  if (element) {
+    renderApp(element, App);
+  }
 };
 
-const appsElement = document.getElementById('apps-root');
-if (appsElement) {
-  const appsRoot = ReactDOM.createRoot(appsElement as HTMLElement);
-  appsRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={workspaceRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const datafilesElement = document.getElementById('datafiles-root');
-if (datafilesElement) {
-  const datafilesRoot = ReactDOM.createRoot(datafilesElement as HTMLElement);
-  datafilesRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={datafilesRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const onboardingElement = document.getElementById('onboarding-root');
-if (onboardingElement) {
-  const onboardingRoot = ReactDOM.createRoot(onboardingElement as HTMLElement);
-  onboardingRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={onboardingRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const navAiElement = document.getElementById('nav-ai-root');
-if (navAiElement) {
-  const navAiRoot = ReactDOM.createRoot(navAiElement as HTMLElement);
-  navAiRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <AIChatButton />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const reconElement = document.getElementById('recon-root');
-if (reconElement) {
-  const reconRoot = ReactDOM.createRoot(reconElement as HTMLElement);
-  reconRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={reconportalRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const ncoElement = document.getElementById('nco-root');
-if (ncoElement) {
-  const ncoRoot = ReactDOM.createRoot(ncoElement as HTMLElement);
-  ncoRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <RouterProvider router={ncoRouter} />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const dashboardElement = document.getElementById('dashboard-root');
-if (dashboardElement) {
-  const dashboardRoot = ReactDOM.createRoot(dashboardElement as HTMLElement);
-  dashboardRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <BrowserRouter>
-            <Dashboard />
-          </BrowserRouter>
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
-
-const notifBadgeElement = document.getElementById('notification-badge-root');
-if (notifBadgeElement) {
-  const notifBadgeRoot = ReactDOM.createRoot(notifBadgeElement as HTMLElement);
-  notifBadgeRoot.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ConfigProvider theme={themeConfig}>
-          <NotificationBadge />
-        </ConfigProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
+mountApp('apps-root', WorkspaceApp);
+mountApp('datafiles-root', DatafilesApp);
+mountApp('onboarding-root', OnboardingApp);
+mountApp('nav-ai-root', NavAI);
+mountApp('recon-root', ReconApp);
+mountApp('dashboard-root', DashboardApp);
+mountApp('nco-root', NcoApp);
+mountApp('notification-badge-root', NotificationBadge);
