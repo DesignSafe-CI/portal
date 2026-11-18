@@ -71,42 +71,19 @@ const notebookInPublished = {
   isPreviewable: true,
 } as TFileListing;
 
-const userData = {
-  username: 'testuser',
-  firstName: 'test',
-  lastName: 'user',
-  institution: 'inst',
-  email: 'test@test.test',
-  isStaff: false,
-  homedir: '/',
-  setupComplete: true,
-};
-
-afterEach(() => {
-  global.window.__authenticatedUser__ = undefined;
-});
-
 describe('OpenInJupyterButton', () => {
   it('render Jupyter link for notebook in Community Data', () => {
-    global.window.__authenticatedUser__ = userData;
     render(<OpenInJupyterButton file={notebookInCommunity} />);
     expect(screen.getByRole('link').getAttribute('href')).toEqual(
-      'https://jupyter.designsafe-ci.org/user/testuser/lab/tree/CommunityData/%2FJupyter%20Notebooks%20for%20Civil%20Engineering%20Courses%2FUniv%20of%20Texas%20_%20FiniteElementAnalyses%20in%20GeotechnicalEngineering%2Fnotebooks%2F02-elastic_bar_linear_fem.ipynb'
+      'https://jupyter.designsafe-ci.org/user-redirect/lab/tree/CommunityData/%2FJupyter%20Notebooks%20for%20Civil%20Engineering%20Courses%2FUniv%20of%20Texas%20_%20FiniteElementAnalyses%20in%20GeotechnicalEngineering%2Fnotebooks%2F02-elastic_bar_linear_fem.ipynb'
     );
   });
 
   it('render Jupyter link for notebook in Published Data', () => {
-    global.window.__authenticatedUser__ = userData;
     render(<OpenInJupyterButton file={notebookInPublished} />);
     expect(screen.getByRole('link').getAttribute('href')).toEqual(
-      'https://jupyter.designsafe-ci.org/user/testuser/lab/tree/NHERI-Published/%2FPRJ-2890%2FExperiment--wall-of-wind-validation-and-calibration-tests-september-2020%2Fdata%2FAnalysis--jupyter-notebook-wow-sep-2020%2Fdata%2FPerformance_Analysis_2020.ipynb'
+      'https://jupyter.designsafe-ci.org/user-redirect/lab/tree/NHERI-Published/%2FPRJ-2890%2FExperiment--wall-of-wind-validation-and-calibration-tests-september-2020%2Fdata%2FAnalysis--jupyter-notebook-wow-sep-2020%2Fdata%2FPerformance_Analysis_2020.ipynb'
     );
-  });
-
-  it('render no link for unauthenticated user', () => {
-    global.window.__authenticatedUser__ = undefined;
-    render(<OpenInJupyterButton file={notebookInPublished} />);
-    expect(screen.queryByRole('link')).toBeNull();
   });
 
   it('render no link for non-notebook file', () => {
