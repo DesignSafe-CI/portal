@@ -41,6 +41,7 @@ import { PublishedEntityDetails } from '../PublishedEntityDetails';
 import { PreviewModalBody } from '../../DatafilesModal/PreviewModal';
 import { SubEntityDetails } from '../SubEntityDetails';
 import { PipelineEditCategoryModal } from '../modals';
+import { OpenInJupyterButton } from '../../FileListing/OpenInJupyterButton';
 
 export const EntityFileListingTable: React.FC<{
   treeData: TPreviewTreeData;
@@ -95,6 +96,9 @@ export const EntityFileListingTable: React.FC<{
                 >
                   {data}
                 </Button>
+                {record.path.endsWith('.ipynb') && (
+                  <OpenInJupyterButton file={record} />
+                )}
               </>
             )}
             <div>
