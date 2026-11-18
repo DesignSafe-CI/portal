@@ -15,6 +15,7 @@ import {
   useDoiContext,
 } from '@client/hooks';
 import styles from './FileListing.module.css';
+import { OpenInJupyterButton } from './OpenInJupyterButton';
 
 export function toBytes(bytes?: number) {
   if (bytes === 0) return '0 bytes';
@@ -24,33 +25,6 @@ export function toBytes(bytes?: number) {
   const precision = orderOfMagnitude === 0 ? 0 : 1;
   const bytesInUnits = bytes / Math.pow(1024, orderOfMagnitude);
   return `${bytesInUnits.toFixed(precision)} ${units[orderOfMagnitude]}`;
-}
-
-export function OpenInJupyterButton({ file }: { file: TFileListing }) {
-  const { user } = useAuthenticatedUser();
-  const systemPathAlias = {
-    'designsafe.storage.community': 'CommunityData',
-    'designsafe.storage.published': 'NHERI-Published',
-  }[file.system];
-
-  if (!user || !systemPathAlias || !file.path.endsWith('.ipynb')) return null;
-
-  const jupyterLink = `https://jupyter.designsafe-ci.org/user/${
-    user.username
-  }/lab/tree/${systemPathAlias}/${encodeURIComponent(file.path)}`;
-  return (
-    <Button
-      size="small"
-      style={{ marginLeft: '1rem', textDecoration: 'none' }}
-      type="default"
-      href={jupyterLink}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Open in Jupyter
-      <i className="fa fa-external-link" />
-    </Button>
-  );
 }
 
 export const FileListing: React.FC<
