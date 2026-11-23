@@ -1,4 +1,8 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from 'react-router-dom';
 import { NCOSchedLayout } from './layouts/ncoSchedulerLayout';
 import { NCOGrantsLayout } from './layouts/ncoGrantsLayout';
 
@@ -24,4 +28,6 @@ const ncoRouter = createBrowserRouter(
   { basename: '/nco' }
 );
 
-export default ncoRouter;
+export default function NcoRouter() {
+  return <RouterProvider router={ncoRouter} />;
+}

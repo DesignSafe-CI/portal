@@ -1,32 +1,25 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
-  root: __dirname,
+  root: import.meta.dirname,
   cacheDir: '../../node_modules/.vite/modules/dashboard',
 
-  plugins: [react(), nxViteTsPaths()],
-
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
+  plugins: [react()],
 
   test: {
     deps: {
       optimizer: {
-        web: {
+        // Ant Design X uses extensionless antd/es imports that need Vite's resolver.
+        client: {
           enabled: true,
-          // Ant Design X imports antd/es internals that need Vite's resolver.
           include: ['antd', '@ant-design/x'],
         },
       },
     },
     globals: true,
-    cache: { dir: '../../node_modules/.vitest' },
-    passWithNoTests: true,
     environment: 'jsdom',
+    setupFiles: ['./src/vitest.setup.ts'],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {

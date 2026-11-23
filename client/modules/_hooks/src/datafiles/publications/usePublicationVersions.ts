@@ -15,7 +15,7 @@ export function usePublicationVersions(projectId: string) {
     const selectedVersionParam = searchParams.get('version');
     const versionFromPath = path && (path.match(pathRegex)?.[1] || '1');
 
-    let _selectedVersion = 1;
+    let _selectedVersion: number;
     if (!selectedVersionParam) {
       _selectedVersion = Math.max(...(_dedupedVersions ?? [1]));
     } else {

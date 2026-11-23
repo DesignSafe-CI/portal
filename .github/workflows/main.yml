@@ -17,7 +17,7 @@ jobs:
       - name: Setup uv and Python
         uses: astral-sh/setup-uv@v10.1.0
         with:
-          version: 0.12.15
+          version: 0.13.5
           python-version: "3.12"
           enable-cache: true
 
@@ -69,54 +69,50 @@ jobs:
         run: |
           uv run ruff format --check designsafe
 
-  React_NX_unit_tests:
+  React_unit_tests:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: client
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/setup@v2
         with:
-          fetch-depth: 0
+          runtime: node@24
+          cache-dependency-path: "client/pnpm-lock.yaml"
+          working-directory: "client"
+          cache: true
+          require-lockfile: true
 
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: client/package-lock.json
+      # The root Vitest config includes application and module tests.
+      - name: Run client tests with coverage
+        run: pnpm test --coverage
 
-      - run: npm ci
-        working-directory: client
+      # The build script runs TypeScript checks before building with Vite.
+      - name: Build client
+        run: pnpm build
 
-      - uses: nrwl/nx-set-shas@v3
-
-      # Test/build any apps and libs that have been impacted by the diff.
-      - run: npx nx affected --target=test --parallel=3 --ci --code-coverage
-        working-directory: client
-      - run: npx nx affected --target=build --parallel=3
-        working-directory: client
-
-  React_NX_linting:
+  React_linting:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: client
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/setup@v2
         with:
-          fetch-depth: 0
+          runtime: node@24
+          cache-dependency-path: "client/pnpm-lock.yaml"
+          working-directory: "client"
+          cache: true
+          require-lockfile: true
 
-      - name: Setup Node.js for use with actions
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: client/package-lock.json
+      - name: Check formatting
+        run: pnpm format:check
 
-      - run: npm ci
-        working-directory: client
-
-      - uses: nrwl/nx-set-shas@v3
-
-      # Check linting/formatting of workspace files.
-      - run: npx nx format:check
-        working-directory: client
-
-      # Lint any apps and libs that have been impacted by the diff.
-      - run: npx nx affected --target=lint --parallel=3
-        working-directory: client
+      - name: Lint client
+        run: pnpm lint
