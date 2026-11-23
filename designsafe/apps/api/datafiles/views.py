@@ -86,10 +86,15 @@ class DataFilesView(BaseApiView):
                 client = get_client(request.user, api, system)
             except AttributeError:
                 raise resource_unconnected_handler(api)
-        elif api in ("agave", "tapis") and system in (
-            settings.COMMUNITY_SYSTEM,
-            settings.PUBLISHED_SYSTEM,
-            settings.NEES_PUBLIC_SYSTEM,
+        elif (
+            api in ("agave", "tapis")
+            and system
+            in (
+                settings.COMMUNITY_SYSTEM,
+                settings.PUBLISHED_SYSTEM,
+                settings.NEES_PUBLIC_SYSTEM,
+            )
+            and scheme in ("public", "community")
         ):
             client = service_account()
         else:
