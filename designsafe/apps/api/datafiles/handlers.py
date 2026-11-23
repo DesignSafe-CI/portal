@@ -53,6 +53,7 @@ allowed_actions = {
     ],
 }
 notify_actions = ["move", "copy", "rename", "trash", "mkdir", "upload"]
+readonly_actions = ["listing", "search", "download", "preview", "detail", "logentity"]
 
 operations_mapping = {
     "agave": tapis_operations,
@@ -77,6 +78,8 @@ def datafiles_get_handler(
     **kwargs,
 ):
     if operation not in allowed_actions[scheme]:
+        raise PermissionDenied
+    if operation not in readonly_actions:
         raise PermissionDenied
     op = getattr(operations_mapping[api], operation)
 
